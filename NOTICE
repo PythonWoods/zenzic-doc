@@ -1,0 +1,52 @@
+# Zenzic Documentation
+
+Copyright 2026 PythonWoods <dev@pythonwoods.dev>
+
+This product includes documentation developed by the PythonWoods contributors.
+
+Project attribution:
+
+- Zenzic Documentation is part of the Zenzic project by PythonWoods.
+- Docusaurus, React, and other referenced tools are third-party projects.
+
+================================================================================
+
+## Runtime Dependencies
+
+1. Docusaurus v3 (https://github.com/facebook/docusaurus)
+   Copyright (c) Meta Platforms, Inc. and its affiliates
+   License: MIT
+   Used for: Documentation site framework
+
+2. React (https://github.com/facebook/react)
+   Copyright (c) Meta Platforms, Inc. and its affiliates
+   License: MIT
+   Used for: UI rendering engine
+
+3. MDX (https://github.com/mdx-js/mdx)
+   Copyright (c) Compositor and Vercel, Inc.
+   License: MIT
+   Used for: Markdown + JSX authoring format
+
+4. Tailwind CSS (https://github.com/tailwindlabs/tailwindcss)
+   Copyright (c) Tailwind Labs, Inc.
+   License: MIT
+   Used for: Utility-first CSS framework
+
+5. clsx (https://github.com/lukeed/clsx)
+   Copyright (c) Luke Edwards
+   License: MIT
+   Used for: Conditional className utility
+
+6. prism-react-renderer (https://github.com/FormidableLabs/prism-react-renderer)
+   Copyright (c) Formidable Labs, Inc.
+   License: MIT
+   Used for: Syntax highlighting in code blocks
+
+================================================================================
+
+Full license texts for third-party dependencies can be found in their
+respective project repositories or package installations.
+
+This NOTICE file is provided in accordance with the Apache License 2.0
+requirements for attribution.

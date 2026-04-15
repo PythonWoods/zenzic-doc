@@ -1,0 +1,40 @@
+name: npm-audit
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '42 3 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (high+) with temporary allowlist
+        run: |
+          npx --yes audit-ci@^7 \
+            --high \
+            --report-type summary \
+            --allowlist GHSA-5c6j-r48x-rmvq \
+            --allowlist GHSA-qj8w-gfj5-8c6v

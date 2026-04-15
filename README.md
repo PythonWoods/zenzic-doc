@@ -1,0 +1,269 @@
+# zenzic-doc Developer Guide
+
+This repository contains the Docusaurus documentation website for Zenzic.
+
+This guide is written for both experienced maintainers and first-time contributors.
+If you are new, follow the sections in order.
+
+## 1) Prerequisites
+
+- Node.js 20 or newer
+- npm 10 or newer
+- Optional: [just](https://github.com/casey/just) to run short, memorable commands
+
+## 2) First Setup (for new collaborators)
+
+Run this once after cloning the repository:
+
+```bash
+npm ci
+```
+
+What this does:
+
+- Installs dependencies exactly as defined in `package-lock.json`.
+- Keeps your environment reproducible with CI.
+
+Alternative with just:
+
+```bash
+just setup
+```
+
+## 3) Start the docs site locally
+
+```bash
+npm run start
+```
+
+What this does:
+
+- Starts a local development server.
+- Automatically reloads pages when files change.
+
+Alternative with just:
+
+```bash
+just start
+```
+
+## 4) Common daily workflow
+
+When editing docs or components, this is the safest flow:
+
+```bash
+just start
+just verify
+```
+
+What `just verify` does:
+
+- Runs TypeScript checks.
+- Builds the production site exactly like CI expects.
+
+## 5) All commands explained
+
+### npm commands
+
+| Command | When to use it | What it does |
+| --- | --- | --- |
+| `npm ci` | First setup, clean reinstall, CI parity | Installs dependencies from lockfile with deterministic versions |
+| `npm run start` | During active development | Starts local server with live reload |
+| `npm run build` | Before PR, before release | Produces static site in `build/` |
+| `npm run serve` | After a build | Serves `build/` locally to preview production output |
+| `npm run lint:md` | Before PR, after docs edits | Lints Markdown/MDX style and formatting rules |
+| `npm run lint:ts` | Before PR, after React/TS edits | Lints TypeScript/React source files |
+| `npm run typecheck` | Before PR, when changing TS/React files | Runs `tsc` type checks |
+| `npm run clear` | If Docusaurus cache causes weird behavior | Clears cached artifacts |
+| `npm run swizzle` | Advanced theme customization | Copies Docusaurus theme internals for customization |
+| `npm run write-translations` | i18n workflow changes | Generates translation scaffolding |
+| `npm run write-heading-ids` | Large Markdown updates | Writes/updates heading IDs for docs files |
+| `npm run deploy` | Deployment workflows only | Runs Docusaurus deploy command |
+| `npm run docusaurus -- <args>` | Advanced/diagnostic usage | Runs raw Docusaurus CLI with custom arguments |
+
+### just commands
+
+`just` wraps npm commands with simpler names.
+
+| Command | When to use it | What it does |
+| --- | --- | --- |
+| `just setup` | First setup or reset | Runs `npm ci` |
+| `just start` | Daily editing | Runs local dev server |
+| `just serve` | Same as start | Alias of `just start` |
+| `just markdownlint` | After editing docs | Runs markdown lint checks |
+| `just lint` | After editing React/TS source | Runs TypeScript/React lint checks |
+| `just typecheck` | Before opening/updating PR | Runs TypeScript checks |
+| `just build` | Build validation | Runs production build |
+| `just preview` | Validate built output | Serves already-built site |
+| `just verify` | Recommended final local check | Runs `markdownlint` + `lint` + `typecheck` + `build` |
+| `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
+
+You can list all recipes with:
+
+```bash
+just --list
+```
+
+## 6) Pre-commit hooks (Obsidian Guard)
+
+This repository enforces quality gates before every commit via [pre-commit](https://pre-commit.com/).
+
+Install the hooks once after cloning:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+Every `git commit` will automatically run:
+
+| Hook | What it checks |
+| --- | --- |
+| trailing-whitespace | No trailing spaces (excludes `.mdx`) |
+| end-of-file-fixer | Files end with a newline |
+| check-yaml / check-json / check-toml | Valid structured data |
+| check-added-large-files | Prevents accidental binary commits |
+| check-merge-conflict | No unresolved merge markers |
+| no-commit-to-branch | Blocks direct commits to `main` |
+| TypeScript Typecheck | `tsc --noEmit` must pass |
+| Zenzic Sentinel | `zenzic check all` must exit 0 |
+| REUSE/SPDX | License compliance on every file |
+
+If a hook fails, fix the reported issue and retry the commit.
+
+To run all hooks manually without committing:
+
+```bash
+pre-commit run --all-files
+```
+
+## 7) CI/CD workflows
+
+| Workflow | File | Trigger | Goal |
+| --- | --- | --- | --- |
+| Docs CI | `.github/workflows/ci.yml` | PR, push to `main`, manual | Validate install, markdown lint, TS/React lint, typecheck, and build on Node 20 and 22 |
+| Dependency Audit | `.github/workflows/npm-audit.yml` | PR, push to `main`, weekly, manual | Detect high-severity dependency vulnerabilities |
+| Dependency Review | `.github/workflows/dependency-review.yml` | PR, manual | Detect risky dependency changes introduced by PRs |
+| CodeQL (opt-in) | `.github/workflows/codeql.yml` | PR, push to `main`, weekly, manual | Static analysis when `ENABLE_CODEQL=true` |
+| Release Docs | `.github/workflows/release-docs.yml` | tags `v*`, manual | Build, archive, and publish versioned artifact |
+
+## 8) Security notes
+
+- `codeql.yml` is opt-in for private repositories.
+- To enable CodeQL jobs: enable Code Security (GHAS), then set repository variable `ENABLE_CODEQL=true`.
+- `npm-audit.yml` runs strict high-severity audit without allowlists.
+
+## 9) Pipeline robustness (current status)
+
+Landing-page policy:
+
+- `src/pages/index.tsx` is an intentional monolith landing page and is excluded from `lint:ts` by explicit policy.
+- It is still covered by `typecheck` and `build`.
+
+Already implemented:
+
+- Concurrency controls (cancel obsolete runs).
+- Job timeouts (avoid stuck runners).
+- Manual `workflow_dispatch` triggers.
+- Node matrix (20 and 22) for compatibility.
+- npm cache in workflows, keyed by `package-lock.json`.
+
+Possible future hardening:
+
+- Pin third-party GitHub Actions by commit SHA.
+- Require branch protection checks after rollout validation.
+
+## 10) Troubleshooting
+
+### Error: `File '@docusaurus/tsconfig' not found`
+
+When this appears in your editor, check `tsconfig.json` and ensure `extends` points to:
+
+```json
+"@docusaurus/tsconfig/tsconfig.json"
+```
+
+Then run:
+
+```bash
+npm run typecheck
+```
+
+### `npm ci` fails
+
+Try this sequence:
+
+```bash
+just clean
+rm -rf node_modules
+npm ci
+```
+
+If it still fails, verify your Node/npm versions against the prerequisites section.
+
+### `npm run build` fails but `start` works
+
+This usually means production-only checks are stricter.
+
+Run:
+
+```bash
+npm run typecheck
+npm run build
+```
+
+Fix type errors first, then retry the build.
+
+### `/it/docs/intro` is 404 on localhost
+
+This is expected when running `npm run start` with default locale (`en`):
+the dev server serves one locale at a time.
+
+Use one of these commands instead:
+
+```bash
+npm run start:en
+npm run start:it
+```
+
+Notes:
+
+- With `start:it`, open `http://localhost:3000/docs/intro` (Italian content served at root in dev).
+- If you want prefixed routes like `/it/docs/intro`, build + serve production output:
+
+```bash
+npm run build
+npm run serve
+```
+
+### CI fails but local commands pass
+
+Use the exact CI-equivalent local gate:
+
+```bash
+just verify
+```
+
+If CI still differs, check:
+
+- Node version (CI uses Node 20 and 22)
+- Lockfile changes (`package-lock.json`)
+- Workflow-specific jobs (dependency audit, dependency review)
+
+## 11) Pull Request Checklist
+
+Before opening or updating a PR, run this checklist.
+
+- [ ] I installed dependencies with `npm ci` (or `just setup`).
+- [ ] I tested local development with `npm run start` (or `just start`) if UI/docs behavior changed.
+- [ ] I ran `just verify` and it passed.
+- [ ] I reviewed `README.md` sections if I changed commands/workflows.
+- [ ] I updated docs or comments when behavior changed.
+- [ ] My branch contains only intentional changes.
+
+Minimal command sequence before PR:
+
+```bash
+just setup
+just verify
+```

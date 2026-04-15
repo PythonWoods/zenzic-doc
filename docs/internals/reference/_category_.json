@@ -1,0 +1,8 @@
+{
+  "label": "Reference",
+  "position": 9,
+  "link": {
+    "type": "generated-index",
+    "description": "Internal API surface and data model reference."
+  }
+}

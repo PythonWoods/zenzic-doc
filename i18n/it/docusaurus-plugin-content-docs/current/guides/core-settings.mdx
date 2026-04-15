@@ -1,0 +1,313 @@
+---
+icon: lucide/sliders-horizontal
+sidebar_label: "Impostazioni Principali"
+description: "Tutti i campi di zenzic.toml: soglie, esclusioni, directory e feature flag."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Impostazioni di Base
+
+Tutti i campi di primo livello in `zenzic.toml` che controllano percorsi, soglie e punteggio.
+
+---
+
+## `docs_dir`
+
+**Tipo:** stringa (percorso) — **Default:** `"docs"`
+
+Percorso alla directory sorgente della documentazione, relativo alla root del repository.
+
+```toml
+docs_dir = "documentation"
+```
+
+---
+
+## `excluded_dirs`
+
+**Tipo:** lista di stringhe — **Default:** `["includes", "assets", "stylesheets", "overrides", "hooks"]`
+
+Nomi di directory (non percorsi completi) all'interno di `docs_dir` escluse da tutti i controlli.
+Qualsiasi directory il cui **nome** corrisponde a una voce in questa lista viene saltata,
+indipendentemente dalla profondità nell'albero. Questo significa che
+`excluded_dirs = ["assets"]` esclude sia `docs/assets/` che `docs/guide/assets/`.
+
+La lista predefinita copre le directory speciali standard di MkDocs e Material for MkDocs, che
+contengono override del tema, CSS e include di snippet piuttosto che contenuto documentale.
+
+```toml
+excluded_dirs = ["includes", "assets", "partials", "_templates"]
+```
+
+---
+
+## `excluded_assets`
+
+**Tipo:** lista di stringhe (pattern fnmatch) — **Default:** `[]`
+
+Pattern esclusi dal controllo asset non utilizzati. Ogni voce viene confrontata con i percorsi
+dei file asset (relativi a `docs_dir`) usando la sintassi glob di Python
+[`fnmatch`](https://docs.python.org/3/library/fnmatch.html) — `*` corrisponde a un qualsiasi
+segmento, `**` corrisponde attraverso le directory e `?` corrisponde a un singolo carattere.
+
+Questo campo esiste per file referenziati dalla configurazione dello strumento di build o dai
+template del tema piuttosto che da qualsiasi pagina Markdown — ad esempio, favicon, logo e
+immagini di anteprima social.
+
+Gli slash iniziali vengono rimossi, quindi `"assets/favicon.svg"` e `"/assets/favicon.svg"` sono
+equivalenti.
+
+:::warning[Modifica incompatibile nella v0.6.0a2]
+Le versioni precedenti trattavano ogni voce come un percorso letterale e usavano la
+sottrazione esatta di set. A partire dalla v0.6.0a2, ogni voce è trattata come un pattern
+`fnmatch`. I percorsi letterali esistenti continuano a funzionare — corrispondono
+semplicemente a se stessi.
+:::
+
+```toml
+excluded_assets = [
+    "assets/favicon.svg",
+    "assets/icon-512.png",
+    "assets/logo.png",
+    "assets/social-preview.png",
+    "**/_category_.json",         # metadati sidebar Docusaurus
+]
+```
+
+Il pattern `**/_category_.json` è raccomandato per i progetti Docusaurus, dove ogni
+sotto-directory può contenere un file `_category_.json` consumato dal plugin sidebar
+piuttosto che referenziato da qualsiasi pagina.
+
+---
+
+## `excluded_asset_dirs`
+
+**Tipo:** lista di stringhe — **Default:** `["overrides"]`
+
+Directory all'interno di `docs_dir` i cui file non-Markdown vengono esclusi dal controllo asset
+non utilizzati. Pensato per directory di override del tema dove i file sono consumati dallo
+strumento di build piuttosto che referenziati dalle pagine Markdown.
+
+```toml
+excluded_asset_dirs = ["overrides", "_theme"]
+```
+
+---
+
+## `excluded_file_patterns`
+
+**Tipo:** lista di stringhe — **Default:** `[]`
+
+Pattern glob sui nomi dei file esclusi dal controllo orfani. Questa è una via di fuga per setup
+non standard. **Per i progetti che usano `mkdocs-i18n` con `docs_structure: suffix`**, non è
+necessaria alcuna configurazione — Zenzic rileva automaticamente tutti i locale non-default da
+`mkdocs.yml` ed esclude automaticamente i file `*.{locale}.md` corrispondenti.
+
+```toml
+# Esclusione manuale per uno schema di naming personalizzato
+excluded_file_patterns = ["*.locale.md", "*_draft.md"]
+```
+
+I pattern vengono confrontati solo con il **nome del file** (non con il percorso completo). Si
+applica solo al controllo orfani — i controlli placeholder e asset scansionano normalmente i
+file con suffisso locale.
+
+---
+
+## `excluded_build_artifacts`
+
+**Tipo:** lista di stringhe (pattern glob) — **Default:** `[]`
+
+Pattern glob (relativi a `docs_dir`) per asset generati in fase di build. I link a percorsi
+corrispondenti a questi pattern non vengono segnalati come non raggiungibili anche quando il file
+non esiste su disco al momento del lint.
+
+```toml
+excluded_build_artifacts = [
+    "pdf/*.pdf",
+    "assets/bundle.zip",
+]
+```
+
+Usa questo campo quando la documentazione contiene link a file prodotti solo durante lo step di
+build e quindi assenti quando Zenzic gira sul sorgente grezzo.
+
+---
+
+## `excluded_external_urls`
+
+**Tipo:** lista di stringhe — **Default:** `[]`
+
+Prefissi URL esclusi dal controllo dei link esterni non raggiungibili. Un URL viene saltato
+quando inizia con una qualsiasi voce in questa lista. Il matching è basato su prefisso — una
+singola voce copre un intero dominio o sotto-albero.
+
+Scenari comuni:
+
+- **Librerie pre-release** — link al proprio repo GitHub o alla pagina PyPI prima che siano
+  pubblici
+- **Repository privati** — repo GitHub interni non raggiungibili dai runner CI
+- **Ambienti di staging** — URL di staging o preview che esistono solo durante una finestra di
+  deploy
+
+```toml
+excluded_external_urls = [
+    "https://github.com/MyOrg/my-library",
+    "https://pypi.org/project/my-library/",
+]
+```
+
+:::warning[Usa con cautela]
+Escludere un prefisso URL silenzia tutti gli errori di link interrotto sotto quel prefisso.
+Preferisci correggere il problema sottostante e rimuovere l'esclusione una volta che l'URL è
+attivo.
+:::
+
+---
+
+## `snippet_min_lines`
+
+**Tipo:** intero — **Default:** `1`
+
+Numero minimo di righe che un blocco di codice Python delimitato deve contenere per essere
+controllato sintatticamente. Il default di `1` controlla ogni blocco, incluse le espressioni
+su una riga.
+
+Aumenta questo valore se la documentazione include molti snippet illustrativi brevi — istruzioni
+import, esempi su una riga, annotazioni di tipo — che sono intenzionalmente incompleti e
+fallirebbero `compile()`. Un valore di `3` è una scelta comune per progetti con sia esempi
+su una riga che codice eseguibile multi-riga.
+
+```toml
+snippet_min_lines = 3
+```
+
+---
+
+## `placeholder_max_words`
+
+**Tipo:** intero — **Default:** `50`
+
+Le pagine con meno parole di questa soglia vengono segnalate come `short-content`. Il conteggio
+parole è calcolato dividendo il sorgente Markdown grezzo sugli spazi — include titoli, testo dei
+link e contenuto dei blocchi di codice, ma non i tag HTML.
+
+Imposta a `0` per disabilitare interamente il segnale di conteggio parole. Il segnale di
+pattern-match (`placeholder_patterns`) funziona indipendentemente e non viene influenzato.
+
+```toml
+placeholder_max_words = 100
+```
+
+---
+
+## `placeholder_patterns`
+
+**Tipo:** lista di stringhe — **Default:** `["coming soon", "work in progress", "wip", "todo", "to do", "stub", "placeholder", "fixme", "tbd", "to be written", "to be completed", "to be added", "under construction", "not yet written", "draft", "da completare", "in costruzione", "in lavorazione", "da scrivere", "da aggiungere", "bozza", "prossimamente"]`
+
+Stringhe case-insensitive che, quando trovate in qualsiasi punto di una riga, segnalano la
+pagina come `placeholder-text`. Il matching viene eseguito riga per riga sul sorgente Markdown
+grezzo. Ogni pattern viene trattato come stringa letterale, non come espressione regolare.
+
+```toml
+placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
+```
+
+Per disabilitare interamente il pattern matching mantenendo il controllo del conteggio parole:
+
+```toml
+placeholder_patterns = []
+```
+
+---
+
+## `validate_same_page_anchors`
+
+**Tipo:** booleano — **Default:** `false`
+
+Quando `true`, i link con ancora nella stessa pagina (`[testo](#sezione)`) vengono validati
+rispetto ai titoli estratti dal file sorgente.
+
+Zenzic risolve gli slug delle ancore nel seguente ordine:
+
+1. **Ancora esplicita MkDocs Material** — se il titolo contiene `{/* { #custom-id } */}`,
+   quell'ID viene usato direttamente.
+2. **Slug standard** — i tag HTML vengono rimossi, il testo viene convertito in minuscolo e i
+   caratteri non-word sostituiti con trattini, in accordo con l'estensione `toc` di
+   Python-Markdown.
+
+Disabilitato di default perché gli ID ancora possono anche essere prodotti al momento del build
+da attributi HTML o plugin personalizzati invisibili durante la scansione a livello sorgente.
+Abilita per progetti dove tutte le ancore sono guidate da titoli ATX.
+
+```toml
+validate_same_page_anchors = true
+```
+
+---
+
+## `fail_under`
+
+**Tipo:** intero — **Default:** `0`
+
+Punteggio di qualità minimo (0–100). Se `zenzic score` produce un punteggio inferiore a questo
+valore, il comando termina con codice di uscita 1. Impostare `fail_under = 0` (il default)
+disabilita la soglia.
+
+Il flag CLI `--fail-under` sovrascrive questo valore per una singola esecuzione.
+
+```toml
+fail_under = 80   # exit 1 se score < 80
+```
+
+Per eseguire in modalità osservazionale indipendentemente da ciò che contiene `zenzic.toml`:
+
+```bash
+zenzic score --fail-under 0
+```
+
+---
+
+## `strict`
+
+**Tipo:** booleano — **Default:** `false`
+
+Quando `true`, ogni invocazione di `zenzic check all`, `zenzic score` e `zenzic diff` si comporta
+come se fosse passato `--strict`: gli URL esterni vengono validati via rete e i warning vengono
+trattati come errori.
+
+Usa questo campo per rendere la modalità strict il default permanente per un progetto, senza
+dover aggiungere `--strict` a ogni comando CI:
+
+```toml
+strict = true
+```
+
+Il flag CLI `--strict` sovrascrive questo valore per una singola esecuzione.
+
+---
+
+## `exit_zero`
+
+**Tipo:** booleano — **Default:** `false`
+
+Quando `true`, `zenzic check all` termina sempre con codice `0` anche quando vengono trovati
+problemi. Tutti i risultati vengono comunque stampati e inclusi nel punteggio qualità — viene
+soppressa solo l'uscita non-zero.
+
+Usa questo campo durante uno sprint attivo di miglioramento della documentazione per ottenere
+visibilità completa senza bloccare la pipeline:
+
+```toml
+exit_zero = true
+```
+
+Il flag CLI `--exit-zero` sovrascrive questo valore per una singola esecuzione.
+
+:::warning[Usa con cautela]
+Impostare `exit_zero = true` in `zenzic.toml` disabilita il quality gate globalmente.
+Preferisci usare `--exit-zero` come flag CLI temporaneo durante gli sprint di cleanup,
+rimuovendolo una volta che il baseline è pulito.
+:::

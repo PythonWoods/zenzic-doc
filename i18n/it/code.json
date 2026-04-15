@@ -1,0 +1,796 @@
+{
+  "theme.ErrorPageContent.title": {
+    "message": "Questa pagina è andata in crash.",
+    "description": "The title of the fallback page when the page crashed"
+  },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Torna indietro all'inizio",
+    "description": "The ARIA label for the back to top button"
+  },
+  "theme.blog.archive.title": {
+    "message": "Archivio",
+    "description": "The page & hero title of the blog archive page"
+  },
+  "theme.blog.archive.description": {
+    "message": "Archivio",
+    "description": "The page & hero description of the blog archive page"
+  },
+  "theme.blog.paginator.navAriaLabel": {
+    "message": "Navigazione nella pagina dei post del blog ",
+    "description": "The ARIA label for the blog pagination"
+  },
+  "theme.blog.paginator.newerEntries": {
+    "message": "Post più recenti",
+    "description": "The label used to navigate to the newer blog posts page (previous page)"
+  },
+  "theme.blog.paginator.olderEntries": {
+    "message": "Post più vecchi",
+    "description": "The label used to navigate to the older blog posts page (next page)"
+  },
+  "theme.blog.post.paginator.navAriaLabel": {
+    "message": "Navigazione nella pagina dei post del blog ",
+    "description": "The ARIA label for the blog posts pagination"
+  },
+  "theme.blog.post.paginator.newerPost": {
+    "message": "Post più recente",
+    "description": "The blog post button label to navigate to the newer/previous post"
+  },
+  "theme.blog.post.paginator.olderPost": {
+    "message": "Post più vecchio",
+    "description": "The blog post button label to navigate to the older/next post"
+  },
+  "theme.tags.tagsPageLink": {
+    "message": "Guarda tutte le etichette",
+    "description": "The label of the link targeting the tag list page"
+  },
+  "theme.colorToggle.ariaLabel.mode.system": {
+    "message": "system mode",
+    "description": "The name for the system color mode"
+  },
+  "theme.colorToggle.ariaLabel.mode.light": {
+    "message": "modalità luce",
+    "description": "The name for the light color mode"
+  },
+  "theme.colorToggle.ariaLabel.mode.dark": {
+    "message": "Modalità scura",
+    "description": "The name for the dark color mode"
+  },
+  "theme.colorToggle.ariaLabel": {
+    "message": "Passa dalla modalità scura a quella chiara (currently {mode})",
+    "description": "The ARIA label for the color mode toggle"
+  },
+  "theme.docs.breadcrumbs.navAriaLabel": {
+    "message": "Briciole di pane",
+    "description": "The ARIA label for the breadcrumbs"
+  },
+  "theme.docs.paginator.navAriaLabel": {
+    "message": "Pagina del documento",
+    "description": "The ARIA label for the docs pagination"
+  },
+  "theme.docs.paginator.previous": {
+    "message": "Precedente",
+    "description": "The label used to navigate to the previous doc"
+  },
+  "theme.docs.paginator.next": {
+    "message": "Successivo",
+    "description": "The label used to navigate to the next doc"
+  },
+  "theme.docs.tagDocListPageTitle.nDocsTagged": {
+    "message": "Un documento etichettato|{count} documenti etichettati",
+    "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+  },
+  "theme.docs.tagDocListPageTitle": {
+    "message": "{nDocsTagged} con \"{tagName}\"",
+    "description": "The title of the page for a docs tag"
+  },
+  "theme.docs.versionBadge.label": {
+    "message": "Versione: {versionLabel}"
+  },
+  "theme.docs.versions.unreleasedVersionLabel": {
+    "message": "Questa è documentazione inedita per {siteTitle} versione {versionLabel}.",
+    "description": "The label used to tell the user that he's browsing an unreleased doc version"
+  },
+  "theme.docs.versions.unmaintainedVersionLabel": {
+    "message": "Questa è la documentazione per {siteTitle} {versionLabel}, che non è più attivamente mantenuta.",
+    "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+  },
+  "theme.docs.versions.latestVersionSuggestionLabel": {
+    "message": "Per la documentazione aggiornata, guarda la {latestVersionLink} ({versionLabel}).",
+    "description": "The label used to tell the user to check the latest version"
+  },
+  "theme.docs.versions.latestVersionLinkLabel": {
+    "message": "ultima versione",
+    "description": "The label used for the latest version suggestion link label"
+  },
+  "theme.common.editThisPage": {
+    "message": "Modifica questa pagina",
+    "description": "The link label to edit the current page"
+  },
+  "theme.common.headingLinkTitle": {
+    "message": "Link diretto a {heading}",
+    "description": "Title for link to heading"
+  },
+  "theme.lastUpdated.atDate": {
+    "message": " il {date}",
+    "description": "The words used to describe on which date a page has been last updated"
+  },
+  "theme.lastUpdated.byUser": {
+    "message": " da {user}",
+    "description": "The words used to describe by who the page has been last updated"
+  },
+  "theme.lastUpdated.lastUpdatedAtBy": {
+    "message": "Ultimo aggiornamento{atDate}{byUser}",
+    "description": "The sentence used to display when a page has been last updated, and by who"
+  },
+  "theme.navbar.mobileVersionsDropdown.label": {
+    "message": "Versioni",
+    "description": "The label for the navbar versions dropdown on mobile view"
+  },
+  "theme.NotFound.title": {
+    "message": "Pagina non trovata",
+    "description": "The title of the 404 page"
+  },
+  "theme.tags.tagsListLabel": {
+    "message": "Etichette:",
+    "description": "The label alongside a tag list"
+  },
+  "theme.admonition.caution": {
+    "message": "attenzione",
+    "description": "The default label used for the Caution admonition (:::caution)"
+  },
+  "theme.admonition.danger": {
+    "message": "pericolo",
+    "description": "The default label used for the Danger admonition (:::danger)"
+  },
+  "theme.admonition.info": {
+    "message": "informazioni",
+    "description": "The default label used for the Info admonition (:::info)"
+  },
+  "theme.admonition.note": {
+    "message": "note",
+    "description": "The default label used for the Note admonition (:::note)"
+  },
+  "theme.admonition.tip": {
+    "message": "suggerimento",
+    "description": "The default label used for the Tip admonition (:::tip)"
+  },
+  "theme.admonition.warning": {
+    "message": "warning",
+    "description": "The default label used for the Warning admonition (:::warning)"
+  },
+  "theme.AnnouncementBar.closeButtonAriaLabel": {
+    "message": "Chiudi",
+    "description": "The ARIA label for close button of announcement bar"
+  },
+  "theme.blog.sidebar.navAriaLabel": {
+    "message": "Navigazione dei post recenti del blog",
+    "description": "The ARIA label for recent posts in the blog sidebar"
+  },
+  "theme.DocSidebarItem.expandCategoryAriaLabel": {
+    "message": "Expand sidebar category '{label}'",
+    "description": "The ARIA label to expand the sidebar category"
+  },
+  "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+    "message": "Collapse sidebar category '{label}'",
+    "description": "The ARIA label to collapse the sidebar category"
+  },
+  "theme.IconExternalLink.ariaLabel": {
+    "message": "(opens in new tab)",
+    "description": "The ARIA label for the external link icon"
+  },
+  "theme.NavBar.navAriaLabel": {
+    "message": "Principale",
+    "description": "The ARIA label for the main navigation"
+  },
+  "theme.NotFound.p1": {
+    "message": "Non siamo riusciti a trovare quello che stavi cercando.",
+    "description": "The first paragraph of the 404 page"
+  },
+  "theme.NotFound.p2": {
+    "message": "Contatta il proprietario del sito che ti ha collegato all'URL originale e fagli sapere che il loro collegamento è interrotto.",
+    "description": "The 2nd paragraph of the 404 page"
+  },
+  "theme.TOCCollapsible.toggleButtonLabel": {
+    "message": "Su questa pagina",
+    "description": "The label used by the button on the collapsible TOC component"
+  },
+  "theme.navbar.mobileLanguageDropdown.label": {
+    "message": "Linguaggio",
+    "description": "The label for the mobile language switcher dropdown"
+  },
+  "theme.blog.post.readMore": {
+    "message": "Leggi di più",
+    "description": "The label used in blog post item excerpts to link to full blog posts"
+  },
+  "theme.blog.post.readMoreLabel": {
+    "message": "Leggi di più su {title}",
+    "description": "The ARIA label for the link to full blog posts from excerpts"
+  },
+  "theme.blog.post.readingTime.plurals": {
+    "message": "Lettura di 1 minuto|{readingTime} minuti di lettura",
+    "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+  },
+  "theme.CodeBlock.copy": {
+    "message": "Copia",
+    "description": "The copy button label on code blocks"
+  },
+  "theme.CodeBlock.copied": {
+    "message": "Copiato",
+    "description": "The copied button label on code blocks"
+  },
+  "theme.CodeBlock.copyButtonAriaLabel": {
+    "message": "Copia il codice negli appunti",
+    "description": "The ARIA label for copy code blocks button"
+  },
+  "theme.CodeBlock.wordWrapToggle": {
+    "message": "Attiva/disattiva a capo automatico",
+    "description": "The title attribute for toggle word wrapping button of code block lines"
+  },
+  "theme.docs.breadcrumbs.home": {
+    "message": "Pagina principale",
+    "description": "The ARIA label for the home page in the breadcrumbs"
+  },
+  "theme.docs.sidebar.collapseButtonTitle": {
+    "message": "Collassa la barra laterale",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.collapseButtonAriaLabel": {
+    "message": "Collassa la barra laterale",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.navAriaLabel": {
+    "message": "Barra laterale dei documenti",
+    "description": "The ARIA label for the sidebar navigation"
+  },
+  "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+    "message": "Chiudi la barra di navigazione",
+    "description": "The ARIA label for close button of mobile sidebar"
+  },
+  "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+    "message": "Attiva/disattiva la barra di navigazione",
+    "description": "The ARIA label for hamburger menu button of mobile navigation"
+  },
+  "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+    "message": "← Indietro al menu principale",
+    "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+  },
+  "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
+    "message": "Expand the dropdown",
+    "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
+  },
+  "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
+    "message": "Collapse the dropdown",
+    "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
+  },
+  "theme.docs.sidebar.expandButtonTitle": {
+    "message": "Espandi la barra laterale",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.docs.sidebar.expandButtonAriaLabel": {
+    "message": "Espandi la barra laterale",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.blog.post.plurals": {
+    "message": "Un post|{count} post",
+    "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+  },
+  "theme.blog.tagTitle": {
+    "message": "{nPosts} etichettati con \"{tagName}\"",
+    "description": "The title of the page for a blog tag"
+  },
+  "theme.blog.author.pageTitle": {
+    "message": "{authorName} - {nPosts}",
+    "description": "The title of the page for a blog author"
+  },
+  "theme.blog.authorsList.pageTitle": {
+    "message": "Authors",
+    "description": "The title of the authors page"
+  },
+  "theme.blog.authorsList.viewAll": {
+    "message": "View All Authors",
+    "description": "The label of the link targeting the blog authors page"
+  },
+  "theme.blog.author.noPosts": {
+    "message": "This author has not written any posts yet.",
+    "description": "The text for authors with 0 blog post"
+  },
+  "theme.contentVisibility.unlistedBanner.title": {
+    "message": "Pagina non in elenco",
+    "description": "The unlisted content banner title"
+  },
+  "theme.contentVisibility.unlistedBanner.message": {
+    "message": "Questa pagina non è in elenco. I motori di ricerca non lo indicheranno e solo gli utenti con collegamento diretto possono accedervi.",
+    "description": "The unlisted content banner message"
+  },
+  "theme.contentVisibility.draftBanner.title": {
+    "message": "Draft page",
+    "description": "The draft content banner title"
+  },
+  "theme.contentVisibility.draftBanner.message": {
+    "message": "This page is a draft. It will only be visible in dev and be excluded from the production build.",
+    "description": "The draft content banner message"
+  },
+  "theme.docs.DocCard.categoryDescription.plurals": {
+    "message": "1 elemento|{count} elementi",
+    "description": "The default description for a category card in the generated index about how many items this category includes"
+  },
+  "theme.ErrorPageContent.tryAgain": {
+    "message": "Prova di nuovo",
+    "description": "The label of the button to try again rendering when the React error boundary captures an error"
+  },
+  "theme.common.skipToMainContent": {
+    "message": "Passa al contenuto principale",
+    "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+  },
+  "theme.tags.tagsPageTitle": {
+    "message": "Etichette",
+    "description": "The title of the tag list page"
+  },
+  "GUARD YOUR DOCS.": {
+    "message": "GUARD YOUR DOCS."
+  },
+  "homepage.badge.version": {
+    "message": "v0.5.0a5 Rilasciato"
+  },
+  "homepage.meta.title": {
+    "message": "Zenzic - Linter ad alte prestazioni per documentazione"
+  },
+  "homepage.meta.description": {
+    "message": "Linter indipendente dal motore e scudo di sicurezza per documentazione Markdown, livello engineering."
+  },
+  "homepage.nav.docs": {
+    "message": "Documentazione"
+  },
+  "homepage.nav.github": {
+    "message": "GitHub"
+  },
+  "homepage.nav.brand": {
+    "message": "Zenzic"
+  },
+  "homepage.nav.pythonwoods": {
+    "message": "PythonWoods"
+  },
+  "homepage.title.line1": {
+    "message": "Linter ad alte prestazioni"
+  },
+  "homepage.title.line2": {
+    "message": "per Markdown."
+  },
+  "homepage.tagline": {
+    "message": "Intercetta link interrotti, pagine orfane e credenziali trapelate — prima dei tuoi utenti. Engineering-grade e indipendente dal motore."
+  },
+  "homepage.cta.get-started": {
+    "message": "Inizia ora"
+  },
+  "homepage.cta.github": {
+    "message": "Vedi su GitHub"
+  },
+  "homepage.checks.heading.main": {
+    "message": "Un nuovo standard per i documenti."
+  },
+  "homepage.checks.heading.sub": {
+    "message": "Motori dedicati per l'integrità strutturale."
+  },
+  "homepage.check.links.title": {
+    "message": "Link interrotti"
+  },
+  "homepage.check.links.code": {
+    "message": "CHK 0.1"
+  },
+  "homepage.check.links.desc": {
+    "message": "Rileva link interni morti, anchor mancanti e URL irraggiungibili prima che la build parta."
+  },
+  "homepage.check.orphans.title": {
+    "message": "Pagine orfane"
+  },
+  "homepage.check.orphans.code": {
+    "message": "CHK 0.2"
+  },
+  "homepage.check.orphans.desc.before": {
+    "message": "Trova i file "
+  },
+  "homepage.check.orphans.desc.code": {
+    "message": ".md"
+  },
+  "homepage.check.orphans.desc.after": {
+    "message": " che esistono su disco ma sono assenti dalla navigazione del sito."
+  },
+  "homepage.check.orphans.desc": {
+    "message": "Trova i file .md che esistono su disco ma sono assenti dalla navigazione del sito."
+  },
+  "homepage.check.snippets.title": {
+    "message": "Snippet non validi"
+  },
+  "homepage.check.snippets.code": {
+    "message": "CHK 0.3"
+  },
+  "homepage.check.snippets.desc": {
+    "message": "Compila ogni blocco Python delimitato. Intercetta gli errori di sintassi prima che i lettori copino codice rotto."
+  },
+  "homepage.check.placeholders.title": {
+    "message": "Stub segnaposto"
+  },
+  "homepage.check.placeholders.code": {
+    "message": "CHK 0.4"
+  },
+  "homepage.check.placeholders.desc.before": {
+    "message": "Segnala le pagine sotto una soglia di conteggio parole o contenenti pattern come "
+  },
+  "homepage.check.placeholders.desc.todo": {
+    "message": "TODO"
+  },
+  "homepage.check.placeholders.desc.wip": {
+    "message": "WIP"
+  },
+  "homepage.check.placeholders.desc.after": {
+    "message": "."
+  },
+  "homepage.check.placeholders.desc": {
+    "message": "Segnala le pagine sotto una soglia di conteggio parole o contenenti pattern come TODO, WIP."
+  },
+  "homepage.check.assets.title": {
+    "message": "Asset inutilizzati"
+  },
+  "homepage.check.assets.code": {
+    "message": "CHK 0.5"
+  },
+  "homepage.check.assets.desc.before": {
+    "message": "Segnala immagini e file che esistono in "
+  },
+  "homepage.check.assets.desc.code": {
+    "message": "docs/"
+  },
+  "homepage.check.assets.desc.after": {
+    "message": " ma non sono mai referenziati da alcuna pagina."
+  },
+  "homepage.check.assets.desc": {
+    "message": "Segnala immagini e file che esistono in docs/ ma non sono mai referenziati."
+  },
+  "homepage.check.shield.title": {
+    "message": "Zenzic Shield"
+  },
+  "homepage.check.shield.code": {
+    "message": "CHK 0.6"
+  },
+  "homepage.check.shield.desc.before": {
+    "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice "
+  },
+  "homepage.check.shield.desc.code": {
+    "message": "2"
+  },
+  "homepage.check.shield.desc.after": {
+    "message": " immediatamente."
+  },
+  "homepage.check.shield.desc": {
+    "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice 2 immediatamente."
+  },
+  "homepage.sentinel.title": {
+    "message": "Sentinella in Azione"
+  },
+  "homepage.sentinel.subtitle": {
+    "message": "Ogni rilevamento è associato a file, riga e sorgente. Output strutturato per occhi umani e pipeline CI."
+  },
+  "homepage.sentinel.gutter.title": {
+    "message": "Reporter con contesto"
+  },
+  "homepage.sentinel.gutter.desc": {
+    "message": "Ogni errore mostra la riga sorgente esatta con contesto di contorno. Niente scorrimento di log."
+  },
+  "homepage.sentinel.shield.title": {
+    "message": "Zenzic Shield"
+  },
+  "homepage.sentinel.shield.desc.before": {
+    "message": "Scansiona ogni riga — inclusi i blocchi delimitati "
+  },
+  "homepage.sentinel.shield.desc.bash": {
+    "message": "bash"
+  },
+  "homepage.sentinel.shield.desc.middle": {
+    "message": "e "
+  },
+  "homepage.sentinel.shield.desc.yaml": {
+    "message": "yaml"
+  },
+  "homepage.sentinel.shield.desc.after": {
+    "message": " — per credenziali trapelate. Il codice di uscita "
+  },
+  "homepage.sentinel.shield.desc.code": {
+    "message": "2"
+  },
+  "homepage.sentinel.shield.desc.tail": {
+    "message": " è riservato esclusivamente agli eventi di sicurezza."
+  },
+  "homepage.sentinel.shield.desc": {
+    "message": "Scansiona ogni riga — inclusi blocchi bash e yaml delimitati — per credenziali trapelate. Il codice di uscita 2 è riservato agli eventi di sicurezza."
+  },
+  "homepage.sentinel.summary.title": {
+    "message": "Riepilogo di gravità"
+  },
+  "homepage.sentinel.summary.desc": {
+    "message": "Ogni esecuzione termina con un riepilogo compatto. Sai subito se il controllo è fallito o ha emesso solo avvisi."
+  },
+  "homepage.score.title": {
+    "message": "Punteggio di Qualità"
+  },
+  "homepage.score.desc": {
+    "message": "Monitora un punteggio deterministico in CI per bloccare le regressioni. Una visione olistica ed elegante della salute della tua documentazione."
+  },
+  "homepage.score.metrics": {
+    "message": "Metriche"
+  },
+  "homepage.score.overall-health": {
+    "message": "Salute Complessiva"
+  },
+  "homepage.score.value": {
+    "message": "98"
+  },
+  "homepage.score.delta": {
+    "message": "+2%"
+  },
+  "homepage.score.ci-command": {
+    "message": "Comando CI"
+  },
+  "homepage.score.ci-command.value": {
+    "message": "zenzic score --save"
+  },
+  "homepage.score.category.links": {
+    "message": "Salute Link Interni"
+  },
+  "homepage.score.category.links.value": {
+    "message": "99"
+  },
+  "homepage.score.anchor-stability": {
+    "message": "Stabilità anchor"
+  },
+  "homepage.score.anchor-stability.value": {
+    "message": "28"
+  },
+  "homepage.score.external-refs": {
+    "message": "Riferimenti esterni"
+  },
+  "homepage.score.external-refs.value": {
+    "message": "16"
+  },
+  "homepage.score.category.orphans": {
+    "message": "Rilevamento Orfani"
+  },
+  "homepage.score.category.orphans.value": {
+    "message": "21"
+  },
+  "homepage.score.unused-assets": {
+    "message": "Asset inutilizzati"
+  },
+  "homepage.score.unused-assets.value": {
+    "message": "12"
+  },
+  "homepage.score.nav-isolation": {
+    "message": "Isolamento navigazione"
+  },
+  "homepage.score.nav-isolation.value": {
+    "message": "9"
+  },
+  "homepage.footer.license": {
+    "message": "© 2026 PythonWoods. Licenza Apache-2.0."
+  },
+  "homepage.footer.python-version": {
+    "message": "Python 3.11+"
+  },
+  "homepage.footer.runtime": {
+    "message": "Zero dipendenze runtime"
+  },
+  "homepage.terminal.gutter.file": {
+    "message": "docs/guide.md"
+  },
+  "homepage.terminal.gutter.tag": {
+    "message": "[FILE_NOT_FOUND]"
+  },
+  "homepage.terminal.shield.locationValue": {
+    "message": "docs/tutorial.md:42"
+  },
+  "homepage.terminal.shield.credentialValue": {
+    "message": "ghp_************3456"
+  },
+  "terminal.gutter.finding": {
+    "message": "'intro.md' non raggiungibile dalla nav"
+  },
+  "terminal.gutter.line15": {
+    "message": "prima di continuare."
+  },
+  "terminal.gutter.line16": {
+    "message": "Consulta la pagina introduttiva per i dettagli."
+  },
+  "terminal.gutter.line17": {
+    "message": "Poi configura il tuo ambiente."
+  },
+  "terminal.shield.header": {
+    "message": "VIOLAZIONE SICUREZZA RILEVATA"
+  },
+  "terminal.shield.label.finding": {
+    "message": "Trovato:"
+  },
+  "terminal.shield.value.finding": {
+    "message": "Token GitHub rilevato"
+  },
+  "terminal.shield.label.location": {
+    "message": "Posizione:"
+  },
+  "terminal.shield.label.credential": {
+    "message": "Credenziale:"
+  },
+  "terminal.shield.label.action": {
+    "message": "Azione:"
+  },
+  "terminal.shield.value.action": {
+    "message": "Ruota questa credenziale immediatamente e rimuovila dalla cronologia del repository."
+  },
+  "terminal.summary.errors": {
+    "message": "✘ 2 errori"
+  },
+  "terminal.summary.warnings": {
+    "message": "⚠ 1 avviso"
+  },
+  "terminal.summary.files": {
+    "message": "• 1 file con rilevamenti"
+  },
+  "terminal.summary.verdict": {
+    "message": "FALLITO: Uno o più controlli hanno fallito."
+  },
+  "homepage.features.title": {
+    "message": "A new standard for docs.",
+    "description": "Features section title"
+  },
+  "homepage.features.muted": {
+    "message": "Purpose-built engines for structural integrity.",
+    "description": "Muted part of features title"
+  },
+  "chk01.title": {
+    "message": "Broken links"
+  },
+  "chk01.desc": {
+    "message": "Detects dead internal links, missing anchors, and unreachable URLs before the build runs."
+  },
+  "chk02.title": {
+    "message": "Orphan pages"
+  },
+  "chk02.desc": {
+    "message": "Finds <code>.md</code> files that exist on disk but are absent from the site navigation."
+  },
+  "chk03.title": {
+    "message": "Invalid snippets"
+  },
+  "chk03.desc": {
+    "message": "Compiles every fenced Python block. Catches syntax errors before readers copy-paste code."
+  },
+  "chk04.title": {
+    "message": "Placeholder stubs"
+  },
+  "chk04.desc": {
+    "message": "Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>."
+  },
+  "chk05.title": {
+    "message": "Unused assets"
+  },
+  "chk05.desc": {
+    "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
+  },
+  "chk06.title": {
+    "message": "Zenzic Shield"
+  },
+  "chk06.desc": {
+    "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
+  },
+  "homepage.hero.badge": {
+    "message": "v0.6.0a1 \"Obsidian Glass\" Released",
+    "description": "Wait release version badge"
+  },
+  "homepage.hero.title": {
+    "message": "High-performance linter",
+    "description": "Main hero headline"
+  },
+  "homepage.hero.titleMuted": {
+    "message": "for Markdown.",
+    "description": "Muted part of the hero headline"
+  },
+  "homepage.hero.subtitle": {
+    "message": "Catch broken links, orphan pages, and leaked credentials - before your users do. Engineering-grade and engine-agnostic.",
+    "description": "Hero sub headline"
+  },
+  "homepage.hero.getStarted": {
+    "message": "Get started",
+    "description": "Get started button"
+  },
+  "homepage.hero.viewOnGithub": {
+    "message": "View on GitHub",
+    "description": "View on GitHub button"
+  },
+  "homepage.score.sub": {
+    "message": "Track a deterministic score in CI to block regressions. A holistic, elegant view of your documentation health."
+  },
+  "homepage.score.overall": {
+    "message": "Overall Health"
+  },
+  "homepage.score.ciLabel": {
+    "message": "CI Command"
+  },
+  "score.linksHealth": {
+    "message": "Internal Links Health"
+  },
+  "score.anchor": {
+    "message": "Anchor stability"
+  },
+  "score.external": {
+    "message": "External references"
+  },
+  "score.orphan": {
+    "message": "Orphan Detection"
+  },
+  "score.unused": {
+    "message": "Unused Assets"
+  },
+  "score.nav": {
+    "message": "Nav Isolation"
+  },
+  "homepage.sentinel.sub": {
+    "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
+  },
+  "sentinel.gutter.title": {
+    "message": "Gutter reporter"
+  },
+  "sentinel.gutter.desc": {
+    "message": "Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke."
+  },
+  "sentinel.gutter.msg": {
+    "message": "'intro.md' not reachable from nav"
+  },
+  "sentinel.gutter.ctx1": {
+    "message": "before continuing."
+  },
+  "sentinel.gutter.line": {
+    "message": "See the getting started page for details."
+  },
+  "sentinel.gutter.ctx2": {
+    "message": "Then configure your environment."
+  },
+  "sentinel.shield.title": {
+    "message": "Zenzic Shield"
+  },
+  "sentinel.shield.desc": {
+    "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
+  },
+  "sentinel.shield.banner": {
+    "message": "SECURITY BREACH DETECTED"
+  },
+  "sentinel.shield.finding": {
+    "message": "Finding:"
+  },
+  "sentinel.shield.location": {
+    "message": "Location:"
+  },
+  "sentinel.shield.credential": {
+    "message": "Credential:"
+  },
+  "sentinel.shield.action": {
+    "message": "Action:"
+  },
+  "sentinel.shield.actionVal": {
+    "message": "Rotate this credential immediately and purge it from the repository history."
+  },
+  "sentinel.summary.title": {
+    "message": "Severity summary"
+  },
+  "sentinel.summary.desc": {
+    "message": "Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings."
+  },
+  "sentinel.summary.errors": {
+    "message": "✘ 2 errors"
+  },
+  "sentinel.summary.warnings": {
+    "message": "⚠ 1 warning"
+  },
+  "sentinel.summary.files": {
+    "message": "• 1 file with findings"
+  },
+  "sentinel.summary.failed": {
+    "message": "FAILED: One or more checks failed."
+  }
+}

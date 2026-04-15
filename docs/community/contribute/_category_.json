@@ -1,0 +1,8 @@
+{
+  "label": "Contribute",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Bug reports, pull requests, change requests, and contribution guidelines."
+  }
+}

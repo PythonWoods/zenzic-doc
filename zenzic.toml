@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2025 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+
+docs_dir = "docs"
+
+# --- PROTEZIONE DOGFOODING ---
+# The documentation explains placeholder patterns by example, so the checker
+# would produce false positives on every page that describes its own rules.
+placeholder_patterns  = []
+placeholder_max_words = 0
+
+# --- ESCLUSIONE ASSET ---
+# _category_.json are Docusaurus sidebar metadata consumed by the build tool,
+# not referenced by any Markdown page.
+excluded_assets = [
+    "**/_category_.json",
+    "static/brand/**",
+    "static/social/**",
+    "static/img/favicon.ico",
+]
+
+# --- REGOLE DI QUALITÀ ---
+fail_under = 100
+strict      = true
+
+[build_context]
+engine         = "docusaurus"
+base_url       = "/"
+default_locale = "en"
+locales        = ["it"]

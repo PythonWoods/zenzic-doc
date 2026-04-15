@@ -1,0 +1,8 @@
+{
+  "label": "Contribuire",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Segnalazioni bug, pull request, richieste di modifica e linee guida per contribuire."
+  }
+}

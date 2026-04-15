@@ -1,0 +1,58 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.User Guide": {
+    "message": "Guida Utente",
+    "description": "The label for category 'User Guide' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.User Guide.link.generated-index.description": {
+    "message": "Installa, configura ed esegui Zenzic sulla tua documentazione.",
+    "description": "The generated-index page description for category 'User Guide' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Developers": {
+    "message": "Sviluppatori",
+    "description": "The label for category 'Developers' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Developers.link.generated-index.description": {
+    "message": "Estendi Zenzic con adapter personalizzati, regole plugin e integrazioni.",
+    "description": "The generated-index page description for category 'Developers' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Reference": {
+    "message": "Riferimento",
+    "description": "The label for category 'Reference' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Reference.link.generated-index.description": {
+    "message": "Riferimento configurazione, adapter dei motori e regole personalizzate.",
+    "description": "The generated-index page description for category 'Reference' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Ecosystem": {
+    "message": "Ecosistema",
+    "description": "The label for category 'Ecosystem' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Ecosystem.link.generated-index.description": {
+    "message": "Adapter, integrazioni e come Zenzic si integra nella tua pipeline documentale.",
+    "description": "The generated-index page description for category 'Ecosystem' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Community": {
+    "message": "Comunità",
+    "description": "The label for category 'Community' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Community.link.generated-index.description": {
+    "message": "Contribuisci, segnala bug, richiedi funzionalità ed esplora il progetto.",
+    "description": "The generated-index page description for category 'Community' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.How to Contribute": {
+    "message": "Come Contribuire",
+    "description": "The label for category 'How to Contribute' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Examples": {
+    "message": "Esempi",
+    "description": "The label for category 'Examples' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Examples.link.generated-index.description": {
+    "message": "Progetti di riferimento che dimostrano Zenzic in scenari reali.",
+    "description": "The generated-index page description for category 'Examples' in sidebar 'tutorialSidebar'"
+  }
+}

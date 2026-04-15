@@ -1,0 +1,27 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOMEPAGE CSS — Scoped via Layout wrapperClassName="zz-homepage"
+   No DOM class injection. No #__docusaurus overrides.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Homepage font overrides ── */
+.zz-homepage .font-mono,
+.zz-homepage .font-mono *,
+.zz-homepage code,
+.zz-homepage code *,
+.zz-homepage pre,
+.zz-homepage pre * {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.zz-homepage code {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+.zz-homepage a,
+.zz-homepage a:hover {
+  text-decoration: none;
+}

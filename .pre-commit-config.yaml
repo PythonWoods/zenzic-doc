@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+
+# ── Dogfooding Enforcement ─────────────────────────────────────────
+# Zenzic guards its own documentation.  No commit enters zenzic-doc
+# without the Sentinel's approval.
+# ───────────────────────────────────────────────────────────────────
+
+repos:
+  # 1. Generic file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.mdx$
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+      - id: no-commit-to-branch
+        args: ["--branch", "main"]
+
+  # 2. TypeScript type checking
+  - repo: local
+    hooks:
+      - id: typecheck
+        name: "TypeScript Typecheck"
+        entry: npm run typecheck
+        language: system
+        pass_filenames: false
+        types_or: [ts, tsx]
+
+  # 3. Zenzic Sentinel — The Dogfooding Hook
+  #    Bootstrap script: tries local core (../zenzic) first,
+  #    falls back to uvx --pre for external contributors.
+  #    always_run: true — config/nav changes can break docs
+  #                        even without .md edits
+  - repo: local
+    hooks:
+      - id: zenzic-check
+        name: "Zenzic Sentinel"
+        entry: bash scripts/pre-commit-zenzic.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # 4. REUSE/SPDX license compliance
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    hooks:
+      - id: reuse

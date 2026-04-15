@@ -1,0 +1,9 @@
+{
+  "label": "Riferimento",
+  "position": 3,
+  "key": "reference-guides",
+  "link": {
+    "type": "generated-index",
+    "description": "Riferimento configurazione, adapter, CI/CD e migrazione."
+  }
+}

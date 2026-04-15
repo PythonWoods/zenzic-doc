@@ -1,0 +1,9 @@
+{
+  "label": "Reference",
+  "position": 3,
+  "key": "reference-guides",
+  "link": {
+    "type": "generated-index",
+    "description": "Configuration reference, engine adapters, CI/CD integration, and migration."
+  }
+}

@@ -1,0 +1,69 @@
+version = 1
+
+# ── Documentation content ────────────────────────────────────────────────────
+
+[[annotations]]
+path = "docs/**/*.mdx"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "i18n/**/*.mdx"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── Source (theme, components, pages) ────────────────────────────────────────
+
+[[annotations]]
+path = "src/**"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "scripts/**"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── Static assets ────────────────────────────────────────────────────────────
+
+[[annotations]]
+path = "static/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "docs/**/assets/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── i18n translation files ───────────────────────────────────────────────────
+
+[[annotations]]
+path = "i18n/**/*.json"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── Project root — prose ─────────────────────────────────────────────────────
+
+[[annotations]]
+path = ["LICENSE", "NOTICE", "README.md", ".gitignore"]
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── Project root — configuration ─────────────────────────────────────────────
+
+[[annotations]]
+path = ["package.json", "tsconfig.json", "docusaurus.config.ts", "sidebars.ts", "tailwind.config.js"]
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ── CI ────────────────────────────────────────────────────────────────────────
+
+[[annotations]]
+path = ".github/**"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"

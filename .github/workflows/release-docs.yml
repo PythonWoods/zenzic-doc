@@ -1,0 +1,60 @@
+name: release-docs
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish docs artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build docs
+        run: npm run build
+
+      - name: Set artifact name
+        id: vars
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "name=docs-build-${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=docs-build-run-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Archive build output
+        run: tar -czf "${{ steps.vars.outputs.name }}.tar.gz" build
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.name }}
+          path: ${{ steps.vars.outputs.name }}.tar.gz
+          retention-days: 30
+
+      - name: Publish GitHub release (tags only)
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.vars.outputs.name }}.tar.gz
+          generate_release_notes: true

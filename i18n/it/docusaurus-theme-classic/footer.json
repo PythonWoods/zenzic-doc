@@ -1,0 +1,26 @@
+{
+  "link.title.Bastion": {
+    "message": "Bastion",
+    "description": "The title of the footer links column with title=Bastion in the footer"
+  },
+  "link.title.Ecosystem": {
+    "message": "Ecosystem",
+    "description": "The title of the footer links column with title=Ecosystem in the footer"
+  },
+  "link.item.label.Documentation": {
+    "message": "Documentazione",
+    "description": "The label of footer link with label=Documentation linking to /docs/intro"
+  },
+  "link.item.label.GitHub Core": {
+    "message": "GitHub Core",
+    "description": "The label of footer link with label=GitHub Core linking to https://github.com/PythonWoods/zenzic"
+  },
+  "link.item.label.PythonWoods": {
+    "message": "PythonWoods",
+    "description": "The label of footer link with label=PythonWoods linking to https://pythonwoods.dev"
+  },
+  "copyright": {
+    "message": "Copyright © 2026 PythonWoods. Integrità di classe ingegneristica.",
+    "description": "The footer copyright"
+  }
+}

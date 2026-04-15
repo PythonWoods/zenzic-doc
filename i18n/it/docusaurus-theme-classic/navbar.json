@@ -1,0 +1,22 @@
+{
+  "title": {
+    "message": "Zenzic",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Logo Zenzic",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Documentation": {
+    "message": "Documentazione",
+    "description": "Navbar item with label Documentation"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "item.label.Docs": {
+    "message": "Docs",
+    "description": "Navbar item with label Docs"
+  }
+}
