@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Zenzic',
-  tagline: 'Engineering-grade documentation linter',
+  tagline: 'Documentation security layer',
   favicon: 'img/favicon.ico',
 
   // Future flags for v4 compatibility
@@ -70,7 +70,7 @@ const config: Config = {
 
   themeConfig: {
     // Social sharing image
-    image: '/social/social-card.svg',
+    image: '/assets/social/social-card.svg',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
