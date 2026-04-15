@@ -22,6 +22,9 @@
 .env.production.local
 *.log
 
+# Drafts (dev.to articles, internal notes)
+/drafts
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
