@@ -21,11 +21,16 @@ Zenzic is automation-ready out of the box. The `--format json` flag and `--save`
 Every check command supports `--format json`:
 
 ```bash
-# Machine-readable report for all checks
+# Aggregated report for all checks
 zenzic check all --format json
 
-# Machine-readable score with full per-check breakdown
+# Individual checks
+zenzic check links --format json
+zenzic check references --format json
+
+# Scoring and regression
 zenzic score --format json
+zenzic diff --format json
 ```
 
 ### `zenzic check all --format json`
@@ -64,6 +69,26 @@ zenzic score --format json
   ]
 }
 ```
+
+### Individual commands (`check links`, `check orphans`, etc.)
+
+Each individual check command returns a uniform findings structure:
+
+```json
+{
+  "findings": [
+    {"rel_path": "guides/setup.md", "line_no": 42, "code": "BROKEN_LINK", "severity": "error", "message": "Link target 'install.md' not found"}
+  ],
+  "summary": {
+    "errors": 1, "warnings": 0, "info": 0,
+    "security_incidents": 0, "security_breaches": 0,
+    "elapsed_seconds": 0.042
+  }
+}
+```
+
+Exit codes are preserved in JSON mode: exit 1 on errors, exit 2 on Shield breaches,
+exit 3 on Blood Sentinel — the same contract as terminal output.
 
 ---
 
