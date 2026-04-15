@@ -188,14 +188,16 @@ never suppressed by `--exit-zero`. See
 
 ## JSON output
 
-Pass `--format json` to `check all` for structured output:
+All check commands support `--format json` for machine-readable output.
+
+### `check all`
+
+The aggregated report groups findings by check:
 
 ```bash
 zenzic check all --format json | jq '.orphans'
 zenzic check all --format json > report.json
 ```
-
-The JSON report contains seven keys:
 
 ```json
 {
@@ -212,6 +214,41 @@ The JSON report contains seven keys:
 Each key holds a list of issue strings or objects. An empty list means the check passed.
 `nav_contract` validates `extra.alternate` links in `mkdocs.yml` against the Virtual Site Map
 — always empty for non-MkDocs projects.
+
+### Individual commands
+
+`check links`, `check orphans`, `check snippets`, `check references`, and `check assets`
+each accept `--format json` and return a uniform findings structure:
+
+```bash
+zenzic check links --format json
+zenzic check references --format json --strict
+```
+
+```json
+{
+  "findings": [
+    {
+      "rel_path": "guides/setup.md",
+      "line_no": 42,
+      "code": "BROKEN_LINK",
+      "severity": "error",
+      "message": "Link target 'install.md' not found"
+    }
+  ],
+  "summary": {
+    "errors": 1,
+    "warnings": 0,
+    "info": 0,
+    "security_incidents": 0,
+    "security_breaches": 0,
+    "elapsed_seconds": 0.042
+  }
+}
+```
+
+Exit codes are preserved in JSON mode: exit 1 on errors, exit 2 on Shield breaches,
+exit 3 on Blood Sentinel path traversal — the same contract as text output.
 
 ---
 
