@@ -215,6 +215,42 @@ Ogni chiave contiene una lista di stringhe o oggetti con i problemi. Una lista v
 che il controllo è passato. `nav_contract` valida i link `extra.alternate` in `mkdocs.yml`
 rispetto alla Virtual Site Map — sempre vuoto per i progetti non MkDocs.
 
+### Comandi singoli
+
+`check links`, `check orphans`, `check snippets`, `check references` e `check assets`
+accettano ciascuno `--format json` e restituiscono una struttura uniforme:
+
+```bash
+zenzic check links --format json
+zenzic check references --format json --strict
+```
+
+```json
+{
+  "findings": [
+    {
+      "rel_path": "guides/setup.md",
+      "line_no": 42,
+      "code": "BROKEN_LINK",
+      "severity": "error",
+      "message": "Link target 'install.md' not found"
+    }
+  ],
+  "summary": {
+    "errors": 1,
+    "warnings": 0,
+    "info": 0,
+    "security_incidents": 0,
+    "security_breaches": 0,
+    "elapsed_seconds": 0.042
+  }
+}
+```
+
+I codici di uscita sono preservati in modalità JSON: exit 0 quando vengono trovati solo
+warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni Shield,
+exit 3 per path traversal Blood Sentinel — lo stesso contratto dell'output testuale.
+
 ---
 
 ## Override dell'engine

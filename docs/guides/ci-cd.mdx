@@ -87,7 +87,8 @@ Each individual check command returns a uniform findings structure:
 }
 ```
 
-Exit codes are preserved in JSON mode: exit 1 on errors, exit 2 on Shield breaches,
+Exit codes are preserved in JSON mode: exit 0 when only warnings are found,
+exit 1 on errors (or warnings under `--strict`), exit 2 on Shield breaches,
 exit 3 on Blood Sentinel — the same contract as terminal output.
 
 ---

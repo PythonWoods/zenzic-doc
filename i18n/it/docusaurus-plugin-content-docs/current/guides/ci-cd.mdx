@@ -62,6 +62,27 @@ zenzic score --format json
 }
 ```
 
+### Comandi singoli (`check links`, `check orphans`, ecc.)
+
+Ogni comando di controllo singolo restituisce una struttura findings uniforme:
+
+```json
+{
+  "findings": [
+    {"rel_path": "guides/setup.md", "line_no": 42, "code": "BROKEN_LINK", "severity": "error", "message": "Link target 'install.md' not found"}
+  ],
+  "summary": {
+    "errors": 1, "warnings": 0, "info": 0,
+    "security_incidents": 0, "security_breaches": 0,
+    "elapsed_seconds": 0.042
+  }
+}
+```
+
+I codici di uscita sono preservati in modalità JSON: exit 0 quando vengono trovati solo
+warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni Shield,
+exit 3 per Blood Sentinel — lo stesso contratto dell'output da terminale.
+
 ---
 
 ## GitHub Actions: Gate Zenzic Shield
