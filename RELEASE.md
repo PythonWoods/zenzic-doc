@@ -2,7 +2,7 @@
 
 ## Current Status
 
-> **v0.6.1rc1 "Obsidian Bastion" — Public Launch Active.**
+> **v0.6.1rc2 "Obsidian Bastion (Hardened)" — Public Launch Active.**
 
 The documentation site is open and publicly deployed.
 All embargo conditions have been satisfied.
