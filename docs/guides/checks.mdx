@@ -326,8 +326,9 @@ The Shield scans **every line of every file** during Pass 1, including lines ins
 | `google-api-key` | Google Cloud / Maps API keys (`AIza…`) |
 | `private-key` | PEM private keys (`-----BEGIN … PRIVATE KEY-----`) |
 | `hex-encoded-payload` | Hex-encoded byte sequences (3+ consecutive `\xNN` escapes) |
+| `gitlab-pat` | GitLab Personal Access Tokens (`glpat-…`) |
 
-**Exit Code 2** is reserved exclusively for Shield events. It is never suppressed by `--exit-zero` or `exit_zero = true` in `zenzic.toml`.
+**Exit Code 2** is reserved for Shield events. It is never suppressed by `--exit-zero` or `exit_zero = true` in `zenzic.toml`.
 
 :::danger[If you receive exit code 2]
 

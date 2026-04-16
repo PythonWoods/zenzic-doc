@@ -37,17 +37,13 @@ zenzic diff --format json
 
 ```json
 {
-  "status": "passed",
-  "exit_code": 0,
-  "checks": {
-    "links":          {"status": "passed", "errors": 0},
-    "orphans":        {"status": "passed", "errors": 0},
-    "snippets":       {"status": "passed", "errors": 0},
-    "placeholders":   {"status": "passed", "errors": 0},
-    "unused_assets":  {"status": "passed", "errors": 0},
-    "references":     {"status": "passed", "errors": 0},
-    "nav_contract":   {"status": "passed", "errors": 0}
-  }
+  "links":         ["guides/setup.md:12 — Link target 'install.md' not found"],
+  "orphans":       ["old-page.md"],
+  "snippets":      [{"file": "api/ref.md", "line": 5, "message": "Snippet target not found"}],
+  "placeholders":  [{"file": "index.md", "line": 1, "issue": "TODO", "detail": "Fix this"}],
+  "unused_assets": ["images/old-logo.png"],
+  "references":    [],
+  "nav_contract":  []
 }
 ```
 
@@ -245,5 +241,6 @@ Combine with branch protection rules to block merges that degrade documentation 
 | `0` | All checks passed | Keep badge green |
 | `1` | One or more checks failed | Set badge to `failing` / `ef4444` |
 | **`2`** | **Zenzic Shield: credential detected** | **Rotate credential immediately** |
+| **`3`** | **Blood Sentinel: path traversal detected** | **Remove offending link immediately** |
 
 > For the full badge copy-paste reference, see [Official Badges](../usage/badges.mdx).

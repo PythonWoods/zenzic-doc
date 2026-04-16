@@ -32,15 +32,13 @@ zenzic score --format json
 
 ```json
 {
-  "status": "passed",
-  "exit_code": 0,
-  "checks": {
-    "links":        {"status": "passed", "errors": 0},
-    "orphans":      {"status": "passed", "errors": 0},
-    "snippets":     {"status": "passed", "errors": 0},
-    "placeholders": {"status": "passed", "errors": 0},
-    "assets":       {"status": "passed", "errors": 0}
-  }
+  "links":         ["guides/setup.md:12 — Link target 'install.md' not found"],
+  "orphans":       ["old-page.md"],
+  "snippets":      [{"file": "api/ref.md", "line": 5, "message": "Snippet target not found"}],
+  "placeholders":  [{"file": "index.md", "line": 1, "issue": "TODO", "detail": "Fix this"}],
+  "unused_assets": ["images/old-logo.png"],
+  "references":    [],
+  "nav_contract":  []
 }
 ```
 
@@ -237,5 +235,6 @@ Combina con le branch protection rules per bloccare i merge che degradano la qua
 | `0` | Tutti i controlli superati | Mantieni il badge verde |
 | `1` | Uno o più controlli falliti | Imposta il badge a `failing` / `ef4444` |
 | **`2`** | **Zenzic Shield: credenziale rilevata** | **Ruota la credenziale immediatamente** |
+| **`3`** | **Blood Sentinel: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
 
 > Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](../usage/badges.mdx).

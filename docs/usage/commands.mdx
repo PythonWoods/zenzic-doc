@@ -128,38 +128,6 @@ patterns.
 
 ---
 
-## Development server
-
-```bash
-zenzic serve                  # Start dev server with pre-flight quality check
-zenzic serve --engine mkdocs  # Force a specific engine
-zenzic serve --engine zensical
-zenzic serve --port 9000      # Custom starting port (tries up to 10 consecutive ports)
-zenzic serve -p 9000
-zenzic serve --no-preflight   # Skip pre-flight and start server immediately
-```
-
-`zenzic serve` auto-detects the documentation engine from the repository root:
-
-| Config file present | Engine binary available | Result |
-| :--- | :--- | :--- |
-| `zensical.toml` | `zensical` or `mkdocs` | Starts available engine |
-| `zensical.toml` | neither | Error — install an engine |
-| `mkdocs.yml` only | `mkdocs` or `zensical` | Starts available engine |
-| `mkdocs.yml` only | neither | Error — install an engine |
-| neither | any | Static file server on `site/` (no hot-reload) |
-
-Before launching the server, Zenzic runs a silent pre-flight check (orphans, snippets,
-placeholders, unused assets). Issues are printed as warnings but never block startup. External
-link validation is intentionally excluded from the pre-flight. Use `--no-preflight` to skip the
-quality check entirely when you are mid-fix.
-
-**Port handling.** Zenzic probes for a free port via socket before launching the engine
-subprocess, then passes `--dev-addr 127.0.0.1:{port}` to mkdocs or zensical. The
-`Address already in use` error can never appear from the engine.
-
----
-
 ## Exit codes {#exit-codes}
 
 | Code | Meaning |
@@ -170,7 +138,7 @@ subprocess, then passes `--dev-addr 127.0.0.1:{port}` to mkdocs or zensical. The
 | **`3`** | **SECURITY INCIDENT — Blood Sentinel: link targets an OS system directory** |
 
 :::danger[Exit code 2 is reserved for security events]
-Exit code 2 is issued exclusively by `zenzic check references` when the Shield detects a
+Exit code 2 is issued by `zenzic check references` and `zenzic check all` when the Shield detects a
 known credential pattern embedded in a reference URL. It is never used for ordinary check
 failures. If you receive exit code 2, treat it as a build-blocking security incident and
 **rotate the exposed credential immediately**.

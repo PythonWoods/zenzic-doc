@@ -130,38 +130,6 @@ questi pattern.
 
 ---
 
-## Server di sviluppo
-
-```bash
-zenzic serve                  # Avvia il server con pre-flight di qualità
-zenzic serve --engine mkdocs  # Forza un motore specifico
-zenzic serve --engine zensical
-zenzic serve --port 9000      # Porta di partenza personalizzata (prova fino a 10 porte consecutive)
-zenzic serve -p 9000
-zenzic serve --no-preflight   # Salta il pre-flight e avvia il server immediatamente
-```
-
-`zenzic serve` rileva automaticamente il motore di documentazione dalla root del repository:
-
-| File di config presente | Binario disponibile | Risultato |
-| :--- | :--- | :--- |
-| `zensical.toml` | `zensical` o `mkdocs` | Avvia il motore disponibile |
-| `zensical.toml` | nessuno | Errore — installa un motore |
-| solo `mkdocs.yml` | `mkdocs` o `zensical` | Avvia il motore disponibile |
-| solo `mkdocs.yml` | nessuno | Errore — installa un motore |
-| nessuno | qualsiasi | Server statico su `site/` (senza hot-reload) |
-
-Prima di avviare il server, Zenzic esegue un pre-flight silenzioso (orfani, snippet,
-placeholder, asset non usati). I problemi vengono stampati come warning ma non bloccano mai
-l'avvio. La validazione dei link esterni è esclusa intenzionalmente dal pre-flight. Usa
-`--no-preflight` per saltare il controllo qualità quando sei nel mezzo di una fix.
-
-**Gestione della porta.** Zenzic individua una porta libera tramite socket probe prima di
-avviare il subprocess dell'engine, poi passa `--dev-addr 127.0.0.1:{porta}` a mkdocs o
-zensical. L'errore `Address already in use` non può mai provenire dall'engine.
-
----
-
 ## Codici di uscita {#exit-codes}
 
 | Codice | Significato |
@@ -172,7 +140,7 @@ zensical. L'errore `Address already in use` non può mai provenire dall'engine.
 | **`3`** | **INCIDENTE DI SICUREZZA — Blood Sentinel: il link punta a una directory di sistema dell'OS** |
 
 :::danger[Il codice di uscita 2 è riservato agli eventi di sicurezza]
-Il codice 2 viene emesso esclusivamente da `zenzic check references` quando lo Shield
+Il codice 2 viene emesso da `zenzic check references` e `zenzic check all` quando lo Shield
 rileva un pattern di credenziale noto incorporato in un URL di riferimento. Non viene mai
 usato per i fallimenti ordinari dei controlli. Se ricevi il codice di uscita 2, trattalo
 come un incidente di sicurezza bloccante e **ruota immediatamente la credenziale esposta**.

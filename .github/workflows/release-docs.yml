@@ -10,6 +10,10 @@ permissions:
   contents: write
   deployments: write
 
+concurrency:
+  group: release-docs-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Build and publish docs artifact
@@ -17,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -55,16 +59,14 @@ jobs:
 
       - name: Publish GitHub release (tags only)
         if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${{ steps.vars.outputs.name }}.tar.gz
           generate_release_notes: true
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: zenzic-doc
-          directory: build
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy build --project-name=zenzic-doc
