@@ -41,11 +41,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-  disabled_notice:
-    if: vars.ENABLE_CODEQL != 'true'
-    name: CodeQL disabled
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain why CodeQL is skipped
-        run: |
-          echo "CodeQL skipped: set repository variable ENABLE_CODEQL=true after enabling Code Security (GHAS) on this repository."
+
