@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2025 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+
+pythonwoods:
+  name: PythonWoods
+  url: https://github.com/PythonWoods
+  image_url: https://github.com/PythonWoods.png

@@ -1,0 +1,103 @@
+{/*
+SPDX-FileCopyrightText: 2025 PythonWoods <dev@pythonwoods.dev>
+SPDX-License-Identifier: Apache-2.0
+*/}
+
+---
+slug: the-obsidian-mirror
+title: "Il Mirror di Ossidiana: Come abbiamo costruito una fortezza documentale ad alta disponibilità"
+authors: [pythonwoods]
+tags: [infrastructure, seo, cloudflare, readthedocs, docusaurus]
+---
+
+In Zenzic, la stabilità non è solo una feature del codice — è un impegno
+dell'infrastruttura. Abbiamo implementato una strategia **Dual-Bastion** combinando
+la velocità di Cloudflare Pages con l'autorità SEO di Read the Docs, e poi sigillato
+il tutto con lo Zenzic Sentinel.
+
+{/* truncate */}
+
+## Il Problema
+
+La documentazione open-source è fragile. Un singolo hosting provider che va giù — o un
+aggiornamento del framework che rompe tutto — può far sparire il vostro "Porto Sicuro"
+dall'oggi al domani. Il nostro sito precedente, basato su MkDocs, viveva su un
+sottodominio di terzo livello ed era strettamente legato a una sola piattaforma.
+Avevamo bisogno di ridondanza.
+
+## La Soluzione: Architettura Dual-Bastion
+
+Abbiamo distribuito lo stesso sito Docusaurus v3 su **due piattaforme indipendenti**
+con ruoli complementari.
+
+### Master — Cloudflare Pages
+
+| Aspetto | Dettaglio |
+|---|---|
+| **Deploy** | GitHub Actions via `wrangler-action` |
+| **Edge** | CDN globale di Cloudflare — TTFB sotto i 50 ms nel mondo |
+| **Dominio** | `zenzic.dev` — la Sorgente di Verità canonica |
+
+Cloudflare Pages ci offre controllo totale sulla landing page, invalidazione
+istantanea della cache e HTTPS senza configurazione sul dominio personalizzato.
+
+### Mirror — Read the Docs
+
+| Aspetto | Dettaglio |
+|---|---|
+| **Deploy** | Build automatica via `.readthedocs.yaml` (Node 22, Ubuntu 24.04) |
+| **Autorità** | RTD è un dominio ad alta fiducia nell'indice di Google |
+| **Dominio** | `docs.zenzic.dev` — booster SEO e fallback |
+
+Read the Docs agisce come **Iniettore di Autorità SEO**: Google indicizza il mirror
+RTD, scopre il tag `<link rel="canonical">` che punta a `zenzic.dev`, e trasferisce
+l'equity dei link al nostro dominio primario.
+
+## Il Sigillo Canonico
+
+Il contenuto duplicato è il killer silenzioso della SEO. Per evitare penalizzazioni
+da parte di Google, Docusaurus inietta un tag
+`<link rel="canonical" href="https://zenzic.dev/...">` su ogni pagina — anche quando
+servita da `docs.zenzic.dev`. RTD lavora *per* noi, donando la sua autorità al dominio
+master senza attivare penalità per contenuto duplicato.
+
+## Dogfooding: Zenzic valida entrambi
+
+Prima che ogni deploy raggiunga la produzione, lo **Zenzic Sentinel** (v0.6.1rc2)
+valida ogni file in entrambi gli ambienti:
+
+- **89 file** analizzati (76 documenti, 13 asset)
+- **Zero** path traversal
+- **Zero** link interni rotti
+- **Exit code 0** — la pace del Sentinel
+
+L'hook pre-commit impone questo gate localmente, quindi bug di routing come il
+"Dilemma degli Slug" (`trailingSlash` vs integrità del filesystem) vengono intercettati
+prima di entrare in `main`.
+
+## Cross-Linking: Il Cerchio di Fiducia
+
+Entrambi i siti si collegano reciprocamente tramite la sezione **Availability** nel
+footer:
+
+- **Master (Cloudflare)** → `https://zenzic.dev`
+- **Mirror (Read the Docs)** → `https://docs.zenzic.dev`
+
+Se un utente atterra sul mirror, un clic lo porta al primario. Se il primario è giù,
+il mirror è ancora attivo. Il cerchio si chiude.
+
+## Conclusioni
+
+1. **Mai dipendere da un solo host.** La documentazione è un prodotto — trattatela
+   come tale.
+2. **I canonical URL non sono negoziabili.** Senza di essi, un mirror diventa un
+   concorrente agli occhi di Google.
+3. **Validate tutto con un linter.** Zenzic ha intercettato il conflitto
+   `trailingSlash` prima che potesse corrompere i file sorgente.
+4. **L'infrastruttura è documentazione.** Se i vostri lettori non possono
+   raggiungere la documentazione, la documentazione non esiste.
+
+---
+
+*Zenzic è un linter e scudo di sicurezza engine-agnostic per documentazione Markdown.
+Provalo: `pip install zenzic`.*

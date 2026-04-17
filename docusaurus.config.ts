@@ -47,7 +47,10 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -88,6 +91,11 @@ const config: Config = {
           label: 'Docs',
         },
         {
+          to: '/blog',
+          label: 'Blog',
+          position: 'left',
+        },
+        {
           type: 'html',
           position: 'left',
           value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.6.1rc2</span>',
@@ -105,7 +113,21 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [],
+      links: [
+        {
+          title: 'Availability',
+          items: [
+            {
+              label: 'Master (Cloudflare)',
+              href: 'https://zenzic.dev',
+            },
+            {
+              label: 'Mirror (Read the Docs)',
+              href: 'https://docs.zenzic.dev',
+            },
+          ],
+        },
+      ],
       copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.6.1rc2. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
