@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 — theme + utilities only.
+   Preflight excluded: @layer base (preflight) appears after @layer docusaurus.infima
+   in the final bundle, meaning it would override Infima and break Docusaurus layout. */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+/* Dark mode variant bound to Docusaurus data-theme attribute (overrides built-in @media prefers-color-scheme) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Theme extensions (migrated from tailwind.config.js) */
+@theme {
+  --font-family-sans: 'Inter', sans-serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
+  --color-zinc-950: #09090b;
+}
 
 /**
  * Zenzic Bastion Global Design System
@@ -116,9 +128,21 @@ body {
 /* ── Navbar ── */
 .navbar {
   background-color: var(--ifm-navbar-background-color);
-  backdrop-filter: blur(8px);
   box-shadow: none;
   padding: 0;
+  position: relative;
+}
+
+/* backdrop-filter on ::before — avoids creating a containing block for
+   position:fixed descendants (e.g. .navbar-sidebar), which would clip the
+   mobile sidebar to the navbar height instead of the full viewport. */
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .navbar .navbar__inner {
