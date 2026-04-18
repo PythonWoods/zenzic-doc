@@ -61,6 +61,11 @@ path = ["package.json", "tsconfig.json", "docusaurus.config.ts", "sidebars.ts", 
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
+[[annotations]]
+path = ".vscode/mcp.json"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
 # ── CI ────────────────────────────────────────────────────────────────────────
 
 [[annotations]]

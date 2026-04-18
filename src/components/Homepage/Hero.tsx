@@ -49,7 +49,7 @@ export default function Hero(): React.JSX.Element {
             Get started
           </Translate>
         </Link>
-        <a href="https://github.com/PythonWoods/zenzic" className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-transparent dark:text-zinc-300 text-zinc-600 text-sm font-medium border dark:border-zinc-700 border-zinc-300 dark:hover:border-zinc-500 hover:border-zinc-400 dark:hover:text-white hover:text-zinc-900 transition-colors">
+        <a href="https://github.com/PythonWoods/zenzic" rel="noopener noreferrer" className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-transparent dark:text-zinc-300 text-zinc-600 text-sm font-medium border dark:border-zinc-700 border-zinc-300 dark:hover:border-zinc-500 hover:border-zinc-400 dark:hover:text-white hover:text-zinc-900 transition-colors">
           <Translate id="homepage.hero.viewOnGithub" description="View on GitHub button">
             View on GitHub
           </Translate>
