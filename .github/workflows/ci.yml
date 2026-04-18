@@ -2,9 +2,39 @@ name: docs-ci
 
 on:
   pull_request:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - 'docs/**'
+      - 'i18n/**'
+      - 'src/**'
+      - 'static/**'
+      - 'scripts/**'
+      - 'docusaurus.config.ts'
+      - 'sidebars.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'zenzic.toml'
+      - '.github/workflows/ci.yml'
   push:
     branches:
       - main
+      - 'release/**'
+    paths:
+      - 'docs/**'
+      - 'i18n/**'
+      - 'src/**'
+      - 'static/**'
+      - 'scripts/**'
+      - 'docusaurus.config.ts'
+      - 'sidebars.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'zenzic.toml'
+      - '.github/workflows/ci.yml'
 
 permissions:
   contents: read
