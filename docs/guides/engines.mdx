@@ -189,16 +189,19 @@ using Python's `tomllib` — **zero YAML**. No `mkdocs.yml` is read or required.
 engine = "zensical"
 ```
 
-If `zensical.toml` is **absent** when `engine = "zensical"` is declared, Zenzic raises
-`ConfigurationError` immediately:
+### Transparent Proxy (Migration Bridge)
+
+To facilitate a smooth migration from MkDocs to Zensical, the adapter implements a **Transparent Proxy** mode. If `zensical.toml` is **absent** but `mkdocs.yml` is present in the project root, the Zensical adapter will automatically use the MkDocs configuration as a bridge.
+
+This allows you to test Zenzic with the Zensical engine even before you have fully committed to a native `zensical.toml`. When this happens, the Sentinel banner will notify you:
 
 ```text
-ConfigurationError: engine 'zensical' declared in zenzic.toml but zensical.toml is missing
-hint: create zensical.toml or set engine = 'mkdocs' for MkDocs projects
+SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
 ```
 
-There is no fallback. There is no silent degradation. Engine identity must be provable from
-the files on disk.
+:::warning[Structural Custodian Rule]
+While this bridge allows Zenzic to run, Zensical itself may handle some MkDocs features differently. Use the bridge as a temporary safety net during migration, and aim for a native `zensical.toml` to achieve full parity.
+:::
 
 ### zensical.toml nav format
 
@@ -269,6 +272,20 @@ locales        = ["it", "fr"]
 
 When `locales` is empty, Zenzic reads locale information from the `i18n` block in
 `docusaurus.config.ts`.
+
+### Versioning support
+
+Zenzic supports Docusaurus **multi-version documentation** out of the box. It identifies:
+
+1. **Version list** — read from `versions.json` in the project root.
+2. **Versioned content** — discovered under `versioned_docs/version-{version}/`.
+3. **Versioned translations** — discovered under `i18n/{locale}/docusaurus-plugin-content-docs/version-{version}/`.
+
+The Virtual Site Map automatically maps these paths to their correct canonical URLs (e.g., `/docs/1.0.0/intro/`), allowing Zenzic to validate links across versions without requiring a build.
+
+:::tip[Ghost Routing]
+Versioned routes are treated as **Ghost Routes**: they are always considered reachable because Docusaurus automatically generates navigation for versioned documentation trees.
+:::
 
 ### i18n layout
 

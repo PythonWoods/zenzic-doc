@@ -17,7 +17,7 @@ function ScoreSubRow({icon, label, value}: {icon: ReactNode; label: ReactNode; v
 }
 
 function ScoreRow({color, label, value}: {color: 'sky' | 'rose'; label: ReactNode; value: ReactNode}): React.JSX.Element {
-  const palette = color === 'sky' 
+  const palette = color === 'sky'
     ? { ring: 'border-sky-500/30 bg-sky-500/10', dot: 'bg-sky-400' }
     : { ring: 'border-rose-500/30 bg-rose-500/10', dot: 'bg-rose-400' };
 
@@ -77,9 +77,9 @@ export default function QualityScore(): React.JSX.Element {
                 <ScoreSubRow icon={<SimpleDotIcon color="sky" />} label={<Translate id="score.external">External references</Translate>} value="16" />
               </div>
             </div>
-            
+
             <div className="border-t dark:border-zinc-800/50 border-zinc-200 mx-2 my-1" />
-            
+
             <div className="p-2">
               <ScoreRow color="rose" label={<Translate id="score.orphan">Orphan Detection</Translate>} value="21" />
               <div className="ml-5 pl-4 border-l dark:border-zinc-800/40 border-zinc-200 flex flex-col py-1">

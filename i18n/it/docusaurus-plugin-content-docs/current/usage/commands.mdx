@@ -31,6 +31,7 @@ zenzic check all --format json      # Output machine-readable
 zenzic check all --exit-zero        # Segnala problemi ma esce sempre con codice 0
 zenzic check all --quiet            # Output minimale a riga singola per pre-commit e CI
 zenzic check all --engine mkdocs    # Sovrascrive il motore rilevato
+zenzic check all --offline          # Forza URL piatti (es. per build su USB o rete intranet)
 zenzic check links --show-info      # Mostra finding di livello info (es. link circolari)
 ```
 
@@ -87,6 +88,33 @@ zenzic check all --show-info
 ```bash
 zenzic check all --quiet
 ```
+
+### `--offline`
+
+`--offline` è disponibile su `check all`, `check links` e `check orphans`. Forza
+tutti gli adapter (MkDocs e Zensical) a risolvere gli URL **senza** `use_directory_urls`,
+producendo percorsi `.html` piatti invece di slug clean basati su directory.
+
+Usalo quando esegui il linting di documentazione distribuita come file statici — ad esempio
+su chiavetta USB o su rete intranet senza web server.
+
+```bash
+zenzic check all --offline          # Modalità URL piatti: guide/install.md → /guide/install.html
+zenzic check links --offline
+zenzic check orphans --offline
+```
+
+Quando attivo, il banner Sentinel mostra:
+
+```text
+SENTINEL: [Offline Mode Active: forcing flat URL structure]
+```
+
+:::note[Parità tra engine]
+Il flag `--offline` ha un **comportamento identico** su entrambi gli adapter MkDocs e Zensical.
+Questo garantisce che Zenzic resti un Custode Strutturale coerente indipendentemente dal tuo
+motore di build.
+:::
 
 ---
 

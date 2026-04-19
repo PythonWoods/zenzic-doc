@@ -77,7 +77,8 @@ una pagina tradotta a una pagina che esiste solo nel locale di default viene sop
 | `"mkdocs"` (default) | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
 | `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `VanillaAdapter` — nessuna consapevolezza nav |
 | `"zensical"` | `zensical.toml` trovato | `ZensicalAdapter` — legge nav da `zensical.toml` |
-| `"zensical"` | `zensical.toml` assente | **Errore** — `zensical.toml` è richiesto |
+| `"zensical"` | `zensical.toml` assente, `mkdocs.yml` trovato | `ZensicalAdapter` — **Proxy Trasparente** usando `mkdocs.yml` |
+| `"docusaurus"` | `docusaurus.config.ts` trovato | `DocusaurusAdapter` — legge la configurazione staticamente |
 | qualsiasi stringa sconosciuta | — | `VanillaAdapter` — nessun adapter registrato per questo motore |
 
 ### Modalità Vanilla

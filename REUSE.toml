@@ -40,6 +40,12 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
+[[annotations]]
+path = "i18n/**/assets/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
 # ── i18n translation files ───────────────────────────────────────────────────
 
 [[annotations]]
@@ -57,7 +63,20 @@ SPDX-License-Identifier = "Apache-2.0"
 # ── Project root — configuration ─────────────────────────────────────────────
 
 [[annotations]]
-path = ["package.json", "tsconfig.json", "docusaurus.config.ts", "sidebars.ts", "tailwind.config.js"]
+path = [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "docusaurus.config.ts",
+    "sidebars.ts",
+    "tailwind.config.js",
+    "eslint.config.mjs",
+    ".markdownlint-cli2.jsonc",
+    "RELEASE.md",
+    "zenzic.toml",
+    "justfile",
+    "**/*_category_.json"
+]
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 

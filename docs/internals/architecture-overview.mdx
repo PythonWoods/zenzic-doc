@@ -252,6 +252,34 @@ class RouteMetadata:
     slug: str | None = None   # Frontmatter slug override
     route_base_path: str = "/" # URL prefix from docs plugin preset
     is_proxy: bool = False    # True for build-generated routes with no source file
+    version: str | None = None # Optional version label (Docusaurus support)
+```
+
+---
+
+## Virtual Site Map (VSM) {#vsm}
+
+The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a pure-data structure (a mapping of `canonical_url` string to `Route` objects) constructed by the `VSMBuilder` by combining adapter knowledge with filesystem discovery.
+
+### Versioning & Multi-Doc Support {#vsm-versioning}
+
+Starting with v0.6.1 "Obsidian Glass", the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
+
+1. **Identifies version boundaries** via the adapter's extended root discovery.
+2. **Tags routes** with their respective version label in `RouteMetadata`.
+3. **Resolves cross-links** within the same version context first, preventing version-skew in link validation.
+
+Versioned routes are often treated as **Ghost Routes** — they are marked `REACHABLE` even if they do not appear in the primary navigation file, as the build engine is assumed to manage version-specific sidebars automatically.
+
+### Offline Mode & Flat URL Resolution {#vsm-offline}
+
+The `--offline` flag triggers a global architectural shift in how the VSM resolves URLs. When active:
+
+1. **`offline_mode`** is set to `True` in the `BuildContext`.
+2. **Adapters force `use_directory_urls = False`**, overriding any engine-specific configuration.
+3. **`map_url()`** produces flat `.html` paths (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
+
+This ensures that Zenzic remains a **Structural Custodian** for documentation distributed on filesystems where directory-index resolution (e.g., `/page/` → `/page/index.html`) is unavailable.
 ```
 
 ### Built-in Adapters {#built-in-adapters}

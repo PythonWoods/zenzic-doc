@@ -126,6 +126,33 @@ Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motor
 - `url` — URL canonico della pagina
 - `status` — stato della route: `REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`
 - `source_path` — percorso del file sorgente relativo a `docs_root`
+- `version` — etichetta opzionale della versione (supporto Docusaurus)
+
+---
+
+## Virtual Site Map (VSM) {#vsm}
+
+La Virtual Site Map è l'**unica fonte di verità per il routing** di Zenzic. È una struttura dati pura (una mappa tra stringhe `canonical_url` e oggetti `Route`) costruita dal `VSMBuilder` combinando la conoscenza degli adapter con la scoperta del filesystem.
+
+### Versioning e Supporto Multi-Doc {#vsm-versioning}
+
+A partire dalla v0.6.1 "Obsidian Glass", la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
+
+1. **Identifica i confini di versione** tramite la scoperta estesa della root dell'adapter.
+2. **Etichetta le route** con la rispettiva versione in `RouteMetadata`.
+3. **Risolve i cross-link** dando priorità al contesto della stessa versione, prevenendo la "version-skew" nella validazione dei link.
+
+Le route versionate sono spesso trattate come **Ghost Routes** — sono marcate come `REACHABLE` anche se non appaiono nel file di navigazione principale, poiché si assume che il motore di build gestisca automaticamente le sidebar specifiche per versione.
+
+### Modalità Offline e Risoluzione URL Flat {#vsm-offline}
+
+Il flag `--offline` innesca un cambiamento architetturale globale nel modo in cui la VSM risolve gli URL. Quando attivo:
+
+1. **`offline_mode`** viene impostato a `True` nel `BuildContext`.
+2. **Gli adapter forzano `use_directory_urls = False`**, sovrascrivendo qualsiasi configurazione specifica del motore.
+3. **`map_url()`** produce percorsi `.html` piatti (es. `guida/install.md` → `/guida/install.html`) invece di slug in stile directory.
+
+Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la documentazione distribuita su filesystem dove la risoluzione dell'indice di directory (es. `/pagina/` → `/pagina/index.html`) non è disponibile.
 
 ### Adapter disponibili
 
@@ -358,4 +385,3 @@ Le nuove integrazioni seguono lo stesso schema:
 4. Usa `ZenzicConfig.load()` + le funzioni di controllo del core — non avviare mai sottoprocessi shell.
 
 Il package `zenzic.integrations` è intenzionalmente snello: non contiene logica condivisa, solo hook per-motore. Tutta l'intelligenza vive in `zenzic.core`.
-

@@ -87,7 +87,8 @@ Zenzic resolves the correct adapter automatically from `build_context.engine`:
 | `"mkdocs"` (default) | `mkdocs.yml` found | `MkDocsAdapter` — reads nav and i18n from `mkdocs.yml` |
 | `"mkdocs"` | `mkdocs.yml` absent, no locales | `VanillaAdapter` — no nav awareness |
 | `"zensical"` | `zensical.toml` found | `ZensicalAdapter` — reads nav from `zensical.toml` |
-| `"zensical"` | `zensical.toml` absent | **Error** — `zensical.toml` is required |
+| `"zensical"` | `zensical.toml` absent, `mkdocs.yml` found | `ZensicalAdapter` — **Transparent Proxy** using `mkdocs.yml` |
+| `"docusaurus"` | `docusaurus.config.ts` found | `DocusaurusAdapter` — reads configuration statically |
 | any unknown string | — | `VanillaAdapter` — no registered adapter for this engine |
 
 ### Vanilla mode

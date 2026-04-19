@@ -90,7 +90,7 @@ const config: Config = {
         {
           type: 'html',
           position: 'left',
-          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.6.1rc2</span>',
+          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.6.1</span>',
         },
         {
           type: 'localeDropdown',
@@ -106,7 +106,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.6.1rc2. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.6.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
       theme: prismThemes.github,

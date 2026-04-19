@@ -59,9 +59,9 @@ images.
 Leading slashes are stripped, so `"assets/favicon.svg"` and `"/assets/favicon.svg"` are
 equivalent.
 
-:::warning[Breaking change in v0.6.0a2]
-Prior versions treated each entry as a literal path and used exact set subtraction.
-Starting from v0.6.0a2, every entry is treated as an `fnmatch` pattern.
+:::warning[Breaking change in v0.6.0]
+Prior versions treated each entry as a literal path.
+Starting from v0.6.0, every entry is treated as an `fnmatch` pattern.
 Existing literal paths continue to work — they simply match themselves.
 :::
 

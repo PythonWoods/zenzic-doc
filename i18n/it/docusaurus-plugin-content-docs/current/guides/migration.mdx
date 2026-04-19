@@ -221,8 +221,19 @@ sorgenti — non dipende dal funzionamento di alcun motore di build.
 Installa Zensical insieme a (o al posto di) MkDocs:
 
 ```bash
-uv add --dev zensical      # raccomandato
-# oppure: pip install zensical
+uv pip install zensical   # oppure: pip install zensical
+```
+
+Ora puoi testare la tua documentazione contro il motore Zensical senza nemmeno creare un file `zensical.toml`. Eseguendo Zenzic con l'engine Zensical, si attiva la modalità **Proxy Trasparente**:
+
+```bash
+zenzic check all --engine zensical
+```
+
+Zenzic leggerà il tuo file `mkdocs.yml` esistente e validerà come Zensical lo interpreterebbe. Cerca il banner Sentinel per confermare che il ponte è attivo:
+
+```text
+SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
 ```
 
 Esegui la build della documentazione per verificare che produca output corretto:
@@ -266,11 +277,12 @@ nav = [
 ]
 ```
 
-:::warning[Contratto di enforcement]
-Una volta dichiarato `engine = "zensical"` in `zenzic.toml`, `zensical.toml` **deve**
-esistere. Zenzic solleva un `ConfigurationError` immediatamente se è assente — non c'è
-fallback silenzioso a `mkdocs.yml`. Questo è intenzionale: l'identità dell'engine deve
-essere provabile.
+:::tip[Identità Flessibile & Custode Strutturale]
+Se `engine = "zensical"` è dichiarato ma `zensical.toml` non esiste ancora, Zenzic eseguirà nativamente un fallback leggendo il tuo `mkdocs.yml` esistente (il Proxy Trasparente). 
+Questo ti permette di cambiare engine e mantenere il file di configurazione legacy durante la transizione, senza interrompere la pipeline di validazione. Zenzic agisce come un custode strutturale: non ti costringerà a cambiare formato di configurazione prematuramente.
+
+Nota: Mentre opera tramite il bridge di compatibilità, Zenzic emetterà dei warning se il tuo `mkdocs.yml` contiene impostazioni specifiche di MkDocs che Zensical ignora, come:
+`remote_branch`, `remote_name`, `exclude_docs`, `draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
 :::
 
 ### Fase 4 — Verifica l'integrità dei link
@@ -302,7 +314,7 @@ le supporta tutte con la stessa garanzia di qualità:
 | Percorso | `engine` in `zenzic.toml` | Cosa valida Zenzic |
 | :--- | :--- | :--- |
 | Rimane su MkDocs 1.x | `"mkdocs"` | Contratto strutturale completo MkDocs 1.x |
-| Passa a Zensical | `"zensical"` | Nav Zensical + contratto identità TOML |
+| Passa a Zensical | `"zensical"` | Nav Zensical (via TOML o bridge legacy YAML) |
 | Migra a un altro motore | `"mkdocs"` durante transizione, poi adapter | Integrità sorgenti durante il cambio |
 | Valuta senza impegnarsi | flag CLI `--engine mkdocs` o `--engine zensical` | Controllo compatibilità dry-run |
 
@@ -345,5 +357,5 @@ engine = "zensical"
 | Dry-run compatibilità | `zenzic check all --engine zensical` | Problemi strutturali con adapter Zensical |
 | Dopo il cambio di build | `zenzic check all` | Stessi problemi di prima |
 | Controllo regressioni | `zenzic diff` | Delta = 0 |
-| Enforcement identità | `engine = "zensical"` in `zenzic.toml` | Richiede `zensical.toml` |
+| Identità flessibile | `engine = "zensical"` in `zenzic.toml` | Usa `zensical.toml` o esegue il fallback a `mkdocs.yml` |
 | Gate finale | `zenzic diff --threshold 0` | Exit 0 solo se il punteggio non è diminuito |

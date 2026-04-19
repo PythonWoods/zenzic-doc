@@ -31,6 +31,7 @@ zenzic check all --format json      # Machine-readable output
 zenzic check all --exit-zero        # Report issues but always exit 0
 zenzic check all --quiet            # Minimal one-line output for pre-commit and CI hooks
 zenzic check all --engine mkdocs    # Override detected build engine adapter
+zenzic check all --offline          # Force flat URL resolution (e.g. for USB / intranet builds)
 zenzic check links --show-info      # Show info-level findings (e.g. circular links)
 ```
 
@@ -86,6 +87,32 @@ zenzic check all --show-info
 ```bash
 zenzic check all --quiet
 ```
+
+### `--offline`
+
+`--offline` is available on `check all`, `check links`, and `check orphans`. It forces
+all adapters (MkDocs and Zensical) to resolve URLs **without** `use_directory_urls`, 
+producing flat `.html` paths instead of clean directory-based slugs.
+
+Use this flag when linting documentation that will be distributed as static files — for
+example, bundled onto a USB drive or served over an intranet without a web server.
+
+```bash
+zenzic check all --offline          # flat URL mode: guide/install.md → /guide/install.html
+zenzic check links --offline
+zenzic check orphans --offline
+```
+
+When active, the Sentinel banner displays:
+
+```text
+SENTINEL: [Offline Mode Active: forcing flat URL structure]
+```
+
+:::note[Engine parity]
+The `--offline` flag has **identical behaviour** on both the MkDocs and Zensical adapters.
+This ensures Zenzic remains a consistent Structural Custodian regardless of your build engine.
+:::
 
 ---
 

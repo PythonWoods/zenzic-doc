@@ -59,11 +59,10 @@ immagini di anteprima social.
 Gli slash iniziali vengono rimossi, quindi `"assets/favicon.svg"` e `"/assets/favicon.svg"` sono
 equivalenti.
 
-:::warning[Modifica incompatibile nella v0.6.0a2]
-Le versioni precedenti trattavano ogni voce come un percorso letterale e usavano la
-sottrazione esatta di set. A partire dalla v0.6.0a2, ogni voce è trattata come un pattern
-`fnmatch`. I percorsi letterali esistenti continuano a funzionare — corrispondono
-semplicemente a se stessi.
+:::warning[Modifica incompatibile nella v0.6.0]
+Le versioni precedenti trattavano ogni voce come un percorso letterale.
+A partire dalla v0.6.0, ogni voce è trattata come un pattern `fnmatch`.
+I percorsi letterali esistenti continuano a funzionare: corrispondono semplicemente a se stessi.
 :::
 
 ```toml
