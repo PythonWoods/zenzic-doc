@@ -92,8 +92,9 @@ zenzic check all --quiet
 ### `--offline`
 
 `--offline` è disponibile su `check all`, `check links` e `check orphans`. Forza
-tutti gli adapter (MkDocs e Zensical) a risolvere gli URL **senza** `use_directory_urls`,
-producendo percorsi `.html` piatti invece di slug clean basati su directory.
+tutti gli adapter (MkDocs, Zensical e Docusaurus) a risolvere gli URL **senza**
+`use_directory_urls`, producendo percorsi `.html` piatti invece di slug clean basati
+su directory.
 
 Usalo quando esegui il linting di documentazione distribuita come file statici — ad esempio
 su chiavetta USB o su rete intranet senza web server.
@@ -111,7 +112,7 @@ SENTINEL: [Offline Mode Active: forcing flat URL structure]
 ```
 
 :::note[Parità tra engine]
-Il flag `--offline` ha un **comportamento identico** su entrambi gli adapter MkDocs e Zensical.
+Il flag `--offline` ha un **comportamento identico** su MkDocs, Zensical e Docusaurus.
 Questo garantisce che Zenzic resti un Custode Strutturale coerente indipendentemente dal tuo
 motore di build.
 :::

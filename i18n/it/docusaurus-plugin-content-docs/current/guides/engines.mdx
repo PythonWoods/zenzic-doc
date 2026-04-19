@@ -287,7 +287,14 @@ Zenzic supporta nativamente la **documentazione multi-versione** di Docusaurus. 
 2. **Contenuto versionato** — scoperto sotto `versioned_docs/version-{version}/`.
 3. **Traduzioni versionate** — scoperte sotto `i18n/{locale}/docusaurus-plugin-content-docs/version-{version}/`.
 
-La Virtual Site Map mappa automaticamente questi percorsi ai rispettivi URL canonici (es. `/docs/1.0.0/intro/`), permettendo a Zenzic di validare i link tra le versioni senza richiedere una build.
+La Virtual Site Map mappa automaticamente questi percorsi ai rispettivi URL canonici, seguendo le regole ufficiali di versionamento di Docusaurus:
+
+- **Versione latest** (la prima voce in `versions.json`) mappa sulla root della `routeBasePath` — **senza etichetta di versione nell'URL**.
+  - Esempio: `versioned_docs/version-1.1.0/hello.md` con `versions.json = ["1.1.0", "1.0.0"]` → `/docs/hello/`.
+- **Versioni precedenti** conservano l'etichetta di versione nell'URL.
+  - Esempio: `versioned_docs/version-1.0.0/hello.md` → `/docs/1.0.0/hello/`.
+
+Questo rispecchia esattamente il comportamento di Docusaurus, prevenendo falsi positivi di link rotti sulle pagine della versione latest.
 
 :::tip[Ghost Routing]
 Le rotte versionate sono trattate come **Ghost Routes**: sono sempre considerate raggiungibili perché Docusaurus genera automaticamente la navigazione per gli alberi di documentazione versionati.
@@ -312,6 +319,50 @@ i18n/
 L'adapter identifica `i18n/{locale}/docusaurus-plugin-content-docs/current/` come root del
 mirror locale. I file sotto questi percorsi vengono esclusi dal controllo orphan — ereditano
 l'appartenenza alla nav dall'originale nel locale predefinito.
+
+### Regole frontmatter slug
+
+Docusaurus consente di sovrascrivere l'URL canonico di qualsiasi pagina tramite la chiave
+frontmatter `slug:`. Zenzic applica le stesse regole di Docusaurus:
+
+- **Slug assoluto** (inizia con `/`): sempre preceduto dalla `routeBasePath`.
+  - `slug: /ciao` + `routeBasePath: docs` → `/docs/ciao/`.
+  - `slug: /ciao` + `routeBasePath: ''` (docs alla root del sito) → `/ciao/`.
+- **Slug relativo** (senza `/` iniziale): sostituisce solo l'ultimo segmento del percorso.
+  - `slug: setup` in `guide/install.md` → `/docs/guide/setup/`.
+
+### Collasso intelligente dei file
+
+Zenzic rispecchia la logica `isCategoryIndex` di Docusaurus: un file collassa nell'URL
+della directory genitore quando il suo nome (case-insensitive) è:
+
+- `index` — es. `guides/index.md` → `/docs/guides/`
+- `readme` — es. `guides/README.md` → `/docs/guides/`
+- Il nome della cartella genitore — es. `Guide/Guide.md` → `/docs/Guide/`
+
+Questo evita che Zenzic segnali link rotti quando gli autori usano una di queste tre
+convenzioni per creare pagine di atterraggio di categoria.
+
+### Risoluzione alias `@site/`
+
+I progetti Docusaurus usano frequentemente l'alias `@site/` nei link per referenziare file
+relativi alla root del progetto:
+
+```markdown
+[Diagramma architettura](@site/static/img/arch.png)
+[Codice sorgente](@site/docs/internals/architecture.mdx)
+```
+
+Zenzic risolve `@site/` automaticamente alla root del repository. I link che iniziano con
+`@site/docs/` vengono risolti rispetto alla docs root; tutti gli altri percorsi `@site/`
+vengono verificati rispetto alla root del repository. Questo significa che Zenzic valida
+questi link senza generare falsi positivi di errore **PathTraversal**.
+
+:::note
+Per abilitare la risoluzione completa di `@site/`, imposta `repo_root` nella sezione
+`[build_context]` del tuo `zenzic.toml`, oppure esegui `zenzic check` dalla root del
+progetto affinché Zenzic possa rilevarlo automaticamente.
+:::
 
 ### Supporto MDX
 

@@ -281,7 +281,14 @@ Zenzic supports Docusaurus **multi-version documentation** out of the box. It id
 2. **Versioned content** — discovered under `versioned_docs/version-{version}/`.
 3. **Versioned translations** — discovered under `i18n/{locale}/docusaurus-plugin-content-docs/version-{version}/`.
 
-The Virtual Site Map automatically maps these paths to their correct canonical URLs (e.g., `/docs/1.0.0/intro/`), allowing Zenzic to validate links across versions without requiring a build.
+The Virtual Site Map automatically maps these paths to their correct canonical URLs, following Docusaurus's official versioning rules:
+
+- **Latest version** (the first entry in `versions.json`) maps to the `routeBasePath` root — **no version label in the URL**.
+  - Example: `versioned_docs/version-1.1.0/hello.md` with `versions.json = ["1.1.0", "1.0.0"]` → `/docs/hello/`.
+- **Older versions** retain their version label in the URL.
+  - Example: `versioned_docs/version-1.0.0/hello.md` → `/docs/1.0.0/hello/`.
+
+This matches Docusaurus's own behavior exactly, preventing false positive broken-link reports against latest-version pages.
 
 :::tip[Ghost Routing]
 Versioned routes are treated as **Ghost Routes**: they are always considered reachable because Docusaurus automatically generates navigation for versioned documentation trees.
@@ -306,6 +313,50 @@ i18n/
 The adapter identifies `i18n/{locale}/docusaurus-plugin-content-docs/current/` as the
 locale mirror root. Files under these paths are excluded from the orphan check — they
 inherit nav membership from the default-locale original.
+
+### Frontmatter slug rules
+
+Docusaurus allows overriding the canonical URL of any page via the `slug:` frontmatter key.
+Zenzic applies the same rules as Docusaurus itself:
+
+- **Absolute slug** (starts with `/`): always prepended with `routeBasePath`.
+  - `slug: /bonjour` + `routeBasePath: docs` → `/docs/bonjour/`.
+  - `slug: /bonjour` + `routeBasePath: ''` (docs at site root) → `/bonjour/`.
+- **Relative slug** (no leading `/`): replaces the last path segment only.
+  - `slug: setup` in `guide/install.md` → `/docs/guide/setup/`.
+
+### Smart file collapsing
+
+Zenzic mirrors Docusaurus's `isCategoryIndex` logic: a file collapses into its parent
+directory URL when its name (case-insensitive) is:
+
+- `index` — e.g. `guides/index.md` → `/docs/guides/`
+- `readme` — e.g. `guides/README.md` → `/docs/guides/`
+- The parent folder's name — e.g. `Guides/Guides.md` → `/docs/Guides/`
+
+This prevents Zenzic from reporting broken links when authors use any of these three
+conventions to create category landing pages.
+
+### `@site/` alias resolution
+
+Docusaurus projects frequently use the `@site/` alias in links to reference files
+relative to the project root:
+
+```markdown
+[Architecture diagram](@site/static/img/arch.png)
+[Source code](@site/docs/internals/architecture.mdx)
+```
+
+Zenzic resolves `@site/` to the repository root automatically. Links starting with
+`@site/docs/` are resolved against the docs root; all other `@site/` paths are checked
+against the repository root. This means Zenzic validates these links without triggering
+false-positive **PathTraversal** errors.
+
+:::note
+To enable full `@site/` resolution, set `repo_root` in your `zenzic.toml`
+`[build_context]` section, or run `zenzic check` from the project root so Zenzic
+can detect it automatically.
+:::
 
 ### MDX support
 
