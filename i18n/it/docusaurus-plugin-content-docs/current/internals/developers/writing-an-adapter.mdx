@@ -52,6 +52,7 @@ delegano a `get_route_info()`.
 | `get_ignored_patterns()` | Quali glob di filename deve saltare il controllo orfani? |
 | `get_nav_paths()` | Quali percorsi `.md` sono dichiarati nella nav di questo motore? |
 | `has_engine_config()` | È stato trovato un file di config del motore? (Controlla l'attivazione del controllo orfani.) |
+| `provides_index(directory_path)` | Questa directory ha una landing page fornita dall'engine? (Controlla l'emissione di `MISSING_DIRECTORY_INDEX`.) |
 
 ---
 
@@ -290,6 +291,13 @@ Zenzic potrebbe produrre risultati errati:
 8. `resolve_anchor()` non deve mai sollevare eccezioni — restituisci `False` in caso di errore.
    L'argomento `anchors_cache` è in sola lettura; non mutarlo.
 9. `has_engine_config()` non deve mai sollevare eccezioni — restituisci `False` in caso di errore.
+10. `provides_index(directory_path)` **è l'unico metodo che può eseguire I/O**.
+    Viene chiamato una volta per directory durante la fase di discovery — mai
+    all'interno dei loop critici per-link o per-file — quindi una singola chiamata
+    `Path.exists()` è accettabile.  Restituisci `True` se il tuo engine genererà una
+    landing page per la directory (es. tramite `index.md`, `README.md`, o una voce
+    di configurazione dinamica come `_category_.json` con `"link": {"type": "generated-index"}`).  Non
+    sollevare mai eccezioni — restituisci `False` in caso di errore I/O.
 
 ---
 

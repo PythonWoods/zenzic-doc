@@ -232,12 +232,14 @@ class BaseAdapter(Protocol):
     def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
     def get_ignored_patterns(self) -> set[str]: ...
     def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
+    def provides_index(self, directory_path: Path) -> bool: ...
 ```
 
 Key methods:
 
 - **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `VanillaAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
 - **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
+- **`provides_index(directory_path)`** -- **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for the given directory. Called once per directory by `find_missing_directory_indices()` — never inside per-link or per-file hot loops. This is the only `BaseAdapter` method that may perform disk I/O (`Path.exists()`).
 - **`map_url()` / `classify_route()`** -- Legacy File-to-URL API, preserved for backward compatibility. Default implementations delegate to `get_route_info()`.
 
 ### `RouteMetadata` {#route-metadata}
@@ -298,6 +300,20 @@ Adapters that support frontmatter `slug` overrides (currently `DocusaurusAdapter
 However, Zenzic's **link integrity** validation (broken links, absolute paths) resolves relative paths from the *filesystem* location, not the slug URL. This means a heavy divergence between slug and file path can cause a page's relative links to resolve differently in Zenzic (file-based) vs the build engine (URL-based).
 
 **Architectural invariant:** keep the filesystem hierarchy aligned with the intended URL hierarchy. If a file is moved to a new directory, let the URL follow naturally rather than using `slug` to pin the old URL. This ensures `../` links resolve identically in both the linter and the static-site generator.
+
+### Alias Mapping in `InMemoryPathResolver` {#alias-mapping}
+
+The `InMemoryPathResolver` is not a simple file-lookup table. It implements an **Alias Mapping** layer that translates virtual path prefixes into physical filesystem paths before any link validation takes place.
+
+The resolver is initialised once during Phase 1 with a complete in-memory file map. At initialisation it also registers all known alias prefixes for the active adapter. Currently supported aliases:
+
+| Alias prefix | Resolves to | Engine |
+| :--- | :--- | :--- |
+| `@site/` | `repo_root/` | Docusaurus |
+
+When a link target uses `@site/static/img/logo.png`, the resolver strips the virtual prefix and remaps the path to `repo_root/static/img/logo.png` before checking for file existence. This prevents spurious `PATH_TRAVERSAL` errors that would otherwise fire for valid Docusaurus project-relative references.
+
+**Key property:** alias resolution happens entirely in memory. No disk I/O is performed; the resolver consults only the file index built during Phase 1. This preserves the Zero-I/O hot-path invariant (Core Law 1).
 
 ### Engine Factory {#engine-factory}
 

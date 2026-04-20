@@ -52,6 +52,7 @@ to `get_route_info()`.
 | `get_ignored_patterns()` | Which filename globs should the orphan check skip? |
 | `get_nav_paths()` | Which `.md` paths are listed in this engine's nav config? |
 | `has_engine_config()` | Was a build-engine config file found on disk? (Controls orphan check activation.) |
+| `provides_index(directory_path)` | Does this directory have an engine-provided landing page? (Controls `MISSING_DIRECTORY_INDEX` emission.) |
 
 ---
 
@@ -290,6 +291,13 @@ incorrect results:
 8. `resolve_anchor()` must never raise — return `False` on any failure.
    The `anchors_cache` argument is read-only; do not mutate it.
 9. `has_engine_config()` must never raise — return `False` on any failure.
+10. `provides_index(directory_path)` **is the only method permitted to do I/O**.
+    It is called once per directory during the discovery phase — never inside
+    per-link or per-file hot loops — so a single `Path.exists()` call is
+    acceptable.  Return `True` if your engine will generate a landing page for
+    the directory (e.g. via `index.md`, `README.md`, or a dynamic config entry
+    like `_category_.json` with `"link": {"type": "generated-index"}`).  Never
+    raise — return `False` on any I/O failure.
 
 ---
 

@@ -118,6 +118,7 @@ Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motor
 | `map_url(rel_path)` | Mappa un percorso file relativo al suo URL canonico |
 | `resolve_asset(path, docs_root)` | Risolve un asset con fallback i18n |
 | `resolve_anchor(file, anchor, cache, docs_root)` | Risolve un'ancora con fallback i18n |
+| `provides_index(directory_path)` | **Hook I/O della fase di discovery.** Restituisce `True` se il motore genererà una landing page per questa directory. Unico metodo del protocollo che può eseguire I/O su disco (`Path.exists()`). |
 
 ### RouteMetadata
 
@@ -170,6 +171,20 @@ Gli adapter che supportano override `slug` nel frontmatter (attualmente `Docusau
 Tuttavia, la validazione dell'**integrità dei link** di Zenzic (link rotti, percorsi assoluti) risolve i percorsi relativi dalla posizione nel *filesystem*, non dall'URL dello slug. Questo significa che una divergenza marcata tra slug e percorso file può causare una risoluzione diversa dei link relativi in Zenzic (basata sui file) rispetto al build engine (basata sugli URL).
 
 **Invariante architetturale:** mantieni la gerarchia del filesystem allineata alla gerarchia degli URL desiderata. Se un file viene spostato in una nuova directory, lascia che l'URL segua naturalmente piuttosto che usare `slug` per bloccare il vecchio URL. Questo garantisce che i link `../` si risolvano in modo identico sia nel linter che nel generatore di siti statici.
+
+### Mapping degli Alias in `InMemoryPathResolver` {#alias-mapping}
+
+`InMemoryPathResolver` non è un semplice indice di file. Implementa uno strato di **Mapping degli Alias** che traduce prefissi di percorso virtuali in percorsi fisici del filesystem prima di qualsiasi validazione dei link.
+
+Il resolver viene inizializzato una volta durante la Fase 1 con una mappa completa dei file in memoria. All'inizializzazione registra anche tutti i prefissi alias noti per l'adapter attivo. Alias attualmente supportati:
+
+| Prefisso alias | Risolve in | Engine |
+| :--- | :--- | :--- |
+| `@site/` | `repo_root/` | Docusaurus |
+
+Quando il target di un link usa `@site/static/img/logo.png`, il resolver rimuove il prefisso virtuale e rimappa il percorso in `repo_root/static/img/logo.png` prima di verificare l'esistenza del file. Questo previene errori spuri `PATH_TRAVERSAL` che altrimenti si attiverebbero per riferimenti Docusaurus relativi al progetto perfettamente validi.
+
+**Proprietà chiave:** la risoluzione degli alias avviene interamente in memoria. Non viene eseguito alcun I/O su disco; il resolver consulta solo l'indice dei file costruito durante la Fase 1. Questo preserva l'invariante Zero-I/O nel percorso critico (Legge Core 1).
 
 ### Factory degli engine
 
