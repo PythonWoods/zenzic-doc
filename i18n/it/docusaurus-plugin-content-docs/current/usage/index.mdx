@@ -29,10 +29,13 @@ Il repository include fixture mantenuti e allineati ai contratti documentati:
 :::tip[Vuoi eseguirlo subito?]
 
 ```bash
-uvx --pre zenzic check all
+pip install zenzic
+zenzic lab          # esplora tutti i 9 esempi inclusi — zero setup
+zenzic check all    # proteggi la tua documentazione
 ```
 
-Nessuna installazione richiesta. `uvx` scarica ed esegue Zenzic in un ambiente temporaneo.
+Vuoi vedere come Zenzic gestisce Docusaurus v3 o il proxy di Zensical?
+Lancia `zenzic lab` e guarda la Sentinel in azione su ogni engine supportato.
 :::
 
 ---
@@ -45,7 +48,7 @@ Nessuna installazione richiesta. `uvx` scarica ed esegue Zenzic in un ambiente t
   <TabItem value="uv" label="uv">
 
 ```bash
-uvx --pre zenzic check all
+uvx zenzic check all
 ```
 
 `uvx` risolve ed esegue Zenzic da PyPI in un ambiente temporaneo. Nulla viene installato sul
@@ -56,7 +59,7 @@ fissare una dipendenza dev.
   <TabItem value="pip" label="pip">
 
 ```bash
-pip install --pre zenzic
+pip install zenzic
 zenzic check all
 ```
 
@@ -72,7 +75,7 @@ mantenere pulito il Python di sistema.
   <TabItem value="uv" label="uv">
 
 ```bash
-uv tool install --pre zenzic
+uv tool install zenzic
 zenzic check all
 ```
 
@@ -85,7 +88,7 @@ attivare un virtual environment.
 ```bash
 python -m venv ~/.local/zenzic-env
 source ~/.local/zenzic-env/bin/activate   # Windows: .venv\Scripts\activate
-pip install --pre zenzic
+pip install zenzic
 ```
 
 Installa in un virtual environment dedicato, poi aggiungi la directory `bin/` al `PATH`.
@@ -99,7 +102,7 @@ Installa in un virtual environment dedicato, poi aggiungi la directory `bin/` al
   <TabItem value="uv" label="uv">
 
 ```bash
-uv add --dev --pre zenzic
+uv add --dev zenzic
 uv run zenzic check all
 ```
 
@@ -113,7 +116,7 @@ prima di eseguire i controlli.
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install --pre zenzic
+pip install zenzic
 zenzic check all
 ```
 
@@ -130,7 +133,7 @@ Questo significa che **non è necessario installare** MkDocs, Material for MkDoc
 
 ```bash
 # Fare il lint di qualsiasi progetto MkDocs — nessun extra necessario
-uvx --pre zenzic check all
+uvx zenzic check all
 ```
 
 :::note[Adapter di terze parti]

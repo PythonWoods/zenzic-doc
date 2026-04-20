@@ -83,4 +83,4 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Zenzic Documentation Audit
-        run: uvx --pre zenzic check all --engine docusaurus --strict
+        run: uvx zenzic check all --engine docusaurus --strict

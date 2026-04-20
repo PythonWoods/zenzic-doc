@@ -29,10 +29,13 @@ The repository ships maintained fixtures that mirror the documented contracts:
 :::tip[Just want to run it now?]
 
 ```bash
-uvx --pre zenzic check all
+pip install zenzic
+zenzic lab          # explore all 9 built-in examples — zero setup
+zenzic check all    # protect your own documentation
 ```
 
-No installation required. `uvx` downloads and runs Zenzic in a throwaway environment.
+Curious how Zenzic handles Docusaurus v3 versioning or the Zensical transparent proxy?
+Launch `zenzic lab` and watch the Sentinel in action across every supported engine.
 :::
 
 import { SummaryTerminal } from '@site/src/components/SentinelTerminal';
@@ -49,7 +52,7 @@ import { SummaryTerminal } from '@site/src/components/SentinelTerminal';
   <TabItem value="uv" label="uv">
 
 ```bash
-uvx --pre zenzic check all
+uvx zenzic check all
 ```
 
 `uvx` resolves and runs Zenzic from PyPI in a throwaway environment. Nothing is installed on
@@ -60,7 +63,7 @@ avoid pinning a dev dependency.
   <TabItem value="pip" label="pip">
 
 ```bash
-pip install --pre zenzic
+pip install zenzic
 zenzic check all
 ```
 
@@ -76,7 +79,7 @@ your system Python clean.
   <TabItem value="uv" label="uv">
 
 ```bash
-uv tool install --pre zenzic
+uv tool install zenzic
 zenzic check all
 ```
 
@@ -89,7 +92,7 @@ a virtual environment.
 ```bash
 python -m venv ~/.local/zenzic-env
 source ~/.local/zenzic-env/bin/activate   # Windows: .venv\Scripts\activate
-pip install --pre zenzic
+pip install zenzic
 ```
 
 Install into a dedicated virtual environment, then add the `bin/` directory to your `PATH`.
@@ -103,7 +106,7 @@ Install into a dedicated virtual environment, then add the `bin/` directory to y
   <TabItem value="uv" label="uv">
 
 ```bash
-uv add --dev --pre zenzic
+uv add --dev zenzic
 uv run zenzic check all
 ```
 
@@ -117,7 +120,7 @@ pipelines that install project dependencies before running checks.
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install --pre zenzic
+pip install zenzic
 zenzic check all
 ```
 
@@ -134,7 +137,7 @@ This means you **do not need to install** MkDocs, Material for MkDocs, or any ot
 
 ```bash
 # Lint any MkDocs project — no extras needed
-uvx --pre zenzic check all
+uvx zenzic check all
 ```
 
 :::note[Third-party engine adapters]

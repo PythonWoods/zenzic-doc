@@ -116,10 +116,10 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Lint documentation
-        run: uvx --pre zenzic check all --strict
+        run: uvx zenzic check all --strict
 
       - name: Check references and run Shield
-        run: uvx --pre zenzic check references
+        run: uvx zenzic check references
 ```
 
   </TabItem>
@@ -150,10 +150,10 @@ jobs:
           enable-cache: true
 
       - name: Lint documentation
-        run: uvx --pre zenzic check all --strict
+        run: uvx zenzic check all --strict
 
       - name: Check references and run Shield
-        run: uvx --pre zenzic check references
+        run: uvx zenzic check references
 ```
 
 The `enable-cache: true` option caches the uv tool cache across runs,
@@ -187,7 +187,7 @@ steps:
   - name: 🛡️ Run Zenzic Score
     id: zenzic_step
     run: |
-      uvx --pre zenzic score --save   # threshold read from fail_under in zenzic.toml
+      uvx zenzic score --save   # threshold read from fail_under in zenzic.toml
       SCORE=$(jq '.score' .zenzic-score.json)
       echo "SCORE=$SCORE" >> "$GITHUB_OUTPUT"
 
@@ -226,8 +226,8 @@ steps:
 ```yaml
 - name: Detect score regression
   run: |
-    uvx --pre zenzic score --save      # update snapshot
-    uvx --pre zenzic diff --threshold 5  # fail if score drops > 5 points
+    uvx zenzic score --save      # update snapshot
+    uvx zenzic diff --threshold 5  # fail if score drops > 5 points
 ```
 
 Combine with branch protection rules to block merges that degrade documentation quality.
