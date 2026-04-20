@@ -1,0 +1,175 @@
+---
+sidebar_position: 4
+sidebar_label: "Finding Codes"
+description: "Complete reference for all Zenzic finding codes, their severity levels, exit code impact, and remediation guidance."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Finding Codes Reference
+
+Every issue detected by Zenzic is tagged with a **finding code** that identifies
+its category. This page is the authoritative index of all codes, their severity
+levels, and what they mean for your exit code.
+
+:::info[Severity vs. exit code]
+Severity describes the nature of the issue; the exit code determines whether
+`zenzic check` signals failure to the shell or CI system.
+
+| Severity | Exit code impact |
+| :--- | :--- |
+| `error` | Exit 1 (suppressible by `--exit-zero`) |
+| `warning` | Exit 1 in `--strict` mode only |
+| `info` | Never affects exit code — use `--show-info` to display |
+| `security_breach` | Exit 2 — never suppressible |
+| `security_incident` | Exit 3 — never suppressible |
+:::
+
+---
+
+## Link Checks
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `FILE_NOT_FOUND` | error | `check links` | A relative link target does not exist on disk |
+| `ANCHOR_NOT_FOUND` | error | `check links` | The `#heading-anchor` in a link does not exist in the target file |
+| `EXTERNAL_BROKEN` | error | `check links --strict` | An HTTP HEAD/GET request to an external URL returned a non-2xx/3xx status |
+| `CIRCULAR_LINK` | info | `check links` | The resolved link target is part of a detected link cycle |
+| `PATH_TRAVERSAL` | error | `check links` | A link resolves outside the `docs/` directory |
+| `PATH_TRAVERSAL_SUSPICIOUS` | security_incident | `check links` | A link resolves to a known OS system path (`/etc/`, `/root/`, etc.) — triggers **Exit 3 (Blood Sentinel)** |
+
+---
+
+## Orphan Check
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `ORPHAN` | warning | `check orphans` | A `.md` file exists on disk but is not listed in the site navigation |
+
+---
+
+## Snippet Check
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `SNIPPET` | error | `check snippets` | A fenced code block with a checkable language tag (`python`, `yaml`, `json`, `toml`) contains a syntax error |
+
+---
+
+## Placeholder Check
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `short-content` | warning | `check placeholders` | Page word count is below `placeholder_max_words` (default: 50) |
+| `placeholder-text` | warning | `check placeholders` | Page contains a pattern from `placeholder_patterns` (e.g. `TODO`, `WIP`, `Draft`) |
+
+---
+
+## Asset Check
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `ASSET` | warning | `check assets` | An image or media file in `docs/` is not referenced by any `.md` page |
+
+---
+
+## Reference Pipeline
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `DANGLING_REF` | error | `check references` | A `[text][id]` usage references an ID that has no definition in the file |
+| `DEAD_DEF` | warning | `check references` | A `[id]: url` definition exists but is never used in the file |
+| `DUPLICATE_DEF` | warning | `check references` | The same reference ID is defined twice; the first definition wins (CommonMark §4.7) |
+| `MISSING_ALT` | warning | `check references` | An image (`![](url)`) has a blank or absent alt-text attribute |
+
+---
+
+## Shield (Credential Detection)
+
+Shield findings always produce **Exit 2**. They are never suppressible.
+
+| Code | Pattern family | Example prefix |
+| :--- | :--- | :--- |
+| `openai-api-key` | OpenAI API key | `sk-…` |
+| `github-token` | GitHub personal / OAuth token | `gh[pousr]_…` |
+| `aws-access-key` | AWS IAM access key ID | `AKIA…` |
+| `stripe-live-key` | Stripe live secret key | `sk_live_…` |
+| `slack-token` | Slack bot / user / app token | `xox[baprs]-…` |
+| `google-api-key` | Google Cloud / Maps API key | `AIza…` |
+| `private-key` | PEM private key header | `-----BEGIN … PRIVATE KEY-----` |
+| `hex-encoded-payload` | Hex-encoded byte sequence | `\xNN\xNN\xNN…` (3 or more consecutive hex escapes) |
+| `gitlab-pat` | GitLab Personal Access Token | `glpat-…` |
+
+---
+
+## Directory Index Integrity {#missing-directory-index}
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `MISSING_DIRECTORY_INDEX` | info | `check all --show-info` | A directory contains Markdown source files but no engine-provided landing page — the directory URL may return a 404 |
+
+### What triggers this finding?
+
+`MISSING_DIRECTORY_INDEX` is emitted when `find_missing_directory_indices()` discovers
+a subdirectory under `docs/` that satisfies both conditions:
+
+1. **Contains at least one `.md` or `.mdx` source file** — the directory is part of
+   the live documentation.
+2. **Does not provide an index page** as recognised by the active adapter's
+   `provides_index()` method.
+
+The check is **engine-aware**: each adapter knows what constitutes a directory
+landing page for its build engine:
+
+| Engine | What counts as an index |
+| :--- | :--- |
+| Docusaurus | `index.md`, `index.mdx`, `README.md`, `README.mdx`, or `_category_.json` with `"link": {"type": "generated-index"}` |
+| MkDocs | `index.md` or `README.md` |
+| Zensical | `index.md` |
+| Vanilla | `index.md` |
+
+### Why severity `info`?
+
+A missing directory index is not always a hard error. Some sites intentionally
+omit a `docs/` root index, or use the build engine's default category page
+rather than a hand-authored one. `info` severity means:
+
+- **Never blocks CI** — the finding does not contribute to Exit 1.
+- **Never affects the quality score.**
+- **Visible on demand** — use `--show-info` to see these signals during development.
+
+### How to fix
+
+Create an appropriate index file in the reported directory:
+
+```bash
+# Docusaurus: an MDX index page at docs/my-section/index.mdx
+touch docs/my-section/index.mdx
+
+# MkDocs / Zensical: a standard index
+echo "# My Section" > docs/my-section/index.md
+```
+
+Alternatively, for Docusaurus, add a `_category_.json` with a generated index:
+
+```json
+{
+  "label": "My Section",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Overview of everything in this section."
+  }
+}
+```
+
+---
+
+## Rule Engine (Custom Rules)
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| User-defined rule ID (e.g. `NO_DRAFT`) | Configured in `[[custom_rules]]` | `check all` | A line matched a user-defined regex pattern |
+| `Z009` | error | `check all` | A worker process exceeded the 30-second per-file timeout — likely caused by catastrophic backtracking in a `[[custom_rules]]` regex pattern |
+| `RULE-ENGINE-ERROR` | error | `check all` | A worker process raised an unexpected exception |
