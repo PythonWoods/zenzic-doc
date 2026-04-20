@@ -60,7 +60,7 @@ progetto:
 engine = "mkdocs"   # oppure "zensical" o "docusaurus"
 ```
 
-Se `[build_context]` è assente, Zenzic rileva automaticamente:
+Se `[build_context]` è assente, Zenzic individua deterministicamente il motore:
 
 - `mkdocs.yml` presente → `MkDocsAdapter`
 - `docusaurus.config.ts` (o `.js`) presente → `DocusaurusAdapter`

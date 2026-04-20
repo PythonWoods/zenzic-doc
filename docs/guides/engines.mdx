@@ -56,7 +56,7 @@ The `[build_context]` section in `zenzic.toml` tells Zenzic which engine your pr
 engine = "mkdocs"   # or "zensical" or "docusaurus"
 ```
 
-If `[build_context]` is absent entirely, Zenzic auto-detects:
+If `[build_context]` is absent entirely, Zenzic deterministically discovers the engine:
 
 - `mkdocs.yml` present → `MkDocsAdapter`
 - `docusaurus.config.ts` (or `.js`) present → `DocusaurusAdapter`

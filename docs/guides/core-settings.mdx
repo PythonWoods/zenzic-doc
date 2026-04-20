@@ -101,7 +101,7 @@ excluded_asset_dirs = ["overrides", "_theme"]
 
 Filename glob patterns excluded from the orphan check. This is an escape hatch for non-standard
 setups. **For projects using `mkdocs-i18n` with `docs_structure: suffix`**, no configuration is
-needed — Zenzic auto-detects all non-default locales from `mkdocs.yml` and excludes the
+needed — Zenzic reads all non-default locales from `mkdocs.yml` and excludes the
 corresponding `*.{locale}.md` files automatically.
 
 ```toml
