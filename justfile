@@ -24,6 +24,10 @@ serve:
 preview:
     npm run serve
 
+# Build production static site
+build:
+    npm run build
+
 # Static type check
 typecheck:
     npm run typecheck
