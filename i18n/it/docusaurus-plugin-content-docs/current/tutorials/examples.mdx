@@ -1,0 +1,212 @@
+---
+sidebar_position: 1
+sidebar_label: "Panoramica"
+title: Panoramica degli Esempi
+description: Un indice ragionato dei progetti di riferimento Zenzic — da Vanilla zero-config a VCS-aware, integrazione MkDocs, adapter Docusaurus e security lab Shield.
+---
+
+# Esempi
+
+Ogni esempio nel repository Zenzic è un **progetto di riferimento autonomo** che puoi clonare ed eseguire immediatamente. Ognuno è progettato per dimostrare una funzionalità o un caso d'uso specifico, così il codice che vedi è il minimo necessario per dimostrare il concetto.
+
+Tutti gli esempi si trovano in [`examples/`](https://github.com/PythonWoods/zenzic/tree/main/examples) nel repository Zenzic.
+
+---
+
+## Schema di Esecuzione Rapida {#quick-run}
+
+Ogni esempio segue la stessa convenzione:
+
+```bash
+# Dalla radice del repo — nessuna installazione richiesta
+cd examples/<nome-esempio>
+uvx zenzic check all
+```
+
+Oppure con un'installazione persistente:
+
+```bash
+pip install zenzic
+cd examples/<nome-esempio>
+zenzic check all
+```
+
+---
+
+## Catalogo degli Esempi {#catalog}
+
+### Vanilla — Quality Gate Agnostico al Motore {#vanilla}
+
+**Directory:** `examples/vanilla/`
+**Motore:** `vanilla` (nessun motore di build)
+**Uscita attesa:** 0
+
+Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdocs.yml`, nessun `docusaurus.config.ts` — solo file Markdown e un `zenzic.toml`. Il `VanillaAdapter` tratta ogni file come raggiungibile.
+
+**Inizia qui se:** hai un progetto con Markdown puro e nessun SSG.
+
+---
+
+### mkdocs-basic — Showcase dell'Integrazione MkDocs {#mkdocs-basic}
+
+**Directory:** `examples/mkdocs-basic/`
+**Motore:** `mkdocs`
+**Uscita attesa:** 0
+**Extra richiesto:** `pip install "zenzic[mkdocs]"`
+
+Il principale showcase per `zenzic.integrations.mkdocs`. Questo esempio dimostra:
+
+- `MkDocsAdapter` che legge `mkdocs.yml` staticamente (nessun binario `mkdocs` invocato).
+- Il plugin `zenzic` dichiarato in `mkdocs.yml` — attiva `check all` come gate di build durante `mkdocs build`.
+- Struttura i18n a cartelle con contenuto in inglese e italiano.
+
+```yaml
+# Da mkdocs.yml in questo esempio
+plugins:
+  - search
+  - zenzic      # zenzic.integrations.mkdocs scoperto automaticamente via entry point
+```
+
+**Inizia qui se:** usi MkDocs e vuoi un quality gate al momento della build.
+
+---
+
+### docusaurus-v3 — Routing Metadata-Driven {#docusaurus-v3}
+
+**Directory:** `examples/docusaurus-v3/`
+**Motore:** `docusaurus`
+**Uscita attesa:** 0
+
+Dimostra `DocusaurusAdapter` che analizza `docusaurus.config.ts` come testo puro — nessuna installazione di Node.js richiesta. Funzionalità chiave: `docs/guide/about.mdx` usa un frontmatter `slug: /about` override, dimostrando che Zenzic mappa correttamente l'URL canonico tramite `_extract_frontmatter_slug()` invece di derivarlo dal percorso filesystem.
+
+```mdx
+---
+title: Informazioni su Questo Progetto
+slug: /about
+---
+```
+
+**Inizia qui se:** usi Docusaurus v3 e vuoi validare link, slug e struttura i18n.
+
+---
+
+### zensical-basic — Motore Zensical {#zensical-basic}
+
+**Directory:** `examples/zensical-basic/`
+**Motore:** `zensical`
+**Uscita attesa:** 0
+
+Progetto minimale che dimostra `ZensicalAdapter` che legge `zensical.toml`. Nessuna libreria Python richiesta per l'adapter — `ZensicalAdapter` usa solo `tomllib` (stdlib).
+
+**Inizia qui se:** usi Zensical come motore di build.
+
+---
+
+### i18n-standard — Documentazione Bilingue Gold Standard {#i18n-standard}
+
+**Directory:** `examples/i18n-standard/`
+**Motore:** `mkdocs`
+**Uscita attesa:** 0
+
+Un progetto di documentazione bilingue strutturato per ottenere **100/100** con `zenzic check all --strict`. Ogni pagina ha un originale inglese e una traduzione italiana nella struttura di directory corretta. Tutti i link, gli slug e le voci di navigazione sono coerenti tra i locale.
+
+**Inizia qui se:** mantieni documentazione multilingue e vuoi stabilire una baseline di qualità.
+
+---
+
+### vcs-aware-project — Esclusione VCS-Aware {#vcs-aware}
+
+**Directory:** `examples/vcs-aware-project/`
+**Motore:** `vanilla`
+**Uscita attesa:** 0
+
+Dimostra il **Modello di Esclusione a Livelli** introdotto in v0.6.1 "Obsidian Bastion":
+
+- `respect_vcs_ignore = true` — Zenzic legge i pattern `.gitignore` al livello L2-VCS.
+- `included_dirs = ["generated-api"]` — forza una directory ignorata da VCS nello scope al livello L2 Forced Inclusion.
+- `excluded_file_patterns = ["*_draft_*"]` — esclusione L3 a livello di nome file dalla configurazione.
+
+**Inizia qui se:** hai directory ignorate da VCS che devono (o non devono) essere scansionate.
+
+---
+
+### custom-dir-target — Audit di una Directory Non-Default {#custom-dir}
+
+**Directory:** `examples/custom-dir-target/`
+**Motore:** `vanilla`
+**Uscita attesa:** 0
+
+Mostra come puntare Zenzic a una directory docs che differisce dal default `docs/`. Utile per monorepo o progetti dove la documentazione si trova in `content/`, `pages/`, o un altro percorso personalizzato.
+
+---
+
+### single-file-target — Audit Mirato su un Singolo File {#single-file}
+
+**Directory:** `examples/single-file-target/`
+**Motore:** `vanilla`
+**Uscita attesa:** 0
+
+Dimostra come limitare `zenzic check links` a un singolo file specifico usando il flag `--target`. Utile per hook pre-commit che devono controllare solo i file modificati.
+
+---
+
+### plugin-scaffold-demo — Plugin di Regole Custom {#plugin-scaffold}
+
+**Directory:** `examples/plugin-scaffold-demo/`
+**Motore:** `vanilla`
+**Uscita attesa:** 0
+
+L'implementazione di riferimento per scrivere un plugin di regole Zenzic personalizzato. Generato da `zenzic init --plugin my-plugin`. Mostra come implementare una sottoclasse `BaseRule`, registrarla tramite l'entry point `zenzic.rules`, e pacchettizzarla come pacchetto Python autonomo.
+
+**Inizia qui se:** hai bisogno di un controllo che Zenzic non fornisce nativamente.
+
+---
+
+### broken-docs — Fixture di Riferimento per i Fallimenti {#broken-docs}
+
+**Directory:** `examples/broken-docs/`
+**Motore:** `vanilla`
+**Uscita attesa:** 1
+
+Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimento completo. Questa è la baseline di regressione per il motore dei controlli. Studia questo esempio per capire esattamente come appare ogni tipo di risultato nell'output.
+
+---
+
+### security_lab — Fixture di Test per lo Shield {#security-lab}
+
+**Directory:** `examples/security_lab/`
+**Motore:** `vanilla`
+**Uscita attesa:** 2 (Shield)
+
+Attiva intenzionalmente lo Zenzic Shield (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema Shield.
+
+:::danger[Questo esempio esce con codice 2 per design]
+`security_lab` contiene credenziali sintetiche posizionate intenzionalmente per i test dello Shield. **Non** interpretare il codice di uscita 2 di questo esempio come un vero incidente di sicurezza. Per verificare che lo Shield funzioni, esegui: `cd examples/security_lab && zenzic check all; echo $?` e conferma che l'output sia `2`.
+:::
+
+---
+
+## Matrice Funzionalità-Esempio {#matrix}
+
+| Funzionalità | Esempio |
+| :--- | :--- |
+| Markdown puro zero-config | [vanilla](#vanilla) |
+| Analisi statica MkDocs | [mkdocs-basic](#mkdocs-basic) |
+| Gate build MkDocs | [mkdocs-basic](#mkdocs-basic) |
+| Adapter Docusaurus + routing slug | [docusaurus-v3](#docusaurus-v3) |
+| Motore Zensical | [zensical-basic](#zensical-basic) |
+| Bilingue / i18n 100/100 | [i18n-standard](#i18n-standard) |
+| Esclusione VCS-aware (L1–L4) | [vcs-aware-project](#vcs-aware) |
+| `docs_dir` personalizzata | [custom-dir-target](#custom-dir) |
+| Singolo file `--target` | [single-file-target](#single-file) |
+| Plugin di regole custom | [plugin-scaffold-demo](#plugin-scaffold) |
+| Come appaiono i fallimenti | [broken-docs](#broken-docs) |
+| Rilevamento credenziali Shield | [security_lab](#security-lab) |
+
+---
+
+## Vedi Anche {#see-also}
+
+- [Panoramica Ecosistema](../explanation/ecosystem) — Modello Adapter vs Integrazione.
+- [Discovery e Esclusione](../explanation/discovery) — Come funziona la gerarchia di esclusione a livelli.
+- [Riferimento Controlli](../reference/checks) — Tutti i comandi `zenzic check` disponibili e i loro risultati.

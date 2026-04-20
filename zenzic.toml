@@ -1,21 +1,28 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-docs_dir = "docs"
+# --- CORE SETTINGS ---
+docs_dir   = "docs"
+fail_under = 100
+strict     = true
 
+# --- EXTERNAL VALIDATION ---
 excluded_external_urls = [
     "https://docs.github.com/en/authentication/managing-commit-signature-verification/",
 ]
 
 # --- PROTEZIONE DOGFOODING ---
-# The documentation explains placeholder patterns by example, so the checker
-# would produce false positives on every page that describes its own rules.
+# Placeholder checks disabled: the documentation explains placeholder patterns
+# by example, so the checker would produce false positives on pages that
+# describe its own rules.
 placeholder_patterns  = []
 placeholder_max_words = 0
 
-# --- ESCLUSIONE ASSET ---
-# _category_.json are Docusaurus sidebar metadata consumed by the build tool,
-# not referenced by any Markdown page.
+# --- GESTIONE ASSET & STRUTTURA ---
+# _category_.json files are Docusaurus sidebar metadata consumed by the build
+# tool, not referenced by any Markdown page. They are excluded from the
+# "Unused Assets" check; the DocusaurusAdapter still reads them to validate
+# directory index integrity.
 excluded_assets = [
     "**/_category_.json",
     "static/brand/**",
@@ -23,10 +30,7 @@ excluded_assets = [
     "static/img/favicon.ico",
 ]
 
-# --- REGOLE DI QUALITÀ ---
-fail_under = 100
-strict      = true
-
+# --- ENGINE CONTEXT (Obsidian Glass Stable) ---
 [build_context]
 engine         = "docusaurus"
 base_url       = "/"

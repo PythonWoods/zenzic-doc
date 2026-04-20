@@ -1,8 +1,0 @@
-{
-  "label": "Ingegneria",
-  "position": 5,
-  "link": {
-    "type": "generated-index",
-    "description": "Architettura, ADR, modello di sicurezza e riferimenti per sviluppatori."
-  }
-}

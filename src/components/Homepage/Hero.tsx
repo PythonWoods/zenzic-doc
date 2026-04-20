@@ -13,7 +13,7 @@ export function SentinelBadge(): React.JSX.Element {
 }
 
 export default function Hero(): React.JSX.Element {
-  const docsHref = useBaseUrl('/docs/intro');
+  const docsHref = useBaseUrl('/docs/');
   const iconUrl = useBaseUrl('/assets/brand/svg/zenzic-icon.svg');
 
   return (

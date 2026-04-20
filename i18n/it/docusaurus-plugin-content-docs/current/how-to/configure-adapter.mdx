@@ -1,0 +1,198 @@
+---
+icon: lucide/plug
+sidebar_label: "Adapter e Motore"
+description: "Configura il comportamento dell'adapter, le impostazioni locale e le opzioni specifiche del motore."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Adapter e Motore
+
+Zenzic usa un **adapter** per ottenere conoscenza specifica del motore — struttura della nav,
+directory i18n e pattern locale — senza importare o eseguire alcun framework di build. Gli adapter
+sono scoperti a runtime tramite Python entry-points.
+
+---
+
+## `[build_context]`
+
+**Tipo:** tabella — **Default:** `engine = "mkdocs"`, `default_locale = "en"`, `locales = []`,
+`fallback_to_default = true`
+
+Contesto engine e i18n per la risoluzione dei percorsi locale-aware. Richiesto solo per i
+progetti che usano **Folder Mode i18n** (`docs_structure: folder`).
+
+```toml
+[build_context]
+engine         = "mkdocs"   # "mkdocs" o "zensical"
+default_locale = "en"       # codice ISO 639-1 del locale di default
+locales        = ["it"]     # nomi delle directory locale non-default
+# fallback_to_default = true
+```
+
+> **Ordine TOML:** `[build_context]` deve essere l'**ultima** sezione in `zenzic.toml`. Gli header
+> di tabella TOML si applicano a tutte le chiavi successive; posizionare `[build_context]` prima
+> dei campi di primo livello li sposta silenziosamente nella sotto-tabella.
+
+### `engine`
+
+**Default:** `"mkdocs"`
+
+Seleziona l'adapter usato per l'estrazione della nav e la risoluzione dei percorsi i18n. I valori
+validi per un'installazione Zenzic standard sono `"mkdocs"` e `"zensical"`. Gli adapter di
+terze parti registrati sotto il gruppo di entry-point `zenzic.adapters` aggiungono i propri valori.
+
+### `default_locale`
+
+**Default:** `"en"`
+
+Codice ISO 639-1 che identifica la directory locale di default. Usato per la risoluzione del
+fallback i18n.
+
+### `locales`
+
+**Default:** `[]`
+
+Nomi delle directory locale non-default. Zenzic usa questa lista per:
+
+1. **Fallback asset** — un link da `docs/it/index.md` a `assets/logo.svg` risolve letteralmente
+   in `docs/it/assets/logo.svg` (che non esiste). Sapendo che `"it"` è una directory locale,
+   Zenzic rimuove il prefisso e controlla `docs/assets/logo.svg`.
+2. **Soppressione orfani** — i file sotto `docs/it/` non vengono segnalati come orfani.
+
+### `fallback_to_default`
+
+**Default:** `true`
+
+Rispecchia il flag `fallback_to_default` del plugin `mkdocs-i18n`. Quando `true`, un link da
+una pagina tradotta a una pagina che esiste solo nel locale di default viene soppresso.
+
+---
+
+## Scoperta adapter (file-driven)
+
+| `build_context.engine` | File di configurazione presente | Adapter selezionato |
+| :--- | :--- | :--- |
+| `"mkdocs"` (default) | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
+| `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `VanillaAdapter` — nessuna consapevolezza nav |
+| `"zensical"` | `zensical.toml` trovato | `ZensicalAdapter` — legge nav da `zensical.toml` |
+| `"zensical"` | `zensical.toml` assente, `mkdocs.yml` trovato | `ZensicalAdapter` — **Proxy Trasparente** usando `mkdocs.yml` |
+| `"docusaurus"` | `docusaurus.config.ts` trovato | `DocusaurusAdapter` — legge la configurazione staticamente |
+| qualsiasi stringa sconosciuta | — | `VanillaAdapter` — nessun adapter registrato per questo motore |
+
+### Modalità Vanilla
+
+Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
+
+Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
+In questa modalità:
+
+- **Il controllo orfani viene saltato** — senza una dichiarazione di nav, ogni file Markdown
+  sembrerebbe un orfano, rendendo il controllo privo di significato.
+- **Tutti gli altri controlli** (link, snippet, placeholder, asset, riferimenti) **vengono
+  eseguiti normalmente.**
+
+La modalità Vanilla è il comportamento corretto per repository Markdown semplici, wiki e
+progetti che dichiarano la navigazione dinamicamente al momento del build.
+
+---
+
+## Flag `--engine` (override per singola esecuzione)
+
+Il flag `--engine` su `zenzic check orphans` e `zenzic check all` sovrascrive
+`build_context.engine` per una singola esecuzione:
+
+```bash
+zenzic check orphans --engine zensical
+zenzic check all --engine mkdocs
+```
+
+Se passi un nome di engine senza adapter registrato, Zenzic elenca quelli disponibili ed esce
+con codice 1:
+
+```text
+ERROR: Unknown engine adapter 'hugo'.
+Installed adapters: mkdocs, vanilla, zensical
+Install a third-party adapter or choose from the list above.
+```
+
+---
+
+## Coesistenza dei motori (`mkdocs.yml` + `zensical.toml` nella stessa repo)
+
+Alcune repository contengono sia `mkdocs.yml` che `zensical.toml` durante una transizione.
+
+Zenzic **non** rileva automaticamente quale file è presente.  L'adapter attivo è sempre
+determinato da `build_context.engine` in `zenzic.toml`: se è dichiarato `engine = "mkdocs"`,
+Zenzic legge `mkdocs.yml` anche quando esiste anche `zensical.toml`, e viceversa.
+
+Se `build_context` è assente da `zenzic.toml`, il default è `engine = "mkdocs"`, quindi
+`MkDocsAdapter` viene usato indipendentemente dalla presenza di `zensical.toml`.
+
+:::warning[L'ambiguità è esplicita, non silenziosa]
+Zenzic non sceglie per te.  Quando entrambi i file di configurazione esistono e non hai
+impostato `engine = "zensical"`, stai usando il MkDocs adapter.  Questo è intenzionale:
+**l'identità del motore deve essere una dichiarazione deliberata**, non un'inferenza.
+:::
+
+```toml
+# zenzic.toml — dichiarazione esplicita del motore richiesta
+[build_context]
+engine = "zensical"   # ← questa riga attiva ZensicalAdapter
+```
+
+---
+
+## `ZensicalAdapter` — riferimento al formato nav
+
+`ZensicalAdapter` legge tutta la navigazione da `[project].nav` in `zensical.toml`
+(Zensical v0.0.31+).  Tre forme di voci nav sono supportate e liberamente mescolabili:
+
+```toml
+[project]
+site_name = "La Mia Documentazione"
+docs_dir  = "docs"
+nav = [
+    "index.md",                          # stringa semplice — titolo inferito dall'H1
+    {"Guida" = "guide.md"},              # pagina con titolo
+    {"API" = [                            # sezione con pagine annidate
+        "api/index.md",
+        {"Endpoint" = "api/endpoints.md"},
+    ]},
+    {"GitHub" = "https://github.com/x"},  # link esterno — ignorato dall'estrattore nav
+]
+```
+
+**Classificazione delle route con nav esplicita:** Quando `[project].nav` è presente e
+non vuota, qualsiasi file `.md` che esiste su disco ma è assente dalla nav viene
+classificato `ORPHAN_BUT_EXISTING` — il file è servito da Zensical (routing filesystem)
+ma non è raggiungibile tramite la navigazione nella sidebar.
+
+**Classificazione delle route senza nav:** Quando `[project].nav` è assente o vuota,
+ogni file è classificato `REACHABLE` — si applica il routing filesystem-based di default
+di Zensical.
+
+**`use_directory_urls`:** Zensical usa URL in stile directory per default (`/pagina/`).
+Impostare `use_directory_urls = false` in `[project]` per passare agli URL flat
+(`/pagina.html`). L'adapter legge questo flag e adatta `map_url()` di conseguenza.
+
+```toml
+[project]
+use_directory_urls = false   # /pagina.html anziché /pagina/
+```
+
+---
+
+## Adapter di terze parti
+
+Gli adapter di terze parti (es. `zenzic-hugo-adapter`) si scoprono automaticamente una volta
+installati come pacchetti Python — nessun aggiornamento di Zenzic richiesto. Gli adapter si
+registrano sotto il gruppo di entry-point `zenzic.adapters` nel loro `pyproject.toml`:
+
+```toml
+[project.entry-points."zenzic.adapters"]
+hugo = "zenzic_hugo.adapter:HugoAdapter"
+```
+
+Consulta [Scrivere un Adapter](../community/developers/how-to/implement-adapter.mdx) per il protocollo completo.

@@ -1,8 +1,0 @@
-{
-  "label": "Architecture Decision Records",
-  "position": 7,
-  "link": {
-    "type": "generated-index",
-    "description": "Recorded architectural decisions and their rationale."
-  }
-}

@@ -1,0 +1,110 @@
+---
+sidebar_position: 11
+title: Glossario
+description: Terminologia tecnica di Zenzic — ogni termine definito con rigore e contesto architetturale.
+---
+
+# Glossario
+
+Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in italiano dove la traduzione e naturale; i termini tecnici che sono standard dell'industria (adapter, shield, pipeline) restano in inglese.
+
+---
+
+### Adapter {#adapter}
+
+Componente che media tra il core di Zenzic e un motore di build specifico (MkDocs, Zensical, Docusaurus). Ogni adapter implementa il protocollo `BaseAdapter` e fornisce la risoluzione dei percorsi locale-aware, la mappa di navigazione e la classificazione delle route. Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters` e istanziati dalla factory `get_adapter`. Vedi [Architettura -- Protocollo Adapter](../explanation/architecture#adapter-protocol).
+
+---
+
+### Blood Sentinel (Uscita 3) {#blood-sentinel}
+
+Meccanismo di sicurezza che rileva i link la cui risoluzione porta a directory di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Quando viene rilevato un `PATH_TRAVERSAL_SUSPICIOUS`, Zenzic termina con exit code **3** — il codice di uscita piu alto nella gerarchia. Non viene mai soppresso da `--exit-zero`. Un risultato Blood Sentinel puo indicare una template injection, una toolchain di documentazione compromessa o un errore dell'autore che rivela dettagli dell'infrastruttura interna.
+
+---
+
+### Esclusione a Livelli {#layered-exclusion}
+
+Il sistema a quattro livelli che determina quali file e directory vengono inclusi o esclusi dalla scansione di Zenzic. I livelli, in ordine di priorità decrescente, sono:
+
+| Livello | Nome | Descrizione |
+| :---: | :--- | :--- |
+| L1 | Guardrail di Sistema | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
+| L2 | Inclusioni Forzate + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
+| L3 | Configurazione | `excluded_dirs`, `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
+| L4 | CLI | `--exclude-dir`, `--include-dir` per override temporanei |
+
+Il `LayeredExclusionManager` orchestra tutti i livelli. Vedi [Discovery e Esclusione](../explanation/discovery#four-level-hierarchy).
+
+---
+
+### Ghost Route {#ghost-route}
+
+Una pagina che non esiste fisicamente su disco ma che appare nella navigazione del sito (ad esempio una voce `nav` in `mkdocs.yml` che punta a un file non ancora creato). Il contrario di una Pagina Oscura.
+
+---
+
+### Guardrail di Sistema (L1) {#system-guardrails}
+
+L'insieme immutabile di directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Includono `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`. Le voci dell'utente in `excluded_dirs` si aggiungono ai Guardrail, non li sostituiscono. Nessuna inclusione forzata o flag CLI puo sovrascriverli.
+
+---
+
+### Hex Shield {#hex-shield}
+
+Pattern di rilevamento dello Zenzic Shield specializzato nell'identificazione di sequenze di byte hex-encoded (3 o piu escape `\xNN` consecutivi). Progettato per intercettare payload binari offuscati che potrebbero essere incorporati nella documentazione come shellcode, beacon di comando e controllo o dati esfiltrati.
+
+---
+
+### Mappa dei Riferimenti (ReferenceMap) {#reference-map}
+
+Struttura dati per-file che raccoglie le definizioni dei reference-link Markdown (`[id]: url`). Viene popolata durante la Passata 1 della pipeline di scansione. La ReferenceMap traccia:
+
+- **Definizioni accettate** (prima definizione vince, per CommonMark SS4.7)
+- **ID duplicati** (segnalati come avviso)
+- **ID utilizzati** (marcati durante la cross-check)
+- **Definizioni morte** (definite ma mai referenziate)
+- **Punteggio di integrita** (rapporto tra definizioni utilizzate e totali)
+
+---
+
+### Pagina Oscura {#dark-page}
+
+Un file `.md` che esiste fisicamente su disco ma non compare nella navigazione del sito. Il lettore non puo raggiungerla seguendo l'albero di navigazione — puo accedervi solo indovinando l'URL o trovando un link diretto. Rilevata dal controllo orfani (`zenzic check orphans`). Sinonimo di pagina orfana nel contesto Zenzic.
+
+---
+
+### Pipeline a Due Passate {#two-pass-pipeline}
+
+L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti, scansiona lo Shield e costruisce la ReferenceMap. La seconda passata valida i link, risolve i percorsi e verifica le ancore. Questa separazione garantisce che la cross-check dei riferimenti avvenga solo dopo che tutte le definizioni sono state raccolte, e che lo Shield abbia la priorità assoluta. Vedi [Architettura -- Pipeline a Due Passate](../explanation/architecture#two-pass-pipeline).
+
+---
+
+### Porto Sicuro {#safe-harbor}
+
+La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Porto Sicuro si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
+
+---
+
+### Punteggio Sentinella {#sentinel-score}
+
+Il punteggio di qualita documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di cinque categorie di problemi:
+
+- Link rotti
+- Pagine orfane
+- Errori negli snippet di codice
+- Pagine segnaposto
+- Asset inutilizzati
+
+Ogni categoria ha un peso specifico e una funzione di penalita. Il punteggio puo essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima puo essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
+
+---
+
+### Violazione Shield {#shield-violation}
+
+Un risultato emesso dallo Zenzic Shield quando un pattern di credenziale viene rilevato in qualsiasi riga di qualsiasi file (incluse le righe dentro blocchi di codice e il frontmatter YAML). Le violazioni Shield causano exit code **2**, che non viene mai soppresso. La risposta corretta a una violazione Shield è: ruotare la credenziale immediatamente, rimuovere o sostituire la riga incriminata, e non committare il segreto nella cronologia del repository.
+
+---
+
+### Virtual Site Map (VSM) — Mappa Virtuale del Sito {#vsm}
+
+Proiezione in memoria dell'insieme di URL che il motore di build generera. Costruita a partire dai file sorgente Markdown e dalla configurazione dell'adapter, la VSM mappa ogni file `.md` al suo URL canonico e al suo stato di routing (`REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`). La VSM e significativa solo quando l'adapter ha una configurazione engine (ad esempio `mkdocs.yml`); per il `VanillaAdapter`, ogni file e `REACHABLE` per definizione.

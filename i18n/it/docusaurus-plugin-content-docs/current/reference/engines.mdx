@@ -1,0 +1,431 @@
+---
+icon: lucide/blocks
+sidebar_label: "Guida ai Motori"
+description: "Come Zenzic scopre e carica gli adapter dei motori di documentazione."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Guida alla Configurazione dei Motori
+
+Zenzic è **agnostico** — funziona con MkDocs, Zensical o una semplice cartella di file
+Markdown senza richiedere l'installazione di alcun framework di build. È anche **opinato**:
+quando dichiari un motore, devi dimostrarlo. Questa guida spiega come configurare Zenzic
+per ogni motore supportato e quali sono le regole.
+
+## Portata multi-ecosistema
+
+Zenzic è uno strumento Python, ma la sua portata non è limitata all'ecosistema Python della
+documentazione. Poiché Zenzic analizza **file Markdown sorgente e configurazione come dati
+semplici** — senza mai invocare un motore di build, senza mai importare codice di framework
+— può validare la documentazione di qualsiasi generatore di siti statici (SSG),
+indipendentemente dal linguaggio in cui è scritto.
+
+| Livello di supporto | Motore | Linguaggio SSG | Come |
+| :--- | :--- | :--- | :--- |
+| **Nativo** | MkDocs | Python | `MkDocsAdapter` — legge `mkdocs.yml`, risolve i18n, impone la nav |
+| **Nativo** | Zensical | Python | `ZensicalAdapter` — legge `zensical.toml`, zero YAML |
+| **Nativo** | Docusaurus | Node.js | `DocusaurusAdapter` — legge `docusaurus.config.ts`, risolve i18n |
+| **Agnostico** | Vanilla | qualsiasi | `VanillaAdapter` — funziona su qualsiasi cartella Markdown; controllo orphan disabilitato |
+| **Estensibile** | Hugo *(esempio)* | Go | Adapter di terze parti via entry-point `zenzic.adapters` |
+| **Estensibile** | Jekyll *(esempio)* | Ruby | Adapter di terze parti via entry-point `zenzic.adapters` |
+
+Le voci "Estensibile" sono esempi di ciò che il sistema di adapter rende possibile — non
+adapter già distribuiti. Un team che gestisce documentazione Hugo o Jekyll può scrivere un
+pacchetto adapter di terze parti e installarlo accanto a Zenzic senza alcuna modifica a
+Zenzic stesso:
+
+```bash
+# Esempio: adapter di terze parti per un ipotetico supporto Hugo
+uv pip install zenzic-hugo-adapter   # oppure: pip install zenzic-hugo-adapter
+zenzic check all --engine hugo
+```
+
+Questa portata multi-linguaggio è una proprietà strutturale, non una promessa di roadmap.
+Il protocollo Adapter definisce cinque metodi; qualsiasi pacchetto Python che li implementa
+e si registra sotto il gruppo entry-point `zenzic.adapters` è un adapter Zenzic valido —
+per qualsiasi SSG.
+
+---
+
+## Scegliere un motore
+
+La sezione `[build_context]` in `zenzic.toml` indica a Zenzic quale motore utilizza il tuo
+progetto:
+
+```toml
+# zenzic.toml
+[build_context]
+engine = "mkdocs"   # oppure "zensical" o "docusaurus"
+```
+
+Se `[build_context]` è assente, Zenzic individua deterministicamente il motore:
+
+- `mkdocs.yml` presente → `MkDocsAdapter`
+- `docusaurus.config.ts` (o `.js`) presente → `DocusaurusAdapter`
+- nessuna configurazione presente, nessun locale dichiarato → `VanillaAdapter` (controllo orphan disabilitato)
+
+:::info[Ponte CLI — Controlli signal-to-noise]
+Selezione engine e verbosità Sentinel sono aspetti separati. Usa
+[Comandi CLI: Flag globali](./cli.mdx#global-flags) per calibrare la policy per run:
+
+1. `--strict` per elevare warning e imporre validazione URL esterni.
+2. `--exit-zero` per run osservativi non bloccanti.
+3. `--show-info` per ispezionare finding informativi di topologia.
+4. `--quiet` per output CI/pre-commit a riga singola.
+:::
+
+---
+
+## MkDocs
+
+`MkDocsAdapter` viene selezionato quando `engine = "mkdocs"` (o qualsiasi stringa motore
+non riconosciuta). Legge `mkdocs.yml` usando un loader YAML permissivo che ignora
+silenziosamente i tag sconosciuti (come l'interpolazione `!ENV` di MkDocs), quindi le
+configurazioni con molte variabili d'ambiente funzionano senza alcuna pre-elaborazione.
+
+### Limiti dell'analisi statica
+
+`MkDocsAdapter` analizza `mkdocs.yml` come **dati statici**. Non esegue la pipeline di
+build di MkDocs. Questo significa:
+
+- **Tag `!ENV`** — trattati silenziosamente come `null`. Se la nav dipende da
+  interpolazione di variabili d'ambiente a runtime, le voci nav che dipendono da quei
+  valori saranno assenti dalla visione di Zenzic.
+- **Nav generata dai plugin** — plugin che mutano la nav a runtime (es.
+  `mkdocs-awesome-pages`, `mkdocs-literate-nav`) producono un albero di navigazione
+  che Zenzic non vede mai. Le pagine incluse solo da questi plugin vengono segnalate
+  come orfane.
+- **Macro** — `mkdocs-macros-plugin` (template Jinja2 in Markdown) non viene
+  valutato. I link all'interno di espressioni macro non vengono validati.
+
+Per progetti che dipendono fortemente dalla generazione dinamica della nav, aggiungi i
+percorsi generati dai plugin a `excluded_dirs` in `zenzic.toml` per sopprimere i falsi
+positivi sugli orfani finché non sarà disponibile un adapter nativo.
+
+### Configurazione minima
+
+```toml
+# zenzic.toml
+docs_dir = "docs"
+
+[build_context]
+engine         = "mkdocs"
+default_locale = "en"
+locales        = ["it", "fr"]   # nomi delle directory locale non predefinite (folder mode)
+```
+
+Quando `locales` è vuoto, Zenzic si ricade a leggere le informazioni sui locale direttamente
+dal blocco del plugin `mkdocs-static-i18n` in `mkdocs.yml` — zero configurazione richiesta
+per la maggior parte dei progetti.
+
+### i18n: Folder Mode
+
+In Folder Mode (`docs_structure: folder`), ogni locale non predefinito vive in una directory
+di primo livello sotto `docs/`:
+
+```text
+docs/
+  index.md          ← locale predefinito
+  assets/
+    logo.png        ← asset condiviso
+  it/
+    index.md        ← traduzione italiana
+```
+
+Zenzic legge la lista `languages` da `mkdocs.yml` per identificare le directory locale. I
+file il cui primo componente del percorso è una directory locale vengono esclusi dal controllo
+orphan — ereditano la loro appartenenza alla nav dall'originale nel locale predefinito.
+
+Quando `fallback_to_default: true` è impostato, i link agli asset da `docs/it/index.md` che
+si risolvono a `docs/it/assets/logo.png` (assente) vengono automaticamente ricontrollati
+rispetto a `docs/assets/logo.png`, specchiando il comportamento di fallback effettivo del
+motore di build.
+
+```yaml
+# mkdocs.yml
+plugins:
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      languages:
+        - locale: en
+          default: true
+          build: true
+        - locale: it
+          build: true
+```
+
+> **Regola:** Se `fallback_to_default: true` è impostato, almeno una voce lingua deve avere
+> `default: true`. Se nessuna lo ha, Zenzic lancia `ConfigurationError` immediatamente — non
+> può determinare il locale di destinazione del fallback.
+
+### i18n: Suffix Mode
+
+In Suffix Mode (`docs_structure: suffix`), i file tradotti sono fratelli degli originali:
+
+```text
+docs/
+  guide.md        ← locale predefinito
+  guide.it.md     ← traduzione italiana (stessa profondità di directory)
+  assets/
+    logo.png      ← stesso percorso relativo da entrambi i file
+```
+
+Zenzic legge i codici locale non predefiniti da `mkdocs.yml` e genera pattern di esclusione
+`*.{locale}.md` (es. `*.it.md`, `*.fr.md`). Questi file vengono esclusi dal controllo orphan.
+
+Solo i codici ISO 639-1 validi di due lettere minuscole producono pattern di esclusione. I
+tag di versione (`v1`, `v2`), tag di build (`beta`, `rc1`), codici a tre lettere e codici
+BCP 47 con regione vengono rifiutati silenziosamente — non producono esclusioni false.
+
+---
+
+## Zensical
+
+`ZensicalAdapter` viene selezionato quando `engine = "zensical"`. Legge `zensical.toml`
+nativamente usando `tomllib` di Python — **zero YAML**. Nessun `mkdocs.yml` viene letto
+né richiesto.
+
+### Native Enforcement
+
+```toml
+# zenzic.toml
+[build_context]
+engine = "zensical"
+```
+
+### Proxy Trasparente (Ponte di Migrazione)
+
+Per facilitare una migrazione fluida da MkDocs a Zensical, l'adapter implementa una modalità **Proxy Trasparente**. Se `zensical.toml` è **assente** ma `mkdocs.yml` è presente nella root del progetto, l'adapter Zensical utilizzerà automaticamente la configurazione MkDocs come ponte.
+
+Questo permette di testare Zenzic con l'engine Zensical ancora prima di aver completato il passaggio a un file `zensical.toml` nativo. In questo caso, il banner Sentinel ti avviserà:
+
+```text
+SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
+```
+
+:::warning[Regola del Custode Strutturale]
+Sebbene questo ponte permetta a Zenzic di funzionare, Zensical stesso potrebbe gestire alcune feature di MkDocs in modo diverso. Usa il ponte come rete di sicurezza temporanea durante la migrazione e punta a un file `zensical.toml` nativo per ottenere la piena parità.
+:::
+
+### Formato nav di zensical.toml
+
+Zenzic legge la sezione `[nav]` per determinare quali pagine sono dichiarate:
+
+```toml
+# zensical.toml
+[project]
+site_name = "La Mia Documentazione"
+
+[nav]
+nav = [
+  {title = "Home",      file = "index.md"},
+  {title = "Tutorial",  file = "tutorial.md"},
+  {title = "API",       file = "reference/api.md"},
+]
+```
+
+I file elencati sotto `file` (relativi a `docs/`) costituiscono il set della nav. Qualsiasi
+file `.md` sotto `docs/` che non è in questo set e non è un mirror locale viene segnalato
+come orphan.
+
+### Perché Zensical elimina la complessità dell'i18n
+
+L'i18n di MkDocs si basa su un plugin (`mkdocs-static-i18n`) con la propria configurazione
+YAML, switch `docs_structure`, logica `fallback_to_default` e liste `languages`. Zensical
+definisce la semantica i18n nativamente in `zensical.toml` senza indirezione di plugin.
+Il risultato:
+
+- Nessun YAML da analizzare per il rilevamento dei locale
+- Nessuna ambiguità `fallback_to_default`
+- Nessuna euristica "quale blocco plugin si applica?"
+- `ConfigurationError` è impossibile per i18n mal configurato — lo schema TOML è esplicito
+
+---
+
+## Docusaurus {#docusaurus}
+
+`DocusaurusAdapter` viene selezionato quando `engine = "docusaurus"` o quando
+`docusaurus.config.ts` (o `.js`) viene rilevato nella root del progetto. Legge la
+configurazione di Docusaurus come **testo semplice** usando pattern matching — nessun
+runtime Node.js, nessun `npm install`, nessuna valutazione JavaScript.
+
+### Analisi solo-sorgente
+
+Docusaurus è un framework Node.js costruito su React. Zenzic non importa né esegue alcun
+codice Node.js. Il `DocusaurusAdapter` invece:
+
+1. **Legge `docusaurus.config.ts`** come testo ed estrae dati strutturali — `i18n.locales`,
+   `i18n.defaultLocale`, `routeBasePath` e `path` del plugin docs, e configurazione sidebar.
+2. **Risolve le directory locale** secondo il layout i18n standard di Docusaurus
+   (`i18n/{locale}/docusaurus-plugin-content-docs/current/`).
+3. **Mappa le sidebar** da `sidebars.ts` o `sidebars.js` usando pattern matching a livello
+   testuale per determinare quali file sono dichiarati nella navigazione.
+
+### Configurazione minima
+
+```toml
+# zenzic.toml
+docs_dir = "docs"
+
+[build_context]
+engine         = "docusaurus"
+default_locale = "en"
+locales        = ["it", "fr"]
+```
+
+Quando `locales` è vuoto, Zenzic legge le informazioni sui locale dal blocco `i18n` in
+`docusaurus.config.ts`.
+
+### Supporto al versioning
+
+Zenzic supporta nativamente la **documentazione multi-versione** di Docusaurus. Identifica:
+
+1. **Lista versioni** — letta da `versions.json` nella root del progetto.
+2. **Contenuto versionato** — scoperto sotto `versioned_docs/version-{version}/`.
+3. **Traduzioni versionate** — scoperte sotto `i18n/{locale}/docusaurus-plugin-content-docs/version-{version}/`.
+
+La Virtual Site Map mappa automaticamente questi percorsi ai rispettivi URL canonici, seguendo le regole ufficiali di versionamento di Docusaurus:
+
+- **Versione latest** (la prima voce in `versions.json`) mappa sulla root della `routeBasePath` — **senza etichetta di versione nell'URL**.
+  - Esempio: `versioned_docs/version-1.1.0/hello.md` con `versions.json = ["1.1.0", "1.0.0"]` → `/docs/hello/`.
+- **Versioni precedenti** conservano l'etichetta di versione nell'URL.
+  - Esempio: `versioned_docs/version-1.0.0/hello.md` → `/docs/1.0.0/hello/`.
+
+Questo rispecchia esattamente il comportamento di Docusaurus, prevenendo falsi positivi di link rotti sulle pagine della versione latest.
+
+:::tip[Ghost Routing]
+Le rotte versionate sono trattate come **Ghost Routes**: sono sempre considerate raggiungibili perché Docusaurus genera automaticamente la navigazione per gli alberi di documentazione versionati.
+:::
+
+### Layout i18n
+
+Docusaurus memorizza le traduzioni in una struttura di directory profonda:
+
+```text
+docs/
+  index.mdx         ← locale predefinito
+  assets/
+    logo.png         ← asset condiviso
+i18n/
+  it/
+    docusaurus-plugin-content-docs/
+      current/
+        index.mdx    ← traduzione italiana
+```
+
+L'adapter identifica `i18n/{locale}/docusaurus-plugin-content-docs/current/` come root del
+mirror locale. I file sotto questi percorsi vengono esclusi dal controllo orphan — ereditano
+l'appartenenza alla nav dall'originale nel locale predefinito.
+
+### Regole frontmatter slug
+
+Docusaurus consente di sovrascrivere l'URL canonico di qualsiasi pagina tramite la chiave
+frontmatter `slug:`. Zenzic applica le stesse regole di Docusaurus:
+
+- **Slug assoluto** (inizia con `/`): sempre preceduto dalla `routeBasePath`.
+  - `slug: /ciao` + `routeBasePath: docs` → `/docs/ciao/`.
+  - `slug: /ciao` + `routeBasePath: ''` (docs alla root del sito) → `/ciao/`.
+- **Slug relativo** (senza `/` iniziale): sostituisce solo l'ultimo segmento del percorso.
+  - `slug: setup` in `guide/install.md` → `/docs/guide/setup/`.
+
+### Collasso intelligente dei file
+
+Zenzic rispecchia la logica `isCategoryIndex` di Docusaurus: un file collassa nell'URL
+della directory genitore quando il suo nome (case-insensitive) è:
+
+- `index` — es. `guides/index.md` → `/docs/guides/`
+- `readme` — es. `guides/README.md` → `/docs/guides/`
+- Il nome della cartella genitore — es. `Guide/Guide.md` → `/docs/Guide/`
+
+Questo evita che Zenzic segnali link rotti quando gli autori usano una di queste tre
+convenzioni per creare pagine di atterraggio di categoria.
+
+### Risoluzione alias `@site/`
+
+I progetti Docusaurus usano frequentemente l'alias `@site/` nei link per referenziare file
+relativi alla root del progetto:
+
+```markdown
+[Diagramma architettura](@site/static/img/arch.png)
+[Codice sorgente](@site/docs/internals/architecture.mdx)
+```
+
+Zenzic risolve `@site/` automaticamente alla root del repository. I link che iniziano con
+`@site/docs/` vengono risolti rispetto alla docs root; tutti gli altri percorsi `@site/`
+vengono verificati rispetto alla root del repository. Questo significa che Zenzic valida
+questi link senza generare falsi positivi di errore **PathTraversal**.
+
+:::note
+Per abilitare la risoluzione completa di `@site/`, imposta `repo_root` nella sezione
+`[build_context]` del tuo `zenzic.toml`, oppure esegui `zenzic check` dalla root del
+progetto affinché Zenzic possa rilevarlo automaticamente.
+:::
+
+### Supporto MDX
+
+Docusaurus usa file MDX (`.mdx`) nativamente. L'adapter tratta i file `.mdx` in modo
+identico ai file `.md` per scanning, validazione link e controllo orphan.
+
+### Limiti dell'analisi statica
+
+- **Plugin sidebar dinamici** — le sidebar generate dinamicamente tramite JavaScript a
+  build-time producono una navigazione che Zenzic non può osservare staticamente. Le pagine
+  incluse solo da plugin sidebar personalizzati verranno segnalate come orfane.
+- **`docusaurus.config.ts` con TypeScript complesso** — l'adapter usa pattern matching, non
+  valutazione TypeScript completa. Le configurazioni che calcolano valori a livello di
+  modulo o importano da moduli esterni potrebbero non essere analizzate completamente.
+- **Plugin blog e pagine** — `DocusaurusAdapter` si concentra attualmente sul plugin docs.
+  Il contenuto sotto `/blog/` o le pagine personalizzate non viene validato.
+
+Per i casi di sidebar dinamiche, aggiungi i percorsi generati a `excluded_dirs` in
+`zenzic.toml`.
+
+---
+
+## Divieto di Link Assoluti
+
+**Questa regola si applica a ogni motore, incondizionatamente.**
+
+I link che iniziano con `/` sono un errore bloccante in tutte le modalità motore:
+
+```markdown
+{/* Rifiutato — il percorso assoluto rompe la portabilità */}
+[Scarica](/assets/guide.pdf)
+
+{/* Corretto — il percorso relativo sopravvive a qualsiasi prefisso di hosting */}
+[Scarica](/assets/guide.pdf)
+```
+
+Un link a `/assets/guide.pdf` presuppone che il sito sia servito dalla root del dominio.
+Quando la documentazione è ospitata su `https://example.com/docs/`, il browser risolve
+`/assets/guide.pdf` in `https://example.com/assets/guide.pdf` — un 404. La correzione è
+sempre un percorso relativo.
+
+Il controllo viene eseguito prima di qualsiasi logica dell'adapter — prima del parsing della
+nav, prima del rilevamento dei locale, prima della risoluzione dei percorsi. Non può essere
+soppresso dalla configurazione del motore.
+
+Gli URL esterni (`https://...`, `http://...`) non sono interessati.
+
+---
+
+## Vanilla (nessun motore)
+
+`VanillaAdapter` viene restituito quando non è presente alcun file di configurazione del
+motore e non sono dichiarati locale. Tutti i metodi dell'adapter sono no-op:
+
+- `is_locale_dir` → sempre `False`
+- `resolve_asset` → sempre `None`
+- `is_shadow_of_nav_page` → sempre `False`
+- `get_nav_paths` → `frozenset()`
+- `get_ignored_patterns` → `set()`
+
+`find_orphans` restituisce `[]` immediatamente — senza una nav, non c'è un insieme di
+riferimento con cui confrontarsi. I controlli snippet, placeholder, link e asset vengono
+comunque eseguiti normalmente.
+
+Questo significa che Zenzic funziona out-of-the-box con qualsiasi altro sistema basato su
+Markdown senza produrre falsi positivi.
