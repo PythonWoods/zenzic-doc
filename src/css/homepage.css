@@ -25,3 +25,8 @@
 .zz-homepage a:hover {
   text-decoration: none;
 }
+
+/* Smooth scroll for the #quickstart anchor */
+.zz-homepage {
+  scroll-behavior: smooth;
+}

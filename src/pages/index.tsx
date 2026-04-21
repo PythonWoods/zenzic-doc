@@ -4,9 +4,10 @@ import Layout from '@theme/Layout';
 import '@site/src/css/homepage.css';
 
 import Hero from '../components/Homepage/Hero';
-import Features from '../components/Homepage/Features';
+import EngineeringLedger from '../components/Homepage/EngineeringLedger';
 import SentinelSection from '../components/Homepage/SentinelSection';
 import QualityScore from '../components/Homepage/QualityScore';
+import Quickstart from '../components/Homepage/Quickstart';
 
 export default function Home(): React.JSX.Element {
   return (
@@ -24,9 +25,10 @@ export default function Home(): React.JSX.Element {
         <main className="flex-grow mt-0 pt-0">
           <Hero />
           <div className="w-full border-t dark:border-zinc-800 border-zinc-200" />
-          <Features />
+          <EngineeringLedger />
           <SentinelSection />
           <QualityScore />
+          <Quickstart />
         </main>
 
         <footer className="py-12 border-t dark:border-zinc-800/60 border-zinc-200 mt-auto">
