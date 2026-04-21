@@ -793,6 +793,12 @@
   "sentinel.summary.failed": {
     "message": "FAILED: One or more checks failed."
   },
+  "sentinel.label": {
+    "message": "Reporter & Shield"
+  },
+  "score.label": {
+    "message": "Metriche di Qualit\u00e0"
+  },
   "ledger.label": {
     "message": "L\u2019Obsidian Engineering Ledger"
   },
