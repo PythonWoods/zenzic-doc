@@ -47,10 +47,12 @@ jobs:
   validate:
     name: Validate (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22]
+        node: [22, 24]
 
     steps:
       - name: Checkout
