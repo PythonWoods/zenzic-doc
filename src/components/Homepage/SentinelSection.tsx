@@ -6,6 +6,9 @@ export default function SentinelSection(): React.JSX.Element {
     <section className="border-t dark:border-zinc-800 border-zinc-200 dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-5xl mx-auto px-6">
         <div className="mb-24 text-center">
+          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+            <Translate id="sentinel.label">Reporter &amp; Shield</Translate>
+          </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.sentinel.title">Sentinel in Action</Translate>
           </h2>

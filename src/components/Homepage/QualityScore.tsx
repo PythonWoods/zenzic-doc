@@ -39,6 +39,9 @@ export default function QualityScore(): React.JSX.Element {
     <section className="border-t dark:border-zinc-800 border-zinc-200 dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-[1000px] mx-auto px-6">
         <div className="mb-12">
+          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+            <Translate id="score.label">Health Metrics</Translate>
+          </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.score.title">Quality Score</Translate>
           </h2>
@@ -73,18 +76,18 @@ export default function QualityScore(): React.JSX.Element {
             <div className="p-2">
               <ScoreRow color="sky" label={<Translate id="score.linksHealth">Internal Links Health</Translate>} value="99" />
               <div className="ml-5 pl-4 border-l dark:border-zinc-800/40 border-zinc-200 flex flex-col py-1">
-                <ScoreSubRow icon={<SimpleDotIcon color="sky" />} label={<Translate id="score.anchor">Anchor stability</Translate>} value="28" />
-                <ScoreSubRow icon={<SimpleDotIcon color="sky" />} label={<Translate id="score.external">External references</Translate>} value="16" />
+                <ScoreSubRow icon={<SimpleDotIcon color="sky" />} label={<Translate id="score.anchor">Anchor stability</Translate>} value="100" />
+                <ScoreSubRow icon={<SimpleDotIcon color="sky" />} label={<Translate id="score.external">External references</Translate>} value="97" />
               </div>
             </div>
 
             <div className="border-t dark:border-zinc-800/50 border-zinc-200 mx-2 my-1" />
 
             <div className="p-2">
-              <ScoreRow color="rose" label={<Translate id="score.orphan">Orphan Detection</Translate>} value="21" />
+              <ScoreRow color="rose" label={<Translate id="score.orphan">Orphan Detection</Translate>} value="95" />
               <div className="ml-5 pl-4 border-l dark:border-zinc-800/40 border-zinc-200 flex flex-col py-1">
-                <ScoreSubRow icon={<SimpleDotIcon color="rose" />} label={<Translate id="score.unused">Unused Assets</Translate>} value="12" />
-                <ScoreSubRow icon={<SimpleDotIcon color="rose" />} label={<Translate id="score.nav">Nav Isolation</Translate>} value="9" />
+                <ScoreSubRow icon={<SimpleDotIcon color="rose" />} label={<Translate id="score.unused">Unused Assets</Translate>} value="91" />
+                <ScoreSubRow icon={<SimpleDotIcon color="rose" />} label={<Translate id="score.nav">Nav Isolation</Translate>} value="100" />
               </div>
             </div>
           </div>

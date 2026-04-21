@@ -89,19 +89,19 @@
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
   },
   "homepage.hero.badge": {
-    "message": "v0.6.0a2 \"Obsidian Glass\" Released",
+    "message": "v0.6.1 \"Obsidian Glass\" Stable",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "High-performance linter",
+    "message": "The Safe Harbor",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
-    "message": "for Markdown.",
+    "message": "for Markdown Documentation.",
     "description": "Muted part of the hero headline"
   },
   "homepage.hero.subtitle": {
-    "message": "Catch broken links, orphan pages, and leaked credentials - before your users do. Engineering-grade and engine-agnostic.",
+    "message": "High-performance, engine-agnostic, and security-hardened static analysis.",
     "description": "Hero sub headline"
   },
   "homepage.hero.getStarted": {
@@ -210,6 +210,57 @@
   },
   "sentinel.summary.failed": {
     "message": "FAILED: One or more checks failed."
+  },
+  "sentinel.label": {
+    "message": "Reporter & Shield"
+  },
+  "score.label": {
+    "message": "Health Metrics"
+  },
+  "ledger.label": {
+    "message": "The Obsidian Engineering Ledger"
+  },
+  "ledger.heading": {
+    "message": "Three invariants enforced on every commit."
+  },
+  "ledger.heading.muted": {
+    "message": "No exceptions. No shortcuts."
+  },
+  "ledger.sub": {
+    "message": "These are not aspirations \u2014 they are gates. Every release of Zenzic ships only when all three pass."
+  },
+  "ledger.01.title": {
+    "message": "Zero Assumptions at System Boundaries"
+  },
+  "ledger.01.desc": {
+    "message": "Every public entry point validates its inputs at the boundary. Internal hot paths carry no defensive checks \u2014 the shape is guaranteed by the type system, enforced by mypy --strict on every merge."
+  },
+  "ledger.02.title": {
+    "message": "Subprocess-Free Analysis"
+  },
+  "ledger.02.desc": {
+    "message": "Production-grade tools do not shell out during analysis. No subprocess.run(), no os.system() inside per-item loops. Zenzic validates your documentation stack without executing it."
+  },
+  "ledger.03.title": {
+    "message": "Deterministic Dependency Graph"
+  },
+  "ledger.03.desc": {
+    "message": "Every dependency is pinned in a lockfile, audited by Dependabot, and scanned for SPDX licence compatibility. No transitive surprises at release time. uv lock and reuse lint run on every commit."
+  },
+  "quickstart.label": {
+    "message": "Get Started"
+  },
+  "quickstart.heading": {
+    "message": "From zero to documentation integrity in one command."
+  },
+  "quickstart.sub": {
+    "message": "No configuration required. No account needed. Works on any Markdown project."
+  },
+  "quickstart.github": {
+    "message": "Star on GitHub"
+  },
+  "quickstart.docs": {
+    "message": "Read the full docs \u2192"
   },
   "theme.ErrorPageContent.title": {
     "message": "This page crashed.",
