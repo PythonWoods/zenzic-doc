@@ -54,41 +54,41 @@ export default function Features(): React.JSX.Element {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
-          <CheckCard 
-            code="0.1" 
-            visual={<BrokenLinksIso />} 
-            title={<Translate id="chk01.title">Broken links</Translate>} 
-            desc={<Translate id="chk01.desc">Detects dead internal links, missing anchors, and unreachable URLs before the build runs.</Translate>} 
+          <CheckCard
+            code="0.1"
+            visual={<BrokenLinksIso />}
+            title={<Translate id="chk01.title">Broken links</Translate>}
+            desc={<Translate id="chk01.desc">Detects dead internal links, missing anchors, and unreachable URLs before the build runs.</Translate>}
           />
-          <CheckCard 
-            code="0.2" 
-            visual={<OrphanIso />} 
-            title={<Translate id="chk02.title">Orphan pages</Translate>} 
-            desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that exist on disk but are absent from the site navigation.'}</Translate>} 
+          <CheckCard
+            code="0.2"
+            visual={<OrphanIso />}
+            title={<Translate id="chk02.title">Orphan pages</Translate>}
+            desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that exist on disk but are absent from the site navigation.'}</Translate>}
           />
-          <CheckCard 
-            code="0.3" 
-            visual={<SnippetIso />} 
-            title={<Translate id="chk03.title">Invalid snippets</Translate>} 
-            desc={<Translate id="chk03.desc">Compiles every fenced Python block. Catches syntax errors before readers copy-paste code.</Translate>} 
+          <CheckCard
+            code="0.3"
+            visual={<SnippetIso />}
+            title={<Translate id="chk03.title">Invalid snippets</Translate>}
+            desc={<Translate id="chk03.desc">Compiles every fenced Python block. Catches syntax errors before readers copy-paste code.</Translate>}
           />
-          <CheckCard 
-            code="0.4" 
-            visual={<PlaceholderIso />} 
-            title={<Translate id="chk04.title">Placeholder stubs</Translate>} 
-            desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>.'}</Translate>} 
+          <CheckCard
+            code="0.4"
+            visual={<PlaceholderIso />}
+            title={<Translate id="chk04.title">Placeholder stubs</Translate>}
+            desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>.'}</Translate>}
           />
-          <CheckCard 
-            code="0.5" 
-            visual={<AssetsIso />} 
-            title={<Translate id="chk05.title">Unused assets</Translate>} 
-            desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports images and files that exist in <code>docs/</code> but are never referenced by any page.'}</Translate>} 
+          <CheckCard
+            code="0.5"
+            visual={<AssetsIso />}
+            title={<Translate id="chk05.title">Unused assets</Translate>}
+            desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports images and files that exist in <code>docs/</code> but are never referenced by any page.'}</Translate>}
           />
-          <CheckCard 
-            code="0.6" 
-            visual={<ShieldIso />} 
-            title={<Translate id="chk06.title">Zenzic Shield</Translate>} 
-            desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately.'}</Translate>} 
+          <CheckCard
+            code="0.6"
+            visual={<ShieldIso />}
+            title={<Translate id="chk06.title">Zenzic Shield</Translate>}
+            desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately.'}</Translate>}
           />
         </div>
       </div>

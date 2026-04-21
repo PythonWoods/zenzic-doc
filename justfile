@@ -8,21 +8,25 @@
 setup:
     npm ci
 
-# Start local development server
+# Start local development server (EN only — language switcher non funziona in dev)
 start:
     npm run start
 
-# Alias for start
+# Start local development server in Italian
+start-it:
+    npm run start:it
+
+# Serve production build locally (EN + IT, language switcher funzionante)
 serve:
-    npm run start
+    npm run serve
+
+# Alias for serve (preview production build)
+preview:
+    npm run serve
 
 # Build production static site
 build:
     npm run build
-
-# Serve production build locally
-preview:
-    npm run serve
 
 # Static type check
 typecheck:

@@ -1,0 +1,175 @@
+---
+sidebar_position: 4
+sidebar_label: "Codici di Finding"
+description: "Riferimento completo per tutti i codici di finding di Zenzic, i livelli di severità, l'impatto sul codice di uscita e le indicazioni di rimedio."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Riferimento Codici di Finding
+
+Ogni problema rilevato da Zenzic è contrassegnato da un **codice di finding** che
+ne identifica la categoria. Questa pagina è l'indice autorevole di tutti i codici,
+i loro livelli di severità e l'impatto sul codice di uscita.
+
+:::info[Severità vs. codice di uscita]
+La severità descrive la natura del problema; il codice di uscita determina se
+`zenzic check` segnala un errore alla shell o al sistema CI.
+
+| Severità | Impatto sul codice di uscita |
+| :--- | :--- |
+| `error` | Uscita 1 (sopprimibile con `--exit-zero`) |
+| `warning` | Uscita 1 solo in modalità `--strict` |
+| `info` | Non influenza mai il codice di uscita — usa `--show-info` per visualizzarlo |
+| `security_breach` | Uscita 2 — mai sopprimibile |
+| `security_incident` | Uscita 3 — mai sopprimibile |
+:::
+
+---
+
+## Controllo Link
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `FILE_NOT_FOUND` | error | `check links` | Il target di un link relativo non esiste su disco |
+| `ANCHOR_NOT_FOUND` | error | `check links` | Il frammento `#heading-anchor` nel link non esiste nel file target |
+| `EXTERNAL_BROKEN` | error | `check links --strict` | Una richiesta HTTP HEAD/GET a un URL esterno ha restituito uno stato non-2xx/3xx |
+| `CIRCULAR_LINK` | info | `check links` | Il target risolto del link fa parte di un ciclo di link rilevato |
+| `PATH_TRAVERSAL` | error | `check links` | Un link risolve al di fuori della directory `docs/` |
+| `PATH_TRAVERSAL_SUSPICIOUS` | security_incident | `check links` | Un link risolve in un percorso di sistema OS noto (`/etc/`, `/root/`, ecc.) — attiva **Uscita 3 (Blood Sentinel)** |
+
+---
+
+## Controllo Orfani
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `ORPHAN` | warning | `check orphans` | Un file `.md` esiste su disco ma non è elencato nella navigazione del sito |
+
+---
+
+## Controllo Snippet
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `SNIPPET` | error | `check snippets` | Un blocco di codice delimitato con un linguaggio verificabile (`python`, `yaml`, `json`, `toml`) contiene un errore di sintassi |
+
+---
+
+## Controllo Placeholder
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `short-content` | warning | `check placeholders` | Il conteggio parole della pagina è inferiore a `placeholder_max_words` (default: 50) |
+| `placeholder-text` | warning | `check placeholders` | La pagina contiene un pattern da `placeholder_patterns` (es. `TODO`, `WIP`, `Bozza`) |
+
+---
+
+## Controllo Asset
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `ASSET` | warning | `check assets` | Un file immagine o multimediale in `docs/` non è referenziato da nessuna pagina `.md` |
+
+---
+
+## Pipeline di Riferimenti
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `DANGLING_REF` | error | `check references` | Un uso `[testo][id]` referenzia un ID che non ha definizione nel file |
+| `DEAD_DEF` | warning | `check references` | Una definizione `[id]: url` esiste ma non viene mai usata nel file |
+| `DUPLICATE_DEF` | warning | `check references` | Lo stesso ID di riferimento è definito due volte; vince la prima definizione (CommonMark §4.7) |
+| `MISSING_ALT` | warning | `check references` | Un'immagine (`![](url)`) ha un attributo alt-text vuoto o assente |
+
+---
+
+## Shield (Rilevamento Credenziali)
+
+I finding Shield producono sempre **Uscita 2**. Non sono mai sopprimibili.
+
+| Codice | Famiglia di pattern | Prefisso esempio |
+| :--- | :--- | :--- |
+| `openai-api-key` | Chiave API OpenAI | `sk-…` |
+| `github-token` | Token personale / OAuth GitHub | `gh[pousr]_…` |
+| `aws-access-key` | ID chiave di accesso AWS IAM | `AKIA…` |
+| `stripe-live-key` | Chiave segreta live Stripe | `sk_live_…` |
+| `slack-token` | Token bot / user / app Slack | `xox[baprs]-…` |
+| `google-api-key` | Chiave API Google Cloud / Maps | `AIza…` |
+| `private-key` | Intestazione chiave privata PEM | `-----BEGIN … PRIVATE KEY-----` |
+| `hex-encoded-payload` | Sequenza di byte in esadecimale | `\xNN\xNN\xNN…` (3 o più escape esadecimali consecutivi) |
+| `gitlab-pat` | Personal Access Token GitLab | `glpat-…` |
+
+---
+
+## Integrità dell'Indice di Directory {#missing-directory-index}
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `MISSING_DIRECTORY_INDEX` | info | `check all --show-info` | Una directory contiene file Markdown sorgente ma nessuna landing page fornita dall'engine — l'URL della directory potrebbe restituire un 404 |
+
+### Cosa attiva questo finding?
+
+`MISSING_DIRECTORY_INDEX` viene emesso quando `find_missing_directory_indices()`
+scopre una sottodirectory sotto `docs/` che soddisfa entrambe le condizioni:
+
+1. **Contiene almeno un file sorgente `.md` o `.mdx`** — la directory fa parte
+   della documentazione attiva.
+2. **Non fornisce una pagina indice** come riconosciuto dal metodo `provides_index()`
+   dell'adapter attivo.
+
+Il controllo è **engine-aware**: ogni adapter conosce cosa costituisce una
+landing page di directory per il suo motore di build:
+
+| Engine | Cosa conta come indice |
+| :--- | :--- |
+| Docusaurus | `index.md`, `index.mdx`, `README.md`, `README.mdx`, o `_category_.json` con `"link": {"type": "generated-index"}` |
+| MkDocs | `index.md` o `README.md` |
+| Zensical | `index.md` |
+| Vanilla | `index.md` |
+
+### Perché severità `info`?
+
+Un indice di directory mancante non è sempre un errore bloccante. Alcuni siti
+omettono intenzionalmente un indice root `docs/`, o usano la pagina di categoria
+predefinita dell'engine piuttosto che una scritta a mano. La severità `info` significa:
+
+- **Non blocca mai la CI** — il finding non contribuisce all'Uscita 1.
+- **Non influenza il punteggio di qualità.**
+- **Visibile su richiesta** — usa `--show-info` per vedere questi segnali durante lo sviluppo.
+
+### Come risolvere
+
+Crea un file indice appropriato nella directory segnalata:
+
+```bash
+# Docusaurus: una pagina MDX indice in docs/mia-sezione/index.mdx
+touch docs/mia-sezione/index.mdx
+
+# MkDocs / Zensical: un indice standard
+echo "# La Mia Sezione" > docs/mia-sezione/index.md
+```
+
+In alternativa, per Docusaurus, aggiungi un `_category_.json` con un indice generato:
+
+```json
+{
+  "label": "La Mia Sezione",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Panoramica di tutto ciò che si trova in questa sezione."
+  }
+}
+```
+
+---
+
+## Rule Engine (Regole Custom)
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| ID regola definito dall'utente (es. `NO_DRAFT`) | Configurata in `[[custom_rules]]` | `check all` | Una riga ha matched un pattern regex definito dall'utente |
+| `Z009` | error | `check all` | Un processo worker ha superato il timeout di 30 secondi per file — probabilmente causato da backtracking catastrofico in un pattern regex `[[custom_rules]]` |
+| `RULE-ENGINE-ERROR` | error | `check all` | Un processo worker ha sollevato un'eccezione inattesa |

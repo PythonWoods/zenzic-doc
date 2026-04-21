@@ -1,0 +1,205 @@
+---
+sidebar_label: "Guida di Stile Sentinel"
+sidebar_position: 6
+description: "Standard di scrittura documentale e regole di formattazione per i contributori Zenzic."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Guida di Stile Sentinel
+
+> *"Il rigore della Sentinella nel codice deve estendersi a ogni pixel che l'utente vede."*
+
+Questo documento codifica il **Sentinel Visual Language** — le regole
+vincolanti per tutte le pagine della documentazione Zenzic. Ogni
+contributore deve seguirle. I revisori devono rifiutare le PR che le violano.
+
+**Direttiva:** ZRT-DOC-002
+
+---
+
+## 1. Regola delle Card (High-Density UX) {#card-rule}
+
+Le card di navigazione orientano. **Non** sostituiscono la barra laterale.
+
+### Struttura
+
+Ogni card in un blocco `<div class="grid cards" markdown>` deve avere esattamente:
+
+1. Un'**icona** (`<Icon name="..." />` — vedi §3).
+2. Un **titolo in grassetto**.
+3. Una **descrizione** di massimo due righe.
+4. Un **unico link d'azione** con prefisso freccia.
+
+### Esempio canonico
+
+```markdown
+- <Icon name="play" /> &nbsp; **Guida Utente**
+
+    Tutto ciò che serve per installare, configurare e integrare Zenzic
+    nel tuo workflow CI/CD.
+
+    [<Icon name="arrow-right" /> Esplora la Guida](../../../how-to/install.mdx)
+```
+
+### Pattern vietati
+
+| Pattern | Motivo |
+| :--- | :--- |
+| Catene di link orizzontali (separati da `·`) | Crea un muro di testo; impossibile da scansionare |
+| Liste `<li>` annidate dentro una card | Rompe l'uniformità dell'altezza delle card |
+| Separatori `---` dentro una card | Aggiunge rumore visivo senza guadagno informativo |
+| Card senza action link | Vicolo cieco; l'utente non ha dove andare |
+
+### Eccezione
+
+**Card di presentazione** (es. demo "Sentinel in Action" nella homepage)
+possono omettere l'action link perché il loro scopo è la dimostrazione
+visiva, non la navigazione. Devono comunque avere il CSS delle card
+(bordo, hover, transizione).
+
+---
+
+## 2. Tassonomia delle Admonition {#admonition-taxonomy}
+
+Ogni tipo di admonition ha un — e un solo — ruolo semantico.
+
+| Tipo | Ruolo | Quando usare |
+| :--- | :--- | :--- |
+| `:::tip` | **Quick Win** | Comandi one-liner eseguibili immediatamente |
+| `:::info` | **Output Sentinel** | Blocchi di output CLI e campioni di report Sentinel |
+| `:::danger` | **Security Gate** | Solo Exit Code 2 (credenziali) e Exit Code 3 (path traversal) |
+| `:::warning` | **Vincolo di Design** | Regole architetturali, policy per contributori, caveat "usare con parsimonia" |
+| `:::note` | **Chiarimento** | Fatti specifici del motore, onboarding contributori, guide multi-step |
+| `:::info` | **Ponte Cross-Reference** | Link dalla sezione corrente al prossimo step operativo |
+| `:::info` | **CTA Comunità** | Chiamate di engagement ("Aiutaci a crescere", "Unisciti alla discussione") |
+| `:::note` | **Filosofia** | Visione del progetto, manifesto di design, credo della Sentinella |
+
+### Applicazione
+
+Se un blocco non rientra in nessuna delle categorie sopra, riscrivilo come
+prosa. Le admonition non sono decorazione.
+
+---
+
+## 3. Legge dell'Iconografia (ZRT-DOC-003) {#iconography}
+
+### Il Componente `<Icon />`
+
+Ogni icona nella documentazione deve essere renderizzata con:
+
+```mdx
+<Icon name="nome-icona" />
+```
+
+Override opzionale della dimensione (default `1.15em`, ereditata dal testo circostante):
+
+```mdx
+<Icon name="shield-check" size={20} />
+```
+
+Tutti i nomi delle icone seguono la convenzione del [set Lucide](https://lucide.dev/icons/)
+(minuscolo, separato da trattini).
+
+### Gerarchia
+
+| Priorità | Set | Sintassi | Note |
+| :---: | :--- | :--- | :--- |
+| 1 | **Lucide** | `<Icon name="play" />` | Tutte le icone UI e di navigazione |
+
+### Regole
+
+- **Coerenza semantica:** se un'icona rappresenta "Contribuisci" in una pagina,
+  deve essere la stessa icona in ogni pagina.
+- **Sintassi uniforme:** ogni icona in una griglia di card usa `<Icon name="..." />`.
+  Nessun mix di sintassi o set di icone.
+- **Contratto di tree-shaking:** prima di usare un nuovo nome di icona, aggiungerlo
+  alla mappa esplicita `iconsMap` in `src/components/Icon.tsx`. I nomi non registrati
+  renderizzano un placeholder rosso e emettono un `console.warn`.
+
+---
+
+## 4. Protocollo Anchor ID (ZRT-DOC-004) {#anchor-ids}
+
+### Quando aggiungere ID espliciti
+
+Aggiungere `{#id}` a un heading quando soddisfa **entrambe** le condizioni:
+
+1. È un heading **H2 o H3** (mai H1 — Docusaurus genera automaticamente gli ID H1 dal `sidebar_label`).
+2. È referenziato da un link cross-pagina (`[testo](pagina.mdx#ancora)`).
+
+### Invariante i18n
+
+L'ID canonico è sempre lo **slug inglese**. Le pagine italiane (e di ogni
+futura lingua) devono usare lo stesso valore `{#id}`:
+
+```markdown
+{/* EN */}
+## Getting Started {#getting-started}
+
+{/* IT */}
+## Inizia Ora {#getting-started}
+```
+
+Questo garantisce che il resolver VSM e i link cross-lingua non si
+rompano mai a causa della generazione di slug dipendente dalla traduzione.
+
+### Formato heading
+
+```markdown
+## Titolo Sezione {#section-title}
+```
+
+Non aggiungere ID a heading che non vengono mai linkati esternamente.
+Ogni ID esplicito è un contratto di manutenzione.
+
+---
+
+## 5. Regola dei Blocchi di Codice {#code-blocks}
+
+Ogni fence di apertura **deve** avere un tag di linguaggio:
+
+| Fence | Verdetto |
+| :--- | :---: |
+| ` ```python ` | ✓ |
+| ` ```bash ` | ✓ |
+| ` ```toml ` | ✓ |
+| ` ```text ` | ✓ (output senza formattazione) |
+| ` ``` ` | ✗ **VIETATO** |
+
+Usare `text` per output senza syntax highlighting. I fence nudi danneggiano
+gli strumenti di accessibilità e i syntax highlighter.
+
+**Specificità del Gutter:** per l'output CLI mostrato nei blocchi `:::info`,
+preferire sempre il tag `text` per evitare che l'evidenziatore di sintassi
+generi colori casuali su stringhe di log o percorsi di file.
+
+---
+
+## 6. Header SPDX {#spdx-header}
+
+Ogni file `.md` deve iniziare con:
+
+```html
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+```
+
+I file con frontmatter YAML posizionano il blocco SPDX immediatamente dopo
+il `---` di chiusura.
+
+---
+
+## 7. Checklist di Coerenza Visiva {#checklist}
+
+Prima di sottomettere una PR, verificare:
+
+- [ ] Ogni griglia di card segue §1 (singolo action link).
+- [ ] Ogni admonition corrisponde al suo ruolo §2.
+- [ ] Tutte le icone usano `<Icon name="..." />` — nessuno shortcode `:lucide-*:`, `:octicons-*:`, o `:material-*:` rimane (§3).
+- [ ] Ogni nuovo nome di icona è registrato in `src/components/Icon.tsx` (§3).
+- [ ] Gli heading H2/H3 cross-referenziati hanno `{#id}` esplicito (§4). Nessun anchor sugli H1.
+- [ ] Nessun code fence nudo esiste (§5).
+- [ ] L'header SPDX è presente (§6).
+- [ ] Il mirror italiano è strutturalmente identico all'inglese.

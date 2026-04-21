@@ -13,14 +13,14 @@ export function SentinelBadge(): React.JSX.Element {
 }
 
 export default function Hero(): React.JSX.Element {
-  const docsHref = useBaseUrl('/docs/intro');
+  const docsHref = useBaseUrl('/docs/');
   const iconUrl = useBaseUrl('/assets/brand/svg/zenzic-icon.svg');
 
   return (
     <section className="max-w-4xl mx-auto mt-0 px-6 pt-12 md:pt-16 pb-14 md:pb-20 text-center flex flex-col items-center justify-start">
       {/* Stealth Logo */}
       <img src={iconUrl} alt="Zenzic Icon" style={{ width: '40px', opacity: 0.6 }} className="mb-8 drop-shadow-sm grayscale contrast-125" />
-      
+
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
         <SentinelBadge />
         <Translate id="homepage.hero.badge" description="Wait release version badge">

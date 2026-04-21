@@ -1,8 +1,11 @@
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Release — zenzic-doc
 
 ## Current Status
 
-> **v0.6.1rc2 "Obsidian Bastion (Hardened)" — Public Launch Active.**
+> **v0.6.1 "Obsidian Glass (Stable)" — Public Launch Active.**
 
 The documentation site is open and publicly deployed.
 All embargo conditions have been satisfied.

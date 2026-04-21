@@ -1,0 +1,42 @@
+---
+sidebar_position: 0
+sidebar_label: "Overview"
+---
+
+# Documentation Overview
+
+Welcome to the **Zenzic** documentation — the engineering-grade static analyzer for
+Markdown-based documentation.
+
+Zenzic operates in the **Build-Aware Gap**: the critical moment between writing source
+files and their transformation into a website. It builds a **Virtual Site Map (VSM)**
+directly from raw Markdown source to validate links, detect orphans, scan for exposed
+credentials, and enforce quality rules — without ever running the documentation build.
+
+## Where to start
+
+| Goal | Page |
+| :--- | :--- |
+| Install Zenzic and run your first check | [First Audit](./tutorials/first-audit) |
+| Understand which checks Zenzic runs | [Checks Reference](./reference/checks) |
+| Configure `zenzic.toml` | [Configuration Reference](./reference/configuration-reference) |
+| Integrate with GitHub Actions | [CI/CD Integration](./how-to/configure-ci-cd) |
+| Explore the internal architecture | [Architecture Overview](./explanation/architecture) |
+| Contribute to the project | [Contributing](./community/contribute/index.mdx) |
+
+## Quick start
+
+```bash
+# Install
+pip install zenzic
+
+# Initialise configuration (discovers engine from config files)
+zenzic init
+
+# Run all checks
+zenzic check all
+```
+
+---
+
+*"The Code is Law. The Documentation is Truth. The Sentinel is vigilant."*

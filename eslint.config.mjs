@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import js from '@eslint/js';
 import globals from 'globals';
 import react from 'eslint-plugin-react';
