@@ -93,15 +93,15 @@
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "High-performance linter",
+    "message": "The Safe Harbor",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
-    "message": "for Markdown.",
+    "message": "for Markdown Documentation.",
     "description": "Muted part of the hero headline"
   },
   "homepage.hero.subtitle": {
-    "message": "Catch broken links, orphan pages, and leaked credentials - before your users do. Engineering-grade and engine-agnostic.",
+    "message": "High-performance, engine-agnostic, and security-hardened static analysis.",
     "description": "Hero sub headline"
   },
   "homepage.hero.getStarted": {

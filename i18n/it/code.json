@@ -684,15 +684,15 @@
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "High-performance linter",
+    "message": "Il Safe Harbor",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
-    "message": "for Markdown.",
+    "message": "per la Documentazione Markdown.",
     "description": "Muted part of the hero headline"
   },
   "homepage.hero.subtitle": {
-    "message": "Catch broken links, orphan pages, and leaked credentials - before your users do. Engineering-grade and engine-agnostic.",
+    "message": "Analisi statica ad alte prestazioni, agnostica rispetto al motore e con sicurezza integrata.",
     "description": "Hero sub headline"
   },
   "homepage.hero.getStarted": {
