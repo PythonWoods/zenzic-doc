@@ -14,12 +14,34 @@ export default function Home(): React.JSX.Element {
     <Layout
       noFooter
       wrapperClassName="zz-homepage"
-      title="High-performance documentation linter"
-      description="Engineering-grade, engine-agnostic linter and security shield for Markdown documentation."
+      title="Zenzic — The Safe Harbor for Markdown"
+      description="High-performance, engine-agnostic, and security-hardened static analysis for Markdown documentation."
     >
       <div data-theme="dark" className="flex flex-col min-h-screen relative w-full">
         <Head>
-          <meta property="og:title" content="Zenzic - High-performance documentation linter" />
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content="Zenzic — The Safe Harbor for Markdown Documentation" />
+          <meta property="og:description" content="High-performance, engine-agnostic, and security-hardened static analysis. Catch broken links, orphan pages, and leaked credentials before your users do." />
+          <meta property="og:image" content="https://zenzic.dev/assets/social/social-card.png" />
+          <meta property="og:url" content="https://zenzic.dev/" />
+          <meta name="twitter:title" content="Zenzic — The Safe Harbor for Markdown Documentation" />
+          <meta name="twitter:description" content="High-performance, engine-agnostic, and security-hardened static analysis. Catch broken links, orphan pages, and leaked credentials before your users do." />
+          <meta name="twitter:image" content="https://zenzic.dev/assets/social/social-card.png" />
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Zenzic",
+            "operatingSystem": "Linux, macOS, Windows",
+            "applicationCategory": "DeveloperApplication",
+            "softwareVersion": "0.6.1",
+            "description": "High-performance, engine-agnostic, and security-hardened static analysis for Markdown documentation.",
+            "url": "https://zenzic.dev",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          })}</script>
         </Head>
 
         <main className="flex-grow mt-0 pt-0">

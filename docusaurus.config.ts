@@ -35,7 +35,7 @@ const config: Config = {
     locales: ['en', 'it'],
     localeConfigs: {
       en: { label: 'English' },
-      it: { label: 'Italiano' },
+      it: { label: 'Italiano', htmlLang: 'it-IT' },
     },
   },
 
@@ -68,8 +68,24 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Social sharing image
-    image: '/assets/social/social-card.svg',
+    // Social sharing image (OG + Twitter Cards)
+    image: 'assets/social/social-card.png',
+    metadata: [
+      {name: 'keywords', content: 'markdown, linter, docusaurus, mkdocs, static analysis, documentation, security, broken links, orphan pages'},
+      {name: 'twitter:card', content: 'summary_large_image'},
+      {name: 'twitter:site', content: '@PythonWoods'},
+      {name: 'twitter:creator', content: '@PythonWoods'},
+      {name: 'theme-color', content: '#4f46e5'},
+    ],
+    headTags: [
+      {
+        tagName: 'link',
+        attributes: {
+          rel: 'canonical',
+          href: 'https://zenzic.dev/',
+        },
+      },
+    ],
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
