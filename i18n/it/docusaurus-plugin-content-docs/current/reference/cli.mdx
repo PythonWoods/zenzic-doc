@@ -117,6 +117,44 @@ Questo garantisce che Zenzic resti un Custode Strutturale coerente indipendentem
 motore di build.
 :::
 
+### `--no-color` / `--force-color` {#output-flags}
+
+Questi flag globali (accettati da tutti i comandi) controllano l'output ANSI indipendentemente
+dal rilevamento automatico del terminale.
+
+| Flag | Effetto |
+| :--- | :--- |
+| `--no-color` | Rimuove tutti i codici ANSI di colore e stile dall'output |
+| `--force-color` | Emette codici ANSI anche quando stdout non è un TTY |
+
+**Variabili d'ambiente:**
+
+| Variabile | Equivale a |
+| :--- | :--- |
+| `NO_COLOR` (qualsiasi valore) | `--no-color` |
+| `FORCE_COLOR` (qualsiasi valore) | `--force-color` |
+
+`NO_COLOR` è conforme alla convenzione standard [no-color.org](https://no-color.org/).
+Quando sono impostate sia `NO_COLOR` che `FORCE_COLOR`, `--no-color` / `NO_COLOR` ha sempre
+la precedenza.
+
+**Comportamento predefinito:** Zenzic usa il rilevamento automatico TTY di Rich. I colori
+sono attivi quando stdout è un terminale; vengono rimossi automaticamente in caso di pipe
+o reindirizzamento — nessun flag richiesto.
+
+```bash
+# Rimuovi colori: aggregatori di log CI, file di testo puro
+zenzic check all --no-color
+NO_COLOR=1 zenzic check all
+
+# Forza colori: sistemi CI con supporto ANSI ma senza TTY dichiarato
+zenzic check all --force-color
+FORCE_COLOR=1 zenzic check all
+
+# Abbina con --format json per output completamente machine-readable
+zenzic check all --no-color --format json > report.json
+```
+
 ---
 
 ## Inizializzazione
