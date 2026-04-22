@@ -40,7 +40,7 @@
 
 [data-theme='light'] {
   /* ── D112/D113: Zinc Standard Typography — structure is neutral, cold, precise ── */
-  --ifm-heading-color: #18181b;           /* Zinc-900 — solid, authoritative */
+  --ifm-heading-color: #3f3f46;           /* Zinc-700 — autorevole senza peso */
   --ifm-font-color-base: #27272a;         /* Zinc-800 — premium readability */
   --ifm-color-emphasis-600: #71717a;      /* Zinc-500 — metadata, secondary */
 
@@ -489,29 +489,29 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: border-color 0.25s ease;
 }
 
-/* Blog post title colour — Indigo consistent */
+/* Blog post title colour — Zinc-200, softer than pure white */
 [data-theme='dark'] article h2 a {
-  color: var(--ifm-color-primary-lighter);
+  color: #e4e4e7;
   transition: color 0.2s ease;
 }
 
 /* D112 fix: blog list titles are <h2><a> — link color overrides heading-color.
-   Light mode: Zinc-900 for titles, Zinc-700 on hover (no Indigo bleed). */
+   Light mode: Zinc-700 for titles, Zinc-600 on hover (no Indigo bleed). */
 [data-theme='light'] article h2 a {
-  color: #18181b;
+  color: #3f3f46;
   font-weight: 700;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 [data-theme='light'] article h2 a:hover {
-  color: #3f3f46;
+  color: #52525b;
   text-decoration: none;
 }
 
 /* Blog post page single title <h1> */
 [data-theme='light'] .blog-post-page h1 {
-  color: #18181b;
+  color: #3f3f46;
 }
 
 /* Blog header — very subtle separation, Obsidian Lead bg */
