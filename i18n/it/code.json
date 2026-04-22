@@ -680,7 +680,7 @@
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
   },
   "homepage.hero.badge": {
-    "message": "v0.6.1 \"Obsidian Glass\" Stable",
+    "message": "v0.7.0 \"Obsidian Maturity\" Stable",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
@@ -797,10 +797,10 @@
     "message": "Reporter & Shield"
   },
   "score.label": {
-    "message": "Metriche di Qualit\u00e0"
+    "message": "Metriche di Qualità"
   },
   "ledger.label": {
-    "message": "L\u2019Obsidian Engineering Ledger"
+    "message": "L’Obsidian Engineering Ledger"
   },
   "ledger.heading": {
     "message": "Tre invarianti verificati ad ogni commit."
@@ -809,31 +809,31 @@
     "message": "Nessuna eccezione. Nessuna scorciatoia."
   },
   "ledger.sub": {
-    "message": "Non sono aspirazioni \u2014 sono requisiti. Zenzic viene rilasciato solo quando tutti e tre passano."
+    "message": "Non sono aspirazioni — sono requisiti. Zenzic viene rilasciato solo quando tutti e tre passano."
   },
   "ledger.01.title": {
     "message": "Zero Assunzioni ai Confini del Sistema"
   },
   "ledger.01.desc": {
-    "message": "Ogni entry point pubblico valida i propri input al confine. I percorsi interni non contengono controlli difensivi \u2014 la forma \u00e8 garantita dal sistema di tipi, imposta da mypy --strict ad ogni merge."
+    "message": "Ogni entry point pubblico valida i propri input al confine. I percorsi interni non contengono controlli difensivi — la forma è garantita dal sistema di tipi, imposta da mypy --strict ad ogni merge."
   },
   "ledger.02.title": {
     "message": "Analisi Senza Sottoprocessi"
   },
   "ledger.02.desc": {
-    "message": "Gli strumenti di livello produzione non eseguono shell durante l\u2019analisi. Nessun subprocess.run(), nessun os.system() nei loop per-item. Zenzic valida il tuo stack documentale senza eseguirlo."
+    "message": "Gli strumenti di livello produzione non eseguono shell durante l’analisi. Nessun subprocess.run(), nessun os.system() nei loop per-item. Zenzic valida il tuo stack documentale senza eseguirlo."
   },
   "ledger.03.title": {
     "message": "Grafo delle Dipendenze Deterministico"
   },
   "ledger.03.desc": {
-    "message": "Ogni dipendenza \u00e8 bloccata in un lockfile, verificata da Dependabot e analizzata per compatibilit\u00e0 SPDX. Nessuna sorpresa transitiva al momento del rilascio. uv lock e reuse lint vengono eseguiti ad ogni commit."
+    "message": "Ogni dipendenza è bloccata in un lockfile, verificata da Dependabot e analizzata per compatibilità SPDX. Nessuna sorpresa transitiva al momento del rilascio. uv lock e reuse lint vengono eseguiti ad ogni commit."
   },
   "quickstart.label": {
     "message": "Inizia"
   },
   "quickstart.heading": {
-    "message": "Da zero all\u2019integrit\u00e0 documentale in un solo comando."
+    "message": "Da zero all’integrità documentale in un solo comando."
   },
   "quickstart.sub": {
     "message": "Nessuna configurazione richiesta. Nessun account necessario. Funziona su qualsiasi progetto Markdown."
@@ -842,6 +842,6 @@
     "message": "Star su GitHub"
   },
   "quickstart.docs": {
-    "message": "Leggi la documentazione completa \u2192"
+    "message": "Leggi la documentazione completa →"
   }
 }
