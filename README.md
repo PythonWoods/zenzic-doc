@@ -1,8 +1,20 @@
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="static/brand/svg/zenzic-nav-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="static/brand/svg/zenzic-nav-light.svg">
+    <img src="static/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
+  </picture>
+</div>
+
 # zenzic-doc Developer Guide
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.6.2-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.0-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
+[![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
+[![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
 
-> **This documentation is strictly aligned to Zenzic v0.6.2 "Obsidian Integrity".**
+> **This documentation is strictly aligned to Zenzic v0.7.0 "Obsidian Maturity".**
 > If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
 
 This repository contains the Docusaurus documentation website for Zenzic.
@@ -101,6 +113,9 @@ What `just verify` does:
 | `just build` | Build validation | Runs production build |
 | `just preview` | Validate built output | Serves already-built site |
 | `just verify` | Recommended final local check | Runs `markdownlint` + `lint` + `typecheck` + `build` |
+| `just preflight` | Before every commit | Runs all pre-commit hooks against every tracked file |
+| `just reuse` | After adding/renaming files | Checks REUSE/SPDX licence compliance |
+| `just sentinel` | Quick quality spot-check | Runs the Zenzic Sentinel alone (faster than full preflight) |
 | `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
 | `just bump VERSION [BADGE]` | After a Zenzic core release | Updates all hardcoded version references |
 
@@ -140,7 +155,7 @@ If a hook fails, fix the reported issue and retry the commit.
 To run all hooks manually without committing:
 
 ```bash
-pre-commit run --all-files
+just preflight
 ```
 
 ## 7) CI/CD workflows
@@ -171,7 +186,7 @@ Already implemented:
 - Concurrency controls (cancel obsolete runs).
 - Job timeouts (avoid stuck runners).
 - Manual `workflow_dispatch` triggers.
-- Node matrix (20 and 22) for compatibility.
+- Node matrix (22 and 24) for compatibility.
 - npm cache in workflows, keyed by `package-lock.json`.
 
 Possible future hardening:
@@ -306,3 +321,28 @@ Minimal command sequence before PR:
 just setup
 just verify
 ```
+
+---
+
+## 📚 The Obsidian Chronicles
+
+Zenzic was born from a technical journey through the fragility of modern documentation
+ecosystems. Discover the philosophy, the security siege, and the engineering behind the
+Sentinel in the [**Obsidian Engineering Series**](https://dev.to/pythonwoods/series/38629) on Dev.to.
+
+---
+
+<div align="center">
+  <a href="https://zenzic.dev">
+    <img src="static/img/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
+  </a>
+  <p>
+    <strong>Engineered with precision by PythonWoods in Italy 🇮🇹</strong><br/>
+    <em>"Building the Safe Harbor for technical knowledge."</em>
+  </p>
+  <p>
+    <a href="https://zenzic.dev"><strong>Documentation</strong></a> &middot;
+    <a href="https://github.com/PythonWoods"><strong>GitHub</strong></a> &middot;
+    <a href="https://zenzic.dev/blog"><strong>Journal</strong></a>
+  </p>
+</div>
