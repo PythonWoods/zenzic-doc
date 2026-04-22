@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zenzic · Brand System · v0.7.0 · Obsidian Maturity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;1,300&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --obsidian:  #0B0C0F;
+      --slate:     #141520;
+      --surface:   #1C1E2E;
+      --border:    #232540;
+      --lead:      #E2E8F0;
+      --muted:     #8B8FA8;
+      --rule:      rgba(255,255,255,0.07);
+      --indigo:    #4f46e5;
+      --cyan:      #38bdf8;
+      --blood:     #FF3B30;
+      --magenta:   #FF2D73;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--obsidian);
+      color: var(--lead);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 52px 44px;
+    }
+
+    .grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+    }
+
+    /* ── Section header ── */
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .page-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 36px;
+    }
+
+    /* ── Label ── */
+    .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 16px;
+    }
+    .label-inline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-top: 10px;
+    }
+
+    /* ── Logo layout ── */
+    .logo-row   { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+    .logo-variant { display: flex; flex-direction: column; gap: 0; }
+
+    .mark-dark  { background: var(--obsidian); border: 1px solid var(--border); }
+    .mark-light { background: #F1F5F9; }
+
+    /* ── Palette ── */
+    .palette { display: flex; gap: 10px; flex-wrap: wrap; }
+    .swatch  { width: 72px; }
+    .swatch-block {
+      width: 72px; height: 72px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 7px;
+    }
+    .swatch-name { font-size: 8.5px; color: var(--muted); line-height: 1.5; }
+    .swatch-role { font-size: 7.5px; color: var(--indigo); line-height: 1.4; margin-top: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* ── Social / hero wraps ── */
+    .social-wrap {
+      width: 100%;
+      aspect-ratio: 1200 / 630;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    /* ── Two-col ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+
+    /* ── Badges ── */
+    .badge-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+    .badge-item { display: flex; flex-direction: column; gap: 10px; }
+
+    @media (max-width: 760px) {
+      body { padding: 32px 20px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="grid">
+
+  <!-- ══════════════════════════════════════
+       DOCUMENT HEADER
+  ══════════════════════════════════════ -->
+  <p class="page-title">Zenzic &middot; Brand System &middot; v0.7.0 &middot; Obsidian Maturity</p>
+
+
+  <!-- ══════════════════════════════════════
+       LOGOMARK
+       The Zenzic Artifact — four quadrants
+       bisected by a diagonal slash.
+       Concept: two systems, one safe harbor.
+       Harbor Cyan (top-left) meets
+       Sentinel Indigo (remaining quadrants).
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">Logomark &mdash; The Zenzic Artifact</span>
+    <span class="label">4-quadrant isometric identity &middot; diagonal slash cut &middot; Harbor Cyan &rarr; Sentinel Indigo</span>
+
+    <div class="logo-row">
+
+      <!-- PRIMARY: Dark background, 120 px -->
+      <div class="logo-variant">
+        <div class="mark-dark" style="width:120px;height:120px;border-radius:4px;display:flex;align-items:center;justify-content:center">
+          <svg width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="br-d120"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+              <mask id="sl-d120">
+                <rect x="0" y="0" width="200" height="200" fill="white"/>
+                <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+              </mask>
+            </defs>
+            <g mask="url(#sl-d120)">
+              <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+              <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+              <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+              <g clip-path="url(#br-d120)">
+                <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <span class="label-inline">Dark &middot; 120 px</span>
+      </div>
+
+      <!-- LIGHT BACKGROUND, 120 px -->
+      <div class="logo-variant">
+        <div class="mark-light" style="width:120px;height:120px;border-radius:4px;display:flex;align-items:center;justify-content:center">
+          <svg width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="br-l120"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+              <mask id="sl-l120">
+                <rect x="0" y="0" width="200" height="200" fill="white"/>
+                <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+              </mask>
+            </defs>
+            <g mask="url(#sl-l120)">
+              <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+              <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+              <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+              <g clip-path="url(#br-l120)">
+                <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <span class="label-inline">Light &middot; 120 px</span>
+      </div>
+
+      <!-- FAVICON SIZES: 48 / 32 / 16 -->
+      <div class="logo-variant">
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+
+          <!-- 48 px -->
+          <div>
+            <div class="mark-dark" style="width:48px;height:48px;border-radius:3px;display:flex;align-items:center;justify-content:center">
+              <svg width="32" height="32" viewBox="0 0 200 200" fill="none">
+                <defs>
+                  <clipPath id="br-48"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+                  <mask id="sl-48">
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+                  </mask>
+                </defs>
+                <g mask="url(#sl-48)">
+                  <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+                  <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <g clip-path="url(#br-48)">
+                    <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <span class="label-inline">48 px</span>
+          </div>
+
+          <!-- 32 px -->
+          <div>
+            <div class="mark-dark" style="width:32px;height:32px;border-radius:2px;display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 200 200" fill="none">
+                <defs>
+                  <clipPath id="br-32"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+                  <mask id="sl-32">
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+                  </mask>
+                </defs>
+                <g mask="url(#sl-32)">
+                  <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+                  <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <g clip-path="url(#br-32)">
+                    <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <span class="label-inline">32 px</span>
+          </div>
+
+          <!-- 16 px — simplified: solid fill + single rule -->
+          <div>
+            <div class="mark-dark" style="width:16px;height:16px;border-radius:2px;display:flex;align-items:center;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 200 200" fill="none">
+                <defs>
+                  <clipPath id="br-16"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+                  <mask id="sl-16">
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+                  </mask>
+                </defs>
+                <g mask="url(#sl-16)">
+                  <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+                  <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+                  <g clip-path="url(#br-16)">
+                    <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <span class="label-inline">16 px</span>
+          </div>
+
+        </div>
+        <span class="label-inline" style="color:var(--muted)">Favicon sizes</span>
+      </div>
+
+      <!-- HORIZONTAL WORDMARK — Dark + Light variants stacked -->
+      <div class="logo-variant" style="flex:1;min-width:300px">
+
+        <!-- Dark -->
+        <div style="background:var(--obsidian);padding:20px 24px;border-radius:3px;border:1px solid var(--border);display:flex;align-items:center;gap:16px">
+          <svg width="36" height="36" viewBox="0 0 200 200" fill="none">
+            <defs>
+              <clipPath id="br-wm-d"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+              <mask id="sl-wm-d">
+                <rect x="0" y="0" width="200" height="200" fill="white"/>
+                <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+              </mask>
+            </defs>
+            <g mask="url(#sl-wm-d)">
+              <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+              <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+              <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+              <g clip-path="url(#br-wm-d)">
+                <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+              </g>
+            </g>
+          </svg>
+          <div style="border-left:1px solid var(--border);padding-left:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:#F8FAFC;letter-spacing:-0.03em;line-height:1">Zenzic</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#38bdf8;letter-spacing:0.2em;text-transform:uppercase;margin-top:5px">The Safe Harbor</div>
+          </div>
+        </div>
+
+        <!-- Light -->
+        <div style="background:#F1F5F9;padding:20px 24px;border-radius:3px;display:flex;align-items:center;gap:16px;margin-top:8px">
+          <svg width="36" height="36" viewBox="0 0 200 200" fill="none">
+            <defs>
+              <clipPath id="br-wm-l"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+              <mask id="sl-wm-l">
+                <rect x="0" y="0" width="200" height="200" fill="white"/>
+                <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+              </mask>
+            </defs>
+            <g mask="url(#sl-wm-l)">
+              <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+              <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+              <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+              <g clip-path="url(#br-wm-l)">
+                <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+              </g>
+            </g>
+          </svg>
+          <div style="border-left:1px solid #CBD5E1;padding-left:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:#0F172A;letter-spacing:-0.03em;line-height:1">Zenzic</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4f46e5;letter-spacing:0.2em;text-transform:uppercase;margin-top:5px">The Safe Harbor</div>
+          </div>
+        </div>
+
+        <span class="label-inline">Horizontal &middot; IBM Plex Mono &middot; Dark + Light</span>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SOCIAL CARD  1200 &times; 630
+       OG Image &mdash; "The Safe Harbor"
+       Dark base, quadrant mark, precision grid.
+  ══════════════════════════════════════ -->
+  <div>
+    <span class="label">Social Card &middot; OG Image &middot; 1200 &times; 630</span>
+    <div class="social-wrap">
+      <svg width="100%" height="100%" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="br-og"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
+          <mask id="sl-og">
+            <rect x="0" y="0" width="200" height="200" fill="white"/>
+            <polygon points="162,-5 138,-5 38,205 62,205" fill="black"/>
+          </mask>
+        </defs>
+
+        <!-- Background -->
+        <rect x="0" y="0" width="1200" height="630" fill="#0d1117"/>
+
+        <!-- Subtle grid -->
+        <g opacity="0.04">
+          <line x1="0"    y1="105" x2="1200" y2="105" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="0"    y1="210" x2="1200" y2="210" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="0"    y1="315" x2="1200" y2="315" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="0"    y1="420" x2="1200" y2="420" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="0"    y1="525" x2="1200" y2="525" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="200"  y1="0"   x2="200"  y2="630" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="400"  y1="0"   x2="400"  y2="630" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="600"  y1="0"   x2="600"  y2="630" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="800"  y1="0"   x2="800"  y2="630" stroke="#8B8FA8" stroke-width="0.5"/>
+          <line x1="1000" y1="0"   x2="1000" y2="630" stroke="#8B8FA8" stroke-width="0.5"/>
+        </g>
+
+        <!-- Decorative circle behind mark -->
+        <circle cx="600" cy="235" r="145" fill="#161b22"/>
+
+        <!-- Large icon, centered -->
+        <g transform="translate(500, 135)">
+          <g mask="url(#sl-og)">
+            <rect x="0"   y="0"   width="97" height="97" rx="10" fill="#38bdf8"/>
+            <rect x="103" y="0"   width="97" height="97" rx="10" fill="#4f46e5"/>
+            <rect x="0"   y="103" width="97" height="97" rx="10" fill="#4f46e5"/>
+            <g clip-path="url(#br-og)">
+              <polygon points="103,103 200,103 200,120 160,200 103,200" fill="#4f46e5"/>
+            </g>
+          </g>
+        </g>
+
+        <!-- Wordmark -->
+        <text x="600" y="442" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="82" fill="#f8fafc" text-anchor="middle" letter-spacing="-2">Zenzic</text>
+        <text x="600" y="492" font-family="ui-monospace,SFMono-Regular,monospace" font-weight="600" font-size="21" fill="#94a3b8" text-anchor="middle" letter-spacing="2">THE SAFE HARBOR FOR MARKDOWN DOCUMENTATION</text>
+        <text x="600" y="534" font-family="ui-monospace,SFMono-Regular,monospace" font-weight="500" font-size="16" fill="#38bdf8" text-anchor="middle" letter-spacing="4">v0.7.0 &middot; OBSIDIAN MATURITY</text>
+      </svg>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SENTINEL PALETTE + TYPOGRAPHY
+  ══════════════════════════════════════ -->
+  <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+
+    <!-- Left: Palette -->
+    <div>
+      <span class="section-title">Sentinel Palette</span>
+
+      <!-- Identity colors (from logomark) -->
+      <p class="label" style="margin-bottom:12px">Identity</p>
+      <div class="palette" style="margin-bottom:24px">
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#38bdf8"></div>
+          <div class="swatch-name">Harbor&nbsp;Cyan<br>#38bdf8</div>
+          <div class="swatch-role">Z1xx &middot; Links</div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#4f46e5"></div>
+          <div class="swatch-name">Sentinel&nbsp;Indigo<br>#4f46e5</div>
+          <div class="swatch-role">Primary Brand</div>
+        </div>
+
+      </div>
+
+      <!-- Signal colors (exit codes & diagnostics) -->
+      <p class="label" style="margin-bottom:12px">Signals</p>
+      <div class="palette" style="margin-bottom:24px">
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#FF3B30"></div>
+          <div class="swatch-name">Blood<br>#FF3B30</div>
+          <div class="swatch-role">Exit 3 &middot; Fatal</div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#FF2D73"></div>
+          <div class="swatch-name">Magenta<br>#FF2D73</div>
+          <div class="swatch-role">Exit 2 &middot; Shield</div>
+        </div>
+
+      </div>
+
+      <!-- Surface colors -->
+      <p class="label" style="margin-bottom:12px">Surface</p>
+      <div class="palette">
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#0D0D0F;border-color:rgba(255,255,255,0.12)"></div>
+          <div class="swatch-name">Obsidian<br>#0D0D0F</div>
+          <div class="swatch-role">Dark BG</div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#1E1E2E;border-color:rgba(255,255,255,0.1)"></div>
+          <div class="swatch-name">Slate<br>#1E1E2E</div>
+          <div class="swatch-role">Surface</div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#8B8FA8;border-color:rgba(255,255,255,0.06)"></div>
+          <div class="swatch-name">Zinc<br>#8B8FA8</div>
+          <div class="swatch-role">Muted Text</div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-block" style="background:#E2E8F0;border-color:rgba(0,0,0,0.15)"></div>
+          <div class="swatch-name">Ghost<br>#E2E8F0</div>
+          <div class="swatch-role">Primary Text</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: Typography -->
+    <div>
+      <span class="section-title">Typography System</span>
+
+      <!-- Display -->
+      <div>
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Display &middot; Barlow Condensed</p>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:700;color:var(--lead);line-height:1;letter-spacing:1px">ZENZIC</p>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:300;color:var(--cyan);letter-spacing:1px;margin-top:4px">The Safe Harbor</p>
+      </div>
+
+      <!-- Code / UI -->
+      <div style="margin-top:24px">
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Code / UI &middot; IBM Plex Mono</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--lead);line-height:2">SENTINEL &middot; SHIELD &middot; HARBOR<br><span style="color:var(--cyan)">uvx zenzic check all ./docs</span><br><span style="color:var(--muted)">v0.7.0 &middot; obsidian maturity &middot; exit 0</span></p>
+      </div>
+
+      <!-- Labels -->
+      <div style="margin-top:24px">
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Labels &middot; Barlow Condensed 300</p>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:300;color:var(--muted);letter-spacing:0.28em;text-transform:uppercase;line-height:2">Z101 LINK BROKEN &middot; Z201 SHIELD SECRET<br>Z401 MISSING INDEX &middot; Z402 ORPHAN PAGE</p>
+      </div>
+
+      <!-- Scale -->
+      <div style="margin-top:24px;border-top:1px solid var(--rule);padding-top:20px">
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;font-family:'IBM Plex Mono',monospace">Scale specimen</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:500;color:var(--lead);line-height:1.2">24 · Heading</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--lead);line-height:1.4;margin-top:4px">16 · Subheading</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);line-height:1.6;margin-top:4px">13 · Body &mdash; the primary reading size</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.22em;text-transform:uppercase;line-height:1.6;margin-top:4px">09 · Label &middot; all caps &middot; tracked</p>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       OFFICIAL BADGES
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">Official Badges</span>
+    <span class="label">Static SVG &middot; for offline / enterprise deployments &middot; included in brand-kit.zip</span>
+
+    <div class="badge-row">
+
+      <div class="badge-item">
+        <img src="svg/zenzic-badge-shield.svg" alt="Zenzic Shield badge" height="20" style="display:block">
+        <span class="label-inline">Shield &middot; Binary gate: passing / failing</span>
+      </div>
+
+      <div class="badge-item">
+        <img src="svg/zenzic-badge-score.svg" alt="Zenzic Score badge" height="20" style="display:block">
+        <span class="label-inline">Score &middot; Quality metric 0–100</span>
+      </div>
+
+    </div>
+
+    <div style="margin-top:24px;border-top:1px solid var(--rule);padding-top:20px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8">Dynamic variants via Shields.io &rarr; see <a href="https://zenzic.dev/docs/how-to/add-badges/" style="color:var(--cyan);text-decoration:none">zenzic.dev/docs/how-to/add-badges/</a></p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8">Brand inquiries &rarr; <a href="mailto:brand@pythonwoods.dev" style="color:var(--indigo);text-decoration:none">brand@pythonwoods.dev</a></p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       USAGE LAWS
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">Usage Laws</span>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+
+      <div>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px">Do</p>
+        <ul style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:2;list-style:none;padding:0">
+          <li>&#10003;&nbsp; Use on high-contrast backgrounds</li>
+          <li>&#10003;&nbsp; Maintain the slash-cut geometry</li>
+          <li>&#10003;&nbsp; Keep the 4-quadrant color split</li>
+          <li>&#10003;&nbsp; Give the artifact room to breathe</li>
+          <li>&#10003;&nbsp; Write "Zenzic" with capital&nbsp;Z</li>
+        </ul>
+      </div>
+
+      <div>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--blood);margin-bottom:10px">Do Not</p>
+        <ul style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:2;list-style:none;padding:0">
+          <li>&#10007;&nbsp; Rotate or skew the artifact</li>
+          <li>&#10007;&nbsp; Apply drop-shadows or blur</li>
+          <li>&#10007;&nbsp; Recolor individual quadrants</li>
+          <li>&#10007;&nbsp; Place on low-contrast surfaces</li>
+          <li>&#10007;&nbsp; Write "zenzic", "ZENZIC", or "ZenZic"</li>
+        </ul>
+      </div>
+
+      <div>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Voice</p>
+        <ul style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:2;list-style:none;padding:0">
+          <li>&mdash;&nbsp; Surgical precision, never vague</li>
+          <li>&mdash;&nbsp; "The Safe Harbor", not "the linter"</li>
+          <li>&mdash;&nbsp; Exit codes, not "errors"</li>
+          <li>&mdash;&nbsp; Findings with Z-codes, always</li>
+          <li>&mdash;&nbsp; Silent on success, loud on failure</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- footer rule -->
+  <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;text-align:center;padding-bottom:8px">
+    Zenzic &middot; Open Source &middot; Apache-2.0 &middot; zenzic.dev &middot; brand@pythonwoods.dev
+  </p>
+
+</div>
+</body>
+</html>
