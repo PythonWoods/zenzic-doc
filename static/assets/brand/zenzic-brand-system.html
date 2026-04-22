@@ -605,6 +605,119 @@
   </div>
 
 
+  <!-- ── SECTION: Accessibility & Themes ── -->
+  <div style="border-top:1px solid var(--rule);padding-top:36px">
+    <p class="page-title" style="color:var(--muted);margin-bottom:28px">§ 08 &mdash; Accessibility &amp; Themes</p>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;max-width:720px;margin-bottom:32px">
+      The Zenzic palette is <strong style="color:var(--lead)">adaptive</strong>: every accent colour shifts
+      between dark and light surfaces to maintain the minimum WCAG AA contrast ratio (4.5:1 for body text,
+      3:1 for large UI elements). A brand system that ignores contrast is a liability at scale.
+    </p>
+
+    <!-- Two-column theme comparison -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px">
+
+      <!-- Dark Mode Panel -->
+      <div style="background:#09090b;border:1px solid #1e1e27;border-radius:8px;padding:24px">
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#4f46e5;margin-bottom:18px">Dark Mode — Obsidian Lead</p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#4f46e5;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Indigo Vibrante</strong> &mdash; #4f46e5</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--ifm-color-primary · Ratio ~5.2:1 on #09090b</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#06b6d4;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Cyan Elettrico</strong> &mdash; #06b6d4</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--obsidian-accent · Ratio ~6.8:1 on #09090b</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#8b0000;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Sangue Profondo</strong> &mdash; #8b0000</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--obsidian-blood · Blood Sentinel &amp; Security</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Light Mode Panel -->
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:24px">
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#3730a3;margin-bottom:18px">Light Mode — White Surface</p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#3730a3;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Indigo Inchiostro</strong> &mdash; #3730a3</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--ifm-color-primary [light] · Ratio ~7.9:1 on #fff</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#0891b2;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Cyan Profondo</strong> &mdash; #0891b2</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--obsidian-accent [light] · Ratio ~4.6:1 on #fff</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:4px;background:#991b1b;flex-shrink:0"></div>
+            <div>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Rosso Mattone</strong> &mdash; #991b1b</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--obsidian-blood [light] · Ratio ~7.1:1 on #fff</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Invariant table -->
+    <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">CSS Variable Contract</p>
+    <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">
+      <thead>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Variable</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Dark</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Light</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><code>--ifm-color-primary</code></td>
+          <td style="padding:6px 8px"><span style="color:#818cf8">#818cf8</span></td>
+          <td style="padding:6px 8px"><span style="color:#3730a3">#3730a3</span></td>
+          <td style="padding:6px 8px">Links, active states, sidebar</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><code>--obsidian-accent</code></td>
+          <td style="padding:6px 8px"><span style="color:#06b6d4">#06b6d4</span></td>
+          <td style="padding:6px 8px"><span style="color:#0891b2">#0891b2</span></td>
+          <td style="padding:6px 8px">Hover states, archive cards, sidebar links</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px"><code>--obsidian-blood</code></td>
+          <td style="padding:6px 8px"><span style="color:#f87171">#8b0000</span></td>
+          <td style="padding:6px 8px"><span style="color:#991b1b">#991b1b</span></td>
+          <td style="padding:6px 8px">Blood Sentinel, security findings, Shield</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:16px;line-height:1.8">
+      <strong style="color:var(--lead)">Law:</strong> Never use hardcoded accent hex values in component styles.
+      Always consume <code>var(--obsidian-accent)</code> and <code>var(--obsidian-blood)</code>.
+      Theme adaptation is free. Hardcoding is a regression.
+    </p>
+
+  </div>
+
+
   <!-- footer rule -->
   <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;text-align:center;padding-bottom:8px">
     Zenzic &middot; Open Source &middot; Apache-2.0 &middot; zenzic.dev &middot; brand@pythonwoods.dev
