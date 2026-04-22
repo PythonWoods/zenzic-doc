@@ -1,0 +1,195 @@
+---
+slug: beyond-the-siege-zenzic-v070-new-standard
+title: "Beyond the Siege: Why Zenzic v0.7.0 is the New Standard"
+authors: [pythonwoods]
+tags: [release, security, python, opensource]
+date: 2026-04-22
+description: >
+  After Operation Obsidian Stress hardened the Shield and the Obsidian Mirror audit
+  closed every documentation gap, one question remained: what does maturity look like?
+  This is why we called it v0.7.0 — and why it's the definitive reference point.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — Zenzic v0.7.0 "Obsidian Maturity"](/assets/social/social-card.png)
+
+:::info This post is exclusive to zenzic.dev
+This is the fourth and final installment of the Zenzic Engineering Series —
+published exclusively here. It documents what happened **after** the siege: the
+consolidation audit, the i18n fix, the Z404 universalization, and why this moment
+became v0.7.0 rather than v0.6.2.
+:::
+
+The [siege is over](/blog/ai-driven-siege-shield-postmortem). All four bypass vectors
+are closed. 1,046 tests pass. The Bastion holds.
+
+{/* truncate */}
+
+And then we found another bug.
+
+That is how software works. The question is not whether you'll find gaps after a major
+hardening effort — you will. The question is whether your process catches them before
+your users do, and whether you have the institutional discipline to close them without
+inflation.
+
+This is the story of what happened in the final weeks before v0.7.0, and why the
+version number itself carries meaning.
+
+## The Arc: From Sentinel to Maturity
+
+The Zenzic Engineering Series has documented a continuous thread:
+
+| Part | Topic | Version |
+| :--- | :--- | :--- |
+| [Part 1](/blog/hardening-the-documentation-pipeline) | Why Zenzic exists: the leaking pipe problem | v0.5.x Sentinel |
+| [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | Ripping the foundation out: Headless Architecture | v0.6.1rc2 Bastion |
+| [Part 3](/blog/ai-driven-siege-shield-postmortem) | The siege: 4 bypass vectors found and closed | v0.6.1rc2 → v0.6.1 |
+| Part 4 (this post) | The consolidation: what maturity actually means | **v0.7.0** |
+
+The version jump from v0.6.1 to v0.7.0 was not about features. It was about something
+more specific: the deliberate rejection of a framing.
+
+## Why Not v0.6.2?
+
+After the siege postmortem closed all four bypass vectors, the natural next step was a
+v0.6.2 patch release. The Zensical and MkDocs adapters needed Z404 coverage. The i18n
+configuration had a silent fallback bug. The navigation badge hadn't been updated in
+the bump script. These felt like small fixes.
+
+They weren't small. They were the difference between a system that claims to be a
+multi-engine Safe Harbor and a system that actually is one.
+
+Z404 (`CONFIG_ASSET_MISSING`) was originally implemented as Docusaurus-only — a direct
+contradiction of the engine-agnostic architecture Zenzic was built around. A tool that
+detects broken favicon references only in Docusaurus projects is not an agnostic tool.
+It is a Docusaurus tool with MkDocs support bolted on.
+
+The i18n silent fallback was worse. For months, the Italian locale of zenzic.dev was
+silently serving English content. The URL changed. The content didn't. The bug was in
+`docusaurus.config.ts` — `htmlLang: 'it-IT'` without an explicit `path: 'it'` caused
+Docusaurus to look for translations in `i18n/it-IT/` (which doesn't exist) and fall
+back silently to English. The Italian documentation was invisible.
+
+These are not patch-level problems. They are foundational consistency failures in a
+tool built around the premise that documentation quality is measurable and enforceable.
+
+## The Obsidian Mirror Audit
+
+The final pre-release audit — internally called the Obsidian Mirror Pass — was
+structured around a simple question: does every claim Zenzic makes about itself hold
+when verified against the actual state of the codebase, the documentation, and the
+published site?
+
+The audit found:
+
+**Z404 engine gap.** The finding code existed. The implementation was Docusaurus-only.
+MkDocs `theme.favicon` and `theme.logo` were not checked. Zensical `[project].favicon`
+and `[project].logo` were not checked. The fix added `check_config_assets()` to both
+`_mkdocs.py` and `_zensical.py`, and unified the CLI dispatch to cover all three
+engines. Lab Acts 9 and 10 were added to demonstrate the fix.
+
+**i18n silent fallback.** Diagnosed via `.docusaurus/i18n.json` — the `translate: false`
+flag confirmed the Italian locale was not being discovered. Fix: add `path: 'it'`
+explicitly to `localeConfigs`. Documented as institutional memory in the README and
+the FAQ (EN + IT). Added to the PR checklist.
+
+**Navbar badge drift.** The version bump script correctly updated the footer and package
+metadata but missed the `>v{version}<` HTML badge in the navbar. `v0.6.2` persisted in
+the navbar after the v0.7.0 bump. Fixed in the bump script.
+
+**"True Stable" framing rejected.** Early drafts of the release notes used the phrase
+"True Stable" to describe v0.7.0. The phrase was removed. Stability is not a
+declaration — it is an ongoing epistemic posture. Calling a release "True Stable"
+implies that previous releases were somehow dishonestly stable, and that future work
+won't find gaps. Both implications are false. The correct framing: v0.7.0 is
+**Obsidian Maturity** — a point of consolidation, not an arrival.
+
+## What v0.7.0 Actually Is
+
+```
+zenzic check all ./docs
+```
+
+That command now works correctly against four engine types, with:
+
+| Capability | Status |
+| :--- | :--- |
+| MkDocs adapter | Z404 asset checking added |
+| Docusaurus v3 adapter | Z404 (existing), versioning, @site/ alias, slug logic |
+| Zensical adapter | Z404 asset checking added |
+| Standalone Mode | Orphan detection disabled (no nav contract) |
+| Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
+| i18n locale discovery | `path` config enforced; silent fallback documented |
+| Lab (interactive showroom) | 10 Acts covering all engine types |
+| Test suite | 1,127 passing tests |
+| Runtime dependencies | 5 |
+| Subprocess calls | 0 |
+
+The engine-agnostic claim is now verifiable, not aspirational.
+
+## The Vanilla-to-Standalone Sunset
+
+This release also completes the `engine = "vanilla"` → `engine = "standalone"` migration.
+The migration guard in `_factory.py` that raised `ConfigurationError [Z000]` with a
+clear remediation message has been removed entirely in v0.7.0. The guard existed in
+v0.6.x to guide users through the breaking change. It served its purpose. It's gone.
+
+"Standalone Mode" is the canonical identity for documentation projects without a
+declared build system. It is not a fallback. It is not a default. It is a first-class
+engine mode with its own adapter, its own Lab Act, and its own documentation.
+
+## The Institutional Memory Protocol
+
+One pattern that emerged clearly during the Obsidian Mirror audit: the gap between
+what the tooling enforces and what the team remembers is where the worst bugs live.
+
+The i18n silent fallback had been present for months. The navbar badge drift had
+been present since the v0.7.0 bump. Neither was caught by the existing test suite
+because neither was tested — they were assumed.
+
+The fix was not just to close the bugs. It was to encode the knowledge:
+
+- The i18n trap is now in the README troubleshooting section, the PR checklist, and the
+  FAQ (English and Italian).
+- The bump script gap is documented in the script itself and the checklist.
+- The copilot-instructions.md (agent guidelines) carries the full sprint history,
+  including the root cause, the fix, and the lesson.
+
+A process that catches bugs is valuable. A process that prevents the same bug from
+recurring is more valuable. The institutional memory protocol is how you get from the
+first to the second.
+
+## What Comes Next
+
+v0.7.0 is not an ending. It is a reference point. The Obsidian series has established:
+
+- A verified security architecture (zero subprocesses, non-bypassable exit codes)
+- A hardened credential scanner (8-step normalization, 4 bypass vectors closed)
+- A universal engine abstraction (4 engines, Z404 across all)
+- A documented i18n invariant
+- A Quality Score metric for regression detection
+
+The next series will follow a different question: not "is the documentation secure?"
+but "does the documentation make sense?" Adaptive rule engines. Intent-aware analysis.
+What does a linter look like when it starts understanding the content it reads, not just
+the structure it imposes?
+
+That work begins after this release is stable. In the meantime: run Zenzic against your
+docs. See what it finds. The pipe is probably still leaking somewhere — before your
+users find it.
+
+```bash
+pip install zenzic
+zenzic check all
+```
+
+---
+
+| | |
+|---|---|
+| **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
+| **Documentation** | [zenzic.dev](https://zenzic.dev/) |
+| **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
+| **Changelog** | [v0.7.0 Release Notes](https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0) |
+
+_Exclusive to zenzic.dev — the fourth and final chapter of the Zenzic Engineering Series._
