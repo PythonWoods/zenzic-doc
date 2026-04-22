@@ -1,0 +1,62 @@
+---
+slug: zenzic-v060a1-the-sentinel
+title: "Zenzic v0.6.0a1 — The Sentinel"
+authors: [pythonwoods]
+tags: [engineering, python, opensource]
+date: 2026-01-15
+description: >
+  The first alpha of the Sentinel era. Zenzic v0.6.0a1 introduces the core
+  architecture — pure Python, no subprocesses, engine-agnostic — and establishes
+  the three non-negotiable pillars of the Safe Harbor.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Zenzic — The Sentinel](/assets/social/social-card.png)
+
+:::info Alpha Chronicle
+This is the founding milestone record — not a stable release announcement. `v0.6.0a1` was the alpha that codified the Safe Harbor philosophy. The first stable release is **[v0.7.0 — Obsidian Maturity](/blog/beyond-the-siege-zenzic-v070-new-standard)**.
+:::
+
+**v0.6.0a1 — The Sentinel** is the founding alpha: the release that crystallised the
+philosophy of Zenzic from a prototype into a disciplined engineering system.
+
+{/* truncate */}
+
+## What shipped
+
+This alpha established three architectural pillars that remain non-negotiable to this day:
+
+1. **Lint the Source** — Zenzic never runs the build. It reads raw Markdown and configuration
+   files directly. HTML output is never trusted.
+2. **No Subprocesses** — 100% pure Python. No `subprocess.run`, no Node.js execution,
+   no external process calls in the hot path.
+3. **Pure Functions First** — Deterministic logic. No I/O inside link-validation loops.
+
+### Core capabilities in v0.6.0a1
+
+| Feature | Status |
+|:--------|:-------|
+| `zenzic check all` — multi-mode file scan | ✅ Alpha |
+| Shield credential scanner (exit code 2/3) | ✅ Alpha |
+| MkDocs adapter | ✅ Alpha |
+| Standalone adapter (no build config) | ✅ Alpha |
+| Finding codes (`Zxxx` scheme) | 🚧 Prototype |
+| Virtual Site Map (VSM) | 🚧 Prototype |
+
+### The Sentinel identity
+
+The "Sentinel" codename captured the philosophy: an always-on guard at the source
+boundary, not an inspector of finished output. The Sentinel does not care how the
+site renders. It cares whether the source is honest.
+
+The Shield — the credential scanner — was the first concrete expression of that posture:
+a module that exits with code 2 on secrets detected and code 3 on a Blood Sentinel
+(fatal leak pattern), before any documentation build can begin.
+
+## What came next
+
+The critical groundwork laid in v0.6.0a1 — especially the `find_repo_root()` discovery
+protocol (ADR 003) and the two-phase `zenzic init` bootstrap sequence — proved solid
+enough to survive two major hardening passes without architectural change.
+
+Read the full technical story: [Your Documentation is a Leaking Pipe](/blog/hardening-the-documentation-pipeline)

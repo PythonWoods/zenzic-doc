@@ -1,0 +1,74 @@
+---
+slug: zenzic-v061rc2-obsidian-bastion
+title: "Zenzic v0.6.1rc2 — Obsidian Bastion"
+authors: [pythonwoods]
+tags: [security, devtools]
+date: 2026-03-15
+description: >
+  La release candidate Bastion. Zenzic v0.6.1rc2 rimuove l'assunzione
+  single-engine e la sostituisce con un Porto Sicuro multi-engine completo,
+  con il Zensical Transparent Proxy e il supporto enterprise per Docusaurus.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Zenzic — Obsidian Bastion](/assets/social/social-card.png)
+
+:::info Cronaca Release Candidate
+Questo è il record ingegneristico della release candidate `v0.6.1rc2` — non un annuncio
+di versione stabile. Questo ciclo ha consegnato l'architettura multi-engine e l'audit
+avversariale dello Shield. La prima versione stabile è
+**[v0.7.0 — Obsidian Maturity](/blog/beyond-the-siege-zenzic-v070-new-standard)**.
+:::
+
+**v0.6.1rc2 — Obsidian Bastion** è la release che ha trasformato Zenzic da un linter
+single-engine capace a un genuino Porto Sicuro multi-engine.
+
+{/* truncate */}
+
+## Il cambio architetturale
+
+Il cambiamento definitivo del ciclo Bastion è stato il rifiuto di un'assunzione nascosta:
+che ogni progetto che usa Zenzic avesse un unico motore di documentazione conoscibile.
+
+Quell'assunzione si è rotta nel momento in cui abbiamo provato Zensical — un engine
+compatibile con MkDocs ma con la propria superficie di configurazione. La correzione
+non era aggiungere un altro adapter. Era ripensare l'intero contratto degli adapter.
+
+### Headless Architecture (Pilastro 1, applicato)
+
+Ogni adapter è stato refactorizzato per ricevere un oggetto di contesto pre-costruito —
+`BuildContext` — invece di leggere i file di configurazione a runtime. Questo ha
+eliminato l'ultima classe di I/O nel percorso critico e ha reso il sistema
+deterministicamente testabile.
+
+### Novità in v0.6.1rc2
+
+| Funzionalità | Note |
+|:-------------|:-----|
+| Adapter Zensical (`engine = "zensical"`) | Parsing completo di `zensical.toml` |
+| Zensical Transparent Proxy | `engine = "zensical-bridge"` per compatibilità nav MkDocs |
+| Adapter Docusaurus enterprise | Docs versionati, alias `@site/`, allineamento slug |
+| Z401 `MISSING_DIRECTORY_INDEX` | Guardrail SEO: ogni directory deve avere una landing page |
+| Z402 `ORPHAN_PAGE` | Rileva pagine dichiarate ma non raggiungibili dall'albero di nav |
+| Finding codes (`Zxxx`) formalizzati | Tutti i 30+ diagnostici assegnati in `codes.py` |
+| Zenzic Lab (9 Atti) | Showcase interattivo di onboarding a zero config |
+| Standalone Mode | Sostituisce l'identità Vanilla rimossa |
+| `uvx zenzic check all ./path` | Percorso di curiosità primario con zero friction di installazione |
+
+### La purga Vanilla
+
+Il nome legacy `engine = "vanilla"` è stato rimosso. I progetti che lo usano ricevono
+ora un `ConfigurationError [Z000]` con una guida di migrazione chiara. Tutto il testo
+rivolto agli utenti è stato aggiornato a "Standalone Mode".
+
+### Operation Obsidian Stress
+
+Durante il ciclo v0.6.1rc2, un audit avversariale guidato da AI ha trovato **quattro
+vettori di bypass** nel credential scanner Shield. Tutti e quattro sono stati chiusi
+prima che la release candidate fosse finalizzata. Il post-mortem completo è pubblicato qui:
+
+→ [Abbiamo Messo il Nostro Documentation Linter Sotto un Assedio AI](/blog/ai-driven-siege-shield-postmortem)
+
+La storia architetturale completa del ciclo Bastion:
+
+→ [Cosa Succede Quando Strappi le Fondamenta a uno Strumento di Sicurezza](/blog/docs-pipeline-security-risk-obsidian-bastion)

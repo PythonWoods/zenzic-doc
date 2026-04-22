@@ -413,3 +413,75 @@ table thead tr {
   transform: translateY(-4px);
   box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.55), 0 0 14px rgba(79, 70, 229, 0.12);
 }
+
+/* ── Obsidian Journal — Semantic Tag Colours ── */
+/* Release → Indigo (brand primary) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
+a.tag_oVPq[href*="/blog/tags/release"] { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.35); }
+
+/* Security → Blood (#8b0000 lightened for contrast) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
+a.tag_oVPq[href*="/blog/tags/security"] { background: rgba(139, 0, 0, 0.15); color: #f87171; border-color: rgba(139, 0, 0, 0.35); }
+
+/* Engineering → Cyan */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/engineering"],
+a.tag_oVPq[href*="/blog/tags/engineering"] { background: rgba(6, 182, 212, 0.12); color: #22d3ee; border-color: rgba(6, 182, 212, 0.3); }
+
+/* Post-Mortem → Bone white (muted) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/post-mortem"],
+a.tag_oVPq[href*="/blog/tags/post-mortem"] { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.25); }
+
+/* Community → Emerald */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/community"],
+a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+
+/* Shared tag chip base — dark mode */
+[data-theme='dark'] .tag_oVPq {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+/* ── Obsidian Journal — Blog List Card Layout ── */
+/* Obsidian Lead header on blog post pages */
+[data-theme='dark'] .blog-post-page header,
+[data-theme='dark'] article header {
+  border-bottom: 1px solid rgba(79, 70, 229, 0.15);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Card separation between posts in the blog list */
+[data-theme='dark'] article.margin-bottom--xl {
+  border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem !important;
+}
+
+/* Hover: title brightens to Electric Cyan */
+[data-theme='dark'] article h2 a:hover {
+  color: #22d3ee;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Card container subtle glow on hover */
+[data-theme='dark'] article.margin-bottom--xl:hover {
+  border-bottom-color: rgba(79, 70, 229, 0.35);
+  transition: border-color 0.25s ease;
+}
+
+/* Blog post title colour — Indigo consistent */
+[data-theme='dark'] article h2 a {
+  color: var(--ifm-color-primary-lighter);
+  transition: color 0.2s ease;
+}
+
+/* Blog header background — Obsidian Lead */
+[data-theme='dark'] .hero.hero--primary,
+[data-theme='dark'] .blogPostContainer header {
+  background: #09090b;
+}

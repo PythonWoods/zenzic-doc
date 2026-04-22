@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+#
+# Obsidian Journal — Semantic Tag Registry
+# Colours are keyed to the Sentinel Palette and the CLI UIPalette.
+
+release:
+  label: "Release"
+  permalink: /release
+  description: "🚀 Stable version announcements and release notes."
+
+security:
+  label: "Security"
+  permalink: /security
+  description: "🛡️ Shield updates, Blood Sentinel findings, and security advisories."
+
+engineering:
+  label: "Engineering"
+  permalink: /engineering
+  description: "⚙️ Technical deep dives into Zenzic architecture and design."
+
+community:
+  label: "Community"
+  permalink: /community
+  description: "🤝 Brand, Diátaxis, and contribution milestones."
+
+post-mortem:
+  label: "Post-Mortem"
+  permalink: /post-mortem
+  description: "💀 Failure reports, siege recaps, and lessons learned."
+
+python:
+  label: Python
+  permalink: /python
+  description: "Posts about Python internals, patterns, and ecosystem."
+
+opensource:
+  label: Open Source
+  permalink: /opensource
+  description: "Open source practices, licensing, and community building."
+
+devtools:
+  label: DevTools
+  permalink: /devtools
+  description: "Developer tooling, CI/CD, and automation."
+
+markdown:
+  label: Markdown
+  permalink: /markdown
+  description: "Markdown authoring, linting, and documentation pipelines."
