@@ -125,5 +125,37 @@ if brand_changed:
 else:
     print(f"  ⚠  static/assets/brand/zenzic-brand-system.html: nothing to update, skipping")
 
+# 8. Social card SVGs — version text (both dark and light variants)
+for svg_path in ('static/assets/social/social-card.svg',
+                 'static/assets/social/social-card-light.svg'):
+    replace_file(svg_path, f'v{old}', f'v{new}')
+    if m_old and m_new and old_code != new_code:
+        # Also update codename in ALL CAPS (used in SVG text elements)
+        p = Path(svg_path)
+        c = p.read_text()
+        upper_old = old_code.upper()
+        upper_new = new_code.upper()
+        if upper_old in c:
+            p.write_text(c.replace(upper_old, upper_new))
+            changes += 1
+            print(f"  ✓  {svg_path} (codename ALL-CAPS)")
+
+# 9. Regenerate social card PNGs from updated SVGs
+print("\nRegenerating social card PNGs via cairosvg …")
+try:
+    import cairosvg as _svg
+    for dark_light in (('static/assets/social/social-card.svg',
+                         'static/assets/social/social-card.png'),
+                        ('static/assets/social/social-card-light.svg',
+                         'static/assets/social/social-card-light.png')):
+        _svg.svg2png(url=dark_light[0], write_to=dark_light[1],
+                     output_width=1200, output_height=630)
+        changes += 1
+        print(f"  ✓  {dark_light[1]}")
+except ImportError:
+    print("  ⚠  cairosvg not installed — PNGs NOT regenerated. Run:")
+    print("       pip install cairosvg")
+    print("     then re-run this script or regenerate manually.")
+
 print(f"\n✓ Bump complete ({changes} file(s) updated). Run 'just verify' to validate.")
 PYEOF
