@@ -39,7 +39,18 @@
 }
 
 [data-theme='light'] {
+  /* ── D112/D113: Zinc Standard Typography — structure is neutral, cold, precise ── */
+  --ifm-heading-color: #18181b;           /* Zinc-900 — solid, authoritative */
+  --ifm-font-color-base: #27272a;         /* Zinc-800 — premium readability */
+  --ifm-color-emphasis-600: #71717a;      /* Zinc-500 — metadata, secondary */
+
+  /* ── D114: The Author's Signature — Indigo reserved for human identity ── */
+  --obsidian-author-signature: #3730a3;   /* Indigo-800 — deep, ink-grade */
+
+  /* Links/actions: Indigo for function */
   --ifm-color-primary: #3730a3;           /* Indigo inchiostro */
+  --ifm-link-color: #3730a3;
+
   --obsidian-accent: #0891b2;             /* Cyan profondo */
   --obsidian-blood: #991b1b;              /* Rosso mattone */
 }
@@ -650,4 +661,25 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 .blog-post-page article p {
   margin-bottom: 1.4rem;
   line-height: 1.8;
+}
+
+/* ── D113: Sidebar active link — Zinc-100 surface, Indigo text ── */
+[data-theme='light'] .menu__link--active {
+  color: var(--ifm-color-primary) !important;
+  background-color: #f4f4f5 !important;  /* Zinc-100 */
+}
+
+/* ── D114: The Author's Signature — Indigo-800 on author name ── */
+/* Applies in both light and dark but most impactful in light mode */
+[data-theme='light'] .avatar__name a,
+[data-theme='light'] .authorName_Y8Hr {
+  color: var(--obsidian-author-signature) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+[data-theme='light'] .avatar__name a:hover {
+  color: #4f46e5 !important;  /* Vibrant Indigo ignites on hover */
+  text-decoration: none;
 }

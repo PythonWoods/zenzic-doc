@@ -671,6 +671,33 @@
               <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--obsidian-blood [light] · Ratio ~7.1:1 on #fff</p>
             </div>
           </div>
+          <!-- Zinc typography scale -->
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0">
+            <p style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#71717a;margin-bottom:10px">Zinc Typography Scale</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:28px;border-radius:4px;background:#18181b;flex-shrink:0"></div>
+                <div>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:1px"><strong>Zinc-900</strong> &mdash; #18181b &mdash; <code>--ifm-heading-color</code></p>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">Headings — solid, authoritative, Ratio 18.1:1 on #fff</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:28px;border-radius:4px;background:#27272a;flex-shrink:0"></div>
+                <div>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:1px"><strong>Zinc-800</strong> &mdash; #27272a &mdash; <code>--ifm-font-color-base</code></p>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">Body text — premium readability, Ratio 14.7:1 on #fff</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:28px;border-radius:4px;background:#71717a;flex-shrink:0"></div>
+                <div>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:1px"><strong>Zinc-500</strong> &mdash; #71717a &mdash; <code>--ifm-color-emphasis-600</code></p>
+                  <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">Metadata, secondary text (WCAG AA large: 4.6:1)</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -689,6 +716,18 @@
       </thead>
       <tbody>
         <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><code>--ifm-heading-color</code></td>
+          <td style="padding:6px 8px"><span style="color:#fafafa">#fafafa</span></td>
+          <td style="padding:6px 8px"><span style="color:#18181b">#18181b</span></td>
+          <td style="padding:6px 8px">Headings — Zinc-900 in light, near-white in dark</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><code>--ifm-font-color-base</code></td>
+          <td style="padding:6px 8px"><span style="color:#e4e4e7">#e4e4e7</span></td>
+          <td style="padding:6px 8px"><span style="color:#27272a">#27272a</span></td>
+          <td style="padding:6px 8px">Body text — Zinc-800 in light, silk in dark</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
           <td style="padding:6px 8px"><code>--ifm-color-primary</code></td>
           <td style="padding:6px 8px"><span style="color:#818cf8">#818cf8</span></td>
           <td style="padding:6px 8px"><span style="color:#3730a3">#3730a3</span></td>
@@ -700,6 +739,12 @@
           <td style="padding:6px 8px"><span style="color:#0891b2">#0891b2</span></td>
           <td style="padding:6px 8px">Hover states, archive cards, sidebar links</td>
         </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><code>--obsidian-author-signature</code></td>
+          <td style="padding:6px 8px"><span style="color:#818cf8">—</span></td>
+          <td style="padding:6px 8px"><span style="color:#3730a3">#3730a3</span></td>
+          <td style="padding:6px 8px">The Author's Signature — reserved for human identity</td>
+        </tr>
         <tr>
           <td style="padding:6px 8px"><code>--obsidian-blood</code></td>
           <td style="padding:6px 8px"><span style="color:#f87171">#8b0000</span></td>
@@ -709,9 +754,25 @@
       </tbody>
     </table>
 
+    <!-- Material-Aware Doctrine -->
+    <div style="margin-top:24px;padding:16px;background:#111118;border:1px solid #1e1e27;border-left:3px solid #4f46e5;border-radius:6px">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#4f46e5;margin-bottom:10px">The Author's Signature Doctrine</p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin-bottom:6px">
+        <strong style="color:#e4e4e7">Zinc is the architecture</strong> — cold, industrial, precise.
+        It defines the document: headings, body, metadata.
+        Zinc conveys: <em>this content is technical, universal, trustworthy.</em>
+      </p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin-bottom:0">
+        <strong style="color:#818cf8">Indigo is the soul</strong> — the author's mark on the machine.
+        Reserved exclusively for <code>--obsidian-author-signature</code> on the creator's name.
+        In a field of Zinc, a single Indigo node draws the eye to its origin.
+        <em>One colour. One meaning. Non-negotiable.</em>
+      </p>
+    </div>
+
     <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:16px;line-height:1.8">
       <strong style="color:var(--lead)">Law:</strong> Never use hardcoded accent hex values in component styles.
-      Always consume <code>var(--obsidian-accent)</code> and <code>var(--obsidian-blood)</code>.
+      Always consume <code>var(--obsidian-accent)</code>, <code>var(--obsidian-blood)</code>, and <code>var(--obsidian-author-signature)</code>.
       Theme adaptation is free. Hardcoding is a regression.
     </p>
 
