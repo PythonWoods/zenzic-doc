@@ -26,8 +26,8 @@
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@tailwindcss/postcss": "^4.2.2",
-    "tailwindcss": "^4.2.2"
+    "@tailwindcss/postcss": "^4.2.4",
+    "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.0",
@@ -35,9 +35,9 @@
     "@docusaurus/types": "3.10.0",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",
-    "autoprefixer": "^10.4.27",
-    "postcss": "^8.5.9",
-    "typescript": "~6.0.2"
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "typescript": "~6.0.3"
   },
   "browserslist": {
     "production": [
