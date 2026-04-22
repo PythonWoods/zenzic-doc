@@ -5,10 +5,8 @@ authors: [pythonwoods]
 tags: [release, engineering, python, opensource]
 date: 2026-04-22
 description: >
-  Dopo che l'Operazione Obsidian Stress ha irrobustito lo Shield e l'audit Obsidian
-  Mirror ha chiuso ogni lacuna documentale, rimaneva una domanda: come appare la
-  maturità? Per questo l'abbiamo chiamata v0.7.0 — ed è il punto di riferimento
-  definitivo.
+  Dopo Obsidian Stress e il Mirror audit, rimaneva una domanda: come appare la
+  maturità? Ecco perché l'abbiamo chiamata v0.7.0 — il riferimento definitivo.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
@@ -23,7 +21,7 @@ questo momento è diventato v0.7.0 invece di v0.6.2.
 :::
 
 [L'assedio è finito](/blog/ai-driven-siege-shield-postmortem). Tutti e quattro i vettori
-di bypass sono chiusi. 1.046 test passano. Il Bastione regge.
+di bypass sono chiusi. 1.130+ test passano. Il Bastione regge.
 
 {/* truncate */}
 
@@ -76,10 +74,39 @@ Sicuro multi-engine e un sistema che **è** effettivamente tale.
 
 ## Il Sigillo di Ossidiana
 
+## Lo Standard Diagnostico: Codici Zxxx
+
+Introdotto come breaking change in v0.6.1, il sistema di codici `Zxxx` è lo standard
+consolidato in v0.7.0: ogni diagnostica emessa da Zenzic porta un identificatore
+machine-readable. Nessun codice stringa grezzo. Nessun finding silenzioso.
+
+| Range | Categoria | Esempi |
+|:------|:----------|:-------|
+| Z1xx | Integrità dei link | Z101 LINK_BROKEN, Z102 ANCHOR_MISSING, Z104 FILE_NOT_FOUND |
+| Z2xx | Sicurezza | Z201 SHIELD_SECRET, Z202 PATH_TRAVERSAL |
+| Z3xx | Integrità riferimenti | Z301 DANGLING_REF, Z302 DEAD_DEF |
+| Z4xx | Struttura | Z401 MISSING_DIRECTORY_INDEX, Z402 ORPHAN_PAGE, Z404 CONFIG_ASSET_MISSING |
+| Z5xx | Qualità contenuto | Z501 PLACEHOLDER, Z503 SNIPPET_ERROR |
+| Z9xx | Engine / sistema | Z902 RULE_TIMEOUT |
+
+Il registro risiede in `src/zenzic/core/codes.py` — unica fonte di verità.
+
+## La Ristrutturazione Diátaxis
+
+Il portale di documentazione è stato ristrutturato secondo il [framework Diátaxis](https://diataxis.fr/)
+— quattro modalità: Tutorial, How-To, Reference, Explanation. Tutti gli URL di sezione
+sono cambiati: `/docs/usage/` → `/docs/how-to/`, `/docs/guides/` → `/docs/how-to/`,
+`/docs/internals/architecture-overview/` → `/docs/explanation/architecture/`. Zenzic
+ha rilevato tre link obsoleti nel `README.md` non appena il bypass di esclusione
+globale `zenzic.dev` è stato rimosso. Lo strumento ha intercettato la propria deriva
+documentale.
+
+## Il Sigillo di Ossidiana (conclusione)
+
 v0.7.0 è la prima versione di Zenzic che può essere chiamata **stabile** senza riserve.
 
 Non perché sia priva di bug futuri — nessuna versione lo è. Ma perché i sistemi che
-garantisce sono stati verificati avversarialmente, i confini architetturali sono coerenti,
+garantisce sono stati messi alla prova con attacchi diretti, i confini architetturali sono coerenti,
 e il processo per mantenere quella coerenza è ora documentato e applicato.
 
 Il Porto Sicuro è operativo.

@@ -1,0 +1,66 @@
+---
+slug: zenzic-v060a1-the-sentinel
+title: "Zenzic v0.6.0a1 — The Sentinel"
+authors: [pythonwoods]
+tags: [engineering, python, opensource]
+date: 2026-04-12
+description: >
+  La prima alpha dell'era Sentinel. v0.6.0a1 introduce l'architettura core —
+  Python puro, nessun subprocess, engine-agnostic — e i tre pilastri non negoziabili.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+
+:::info[Cronaca Alpha]
+
+Questo è il record della fase Alpha — non un annuncio di versione stabile. `v0.6.0a1` è
+la alpha che ha codificato la filosofia del Porto Sicuro. La prima versione stabile è
+**[v0.7.0 — Obsidian Maturity](/blog/beyond-the-siege-zenzic-v070-new-standard)**.
+
+:::
+
+**v0.6.0a1 — The Sentinel** è la alpha fondatrice: la release che ha cristallizzato la
+filosofia di Zenzic da prototipo a sistema ingegneristico disciplinato.
+
+{/* truncate */}
+
+## Cosa è stato rilasciato
+
+Questa alpha ha stabilito tre pilastri architetturali che rimangono non negoziabili:
+
+1. **Lint the Source** — Zenzic non esegue mai la build. Legge direttamente i file
+   Markdown grezzi e le configurazioni. L'output HTML non viene mai fidato.
+2. **No Subprocesses** — 100% Python puro. Nessun `subprocess.run`, nessuna esecuzione
+   Node.js, nessuna chiamata a processi esterni nel percorso critico.
+3. **Pure Functions First** — Logica deterministica. Nessun I/O dentro i loop di
+   validazione dei link.
+
+### Funzionalità core in v0.6.0a1
+
+| Funzionalità | Stato |
+|:-------------|:------|
+| `zenzic check all` — scansione multi-modalità | ✅ Alpha |
+| Shield credential scanner (exit code 2/3) | ✅ Alpha |
+| Adapter MkDocs | ✅ Alpha |
+| Adapter Docusaurus v3 | ✅ Alpha |
+| Virtual Site Map (VSM) | 🚧 Prototipo |
+
+### L'identità Sentinel
+
+Il codename "Sentinel" ha catturato la filosofia: una guardia sempre attiva al confine
+del sorgente, non un ispettore dell'output finale. Il Sentinel non si preoccupa di come
+il sito viene renderizzato. Si preoccupa che il sorgente sia onesto.
+
+Lo Shield — il credential scanner — è stata la prima espressione concreta di questa
+postura: un modulo che termina con exit code 2 in caso di segreti rilevati e con
+exit code 3 per un Blood Sentinel (pattern di leak fatale), prima che qualsiasi build
+della documentazione possa iniziare.
+
+## Cosa è venuto dopo
+
+Le fondamenta critiche poste in v0.6.0a1 — in particolare il protocollo di discovery
+`find_repo_root()` (ADR 003) e la sequenza di bootstrap a due fasi di `zenzic init` —
+si sono dimostrate solide abbastanza da sopravvivere a due importanti passaggi di
+hardening senza modifiche architetturali.
+
+Leggi la storia tecnica completa: [La tua Documentazione è un Tubo che Perde](/blog/hardening-the-documentation-pipeline)

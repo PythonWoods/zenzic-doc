@@ -3,11 +3,10 @@ slug: zenzic-v061rc2-obsidian-bastion
 title: "Zenzic v0.6.1rc2 — Obsidian Bastion"
 authors: [pythonwoods]
 tags: [security, devtools]
-date: 2026-03-15
+date: 2026-04-16
 description: >
-  The Bastion release candidate. Zenzic v0.6.1rc2 rips out the single-engine
-  assumption and replaces it with a full multi-engine Safe Harbor, complete with
-  the Zensical Transparent Proxy and Docusaurus enterprise versioning support.
+  Zenzic v0.6.1rc2 replaces the single-engine assumption with a multi-engine
+  Safe Harbor — Zensical Proxy, enterprise Docusaurus, adversarial Shield audit.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
@@ -47,16 +46,30 @@ I/O in the hot path and made the system deterministically testable.
 | Docusaurus enterprise adapter | Versioned docs, `@site/` alias, slug alignment |
 | Z401 `MISSING_DIRECTORY_INDEX` | SEO guardrail: every directory must have a landing page |
 | Z402 `ORPHAN_PAGE` | Detects pages declared but unreachable from the nav tree |
-| Finding codes (`Zxxx`) formalised | All 30+ diagnostics assigned codes in `codes.py` |
 | Zenzic Lab (9 Acts) | Interactive zero-config onboarding showcase |
-| Standalone Mode | Replaces the removed Vanilla identity |
 | `uvx zenzic check all ./path` | Primary curiosity path with zero install friction |
 
-### The Vanilla purge
+### Shield hardening: four bypass vectors closed
 
-The legacy `engine = "vanilla"` name was removed. Projects using it now receive a
-`ConfigurationError [Z000]` with a clear migration guide. All user-facing copy was
-updated to "Standalone Mode".
+The security audit that ran concurrently with the Bastion architecture work found and
+closed four bypass vectors in the Shield credential scanner — the module responsible
+for detecting leaked credentials before any documentation build begins.
+
+| Vector | Codename | Attack method | Fix |
+|:-------|:---------|:--------------|:----|
+| Unicode format characters | ZRT-006 | Zero-width joiners (U+200D, U+200C, U+200B) inserted mid-token to break regex matching | Normaliser strips all Unicode category `Cf` characters before scanning |
+| HTML entity obfuscation | ZRT-006 | `&#65;&#75;` encoded credential prefixes bypass plain-text matching | `html.unescape()` decodes `&#NNN;` and `&#xHH;` entities in the normalisation pass |
+| Comment interleaving | ZRT-007 | HTML `<!-- -->` and MDX `{/* */}` comments inserted mid-token | Normaliser strips both comment forms before any pattern is applied |
+| Cross-line split detection | ZRT-007b | Secrets split across two consecutive lines evade single-line scanners | `scan_lines_with_lookback()` carries a 1-line lookback buffer; deduplication via seen-set |
+
+Two additional hardening measures were applied in this cycle:
+
+**Blood Sentinel (Exit 3).** A dedicated fatal exit code was formalised for architectural
+violations — `docs_dir` paths that escape the repository root now trigger Exit 3 before
+any scan begins. This is not a lint finding. It is a hard stop.
+
+**ReDoS protection.** Lines exceeding 1 MiB are silently truncated before regex matching,
+preventing catastrophic backtracking against adversarially crafted inputs.
 
 ### Operation Obsidian Stress
 

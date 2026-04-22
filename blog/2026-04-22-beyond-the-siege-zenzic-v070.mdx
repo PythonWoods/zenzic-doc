@@ -5,9 +5,8 @@ authors: [pythonwoods]
 tags: [release, engineering, python, opensource]
 date: 2026-04-22
 description: >
-  After Operation Obsidian Stress hardened the Shield and the Obsidian Mirror audit
-  closed every documentation gap, one question remained: what does maturity look like?
-  This is why we called it v0.7.0 — and why it's the definitive reference point.
+  After Obsidian Stress and the Mirror audit closed every gap, one question remained:
+  what does maturity look like? This is v0.7.0 — the definitive reference.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
@@ -98,6 +97,16 @@ the FAQ (EN + IT). Added to the PR checklist.
 metadata but missed the `>v{version}<` HTML badge in the navbar. `v0.6.2` persisted in
 the navbar after the v0.7.0 bump. Fixed in the bump script.
 
+**Documentation structure drift (Diátaxis restructure).** The documentation portal
+was restructured following the [Diátaxis framework](https://diataxis.fr/) — four
+clear modes: Tutorials, How-To Guides, Reference, and Explanation. Every section
+URL changed: `/docs/usage/` → `/docs/how-to/`, `/docs/guides/` → `/docs/how-to/`,
+`/docs/internals/architecture-overview/` → `/docs/explanation/architecture/`.
+Three links in `README.md` had been silently pointing at the old paths for weeks
+behind a blanket `zenzic.dev` exclusion bypass. When the exclusion was removed
+as part of the perimeter audit, Zenzic flagged all three immediately. The tool
+caught its own documentation drift.
+
 **"True Stable" framing rejected.** Early drafts of the release notes used the phrase
 "True Stable" to describe v0.7.0. The phrase was removed. Stability is not a
 declaration — it is an ongoing epistemic posture. Calling a release "True Stable"
@@ -122,11 +131,32 @@ That command now works correctly against four engine types, with:
 | Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
 | i18n locale discovery | `path` config enforced; silent fallback documented |
 | Lab (interactive showroom) | 10 Acts covering all engine types |
-| Test suite | 1,127 passing tests |
+| Test suite | 1,130+ passing tests |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
 
 The engine-agnostic claim is now verifiable, not aspirational.
+
+## The Diagnostic Standard: Zxxx Codes
+
+The `Zxxx` code scheme was introduced as a breaking change in v0.6.1 and is the
+established standard in v0.7.0: every diagnostic emitted by Zenzic carries a
+machine-readable identifier. No raw string codes. No silent findings. Every problem
+is named, categorised, and traceable.
+
+| Range | Category | Examples |
+| :--- | :--- | :--- |
+| Z1xx | Link integrity | Z101 LINK_BROKEN, Z102 ANCHOR_MISSING, Z104 FILE_NOT_FOUND |
+| Z2xx | Security | Z201 SHIELD_SECRET, Z202 PATH_TRAVERSAL |
+| Z3xx | Reference integrity | Z301 DANGLING_REF, Z302 DEAD_DEF |
+| Z4xx | Structure | Z401 MISSING_DIRECTORY_INDEX, Z402 ORPHAN_PAGE, Z404 CONFIG_ASSET_MISSING |
+| Z5xx | Content quality | Z501 PLACEHOLDER, Z503 SNIPPET_ERROR |
+| Z9xx | Engine / system | Z902 RULE_TIMEOUT |
+
+The registry lives in `src/zenzic/core/codes.py` — the single source of truth.
+Adding a diagnostic without registering its code is a protocol violation.
+This is what enterprise-grade means in practice: every finding is traceable,
+filterable, and auditable across releases.
 
 ## The Vanilla-to-Standalone Sunset
 

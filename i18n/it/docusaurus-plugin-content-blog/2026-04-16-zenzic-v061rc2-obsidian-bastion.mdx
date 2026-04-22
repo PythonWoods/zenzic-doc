@@ -1,0 +1,90 @@
+---
+slug: zenzic-v061rc2-obsidian-bastion
+title: "Zenzic v0.6.1rc2 — Obsidian Bastion"
+authors: [pythonwoods]
+tags: [security, devtools]
+date: 2026-04-16
+description: >
+  Zenzic v0.6.1rc2 rimuove l'assunzione single-engine costruendo un Porto Sicuro
+  multi-engine — Zensical Proxy, enterprise Docusaurus, audit Shield avversariale.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+
+:::info[Cronaca Release Candidate]
+
+Questo è il record ingegneristico della release candidate `v0.6.1rc2` — non un annuncio
+di versione stabile. Questo ciclo ha consegnato l'architettura multi-engine e l'audit
+avversariale dello Shield. La prima versione stabile è
+**[v0.7.0 — Obsidian Maturity](/blog/beyond-the-siege-zenzic-v070-new-standard)**.
+
+:::
+
+**v0.6.1rc2 — Obsidian Bastion** è la release che ha trasformato Zenzic da un linter
+single-engine capace a un genuino Porto Sicuro multi-engine.
+
+{/* truncate */}
+
+## Il cambio architetturale
+
+Il cambiamento definitivo del ciclo Bastion è stato il rifiuto di un'assunzione nascosta:
+che ogni progetto che usa Zenzic avesse un unico motore di documentazione conoscibile.
+
+Quell'assunzione si è rotta nel momento in cui abbiamo provato Zensical — un engine
+compatibile con MkDocs ma con la propria superficie di configurazione. La correzione
+non era aggiungere un altro adapter. Era ripensare l'intero contratto degli adapter.
+
+### Headless Architecture (Pilastro 1, applicato)
+
+Ogni adapter è stato refactorizzato per ricevere un oggetto di contesto pre-costruito —
+`BuildContext` — invece di leggere i file di configurazione a runtime. Questo ha
+eliminato l'ultima classe di I/O nel percorso critico e ha reso il sistema
+deterministicamente testabile.
+
+### Novità in v0.6.1rc2
+
+| Funzionalità | Note |
+|:-------------|:-----|
+| Adapter Zensical (`engine = "zensical"`) | Parsing completo di `zensical.toml` |
+| Zensical Transparent Proxy | `engine = "zensical-bridge"` per compatibilità nav MkDocs |
+| Adapter Docusaurus enterprise | Docs versionati, alias `@site/`, allineamento slug |
+| Z401 `MISSING_DIRECTORY_INDEX` | Guardrail SEO: ogni directory deve avere una landing page |
+| Z402 `ORPHAN_PAGE` | Rileva pagine dichiarate ma non raggiungibili dall'albero di nav |
+| Zenzic Lab (9 Atti) | Showcase interattivo di onboarding a zero config |
+| `uvx zenzic check all ./path` | Percorso di curiosità primario con zero friction di installazione |
+
+### Hardening dello Shield: quattro vettori di bypass chiusi
+
+L'audit di sicurezza condotto in parallelo con il lavoro architetturale Bastion ha trovato
+e chiuso quattro vettori di bypass nel credential scanner Shield — il modulo responsabile
+del rilevamento di credenziali esposte prima che qualsiasi build della documentazione inizi.
+
+| Vettore | Codice | Metodo d'attacco | Fix |
+|:--------|:-------|:-----------------|:----|
+| Caratteri formato Unicode | ZRT-006 | Joiners a larghezza zero (U+200D, U+200C, U+200B) inseriti a metà token per rompere il matching regex | Il normalizzatore elimina tutti i caratteri Unicode categoria `Cf` prima della scansione |
+| Offuscamento HTML entity | ZRT-006 | `&#65;&#75;` prefissi di credenziali codificati eludono il matching in chiaro | `html.unescape()` decodifica entità `&#NNN;` e `&#xHH;` nel passaggio di normalizzazione |
+| Interleaving di commenti | ZRT-007 | Commenti HTML `<!-- -->` e MDX `{/* */}` inseriti a metà token | Il normalizzatore elimina entrambe le forme di commento prima di applicare qualsiasi pattern |
+| Rilevamento split cross-line | ZRT-007b | Secrets spezzati su due righe consecutive eludono gli scanner a singola riga | `scan_lines_with_lookback()` mantiene un buffer lookback di 1 riga; deduplicazione tramite seen-set |
+
+Due misure di hardening aggiuntive sono state applicate in questo ciclo:
+
+**Blood Sentinel (Exit 3).** Un exit code fatale dedicato è stato formalizzato per le
+violazioni architetturali — i percorsi `docs_dir` che escono dalla root del repository
+attivano Exit 3 prima che inizi qualsiasi scansione. Non è un finding del linter.
+È un arresto immediato.
+
+**Protezione ReDoS.** Le righe superiori a 1 MiB vengono silenziosamente troncate prima
+del matching regex, prevenendo il backtracking catastrofico contro input costruiti
+appositamente per l'attacco.
+
+### Operation Obsidian Stress
+
+Durante il ciclo v0.6.1rc2, un audit avversariale guidato da AI ha trovato **quattro
+vettori di bypass** nel credential scanner Shield. Tutti e quattro sono stati chiusi
+prima che la release candidate fosse finalizzata. Il post-mortem completo è pubblicato qui:
+
+→ [Abbiamo Messo il Nostro Documentation Linter Sotto un Assedio AI](/blog/ai-driven-siege-shield-postmortem)
+
+La storia architetturale completa del ciclo Bastion:
+
+→ [Cosa Succede Quando Strappi le Fondamenta a uno Strumento di Sicurezza](/blog/docs-pipeline-security-risk-obsidian-bastion)

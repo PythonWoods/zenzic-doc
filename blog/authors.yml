@@ -2,7 +2,7 @@ pythonwoods:
   name: PythonWoods
   title: Creator of Zenzic
   url: https://github.com/PythonWoods
-  image_url: https://github.com/PythonWoods.png
+  image_url: /img/pythonwoods-logo.svg
   page: true
   socials:
     github: PythonWoods
