@@ -495,6 +495,25 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: color 0.2s ease;
 }
 
+/* D112 fix: blog list titles are <h2><a> — link color overrides heading-color.
+   Light mode: Zinc-900 for titles, Zinc-700 on hover (no Indigo bleed). */
+[data-theme='light'] article h2 a {
+  color: #18181b;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+[data-theme='light'] article h2 a:hover {
+  color: #3f3f46;
+  text-decoration: none;
+}
+
+/* Blog post page single title <h1> */
+[data-theme='light'] .blog-post-page h1 {
+  color: #18181b;
+}
+
 /* Blog header — very subtle separation, Obsidian Lead bg */
 [data-theme='dark'] .blog-post-page header,
 [data-theme='dark'] article header {
