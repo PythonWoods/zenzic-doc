@@ -1,0 +1,204 @@
+---
+slug: hardening-the-documentation-pipeline
+title: "Your Documentation is a Leaking Pipe (and you don't even know it)"
+authors: [pythonwoods]
+tags: [security, python, opensource, markdown, architecture]
+date: 2026-04-08
+description: >
+  The supply chain risk hiding between your Markdown source and your published docs —
+  and why every engineering team has it. The philosophy, threat model, and
+  architecture of Zenzic, a pure Python static analyzer for Markdown sources.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — The Zenzic Engineering Series](/assets/social/social-card.png)
+
+:::info This is Part 1 of the Zenzic Engineering Series
+Research conducted during the **v0.6.1rc2** pre-release cycle. All findings directly shaped the stability and features of **v0.7.0 "Obsidian Maturity"**.
+
+Cross-published on [Dev.to](https://dev.to/pythonwoods/hardening-the-documentation-pipeline-why-i-built-a-security-first-markdown-analyzer-in-pure-python-37h8) and [Medium](https://medium.com/zenzic-engineering/your-documentation-is-a-leaking-pipe-7c1d6f4a84d0). This edition is the **definitive version**, merging both publications.
+:::
+
+Every CI/CD pipeline has a security perimeter. Developers run static analysis on source
+code. They scan container images for CVEs. They audit dependencies for known
+vulnerabilities. They enforce secrets detection in commit hooks.
+
+And then they push raw, unvalidated Markdown files directly into a documentation
+build — and call it shipped.
+
+This is not a theoretical gap. It is the default posture of almost every engineering
+team I've observed. I built **Zenzic** to prove it — and fix it.
+
+{/* truncate */}
+
+## The Threat Model Nobody Talks About
+
+Consider the anatomy of a typical documentation credential leak.
+
+A contributor opens a pull request with new API documentation. The Markdown file
+contains a code example. Inside that example — copied from a local test, a Slack
+message, or a terminal session — there is a real API key. Not a placeholder. A live
+credential.
+
+The reviewer reads the prose. The reviewer doesn't read the key as a key — it's
+formatted as sample output, it blends into the noise. The PR merges. The docs build
+runs. The rendered HTML goes live. The key is now indexed by search engines.
+
+Now extend the threat model outward. What happens when a `docs_dir` configuration
+entry points to `../../../etc/`? Most documentation tools will simply start reading.
+What happens when a contributor submits a `.gitignore` entry designed to suppress
+certain files, but those files are present on the build server?
+
+These questions don't appear in the standard security checklist. They belong to a class
+of supply chain risk that sits precisely between source code and rendered output — where
+tooling is sparse and assumptions are dangerous.
+
+## ⚓ The Core Philosophy: "Lint the Source, not the Build"
+
+Most documentation tools analyze the generated HTML. This creates a "build driver
+dependency": if your generator (MkDocs, Hugo, Docusaurus) has a bug, your security
+validation breaks.
+
+Zenzic takes a different path. It analyzes the raw Markdown source **before the build
+starts**, building a **Virtual Site Map (VSM)** directly from the filesystem. The core
+never knows which engine it's analyzing. It can't be tricked by disguising content as
+engine-specific directives.
+
+## Why Pure Python Is a Security Decision
+
+Most tooling in the documentation space runs through execution engines. Markdown
+configuration files get evaluated. Node.js processes get spawned. Shell commands get
+invoked to query version control state.
+
+Each of these is a trust boundary. The moment your analyzer executes code to understand
+your content, it has accepted the premise that the content can be trusted to execute
+safely. This is circular reasoning — particularly dangerous when the content being
+analyzed comes from external contributors.
+
+Zenzic was designed from day one around a single architectural invariant:
+**zero subprocess execution, ever.**
+
+No `node` process to evaluate Docusaurus configuration. No `git check-ignore` to
+interpret `.gitignore` rules. No shell calls. Every piece of analysis runs in the Python
+interpreter, on data read as plain bytes and treated as untrusted input throughout.
+
+This is not a convenience trade-off. It is a security model.
+
+## The Architecture of Suspicion
+
+Zenzic's core operates under what I think of as **architectural suspicion**: every input
+is assumed hostile until proven otherwise, and the analysis pipeline is designed to fail
+safely when something unexpected appears.
+
+Three properties define this architecture:
+
+**Engine-agnostic analysis.** Zenzic never imports or executes a documentation
+framework. Engine-specific semantics — how MkDocs resolves nav entries, how Docusaurus
+handles locale trees — live in thin, replaceable adapters. The core never has opinions
+about what "valid documentation" means beyond the content itself.
+
+**Deterministic file discovery.** File traversal is one of the most quietly dangerous
+operations in any build tool. Zenzic's discovery layer enforces a four-level exclusion
+hierarchy: immutable system guardrails (no code can read inside `.git/` or
+`node_modules/`), VCS ignore rules parsed in pure Python, project configuration, and
+runtime overrides. The hierarchy is not advisory — it is enforced at the type boundary.
+No `ExclusionManager`, no scan.
+
+**Non-bypassable exit codes.** When Zenzic detects a credential leak, it exits with
+code 2 — the Shield. When it detects a path traversal attempt, it exits with code 3 —
+the Blood Sentinel. These codes cannot be suppressed, downgraded, or configured away.
+The perimeter holds, or the build fails.
+
+## 🩸 The Blood Sentinel: Classifying Intent
+
+A broken link is a maintenance issue. A link that probes the host OS is a security
+incident.
+
+Zenzic's classification engine detects if a resolved path targets sensitive OS
+directories (`/etc/`, `/proc/`, `/var/`, etc.). Instead of a generic error, it triggers
+a dedicated **Exit Code 3** — crucial for preventing accidental leakage of
+infrastructure details or template injection probes in automated pipelines.
+
+## 🔐 The Shield: Multi-Stream Credential Scanning
+
+Documentation is a magnet for "temporary" credentials that end up being permanent.
+Zenzic's Shield scans every line and fenced code block for 9 families of secrets:
+
+- AWS, GitHub, Stripe, and OpenAI keys
+- GitLab Personal Access Tokens
+- Slack tokens and Google API keys
+- Hex-encoded payloads (`\xNN` escape sequences) for obfuscated strings
+- **Exit Code 2**: A credential breach is a build-blocking, non-suppressible event
+
+## 🌀 Graph Integrity and $O(V+E)$ Complexity
+
+In large documentation sets, link cycles are common. Zenzic implements an **iterative
+DFS** with a three-color marking system to avoid recursion limits. Pre-computing the
+cycle registry in Phase 1.5 allows Phase 2 (Validation) to remain $O(1)$ per-query —
+even massive docsets validate in seconds.
+
+## 🇮🇹 Dogfooding i18n
+
+We believe in bilingual documentation. Zenzic supports native i18n with "Ghost Routes"
+— logical paths that don't exist on disk but are resolved by build plugins. We keep our
+own documentation in full parity between English and Italian.
+
+## Supply Chain Security Starts Before the Build
+
+There is a maturing conversation about supply chain security in software. Most of that
+conversation focuses on dependencies: SBOM generation, CVE scanning, license auditing.
+These are necessary. They are not sufficient.
+
+The documentation pipeline is also part of the supply chain. It receives inputs from
+contributors who may be external to the organization. It runs in the same CI environment
+as your source build. It publishes output that is indexed, cached, and distributed at
+scale.
+
+A credential leaked in documentation has the same blast radius as a credential committed
+to source code. A path traversal through `docs_dir` can access the same filesystem as
+your CI runner.
+
+This is why Zenzic exists. Not to lint Markdown formatting. To treat documentation as
+input — with all the suspicion and rigor that phrase implies.
+
+## The Obligation of Precision
+
+Security tooling carries an obligation that productivity tooling does not: when it says
+something is safe, it must be right. A false negative in a documentation linter means
+a credential goes undetected. A path traversal guard that can be bypassed means the
+bypass is a feature, not a bug.
+
+The normalization pipeline that runs before credential detection was not built to be
+comprehensive — it was built because each step corresponds to a real attack vector
+identified during internal red team exercises: Unicode format character injection, HTML
+entity obfuscation, comment interleaving, cross-line token splitting. Each is a
+documented technique, not a theoretical concern. The full story of those bypass vectors
+is in [Part 3 of this series](/blog/ai-driven-siege-shield-postmortem).
+
+## 🏁 Run It
+
+```bash
+pip install zenzic
+zenzic check all
+```
+
+The largest single architectural step in Zenzic's history deleted 21,870 lines and
+added 888 — the Headless Architecture transition that turned a MkDocs-specific tool
+into a multi-engine documentation security framework. That story is
+[Part 2 in this series](/blog/docs-pipeline-security-risk-obsidian-bastion).
+
+---
+
+_This is Part 1 of the Zenzic Engineering Series._
+
+| | |
+|---|---|
+| **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
+| **Documentation** | [zenzic.dev](https://zenzic.dev/) |
+| **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
+
+**Cross-posted on:**
+- [Dev.to](https://dev.to/pythonwoods/hardening-the-documentation-pipeline-why-i-built-a-security-first-markdown-analyzer-in-pure-python-37h8) — *Hardening the Documentation Pipeline*
+- [Medium](https://medium.com/zenzic-engineering/your-documentation-is-a-leaking-pipe-7c1d6f4a84d0) — *Your Documentation is a Leaking Pipe*
+
+_This edition on zenzic.dev is the **definitive version**, merging both publications._

@@ -1,0 +1,233 @@
+---
+slug: docs-pipeline-security-risk-obsidian-bastion
+title: "What Happens When You Rip the Foundation Out of a Security Tool"
+authors: [pythonwoods]
+tags: [security, python, opensource, devtools]
+date: 2026-04-15
+description: >
+  Inside the architecture of a documentation linter that trusts nothing —
+  not even its own configuration files. How Obsidian Bastion turned Zenzic
+  into a multi-engine security infrastructure.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — The Zenzic Engineering Series](/assets/social/social-card.png)
+
+:::info This is Part 2 of the Zenzic Engineering Series
+Research conducted during the **v0.6.1rc2** pre-release cycle. All findings directly shaped the stability and features of **v0.7.0 "Obsidian Maturity"**.
+
+Cross-published on [Dev.to](https://dev.to/pythonwoods/your-docs-pipeline-is-a-security-risk-zenzic-v061rc1-fixes-that-3ag3) and [Medium](https://medium.com/zenzic-engineering/what-happens-when-you-rip-the-foundation-out-of-a-security-tool-173b57d496b2). This edition is the **definitive version**, merging both publications.
+:::
+
+Most documentation builds operate on an implicit contract with their input: the content
+is trusted because the contributors are trusted. It's a reasonable assumption for a
+wiki. It is an indefensible posture for a security-conscious CI pipeline.
+
+Zenzic was built to invalidate that assumption — to treat documentation the way a
+compiler treats source: as input that must be analyzed, validated, and potentially
+rejected before it reaches production.
+
+If your documentation is part of your CI pipeline, it's part of your attack surface.
+Zenzic is designed for CI pipelines that handle untrusted docs, open-source projects
+with external contributors, and teams running multiple doc engines side by side.
+
+{/* truncate */}
+
+In [Part 1](/blog/hardening-the-documentation-pipeline), I covered the philosophy and
+threat model. This piece is about how Obsidian Bastion enforced them as infrastructure
+properties.
+
+## 🎯 Where Zenzic Fits
+
+Zenzic is designed for:
+- CI pipelines that handle untrusted docs
+- Open-source projects with external contributors
+- Teams running multiple doc engines side by side
+- Security-conscious workflows that need to validate content before the build — not after
+
+Three core properties define it:
+
+**No subprocess execution — ever.** No `node`, no `git`, no shell calls. The core
+library is 100% Pure Python. This isn't a convenience feature — it's a security model.
+A tool that spawns subprocesses is a tool that can be tricked into executing untrusted
+code.
+
+**Engine-agnostic analysis.** Zenzic reads raw Markdown and configuration files as
+plain data. It never imports or executes a documentation framework. Engine-specific
+knowledge lives in thin, replaceable adapters that translate semantics into a neutral
+protocol.
+
+**Deterministic file discovery.** Every file scan is explicit. Every path is validated.
+There are no accidental full-repo traversals, no hidden directories slipping through.
+Identical source files always produce identical results.
+
+## The Versioning As a Threat Model
+
+Understanding what changed in the Obsidian series requires understanding what the
+previous version got wrong.
+
+| Version | Codename | Milestone |
+| :--- | :--- | :--- |
+| v0.5.x | The Sentinel | Core scanning + MkDocs-only awareness |
+| v0.6.0 | Obsidian Glass | Headless architecture transition |
+| v0.6.1rc2 | Obsidian Bastion | Multi-engine security infrastructure |
+
+The Sentinel was a capable linter. It was also architecturally coupled to a single
+documentation engine. When a MkDocs assumption was embedded in the core, the core had
+opinions about what “valid documentation” meant that had nothing to do with the content
+being analyzed.
+
+This coupling is a risk. An analyzer that assumes its input follows MkDocs conventions
+will fail silently — or not at all — when presented with a Docusaurus project.
+Failing silently is the worst possible outcome for a security tool: it gives a false
+sense of coverage.
+
+The biggest single commit in this arc deleted **21,870 lines** and added **888** — the
+Headless Architecture transition that stopped Zenzic from being a MkDocs tool and made
+it an analyser of documentation platforms.
+
+## ⚛️ Parsing Docusaurus without Node
+
+The first concrete challenge was supporting Docusaurus v3. Its config files are
+TypeScript:
+
+```ts
+export default {
+  presets: [['classic', { docs: { routeBasePath: '/guides' } }]],
+  i18n: { defaultLocale: 'en', locales: ['en', 'it'] },
+};
+```
+
+The obvious solution — calling `node` to evaluate the config — would violate Pillar 2
+(No Subprocesses). So I built a **static parser in Pure Python** that extracts
+`baseUrl`, `routeBasePath`, locale configuration, and plugin metadata directly from
+the source text. No evaluation. No runtime. No JavaScript.
+
+## 🧱 Layered Exclusion — The Real Headline Feature
+
+File discovery is where most documentation tools quietly fail. The **Layered Exclusion
+Manager** replaces all ad-hoc directory filtering with a deterministic 4-level hierarchy:
+
+| Level | Name | Description |
+| :---: | :--- | :--- |
+| L1 | System guardrails | Immutable — `.git`, `node_modules`, `__pycache__`, etc. |
+| L2 | `.gitignore` + forced inclusions | Additive rules, parsed in Pure Python |
+| L3 | Config (`zenzic.toml`) | `excluded_dirs` / `excluded_file_patterns` |
+| L4 | CLI flags | `--exclude-dir` / `--include-dir` at runtime |
+
+The levels encode a **security invariant**: L1 System Guardrails are immutable. No
+configuration file and no CLI flag can force Zenzic to scan inside `.git/` or
+`node_modules/`.
+
+## 🗡️ The Tabula Rasa Refactor
+
+The most invasive change: I removed every single `rglob()` call from the codebase — all
+of them — and replaced them with two centralized functions in `discovery.py`:
+
+```python
+def walk_files(root, exclusion_manager) -> Iterator[Path]: ...
+def iter_markdown_sources(root, exclusion_manager) -> Iterator[Path]: ...
+```
+
+The `exclusion_manager` parameter is **mandatory**. Not `Optional`, no `None` default.
+If you call a scanner or validator entry point without an `ExclusionManager`, you get a
+`TypeError` at call time — not a silent full-tree scan at runtime.
+
+168 call sites updated. Accidental full-repo scans are now **architecturally impossible**.
+
+## 🔐 Security Hardening
+
+**ReDoS prevention.** Lines exceeding 1 MiB are silently truncated before Shield regex
+matching. A crafted documentation file with a multi-megabyte line could exploit
+catastrophic backtracking in credential detection patterns.
+
+**Path traversal guard (Exit Code 3).** `_validate_docs_root()` now rejects `docs_dir`
+paths that escape the repository root. A malicious `zenzic.toml` pointing
+`docs_dir: ../../../etc/` triggers **Exit 3 (Blood Sentinel)** before any file is read.
+
+## The Supply Chain Risk Metric That Doesn't Get Enough Attention
+
+Runtime dependency count is an underappreciated supply chain security metric.
+
+Every Python package that Zenzic imports at runtime is a potential vector for
+dependency confusion attacks, malicious package updates, and transitive vulnerability
+inheritance. The decision to minimize the dependency surface is not about keeping the
+package small — it is about limiting the attack surface of the supply chain.
+
+Zenzic's runtime dependency count: **5**.
+
+For a tool that supports four documentation engines, performs multi-family credential
+detection, implements a deterministic quality scoring system, validates link graphs
+against a virtual site map, and runs over a thousand tests — five runtime dependencies
+is a deliberate architectural achievement, not a limitation.
+
+## What "Hardened" Actually Means
+
+The word “hardened” is overused in security marketing. In the context of Obsidian
+Baston, it has a specific meaning: every component of the system has been analyzed for
+its failure modes under adversarial input, and those failure modes have been either
+eliminated or bounded.
+
+The subprocess constraint eliminates the execution trust boundary. The Layered Exclusion
+Manager bounds the filesystem access surface. The mandatory `ExclusionManager` type
+enforces the boundary at the API level. The non-bypassable exit codes ensure that
+security failures produce unambiguous CI outcomes. The ReDoS truncation bounds the
+computational cost of analysis. The path traversal guard bounds the filesystem read
+scope.
+
+None of these are features. They are the removal of assumptions — the careful,
+systematic elimination of the implicit trust that characterizes unexamined systems.
+
+> A hardened system is not a system with more defenses added on top. It is a system
+> with fewer assumptions built in.
+
+## What Broke Along the Way
+
+A refactor of this scope does not leave the API surface intact. Three breaking changes
+were deliberate, not accidental:
+
+- **`zenzic serve` removed entirely** — use your engine's native command (`mkdocs serve`,
+  `npx docusaurus start`). It was the last place where a subprocess could theoretically
+  be spawned.
+- **MkDocs plugin relocated** from `zenzic.plugin` to `zenzic.integrations.mkdocs`,
+  installs separately via `pip install "zenzic[mkdocs]"`, keeping the core free of
+  engine-specific imports.
+- **`ExclusionManager` parameter is now mandatory** — no `Optional`, no `None` default.
+  If your code was silently skipping exclusion filtering, it will now fail at the type
+  level. That's the point.
+
+These are costs. They are also the reason the guarantees in this article are
+enforceable rather than aspirational.
+
+## 📊 By the Numbers
+
+| Metric | Value | Note |
+| :--- | ---: | :--- |
+| Test functions | 929 | High-granularity validation |
+| Source code | 11,422 LOC | Real architectural scope |
+| Test code | 12,927 LOC | ~1.13x ratio — disciplined testing |
+| Engine adapters | 4 | MkDocs, Docusaurus v3, Zensical, Standalone |
+| Runtime dependencies | 5 | Minimal supply chain risk |
+| Subprocess calls | 0 | Safe in sandboxed CI environments |
+
+## 🏁 Run It Against Your Docs
+
+```bash
+pip install zenzic
+zenzic check all
+```
+
+---
+
+_This is Part 2 of the Zenzic Engineering Series._
+
+| | |
+|---|---|
+| **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
+| **Documentation** | [zenzic.dev](https://zenzic.dev/) |
+
+**Cross-posted on:**
+- [Dev.to](https://dev.to/pythonwoods/your-docs-pipeline-is-a-security-risk-zenzic-v061rc1-fixes-that-3ag3) — *Your Docs Pipeline Is a Security Risk*
+- [Medium](https://medium.com/zenzic-engineering/what-happens-when-you-rip-the-foundation-out-of-a-security-tool-173b57d496b2) — *What Happens When You Rip the Foundation Out of a Security Tool*
+
+_This edition on zenzic.dev is the **definitive version**, merging both publications._

@@ -1,0 +1,390 @@
+---
+slug: ai-driven-siege-shield-postmortem
+title: "We Put Our Documentation Linter Under an AI-Driven Siege. Here's the Post-Mortem."
+authors: [pythonwoods]
+tags: [security, python, devtools, opensource]
+date: 2026-04-16
+description: >
+  Four bypass vectors. Four real findings. All closed. How a controlled AI-driven
+  security audit revealed 4 bypass vectors in our Markdown credential scanner —
+  and how we sealed them all.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — The Zenzic Engineering Series](/assets/social/social-card.png)
+
+:::info This is Part 3 (Final) of the Zenzic Engineering Series
+Research conducted during the **v0.6.1rc2** pre-release cycle. All findings directly shaped the stability and features of **v0.7.0 "Obsidian Maturity"**.
+
+Cross-published on [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj) and [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396). This edition is the **definitive version**, merging both publications.
+:::
+
+Four bypass vectors. Four real findings. All closed.
+
+{/* truncate */}
+
+This is the complete technical post-mortem of **Operation Obsidian Stress** — the
+adversarial security audit we ran against Zenzic v0.6.1rc2's Shield (credential scanner)
+before release. I'm publishing the full technical details because the findings are
+instructive, the fixes are non-obvious, and the code belongs in the open.
+
+:::note Methodology
+To validate the Shield, I orchestrated a multi-team AI system — Red Team, Blue Team,
+and Purple Team — using specialized agent ensembles to simulate advanced obfuscation
+techniques. This is AI-assisted security engineering: using the same agentic
+architecture that attackers use to find the gaps they would exploit. All findings,
+bypass vectors, and fixes documented here are real.
+:::
+
+## What Shield Is (and Why Breaking It Matters)
+
+Before the attack details, context: Shield is Zenzic's credential detection layer.
+It scans every Markdown and MDX file in your documentation before the build runs,
+looking for patterns that indicate real credentials in content.
+
+The threat model is simple: a contributor submits a PR with a code example. That
+example contains a real API key — copied from a local terminal session, pasted from
+a Slack thread, or forgotten after a debugging session. The reviewer reads the prose,
+not the bytes. The PR merges. The docs build. The key is now live on your documentation
+site, indexed by search engines.
+
+Shield exists to catch that before it ships. If Shield can be bypassed by someone who
+knows how it works, it's not a scanner — it's a false guarantee.
+
+## The Attack Surface
+
+Shield's architecture before Operation Obsidian Stress:
+
+1. Read each line of the Markdown/MDX file
+2. Apply a normalization pass (strip backticks, collapse whitespace)
+3. Run 9 regex patterns against the normalized line
+4. Report any match as a `ShieldFinding`
+
+Step 4 triggers **Exit Code 2** (Shield breach) — non-bypassable, distinct from Exit
+Code 1 (validation failure) and Exit Code 3 (Blood Sentinel / path traversal).
+
+The attack surface was step 2: the normalization pass. It normalized formatting noise
+but did not account for deliberate obfuscation.
+
+---
+
+## ZRT-006: Unicode Format Character Injection
+
+**Category:** Input normalization bypass  
+**Severity:** High — complete bypass of all regex patterns  
+**CVSS analogy:** 8.1 (High)
+
+### The Technique
+
+Python's `unicodedata` module exposes a character category classification. The `Cf`
+category ("Format characters") includes characters that are semantically meaningful in
+Unicode text processing but are invisible in rendered output and most text displays:
+
+| Code point | Name | Purpose |
+| :--- | :--- | :--- |
+| U+200B | Zero Width Space | Line breaking hint |
+| U+200C | Zero Width Non-Joiner | Prevents ligatures |
+| U+200D | Zero Width Joiner | Forces ligatures |
+| U+00AD | Soft Hyphen | Optional hyphenation |
+| U+FEFF | Zero Width No-Break Space | BOM marker |
+
+Inject any of these into a credential token and the regex fails to match:
+
+```python
+key = "sk-abc123def456ghi789jkl012mno345pqr678stu"
+# Insert ZWS after position 9 (inside the token)
+bypass = key[:9] + "\u200B" + key[9:]
+
+import re
+pattern = re.compile(r"sk-[a-zA-Z0-9]{48}")
+print(pattern.search(bypass))  # None — bypass confirmed
+```
+
+### The Fix
+
+Strip all `Cf`-category characters before any normalization step runs:
+
+```python
+import unicodedata
+
+def _strip_unicode_format_chars(text: str) -> str:
+    """Remove all Unicode Format (Cf) characters.
+    
+    Invisible to human readers but interrupt regex pattern matching.
+    Examples: U+200B (ZWS), U+200C (ZWNJ), U+200D (ZWJ), U+00AD (soft hyphen).
+    """
+    return "".join(c for c in text if unicodedata.category(c) != "Cf")
+```
+
+---
+
+## ZRT-006b: HTML Entity Obfuscation
+
+**Category:** Input normalization bypass  
+**Severity:** High — bypasses patterns that depend on punctuation characters  
+**Affected families:** OpenAI (hyphen), Stripe (hyphen, underscore), GitHub (underscore)
+
+### The Technique
+
+Markdown renderers decode standard HTML entities. The hyphen character (`-`) has the
+HTML entity `&#45;`. The underscore (`_`) is `&#95;`.
+
+```text
+sk&#45;abc123def456ghi789jkl012mno345pqr678stu
+```
+
+Renders as: `sk-abc123def456ghi789jkl012mno345pqr678stu` — a valid OpenAI key format.
+
+The credential scanner sees `sk&#45;abc123...` — which does not match
+`sk-[a-zA-Z0-9]{48}`. The entity is a one-character substitution of a structural
+boundary character.
+
+### The Fix
+
+```python
+import html
+
+def _decode_html_entities(text: str) -> str:
+    """Decode HTML entities before pattern matching.
+    
+    A credential containing &#45; (hyphen) or &#95; (underscore) renders
+    correctly in a browser but bypasses regex patterns that match on the
+    literal character.
+    """
+    return html.unescape(text)
+```
+
+`html.unescape()` is part of the Python standard library. No dependencies. Zero cost.
+
+---
+
+## ZRT-007: Comment Interleaving
+
+**Category:** Token fragmentation via markup  
+**Severity:** High — renders the token non-contiguous in raw source  
+**Technique:** Inject HTML or MDX comment blocks between credential characters
+
+### The Technique
+
+HTML comments and MDX expression comments are invisible in rendered output. They are
+valid Markdown syntax that any Markdown renderer will process and discard.
+
+```text
+sk-abc123<!-- This is a comment, nothing to see here -->def456ghi789jkl012mno345pqr678stu
+```
+
+In rendered output: `sk-abc123def456ghi789jkl012mno345pqr678stu` (correct, readable).  
+In raw source the scanner reads: the regex fails because the comment block interrupts
+the character class `[a-zA-Z0-9]`.
+
+MDX variant: `sk-abc123{/* inline MDX comment */}def456...` — same effect.
+
+### The Fix
+
+```python
+import re
+
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_MDX_COMMENT_RE = re.compile(r"\{/\*.*?\*/\}", re.DOTALL)
+
+def _strip_markup_comments(text: str) -> str:
+    """Strip HTML and MDX comments before pattern matching."""
+    text = _HTML_COMMENT_RE.sub("", text)
+    text = _MDX_COMMENT_RE.sub("", text)
+    return text
+```
+
+---
+
+## ZRT-007b: Cross-Line Token Splitting
+
+**Category:** Architectural bypass — stateless scanner assumption  
+**Severity:** Critical — bypasses all pattern matching with zero obfuscation  
+**Technique:** Line break
+
+This is the most architecturally significant finding. It requires no Unicode tricks,
+no entity encoding, no markup injection. **One line break.**
+
+### The Technique
+
+```text
+Here is my staging key for the integration tests: sk-abc123def456
+ghi789jkl012mno345pqr678stu901vwx234yz
+```
+
+The scanner processes line 1 — no match (only 12 chars after `sk-`).  
+The scanner processes line 2 — no match (no `sk-` prefix).  
+The credential leaks. The split is invisible in rendered output — the two lines render
+as a single paragraph.
+
+### The Fix: The Lookback Buffer
+
+A stateful generator that maintains context across line boundaries, creating a
+synthetic overlap zone:
+
+```python
+def scan_lines_with_lookback(
+    lines: Iterable[tuple[int, str]],
+    file_path: Path,
+    buffer_width: int = 80,
+) -> Iterator[ShieldFinding]:
+    prev_normalized: str = ""
+    prev_seen: set[str] = set()
+
+    for line_no, raw_line in lines:
+        seen_this_line: set[str] = set()
+        normalized = _normalize_line_for_shield(raw_line)
+
+        # Pass 1: standard per-line scan
+        for finding in _scan_normalized_line(normalized, file_path, line_no):
+            yield finding
+            seen_this_line.add(finding.family)
+
+        # Pass 2: cross-line join zone scan
+        if prev_normalized:
+            join_zone = prev_normalized[-buffer_width:] + normalized[:buffer_width]
+            for finding in _scan_normalized_line(join_zone, file_path, line_no):
+                if finding.family not in (seen_this_line | prev_seen):
+                    yield finding
+
+        prev_normalized = normalized
+        prev_seen = seen_this_line
+```
+
+**Why 80 characters?** Standard terminal width and most documentation editors wrap at
+80–120 characters. Taking 80 characters from each side covers the vast majority of
+real-world split positions with minimal false positive risk.
+
+---
+
+## The Complete 8-Step Normalization Pipeline
+
+After closing all four vectors, Shield's normalization function runs every line through
+a deterministic eight-step sequence:
+
+```python
+def _normalize_line_for_shield(raw_line: str) -> str:
+    text = raw_line
+    text = _strip_unicode_format_chars(text)   # Step 1: Cf chars
+    text = html.unescape(text)                  # Step 2: HTML entities
+    text = _HTML_COMMENT_RE.sub("", text)       # Step 3: HTML comments
+    text = _MDX_COMMENT_RE.sub("", text)        # Step 4: MDX comments
+    text = _BACKTICK_RE.sub(lambda m: m.group(1), text)  # Step 5: backtick spans
+    text = text.replace("+", " ")              # Step 6: concatenation operators
+    text = text.replace("|", " ")              # Step 7: table cell separators
+    text = " ".join(text.split())              # Step 8: whitespace collapse
+    return text
+```
+
+Each step is independently testable. The test suite includes 47 tests specifically
+for normalization.
+
+## Coverage Added by Operation Obsidian Stress
+
+| Bypass vector | New tests |
+| :--- | ---: |
+| Cf character injection (ZRT-006) | 23 |
+| HTML entity obfuscation (ZRT-006b) | 18 |
+| Comment interleaving (ZRT-007) | 31 |
+| Cross-line token splitting (ZRT-007b) | 28 |
+| Normalization pipeline integration | 17 |
+| **Total new tests** | **117** |
+
+Before the operation: 929 passing tests. After closing all four vectors: 1,046 passing tests.
+
+## The Risk Management Dimension
+
+The four bypass vectors found during Operation Obsidian Stress have a common property:
+they are not obscure edge cases. They are techniques that appear in standard lists of
+regex evasion methods used in adversarial content scenarios — discoverable by any
+documentation contributor with moderate knowledge of Unicode, HTML encoding, and regex
+mechanics.
+
+The risk profile of an unpatched documentation scanner is not “low probability, low
+impact.” It is **moderate probability, high impact** — because credential leaks in
+documentation have immediate material consequences, and because documentation pipelines
+receive content from the broadest possible contributor population.
+
+This is the supply chain risk dimension that is most frequently underweighted: not the
+vulnerability of your infrastructure, but the vulnerability of the content processing
+path you expose to your contributor base.
+
+> A security tool that can be bypassed by a contributor who knows how it works is not
+> a security tool. It is a compliance checkbox.
+
+## Beyond Security: The Full Zenzic Surface
+
+Shield is one layer in a complete documentation quality framework:
+
+| Layer | What it catches |
+| :--- | :--- |
+| Link validation (VSM) | Broken internal links, ghost routes — no live server required |
+| Orphan detection | Pages that exist but are unreachable in the navigation graph |
+| Snippet verification | Code blocks referencing files that don’t exist on disk |
+| Placeholder scanning | `TODO`, `FIXME`, `TBD` in published content |
+| Asset auditing | Unused images with autofix support |
+| Reference integrity | `[broken][ref]`-style links with missing definitions |
+| Quality score | Deterministic 0–100 metric with regression detection |
+
+All analysis is engine-agnostic: auto-detection covers MkDocs, Docusaurus v3, Zensical,
+and Standalone Mode. No plugins to install. No build to run. No subprocesses.
+
+## Exit Code Taxonomy
+
+Zenzic’s exit codes are non-negotiable — no configuration can suppress them:
+
+| Code | Name | Trigger |
+| :---: | :--- | :--- |
+| 0 | Success | All checks pass |
+| 1 | Quality | Validation findings (broken links, orphans, placeholders) |
+| 2 | Shield | Credential detected in documentation |
+| 3 | Blood Sentinel | Path traversal attack or fatal error |
+
+Codes 2 and 3 cannot be configured away. A CI step that can be silenced on a security
+failure is not a security control.
+
+## The Obligation of the Bastion
+
+“The Bastion holds” is not a marketing phrase. It is an engineering commitment. It means
+that every identified attack path has been closed, that the closure has been verified
+with test coverage, and that the system’s failure modes under adversarial input are
+bounded and known.
+
+It does not mean that future bypass vectors don’t exist. Red team exercises are not
+proofs of security — they are evidence of the security posture at a specific moment in
+time. The four vectors found during Operation Obsidian Stress were found because we
+looked for them systematically. Vectors we haven’t enumerated may still exist.
+
+What the Bastion commitment means is that we look — methodically, adversarially, and
+transparently about what we find.
+
+## The Takeaway
+
+The four bypass vectors found during Operation Obsidian Stress are not exotic. They're
+the kind of techniques that appear in any list of regex evasion methods — Unicode
+injection, HTML entity encoding, markup comment interleaving, structural line splitting.
+
+What made them findable was the decision to look for them **systematically, with
+adversarial intent**, before release. What made them fixable was having a normalization
+pipeline with defined semantics and comprehensive test coverage at each step.
+
+Security tooling that isn't tested adversarially is security tooling that provides the
+appearance of coverage without the substance.
+
+---
+
+---
+
+_This is Part 3 (Final) of the Zenzic Engineering Series._
+
+| | |
+|---|---|
+| **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
+| **Documentation** | [zenzic.dev](https://zenzic.dev/) |
+| **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
+
+**Cross-posted on:**
+- [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj) — *AI Red Team Attacks Code Linter: Full Post-Mortem Report*
+- [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396) — *We Put Our Documentation Linter Under an AI-Driven Siege*
+
+_This edition on zenzic.dev is the **definitive version**, merging both publications._
