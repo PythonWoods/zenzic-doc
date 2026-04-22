@@ -101,6 +101,43 @@ I finding Shield producono sempre **Uscita 2**. Non sono mai sopprimibili.
 | `hex-encoded-payload` | Sequenza di byte in esadecimale | `\xNN\xNN\xNN…` (3 o più escape esadecimali consecutivi) |
 | `gitlab-pat` | Personal Access Token GitLab | `glpat-…` |
 
+### Hardening dei Bypass dello Shield {#shield-bypass-hardening}
+
+Prima che i pattern regex vengano eseguiti, ogni riga passa attraverso una **pipeline
+di normalizzazione in 8 passi** che neutralizza i vettori di offuscamento noti. L'ordine
+è deterministico e rilevante: ogni passo crea le precondizioni per il successivo.
+
+```python
+def _normalize_line_for_shield(raw_line: str) -> str:
+    text = raw_line
+    text = _strip_unicode_format_chars(text)   # Passo 1 — caratteri Unicode Cf
+    text = html.unescape(text)                  # Passo 2 — entità HTML
+    text = _HTML_COMMENT_RE.sub("", text)       # Passo 3 — commenti HTML
+    text = _MDX_COMMENT_RE.sub("", text)        # Passo 4 — commenti MDX
+    text = _BACKTICK_RE.sub(lambda m: m.group(1), text)  # Passo 5 — backtick
+    text = text.replace("+", " ")              # Passo 6 — operatori di concatenazione
+    text = text.replace("|", " ")              # Passo 7 — separatori di colonna
+    text = " ".join(text.split())              # Passo 8 — compressione whitespace
+    return text
+```
+
+Quattro vettori di bypass sono stati scoperti e chiusi durante Operation Obsidian Stress
+(audit pre-release per v0.6.1rc2):
+
+| Vettore | ID | Meccanismo | Passo che lo neutralizza |
+| :--- | :--- | :--- | :--- |
+| Iniezione Unicode Cf | ZRT-006 | Caratteri formato invisibili (U+200B, U+00AD, ecc.) interrompono la contiguità regex | Passo 1 |
+| Offuscamento entità HTML | ZRT-006b | `&#45;` (trattino) e `&#95;` (underscore) bypassano i pattern di prefisso | Passo 2 |
+| Interleaving di commenti | ZRT-007 | `<!-- ... -->` o `{/* ... */}` spezzano il token a metà credenziale | Passi 3–4 |
+| Splitting cross-linea | ZRT-007b | Credenziale divisa tra due righe; nessuna singola riga corrisponde al pattern | Buffer di lookback |
+
+Il **buffer di lookback** (ZRT-007b) è una correzione architetturale che opera al di
+fuori della pipeline per-riga. Un generator con stato mantiene la coda dell'ultima riga
+normalizzata (80 caratteri) e la unisce con la testa della riga corrente per formare una
+finestra di scansione sintetica. Questa finestra rileva le credenziali divise al confine
+di riga anche senza alcun offuscamento — un semplice a capo è sufficiente per aggirare
+uno scanner riga-per-riga privo di stato.
+
 ---
 
 ## Integrità dell'Indice di Directory {#missing-directory-index}
@@ -173,3 +210,96 @@ In alternativa, per Docusaurus, aggiungi un `_category_.json` con un indice gene
 | ID regola definito dall'utente (es. `NO_DRAFT`) | Configurata in `[[custom_rules]]` | `check all` | Una riga ha matched un pattern regex definito dall'utente |
 | `Z009` | error | `check all` | Un processo worker ha superato il timeout di 30 secondi per file — probabilmente causato da backtracking catastrofico in un pattern regex `[[custom_rules]]` |
 | `RULE-ENGINE-ERROR` | error | `check all` | Un processo worker ha sollevato un'eccezione inattesa |
+
+---
+
+## Integrità Asset di Configurazione {#config-asset-missing}
+
+| Codice | Severità | CLI | Significato |
+| :--- | :---: | :--- | :--- |
+| `Z404` | warning | `check all` | Un asset statico (favicon o logo) dichiarato nel file di configurazione del motore non esiste su disco |
+
+### Cosa attiva questo finding?
+
+`Z404 CONFIG_ASSET_MISSING` viene emesso dagli **adapter Docusaurus, MkDocs e Zensical**
+quando un percorso file dichiarato per la favicon del sito, il logo o l'immagine Open Graph
+non risolve in un file reale all'interno della directory asset attesa.
+
+Questo controllo intercetta una classe di misconfigurazioni infrastrutturali silenziose
+che diventano visibili solo a runtime come HTTP 404 — spesso molto tempo dopo un deploy.
+
+### Quali campi di config vengono controllati?
+
+**Docusaurus** (`docusaurus.config.ts` / `.js`) — asset risolti relativi a `static/`:
+
+| Campo di config | Pattern verificato |
+| :--- | :--- |
+| `favicon: 'path/to/icon.png'` | Il percorso risolto relativo a `static/` deve esistere |
+| `image: 'path/to/social-card.png'` (solo valori con estensione immagine) | Il percorso risolto relativo a `static/` deve esistere |
+
+**MkDocs** (`mkdocs.yml`) — asset risolti relativi a `docs_dir` (default: `docs/`):
+
+| Campo di config | Pattern verificato |
+| :--- | :--- |
+| `theme.favicon: 'path/to/icon.png'` | Il percorso risolto relativo a `docs/` deve esistere |
+| `theme.logo: 'path/to/logo.png'` (solo valori con estensione immagine) | Il percorso risolto relativo a `docs/` deve esistere |
+
+**Zensical** (`zensical.toml`) — asset risolti relativi a `[project].docs_dir` (default: `docs/`):
+
+| Campo di config | Pattern verificato |
+| :--- | :--- |
+| `[project].favicon = 'path/to/icon.png'` | Il percorso risolto relativo a `docs/` deve esistere |
+| `[project].logo = 'path/to/logo.png'` (solo valori con estensione immagine) | Il percorso risolto relativo a `docs/` deve esistere |
+
+I controlli su `logo` e `image` sono limitati alle estensioni di file immagine (`png`, `jpg`,
+`jpeg`, `svg`, `gif`, `ico`, `webp`) per evitare falsi positivi da nomi di icone (es.
+`material/library`) o riferimenti a immagini Docker.
+
+### Perché severità `warning`?
+
+Una favicon mancante non interrompe la distribuzione dei contenuti, ma degrada
+l'esperienza utente e la coerenza del brand. Un'immagine OG mancante significa
+che ogni condivisione social restituisce un'anteprima rotta. Entrambi sono problemi
+ad alto impatto che meritano attenzione immediata senza bloccare la CI per default
+— usa `--strict` per promuovere a Uscita 1.
+
+### Come risolvere
+
+**Docusaurus:**
+```bash
+# Verifica il percorso dichiarato in docusaurus.config.ts
+grep -E 'favicon|image' docusaurus.config.ts
+
+# Conferma che il file esista sotto static/
+ls static/assets/favicon/png/zenzic-icon-32.png
+ls static/assets/social/social-card.png
+```
+
+**MkDocs:**
+```bash
+# Verifica i percorsi dichiarati in mkdocs.yml
+grep -E 'favicon|logo' mkdocs.yml
+
+# Conferma che il file esista sotto docs/
+ls docs/assets/favicon.png
+ls docs/assets/logo.png
+```
+
+**Zensical:**
+```bash
+# Verifica i percorsi dichiarati in zensical.toml
+grep -E 'favicon|logo' zensical.toml
+
+# Conferma che il file esista sotto docs/
+ls docs/assets/favicon.png
+ls docs/assets/logo.png
+```
+
+Se il file è assente, aggiungilo. Se il percorso nella config è errato,
+correggilo per corrispondere alla posizione reale del file.
+
+### Copertura adapter
+
+Questo controllo è implementato per **Docusaurus**, **MkDocs** e **Zensical**. Vedi la
+[Guida all'implementazione di adapter](/docs/community/developers/how-to/implement-adapter)
+per istruzioni su come aggiungere `check_config_assets()` a un adapter personalizzato.

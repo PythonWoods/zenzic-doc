@@ -101,6 +101,43 @@ Shield findings always produce **Exit 2**. They are never suppressible.
 | `hex-encoded-payload` | Hex-encoded byte sequence | `\xNN\xNN\xNN…` (3 or more consecutive hex escapes) |
 | `gitlab-pat` | GitLab Personal Access Token | `glpat-…` |
 
+### Shield Bypass Hardening {#shield-bypass-hardening}
+
+Before regex patterns run, every line passes through an **8-step normalization
+pipeline** that closes known obfuscation vectors. Order is deterministic and matters:
+each step creates the preconditions for the next.
+
+```python
+def _normalize_line_for_shield(raw_line: str) -> str:
+    text = raw_line
+    text = _strip_unicode_format_chars(text)   # Step 1 — Unicode Cf chars
+    text = html.unescape(text)                  # Step 2 — HTML entities
+    text = _HTML_COMMENT_RE.sub("", text)       # Step 3 — HTML comments
+    text = _MDX_COMMENT_RE.sub("", text)        # Step 4 — MDX comments
+    text = _BACKTICK_RE.sub(lambda m: m.group(1), text)  # Step 5 — backtick spans
+    text = text.replace("+", " ")              # Step 6 — concatenation operators
+    text = text.replace("|", " ")              # Step 7 — table cell separators
+    text = " ".join(text.split())              # Step 8 — whitespace collapse
+    return text
+```
+
+Four bypass vectors were discovered and closed during Operation Obsidian Stress
+(pre-release audit for v0.6.1rc2):
+
+| Vector | ID | Mechanism | Step that closes it |
+| :--- | :--- | :--- | :--- |
+| Unicode Cf injection | ZRT-006 | Invisible format chars (U+200B, U+00AD, etc.) break regex contiguity | Step 1 |
+| HTML entity obfuscation | ZRT-006b | `&#45;` (hyphen) and `&#95;` (underscore) bypass prefix patterns | Step 2 |
+| Comment interleaving | ZRT-007 | `<!-- ... -->` or `{/* ... */}` split tokens mid-credential | Steps 3–4 |
+| Cross-line splitting | ZRT-007b | Credential split across a line boundary; no single line matches | Lookback buffer |
+
+The **lookback buffer** (ZRT-007b) is an architectural fix that operates outside the
+per-line pipeline. A stateful generator maintains the tail of the previous normalized
+line (80 characters) and joins it with the head of the current line to form a synthetic
+scan window. This window catches credentials split at a line boundary with zero
+obfuscation — a plain line break is sufficient to defeat a stateless line-by-line
+scanner.
+
 ---
 
 ## Directory Index Integrity {#missing-directory-index}
@@ -173,3 +210,95 @@ Alternatively, for Docusaurus, add a `_category_.json` with a generated index:
 | User-defined rule ID (e.g. `NO_DRAFT`) | Configured in `[[custom_rules]]` | `check all` | A line matched a user-defined regex pattern |
 | `Z009` | error | `check all` | A worker process exceeded the 30-second per-file timeout — likely caused by catastrophic backtracking in a `[[custom_rules]]` regex pattern |
 | `RULE-ENGINE-ERROR` | error | `check all` | A worker process raised an unexpected exception |
+
+---
+
+## Config Asset Integrity {#config-asset-missing}
+
+| Code | Severity | CLI | Meaning |
+| :--- | :---: | :--- | :--- |
+| `Z404` | warning | `check all` | A static asset (favicon or logo) declared in the engine config file cannot be found on disk |
+
+### What triggers this finding?
+
+`Z404 CONFIG_ASSET_MISSING` is emitted by the **Docusaurus, MkDocs, and Zensical adapters**
+when a file path declared for the site favicon, logo, or Open Graph social card image
+does not resolve to a real file inside the expected asset directory.
+
+This guard catches a class of silent infrastructure misconfigurations that only
+become visible at runtime as HTTP 404s — often long after a deployment.
+
+### Which config fields are checked?
+
+**Docusaurus** (`docusaurus.config.ts` / `.js`) — assets resolved relative to `static/`:
+
+| Config field | Pattern checked |
+| :--- | :--- |
+| `favicon: 'path/to/icon.png'` | Path resolved relative to `static/` must exist |
+| `image: 'path/to/social-card.png'` (image-extension values only) | Path resolved relative to `static/` must exist |
+
+**MkDocs** (`mkdocs.yml`) — assets resolved relative to `docs_dir` (default: `docs/`):
+
+| Config field | Pattern checked |
+| :--- | :--- |
+| `theme.favicon: 'path/to/icon.png'` | Path resolved relative to `docs/` must exist |
+| `theme.logo: 'path/to/logo.png'` (image-extension values only) | Path resolved relative to `docs/` must exist |
+
+**Zensical** (`zensical.toml`) — assets resolved relative to `[project].docs_dir` (default: `docs/`):
+
+| Config field | Pattern checked |
+| :--- | :--- |
+| `[project].favicon = 'path/to/icon.png'` | Path resolved relative to `docs/` must exist |
+| `[project].logo = 'path/to/logo.png'` (image-extension values only) | Path resolved relative to `docs/` must exist |
+
+All `logo` and `image` checks are restricted to file extensions (`png`, `jpg`, `jpeg`,
+`svg`, `gif`, `ico`, `webp`) to avoid false positives from icon names (e.g.
+`material/library`) or Docker image references.
+
+### Why `warning` severity?
+
+A missing favicon does not break content delivery, but it degrades user
+experience and brand consistency. A missing OG image means every social share
+returns a broken preview. Both are high-impact issues that warrant immediate
+attention without blocking CI by default — use `--strict` to promote to Exit 1.
+
+### How to fix
+
+**Docusaurus:**
+```bash
+# Verify the path declared in docusaurus.config.ts
+grep -E 'favicon|image' docusaurus.config.ts
+
+# Confirm the file exists under static/
+ls static/assets/favicon/png/zenzic-icon-32.png
+ls static/assets/social/social-card.png
+```
+
+**MkDocs:**
+```bash
+# Verify the paths declared in mkdocs.yml
+grep -E 'favicon|logo' mkdocs.yml
+
+# Confirm the file exists under docs/
+ls docs/assets/favicon.png
+ls docs/assets/logo.png
+```
+
+**Zensical:**
+```bash
+# Verify the paths declared in zensical.toml
+grep -E 'favicon|logo' zensical.toml
+
+# Confirm the file exists under docs/
+ls docs/assets/favicon.png
+ls docs/assets/logo.png
+```
+
+If the file is missing, add it. If the path in the config is wrong, correct it
+to match the actual file location.
+
+### Adapter coverage
+
+This check is implemented for **Docusaurus**, **MkDocs**, and **Zensical**. See the
+[Adapter Implementation Guide](/docs/community/developers/how-to/implement-adapter) for
+instructions on adding `check_config_assets()` to a custom adapter.
