@@ -44,6 +44,18 @@ markdownlint:
 # Enterprise local gate: type safety + production build
 verify: markdownlint lint typecheck build
 
+# Run all pre-commit hooks against every tracked file (mirrors CI gate exactly)
+preflight:
+    uvx pre-commit run --all-files
+
+# Check REUSE/SPDX licence compliance
+reuse:
+    uvx reuse lint
+
+# Run the Zenzic Sentinel quality check only (faster than full preflight)
+sentinel:
+    bash scripts/pre-commit-zenzic.sh
+
 # Clean generated artifacts
 clean:
     rm -rf build .docusaurus
