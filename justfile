@@ -8,11 +8,12 @@
 setup:
     npm ci
 
-# Start local development server (EN only — language switcher non funziona in dev)
+# Start local development server (single-locale; locale dropdown inactive in dev mode)
+# Use 'just serve' after 'just build' to test the locale switcher in a production environment
 start:
     npm run start
 
-# Start local development server in Italian
+# Start local development server in Italian (single-locale dev mode)
 start-it:
     npm run start:it
 
@@ -46,3 +47,9 @@ verify: markdownlint lint typecheck build
 # Clean generated artifacts
 clean:
     rm -rf build .docusaurus
+
+# Bump all hardcoded Zenzic version references.
+# Usage:  just bump 0.6.3
+#         just bump 0.6.3 'v0.6.3 "Obsidian Flux" Stable'
+bump version badge='':
+    @bash scripts/bump-version.sh "{{version}}" "{{badge}}"
