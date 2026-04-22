@@ -363,6 +363,31 @@ can detect it automatically.
 Docusaurus uses MDX (`.mdx`) files natively. The adapter treats `.mdx` files identically
 to `.md` files for scanning, link validation, and orphan checking.
 
+### Special URL schemes {#docusaurus-special-url-schemes}
+
+Zenzic recognises the `pathname:///` protocol native to Docusaurus. This scheme is used
+to reference **static assets outside the React router** — downloads, standalone HTML
+pages, PDFs — that Docusaurus serves directly without route generation:
+
+```markdown
+[Open Brand System &rarr;](pathname:///assets/brand/zenzic-brand-system.html)
+[Download Guide](pathname:///assets/guide.pdf)
+```
+
+Because `pathname:///` is a Docusaurus-specific escape hatch with no equivalent in other
+engines, Zenzic treats it as a **verified bypass** — only when `engine = "docusaurus"`:
+
+| Engine | `pathname:///` handling |
+| :--- | :--- |
+| `docusaurus` | Skipped silently — recognised escape hatch |
+| `mkdocs`, `zensical`, `standalone` | Flagged as `Z105 ABSOLUTE_PATH` |
+
+:::note[Engine Isolation]
+This exception is intentionally scoped to the Docusaurus adapter. If you are migrating
+from Docusaurus to another engine, Zenzic will surface every `pathname:///` link as a
+`Z105` error — guiding you to replace them with port-safe relative paths.
+:::
+
 ### Static analysis limits
 
 - **Dynamic sidebar plugins** — sidebars generated dynamically via JavaScript at build-time

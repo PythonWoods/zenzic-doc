@@ -114,6 +114,41 @@ The `--offline` flag has **identical behaviour** on MkDocs, Zensical, and Docusa
 This ensures Zenzic remains a consistent Structural Custodian regardless of your build engine.
 :::
 
+### `--no-color` / `--force-color` {#output-flags}
+
+These global flags (accepted by all commands) control ANSI output independently of TTY detection.
+
+| Flag | Effect |
+| :--- | :--- |
+| `--no-color` | Strip all ANSI color and style codes from output |
+| `--force-color` | Emit ANSI codes even when stdout is not a TTY |
+
+**Environment variables:**
+
+| Variable | Equivalent to |
+| :--- | :--- |
+| `NO_COLOR` (any value) | `--no-color` |
+| `FORCE_COLOR` (any value) | `--force-color` |
+
+`NO_COLOR` conforms to the [no-color.org](https://no-color.org/) standard convention.
+When both `NO_COLOR` and `FORCE_COLOR` are set, `--no-color` / `NO_COLOR` always wins.
+
+**Default behaviour:** Zenzic uses Rich's TTY auto-detection. Colors are active when
+stdout is a terminal; they are stripped automatically when piped or redirected — no flag required.
+
+```bash
+# Strip color: CI log aggregators, plain-text files
+zenzic check all --no-color
+NO_COLOR=1 zenzic check all
+
+# Force color: CI systems that support ANSI but do not report a TTY
+zenzic check all --force-color
+FORCE_COLOR=1 zenzic check all
+
+# Pair with --format json for fully machine-readable output
+zenzic check all --no-color --format json > report.json
+```
+
 ---
 
 ## Initialization
