@@ -87,5 +87,43 @@ code_it.write_text(json.dumps(data_it, indent=2, ensure_ascii=False) + '\n')
 changes += 1
 print(f"  ✓  i18n/it/code.json")
 
+# 7. static/assets/brand/zenzic-brand-system.html — version + codename
+import re as _re
+brand_html = Path('static/assets/brand/zenzic-brand-system.html')
+brand_content = brand_html.read_text()
+brand_changed = False
+
+# 7a. Version string: replace every occurrence of v{old} → v{new}
+if f'v{old}' in brand_content:
+    brand_content = brand_content.replace(f'v{old}', f'v{new}')
+    brand_changed = True
+
+# 7b. Codename: extract from badge strings (format: v1.2.3 "Codename" Stable)
+#     Replace in all three case variants used in the HTML:
+#       Title Case  →  Obsidian Maturity
+#       ALL CAPS    →  OBSIDIAN MATURITY
+#       all lower   →  obsidian maturity
+m_old = _re.search(r'"([^"]+)"', old_badge)
+m_new = _re.search(r'"([^"]+)"', new_badge)
+if m_old and m_new:
+    old_code = m_old.group(1)   # e.g. "Obsidian Maturity"
+    new_code = m_new.group(1)   # e.g. "Quantum Glass"
+    if old_code != new_code:
+        for variant in (
+            (old_code,            new_code),
+            (old_code.upper(),    new_code.upper()),
+            (old_code.lower(),    new_code.lower()),
+        ):
+            if variant[0] in brand_content:
+                brand_content = brand_content.replace(*variant)
+                brand_changed = True
+
+if brand_changed:
+    brand_html.write_text(brand_content)
+    changes += 1
+    print(f"  ✓  static/assets/brand/zenzic-brand-system.html")
+else:
+    print(f"  ⚠  static/assets/brand/zenzic-brand-system.html: nothing to update, skipping")
+
 print(f"\n✓ Bump complete ({changes} file(s) updated). Run 'just verify' to validate.")
 PYEOF
