@@ -22,7 +22,7 @@ export default function Hero(): React.JSX.Element {
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
         <SentinelBadge />
         <Translate id="homepage.hero.badge" description="Wait release version badge">
-          v0.6.1 "Obsidian Glass" Stable
+          v0.7.0 "Obsidian Maturity" Stable
         </Translate>
       </div>
       <h1 className="text-4xl sm:text-5xl md:text-[56px] font-semibold tracking-tight dark:text-white text-zinc-900 leading-[1.1] mb-8">

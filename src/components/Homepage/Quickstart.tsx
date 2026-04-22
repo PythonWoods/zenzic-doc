@@ -48,7 +48,7 @@ export default function Quickstart(): React.JSX.Element {
             {/* Shell ready line */}
             <div className="flex items-center gap-2 pb-3 mb-3 border-b dark:border-zinc-800/40 border-zinc-200/50">
               <span className="text-emerald-400 text-[12px]">✓</span>
-              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]">zenzic 0.6.1 · python 3.12 · ready</span>
+              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]">zenzic 0.7.0 · python 3.12 · ready</span>
             </div>
             <p className="dark:text-zinc-600 text-zinc-400 text-[12px]">
               # explore the interactive lab (9 acts, zero setup)
