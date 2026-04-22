@@ -76,7 +76,7 @@ The implementation of this commitment is **absolute engine-agnosticism**:
 The practical consequence: a project migrating from MkDocs to Zensical — or to Hugo, Docusaurus,
 or any future generator — can run `zenzic check all` continuously against both configurations
 simultaneously. A project that has not yet decided on a build engine can still validate its
-documentation quality today, using Vanilla mode with zero configuration.
+documentation quality today, using Standalone Mode with zero configuration.
 
 Documentation ecosystems evolve constantly — build engines introduce breaking changes,
 configuration formats shift, plugin APIs are redesigned. Zenzic's position is intentionally
@@ -104,7 +104,7 @@ actionable**. This shapes several decisions:
   that a naive single-pass scanner would produce.
 - **i18n fallback awareness.** A link from a translated page to a default-locale asset is not a
   broken link — the build engine will serve the fallback at runtime. Zenzic suppresses it.
-- **Vanilla mode for nav-agnostic projects.** When Zenzic has no nav declaration to compare
+- **Standalone Mode for nav-agnostic projects.** When Zenzic has no nav declaration to compare
   against, it skips the orphan check entirely rather than flagging every file as an orphan.
 
 The goal is a tool that is **utterly silent when your documentation is sound**, and surgically
@@ -258,7 +258,7 @@ JavaScript evaluation.
 | **Native** | Docusaurus | Node.js | `DocusaurusAdapter` |
 | **Native** | MkDocs | Python | `MkDocsAdapter` |
 | **Native** | Zensical | Python | `ZensicalAdapter` |
-| **Agnostic** | Vanilla | any | `VanillaAdapter` |
+| **Agnostic** | Standalone | any | `StandaloneAdapter` |
 | **Extensible** | Hugo, Sphinx, Jekyll, Astro | any | Third-party via entry-point |
 
 The adapter protocol is intentionally lean — five core methods — enabling developers to

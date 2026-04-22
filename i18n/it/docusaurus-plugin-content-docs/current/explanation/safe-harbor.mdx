@@ -81,7 +81,7 @@ L'implementazione di questo impegno è l'**agnosticismo assoluto rispetto al mot
 La conseguenza pratica: un progetto che migra da MkDocs a Zensical — o a Hugo, Docusaurus o
 qualsiasi generatore futuro — può eseguire `zenzic check all` continuamente contro entrambe le
 configurazioni simultaneamente. Un progetto che non ha ancora deciso il motore di build può
-comunque validare la qualità della propria documentazione oggi, usando la modalità Vanilla
+comunque validare la qualità della propria documentazione oggi, usando la Standalone Mode
 senza alcuna configurazione.
 
 Gli ecosistemi di documentazione evolvono costantemente — i motori di build introducono breaking
@@ -114,7 +114,7 @@ azionabile**. Questo plasma diverse decisioni:
 - **Consapevolezza del fallback i18n.** Un link da una pagina tradotta a un asset della locale
   default non è un link rotto — il motore di build servirà il fallback a runtime. Zenzic lo
   sopprime.
-- **Modalità Vanilla per progetti senza nav.** Quando Zenzic non ha dichiarazioni nav contro cui
+- **Standalone Mode per progetti senza nav.** Quando Zenzic non ha dichiarazioni nav contro cui
   confrontare, salta interamente il controllo orfani piuttosto che segnalare ogni file come orfano.
 
 L'obiettivo è uno strumento **completamente silenzioso quando la tua documentazione è sana**, e
@@ -271,7 +271,7 @@ nessuna valutazione JavaScript.
 | **Nativo** | Docusaurus | Node.js | `DocusaurusAdapter` |
 | **Nativo** | MkDocs | Python | `MkDocsAdapter` |
 | **Nativo** | Zensical | Python | `ZensicalAdapter` |
-| **Agnostico** | Vanilla | qualsiasi | `VanillaAdapter` |
+| **Agnostico** | Standalone | qualsiasi | `StandaloneAdapter` |
 | **Estensibile** | Hugo, Sphinx, Jekyll, Astro | qualsiasi | Terze parti via entry-point |
 
 Il protocollo adapter è intenzionalmente snello — cinque metodi fondamentali — permettendo agli
