@@ -6,7 +6,7 @@
   <title>Zenzic · Brand System · v0.7.0 · Obsidian Maturity</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;1,300&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;1,300&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
       --obsidian:  #0B0C0F;
@@ -140,7 +140,7 @@
 
     /* ── Badges ── */
     .badge-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
-    .badge-item { display: flex; flex-direction: column; gap: 10px; }
+    .badge-item { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 
     @media (max-width: 760px) {
       body { padding: 32px 20px; }
@@ -497,32 +497,35 @@
     <div>
       <span class="section-title">Typography System</span>
 
-      <!-- Display -->
+      <!-- Headings: Inter -->
       <div>
-        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Display &middot; Barlow Condensed</p>
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:700;color:var(--lead);line-height:1;letter-spacing:1px">ZENZIC</p>
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:300;color:var(--cyan);letter-spacing:1px;margin-top:4px">The Safe Harbor</p>
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Headings &middot; Inter 700</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:40px;font-weight:700;color:var(--lead);line-height:1;letter-spacing:-0.02em">Zenzic</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:22px;font-weight:600;color:var(--cyan);letter-spacing:-0.01em;margin-top:6px">The Safe Harbor</p>
       </div>
 
-      <!-- Code / UI -->
-      <div style="margin-top:24px">
-        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Code / UI &middot; IBM Plex Mono</p>
-        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--lead);line-height:2">SENTINEL &middot; SHIELD &middot; HARBOR<br><span style="color:var(--cyan)">uvx zenzic check all ./docs</span><br><span style="color:var(--muted)">v0.7.0 &middot; obsidian maturity &middot; exit 0</span></p>
+      <!-- Body: Inter -->
+      <div style="margin-top:22px">
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Body &middot; Inter 400 / 500</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:15px;color:var(--lead);line-height:1.7">Engine-agnostic quality guarantee for<br>Markdown documentation at every scale.</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:13px;color:var(--muted);line-height:1.7;margin-top:6px">Secondary text &middot; labels &middot; captions</p>
       </div>
 
-      <!-- Labels -->
-      <div style="margin-top:24px">
-        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Labels &middot; Barlow Condensed 300</p>
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:300;color:var(--muted);letter-spacing:0.28em;text-transform:uppercase;line-height:2">Z101 LINK BROKEN &middot; Z201 SHIELD SECRET<br>Z401 MISSING INDEX &middot; Z402 ORPHAN PAGE</p>
+      <!-- Code / UI: JetBrains Mono -->
+      <div style="margin-top:22px">
+        <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Code / UI &middot; JetBrains Mono</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lead);line-height:2">SENTINEL &middot; SHIELD &middot; HARBOR<br><span style="color:var(--cyan)">uvx zenzic check all ./docs</span><br><span style="color:var(--muted)">v0.7.0 &middot; obsidian maturity &middot; exit 0</span></p>
       </div>
 
       <!-- Scale -->
-      <div style="margin-top:24px;border-top:1px solid var(--rule);padding-top:20px">
+      <div style="margin-top:22px;border-top:1px solid var(--rule);padding-top:20px">
         <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;font-family:'IBM Plex Mono',monospace">Scale specimen</p>
-        <p style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:500;color:var(--lead);line-height:1.2">24 · Heading</p>
-        <p style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--lead);line-height:1.4;margin-top:4px">16 · Subheading</p>
-        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);line-height:1.6;margin-top:4px">13 · Body &mdash; the primary reading size</p>
-        <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.22em;text-transform:uppercase;line-height:1.6;margin-top:4px">09 · Label &middot; all caps &middot; tracked</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:32px;font-weight:700;color:var(--lead);line-height:1.1;letter-spacing:-0.02em">32 &middot; Hero</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:24px;font-weight:600;color:var(--lead);line-height:1.2;margin-top:4px">24 &middot; Heading</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:16px;font-weight:500;color:var(--lead);line-height:1.4;margin-top:4px">16 &middot; Subheading</p>
+        <p style="font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--muted);line-height:1.6;margin-top:4px">14 &middot; Body &mdash; the primary reading size</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:0.04em;line-height:1.6;margin-top:4px">12 &middot; Code &middot; JetBrains Mono</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.22em;text-transform:uppercase;line-height:1.6;margin-top:4px">09 &middot; Brand Labels &middot; IBM Plex Mono &middot; tracked</p>
       </div>
     </div>
 
