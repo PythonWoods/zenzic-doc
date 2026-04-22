@@ -446,17 +446,8 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 }
 
 /* ── Obsidian Journal — Blog List Card Layout ── */
-/* Obsidian Lead header on blog post pages */
-[data-theme='dark'] .blog-post-page header,
-[data-theme='dark'] article header {
-  border-bottom: 1px solid rgba(79, 70, 229, 0.15);
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Card separation between posts in the blog list */
 [data-theme='dark'] article.margin-bottom--xl {
-  border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   padding-bottom: 2.5rem;
   margin-bottom: 2.5rem !important;
 }
@@ -470,7 +461,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* Card container subtle glow on hover */
 [data-theme='dark'] article.margin-bottom--xl:hover {
-  border-bottom-color: rgba(79, 70, 229, 0.35);
+  border-bottom-color: rgba(79, 70, 229, 0.2);
   transition: border-color 0.25s ease;
 }
 
@@ -480,7 +471,15 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: color 0.2s ease;
 }
 
-/* Blog header background — Obsidian Lead */
+/* Blog header — very subtle separation, Obsidian Lead bg */
+[data-theme='dark'] .blog-post-page header,
+[data-theme='dark'] article header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Blog hero/banner background — Obsidian Lead */
 [data-theme='dark'] .hero.hero--primary,
 [data-theme='dark'] .blogPostContainer header {
   background: #09090b;
