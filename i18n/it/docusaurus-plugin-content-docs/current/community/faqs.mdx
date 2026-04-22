@@ -153,3 +153,23 @@ linting aggressive.
 Questo accade tipicamente quando gli override `slug` nel frontmatter spostano l'URL di una pagina lontano dalla sua posizione nel filesystem. Zenzic risolve i link relativi dal **percorso del file**; build engine come Docusaurus li risolvono dal **percorso dell'URL** (dopo il mapping degli slug). Quando un file in `docs/guides/checks.mdx` ha `slug: /checks`, i due sistemi non concordano su dove porta `../`.
 
 **Soluzione:** rimuovi l'override `slug` e lascia che l'URL segua il filesystem. Se hai spostato un file in `docs/guides/checks.mdx`, il suo URL diventa `/docs/guides/checks` — sia Zenzic che il build engine risolveranno `../` in modo identico. Se hai bisogno del vecchio URL per link esterni, configura un redirect lato server invece di un override slug.
+
+**Le pagine italiane (o in qualsiasi altra lingua) mostrano contenuto inglese anche se l'URL è `/it/`.**
+
+Questa è la **Trappola del Fallback Silenzioso i18n**. Docusaurus deriva il `path` della cartella
+da `htmlLang` quando `path` non è dichiarato esplicitamente. Con `htmlLang: 'it-IT'`, cerca i
+file di traduzione in `i18n/it-IT/` invece di `i18n/it/`. La build si completa senza errori e
+il chrome dell'interfaccia (navbar, breadcrumb) appare tradotto — perché quelle stringhe
+sono integrate nel pacchetto Docusaurus — ma ogni pagina di contenuto ricade silenziosamente
+sulla sorgente inglese.
+
+**Diagnosi:** dopo `npm run build`, apri `.docusaurus/i18n.json` e verifica se la voce della
+localizzazione ha `"translate": false`. In tal caso, il disallineamento del percorso è la causa.
+
+**Soluzione:** aggiungi `path` esplicitamente a ogni localizzazione che usa un tag `htmlLang` regionale:
+
+```ts
+localeConfigs: {
+  it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
+}
+```

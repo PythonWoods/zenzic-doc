@@ -1,5 +1,10 @@
 # zenzic-doc Developer Guide
 
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.6.2-4f46e5)](https://github.com/PythonWoods/zenzic)
+
+> **This documentation is strictly aligned to Zenzic v0.6.2 "Obsidian Integrity".**
+> If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
+
 This repository contains the Docusaurus documentation website for Zenzic.
 
 This guide is written for both experienced maintainers and first-time contributors.
@@ -7,7 +12,7 @@ If you are new, follow the sections in order.
 
 ## 1) Prerequisites
 
-- Node.js 20 or newer
+- Node.js 24 or newer
 - npm 10 or newer
 - Optional: [just](https://github.com/casey/just) to run short, memorable commands
 
@@ -89,7 +94,7 @@ What `just verify` does:
 | --- | --- | --- |
 | `just setup` | First setup or reset | Runs `npm ci` |
 | `just start` | Daily editing | Runs local dev server |
-| `just serve` | Same as start | Alias of `just start` |
+| `just serve` | Preview production build | Serves `build/` with full locale switch (the correct way to test EN↔IT) |
 | `just markdownlint` | After editing docs | Runs markdown lint checks |
 | `just lint` | After editing React/TS source | Runs TypeScript/React lint checks |
 | `just typecheck` | Before opening/updating PR | Runs TypeScript checks |
@@ -97,6 +102,7 @@ What `just verify` does:
 | `just preview` | Validate built output | Serves already-built site |
 | `just verify` | Recommended final local check | Runs `markdownlint` + `lint` + `typecheck` + `build` |
 | `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
+| `just bump VERSION [BADGE]` | After a Zenzic core release | Updates all hardcoded version references |
 
 You can list all recipes with:
 
@@ -141,7 +147,7 @@ pre-commit run --all-files
 
 | Workflow | File | Trigger | Goal |
 | --- | --- | --- | --- |
-| Docs CI | `.github/workflows/ci.yml` | PR, push to `main`, manual | Validate install, markdown lint, TS/React lint, typecheck, and build on Node 20 and 22 |
+| Docs CI | `.github/workflows/ci.yml` | PR, push to `main`, manual | Validate install, markdown lint, TS/React lint, typecheck, and build on Node 22 and 24 |
 | Dependency Audit | `.github/workflows/npm-audit.yml` | PR, push to `main`, weekly, manual | Detect high-severity dependency vulnerabilities |
 | Dependency Review | `.github/workflows/dependency-review.yml` | PR, manual | Detect risky dependency changes introduced by PRs |
 | CodeQL (opt-in) | `.github/workflows/codeql.yml` | PR, push to `main`, weekly, manual | Static analysis when `ENABLE_CODEQL=true` |
@@ -214,7 +220,7 @@ npm run build
 
 Fix type errors first, then retry the build.
 
-### `/it/docs/intro` is 404 on localhost
+### `/it/docs/index` is 404 on localhost
 
 This is expected when running `npm run start` with default locale (`en`):
 the dev server serves one locale at a time.
@@ -228,8 +234,8 @@ npm run start:it
 
 Notes:
 
-- With `start:it`, open `http://localhost:3000/docs/intro` (Italian content served at root in dev).
-- If you want prefixed routes like `/it/docs/intro`, build + serve production output:
+- With `start:it`, open `http://localhost:3000/docs/` (Italian content served at root in dev).
+- If you want prefixed routes like `/it/docs/`, build + serve production output:
 
 ```bash
 npm run build
@@ -246,9 +252,41 @@ just verify
 
 If CI still differs, check:
 
-- Node version (CI uses Node 20 and 22)
+- Node version (CI uses Node 22 and 24)
 - Lockfile changes (`package-lock.json`)
 - Workflow-specific jobs (dependency audit, dependency review)
+
+### The i18n Silent Fallback Trap
+
+**Symptom:** `http://localhost:3000/it/docs/` renders English content even though the
+Italian translation files exist under `i18n/it/`.
+
+**Root cause:** Docusaurus derives the `path` property from `htmlLang` when `path` is
+not set explicitly. If you declare `htmlLang: 'it-IT'`, Docusaurus looks for translations
+in `i18n/it-IT/` — a directory that does not exist. The build completes silently with
+`translate: false` and falls back to the English source for all content pages. The UI
+chrome (navbar, breadcrumbs, pagination labels) remains translated because those strings
+come from Docusaurus's own bundled translations, masking the problem.
+
+**Diagnosis:** In `build/it/.docusaurus/i18n.json` (or `.docusaurus/i18n.json` after a
+build), check whether the `it` locale has `"translate": false`. If so, the path mismatch
+is the cause.
+
+**Fix:** Always set `path` explicitly in `localeConfigs`:
+
+```ts
+// docusaurus.config.ts
+i18n: {
+  defaultLocale: 'en',
+  locales: ['en', 'it'],
+  localeConfigs: {
+    en: { label: 'English' },
+    it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' }, // ← path is mandatory
+  },
+},
+```
+
+**Discovered in:** v0.7.0 release audit (D090 "The i18n Lockdown").
 
 ## 11) Pull Request Checklist
 
@@ -260,6 +298,7 @@ Before opening or updating a PR, run this checklist.
 - [ ] I reviewed `README.md` sections if I changed commands/workflows.
 - [ ] I updated docs or comments when behavior changed.
 - [ ] My branch contains only intentional changes.
+- [ ] If I touched `i18n` config or locale files: I verified the `/it/` pages show **Italian content** (not just an Italian URL), by checking the page body after `npm run build && npm run serve`.
 
 Minimal command sequence before PR:
 

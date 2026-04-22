@@ -154,3 +154,23 @@ linting pipelines.
 This usually happens when frontmatter `slug` overrides move a page's URL away from its filesystem location. Zenzic resolves relative links from the **file path**; build engines like Docusaurus resolve them from the **URL path** (after slug mapping). When a file at `docs/guides/checks.mdx` has `slug: /checks`, the two systems disagree on where `../` leads.
 
 **Solution:** remove the `slug` override and let the URL follow the filesystem. If you moved a file to `docs/guides/checks.mdx`, its URL becomes `/docs/guides/checks` — both Zenzic and the build engine will then resolve `../` identically. If you need the old URL for external links, configure a server-side redirect instead of a slug override.
+
+**The Italian (or any locale) pages show English content even though the URL is `/it/`.**
+
+This is the **i18n Silent Fallback Trap**. Docusaurus derives the folder `path` from
+`htmlLang` when `path` is not declared explicitly. With `htmlLang: 'it-IT'`, it looks for
+translation files in `i18n/it-IT/` instead of `i18n/it/`. The build completes without
+errors and the UI chrome (navbar, breadcrumbs) appears translated — because those strings
+live inside Docusaurus's own package — but every content page silently falls back to the
+English source.
+
+**Diagnosis:** after `npm run build`, open `.docusaurus/i18n.json` and check whether the
+locale entry has `"translate": false`. If so, the path mismatch is the cause.
+
+**Solution:** add `path` explicitly to every locale that uses a regional `htmlLang` tag:
+
+```ts
+localeConfigs: {
+  it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
+}
+```
