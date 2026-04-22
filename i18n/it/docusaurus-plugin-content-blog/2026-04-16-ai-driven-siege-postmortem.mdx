@@ -1,0 +1,85 @@
+---
+slug: ai-driven-siege-shield-postmortem
+title: "Abbiamo Messo il Nostro Documentation Linter Sotto un Assedio AI. Ecco il Post-Mortem."
+authors: [pythonwoods]
+tags: [security, post-mortem, python, devtools]
+date: 2026-04-16
+description: >
+  Quattro vettori di bypass. Quattro finding reali. Tutti chiusi. Come un audit di
+  sicurezza controllato e guidato da AI ha rivelato 4 vettori di bypass nel nostro
+  credential scanner per Markdown — e come li abbiamo sigillati tutti.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — The Zenzic Engineering Series](/assets/social/social-card.png)
+
+:::info Questo è il Parte 3 (Finale) della Zenzic Engineering Series
+Ricerca condotta durante il ciclo pre-release **v0.6.1rc2**. Tutti i finding hanno
+direttamente influenzato la stabilità e le funzionalità di **v0.7.0 "Obsidian Maturity"**.
+
+Cross-pubblicato su [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj)
+e [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396).
+Questa edizione è la **versione definitiva**, unione di entrambe le pubblicazioni.
+:::
+
+Quattro vettori di bypass. Quattro finding reali. Tutti chiusi.
+
+{/* truncate */}
+
+Questo è il post-mortem tecnico completo dell'**Operazione Obsidian Stress** — l'audit
+di sicurezza avversariale che abbiamo condotto contro lo Shield di Zenzic v0.6.1rc2
+(credential scanner) prima del rilascio. Pubblichiamo i dettagli tecnici completi perché
+i finding sono istruttivi, le correzioni non sono ovvie e il codice appartiene al pubblico.
+
+:::note Metodologia
+Per validare lo Shield, ho orchestrato un sistema AI multi-team — Red Team, Blue Team
+e Purple Team — usando ensemble di agenti specializzati per simulare tecniche di
+offuscamento avanzate. Questo è security engineering assistito da AI: usare la stessa
+architettura agentica che usano gli attaccanti per trovare le falle che sfrutterebbero.
+Tutti i finding, i vettori di bypass e le correzioni documentati qui sono reali.
+:::
+
+## Cos'è lo Shield (e Perché Romperlo è Importante)
+
+Prima dei dettagli dell'attacco, il contesto: Shield è il layer di credential detection
+di Zenzic. Scansiona ogni file Markdown e MDX nella tua documentazione prima che la
+build venga eseguita, cercando pattern che indichino credenziali reali nel contenuto.
+
+Il threat model è semplice: un contributor invia una PR con un esempio di codice. Quell'
+esempio contiene una chiave API reale — copiata da una sessione di terminale locale,
+incollata da un thread Slack, o dimenticata dopo una sessione di debug. Il reviewer
+legge la prosa, non i byte. La PR viene fatta merge. I docs vengono buildati. La chiave
+è ora in diretta sul tuo sito di documentazione, indicizzata dai motori di ricerca.
+
+Shield esiste per intercettare questo prima che venga pubblicato. Se Shield può essere
+bypassato da qualcuno che sa come funziona, non è uno scanner — è una garanzia falsa.
+
+## I Quattro Vettori di Bypass
+
+Il contenuto tecnico dettagliato di questa analisi è in lingua inglese, la lingua in
+cui è stato condotto l'audit. Il testo originale è disponibile nella
+[versione in inglese di questo post](/blog/ai-driven-siege-shield-postmortem)
+e nelle pubblicazioni cross-post su Dev.to e Medium.
+
+| Codice | Tecnica | Severità | Stato |
+|:-------|:--------|:---------|:------|
+| ZRT-006 | Unicode Format Character Injection | High (8.1) | ✅ Chiuso |
+| ZRT-007 | Zero-Width Space Fragmentation | High (7.8) | ✅ Chiuso |
+| ZRT-008 | Homoglyph Substitution via Unicode Script Mixing | Critical (9.1) | ✅ Chiuso |
+| ZRT-009 | Bidirectional Text Override (BIDI) | High (7.9) | ✅ Chiuso |
+
+Tutti e quattro i bypass sfruttavano la normalizzazione Unicode nel pass di pre-processing
+dello Shield. Nessuno richiedeva privilegi elevati o accesso al codice sorgente di Zenzic.
+Il solo requisito era conoscere il tipo di normalizzazione applicata.
+
+## La Correzione
+
+Il fix unificato è stato un single-pass di sanitizzazione Unicode **prima** di qualsiasi
+normalizzazione o pattern matching: rimozione di tutti i caratteri nella categoria Unicode
+`Cf` (Format), stripping di zero-width spaces, normalizzazione NFKC prima del confronto
+dei pattern, e rilevamento attivo di mixing di script Unicode all'interno di token singoli.
+
+Dopo la correzione: tutti e quattro i bypass falliscono. La suite di test include ora
+test di regressione per ogni vettore. Il coverage dello Shield è al 100%.
+
+→ [Leggi l'analisi tecnica completa in inglese](/blog/ai-driven-siege-shield-postmortem)

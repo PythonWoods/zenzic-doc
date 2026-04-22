@@ -1,0 +1,87 @@
+---
+slug: beyond-the-siege-zenzic-v070-new-standard
+title: "Oltre l'Assedio: Perché Zenzic v0.7.0 è il Nuovo Standard"
+authors: [pythonwoods]
+tags: [release, engineering, python, opensource]
+date: 2026-04-22
+description: >
+  Dopo che l'Operazione Obsidian Stress ha irrobustito lo Shield e l'audit Obsidian
+  Mirror ha chiuso ogni lacuna documentale, rimaneva una domanda: come appare la
+  maturità? Per questo l'abbiamo chiamata v0.7.0 — ed è il punto di riferimento
+  definitivo.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+![Obsidian Glass — Zenzic v0.7.0 "Obsidian Maturity"](/assets/social/social-card.png)
+
+:::info Questo post è esclusivo di zenzic.dev
+Questo è il quarto e ultimo capitolo della Zenzic Engineering Series —
+pubblicato esclusivamente qui. Documenta cosa è successo **dopo** l'assedio:
+l'audit di consolidamento, il fix i18n, l'universalizzazione di Z404 e perché
+questo momento è diventato v0.7.0 invece di v0.6.2.
+:::
+
+[L'assedio è finito](/blog/ai-driven-siege-shield-postmortem). Tutti e quattro i vettori
+di bypass sono chiusi. 1.046 test passano. Il Bastione regge.
+
+{/* truncate */}
+
+E poi abbiamo trovato un altro bug.
+
+Così funziona il software. La domanda non è se troverai lacune dopo un importante sforzo
+di hardening — le troverai. La domanda è se il tuo processo le intercetta prima che lo
+facciano i tuoi utenti, e se hai la disciplina istituzionale per chiuderle senza inflazione.
+
+Questa è la storia di cosa è successo nelle ultime settimane prima di v0.7.0, e perché
+il numero di versione stesso porta un significato.
+
+## L'Arco: Dal Sentinel alla Maturità
+
+La Zenzic Engineering Series ha documentato un filo continuo:
+
+| Parte | Argomento | Versione |
+| :--- | :--- | :--- |
+| [Parte 1](/blog/hardening-the-documentation-pipeline) | Perché esiste Zenzic: il problema del tubo che perde | v0.5.x Sentinel |
+| [Parte 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | Strappare le fondamenta: Headless Architecture | v0.6.1rc2 Bastion |
+| [Parte 3](/blog/ai-driven-siege-shield-postmortem) | L'assedio: 4 vettori trovati e chiusi | v0.6.1rc2 → v0.6.1 |
+| Parte 4 (questo post) | Il consolidamento: cosa significa davvero la maturità | **v0.7.0** |
+
+Il salto di versione da v0.6.1 a v0.7.0 non riguardava le funzionalità. Riguardava
+qualcosa di più specifico: il rifiuto deliberato di una narrativa.
+
+## Perché Non v0.6.2?
+
+Dopo che il postmortem dell'assedio aveva chiuso tutti e quattro i vettori di bypass,
+il passo naturale successivo era una patch release v0.6.2. Gli adapter Zensical e MkDocs
+necessitavano della copertura Z404. La configurazione i18n aveva un bug di fallback
+silenzioso. Il badge di navigazione non era stato aggiornato nello script di bump.
+Sembravano piccole correzioni.
+
+Non erano piccole. Erano la differenza tra un sistema che **afferma** di essere un Porto
+Sicuro multi-engine e un sistema che **è** effettivamente tale.
+
+## Le Novità di v0.7.0
+
+| Funzionalità | Dettaglio |
+|:-------------|:----------|
+| Z404 agnostico per engine | MkDocs (`theme.favicon/logo`), Zensical (`[project].favicon/logo`) |
+| Fix bug i18n silenzioso | `path: 'it'` esplicito in `docusaurus.config.ts` |
+| Zenzic Lab — 10 Atti | Atti 9 e 10: MkDocs Favicon Guard e Zensical Logo Guard |
+| Vanilla purge completa | `engine = "vanilla"` solleva `ConfigurationError [Z000]` |
+| Standalone Mode | Identità canonica per progetti senza build config |
+| Brand System HTML | Documento di riferimento standalone per il brand team |
+| Pipeline PNG deterministica | `cairosvg` puro, zero subprocess, conforme al Pillar 2 |
+| Obsidian Lead `#09090b` | Background canonico unificato su tutte le superfici |
+
+## Il Sigillo di Ossidiana
+
+v0.7.0 è la prima versione di Zenzic che può essere chiamata **stabile** senza riserve.
+
+Non perché sia priva di bug futuri — nessuna versione lo è. Ma perché i sistemi che
+garantisce sono stati verificati avversarialmente, i confini architetturali sono coerenti,
+e il processo per mantenere quella coerenza è ora documentato e applicato.
+
+Il Porto Sicuro è operativo.
+
+→ [Leggi l'analisi completa in inglese](/blog/beyond-the-siege-zenzic-v070-new-standard)  
+→ [Documenta il tuo progetto con Zenzic](/docs/how-to/install)

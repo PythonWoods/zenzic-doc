@@ -50,10 +50,11 @@ const config: Config = {
         blog: {
           blogTitle: 'The Obsidian Journal',
           blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
-          blogSidebarTitle: 'Recent posts',
-          blogSidebarCount: 8,
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
           postsPerPage: 5,
           showReadingTime: true,
+          admonitions: true,
           feedOptions: {
             type: ['rss', 'atom'],
             title: 'The Obsidian Journal — Zenzic Engineering Blog',
