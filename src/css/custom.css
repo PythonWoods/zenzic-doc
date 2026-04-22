@@ -508,14 +508,14 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* D107.1: Gradient purged. Black is absolute. Typography is the only light. */
 
-/* ── D105: Absolute Monolith — purge container box backgrounds ── */
-/* Force Obsidian Lead on every blog wrapper so no lighter rectangle appears */
+/* ── D111: Transparent Monolith — reveal the Obsidian Lead body ── */
+/* All blog/doc containers become transparent so the single #09090b body surface shows through */
 [data-theme='dark'] .blog-wrapper,
 [data-theme='dark'] .blog-post-page,
 [data-theme='dark'] .theme-blog-post-container,
 [data-theme='dark'] main.docMainContainer,
 [data-theme='dark'] main {
-  background-color: var(--ifm-background-color) !important;
+  background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
 }
