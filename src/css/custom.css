@@ -702,3 +702,51 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   color: #4f46e5 !important;  /* Vibrant Indigo ignites on hover */
   text-decoration: none;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   D116 — The Right-Aligned Navigation Vector
+   Freccia a destra: appare solo al hover, scivola dall'interno.
+   Targets CSS-module class via attribute selector — bilingual safe
+   (same hash in EN + IT sidebar components).
+   ══════════════════════════════════════════════════════════════ */
+[class*='sidebarItemLink'] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 6px;
+  /* Prevent long titles from pushing the arrow off-screen */
+  overflow: hidden;
+}
+
+/* The text span is already a text node — constrain it */
+[class*='sidebarItemLink'] > span,
+[class*='sidebarItemLink'] > :first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+[class*='sidebarItemLink']::after {
+  content: '→';
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95em;
+  flex-shrink: 0;
+  margin-left: 6px;
+  opacity: 0;
+  color: var(--obsidian-accent);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transform: translateX(-6px);
+}
+
+[class*='sidebarItemLink']:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+[class*='sidebarItemLinkActive']::after {
+  opacity: 0.75;
+  transform: translateX(0);
+  color: var(--ifm-color-primary);
+}
+
