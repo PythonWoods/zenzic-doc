@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Zenzic',
   tagline: 'Documentation security layer',
-  favicon: 'img/favicon.ico',
+  favicon: 'assets/favicon/png/zenzic-icon-32.png',
 
   // Future flags for v4 compatibility
   future: {
@@ -35,7 +35,7 @@ const config: Config = {
     locales: ['en', 'it'],
     localeConfigs: {
       en: { label: 'English' },
-      it: { label: 'Italiano', htmlLang: 'it-IT' },
+      it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
     },
   },
 
@@ -47,7 +47,21 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
         },
-        blog: false,
+        blog: {
+          blogTitle: 'The Obsidian Journal',
+          blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
+          blogSidebarTitle: 'Recent posts',
+          blogSidebarCount: 8,
+          postsPerPage: 5,
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            title: 'The Obsidian Journal — Zenzic Engineering Blog',
+            description: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
+            copyright: `© ${new Date().getFullYear()} PythonWoods`,
+          },
+          editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -75,7 +89,10 @@ const config: Config = {
       {name: 'twitter:card', content: 'summary_large_image'},
       {name: 'twitter:site', content: '@PythonWoods'},
       {name: 'twitter:creator', content: '@PythonWoods'},
+      {name: 'twitter:image:alt', content: 'Zenzic — The Safe Harbor for Markdown Documentation'},
       {name: 'theme-color', content: '#4f46e5'},
+      {property: 'og:image:width', content: '1200'},
+      {property: 'og:image:height', content: '630'},
     ],
     headTags: [
       {
@@ -106,7 +123,12 @@ const config: Config = {
         {
           type: 'html',
           position: 'left',
-          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.6.1</span>',
+          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.7.0</span>',
+        },
+        {
+          to: '/blog',
+          label: 'Journal',
+          position: 'left',
         },
         {
           type: 'localeDropdown',
@@ -122,7 +144,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.6.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.0. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
       theme: prismThemes.github,
