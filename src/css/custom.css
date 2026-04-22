@@ -484,3 +484,31 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 [data-theme='dark'] .blogPostContainer header {
   background: #09090b;
 }
+
+/* ── Obsidian Journal — Monolith Enforcement (D103) ── */
+
+/* Prose column — narrower than docs for readability */
+[data-theme='dark'] .blog-wrapper .container,
+[data-theme='dark'] .blogPostContainer .container {
+  max-width: 820px;
+}
+
+/* Radial Indigo hint behind blog post title — 5% opacity, intuition of light */
+[data-theme='dark'] article header {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-theme='dark'] article header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 8px;
+  background: radial-gradient(
+    ellipse 70% 120% at 50% 0%,
+    rgba(79, 70, 229, 0.05) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
