@@ -512,3 +512,39 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   );
   pointer-events: none;
 }
+
+/* ── D105: Absolute Monolith — purge container box backgrounds ── */
+/* Force Obsidian Lead on every blog wrapper so no lighter rectangle appears */
+[data-theme='dark'] .blog-wrapper,
+[data-theme='dark'] .blog-post-page,
+[data-theme='dark'] .theme-blog-post-container,
+[data-theme='dark'] main.docMainContainer,
+[data-theme='dark'] main {
+  background-color: var(--ifm-background-color) !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ── D106: Active Archive — sidebar navigation hover states ── */
+/* "All posts" title link */
+[data-theme='dark'] .blog-sidebar-all-posts-link,
+[data-theme='dark'] .blog-sidebar-all-posts-link:visited {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+[data-theme='dark'] .blog-sidebar-all-posts-link:hover {
+  color: #22d3ee;
+  text-decoration: none;
+}
+/* Year group heading link */
+[data-theme='dark'] .blog-sidebar-year-link,
+[data-theme='dark'] .blog-sidebar-year-link:visited {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+[data-theme='dark'] .blog-sidebar-year-link:hover {
+  color: #22d3ee;
+  text-decoration: none;
+}
