@@ -509,6 +509,48 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   text-decoration: none;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   D118 — The Absolute Title Consistency
+   Blocco totale: ogni titolo nel blog ha la stessa autorità visiva
+   indipendentemente dallo stato visited/read.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Light: Zinc-700 locked across all states */
+[data-theme='light'] .blog-list-page h2 a,
+[data-theme='light'] .blog-list-page h2 a:visited,
+[data-theme='light'] .blog-list-page h2 a:active {
+  color: #3f3f46 !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+[data-theme='light'] .blog-list-page h2 a:hover {
+  color: var(--obsidian-accent) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+/* Dark: White/Silk locked across all states */
+[data-theme='dark'] .blog-list-page h2 a,
+[data-theme='dark'] .blog-list-page h2 a:visited,
+[data-theme='dark'] .blog-list-page h2 a:active {
+  color: #fafafa !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+[data-theme='dark'] .blog-list-page h2 a:hover {
+  color: var(--obsidian-accent) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+/* Remove any opacity fade on blog post list item containers */
+[data-theme='light'] .blog-list-page article,
+[data-theme='dark'] .blog-list-page article {
+  opacity: 1 !important;
+}
+
 /* Blog post page single title <h1> */
 [data-theme='light'] .blog-post-page h1 {
   color: #3f3f46;
@@ -749,4 +791,3 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transform: translateX(0);
   color: var(--ifm-color-primary);
 }
-

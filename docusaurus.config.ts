@@ -92,8 +92,11 @@ const config: Config = {
       {name: 'twitter:creator', content: '@PythonWoods'},
       {name: 'twitter:image:alt', content: 'Zenzic — The Safe Harbor for Markdown Documentation'},
       {name: 'theme-color', content: '#4f46e5'},
+      {property: 'og:image', content: 'https://zenzic.dev/assets/social/social-card.png'},
       {property: 'og:image:width', content: '1200'},
       {property: 'og:image:height', content: '630'},
+      {property: 'og:type', content: 'website'},
+      {property: 'og:url', content: 'https://zenzic.dev/'},
     ],
     headTags: [
       {

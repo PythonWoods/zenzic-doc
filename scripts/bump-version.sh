@@ -140,8 +140,22 @@ for svg_path in ('static/assets/social/social-card.svg',
             changes += 1
             print(f"  ✓  {svg_path} (codename ALL-CAPS)")
 
-# 9. Regenerate ALL brand PNGs from their canonical SVGs (pure cairosvg — no subprocess).
-#    Then rebuild brand-kit.zip using Python zipfile (no Node subprocess).
+# 9. README.md + RELEASE.md — header badge + alignment notice
+replace_file('README.md', f'Zenzic_Core-v{old}', f'Zenzic_Core-v{new}')
+replace_file('README.md', f'Zenzic v{old}', f'Zenzic v{new}')
+replace_file('README.md', f'v{old}', f'v{new}')  # bare v{old} (e.g. "Discovered in: v{old}")
+replace_file('RELEASE.md', f'v{old}', f'v{new}')
+if m_old and m_new and old_code != new_code:
+    for target in ('README.md', 'RELEASE.md'):
+        p = Path(target)
+        c = p.read_text()
+        if old_code in c:
+            p.write_text(c.replace(old_code, new_code))
+            changes += 1
+            print(f"  ✓  {target} (codename)")
+
+# 10. Regenerate ALL brand PNGs from their canonical SVGs (pure cairosvg — no subprocess).
+#     Then rebuild brand-kit.zip using Python zipfile (no Node subprocess).
 #
 # MANIFEST: (svg_source, png_target, width, height)
 #   - static/brand/svg/ is the canonical SVG source (also packed verbatim in brand-kit.zip)
@@ -187,7 +201,7 @@ try:
             _shutil.copy2(png_dst, mirror)
             print(f"     ↳  mirrored → {mirror}")
 
-    # 10. Rebuild brand-kit.zip using Python zipfile (no Node subprocess).
+    # 11. Rebuild brand-kit.zip using Python zipfile (no Node subprocess).
     #     Mirrors the logic in scripts/build-assets.js.
     import zipfile as _zip
     ZIP_SOURCES = [
