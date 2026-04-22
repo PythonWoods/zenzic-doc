@@ -3,6 +3,12 @@ version = 1
 # ── Documentation content ────────────────────────────────────────────────────
 
 [[annotations]]
+path = "blog/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
 path = "docs/**/*.mdx"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
@@ -56,7 +62,9 @@ SPDX-License-Identifier = "Apache-2.0"
 # ── Project root — prose ─────────────────────────────────────────────────────
 
 [[annotations]]
-path = ["LICENSE", "NOTICE", "README.md", ".gitignore"]
+path = ["LICENSE", "NOTICE", "README.md", ".gitignore",
+        "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md",
+        "CITATION.cff", "RELEASE.md"]
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
