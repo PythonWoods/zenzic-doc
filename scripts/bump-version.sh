@@ -140,22 +140,76 @@ for svg_path in ('static/assets/social/social-card.svg',
             changes += 1
             print(f"  ✓  {svg_path} (codename ALL-CAPS)")
 
-# 9. Regenerate social card PNGs from updated SVGs
-print("\nRegenerating social card PNGs via cairosvg …")
+# 9. Regenerate ALL brand PNGs from their canonical SVGs (pure cairosvg — no subprocess).
+#    Then rebuild brand-kit.zip using Python zipfile (no Node subprocess).
+#
+# MANIFEST: (svg_source, png_target, width, height)
+#   - static/brand/svg/ is the canonical SVG source (also packed verbatim in brand-kit.zip)
+#   - static/brand/png/ is the canonical PNG target (packed in brand-kit.zip)
+#   - static/assets/brand/png/ mirrors brand/png/ for in-site serving
+#   - static/assets/social/ sources and mirrors are handled separately
+BRAND_PNG_MANIFEST = [
+    # (svg_path, png_path, width, height)
+    ('static/brand/svg/zenzic-icon.svg',
+     'static/brand/png/zenzic-icon-512.png',          512,   512),
+    ('static/brand/svg/zenzic-nav-dark.svg',
+     'static/brand/png/zenzic-nav-dark.png',          640,   180),
+    ('static/brand/svg/zenzic-nav-light.svg',
+     'static/brand/png/zenzic-nav-light.png',         640,   180),
+    ('static/brand/svg/zenzic-wordmark.svg',
+     'static/brand/png/zenzic-wordmark.png',          600,   120),
+    ('static/assets/social/social-card.svg',
+     'static/assets/social/social-card.png',         1200,   630),
+    ('static/assets/social/social-card-light.svg',
+     'static/assets/social/social-card-light.png',   1200,   630),
+]
+
+# Mirrors: after writing canonical PNG, also copy to assets/brand/png/
+BRAND_PNG_MIRRORS = {
+    'static/brand/png/zenzic-icon-512.png':  'static/assets/brand/png/zenzic-icon-512.png',
+    'static/brand/png/zenzic-nav-dark.png':  'static/assets/brand/png/zenzic-nav-dark.png',
+    'static/brand/png/zenzic-nav-light.png': 'static/assets/brand/png/zenzic-nav-light.png',
+    'static/brand/png/zenzic-wordmark.png':  'static/assets/brand/png/zenzic-wordmark.png',
+}
+
+print("\nRegenerating brand PNGs via cairosvg (pure Python — no subprocess) …")
 try:
     import cairosvg as _svg
-    for dark_light in (('static/assets/social/social-card.svg',
-                         'static/assets/social/social-card.png'),
-                        ('static/assets/social/social-card-light.svg',
-                         'static/assets/social/social-card-light.png')):
-        _svg.svg2png(url=dark_light[0], write_to=dark_light[1],
-                     output_width=1200, output_height=630)
+    import shutil as _shutil
+
+    for svg_src, png_dst, w, h in BRAND_PNG_MANIFEST:
+        _svg.svg2png(url=svg_src, write_to=png_dst, output_width=w, output_height=h)
         changes += 1
-        print(f"  ✓  {dark_light[1]}")
+        print(f"  ✓  {png_dst}  [{w}×{h}]")
+        # Mirror to static/assets/brand/png/ if applicable
+        mirror = BRAND_PNG_MIRRORS.get(png_dst)
+        if mirror and Path(mirror).parent.exists():
+            _shutil.copy2(png_dst, mirror)
+            print(f"     ↳  mirrored → {mirror}")
+
+    # 10. Rebuild brand-kit.zip using Python zipfile (no Node subprocess).
+    #     Mirrors the logic in scripts/build-assets.js.
+    import zipfile as _zip
+    ZIP_SOURCES = [
+        ('static/brand',          'brand'),
+        ('static/assets/social',  'social'),
+    ]
+    zip_out = Path('static/assets/brand-kit.zip')
+    with _zip.ZipFile(zip_out, 'w', compression=_zip.ZIP_DEFLATED) as zf:
+        for src_dir, prefix in ZIP_SOURCES:
+            src = Path(src_dir)
+            if not src.exists():
+                continue
+            for f in sorted(src.rglob('*')):
+                if f.is_file():
+                    arcname = f'{prefix}/{f.relative_to(src)}'
+                    zf.write(f, arcname)
+    changes += 1
+    print(f"\n  ✓  static/assets/brand-kit.zip  (rebuilt — {zip_out.stat().st_size // 1024} KB)")
+
 except ImportError:
-    print("  ⚠  cairosvg not installed — PNGs NOT regenerated. Run:")
-    print("       pip install cairosvg")
-    print("     then re-run this script or regenerate manually.")
+    print("  ⚠  cairosvg not installed — PNGs and brand-kit.zip NOT regenerated.")
+    print("     Install:  pip install cairosvg")
 
 print(f"\n✓ Bump complete ({changes} file(s) updated). Run 'just verify' to validate.")
 PYEOF
