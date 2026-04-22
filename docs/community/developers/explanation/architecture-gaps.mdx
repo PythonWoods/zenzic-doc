@@ -57,3 +57,52 @@ entirely. `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` added to suppress the Node.j
 deprecation warning. Remove the pre-install step only when `wrangler-action` ships a
 release that passes `--yes` to npx natively.
 **Closed in:** v0.5.0a4 (`fix/v050a4-infra-alignment`)
+
+### BRAND-001 — Brand System Static Asset (D096)
+
+**Identified in:** v0.7.0 (`release/v0.7.0`)
+**Component:** `static/assets/brand/zenzic-brand-system.html`, `docs/community/brand-kit.mdx`
+**Description:** The brand kit page lacked a machine-readable, human-navigable reference
+document that engineers and designers could open without a running Docusaurus server.
+A standalone HTML file (`zenzic-brand-system.html`) was required, but Docusaurus's
+`onBrokenLinks: 'throw'` rejects links to static HTML assets via normal relative paths.
+**Resolution:** Created `static/assets/brand/zenzic-brand-system.html` as a self-contained
+hardware-manual-style document (Sentinel Palette, SVG logos, social card preview, typography,
+badge visuals, usage laws). Linked from `brand-kit.mdx` (EN + IT) using the `pathname:///`
+prefix, which bypasses Docusaurus link validation for non-page static assets while keeping
+the URL resolvable in production. Font stack aligned to site standard: Inter + JetBrains Mono.
+**Closed in:** v0.7.0 — commit `1603dc4`
+
+### BRAND-002 — Obsidian Lead Alignment (D097)
+
+**Identified in:** v0.7.0 (`release/v0.7.0`)
+**Component:** `static/assets/social/social-card.svg`, `static/assets/brand/zenzic-brand-system.html`, `src/css/custom.css`
+**Description:** Three distinct background values (`#0d1117`, `#09090b`, `#111118`) were
+used across social cards, the brand system HTML, and the homepage CSS — resulting in a
+visually inconsistent "Obsidian" surface that varied by 3–5% luminance across surfaces.
+**Resolution:** `#09090b` (Obsidian Lead) adopted as the single canonical background across
+all dark surfaces. Changes: `social-card.svg` background `#0d1117` → `#09090b`, circle
+`#161b22` → `#111118`; `brand-system.html` CSS vars `--obsidian` → `#09090b`,
+`--slate` → `#0f0f13`, `--surface` → `#111118`; inline social SVG inside `brand-system.html`
+aligned identically. Palette swatch "Obsidian Lead #09090b · Primary BG" added.
+Social card PNGs (dark + light, 1200×630) regenerated via `cairosvg`.
+**Closed in:** v0.7.0 — commits `1224309`, `070021d`
+
+### INFRA-001 — Brand PNG Pipeline: No Subprocess (D097 Follow-up)
+
+**Identified in:** v0.7.0 (`release/v0.7.0`)
+**Component:** `scripts/bump-version.sh`, `scripts/build-assets.js`
+**Description:** The `bump-version.sh` script regenerated only social card PNGs after a
+version bump, leaving the four brand PNGs (`icon-512`, `nav-dark`, `nav-light`, `wordmark`)
+stale. Additionally, `brand-kit.zip` was rebuilt exclusively by `build-assets.js` (Node.js /
+AdmZip) during `npm run build` — meaning a plain version bump without a full Docusaurus
+build produced a zip with outdated assets. This also violated Pillar 2 (No Subprocesses):
+the bump pipeline spawned a Node.js process implicitly.
+**Resolution:** `bump-version.sh` step 9 expanded to a `BRAND_PNG_MANIFEST`-driven loop
+using `cairosvg` (pure Python): all 6 PNGs (4 brand + 2 social cards) are regenerated on
+every bump. `BRAND_PNG_MIRRORS` dict handles `shutil.copy2` of brand PNGs to
+`static/assets/brand/png/` (in-site serving for `brand-system.html`). Step 10 added:
+`brand-kit.zip` rebuilt via Python `zipfile.ZipFile` + `ZIP_DEFLATED` — identical manifest
+to `build-assets.js` (`static/brand/` → prefix `brand`, `static/assets/social/` → prefix
+`social`). Zero subprocess calls. Dry-run verified: 6/6 SVGs → PNGs, zip 87 KB / 27 entries.
+**Closed in:** v0.7.0 — commit `1cd712f`
