@@ -278,8 +278,8 @@ body {
 
 /* ── Admonitions ── */
 [data-theme='dark'] .alert {
-  background: rgba(15, 15, 19, 0.8);
-  border: 1px solid rgba(63, 63, 70, 0.3);
+  background: rgba(79, 70, 229, 0.03);
+  border: 1px solid rgba(79, 70, 229, 0.2);
   border-radius: 8px;
   border-left: 4px solid var(--ifm-alert-border-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -631,4 +631,10 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   line-height: 1.55;
   margin: 0;
   max-width: 680px;
+}
+
+/* ── D108: Blog Post Prose — breathing room ── */
+.blog-post-page article p {
+  margin-bottom: 1.4rem;
+  line-height: 1.8;
 }
