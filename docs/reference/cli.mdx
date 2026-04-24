@@ -374,24 +374,40 @@ zenzic score                   # show score for visibility
 
 ---
 
-## Plugin inspection
+## Arsenal Inspection
 
 ```bash
-zenzic plugins list   # List all rules registered in the zenzic.rules entry-point group
+zenzic inspect capabilities   # Show all built-in scanners and registered plugin rules
 ```
 
-`zenzic plugins list` shows every lint rule the engine knows about — Core rules bundled with
-Zenzic and any third-party rules installed from external packages:
+`zenzic inspect capabilities` shows Zenzic's complete scanner arsenal in two sections:
+
+**Section A — Core Scanners (Built-in):** seven scanners compiled into Zenzic itself. The Shield
+(Z201) and Blood Sentinel (Z202–203) use dedicated exit codes (2 and 3 respectively) that are never
+suppressible with `--exit-zero`.
+
+**Section B — Extensible Rules (Plugin System):** rules registered via the `zenzic.rules`
+entry-point group from any installed third-party package.
 
 ```text
-Installed plugin rules (1 found)
+Core Scanners  (built-in)
+┌──────────────┬───────────────────┬──────────────────────────────────────┬──────┐
+│ Codes        │ Scanner           │ Capability                           │ Exit │
+├──────────────┼───────────────────┼──────────────────────────────────────┼──────┤
+│ Z201         │ The Shield        │ Credential & security detection      │ 2 ⚠  │
+│ Z202–203     │ Blood Sentinel    │ Path-traversal & jailbreak detection │ 3 ⚠  │
+│ Z101–106     │ Link Validator    │ Broken links & anchor resolution     │ 1    │
+│ …            │ …                 │ …                                    │ …    │
+└──────────────┴───────────────────┴──────────────────────────────────────┴──────┘
+⚠  Exit 2 and Exit 3 are non-suppressible — --exit-zero has no effect on Shield or Blood Sentinel.
 
-  broken-links  Z001  (core)  zenzic.core.rules.VSMBrokenLinkRule
+Extensible Rules  (plugin system — zenzic.rules entry-point group)
+  — No third-party plugins installed. Register rules via the zenzic.rules entry-point group.
 ```
 
-Each row shows the entry-point name, the rule's stable `rule_id` (used in findings and
-suppression lists), the origin distribution (`(core)` for built-in rules, or the package
-name for third-party plugins), and the fully qualified Python class name.
+Each row in the Extensible Rules table shows the entry-point name, the rule's stable `rule_id`
+(used in findings and suppression lists), the origin distribution (`(core)` for built-in rules,
+or the package name for third-party plugins), and the fully qualified Python class name.
 
 Use this command to verify which rules are active after installing a plugin package.
 
