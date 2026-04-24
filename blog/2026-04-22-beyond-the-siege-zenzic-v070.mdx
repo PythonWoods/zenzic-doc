@@ -21,7 +21,7 @@ became v0.7.0 rather than v0.6.2.
 :::
 
 The [siege is over](/blog/ai-driven-siege-shield-postmortem). All four bypass vectors
-are closed. 1,130+ tests pass. The Bastion holds.
+are closed. 1,116 tests pass. The Bastion holds.
 
 {/* truncate */}
 
@@ -131,7 +131,8 @@ That command now works correctly against four engine types, with:
 | Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
 | i18n locale discovery | `path` config enforced; silent fallback documented |
 | Lab (interactive showroom) | 10 Acts covering all engine types |
-| Test suite | 1,130+ passing tests |
+| Test suite | 1,116 passing tests |
+| Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
 
@@ -168,6 +169,12 @@ v0.6.x to guide users through the breaking change. It served its purpose. It's g
 "Standalone Mode" is the canonical identity for documentation projects without a
 declared build system. It is not a fallback. It is not a default. It is a first-class
 engine mode with its own adapter, its own Lab Act, and its own documentation.
+
+This release also closes the chapter on the MkDocs plugin dependency that preceded the
+Headless Architecture. The CLI is now the **Sovereign authority**: `zenzic check all`
+is the single, non-negotiable entry point regardless of what build system the
+documentation uses. There is no plugin shim. There is no parallel execution path.
+One command. One verdict.
 
 ## The Institutional Memory Protocol
 
