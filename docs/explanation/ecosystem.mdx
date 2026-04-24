@@ -1,31 +1,32 @@
 ---
 sidebar_position: 1
-title: Adapters vs. Integrations
-description: The "Mind and Arm" model — how Zenzic separates analysis intelligence (Adapters) from build-engine action (Integrations).
+title: The Adapter Model
+description: How Zenzic understands any documentation engine without becoming part of it — the Adapter protocol and the Sovereign CLI strategy.
 ---
 
-# Adapters vs. Integrations
+# The Adapter Model
 
-Zenzic is designed around a clean architectural separation between two concerns: **understanding** your documentation engine and **acting** inside it. This page explains the mental model.
+Zenzic operates as a **sovereign external auditor**. It never embeds itself inside a build engine,
+never spawns subprocesses, and never requires engine-specific installation extras.
+One binary. Every engine. Full protection.
 
 ---
 
-## The "Mind and Arm" Model {#mind-and-arm}
+## Adapters — The Intelligence Layer {#adapters}
 
-| Component | Metaphor | Direction | When it's used |
-| :--- | :--- | :--- | :--- |
-| **Adapter** | Mind — interprets the engine | Engine → Zenzic | Always, on every `zenzic check` run |
-| **Integration** | Arm — triggers Zenzic from the engine | Zenzic → Engine | Optional, when you want automated gates during the build |
+An **Adapter** (in `zenzic.core.adapters`) is a pure-Python component that **reads** a build
+engine's configuration file and translates it into Zenzic's internal model. Adapters answer
+three questions:
 
-**Adapters** (in `zenzic.core.adapters`) are pure-Python components that **read** an engine's config file and translate it into Zenzic's internal model. They never modify the engine; they never run subprocesses. A `MkDocsAdapter` reads `mkdocs.yml` statically — no `mkdocs` binary is ever invoked.
-
-**Integrations** (in `zenzic.integrations`) are optional plugins that **hook into** a build engine's lifecycle and invoke Zenzic checks automatically. The `ZenzicPlugin` for MkDocs is the first implementation. It fires `zenzic check all` as part of the MkDocs build, making it impossible to publish broken documentation.
+1. **What files are navigable?** (`get_nav_paths()`) — Which `.md` / `.mdx` files appear in the site's navigation?
+2. **What URL does this file get?** (`get_route_info()`) — Canonical URL, slug override, route base path.
+3. **Which patterns does this engine ignore?** (`get_ignored_patterns()`) — Files like `README.md` that some engines skip.
 
 ```mermaid
 flowchart LR
-    subgraph INTAKE ["Intake — Understanding the Engine"]
+    subgraph INTAKE ["Engine Understanding"]
         direction TB
-        ENG["Build Engine\n(mkdocs.yml, docusaurus.config.ts, …)"]
+        ENG["Build Engine Config\n(mkdocs.yml, docusaurus.config.ts, …)"]
         ADP["Adapter\nzenzic.core.adapters"]
         ENG -->|"static read\n(no subprocess)"| ADP
     end
@@ -33,45 +34,30 @@ flowchart LR
     subgraph CORE ["Zenzic Core"]
         direction TB
         VSM["Virtual Site Map\n(VSM)"]
-        SHIELD["Shield Middleware"]
+        SHIELD["Shield + Blood Sentinel"]
         RULES["Rule Engine"]
         ADP --> VSM
         VSM --> SHIELD
         SHIELD --> RULES
     end
 
-    subgraph ACTION ["Action — Triggering from the Engine"]
-        direction TB
-        INTG["Integration\nzenzic.integrations"]
-        BUILD["Build Pipeline\n(mkdocs build, …)"]
-        RULES -->|findings| INTG
-        INTG -->|gate pass/fail| BUILD
+    subgraph OUT ["Sovereign Output"]
+        EXIT["Exit 0 / 1 / 2 / 3\nStructured findings"]
+        RULES --> EXIT
     end
 
     style INTAKE fill:#1e3a5f,color:#fff
     style CORE fill:#1a2e1a,color:#fff
-    style ACTION fill:#3b1f1f,color:#fff
+    style OUT fill:#2d1f3f,color:#fff
 ```
+
+Adapters are **stateless and subprocess-free**. A `MkDocsAdapter` reads `mkdocs.yml` statically
+— no `mkdocs` binary is ever invoked. The same run that analyses a MkDocs project can, with
+a different adapter, analyse a Docusaurus or Zensical project using an identical code path.
 
 ---
 
-## Adapters in Detail {#adapters}
-
-An adapter implements the `BaseAdapter` protocol. It answers three questions:
-
-1. **What files are navigable?** (`get_nav_paths()`) — Which `.md` / `.mdx` files appear in the site's navigation?
-2. **What URL does this file get?** (`get_route_info()`) — Canonical URL, slug override, route base path.
-3. **Which patterns does this engine ignore?** (`get_ignored_patterns()`) — Files like `README.md` that some engines skip.
-
-Adapters are discovered via the `zenzic.adapters` entry-point group. You can ship a third-party adapter for any engine without touching the Zenzic core:
-
-```toml
-# Your adapter's pyproject.toml
-[project.entry-points."zenzic.adapters"]
-myengine = "my_package.adapter:MyEngineAdapter"
-```
-
-### Built-in Adapters
+## Built-in Adapters {#built-in-adapters}
 
 | Adapter class | Engine | Config file read |
 | :--- | :--- | :--- |
@@ -80,39 +66,57 @@ myengine = "my_package.adapter:MyEngineAdapter"
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js` / `.ts` |
 | `StandaloneAdapter` | `standalone` | _(none — every file is reachable)_ |
 
----
-
-## Integrations in Detail {#integrations}
-
-Integrations live in `zenzic.integrations`. They require the host engine to be installed alongside Zenzic, so they are **opt-in** via a package extra:
-
-```bash
-# Core Zenzic — no engine dependency
-pip install zenzic
-
-# With MkDocs integration
-pip install "zenzic[mkdocs]"
-```
-
-### `zenzic.integrations.mkdocs` — The MkDocs Plugin {#mkdocs-plugin}
-
-The MkDocs plugin is registered as a native `mkdocs.plugins` entry point. Add it to your `mkdocs.yml`:
-
-```yaml
-plugins:
-  - search
-  - zenzic          # ← drop-in: no extra config required
-```
-
-When `mkdocs build` runs, Zenzic fires `check all` before the first page is rendered. A finding with severity `error` causes the build to fail immediately — you cannot accidentally publish a broken documentation site.
-
-The plugin is discovered automatically by MkDocs via the entry point:
+Adapters are discovered via the `zenzic.adapters` entry-point group. Ship a third-party
+adapter for any engine without touching the Zenzic core:
 
 ```toml
-# Registered in zenzic's pyproject.toml — no user action required
-[project.entry-points."mkdocs.plugins"]
-zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
+# Your adapter's pyproject.toml
+[project.entry-points."zenzic.adapters"]
+myengine = "my_package.adapter:MyEngineAdapter"
 ```
+
+---
+
+## Sovereign CLI Strategy {#sovereign-cli}
+
+Zenzic v0.7.0 does not provide build-engine plugins or internal integrations.
+This is a deliberate architectural decision, not a missing feature.
+
+### Why no engine plugins?
+
+| Concern | Engine plugin | Sovereign CLI |
+| :--- | :--- | :--- |
+| Credential scanning (Shield) | ❌ Structurally absent — hooks fire too late | ✅ Full ZRT-006/007 hardening |
+| Path traversal (Blood Sentinel) | ❌ Engine controls path resolution | ✅ Every link normalised by Zenzic |
+| Link validation | ❌ Engine's own resolver — not VSM | ✅ O(1) VSM with SHA256 cache |
+| Engine parity | ❌ MkDocs plugin ≠ Docusaurus plugin | ✅ Single code path for all engines |
+| Dependency isolation | ❌ Requires `pip install zenzic[engine]` | ✅ `pip install zenzic` — done |
+
+A plugin that lives inside a build engine cannot enforce the same guarantees as an
+external auditor. The Shield, Blood Sentinel, and VSM were designed for sovereign execution.
+Embedding them inside a build hook would degrade them to best-effort checks.
+
+### The recommended workflow
+
+```bash
+# Install — one package, no extras
+pip install zenzic
+
+# Detect engine from config files, write zenzic.toml
+zenzic init
+
+# Full audit — VSM + Shield + Blood Sentinel + link validation
+zenzic check all
+
+# In CI (GitHub Actions, GitLab CI, etc.)
+# Add as a step before or after your build, not inside it
+zenzic check all --strict
+```
+
+Zenzic runs **before or after** the build — never inside it. This gives you:
+- Exit 2 on any leaked credential (Shell stops immediately)
+- Exit 3 on any path-traversal link (cannot be suppressed)
+- Engine-agnostic results: the same `zenzic check all` command works for every engine
 
 ---
 
@@ -120,10 +124,10 @@ zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
 
 | Scenario | Recommended approach |
 | :--- | :--- |
-| CI pipeline (`zenzic check all` in a GitHub Action) | **Adapter only** — no integration needed |
-| MkDocs project where you want a build gate | **Adapter + MkDocs Integration** — `pip install "zenzic[mkdocs]"` |
+| CI pipeline for any engine | `zenzic check all` — add a step, no plugin needed |
+| Pre-commit credential gate | `zenzic check references` — registers as a pre-commit hook |
 | Custom engine not yet supported | **Write an Adapter** — ship as a separate package, register via `zenzic.adapters` entry-point |
-| Trigger Zenzic from a non-MkDocs engine's build hook | **Write an Integration** — open a PR or ship as a separate package in `zenzic.integrations` |
+| Migrate from MkDocs to Docusaurus | Use `zenzic check all` with `engine = "mkdocs"` on the source, `engine = "docusaurus"` on the target |
 
 ---
 
