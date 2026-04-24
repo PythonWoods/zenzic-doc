@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 sidebar_label: "Finding Codes"
-description: "Complete reference for all Zenzic finding codes, their severity levels, exit code impact, and remediation guidance."
+description: "The definitive Zenzic Finding Code Encyclopedia. Actionable remediation for every Zxxx diagnostic identifier."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,296 +9,325 @@ description: "Complete reference for all Zenzic finding codes, their severity le
 
 # Finding Codes Reference
 
-Every issue detected by Zenzic is tagged with a **finding code** that identifies
-its category. This page is the authoritative index of all codes, their severity
-levels, and what they mean for your exit code.
+Every issue detected by Zenzic is tagged with a **canonical finding code** (`Zxxx`). This encyclopedia provides the technical context and practical remediation steps for every diagnostic signal.
 
-:::info[Severity vs. exit code]
-Severity describes the nature of the issue; the exit code determines whether
-`zenzic check` signals failure to the shell or CI system.
-
-| Severity | Exit code impact |
-| :--- | :--- |
-| `error` | Exit 1 (suppressible by `--exit-zero`) |
-| `warning` | Exit 1 in `--strict` mode only |
-| `info` | Never affects exit code — use `--show-info` to display |
-| `security_breach` | Exit 2 — never suppressible |
-| `security_incident` | Exit 3 — never suppressible |
+:::tip[Deep-linking]
+Each code has a permanent anchor. You can link directly to a specific code using `https://zenzic.dev/docs/reference/finding-codes#z101`.
 :::
 
----
+## Category Overview
 
-## Link Checks
+Zenzic organizes findings into **seven diagnostic categories**, each addressing a specific pillar of documentation integrity:
 
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `FILE_NOT_FOUND` | error | `check links` | A relative link target does not exist on disk |
-| `ANCHOR_NOT_FOUND` | error | `check links` | The `#heading-anchor` in a link does not exist in the target file |
-| `EXTERNAL_BROKEN` | error | `check links --strict` | An HTTP HEAD/GET request to an external URL returned a non-2xx/3xx status |
-| `CIRCULAR_LINK` | info | `check links` | The resolved link target is part of a detected link cycle |
-| `PATH_TRAVERSAL` | error | `check links` | A link resolves outside the `docs/` directory |
-| `PATH_TRAVERSAL_SUSPICIOUS` | security_incident | `check links` | A link resolves to a known OS system path (`/etc/`, `/root/`, etc.) — triggers **Exit 3 (Blood Sentinel)** |
+| **Category** | **Range** | **Purpose** | **Default Severity** |
+|---|---|---|---|
+| **Z0xx** | Migration & Compatibility | Engine deprecation; migration guidance | `error` |
+| **Z1xx** | Link Integrity | Broken/circular links, orphaned pages, path issues | `error`/`warning` |
+| **Z2xx** | Security (Shield) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` |
+| **Z3xx** | Reference Integrity | Dangling/duplicate reference definitions | `error`/`warning` |
+| **Z4xx** | Structure | Directory indexes, orphan pages, missing alt text, config assets | `info`/`warning` |
+| **Z5xx** | Content Quality | Placeholder text, short content, snippet validation, regressions | `warning`/`error` |
+| **Z9xx** | Engine & System | Rule execution errors, timeouts, unused assets, nav violations | `error`/`warning` |
 
----
+### Exit Code Contract
 
-## Orphan Check
+Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `ORPHAN` | warning | `check orphans` | A `.md` file exists on disk but is not listed in the site navigation |
-
----
-
-## Snippet Check
-
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `SNIPPET` | error | `check snippets` | A fenced code block with a checkable language tag (`python`, `yaml`, `json`, `toml`) contains a syntax error |
+*   **Exit 0:** All checks passed (or suppressed via `--exit-zero`).
+*   **Exit 1:** Errors and warnings detected; use `--strict` to promote warnings.
+*   **Exit 2:** Security breaches detected (Z201 SHIELD_SECRET). **Never** suppressed.
+*   **Exit 3:** Security incidents detected (Z203 PATH_TRAVERSAL_FATAL). **Never** suppressed, even with `--exit-zero`.
 
 ---
 
-## Placeholder Check
+## Z0xx — Migration & Compatibility
 
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `short-content` | warning | `check placeholders` | Page word count is below `placeholder_max_words` (default: 50) |
-| `placeholder-text` | warning | `check placeholders` | Page contains a pattern from `placeholder_patterns` (e.g. `TODO`, `WIP`, `Draft`) |
+### Z000: UNSUPPORTED_ENGINE {#z000}
 
----
-
-## Asset Check
-
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `ASSET` | warning | `check assets` | An image or media file in `docs/` is not referenced by any `.md` page |
+*   **Severity:** `error` (Fatal)
+*   **Technical Context:** This diagnostic is emitted when the Zenzic engine encounters an `engine` identifier in `zenzic.toml` that has been deprecated or removed (e.g., the legacy `vanilla` engine). As Zenzic reached "Obsidian Maturity," loose-typed adapters were replaced by strictly typed protocols.
+*   **Remediation Steps:**
+    1. Open your `zenzic.toml` or `pyproject.toml`.
+    2. Locate the `engine` field.
+    3. Update `engine = "vanilla"` to `engine = "standalone"`.
+    4. If you are using MkDocs, ensure it is set to `engine = "mkdocs"`.
 
 ---
 
-## Reference Pipeline
+## Z1xx — Link Integrity
 
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `DANGLING_REF` | error | `check references` | A `[text][id]` usage references an ID that has no definition in the file |
-| `DEAD_DEF` | warning | `check references` | A `[id]: url` definition exists but is never used in the file |
-| `DUPLICATE_DEF` | warning | `check references` | The same reference ID is defined twice; the first definition wins (CommonMark §4.7) |
-| `MISSING_ALT` | warning | `check references` | An image (`![](url)`) has a blank or absent alt-text attribute |
+### Z101: LINK_BROKEN {#z101}
+
+*   **Severity:** `error`
+*   **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs perimeter or was excluded by an exclusion rule.
+*   **Remediation Steps:**
+    1. Verify the physical existence of the target file.
+    2. Check the relative path calculation (e.g., `../folder/target.md`).
+    3. Ensure the file is not matched by `ignored_patterns` in your config.
+    4. If referencing a file outside `docs/`, use a global path or symlink (though relative is preferred).
+
+### Z102: ANCHOR_MISSING {#z102}
+
+*   **Severity:** `error`
+*   **Technical Context:** The file target is valid (Z101 pass), but the specific HTML anchor (e.g., `#setup`) cannot be found in the target's header registry. Zenzic parses all Markdown headers and explicit `<a id="...">` tags to build this registry during Phase 1.
+*   **Remediation Steps:**
+    1. Open the target file and verify the heading text.
+    2. Ensure the anchor matches the engine-specific slugification (e.g., Docusaurus uses Kebab-case).
+    3. If using custom IDs, ensure the syntax `{#id}` or `<a id="id"></a>` is correct.
+
+### Z103: ORPHAN_LINK {#z103}
+
+*   **Severity:** `warning`
+*   **Technical Context:** This link points to a file that is present in the VSM but is not included in the site's navigation structure (sidebar/nav). Users may be able to link to it, but they cannot find it via the UI.
+*   **Remediation Steps:**
+    1. Add the file to your `mkdocs.yml` navigation or Docusaurus `sidebars.ts`.
+    2. If the page is intentional (e.g., a hidden landing page), you can suppress this warning using a `<!-- zenzic-disable Z103 -->` comment.
+
+### Z104: FILE_NOT_FOUND {#z104}
+
+*   **Severity:** `error`
+*   **Technical Context:** A low-level filesystem error. The engine attempted to open a file referenced by a link or asset but received a `FileNotFoundError`. This typically happens when a file is moved or deleted during a concurrent build process.
+*   **Remediation Steps:**
+    1. Ensure no other process is modifying the `docs/` directory during the Zenzic scan.
+    2. Verify that your `docs_dir` setting is correct and that the file path is absolute relative to the repository root.
+
+### Z105: ABSOLUTE_PATH {#z105}
+
+*   **Severity:** `warning`
+*   **Technical Context:** Absolute paths (e.g., `C:\Docs\page.md` or `/home/user/docs/page.md`) break documentation portability. Zenzic flags these to prevent "It works on my machine" syndrome in CI/CD pipelines.
+*   **Remediation Steps:**
+    1. Convert the link to a relative path starting from the current file's directory.
+    2. Use `@site/` or similar engine-specific aliases if supported (e.g., in Docusaurus).
+
+### Z106: CIRCULAR_LINK {#z106}
+
+*   **Severity:** `info`
+*   **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation.
+*   **Remediation Steps:**
+    1. Review the content flow to see if one link can be replaced by a broader "See Also" section.
+    2. Ensure that users aren't getting trapped between two pages with no clear exit path.
 
 ---
 
-## Shield (Credential Detection)
+## Z2xx — Security (Shield)
 
-Shield findings always produce **Exit 2**. They are never suppressible.
+### Z201: SHIELD_SECRET {#z201}
 
-| Code | Pattern family | Example prefix |
-| :--- | :--- | :--- |
-| `openai-api-key` | OpenAI API key | `sk-…` |
-| `github-token` | GitHub personal / OAuth token | `gh[pousr]_…` |
-| `aws-access-key` | AWS IAM access key ID | `AKIA…` |
-| `stripe-live-key` | Stripe live secret key | `sk_live_…` |
-| `slack-token` | Slack bot / user / app token | `xox[baprs]-…` |
-| `google-api-key` | Google Cloud / Maps API key | `AIza…` |
-| `private-key` | PEM private key header | `-----BEGIN … PRIVATE KEY-----` |
-| `hex-encoded-payload` | Hex-encoded byte sequence | `\xNN\xNN\xNN…` (3 or more consecutive hex escapes) |
-| `gitlab-pat` | GitLab Personal Access Token | `glpat-…` |
+*   **Severity:** `security_breach` (Exit 2)
+*   **Technical Context:** The **Hex Shield** identified a pattern matching a known credential format (AWS keys, GitHub tokens, Private Keys). This check is performed on the raw byte stream to prevent obfuscation.
+*   **Remediation Steps:**
+    1. **IMMEDIATE:** Rotate the leaked credential. It must be considered compromised.
+    2. Remove the secret from the file.
+    3. Purge the git history using `git-filter-repo` or a similar tool to ensure the secret is not just hidden but gone.
+    4. Use placeholders like `YOUR_API_KEY` for documentation examples.
 
-### Shield Bypass Hardening {#shield-bypass-hardening}
+### Z202: PATH_TRAVERSAL {#z202}
 
-Before regex patterns run, every line passes through an **8-step normalization
-pipeline** that closes known obfuscation vectors. Order is deterministic and matters:
-each step creates the preconditions for the next.
+*   **Severity:** `error`
+*   **Technical Context:** A relative path uses `..` segments to escape the `docs/` root boundary. This is a security guardrail to ensure the Zenzic engine does not accidentally disclose or scan sensitive repository files (like `.env` or `config.py`) that aren't part of the documentation.
+*   **Remediation Steps:**
+    1. Move the target asset or file into the `docs/` or `static/` hierarchy.
+    2. If you must reference an external file, use a symbolic link (if permitted) or a literal absolute URL.
 
-```python
-def _normalize_line_for_shield(raw_line: str) -> str:
-    text = raw_line
-    text = _strip_unicode_format_chars(text)   # Step 1 — Unicode Cf chars
-    text = html.unescape(text)                  # Step 2 — HTML entities
-    text = _HTML_COMMENT_RE.sub("", text)       # Step 3 — HTML comments
-    text = _MDX_COMMENT_RE.sub("", text)        # Step 4 — MDX comments
-    text = _BACKTICK_RE.sub(lambda m: m.group(1), text)  # Step 5 — backtick spans
-    text = text.replace("+", " ")              # Step 6 — concatenation operators
-    text = text.replace("|", " ")              # Step 7 — table cell separators
-    text = " ".join(text.split())              # Step 8 — whitespace collapse
-    return text
+### Z203: PATH_TRAVERSAL_FATAL {#z203}
+
+*   **Severity:** `security_incident` (Exit 3)
+*   **Technical Context:** The **Blood Sentinel** detected an attempt to access restricted OS directories (e.g., `/etc/`, `/root/`). This is treated as a high-authority security incident, triggering a non-zero exit code that cannot be suppressed.
+*   **Remediation Steps:**
+    1. Investigate the source file for malicious intent or supply-chain compromise.
+    2. Remove any absolute paths that reference host-system locations.
+    3. Ensure no AI-generated content is injecting malicious probes into your documentation.
+
+---
+
+## Z3xx — Reference Integrity
+
+### Z301: DANGLING_REF {#z301}
+
+*   **Severity:** `error`
+*   **Technical Context:** A reference-style link (e.g., `[my link][ref]`) is present, but the definition (e.g., `[ref]: http://...`) is missing from the file. This results in the link being rendered as plain text in most Markdown engines.
+*   **Remediation Steps:**
+    1. Add the missing definition at the bottom of the Markdown file.
+    2. Check for typos in the reference ID.
+
+### Z302: DEAD_DEF {#z302}
+*   **Severity:** `warning`
+*   **Technical Context:** A reference definition exists but no link in the file uses it. While harmless for the end user, it creates maintenance debt and bloats the source file.
+*   **Remediation Steps:**
+    1. Remove the unused definition.
+    2. Or, update a link to use this reference if it was intended to be used.
+
+### Z303: DUPLICATE_DEF {#z303}
+*   **Severity:** `warning`
+*   **Technical Context:** Multiple definitions exist for the same reference ID. According to CommonMark specifications, the first definition typically "wins," but this ambiguity should be resolved.
+*   **Remediation Steps:**
+    1. Ensure each reference ID has exactly one definition in the file.
+    2. Consolidate duplicates into a single canonical reference.
+
+---
+
+## Z4xx — Structure
+
+### Z401: MISSING_DIRECTORY_INDEX {#z401}
+
+*   **Severity:** `info`
+*   **Technical Context:** In hierarchical documentation, every directory should have a "landing" page (usually `index.md` or `README.md`). Without this, the directory URL may return a 404 or a raw directory listing in some build engines.
+*   **Remediation Steps:**
+    1. Create a file named `index.md` or `README.md` in the flagged directory.
+    2. Provide a brief overview of the contents of that directory.
+
+### Z402: ORPHAN_PAGE {#z402}
+
+*   **Severity:** `warning`
+*   **Technical Context:** The file exists in the docs folder but is not reachable through any navigation menu. This is the structural equivalent of "Dead Code."
+*   **Remediation Steps:**
+    1. Include the page in your `nav` (MkDocs) or `sidebar` (Docusaurus) config.
+    2. Delete the file if it is a leftover artifact from a previous version.
+
+### Z403: MISSING_ALT {#z403}
+
+*   **Severity:** `warning`
+*   **Technical Context:** Images without alt text are invisible to screen readers and degrade SEO. Zenzic enforces accessibility as a core pillar of "Obsidian Maturity."
+*   **Remediation Steps:**
+    1. Add descriptive text within the square brackets: `![A description of the image](url)`.
+    2. Avoid generic text like "image" or "screenshot".
+
+### Z404: CONFIG_ASSET_MISSING {#z404}
+
+*   **Severity:** `warning`
+*   **Technical Context:** The build engine's main configuration (e.g., `docusaurus.config.ts`) references a logo or favicon that does not exist at the specified path. This prevents the "Face" of the project from rendering correctly.
+*   **Remediation Steps:**
+    1. Check the `favicon:` or `logo.src:` paths in your config file.
+    2. Ensure the file is physically present in the `static/` directory (for Docusaurus) or `docs/` (for MkDocs).
+
+---
+
+## Z5xx — Content Quality
+
+### Z501: PLACEHOLDER {#z501}
+
+*   **Severity:** `warning`
+*   **Technical Context:** Detects strings like `TODO`, `FIXME`, or `[INSERT IMAGE HERE]`. These are markers of incomplete work that should not be present in production documentation.
+*   **Remediation Steps:**
+    1. Search for the placeholder in the source file.
+    2. Replace it with actual content or remove it.
+
+### Z502: SHORT_CONTENT {#z502}
+
+*   **Severity:** `warning`
+*   **Technical Context:** Pages with very little text (default < 50 words) provide poor user value and can hurt search engine rankings.
+*   **Remediation Steps:**
+    1. Expand the documentation with more detail.
+    2. If the page is a placeholder, combine it with a related page.
+
+### Z503: SNIPPET_ERROR {#z503}
+
+*   **Severity:** `error`
+*   **Technical Context:** The **Snippet Guard** identified a syntax error in a fenced code block marked with a language tag (e.g., `py`, `js`). This prevents users from copying and running broken code examples.
+*   **Remediation Steps:**
+    1. Correct the syntax within the code block.
+    2. If the block contains intentionally broken code (e.g., to show what NOT to do), use the `text` language tag to bypass validation.
+
+### Z504: QUALITY_REGRESSION {#z504}
+
+*   **Severity:** `warning`
+*   **Technical Context:** The **Obsidian Scorer** detected that the quality score for this file has dropped significantly compared to the baseline. This can indicate a loss of structure or readability.
+*   **Remediation Steps:**
+    1. Compare the current file with its previous version.
+    2. Ensure that recent edits haven't introduced excessive complexity or removed vital sections.
+
+---
+
+## Z9xx — Engine & System
+
+### Z901: RULE_ENGINE_ERROR {#z901}
+
+*   **Severity:** `error`
+*   **Technical Context:** An unhandled exception occurred within a core rule or a plugin. This is a system-level failure that usually indicates a bug in Zenzic or an incompatible environment.
+*   **Remediation Steps:**
+    1. Check the full CLI output for a Python traceback.
+    2. Report the issue at `https://github.com/PythonWoods/zenzic/issues`.
+
+### Z902: RULE_TIMEOUT {#z902}
+
+*   **Severity:** `error`
+*   **Technical Context:** A rule took too long to execute (default > 30s). This is almost always caused by a **Catastrophic Backtracking** issue in a custom regular expression provided in `[[custom_rules]]`.
+*   **Remediation Steps:**
+    1. Review your custom regex patterns in `zenzic.toml`.
+    2. Simplify the patterns to avoid nested quantifiers like `(a+)+`.
+    3. Use non-backtracking alternatives if possible.
+
+### Z903: UNUSED_ASSET {#z903}
+
+*   **Severity:** `warning`
+*   **Technical Context:** An image or asset file exists in the directory but is never referenced by any Markdown file. These "Dark Assets" bloat your repository and build artifacts.
+*   **Remediation Steps:**
+    1. Delete the unused file.
+    2. Or, use it in a documentation page where appropriate.
+
+### Z904: NAV_CONTRACT {#z904}
+
+*   **Severity:** `error`
+*   **Technical Context:** A conflict between the physical file structure and the engine's navigation config. For example, a `mkdocs.yml` nav entry pointing to `guide/setup.md` while the file is actually at `guides/setup.md`.
+*   **Remediation Steps:**
+    1. Align the navigation path in your config file with the physical file path.
+    2. Run `zenzic check all` to verify the fix across the VSM.
+
+---
+
+## Best Practices & Diagnostic Suppression
+
+### Suppressing Diagnostics
+
+While Zenzic encourages fixing all findings, you can suppress specific codes using inline comments. This is useful for intentional violations (e.g., linking to external resources that may change, documenting legacy behavior):
+
+```markdown
+<!-- zenzic-disable Z103 ORPHAN_LINK -->
+This page is intentionally hidden from navigation.
+
+<!-- zenzic-disable Z501, Z502 -->
+This section documents legacy behavior and is intentionally brief.
 ```
 
-Four bypass vectors were discovered and closed during Operation Obsidian Stress
-(pre-release audit for v0.6.1rc2):
+### Recommended Workflow
 
-| Vector | ID | Mechanism | Step that closes it |
-| :--- | :--- | :--- | :--- |
-| Unicode Cf injection | ZRT-006 | Invisible format chars (U+200B, U+00AD, etc.) break regex contiguity | Step 1 |
-| HTML entity obfuscation | ZRT-006b | `&#45;` (hyphen) and `&#95;` (underscore) bypass prefix patterns | Step 2 |
-| Comment interleaving | ZRT-007 | `<!-- ... -->` or `{/* ... */}` split tokens mid-credential | Steps 3–4 |
-| Cross-line splitting | ZRT-007b | Credential split across a line boundary; no single line matches | Lookback buffer |
+1. **Baseline scan:** Run `zenzic check all` to establish a baseline of findings.
+2. **Prioritize security:** Address all Z2xx (Shield) findings immediately—these are security-critical.
+3. **Fix structural issues:** Resolve Z4xx (Structure) findings to ensure proper navigation and accessibility.
+4. **Gradual quality improvement:** Address Z5xx (Content Quality) findings incrementally as part of routine documentation maintenance.
+5. **Suppress intentional violations:** Use inline comments sparingly for design decisions (e.g., hidden landing pages, experimental sections).
 
-The **lookback buffer** (ZRT-007b) is an architectural fix that operates outside the
-per-line pipeline. A stateful generator maintains the tail of the previous normalized
-line (80 characters) and joins it with the head of the current line to form a synthetic
-scan window. This window catches credentials split at a line boundary with zero
-obfuscation — a plain line break is sufficient to defeat a stateless line-by-line
-scanner.
+### Engine-Specific Considerations
 
----
+*   **Docusaurus:** Z103 (ORPHAN_LINK) warnings may be intentional for pages outside the main sidebar. Consider using `sidebars.js` routes or suppressing these findings.
+*   **MkDocs:** Z401 (MISSING_DIRECTORY_INDEX) is especially relevant in hierarchical docs; ensure every directory has an `index.md`.
+*   **Standalone Mode:** Orphan detection (Z103, Z402) is disabled without a navigation contract. Use explicitly.
 
-## Directory Index Integrity {#missing-directory-index}
+### Integration with CI/CD
 
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `MISSING_DIRECTORY_INDEX` | info | `check all --show-info` | A directory contains Markdown source files but no engine-provided landing page — the directory URL may return a 404 |
-
-### What triggers this finding?
-
-`MISSING_DIRECTORY_INDEX` is emitted when `find_missing_directory_indices()` discovers
-a subdirectory under `docs/` that satisfies both conditions:
-
-1. **Contains at least one `.md` or `.mdx` source file** — the directory is part of
-   the live documentation.
-2. **Does not provide an index page** as recognised by the active adapter's
-   `provides_index()` method.
-
-The check is **engine-aware**: each adapter knows what constitutes a directory
-landing page for its build engine:
-
-| Engine | What counts as an index |
-| :--- | :--- |
-| Docusaurus | `index.md`, `index.mdx`, `README.md`, `README.mdx`, or `_category_.json` with `"link": {"type": "generated-index"}` |
-| MkDocs | `index.md` or `README.md` |
-| Zensical | `index.md` |
-| Vanilla | `index.md` |
-
-### Why severity `info`?
-
-A missing directory index is not always a hard error. Some sites intentionally
-omit a `docs/` root index, or use the build engine's default category page
-rather than a hand-authored one. `info` severity means:
-
-- **Never blocks CI** — the finding does not contribute to Exit 1.
-- **Never affects the quality score.**
-- **Visible on demand** — use `--show-info` to see these signals during development.
-
-### How to fix
-
-Create an appropriate index file in the reported directory:
+For maximum effectiveness, integrate Zenzic checks into your CI/CD pipeline:
 
 ```bash
-# Docusaurus: an MDX index page at docs/my-section/index.mdx
-touch docs/my-section/index.mdx
+# Fail on any error (Z1xx, Z4xx, Z9xx):
+zenzic check all
 
-# MkDocs / Zensical: a standard index
-echo "# My Section" > docs/my-section/index.md
+# Fail on errors OR warnings (promote with --strict):
+zenzic check all --strict
+
+# Always exit 0 for non-blocking audits:
+zenzic check all --exit-zero
 ```
 
-Alternatively, for Docusaurus, add a `_category_.json` with a generated index:
+Use environment-specific configurations to adapt severity:
 
-```json
-{
-  "label": "My Section",
-  "position": 3,
-  "link": {
-    "type": "generated-index",
-    "description": "Overview of everything in this section."
-  }
-}
+```toml
+[zenzic]
+engine = "docusaurus"
+strict = false  # Warnings only in dev; use --strict in CI
+
+[[rules]]
+code = "Z502"
+minimum_words = 50
 ```
 
 ---
-
-## Rule Engine (Custom Rules)
-
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| User-defined rule ID (e.g. `NO_DRAFT`) | Configured in `[[custom_rules]]` | `check all` | A line matched a user-defined regex pattern |
-| `Z009` | error | `check all` | A worker process exceeded the 30-second per-file timeout — likely caused by catastrophic backtracking in a `[[custom_rules]]` regex pattern |
-| `RULE-ENGINE-ERROR` | error | `check all` | A worker process raised an unexpected exception |
-
----
-
-## Config Asset Integrity {#config-asset-missing}
-
-| Code | Severity | CLI | Meaning |
-| :--- | :---: | :--- | :--- |
-| `Z404` | warning | `check all` | A static asset (favicon or logo) declared in the engine config file cannot be found on disk |
-
-### What triggers this finding?
-
-`Z404 CONFIG_ASSET_MISSING` is emitted by the **Docusaurus, MkDocs, and Zensical adapters**
-when a file path declared for the site favicon, logo, or Open Graph social card image
-does not resolve to a real file inside the expected asset directory.
-
-This guard catches a class of silent infrastructure misconfigurations that only
-become visible at runtime as HTTP 404s — often long after a deployment.
-
-### Which config fields are checked?
-
-**Docusaurus** (`docusaurus.config.ts` / `.js`) — assets resolved relative to `static/`:
-
-| Config field | Pattern checked |
-| :--- | :--- |
-| `favicon: 'path/to/icon.png'` | Path resolved relative to `static/` must exist |
-| `image: 'path/to/social-card.png'` (image-extension values only) | Path resolved relative to `static/` must exist |
-
-**MkDocs** (`mkdocs.yml`) — assets resolved relative to `docs_dir` (default: `docs/`):
-
-| Config field | Pattern checked |
-| :--- | :--- |
-| `theme.favicon: 'path/to/icon.png'` | Path resolved relative to `docs/` must exist |
-| `theme.logo: 'path/to/logo.png'` (image-extension values only) | Path resolved relative to `docs/` must exist |
-
-**Zensical** (`zensical.toml`) — assets resolved relative to `[project].docs_dir` (default: `docs/`):
-
-| Config field | Pattern checked |
-| :--- | :--- |
-| `[project].favicon = 'path/to/icon.png'` | Path resolved relative to `docs/` must exist |
-| `[project].logo = 'path/to/logo.png'` (image-extension values only) | Path resolved relative to `docs/` must exist |
-
-All `logo` and `image` checks are restricted to file extensions (`png`, `jpg`, `jpeg`,
-`svg`, `gif`, `ico`, `webp`) to avoid false positives from icon names (e.g.
-`material/library`) or Docker image references.
-
-### Why `warning` severity?
-
-A missing favicon does not break content delivery, but it degrades user
-experience and brand consistency. A missing OG image means every social share
-returns a broken preview. Both are high-impact issues that warrant immediate
-attention without blocking CI by default — use `--strict` to promote to Exit 1.
-
-### How to fix
-
-**Docusaurus:**
-```bash
-# Verify the path declared in docusaurus.config.ts
-grep -E 'favicon|image' docusaurus.config.ts
-
-# Confirm the file exists under static/
-ls static/assets/favicon/png/zenzic-icon-32.png
-ls static/assets/social/social-card.png
-```
-
-**MkDocs:**
-```bash
-# Verify the paths declared in mkdocs.yml
-grep -E 'favicon|logo' mkdocs.yml
-
-# Confirm the file exists under docs/
-ls docs/assets/favicon.png
-ls docs/assets/logo.png
-```
-
-**Zensical:**
-```bash
-# Verify the paths declared in zensical.toml
-grep -E 'favicon|logo' zensical.toml
-
-# Confirm the file exists under docs/
-ls docs/assets/favicon.png
-ls docs/assets/logo.png
-```
-
-If the file is missing, add it. If the path in the config is wrong, correct it
-to match the actual file location.
-
-### Adapter coverage
-
-This check is implemented for **Docusaurus**, **MkDocs**, and **Zensical**. See the
-[Adapter Implementation Guide](../community/developers/how-to/implement-adapter.mdx) for
-instructions on adding `check_config_assets()` to a custom adapter.
