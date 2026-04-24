@@ -382,25 +382,20 @@ zenzic score                   # mostra il punteggio per visibilità
 
 ---
 
-## Ispezione dei plugin
+## Arsenal: Ispezione delle Capacità
 
 ```bash
-zenzic plugins list   # Elenca tutte le regole registrate nel gruppo zenzic.rules
+zenzic inspect capabilities   # Mostra tutti i scanner built-in e le regole plugin registrate
 ```
 
-`zenzic plugins list` mostra ogni regola di linting che il motore conosce — le regole Core
-incluse in Zenzic e qualsiasi regola di terze parti installata da pacchetti esterni:
+`zenzic inspect capabilities` mostra l'arsenale completo di Zenzic in due sezioni:
 
-```text
-Installed plugin rules (1 found)
+**Sezione A — Scanner Core (Built-in):** sette scanner compilati in Zenzic. Lo Shield (Z201)
+e il Blood Sentinel (Z202–203) usano codici di uscita dedicati (2 e 3 rispettivamente) che non
+sono mai sopprimibili con `--exit-zero`.
 
-  broken-links  Z001  (core)  zenzic.core.rules.VSMBrokenLinkRule
-```
-
-Ogni riga mostra il nome dell'entry-point, il `rule_id` stabile della regola (usato nei
-finding e nelle liste di soppressione), la distribuzione di origine (`(core)` per le regole
-built-in, o il nome del pacchetto per i plugin di terze parti), e il nome completo della
-classe Python.
+**Sezione B — Regole Estensibili (Sistema Plugin):** regole registrate tramite il gruppo
+entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
 Usa questo comando per verificare quali regole sono attive dopo aver installato un pacchetto
 plugin.
