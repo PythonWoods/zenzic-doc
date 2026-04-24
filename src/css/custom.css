@@ -53,7 +53,7 @@
   /* ── D112/D113: Zinc Standard Typography — structure is neutral, cold, precise ── */
   --ifm-heading-color: #3f3f46;           /* Zinc-700 — autorevole senza peso */
   --ifm-font-color-base: #27272a;         /* Zinc-800 — premium readability */
-  --ifm-color-emphasis-600: #71717a;      /* Zinc-500 — metadata, secondary */
+  --ifm-color-emphasis-600: #52525b;      /* Zinc-600 — metadata, secondary (WCAG AA 7.8:1 on white) */
 
   /* ── D114: The Author's Signature — Indigo reserved for human identity ── */
   --obsidian-author-signature: #3730a3;   /* Indigo-800 — deep, ink-grade */
@@ -76,7 +76,7 @@
   --zenzic-success: #10b981;
   --zenzic-warning: #f59e0b;
   --zenzic-error:   #f43f5e;
-  --zenzic-dim:     #64748b;
+  --zenzic-dim:     #94a3b8;  /* Slate-400 — WCAG AA 8.2:1 on #09090b (D110: raised from #64748b) */
   /* --zenzic-fatal inherits var(--obsidian-blood) = #8b0000 — exact CLI match */
 
 
@@ -272,11 +272,11 @@ body {
 }
 
 [data-theme='dark'] .footer__copyright {
-  color: #52525b;
+  color: #a1a1aa;  /* Zinc-400 — 7.6:1 on #09090b (D110: raised from #52525b which failed AA) */
 }
 
 [data-theme='light'] .footer__copyright {
-  color: #a1a1aa;
+  color: #52525b;  /* Zinc-600 — 7.8:1 on white (D110: raised from #a1a1aa which failed AA) */
 }
 
 /* ── Code blocks ── */
@@ -312,7 +312,7 @@ body {
 
 /* ── TOC (right sidebar) ── */
 [data-theme='dark'] .table-of-contents__link {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a which failed AA) */
 }
 
 [data-theme='dark'] .table-of-contents__link:hover,
@@ -390,7 +390,7 @@ table thead tr {
 
 /* ── Breadcrumbs ── */
 [data-theme='dark'] .breadcrumbs__link {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
 }
 
 [data-theme='dark'] .breadcrumbs__link:hover {
@@ -416,7 +416,7 @@ table thead tr {
 }
 
 [data-theme='dark'] .pagination-nav__sublabel {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
 }
 
 [data-theme='dark'] .pagination-nav__label {
