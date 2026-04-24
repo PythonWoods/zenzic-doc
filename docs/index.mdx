@@ -3,38 +3,51 @@ sidebar_position: 0
 sidebar_label: "Overview"
 ---
 
-# Documentation Overview
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
 
-Welcome to the **Zenzic** documentation — the engineering-grade static analyzer for
-Markdown-based documentation.
+# Zenzic: The Engineering Standard for Documentation Integrity
 
-Zenzic operates in the **Build-Aware Gap**: the critical moment between writing source
-files and their transformation into a website. It builds a **Virtual Site Map (VSM)**
-directly from raw Markdown source to validate links, detect orphans, scan for exposed
-credentials, and enforce quality rules — without ever running the documentation build.
+Zenzic is an engine-agnostic static analyzer for Markdown-based documentation.
+It operates in the **Build-Aware Gap** — the critical window between authoring
+source files and their transformation into a published site — building a
+**Virtual Site Map (VSM)** to validate links, detect orphans, scan for exposed
+credentials, and enforce quality rules without ever invoking the documentation build.
 
-## Where to start
+---
 
-| Goal | Page |
-| :--- | :--- |
-| Install Zenzic and run your first check | [First Audit](./tutorials/first-audit) |
-| Understand which checks Zenzic runs | [Checks Reference](./reference/checks) |
-| Configure `zenzic.toml` | [Configuration Reference](./reference/configuration-reference) |
-| Integrate with GitHub Actions | [CI/CD Integration](./how-to/configure-ci-cd) |
-| Explore the internal architecture | [Architecture Overview](./explanation/architecture) |
-| Contribute to the project | [Contributing](./community/contribute/index.mdx) |
+## Start Here: `zenzic lab`
 
-## Quick start
+The fastest way to experience Zenzic is to run the interactive showcase.
+No configuration, no setup — pull and run:
 
 ```bash
-# Install
+uvx zenzic lab
+```
+
+`zenzic lab` walks through a live audit of bundled documentation examples,
+showing every scanner in action: broken links, orphan pages, credential detection,
+and Blood Sentinel path-traversal enforcement.
+
+---
+
+## Four Entry Points
+
+| | |
+| :--- | :--- |
+| **[Tutorials →](./tutorials/first-audit)** | Get started in 5 minutes. |
+| **[How-to →](./how-to/configure-ci-cd)** | Solve specific documentation tasks. |
+| **[Reference →](./reference/cli)** | Technical specs and CLI commands. |
+| **[Explanation →](./explanation/architecture)** | Understand the architecture and pillars. |
+
+---
+
+## Quick Start
+
+```bash
 pip install zenzic
-
-# Initialise configuration (discovers engine from config files)
-zenzic init
-
-# Run all checks
-zenzic check all
+zenzic init         # Detect engine, scaffold config
+zenzic check all    # Full audit
 ```
 
 ---
