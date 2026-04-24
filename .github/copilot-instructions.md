@@ -49,7 +49,7 @@ src/
   pages/index.tsx             # Landing page monolith (ESLint-excluded, covered by typecheck)
   theme/MDXComponents.js      # Global swizzle: injects <Icon> and <SentinelSection> site-wide
 scripts/
-  build-assets.js             # prebuild: zips static/brand/ + static/assets/social/ → brand-kit.zip
+  build-assets.js             # prebuild: zips static/assets/brand/ + static/assets/social/ → brand-kit.zip
   bump-version.sh             # version bump automation (6+ hardcoded strings)
 ```
 

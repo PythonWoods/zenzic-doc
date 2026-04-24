@@ -43,7 +43,7 @@ Zinc typography, Indigo author identity, Cyan accent.
 
 #### 3. Brand System
 
-A formal brand package (\`static/assets/brand-kit.zip\`) is now shipped with every
+A formal brand package (\`static/assets/brand/brand-kit.zip\`) is now shipped with every
 build, containing:
 
 - SVG icon, nav-dark, nav-light, wordmark variants
@@ -90,9 +90,54 @@ Blog list page titles locked across \`:visited\` / \`:active\` / \`:hover\` stat
 No perceived fading regardless of read history. Zinc-700 in light mode, White/Silk
 in dark mode. Cyan on hover only.
 
+#### 8. ObsidianWebPalette — CLI × Web Color Bridge
+
+The Zenzic semantic color system (\`ObsidianPalette\` in the CLI) is now bridged to the
+Docusaurus web layer via six CSS custom properties in \`src/css/custom.css\`:
+
+| CSS Variable | CLI Value | Web — Light | Web — Dark |
+|---|---|---|---|
+| \`--zenzic-brand\` | \`#4f46e5\` | \`#4f46e5\` | \`#4f46e5\` |
+| \`--zenzic-success\` | \`#10b981\` | \`#059669\` | \`#10b981\` |
+| \`--zenzic-warning\` | \`#f59e0b\` | \`#b45309\` | \`#f59e0b\` |
+| \`--zenzic-error\` | \`#f43f5e\` | \`#e11d48\` | \`#f43f5e\` |
+| \`--zenzic-dim\` | \`#64748b\` | \`#475569\` | \`#64748b\` |
+| \`--zenzic-fatal\` | \`#8b0000\` | \`#991b1b\` | \`#8b0000\` |
+
+Dark mode values are exact optical matches to the CLI terminal.
+Light mode values are WCAG AA-calibrated for white surfaces. \`--zenzic-fatal\`
+delegates to the existing \`--obsidian-blood\` variable (already mode-aware).
+
+The brand system HTML (\`static/assets/brand/zenzic-brand-system.html\`) has been
+enriched with the full CLI × Web comparison table and the Mermaid exception note
+(Mermaid's renderer does not consume CSS \`var()\` — diagram hex values are exempt
+from the Zero Hex Law).
+
+#### 9. Asset Integrity & Static Consolidation
+
+\`static/\` has been reorganised around a single canonical hierarchy:
+
+```
+static/
+├── assets/
+│   ├── brand/       ← logos, SVGs, PNGs, brand-system.html, brand-kit.zip
+│   ├── favicon/     ← favicon variants
+│   └── social/      ← OpenGraph and Twitter card images
+├── css/             ← extra.css (static CSS, not processed by Webpack)
+└── img/             ← PythonWoods author assets
+```
+
+Changes:
+- \`static/brand/\` (legacy duplicate of \`assets/brand/\`) deleted. Canonical: \`assets/brand/\`.
+- \`static/assets/stylesheets/\` renamed to \`static/css/\`.
+- \`brand-kit.zip\` moved into \`static/assets/brand/\` (was at \`static/assets/\` root).
+- Navbar logo path updated in \`docusaurus.config.ts\`.
+- \`scripts/build-assets.js\` and \`scripts/bump-version.sh\` updated — no more
+  mirror-copy pattern; \`assets/brand/\` is now the sole source and destination.
+
 ---
 
-### ⚓ Stability Declaration
+
 
 **v0.7.0 is the canonical stable portal for the Obsidian Maturity sprint.**
 

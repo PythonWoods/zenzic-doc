@@ -115,7 +115,7 @@ const config: Config = {
       title: 'Zenzic',
       logo: {
         alt: 'Zenzic Logo',
-        src: '/brand/svg/zenzic-icon.svg',
+        src: '/assets/brand/svg/zenzic-icon.svg',
       },
       items: [
         {

@@ -25,9 +25,6 @@ placeholder_max_words = 0
 # directory index integrity.
 excluded_assets = [
     "**/_category_.json",
-    "static/brand/**",
-    "static/social/**",
-    "static/img/favicon.ico",
 ]
 
 # --- ENGINE CONTEXT (Obsidian Glass Stable) ---

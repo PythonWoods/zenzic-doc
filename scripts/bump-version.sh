@@ -158,68 +158,53 @@ if m_old and m_new and old_code != new_code:
 #     Then rebuild brand-kit.zip using Python zipfile (no Node subprocess).
 #
 # MANIFEST: (svg_source, png_target, width, height)
-#   - static/brand/svg/ is the canonical SVG source (also packed verbatim in brand-kit.zip)
-#   - static/brand/png/ is the canonical PNG target (packed in brand-kit.zip)
-#   - static/assets/brand/png/ mirrors brand/png/ for in-site serving
-#   - static/assets/social/ sources and mirrors are handled separately
+#   - static/assets/brand/svg/ is the canonical SVG source (also packed verbatim in brand-kit.zip)
+#   - static/assets/brand/png/ is the canonical PNG target (packed in brand-kit.zip)
+#   - static/assets/social/ sources are handled separately
 BRAND_PNG_MANIFEST = [
     # (svg_path, png_path, width, height)
-    ('static/brand/svg/zenzic-icon.svg',
-     'static/brand/png/zenzic-icon-512.png',          512,   512),
-    ('static/brand/svg/zenzic-nav-dark.svg',
-     'static/brand/png/zenzic-nav-dark.png',          640,   180),
-    ('static/brand/svg/zenzic-nav-light.svg',
-     'static/brand/png/zenzic-nav-light.png',         640,   180),
-    ('static/brand/svg/zenzic-wordmark.svg',
-     'static/brand/png/zenzic-wordmark.png',          600,   120),
+    ('static/assets/brand/svg/zenzic-icon.svg',
+     'static/assets/brand/png/zenzic-icon-512.png',      512,   512),
+    ('static/assets/brand/svg/zenzic-nav-dark.svg',
+     'static/assets/brand/png/zenzic-nav-dark.png',      640,   180),
+    ('static/assets/brand/svg/zenzic-nav-light.svg',
+     'static/assets/brand/png/zenzic-nav-light.png',     640,   180),
+    ('static/assets/brand/svg/zenzic-wordmark.svg',
+     'static/assets/brand/png/zenzic-wordmark.png',      600,   120),
     ('static/assets/social/social-card.svg',
-     'static/assets/social/social-card.png',         1200,   630),
+     'static/assets/social/social-card.png',            1200,   630),
     ('static/assets/social/social-card-light.svg',
-     'static/assets/social/social-card-light.png',   1200,   630),
+     'static/assets/social/social-card-light.png',      1200,   630),
 ]
-
-# Mirrors: after writing canonical PNG, also copy to assets/brand/png/
-BRAND_PNG_MIRRORS = {
-    'static/brand/png/zenzic-icon-512.png':  'static/assets/brand/png/zenzic-icon-512.png',
-    'static/brand/png/zenzic-nav-dark.png':  'static/assets/brand/png/zenzic-nav-dark.png',
-    'static/brand/png/zenzic-nav-light.png': 'static/assets/brand/png/zenzic-nav-light.png',
-    'static/brand/png/zenzic-wordmark.png':  'static/assets/brand/png/zenzic-wordmark.png',
-}
 
 print("\nRegenerating brand PNGs via cairosvg (pure Python — no subprocess) …")
 try:
     import cairosvg as _svg
-    import shutil as _shutil
 
     for svg_src, png_dst, w, h in BRAND_PNG_MANIFEST:
         _svg.svg2png(url=svg_src, write_to=png_dst, output_width=w, output_height=h)
         changes += 1
         print(f"  ✓  {png_dst}  [{w}×{h}]")
-        # Mirror to static/assets/brand/png/ if applicable
-        mirror = BRAND_PNG_MIRRORS.get(png_dst)
-        if mirror and Path(mirror).parent.exists():
-            _shutil.copy2(png_dst, mirror)
-            print(f"     ↳  mirrored → {mirror}")
 
     # 11. Rebuild brand-kit.zip using Python zipfile (no Node subprocess).
     #     Mirrors the logic in scripts/build-assets.js.
     import zipfile as _zip
     ZIP_SOURCES = [
-        ('static/brand',          'brand'),
+        ('static/assets/brand',   'brand'),
         ('static/assets/social',  'social'),
     ]
-    zip_out = Path('static/assets/brand-kit.zip')
+    zip_out = Path('static/assets/brand/brand-kit.zip')
     with _zip.ZipFile(zip_out, 'w', compression=_zip.ZIP_DEFLATED) as zf:
         for src_dir, prefix in ZIP_SOURCES:
             src = Path(src_dir)
             if not src.exists():
                 continue
             for f in sorted(src.rglob('*')):
-                if f.is_file():
+                if f.is_file() and f != zip_out:
                     arcname = f'{prefix}/{f.relative_to(src)}'
                     zf.write(f, arcname)
     changes += 1
-    print(f"\n  ✓  static/assets/brand-kit.zip  (rebuilt — {zip_out.stat().st_size // 1024} KB)")
+    print(f"\n  ✓  static/assets/brand/brand-kit.zip  (rebuilt — {zip_out.stat().st_size // 1024} KB)")
 
 except ImportError:
     print("  ⚠  cairosvg not installed — PNGs and brand-kit.zip NOT regenerated.")
