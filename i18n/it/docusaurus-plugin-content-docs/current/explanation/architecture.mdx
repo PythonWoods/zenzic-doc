@@ -4,6 +4,8 @@ title: Architettura
 description: Approfondimento tecnico sulla pipeline a due passate, il flusso middleware Shield, il protocollo Adapter e i codici di uscita.
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Architettura
 
 Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strutture interne che ne governano il funzionamento: dalla pipeline di scansione al protocollo degli adapter, dal flusso dello Shield al sistema di esclusione a livelli.
@@ -15,7 +17,7 @@ Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strut
 La pipeline principale di Zenzic opera in due passate sequenziali sul medesimo insieme di file. Ogni file viene letto una sola volta per passata; il costo I/O totale resta $O(N)$ rispetto al numero di file.
 
 <div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
-  <img src="/assets/brand/svg/zenzic-pipeline-flow.svg" alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (Shield + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report" style={{width:'100%',display:'block'}} />
+  <img src={useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg')} alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (Shield + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report" style={{width:'100%',display:'block'}} />
 </div>
 
 ### Passata 1 — Raccolta e Scansione {#pass-1}
@@ -116,7 +118,7 @@ Il validatore di link (`validate_links_async`) opera indipendentemente con la pr
 Lo Zenzic Shield e un middleware di sicurezza che opera trasversalmente a tutta la pipeline. Il suo flusso per ogni riga di ogni file e il seguente:
 
 <div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
-  <img src="/assets/brand/svg/zenzic-shield-normalization.svg" alt="Zenzic Shield — algoritmo di normalizzazione in 8 passaggi: dalla riga grezza attraverso ZRT-006/007/003 fino alla scansione duale e al SecurityFinding" style={{width:'100%',maxWidth:'560px',display:'block',margin:'1.5rem auto'}} />
+  <img src={useBaseUrl('/assets/brand/svg/zenzic-shield-normalization.svg')} alt="Zenzic Shield — algoritmo di normalizzazione in 8 passaggi: dalla riga grezza attraverso ZRT-006/007/003 fino alla scansione duale e al SecurityFinding" style={{width:'100%',maxWidth:'560px',display:'block',margin:'1.5rem auto'}} />
 </div>
 
 ```
@@ -251,7 +253,7 @@ class RouteMetadata:
 La Virtual Site Map è l'**unica fonte di verità per il routing** di Zenzic. È una struttura dati pura (una mappa tra stringhe `canonical_url` e oggetti `Route`) costruita dal `VSMBuilder` combinando la conoscenza degli adapter con la scoperta del filesystem.
 
 <div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
-  <img src="/assets/brand/svg/zenzic-vsm-projection.svg" alt="Zenzic Virtual Site Map — proiezione dal filesystem attraverso VSMBuilder e Adapter Protocol verso un catalogo di route con stati REACHABLE, ORPHAN e GHOST" style={{width:'100%',display:'block'}} />
+  <img src={useBaseUrl('/assets/brand/svg/zenzic-vsm-projection.svg')} alt="Zenzic Virtual Site Map — proiezione dal filesystem attraverso VSMBuilder e Adapter Protocol verso un catalogo di route con stati REACHABLE, ORPHAN e GHOST" style={{width:'100%',display:'block'}} />
 </div>
 
 ### Versioning e Supporto Multi-Doc {#vsm-versioning}
