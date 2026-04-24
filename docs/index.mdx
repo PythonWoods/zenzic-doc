@@ -42,6 +42,27 @@ and Blood Sentinel path-traversal enforcement.
 
 ---
 
+## Enterprise Ready
+
+Zenzic integrates natively with professional CI pipelines:
+
+- **SARIF 2.1.0 export** — `check all --format sarif` produces a report that GitHub Code Scanning
+  reads directly. Findings appear as inline Pull Request annotations and in the Security tab,
+  without log parsing.
+- **Official GitHub Action** — [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action)
+  handles installation, execution, and SARIF upload in a single workflow step.
+- **Cross-platform validation** — every release is tested on Ubuntu, Windows, and macOS across
+  Python 3.11–3.13.
+
+```yaml
+- uses: PythonWoods/zenzic-action@v1
+  with:
+    format: sarif
+    upload-sarif: "true"
+```
+
+---
+
 ## Quick Start
 
 ```bash
