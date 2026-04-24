@@ -139,12 +139,14 @@ Installa il tuo pacchetto insieme a Zenzic:
 uv add my-org-rules            # oppure: pip install my-org-rules
 ```
 
-Dopo l'installazione, esegui `zenzic plugins list` per confermare che la regola venga
-scoperta:
+Dopo l'installazione, esegui `zenzic inspect capabilities` per confermare che la regola
+venga scoperta:
 
 ```bash
-zenzic plugins list
-# Installed plugin rules (2 found)
+zenzic inspect capabilities
+# Core Scanners  (built-in)
+# …
+# Extensible Rules  (plugin system)
 #   broken-links          Z001       (core)          zenzic.core.rules.VSMBrokenLinkRule
 #   no-internal-hostname  MYORG-001  (my-org-rules)  my_org_rules.rules.NoInternalHostnameRule
 ```
@@ -185,7 +187,7 @@ Verifica rapida:
 ```bash
 cd plugin-scaffold-demo
 uv pip install -e .
-zenzic plugins list
+zenzic inspect capabilities
 zenzic check all
 ```
 

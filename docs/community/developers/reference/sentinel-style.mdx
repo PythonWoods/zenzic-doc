@@ -202,3 +202,137 @@ Before submitting a PR, verify:
 - [ ] No naked code fences exist (§5).
 - [ ] SPDX header is present (§6).
 - [ ] Italian mirror is structurally identical to English.
+- [ ] No hex literal (`#rrggbb`) in `src/` outside `ObsidianPalette._*` (§9).
+- [ ] All colour references use `ObsidianPalette.*` — no removed flat constants (§9).
+
+---
+
+## 8. ObsidianUI Gateway {#obsidianui-gateway}
+
+All branded terminal output in Zenzic flows through a single object: `ObsidianUI` in
+`src/zenzic/ui.py`. Command modules must **never** instantiate `Console` or `ObsidianUI`
+directly — they must call `get_ui()` and `get_console()` from `zenzic.cli._shared`.
+
+### Core methods
+
+| Method | When to use |
+| :--- | :--- |
+| `print_header(version)` | The top-of-output Forge Frame banner — once per command invocation |
+| `make_panel(content, *, title, border_style)` | Styled Rich `Panel` — for structured output blocks |
+| `print_exception_alert(message, *, context, title, border_style)` | Error panels for `ZenzicError` and `PluginContractError` |
+
+### Usage pattern
+
+```python
+# In any _check.py / _clean.py / _standalone.py command
+from . import _shared
+
+# Print the Zenzic banner header
+_shared.get_ui().print_header(__version__)
+
+# Print a styled panel
+panel = _shared.get_ui().make_panel(
+    "Content here",
+    title="Panel Title",
+    border_style="bold cyan",
+)
+_shared.get_console().print(panel)
+```
+
+### Why the gateway matters
+
+The `--no-color` and `--force-color` CLI flags call `configure_console()`, which atomically
+replaces the module-level `console` and `_ui` singletons. Any locally-created `Console` or
+`ObsidianUI` instance will be frozen before the flag takes effect, silently ignoring the
+user's color preference.
+
+The `force_terminal` parameter must **always** be `None` (auto-detect) in the module-level
+`Console`, never `False`. Explicit `False` disables color system detection entirely —
+resulting in no ANSI styling even in truecolor terminals. This is the most common source of
+visual regressions in the Zenzic CLI layer.
+
+### Checklist addition
+
+Add to your PR checklist:
+
+- [ ] No `Console(...)` or `ObsidianUI(...)` instantiation in command modules.
+- [ ] All banner output uses `get_ui().print_header()`, not a locally-created UI instance.
+- [ ] `force_terminal` on any new `Console` call is `None` or conditional (`True if ... else None`), never `False`.
+
+---
+
+## 9. ObsidianPalette — Zero Hex Law {#obsidian-palette}
+
+`ObsidianPalette` in `src/zenzic/ui.py` is the **sole authorised source of colour values**
+in the entire Zenzic codebase. This is the Zero Hex Law.
+
+### The Law
+
+:::warning Design Constraint
+
+No hex colour string (e.g. `#4f46e5`) and no raw Rich colour name (e.g. `"red"`, `"cyan"`)
+may appear anywhere in `src/` **except** inside `ObsidianPalette._*` private class attributes.
+Every other file must address only the semantic public attributes shown below.
+
+:::
+
+### Semantic palette
+
+| Attribute | Hex | Meaning |
+| :--- | :---: | :--- |
+| `ObsidianPalette.BRAND` | `#4f46e5` | Zenzic primary / brand accent (Indigo) |
+| `ObsidianPalette.SUCCESS` | `#10b981` | OK · clean · pass (Emerald) |
+| `ObsidianPalette.WARNING` | `#f59e0b` | Caution · advisory (Amber) |
+| `ObsidianPalette.ERROR` | `#f43f5e` | Failure · broken links (Rose) |
+| `ObsidianPalette.DIM` | `#64748b` | Muted · secondary text (Slate) |
+| `ObsidianPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
+
+### Pre-composed style strings
+
+For the most common combinations, use a `STYLE_*` constant instead of constructing
+`f"bold {X}"` inline:
+
+| Constant | Expands to |
+| :--- | :--- |
+| `ObsidianPalette.STYLE_BRAND` | `"bold #4f46e5"` |
+| `ObsidianPalette.STYLE_OK` | `"bold #10b981"` |
+| `ObsidianPalette.STYLE_WARN` | `"bold #f59e0b"` |
+| `ObsidianPalette.STYLE_ERR` | `"bold #f43f5e"` |
+| `ObsidianPalette.STYLE_DIM` | `"#64748b"` |
+
+### Usage pattern
+
+```python
+# CORRECT — semantic alias via ObsidianPalette
+from zenzic.ui import ObsidianPalette
+
+table = Table(border_style=ObsidianPalette.DIM, header_style=ObsidianPalette.STYLE_BRAND)
+text = Text.from_markup(f"[{ObsidianPalette.BRAND}]Zenzic[/]")
+panel = Panel("...", border_style=ObsidianPalette.STYLE_ERR)
+```
+
+```python
+# FORBIDDEN — hex literal outside ObsidianPalette
+text = Text.from_markup("[#4f46e5]Zenzic[/]")   # ✗
+
+# FORBIDDEN — flat constant import (removed in v0.7.0)
+from zenzic.ui import INDIGO, EMERALD            # ✗
+
+# FORBIDDEN — inline alias
+P = ObsidianPalette                              # ✗  use full qualification
+```
+
+### Updating the palette
+
+To change a colour, edit **only** the corresponding `_PRIVATE` hex attribute inside
+`ObsidianPalette` in `src/zenzic/ui.py`. All semantic aliases and pre-composed style
+strings derive from those private attributes — the entire codebase updates automatically.
+
+### Checklist addition
+
+Add to your PR checklist:
+
+- [ ] No hex literal (`#rrggbb`) anywhere in `src/` outside `ObsidianPalette._*`.
+- [ ] No raw Rich colour names (`"red"`, `"cyan"`) for brand-palette usage — use `ObsidianPalette.*`.
+- [ ] No local alias `P = ObsidianPalette` — always use the full class name.
+- [ ] No `from zenzic.ui import INDIGO` (or any removed flat constant).
