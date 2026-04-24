@@ -28,6 +28,30 @@ Lo Shield ha la priorità assoluta. Se la fase 1.a rileva un segreto, l'evento v
 
 Lo Shield scansiona le righe **senza saltare i blocchi di codice** — questo e intenzionale. Un segreto incorporato in un esempio `bash` o in un blocco senza etichetta linguistica e comunque un segreto esposto.
 
+Durante la Passata 1, il `ReferenceScanner` popola una `ReferenceMap` per file:
+
+```python
+scanner = ReferenceScanner(Path("docs/guide.md"))
+
+for event in scanner.harvest():
+    lineno, event_type, data = event
+    if event_type == "SECRET":
+        # Shield ha rilevato una credenziale — interruzione immediata
+        raise SystemExit(2)
+```
+
+Gli eventi di harvest includono:
+
+| Evento | Dati | Significato |
+| :--- | :--- | :--- |
+| `DEF` | `(norm_id, url)` | Definizione reference accettata |
+| `DUPLICATE_DEF` | `(norm_id, url)` | ID duplicato (il primo vince per CommonMark 4.7) |
+| `IMG` | `(alt_text, url)` | Immagine con alt text trovata |
+| `MISSING_ALT` | `url` | Immagine senza alt text |
+| `SECRET` | `SecurityFinding` | Credenziale rilevata dallo Shield |
+
+Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Lo Shield agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
+
 ### Passata 1.5 — Costruzione del grafo dei link {#pass-1-5}
 
 Dopo la Passata 1, e prima della validazione, Zenzic costruisce il **grafo di adiacenza** dei link interni Markdown-to-Markdown. Questo grafo viene usato per il rilevamento dei cicli.
@@ -53,9 +77,37 @@ La seconda passata valida i link estratti contro gli indici globali costruiti ne
 | **Rilevamento cicli** | Il target risolto viene cercato nel registro dei cicli ($O(1)$). I risultati `CIRCULAR_LINK` sono a livello `info` |
 | **Link esterni (solo `--strict`)** | Validazione HTTP asincrona con richieste HEAD concorrenti (max 20 connessioni). Fallback a GET su 405. HTTP 401/403/429 trattati come "vivo" |
 
+### Passata 3 — Report di Integrità {#pass-3}
+
+La Passata 3 calcola il punteggio di integrità per file e consolida tutti i risultati:
+
+```python
+report = scanner.get_integrity_report(cross_check_findings, security_findings)
+```
+
+Il report include:
+
+- **Riferimenti dangling** (errori) dalla Passata 2
+- **Definizioni morte** (warning) — definite ma mai referenziate
+- **Definizioni duplicate** (warning) — stesso ID definito due volte
+- **Risultati Shield** dalla Passata 1
+- **Risultati delle regole** dall'Adaptive Rule Engine (se configurato)
+
+### Pipeline di Validazione dei Link {#link-validation}
+
+Il validatore di link (`validate_links_async`) opera indipendentemente con la propria struttura multifase:
+
+**Fase 1** — Legge tutti i file `.md` in memoria, estrae link inline e reference link, calcola gli slug degli heading per file. Costruisce `InMemoryPathResolver` una volta sola dalla mappa completa dei file.
+
+**Fase 1.5** — Costruisce il grafo di adiacenza dei link e applica il rilevamento cicli DFS iterativo. Il registro dei cicli è un `frozenset[str]` — lookup O(1) nella Fase 2. Complessità totale: Θ(V+E).
+
+**Fase 2** — Valida ogni link contro il resolver, la VSM e il registro dei cicli. I link interni vengono risolti interamente in memoria (nessun I/O su disco). I link esterni vengono raccolti per la Fase 3.
+
+**Fase 3** (solo modalità strict) — Validazione HTTP HEAD concorrente degli URL esterni via `httpx`. Fino a 20 connessioni simultanee. Ogni URL univoco viene verificato esattamente una volta indipendentemente da quanti file vi fanno riferimento.
+
 ---
 
-## Flusso Middleware Shield {#shield-flow}
+## Flusso Middleware Shield {#shield-middleware}
 
 Lo Zenzic Shield e un middleware di sicurezza che opera trasversalmente a tutta la pipeline. Il suo flusso per ogni riga di ogni file e il seguente:
 
@@ -76,20 +128,36 @@ Scansione pattern (regex pre-compilati)
                                     Exit Code 2
 ```
 
-### Famiglie di pattern
+### Normalizzatore Pre-scansione {#normalizer}
 
-Lo Shield rileva otto famiglie di pattern di credenziali:
+Il normalizzatore applica sei passate prima della corrispondenza regex:
 
-| Pattern | Esempio di corrispondenza |
-| :--- | :--- |
-| `openai-api-key` | `sk-...` (chiavi API OpenAI) |
-| `github-token` | `ghp_...`, `gho_...`, `ghu_...`, `ghs_...`, `ghr_...` |
-| `aws-access-key` | `AKIA...` (ID chiave di accesso AWS IAM) |
-| `stripe-live-key` | `sk_live_...` (chiavi segrete live Stripe) |
-| `slack-token` | `xoxb-...`, `xoxp-...`, `xoxa-...`, `xoxr-...`, `xoxs-...` |
-| `google-api-key` | `AIza...` (chiavi API Google Cloud / Maps) |
-| `private-key` | `-----BEGIN ... PRIVATE KEY-----` (chiavi PEM) |
-| `hex-encoded-payload` | 3+ sequenze consecutive `\xNN` (Hex Shield) |
+| Trasformazione | ZRT | Esempio | Risultato |
+| :--- | :--- | :--- | :--- |
+| Rimozione caratteri formato Unicode (categoria Cf) | ZRT-006 | `AKIA​KEY` (zero-width joiner) | `AKIAKEY` |
+| Decodifica riferimenti carattere HTML | ZRT-006 | `sk&#45;abc` | `sk-abc` |
+| Rimozione interleaving commenti HTML/MDX | ZRT-007 | `AKIA<!-- -->KEY` | `AKIAKEY` |
+| Rimozione backtick span | ZRT-003 | `` `AKIA` `` | `AKIA` |
+| Rimozione operatori concat | ZRT-003 | `` `AKIA` + `KEY` `` | `AKIAKEY` |
+| Sostituzione pipe tabella | ZRT-003 | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
+
+Vengono scansionate sia la forma grezza che quella normalizzata. Se lo stesso tipo di segreto viene rilevato in entrambe le forme, viene emesso un solo risultato.
+
+### Famiglie di pattern {#shield-patterns}
+
+Lo Shield rileva nove famiglie di pattern di credenziali:
+
+| Pattern | Regex | Prefisso esempio |
+| :--- | :--- | :--- |
+| `openai-api-key` | `sk-[a-zA-Z0-9]{48}` | `sk-abc...` |
+| `github-token` | `gh[pousr]_[a-zA-Z0-9]{36}` | `ghp_abc...` |
+| `aws-access-key` | `AKIA[0-9A-Z]{16}` | `AKIAIOSFODNN7...` |
+| `stripe-live-key` | `sk_live_[0-9a-zA-Z]{24}` | `sk_live_abc...` |
+| `slack-token` | `xox[baprs]-[0-9a-zA-Z]{10,48}` | `xoxb-abc...` |
+| `google-api-key` | `AIza[0-9A-Za-z\-_]{35}` | `AIzaSyC...` |
+| `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | Header PEM |
+| `hex-encoded-payload` | `(?:\x[0-9a-fA-F]{2}){3,}` | `\x41\x42` (2× sotto soglia) |
+| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | `glpat-abc...` |
 
 ### Proprieta del middleware
 
@@ -98,15 +166,48 @@ Lo Shield rileva otto famiglie di pattern di credenziali:
 - **Exit Code 2 dedicato:** non viene mai soppresso da `--exit-zero` o `exit_zero = true`
 - **Deduplicazione:** se `scan_line_for_secrets` e `scan_url_for_secrets` rilevano lo stesso segreto sulla stessa riga, viene emesso un solo evento
 
+### Middleware I/O: `safe_read_line` {#safe-read-line}
+
+Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft), ogni riga passa attraverso `safe_read_line()`. Se viene rilevato un segreto, viene sollevata immediatamente un'eccezione `ShieldViolation` — la riga non viene mai restituita al chiamante, impedendo al segreto di entrare in qualsiasi parser.
+
+```python
+# La riga non raggiunge mai il parser YAML se contiene un segreto
+line = safe_read_line(raw_line, file_path, line_no)
+```
+
+### Hardening {#shield-hardening}
+
+- **Limite lunghezza riga** (F2-1): Le righe che superano 1 MiB vengono troncate silenziosamente prima della corrispondenza regex per prevenire il ReDoS.
+- **Timeout worker** (ZRT-002): In modalità parallela, ogni worker ha un timeout di 30 secondi. I worker che superano questo limite producono un risultato `Z009` di timeout invece di bloccare la pipeline.
+- **Buffer di lookback** (ZRT-007): Lo scanner mantiene uno stato di lookback di 1 riga. Per ogni riga, la coda della riga precedente normalizzata (`[-80:]`) viene concatenata con la testa della riga corrente (`[:80]`) e scansionata come passata aggiuntiva. Questo rileva i segreti divisi su scalari YAML folded o interruzioni di riga Markdown.
+
 ---
 
 ## Protocollo Adapter {#adapter-protocol}
 
 Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motori di build senza accoppiarsi a nessuno di essi.
 
-### BaseAdapter
+### BaseAdapter {#base-adapter}
 
-`BaseAdapter` e un `@runtime_checkable` Protocol che ogni adapter deve soddisfare. I metodi chiave sono:
+`BaseAdapter` è un `@runtime_checkable` Protocol che ogni adapter deve soddisfare:
+
+```python
+@runtime_checkable
+class BaseAdapter(Protocol):
+    def has_engine_config(self) -> bool: ...
+    def get_nav_paths(self) -> frozenset[str]: ...
+    def map_url(self, rel: Path) -> str: ...
+    def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus: ...
+    def get_route_info(self, rel: Path) -> RouteMetadata: ...
+    def is_locale_dir(self, part: str) -> bool: ...
+    def resolve_asset(self, missing_abs: Path, docs_root: Path) -> Path | None: ...
+    def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
+    def get_ignored_patterns(self) -> set[str]: ...
+    def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
+    def provides_index(self, directory_path: Path) -> bool: ...
+```
+
+Metodi chiave:
 
 | Metodo | Responsabilita |
 | :--- | :--- |
@@ -120,14 +221,20 @@ Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motor
 | `resolve_anchor(file, anchor, cache, docs_root)` | Risolve un'ancora con fallback i18n |
 | `provides_index(directory_path)` | **Hook I/O della fase di discovery.** Restituisce `True` se il motore genererà una landing page per questa directory. Unico metodo del protocollo che può eseguire I/O su disco (`Path.exists()`). |
 
-### RouteMetadata
+### RouteMetadata {#route-metadata}
 
-`RouteMetadata` e il contenitore dei metadati di routing per ogni pagina nella Virtual Site Map (VSM):
+I metadati di routing unificati restituiti da `get_route_info()`:
 
-- `url` — URL canonico della pagina
-- `status` — stato della route: `REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`
-- `source_path` — percorso del file sorgente relativo a `docs_root`
-- `version` — etichetta opzionale della versione (supporto Docusaurus)
+```python
+@dataclass(slots=True)
+class RouteMetadata:
+    canonical_url: str        # URL canonico servito dal motore (es. "/guide/install/")
+    status: RouteStatus       # REACHABLE, ORPHAN_BUT_EXISTING, IGNORED, CONFLICT
+    slug: str | None = None   # Override slug dal frontmatter
+    route_base_path: str = "/" # Prefisso URL dal preset del docs plugin
+    is_proxy: bool = False    # True per route generate dal build senza file sorgente
+    version: str | None = None # Etichetta versione opzionale (supporto Docusaurus)
+```
 
 ---
 
@@ -155,7 +262,7 @@ Il flag `--offline` innesca un cambiamento architetturale globale nel modo in cu
 
 Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la documentazione distribuita su filesystem dove la risoluzione dell'indice di directory (es. `/pagina/` → `/pagina/index.html`) non è disponibile.
 
-### Adapter disponibili
+### Adapter disponibili {#built-in-adapters}
 
 | Engine | Adapter | Configurazione rilevata |
 | :--- | :--- | :--- |
@@ -186,7 +293,7 @@ Quando il target di un link usa `@site/static/img/logo.png`, il resolver rimuove
 
 **Proprietà chiave:** la risoluzione degli alias avviene interamente in memoria. Non viene eseguito alcun I/O su disco; il resolver consulta solo l'indice dei file costruito durante la Fase 1. Questo preserva l'invariante Zero-I/O nel percorso critico (Legge Core 1).
 
-### Factory degli engine
+### Factory degli engine {#engine-factory}
 
 ```mermaid
 flowchart LR
@@ -216,6 +323,14 @@ La factory `get_adapter` segue un protocollo di costruzione a due fasi:
 4. **Cache:** le istanze vengono memorizzate con chiave `(engine, docs_root, repo_root)` per evitare doppie istanziazioni nella stessa sessione CLI
 
 Questo design significa che aggiungere un nuovo adapter per un motore di build **non richiede mai di modificare il core di Zenzic** — basta installare un pacchetto adapter.
+
+### Cache degli Adapter {#adapter-cache}
+
+Le istanze degli adapter vengono memorizzate con chiave `(engine, docs_root, repo_root)`. Questo previene costruzioni ridondanti quando `get_adapter()` viene chiamato sia da `scanner.py` che da `validator.py` nella stessa sessione CLI.
+
+### Guardia `has_engine_config` {#has-engine-config-guard}
+
+Quando un adapter viene istanziato ma non trova il file di configurazione del motore (es. `MkDocsAdapter` senza `mkdocs.yml`), la factory ricade su `VanillaAdapter`. Questo garantisce che i controlli nav-dipendenti vengano saltati in modo pulito invece di produrre falsi positivi.
 
 ---
 
@@ -275,16 +390,45 @@ def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
 
 ---
 
-## LayeredExclusionManager — Interni {#exclusion-internals}
+## LayeredExclusionManager — Interni {#exclusion-manager-internals}
 
-Il `LayeredExclusionManager` e il cuore del sistema di esclusione a 4 livelli. I suoi interni sono documentati in dettaglio nella pagina [Discovery e Esclusione](./discovery).
+Il `LayeredExclusionManager` viene costruito una sola volta per invocazione CLI e passato lungo l'intera pipeline. Incapsula tutti e quattro i livelli di esclusione in forma pre-compilata.
 
-I punti salienti dal punto di vista architetturale:
+### Costruzione {#exclusion-construction}
 
-- **Pre-compilazione:** i pattern `excluded_file_patterns` e `included_file_patterns` vengono compilati in `re.Pattern` al momento della costruzione del manager, non ad ogni valutazione
-- **Pulizia dei livelli:** le `SYSTEM_EXCLUDED_DIRS` vengono rimosse da `_config_excluded_dirs` per evitare confusione tra L1 e L3
-- **VCSIgnoreParser unificato:** quando `respect_vcs_ignore = true`, le regole da tutti i file `.gitignore` vengono unite in un singolo parser con cache `_positive_combined` per il fast-path senza negazioni
-- **Costruzione unica:** il manager viene costruito una sola volta dalla CLI e passato lungo tutta la pipeline
+```python
+manager = LayeredExclusionManager(
+    config,
+    repo_root=repo_root,
+    docs_root=docs_root,
+    cli_exclude=["drafts"],
+    cli_include=["generated-api"],
+)
+```
+
+Al momento della costruzione:
+
+1. Le System Guardrail vengono caricate da `SYSTEM_EXCLUDED_DIRS` (frozen set).
+2. Le `excluded_dirs` della config vengono ripulite dalle system guardrail per mantenere i livelli separati.
+3. I pattern di file vengono pre-compilati via `fnmatch.translate()` in `re.Pattern`.
+4. Se `respect_vcs_ignore` è `true`, i file `.gitignore` vengono analizzati e le regole unite in un singolo `VCSIgnoreParser`.
+
+### VCS Ignore Parser {#vcs-parser}
+
+Il `VCSIgnoreParser` implementa la specifica gitignore completa come parser pure-Python:
+
+- I pattern vengono pre-compilati in `re.Pattern` al momento della costruzione.
+- Il matching è O(N) per percorso dove N = numero di regole.
+- Quando non esistono regole di negazione, un **fast-path combinato** unisce tutte le regole positive in una singola regex compilata.
+- I percorsi contenenti componenti `..` vengono sempre trattati come non corrispondenti (sicurezza).
+
+### `should_exclude_dir` {#should-exclude-dir}
+
+Chiamato da `walk_files()` per ogni directory durante `os.walk()`. Restituisce `True` per potare la directory dalla visita — la directory e tutti i suoi discendenti non vengono mai esplorati.
+
+### `should_exclude_file` {#should-exclude-file}
+
+Chiamato da `iter_markdown_sources()` per ogni file che supera il filtraggio per directory. Esegue una valutazione completa a 5 livelli inclusi i controlli sui componenti del percorso contro tutti i livelli di esclusione.
 
 ---
 
@@ -313,9 +457,31 @@ Il Blood Sentinel (exit 3) viene valutato per primo. Poi lo Shield (exit 2). Sol
 I codici di uscita 2 (Shield) e 3 (Blood Sentinel) rappresentano eventi di sicurezza. Non vengono mai soppressi da `--exit-zero` o `exit_zero = true` nella configurazione. Questo e un contratto architetturale invariante.
 :::
 
+### Exit Code 0 — Pulito
+
+Tutti i controlli sono stati superati. Nessun errore, nessun warning (o `--exit-zero` è attivo e sono stati trovati solo risultati non di sicurezza).
+
+### Exit Code 1 — Risultati
+
+Sono stati rilevati problemi di qualità della documentazione: link rotti, pagine orfane, snippet non validi, pagine segnaposto, asset non utilizzati, riferimenti dangling o definizioni morte (in modalità strict).
+
+Può essere soppresso da `exit_zero = true` nella configurazione o `--exit-zero` nella CLI.
+
+### Exit Code 2 — Shield
+
+Una credenziale esposta è stata rilevata dallo Zenzic Shield. Questo codice di uscita **non viene mai** soppresso da `--exit-zero` o `exit_zero = true`. La credenziale deve essere ruotata immediatamente.
+
+### Exit Code 3 — Blood Sentinel
+
+Un link nella documentazione risolve verso un percorso di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Viene classificato come `PATH_TRAVERSAL_SUSPICIOUS` — un incidente di sicurezza che indica una potenziale iniezione template, toolchain compromessa o divulgazione di infrastruttura.
+
+Il codice di uscita 3 ha la **priorità massima**. Se esistono risultati sia di Shield che di Blood Sentinel nella stessa esecuzione, il codice 3 vince.
+
+Il Blood Sentinel scatta anche quando `docs_dir` stesso risolve fuori dalla radice del repository (protezione jailbreak F4-1).
+
 ---
 
-## Motore Adattivo Ibrido {#hybrid-adaptive-engine}
+## Motore Adattivo Ibrido {#adaptive-engine}
 
 La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e parallela in base al numero di file:
 
@@ -400,3 +566,58 @@ Le nuove integrazioni seguono lo stesso schema:
 4. Usa `ZenzicConfig.load()` + le funzioni di controllo del core — non avviare mai sottoprocessi shell.
 
 Il package `zenzic.integrations` è intenzionalmente snello: non contiene logica condivisa, solo hook per-motore. Tutta l'intelligenza vive in `zenzic.core`.
+
+---
+
+## Layer CLI {#cli-layer}
+
+La CLI è strutturata come un **package** (`src/zenzic/cli/`), non come un modulo monolitico. Questa separazione applica la responsabilità singola a livello di modulo e rende la pipeline di output visivo auditabile come una preoccupazione di primo piano.
+
+### Struttura del package {#cli-package-layout}
+
+```
+src/zenzic/cli/
+├── __init__.py       # Superficie di re-export pubblica per main.py — nessuna logica
+├── _shared.py        # Custode dello Stato Visivo: singleton console, singleton _ui, utility
+├── _check.py         # sub-app check_app + 7 comandi check
+├── _clean.py         # sub-app clean_app + pulizia asset
+├── _plugins.py       # sub-app plugins_app + lista plugin
+└── _standalone.py    # comandi score, diff, init
+```
+
+### Custode dello Stato Visivo {#visual-state-guardian}
+
+`_shared.py` è il **solo proprietario di tutto lo stato console e UI**. Espone due getter dinamici:
+
+| Getter | Restituisce |
+| :--- | :--- |
+| `get_console()` | Il singleton `rich.console.Console` corrente |
+| `get_ui()` | Il singleton `ObsidianUI` corrente (avvolge la console) |
+
+`configure_console()` — chiamata dal callback Typer `--no-color` / `--force-color` in `main.py` — **sostituisce** entrambi i singleton atomicamente. Poiché ogni comando chiama `get_ui()` / `get_console()` al momento dell'invocazione anziché all'importazione, ricevono sempre l'istanza che riflette i flag colore dell'utente.
+
+**Invariante:** `force_terminal` sulla `Console` a livello di modulo è sempre `None` (auto-detect via `sys.stdout.isatty()`). Passare `force_terminal=False` disabilita silenziosamente il colore anche nei terminali interattivi — questo è un pattern di bug latente che l'architettura esplicitamente protegge.
+
+### Flusso del banner di avvio {#cli-banner-flow}
+
+```mermaid
+flowchart LR
+    ARGV["sys.argv"] --> COND{Condizione banner?}
+    COND -->|"len == 1\nor --help/-h in argv\nor sub-app nuda"| BANNER["_print_banner()\n→ get_ui().print_header()"]
+    COND -->|"No"| CMD["Typer dispatch"]
+    BANNER --> CMD
+    CMD --> CB["@app.callback()\nconfigure_console()"]
+    CB --> EXEC["Comando esegue\ncon console corretta"]
+```
+
+Il banner scrive sempre su **stdout** (il `_shared.console` condiviso), quindi usa lo stesso stream di rilevamento colore dell'output successivo del comando. Il callback Typer viene eseguito *dopo* il banner, il che è accettabile — la console a livello di modulo già usa `force_terminal=None` (auto-detect) all'avvio.
+
+`_SUBAPPS_WITH_MENU` in `cli_main()` copre le sub-app che usano `no_args_is_help=True`: invocare `zenzic check`, `zenzic clean`, o `zenzic inspect` senza ulteriori argomenti mostra la pagina di help Typer; il banner viene anteposto dall'esplicito controllo di invocazione nuda.
+
+### Punti di estensione {#cli-extension-points}
+
+| Obiettivo | Azione |
+| :--- | :--- |
+| Aggiungere un comando a una sub-app esistente | Aggiungere `@check_app.command()` (o altra app) nel `_*.py` rilevante — nessuna modifica a `__init__.py` o `main.py` |
+| Aggiungere una nuova sub-app top-level | Creare `_miafeature.py`, esportare da `__init__.py`, registrare in `main.py`, aggiungere a `_SUBAPPS_WITH_MENU` se `no_args_is_help=True` |
+| Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `ObsidianUI` localmente |

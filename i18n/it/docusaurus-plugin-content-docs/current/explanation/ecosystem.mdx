@@ -1,32 +1,33 @@
 ---
 sidebar_position: 1
-sidebar_label: "Panoramica"
-title: Adapter vs. Integrazioni
-description: Il modello "Mente e Braccio" — come Zenzic separa l'intelligenza di analisi (Adapter) dall'azione sul motore di build (Integrations).
+sidebar_label: "Modello Adapter"
+title: Il Modello Adapter
+description: Come Zenzic comprende qualsiasi motore di documentazione senza farne parte — il protocollo Adapter e la strategia CLI Sovrana.
 ---
 
-# Adapter vs. Integrazioni
+# Il Modello Adapter
 
-Zenzic è costruito attorno a una separazione architetturale netta tra due responsabilità: **comprendere** il tuo motore di documentazione e **agire** al suo interno. Questa pagina spiega il modello mentale.
+Zenzic opera come **revisore esterno sovrano**. Non si incorpora mai all'interno di un motore di build,
+non avvia mai sottoprocessi e non richiede mai extra di installazione specifici per il motore.
+Un unico binario. Ogni motore. Protezione completa.
 
 ---
 
-## Il Modello "Mente e Braccio" {#mind-and-arm}
+## Adapter — Il Layer dell'Intelligenza {#adapters}
 
-| Componente | Metafora | Direzione | Quando viene usato |
-| :--- | :--- | :--- | :--- |
-| **Adapter** | Mente — interpreta il motore | Engine → Zenzic | Sempre, ad ogni esecuzione di `zenzic check` |
-| **Integration** | Braccio — attiva Zenzic dal motore | Zenzic → Engine | Opzionale, quando vuoi gate automatici durante la build |
+Un **Adapter** (in `zenzic.core.adapters`) è un componente Pure-Python che **legge** il file di
+configurazione di un motore di build e lo traduce nel modello interno di Zenzic. Gli adapter rispondono
+a tre domande:
 
-Gli **Adapter** (in `zenzic.core.adapters`) sono componenti Pure-Python che **leggono** il file di configurazione di un motore e lo traducono nel modello interno di Zenzic. Non modificano mai il motore, non avviano mai sottoprocessi. Un `MkDocsAdapter` legge `mkdocs.yml` in modo statico — il binario `mkdocs` non viene mai invocato.
-
-Le **Integrazioni** (in `zenzic.integrations`) sono plugin opzionali che si **agganciano** al ciclo di vita di un motore di build e invocano automaticamente i controlli di Zenzic. Lo `ZenzicPlugin` per MkDocs è la prima implementazione. Si attiva durante `mkdocs build`, rendendo impossibile pubblicare documentazione con link rotti.
+1. **Quali file sono navigabili?** (`get_nav_paths()`) — Quali file `.md` / `.mdx` compaiono nella navigazione del sito?
+2. **Quale URL ottiene questo file?** (`get_route_info()`) — URL canonico, slug override, route base path.
+3. **Quali pattern ignora questo motore?** (`get_ignored_patterns()`) — File come `README.md` che alcuni motori saltano.
 
 ```mermaid
 flowchart LR
-    subgraph INTAKE ["Intake — Comprensione del Motore"]
+    subgraph INTAKE ["Comprensione del Motore"]
         direction TB
-        ENG["Motore di Build\n(mkdocs.yml, docusaurus.config.ts, …)"]
+        ENG["Config del Motore di Build\n(mkdocs.yml, docusaurus.config.ts, …)"]
         ADP["Adapter\nzenzic.core.adapters"]
         ENG -->|"lettura statica\n(nessun sottoprocesso)"| ADP
     end
@@ -34,45 +35,31 @@ flowchart LR
     subgraph CORE ["Core di Zenzic"]
         direction TB
         VSM["Virtual Site Map\n(VSM)"]
-        SHIELD["Shield Middleware"]
+        SHIELD["Shield + Blood Sentinel"]
         RULES["Motore delle Regole"]
         ADP --> VSM
         VSM --> SHIELD
         SHIELD --> RULES
     end
 
-    subgraph ACTION ["Action — Attivazione dal Motore"]
-        direction TB
-        INTG["Integration\nzenzic.integrations"]
-        BUILD["Pipeline di Build\n(mkdocs build, …)"]
-        RULES -->|risultati| INTG
-        INTG -->|pass/fail gate| BUILD
+    subgraph OUT ["Output Sovrano"]
+        EXIT["Exit 0 / 1 / 2 / 3\nRisultati strutturati"]
+        RULES --> EXIT
     end
 
     style INTAKE fill:#1e3a5f,color:#fff
     style CORE fill:#1a2e1a,color:#fff
-    style ACTION fill:#3b1f1f,color:#fff
+    style OUT fill:#2d1f3f,color:#fff
 ```
+
+Gli adapter sono **stateless e senza sottoprocessi**. Un `MkDocsAdapter` legge `mkdocs.yml` in modo
+statico — il binario `mkdocs` non viene mai invocato. La stessa esecuzione che analizza un progetto
+MkDocs può, con un adapter diverso, analizzare un progetto Docusaurus o Zensical usando un percorso
+di codice identico.
 
 ---
 
-## Adapter nel Dettaglio {#adapters}
-
-Un adapter implementa il protocollo `BaseAdapter`. Risponde a tre domande:
-
-1. **Quali file sono navigabili?** (`get_nav_paths()`) — Quali file `.md` / `.mdx` compaiono nella navigazione del sito?
-2. **Quale URL ottiene questo file?** (`get_route_info()`) — URL canonico, slug override, route base path.
-3. **Quali pattern ignora questo motore?** (`get_ignored_patterns()`) — File come `README.md` che alcuni motori saltano.
-
-Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters`. Puoi pubblicare un adapter di terze parti per qualsiasi motore senza toccare il core di Zenzic:
-
-```toml
-# pyproject.toml del tuo adapter
-[project.entry-points."zenzic.adapters"]
-mio_motore = "mio_pacchetto.adapter:MioAdapter"
-```
-
-### Adapter Integrati
+## Adapter Integrati {#built-in-adapters}
 
 | Classe adapter | Motore | File di configurazione letto |
 | :--- | :--- | :--- |
@@ -81,39 +68,57 @@ mio_motore = "mio_pacchetto.adapter:MioAdapter"
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js` / `.ts` |
 | `StandaloneAdapter` | `standalone` | _(nessuno — ogni file è REACHABLE)_ |
 
----
-
-## Integrazioni nel Dettaglio {#integrations}
-
-Le integrazioni vivono in `zenzic.integrations`. Richiedono che il motore host sia installato insieme a Zenzic, quindi sono **opt-in** tramite un extra del pacchetto:
-
-```bash
-# Solo Zenzic — nessuna dipendenza dal motore
-pip install zenzic
-
-# Con l'integrazione MkDocs
-pip install "zenzic[mkdocs]"
-```
-
-### `zenzic.integrations.mkdocs` — Il Plugin MkDocs {#mkdocs-plugin}
-
-Il plugin MkDocs è registrato come entry point nativo `mkdocs.plugins`. Aggiungilo al tuo `mkdocs.yml`:
-
-```yaml
-plugins:
-  - search
-  - zenzic          # ← drop-in: nessuna configurazione aggiuntiva richiesta
-```
-
-Quando viene eseguito `mkdocs build`, Zenzic attiva `check all` prima che venga renderizzata la prima pagina. Un risultato con severità `error` causa il fallimento immediato della build — non puoi pubblicare accidentalmente un sito di documentazione con link rotti.
-
-Il plugin viene scoperto automaticamente da MkDocs tramite l'entry point:
+Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters`. Puoi pubblicare un
+adapter di terze parti per qualsiasi motore senza toccare il core di Zenzic:
 
 ```toml
-# Registrato nel pyproject.toml di zenzic — nessuna azione richiesta dall'utente
-[project.entry-points."mkdocs.plugins"]
-zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
+# pyproject.toml del tuo adapter
+[project.entry-points."zenzic.adapters"]
+mio_motore = "mio_pacchetto.adapter:MioAdapter"
 ```
+
+---
+
+## Strategia CLI Sovrana {#sovereign-cli}
+
+Zenzic v0.7.0 non fornisce plugin per motori di build né integrazioni interne.
+Questa è una decisione architetturale deliberata, non una funzionalità mancante.
+
+### Perché nessun plugin per motori?
+
+| Aspetto | Plugin nel motore | CLI Sovrana |
+| :--- | :--- | :--- |
+| Scansione credenziali (Shield) | ❌ Strutturalmente assente — gli hook si attivano troppo tardi | ✅ Hardening completo ZRT-006/007 |
+| Path traversal (Blood Sentinel) | ❌ Il motore controlla la risoluzione dei path | ✅ Ogni link normalizzato da Zenzic |
+| Validazione dei link | ❌ Resolver del motore — non la VSM | ✅ VSM O(1) con cache SHA256 |
+| Parità tra motori | ❌ Plugin MkDocs ≠ Plugin Docusaurus | ✅ Percorso di codice unico per tutti i motori |
+| Isolamento dipendenze | ❌ Richiede `pip install zenzic[motore]` | ✅ `pip install zenzic` — fatto |
+
+Un plugin che vive all'interno di un motore di build non può garantire le stesse proprietà di un
+revisore esterno. Lo Shield, il Blood Sentinel e la VSM sono stati progettati per l'esecuzione
+sovrana. Incorporarli in un hook di build li degraderebbe a controlli best-effort.
+
+### Il workflow consigliato
+
+```bash
+# Installazione — un solo pacchetto, nessun extra
+pip install zenzic
+
+# Rilevamento motore dai file di configurazione, scrittura zenzic.toml
+zenzic init
+
+# Audit completo — VSM + Shield + Blood Sentinel + validazione link
+zenzic check all
+
+# In CI (GitHub Actions, GitLab CI, ecc.)
+# Aggiungi come step prima o dopo la build, non al suo interno
+zenzic check all --strict
+```
+
+Zenzic viene eseguito **prima o dopo** la build — mai al suo interno. Questo garantisce:
+- Exit 2 per qualsiasi credenziale esposta (la shell si ferma immediatamente)
+- Exit 3 per qualsiasi link path-traversal (non sopprimibile)
+- Risultati engine-agnostici: lo stesso comando `zenzic check all` funziona per ogni motore
 
 ---
 
@@ -121,10 +126,10 @@ zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
 
 | Scenario | Approccio consigliato |
 | :--- | :--- |
-| Pipeline CI (`zenzic check all` in una GitHub Action) | **Solo Adapter** — nessuna integrazione necessaria |
-| Progetto MkDocs con gate di build | **Adapter + Integrazione MkDocs** — `pip install "zenzic[mkdocs]"` |
+| Pipeline CI per qualsiasi motore | `zenzic check all` — aggiungi uno step, nessun plugin necessario |
+| Gate pre-commit per le credenziali | `zenzic check references` — si registra come hook pre-commit |
 | Motore custom non ancora supportato | **Scrivi un Adapter** — pubblica come pacchetto separato, registra via entry-point `zenzic.adapters` |
-| Attivare Zenzic da un hook di build non-MkDocs | **Scrivi un'Integrazione** — apri una PR o pubblica come pacchetto separato in `zenzic.integrations` |
+| Migrazione da MkDocs a Docusaurus | Usa `zenzic check all` con `engine = "mkdocs"` sulla sorgente, `engine = "docusaurus"` sulla destinazione |
 
 ---
 

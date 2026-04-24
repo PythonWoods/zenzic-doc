@@ -116,13 +116,16 @@ SecurityFinding (or pass-through)
 
 ### Pre-scan Normalizer {#normalizer}
 
-The normalizer (ZRT-003 fix) reconstructs secrets that authors split across Markdown formatting:
+The normalizer applies six passes before regex matching:
 
-| Transformation | Example | Result |
-| :--- | :--- | :--- |
-| Unwrap backtick spans | `` `AKIA` `` | `AKIA` |
-| Remove concat operators | `` `AKIA` + `KEY` `` | `AKIAKEY` |
-| Replace table pipes | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
+| Transformation | ZRT | Example | Result |
+| :--- | :--- | :--- | :--- |
+| Strip Unicode format characters (Cf category) | ZRT-006 | `AKIA​KEY` (zero-width joiner) | `AKIAKEY` |
+| Decode HTML character references | ZRT-006 | `sk&#45;abc` | `sk-abc` |
+| Strip HTML/MDX comment interleaving | ZRT-007 | `AKIA<!-- -->KEY` | `AKIAKEY` |
+| Unwrap backtick spans | ZRT-003 | `` `AKIA` `` | `AKIA` |
+| Remove concat operators | ZRT-003 | `` `AKIA` + `KEY` `` | `AKIAKEY` |
+| Replace table pipes | ZRT-003 | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
 
 Both the raw and normalized forms are scanned. If the same secret type is detected in both forms, only one finding is emitted.
 
@@ -138,6 +141,7 @@ Both the raw and normalized forms are scanned. If the same secret type is detect
 | `google-api-key` | `AIza[0-9A-Za-z\-_]{35}` | `AIzaSyC...` |
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | PEM header |
 | `hex-encoded-payload` | `(?:\x[0-9a-fA-F]{2}){3,}` | `\x41\x42` (2× below threshold) |
+| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | `glpat-abc...` |
 
 ### IO Middleware: `safe_read_line` {#safe-read-line}
 
@@ -152,6 +156,7 @@ line = safe_read_line(raw_line, file_path, line_no)
 
 - **Line length limit** (F2-1): Lines exceeding 1 MiB are silently truncated before regex matching to prevent ReDoS.
 - **Worker timeout** (ZRT-002): In parallel mode, each worker has a 30-second timeout. Workers that exceed this limit produce a `Z009` timeout finding instead of blocking the pipeline.
+- **Lookback buffer** (ZRT-007): The scanner maintains a 1-line lookback state. For each line, the tail of the previous normalised line (`[-80:]`) is concatenated with the head of the current line (`[:80]`) and scanned as an additional pass. This catches secrets split across YAML folded scalars or Markdown line breaks.
 
 ---
 
@@ -181,7 +186,7 @@ The truncated line is still scanned — a credential that begins in the first 1 
 
 ### F4-1 — Anti-Jailbreak Path Validation {#f4-1-antijailbreak}
 
-The `_validate_docs_root()` function in `cli.py` elevates the **Blood Sentinel** (Exit Code 3) from a link-time check to a **pre-scan filesystem barrier**.
+The `_validate_docs_root()` function in `cli/_shared.py` elevates the **Blood Sentinel** (Exit Code 3) from a link-time check to a **pre-scan filesystem barrier**.
 
 **Threat model:** A malicious or misconfigured `zenzic.toml` containing `docs_dir = "../../etc"` would cause Zenzic to scan OS system directories, potentially leaking sensitive file contents through credential detection findings or exposing the directory structure in error messages.
 
@@ -460,68 +465,103 @@ In parallel mode:
 
 ---
 
-## Integrations Layer {#integrations-layer}
+## Sovereign CLI — No Integrations Layer {#sovereign-cli}
 
-The `zenzic.integrations` namespace contains **opt-in plugins** that hook into an external build engine's lifecycle and invoke Zenzic checks as a quality gate. Integrations are the **Arm** of the [Mind and Arm model](./ecosystem) — they act, whereas Adapters interpret.
+Zenzic v0.7.0 removes the `zenzic.integrations` namespace entirely. The former MkDocs plugin
+(`zenzic.integrations.mkdocs`) and its `pip install "zenzic[mkdocs]"` extra are gone.
 
-### Design Contract {#integrations-contract}
+**Why:** An embedded engine hook couples Zenzic's release cycle to an external build tool's
+plugin API. It also prevented users of other engines from accessing the full Shield and Blood
+Sentinel hardening that only the CLI pipeline provides. A Sovereign CLI decouples quality
+gating from build tooling and makes every enforcement point engine-agnostic.
 
-Integrations follow two invariants:
-
-1. **Dependency isolation.** An integration may import its host engine (`mkdocs`, etc.). Zenzic core never imports any integration; the dependency is strictly one-directional. This is why integration extras are opt-in: `pip install "zenzic[mkdocs]"`.
-2. **Subprocess-free core.** Integrations trigger Zenzic's Python API directly — no `subprocess.run("zenzic ...")`. Pillar 2 (No Subprocess) is preserved end-to-end.
-
-### `zenzic.integrations.mkdocs` — `ZenzicPlugin` {#zenzic-plugin}
-
-`ZenzicPlugin` is a native MkDocs plugin that injects a full `zenzic check all` gate into every `mkdocs build` invocation.
-
-**Registration** (automatic via entry point):
-
-```toml
-[project.entry-points."mkdocs.plugins"]
-zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
-```
-
-**Activation** (user-side, in `mkdocs.yml`):
+**Migration:** Replace the `plugins: - zenzic` entry in `mkdocs.yml` with a CI step:
 
 ```yaml
-plugins:
-  - search
-  - zenzic
+# GitHub Actions
+- run: zenzic check all --strict
 ```
 
-**Execution flow:**
+This produces identical enforcement with the full VSM, Shield (ZRT-006/007), and Blood Sentinel
+active — capabilities that the plugin layer never fully exposed.
+
+### Extension pattern {#extension-pattern}
+
+External tools that need to invoke Zenzic checks programmatically should use the public Python
+API directly, never shell out:
+
+```python
+from zenzic.core.scanner import find_repo_root
+from zenzic.models.config import ZenzicConfig
+
+repo_root = find_repo_root()
+config, _ = ZenzicConfig.load(repo_root)
+# ... invoke scanner / validator functions directly
+```
+
+All intelligence lives in `zenzic.core`. The CLI is a thin dispatch layer over the same
+functions — there is no hidden logic that requires the subprocess path.
+
+---
+
+## CLI Layer {#cli-layer}
+
+The CLI is structured as a **package** (`src/zenzic/cli/`), not a monolithic module. This separation enforces single-responsibility at the module level and makes the visual output pipeline auditable as a first-class concern.
+
+### Package layout {#cli-package-layout}
+
+```
+src/zenzic/cli/
+├── __init__.py       # Public re-export surface for main.py — no logic
+├── _shared.py        # Visual State Guardian: console singleton, _ui singleton, utilities
+├── _check.py         # check_app sub-app + 7 check commands
+├── _clean.py         # clean_app sub-app + clean assets
+├── _inspect.py       # inspect_app sub-app + capabilities command
+├── _lab.py           # lab command — interactive example showcase
+└── _standalone.py    # score, diff, init commands
+```
+
+### Visual State Guardian {#visual-state-guardian}
+
+`_shared.py` is the **sole owner of all console and UI state**. It exposes two dynamic getters:
+
+| Getter | Returns |
+| :--- | :--- |
+| `get_console()` | The current `rich.console.Console` singleton |
+| `get_ui()` | The current `ObsidianUI` singleton (wraps the console) |
+
+`configure_console()` — called by the `--no-color` / `--force-color` Typer callback in `main.py` — **replaces** both singletons atomically. Because every command calls `get_ui()` / `get_console()` at invocation time rather than import time, they always receive the instance that reflects the user's color flags.
+
+**Invariant:** `force_terminal` on the module-level `Console` is always `None` (auto-detect via `sys.stdout.isatty()`). Passing `force_terminal=False` silently disables color even in interactive terminals — this is a latent bug pattern the architecture explicitly guards against.
+
+### Startup banner flow {#cli-banner-flow}
 
 ```mermaid
-sequenceDiagram
-    participant MKD as mkdocs build
-    participant PLG as ZenzicPlugin
-    participant CFG as ZenzicConfig.load()
-    participant CLI as check_all()
-
-    MKD->>PLG: on_config(mkdocs_config)
-    PLG->>CFG: load(repo_root)
-    CFG-->>PLG: ZenzicConfig
-    PLG->>CLI: check_all(config, docs_root, repo_root)
-    CLI-->>PLG: exit_code
-    alt exit_code == 0
-        PLG-->>MKD: build continues
-    else exit_code >= 1
-        PLG-->>MKD: PluginError raised — build aborted
-    end
+flowchart LR
+    ARGV["sys.argv"] --> COND{Banner condition?}
+    COND -->|"len == 1\nor --help/-h in argv\nor bare sub-app"| BANNER["_print_banner()\n→ get_ui().print_header()"]
+    COND -->|"No"| CMD["Typer dispatch"]
+    BANNER --> CMD
+    CMD --> CB["@app.callback()\nconfigure_console()"]
+    CB --> EXEC["Command executes\nwith correct console"]
 ```
 
-Shield findings (exit code 2) and Blood Sentinel findings (exit code 3) abort the build unconditionally, regardless of any `--exit-zero` setting. Standard quality findings (exit code 1) abort the build unless `exit_zero = true` is set in `zenzic.toml`.
+The banner always writes to **stdout** (the shared `_shared.console`) so it uses the same color-detection stream as the subsequent command output. The Typer callback runs *after* the banner, which is acceptable — the module-level console already uses `force_terminal=None` (auto-detect) at startup.
 
-**Logger:** The plugin logs under the `zenzic.integrations.mkdocs` logger (not `mkdocs.plugins.zenzic`), consistent with the standard Zenzic logging hierarchy.
+`_SUBAPPS_WITH_MENU` in `cli_main()` covers sub-apps that use `no_args_is_help=True`: invoking `zenzic check`, `zenzic clean`, or `zenzic inspect` with no further arguments shows the Typer help page; the banner is prepended by the explicit bare-invocation check.
 
-### Extending the Integrations Namespace {#extending-integrations}
+### Extension points {#cli-extension-points}
 
-New integrations follow the same pattern:
+| Goal | Action |
+| :--- | :--- |
+| Add a command to an existing sub-app | Add `@check_app.command()` (or other app) in the relevant `_*.py` — no changes to `__init__.py` or `main.py` |
+| Add a new top-level sub-app | Create `_myfeature.py`, export from `__init__.py`, register in `main.py`, add to `_SUBAPPS_WITH_MENU` if `no_args_is_help=True` |
+| Add a shared utility | Add to `_shared.py` and import via `from . import _shared` — never instantiate `Console` or `ObsidianUI` locally |
 
-1. Create `src/zenzic/integrations/<engine>.py`.
-2. Add `<engine> = ["<engine-pkg>>=<version>"]` to `[project.optional-dependencies]` in `pyproject.toml`.
-3. Register any required entry points (e.g. `<engine>.plugins`).
-4. Use `ZenzicConfig.load()` + the core check functions — never shell out.
+### Visual identity — `zenzic.core.ui` {#core-ui}
 
-The `zenzic.integrations` package is intentionally thin: it contains no shared logic, only per-engine hooks. All intelligence lives in `zenzic.core`.
+`ObsidianPalette`, `ObsidianUI`, `make_banner`, `emoji`, and `SUPPORTS_COLOR` live in
+`src/zenzic/core/ui.py`. The core layer owns the visual identity so `SentinelReporter` (which
+is also in `core/`) can import them without looking upward. The CLI layer imports from
+`zenzic.core.ui` directly. The compatibility stub at `src/zenzic/ui.py` re-exports everything
+for any third-party code that was already importing from the old path.
