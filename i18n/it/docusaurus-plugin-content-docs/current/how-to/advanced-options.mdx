@@ -402,13 +402,13 @@ automaticamente:
   configurazione i18n dell'engine.
 - **Risoluzione dei link cross-locale** — gli adapter MkDocs e Zensical risolvono i link che
   attraversano i confini di locale senza falsi positivi.
-- **La modalità Vanilla salta completamente il controllo orfani** — quando non è presente alcuna
+- **La modalità Standalone salta completamente il controllo orfani** — quando non è presente alcuna
   config del motore di build, ogni file sembrerebbe un orfano. Zenzic salta il controllo
   piuttosto che segnalare rumore.
 
-:::tip[Forza la modalità Vanilla per sopprimere il controllo orfani]
+:::tip[Forza la modalità Standalone per sopprimere il controllo orfani]
 ```bash
-zenzic check all --engine vanilla
+zenzic check all --engine standalone
 ```
 :::
 

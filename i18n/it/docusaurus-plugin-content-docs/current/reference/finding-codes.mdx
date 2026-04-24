@@ -44,8 +44,8 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z000: UNSUPPORTED_ENGINE {#z000}
 
-*   **Severità:** `error` (Fatale)
-*   **Contesto Tecnico:** Questa diagnostica viene emessa quando l'engine di Zenzic incontra un identificatore `engine` in `zenzic.toml` che è stato deprecato o rimosso (ad esempio, il vecchio motore `vanilla`). Con il raggiungimento della "Maturità di Ossidiana", gli adapter a tipizzazione debole sono stati sostituiti da protocolli rigorosi.
+*   **Severità:** `error` (Fatale — interrompe l'esecuzione immediatamente)
+*   **Contesto Tecnico:** Z000 è un **errore di configurazione fatale**, non un finding collezionabile. Si manifesta come eccezione `ConfigurationError` quando la factory degli adapter incontra un identificatore `engine` deprecato o rimosso in `zenzic.toml` (es. `engine = "vanilla"`, rimosso in v0.6.1). L'esecuzione si ferma prima che inizi qualsiasi scansione; Z000 **non** apparirà nell'output `--format json` né nell'array findings.
 *   **Passaggi di Rimedio:**
     1. Apri il tuo `zenzic.toml` o `pyproject.toml`.
     2. Individua il campo `engine`.

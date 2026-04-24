@@ -27,7 +27,7 @@ indipendentemente dal linguaggio in cui è scritto.
 | **Nativo** | MkDocs | Python | `MkDocsAdapter` — legge `mkdocs.yml`, risolve i18n, impone la nav |
 | **Nativo** | Zensical | Python | `ZensicalAdapter` — legge `zensical.toml`, zero YAML |
 | **Nativo** | Docusaurus | Node.js | `DocusaurusAdapter` — legge `docusaurus.config.ts`, risolve i18n |
-| **Agnostico** | Vanilla | qualsiasi | `VanillaAdapter` — funziona su qualsiasi cartella Markdown; controllo orphan disabilitato |
+| **Agnostico** | Standalone | qualsiasi | `StandaloneAdapter` — funziona su qualsiasi cartella Markdown; controllo orphan disabilitato |
 | **Estensibile** | Hugo *(esempio)* | Go | Adapter di terze parti via entry-point `zenzic.adapters` |
 | **Estensibile** | Jekyll *(esempio)* | Ruby | Adapter di terze parti via entry-point `zenzic.adapters` |
 
@@ -64,7 +64,7 @@ Se `[build_context]` è assente, Zenzic individua deterministicamente il motore:
 
 - `mkdocs.yml` presente → `MkDocsAdapter`
 - `docusaurus.config.ts` (o `.js`) presente → `DocusaurusAdapter`
-- nessuna configurazione presente, nessun locale dichiarato → `VanillaAdapter` (controllo orphan disabilitato)
+- nessuna configurazione presente, nessun locale dichiarato → `StandaloneAdapter` (controllo orphan disabilitato)
 
 :::info[Ponte CLI — Controlli signal-to-noise]
 Selezione engine e verbosità Sentinel sono aspetti separati. Usa
@@ -438,9 +438,9 @@ Gli URL esterni (`https://...`, `http://...`) non sono interessati.
 
 ---
 
-## Vanilla (nessun motore)
+## Standalone (nessun motore)
 
-`VanillaAdapter` viene restituito quando non è presente alcun file di configurazione del
+`StandaloneAdapter` viene restituito quando non è presente alcun file di configurazione del
 motore e non sono dichiarati locale. Tutti i metodi dell'adapter sono no-op:
 
 - `is_locale_dir` → sempre `False`

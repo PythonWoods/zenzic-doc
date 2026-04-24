@@ -137,19 +137,21 @@ The Zenzic Shield uses a **dual-stream architecture** to ensure that no part of 
 
 When the Reference Scanner processes a file, it creates two independent streams:
 
-```text
-                ┌─────────────────────────────────┐
-                │  Reference Scanner               │
-                │                                  │
-File on disk ──►│  SHIELD stream                   │
-                │    sees ALL lines (including      │
-                │    YAML frontmatter)              │
-                │                                  │
-                │  CONTENT stream                  │
-                │    skips frontmatter + fenced     │
-                │    blocks (parses references      │
-                │    and images)                    │
-                └─────────────────────────────────┘
+```mermaid
+flowchart LR
+    classDef file    fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
+    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef content fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
+
+    disk["📄 File on disk"]:::file
+
+    subgraph RS ["Reference Scanner"]
+        SH["🛡️ SHIELD stream\nSees ALL lines\n(incl. YAML frontmatter)"]:::shield
+        CT["📝 CONTENT stream\nSkips frontmatter + fenced blocks\n(parses references & images)"]:::content
+    end
+
+    disk --> SH
+    disk --> CT
 ```
 
 The two streams have opposite filtering rules by design. The Content stream must skip YAML frontmatter to avoid parsing metadata like `author: Jane Doe` as a broken reference definition. The Shield stream must see frontmatter because a key like `aws_key: AKIA...` hiding in YAML metadata is a real secret that must be caught. The streams never share a data source — merging them would create a blind spot.

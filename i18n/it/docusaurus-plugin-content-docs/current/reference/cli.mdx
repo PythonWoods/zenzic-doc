@@ -174,7 +174,7 @@ prompt e scrivere direttamente in `pyproject.toml`.
 Il rilevamento automatico dell'engine è incluso in entrambe le modalità: se `mkdocs.yml`
 o `zensical.toml` è presente, la configurazione generata preimposta il campo `engine`.
 Se non viene trovato alcun file di configurazione engine, si applicano i default
-vanilla (indipendenti dall'engine).
+standalone (indipendenti dall'engine).
 
 `zenzic init --plugin <nome>` genera uno scheletro di pacchetto Python con
 entry-point `zenzic.rules` pronto all'uso e template `BaseRule`
@@ -266,9 +266,9 @@ zenzic check references --format json --strict
     {
       "rel_path": "guides/setup.md",
       "line_no": 42,
-      "code": "BROKEN_LINK",
+      "code": "Z104",
       "severity": "error",
-      "message": "Link target 'install.md' not found"
+      "message": "guides/setup.md:42: 'install.md' not found in docs"
     }
   ],
   "summary": {
@@ -296,7 +296,7 @@ modificare `zenzic.toml`. Accettato da `check orphans` e `check all`:
 ```bash
 zenzic check orphans --engine mkdocs
 zenzic check all --engine zensical
-zenzic check all --engine vanilla    # disabilita il controllo orfani indipendentemente dalla config
+zenzic check all --engine standalone    # disabilita il controllo orfani indipendentemente dalla config
 ```
 
 Se passi un nome di engine per cui non esiste un adapter registrato, Zenzic elenca gli adapter
@@ -304,7 +304,7 @@ disponibili ed esce con codice 1:
 
 ```text
 ERROR: Unknown engine adapter 'hugo'.
-Installed adapters: mkdocs, vanilla, zensical
+Installed adapters: mkdocs, standalone, zensical
 Install a third-party adapter or choose from the list above.
 ```
 

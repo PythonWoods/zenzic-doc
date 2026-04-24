@@ -26,7 +26,7 @@ any static site generator (SSG), regardless of what language that generator is w
 | **Native** | MkDocs | Python | `MkDocsAdapter` — reads `mkdocs.yml`, resolves i18n, enforces nav |
 | **Native** | Zensical | Python | `ZensicalAdapter` — reads `zensical.toml`, zero-YAML |
 | **Native** | Docusaurus | Node.js | `DocusaurusAdapter` — reads `docusaurus.config.ts`, resolves i18n |
-| **Agnostic** | Vanilla | any | `VanillaAdapter` — works on any Markdown folder; orphan check disabled |
+| **Agnostic** | Standalone | any | `StandaloneAdapter` — works on any Markdown folder; orphan check disabled |
 | **Extensible** | Hugo *(example)* | Go | Third-party adapter via `zenzic.adapters` entry-point |
 | **Extensible** | Jekyll *(example)* | Ruby | Third-party adapter via `zenzic.adapters` entry-point |
 
@@ -60,7 +60,7 @@ If `[build_context]` is absent entirely, Zenzic deterministically discovers the 
 
 - `mkdocs.yml` present → `MkDocsAdapter`
 - `docusaurus.config.ts` (or `.js`) present → `DocusaurusAdapter`
-- neither config present, no locales declared → `VanillaAdapter` (orphan check disabled)
+- neither config present, no locales declared → `StandaloneAdapter` (orphan check disabled)
 
 :::info[CLI bridge — Signal-to-noise controls]
 Engine selection and Sentinel verbosity are independent concerns. Use
@@ -429,9 +429,9 @@ External URLs (`https://...`, `http://...`) are not affected.
 
 ---
 
-## Vanilla (no engine)
+## Standalone (no engine)
 
-`VanillaAdapter` is returned when no engine config file is present and no locales are
+`StandaloneAdapter` is returned when no engine config file is present and no locales are
 declared. All adapter methods are no-ops:
 
 - `is_locale_dir` → always `False`

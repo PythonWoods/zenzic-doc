@@ -139,7 +139,7 @@ uvx zenzic check all
 :::note[Adapter di terze parti]
 Gli adapter di terze parti (es. un ipotetico `zenzic-hugo-adapter`) sono pacchetti
 installabili separati — non extra di `zenzic` stesso. Nessun extra è richiesto per
-`VanillaAdapter` (cartelle Markdown semplici).
+`StandaloneAdapter` (cartelle Markdown semplici).
 :::
 
 ---
@@ -233,25 +233,25 @@ repository, Zenzic carica l'**adapter** corrispondente che fornisce:
 - **Soppressione directory locale** — i file sotto `docs/it/`, `docs/fr/`, ecc. non vengono
   segnalati come orfani.
 
-### Modalità Vanilla {#vanilla-mode}
+### Modalità Standalone {#standalone-mode}
 
 Quando non viene trovata alcuna configurazione del motore di build, Zenzic ricade su
-`VanillaAdapter`. In questa modalità:
+`StandaloneAdapter`. In questa modalità:
 
 - **Il controllo orfani viene saltato.** Senza una dichiarazione di nav, ogni file sembrerebbe
   un orfano.
 - **Tutti gli altri controlli vengono eseguiti normalmente** — link, snippet, placeholder, asset
   e riferimenti.
 
-La modalità Vanilla è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
+La modalità Standalone è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
 qualsiasi progetto dove la navigazione è implicita.
 
 :::tip[Forza una modalità specifica]
 Usa `--engine` per sovrascrivere l'adapter rilevato per una singola esecuzione:
 
 ```bash
-zenzic check all --engine vanilla    # salta il controllo orfani
-zenzic check all --engine mkdocs     # forza l'adapter MkDocs
+zenzic check all --engine standalone    # salta il controllo orfani
+zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 ```
 :::
 

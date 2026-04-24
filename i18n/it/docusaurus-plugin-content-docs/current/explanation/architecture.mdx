@@ -305,7 +305,7 @@ Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la doc
 | `mkdocs` | `MkDocsAdapter` | `mkdocs.yml` |
 | `zensical` | `ZensicalAdapter` | `zensical.toml` |
 | `docusaurus` | `DocusaurusAdapter` | `docusaurus.config.js` / `.ts` |
-| `vanilla` | `VanillaAdapter` | Nessuna — no-op, ogni file e REACHABLE |
+| `standalone` | `StandaloneAdapter` | Nessuna — adapter agnostico, orphan check saltato |
 
 ### Risoluzione Link e Mapping degli Slug {#link-resolution}
 
@@ -342,7 +342,7 @@ flowchart LR
     CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
     CONSTRUCT_STD --> HAS_CONFIG
     HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| VANILLA["Fallback: VanillaAdapter()"]
+    HAS_CONFIG -->|No| VANILLA["Fallback: StandaloneAdapter()"]
     EP -->|Not found| VANILLA
     VANILLA --> STORE
 
@@ -355,7 +355,7 @@ La factory `get_adapter` segue un protocollo di costruzione a due fasi:
 
 1. **Scoperta:** il gruppo entry-point `zenzic.adapters` viene consultato per primo, poi il registro built-in
 2. **Costruzione:** se l'adapter espone un classmethod `from_repo(context, docs_root, repo_root)`, viene usato quello; altrimenti si chiama il costruttore standard
-3. **Guard `has_engine_config`:** se l'adapter costruito restituisce `False` da `has_engine_config()`, la factory ricade su `VanillaAdapter`
+3. **Guard `has_engine_config`:** se l'adapter costruito restituisce `False` da `has_engine_config()`, la factory ricade su `StandaloneAdapter`
 4. **Cache:** le istanze vengono memorizzate con chiave `(engine, docs_root, repo_root)` per evitare doppie istanziazioni nella stessa sessione CLI
 
 Questo design significa che aggiungere un nuovo adapter per un motore di build **non richiede mai di modificare il core di Zenzic** — basta installare un pacchetto adapter.
@@ -366,7 +366,7 @@ Le istanze degli adapter vengono memorizzate con chiave `(engine, docs_root, rep
 
 ### Guardia `has_engine_config` {#has-engine-config-guard}
 
-Quando un adapter viene istanziato ma non trova il file di configurazione del motore (es. `MkDocsAdapter` senza `mkdocs.yml`), la factory ricade su `VanillaAdapter`. Questo garantisce che i controlli nav-dipendenti vengano saltati in modo pulito invece di produrre falsi positivi.
+Quando un adapter viene istanziato ma non trova il file di configurazione del motore (es. `MkDocsAdapter` senza `mkdocs.yml`), la factory ricade su `StandaloneAdapter`. Questo garantisce che i controlli nav-dipendenti vengano saltati in modo pulito invece di produrre falsi positivi.
 
 ---
 
@@ -537,71 +537,26 @@ La soglia di 50 file (`ADAPTIVE_PARALLEL_THRESHOLD`) e un'euristica conservativa
 
 ---
 
-## Layer delle Integrazioni {#integrations-layer}
+## CLI Sovrana — Nessun Layer di Integrazioni {#sovereign-cli}
 
-Il namespace `zenzic.integrations` contiene **plugin opt-in** che si agganciano al ciclo di vita di un motore di build esterno e invocano i controlli di Zenzic come quality gate. Le integrazioni sono il **Braccio** del [modello Mente e Braccio](./ecosystem) — agiscono, mentre gli Adapter interpretano.
+Zenzic v0.7.0 rimuove completamente il namespace `zenzic.integrations`. Il vecchio plugin MkDocs
+(`zenzic.integrations.mkdocs`) e il suo extra `pip install "zenzic[mkdocs]"` sono stati eliminati.
 
-### Contratto di Progettazione {#integrations-contract}
+**Perché:** un hook embedded nel motore accoppia il ciclo di rilascio di Zenzic all'API plugin di
+uno strumento di build esterno. Impedisce inoltre agli utenti di altri motori di accedere
+all'hardening completo di Shield e Blood Sentinel, disponibile solo nella pipeline CLI.
+Una CLI Sovrana disaccoppia il quality gate dallo strumento di build e rende ogni punto di
+applicazione engine-agnostico.
 
-Le integrazioni seguono due invarianti:
-
-1. **Isolamento delle dipendenze.** Un'integrazione può importare il suo motore host (`mkdocs`, ecc.). Il core di Zenzic non importa mai alcuna integrazione; la dipendenza è strettamente unidirezionale. Per questo motivo gli extra delle integrazioni sono opt-in: `pip install "zenzic[mkdocs]"`.
-2. **Core subprocess-free.** Le integrazioni attivano l'API Python di Zenzic direttamente — nessun `subprocess.run("zenzic ...")`. Il Pilastro 2 (Zero Sottoprocessi) è preservato end-to-end.
-
-### `zenzic.integrations.mkdocs` — `ZenzicPlugin` {#zenzic-plugin}
-
-`ZenzicPlugin` è un plugin nativo MkDocs che inietta un gate completo `zenzic check all` in ogni esecuzione di `mkdocs build`.
-
-**Registrazione** (automatica tramite entry point):
-
-```toml
-[project.entry-points."mkdocs.plugins"]
-zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
-```
-
-**Attivazione** (lato utente, in `mkdocs.yml`):
+**Migrazione:** sostituisci la voce `plugins: - zenzic` in `mkdocs.yml` con uno step CI:
 
 ```yaml
-plugins:
-  - search
-  - zenzic
+# GitHub Actions
+- run: zenzic check all --strict
 ```
 
-**Flusso di esecuzione:**
-
-```mermaid
-sequenceDiagram
-    participant MKD as mkdocs build
-    participant PLG as ZenzicPlugin
-    participant CFG as ZenzicConfig.load()
-    participant CLI as check_all()
-
-    MKD->>PLG: on_config(mkdocs_config)
-    PLG->>CFG: load(repo_root)
-    CFG-->>PLG: ZenzicConfig
-    PLG->>CLI: check_all(config, docs_root, repo_root)
-    CLI-->>PLG: exit_code
-    alt exit_code == 0
-        PLG-->>MKD: build prosegue
-    else exit_code >= 1
-        PLG-->>MKD: PluginError sollevata — build interrotta
-    end
-```
-
-I risultati Shield (exit code 2) e Blood Sentinel (exit code 3) interrompono la build incondizionatamente, indipendentemente da qualsiasi impostazione `--exit-zero`. I risultati di qualità standard (exit code 1) interrompono la build a meno che `exit_zero = true` non sia impostato in `zenzic.toml`.
-
-**Logger:** Il plugin registra sotto il logger `zenzic.integrations.mkdocs` (non `mkdocs.plugins.zenzic`), coerentemente con la gerarchia di logging standard di Zenzic.
-
-### Estendere il Namespace delle Integrazioni {#extending-integrations}
-
-Le nuove integrazioni seguono lo stesso schema:
-
-1. Crea `src/zenzic/integrations/<motore>.py`.
-2. Aggiungi `<motore> = ["<pacchetto-motore>>=<versione>"]` a `[project.optional-dependencies]` in `pyproject.toml`.
-3. Registra gli entry point richiesti (es. `<motore>.plugins`).
-4. Usa `ZenzicConfig.load()` + le funzioni di controllo del core — non avviare mai sottoprocessi shell.
-
-Il package `zenzic.integrations` è intenzionalmente snello: non contiene logica condivisa, solo hook per-motore. Tutta l'intelligenza vive in `zenzic.core`.
+Questo produce un'applicazione identica con VSM completo, Shield (ZRT-006/007) e Blood Sentinel
+attivi — capacità che il layer plugin non aveva mai esposto completamente.
 
 ---
 

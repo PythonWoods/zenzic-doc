@@ -46,6 +46,14 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '0.7.0',
+              badge: false,
+              banner: 'none',
+            },
+          },
         },
         blog: {
           blogTitle: 'The Obsidian Journal',
@@ -127,11 +135,6 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          type: 'html',
-          position: 'left',
-          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.7.0</span>',
-        },
-        {
           to: '/blog',
           label: 'Journal',
           position: 'left',
@@ -139,6 +142,11 @@ const config: Config = {
         {
           type: 'localeDropdown',
           position: 'right',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
         },
         {
           href: 'https://github.com/PythonWoods/zenzic',

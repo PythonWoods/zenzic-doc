@@ -102,15 +102,15 @@ Motore: `mkdocs`.
 
 ---
 
-## vanilla — Gate di Qualità Agnostico rispetto all'Engine
+## standalone — Gate di Qualità Agnostico rispetto all'Engine
 
 **Scopo:** Mostrare Zenzic in esecuzione senza nessun motore di build. Nessun
 `mkdocs.yml`, nessun `zensical.toml`, nessuna config Hugo. Solo
-`engine = "vanilla"` in `zenzic.toml`.
+`engine = "standalone"` in `zenzic.toml`.
 
 **Risultato atteso:** `SUCCESS` — tutti i controlli applicabili passano.
 
-Cosa funziona in modalità Vanilla:
+Cosa funziona in modalità Standalone:
 
 - Link, snippet, placeholder e asset sono verificati completamente
 - Le `[[custom_rules]]` si attivano identicamente a qualsiasi altra modalità
@@ -118,11 +118,11 @@ Cosa funziona in modalità Vanilla:
 - Il **controllo orfani è saltato** — senza nav dichiarata non esiste un insieme di riferimento
 
 ```bash
-cd examples/vanilla
+cd examples/standalone
 zenzic check all   # uscita 0
 ```
 
-Usa la modalità Vanilla per Hugo, Docusaurus, Sphinx, Astro, Jekyll, wiki GitHub
+Usa la modalità Standalone per Hugo, Docusaurus, Sphinx, Astro, Jekyll, wiki GitHub
 o qualsiasi progetto che non usa MkDocs o Zensical.
 
 ---
@@ -150,9 +150,9 @@ Dalla root del repository, verifica che tutti gli esempi producano i codici di
 uscita attesi:
 
 ```bash
-# Gold standard e vanilla: devono essere puliti
+# Gold standard e standalone: devono essere puliti
 (cd examples/i18n-standard && zenzic check all --strict)
-(cd examples/vanilla        && zenzic check all)
+(cd examples/standalone        && zenzic check all)
 
 # Broken: deve fallire con uscita 1
 (cd examples/broken-docs    && zenzic check all); [ $? -eq 1 ]

@@ -405,12 +405,12 @@ Zensical's locale system, Zenzic adapts automatically:
 - **Cross-locale link resolution** — the engine adapters resolve links that cross
   locale boundaries (e.g. a link from `docs/it/page.md` to `docs/en/page.md`) without false
   positives.
-- **Vanilla mode skips orphan check entirely** — when no build-engine config is present, every
+- **Standalone mode skips orphan check entirely** — when no build-engine config is present, every
   file would appear as an orphan. Zenzic skips the check rather than report noise.
 
-:::tip[Force Vanilla mode to suppress orphan check]
+:::tip[Force Standalone mode to suppress orphan check]
 ```bash
-zenzic check all --engine vanilla
+zenzic check all --engine standalone
 ```
 :::
 

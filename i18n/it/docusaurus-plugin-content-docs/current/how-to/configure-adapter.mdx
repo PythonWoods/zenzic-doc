@@ -75,17 +75,17 @@ una pagina tradotta a una pagina che esiste solo nel locale di default viene sop
 | `build_context.engine` | File di configurazione presente | Adapter selezionato |
 | :--- | :--- | :--- |
 | `"mkdocs"` (default) | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
-| `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `VanillaAdapter` — nessuna consapevolezza nav |
+| `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `StandaloneAdapter` — nessuna consapevolezza nav |
 | `"zensical"` | `zensical.toml` trovato | `ZensicalAdapter` — legge nav da `zensical.toml` |
 | `"zensical"` | `zensical.toml` assente, `mkdocs.yml` trovato | `ZensicalAdapter` — **Proxy Trasparente** usando `mkdocs.yml` |
 | `"docusaurus"` | `docusaurus.config.ts` trovato | `DocusaurusAdapter` — legge la configurazione staticamente |
-| qualsiasi stringa sconosciuta | — | `VanillaAdapter` — nessun adapter registrato per questo motore |
+| qualsiasi stringa sconosciuta | — | `StandaloneAdapter` — nessun adapter registrato per questo motore |
 
-### Modalità Vanilla
+### Modalità Standalone
 
-Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
+Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
 
-Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
+Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
 In questa modalità:
 
 - **Il controllo orfani viene saltato** — senza una dichiarazione di nav, ogni file Markdown
@@ -113,7 +113,7 @@ con codice 1:
 
 ```text
 ERROR: Unknown engine adapter 'hugo'.
-Installed adapters: mkdocs, vanilla, zensical
+Installed adapters: mkdocs, standalone, zensical
 Install a third-party adapter or choose from the list above.
 ```
 

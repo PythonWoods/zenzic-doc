@@ -102,14 +102,14 @@ Engine: `mkdocs`.
 
 ---
 
-## vanilla — Engine-Agnostic Quality Gate
+## standalone — Engine-Agnostic Quality Gate
 
 **Purpose:** Show Zenzic running without any build engine. No `mkdocs.yml`,
-no `zensical.toml`, no Hugo config. Just `engine = "vanilla"` in `zenzic.toml`.
+no `zensical.toml`, no Hugo config. Just `engine = "standalone"` in `zenzic.toml`.
 
 **Expected result:** `SUCCESS` — all applicable checks pass.
 
-What works in Vanilla mode:
+What works in Standalone mode:
 
 - Links, snippets, placeholders, and assets are fully checked
 - `[[custom_rules]]` fire identically to any other mode
@@ -117,11 +117,11 @@ What works in Vanilla mode:
 - The **orphan check is skipped** — with no declared nav there is no reference set
 
 ```bash
-cd examples/vanilla
+cd examples/standalone
 zenzic check all   # exit 0
 ```
 
-Use Vanilla mode for Hugo, Docusaurus, Sphinx, Astro, Jekyll, GitHub wikis,
+Use Standalone mode for Hugo, Docusaurus, Sphinx, Astro, Jekyll, GitHub wikis,
 or any project that does not use MkDocs or Zensical.
 
 ---
@@ -148,9 +148,9 @@ failing, the SDK template has drifted.
 From the repository root, verify all examples produce their expected exit codes:
 
 ```bash
-# Gold standard and vanilla: must be clean
+# Gold standard and standalone: must be clean
 (cd examples/i18n-standard && zenzic check all --strict)
-(cd examples/vanilla        && zenzic check all)
+(cd examples/standalone        && zenzic check all)
 
 # Broken: must fail with exit 1
 (cd examples/broken-docs    && zenzic check all); [ $? -eq 1 ]

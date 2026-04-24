@@ -267,7 +267,7 @@ class BaseAdapter(Protocol):
 
 Key methods:
 
-- **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `VanillaAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
+- **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `StandaloneAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
 - **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
 - **`provides_index(directory_path)`** -- **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for the given directory. Called once per directory by `find_missing_directory_indices()` — never inside per-link or per-file hot loops. This is the only `BaseAdapter` method that may perform disk I/O (`Path.exists()`).
 - **`map_url()` / `classify_route()`** -- Legacy File-to-URL API, preserved for backward compatibility. Default implementations delegate to `get_route_info()`.
@@ -332,7 +332,7 @@ This ensures that Zenzic remains a **Structural Custodian** for documentation di
 | `MkDocsAdapter` | `mkdocs` | `mkdocs.yml` | Full nav resolution, i18n folder/suffix mode, locale fallback |
 | `ZensicalAdapter` | `zensical` | `zensical.toml` | Native TOML-based config, reads `mkdocs.yml` natively |
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js/ts` | Static JS config parsing, frontmatter slug support, route base path |
-| `VanillaAdapter` | `vanilla` | (none) | No-op adapter for plain Markdown projects |
+| `StandaloneAdapter` | `standalone` | (none) | Engine-agnostic adapter for plain Markdown projects; orphan check skipped |
 
 ### Link Resolution and Slug Mapping {#link-resolution}
 
@@ -371,7 +371,7 @@ flowchart LR
     CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
     CONSTRUCT_STD --> HAS_CONFIG
     HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| VANILLA["Fallback: VanillaAdapter()"]
+    HAS_CONFIG -->|No| VANILLA["Fallback: StandaloneAdapter()"]
     EP -->|Not found| VANILLA
     VANILLA --> STORE
 
@@ -383,7 +383,7 @@ flowchart LR
 ```
 1. Query zenzic.adapters entry-point group for context.engine
 2. If found: instantiate via from_repo() classmethod (if available)
-3. If not found: return VanillaAdapter (neutral no-op behaviour)
+3. If not found: return StandaloneAdapter (neutral no-op behaviour)
 ```
 
 Third-party adapters can be registered via `pyproject.toml`:
@@ -399,7 +399,7 @@ Adapter instances are cached by `(engine, docs_root, repo_root)` key. This preve
 
 ### `has_engine_config` Guard {#has-engine-config-guard}
 
-When an adapter is instantiated but finds no engine config file (e.g. `MkDocsAdapter` with no `mkdocs.yml`), the factory falls back to `VanillaAdapter`. This ensures nav-dependent checks are skipped cleanly rather than producing false positives.
+When an adapter is instantiated but finds no engine config file (e.g. `MkDocsAdapter` with no `mkdocs.yml`), the factory falls back to `StandaloneAdapter`. This ensures nav-dependent checks are skipped cleanly rather than producing false positives.
 
 ---
 

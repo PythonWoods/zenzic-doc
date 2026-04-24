@@ -47,27 +47,26 @@ Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdo
 
 ---
 
-### mkdocs-basic — Showcase dell'Integrazione MkDocs {#mkdocs-basic}
+### mkdocs-basic — Showcase dell'Adapter MkDocs {#mkdocs-basic}
 
 **Directory:** `examples/mkdocs-basic/`
 **Motore:** `mkdocs`
 **Uscita attesa:** 0
-**Extra richiesto:** `pip install "zenzic[mkdocs]"`
 
-Il principale showcase per `zenzic.integrations.mkdocs`. Questo esempio dimostra:
+Dimostra `MkDocsAdapter` che legge `mkdocs.yml` staticamente — nessun binario `mkdocs` invocato.
+Mostra la struttura i18n a cartelle con contenuto in inglese e italiano.
 
-- `MkDocsAdapter` che legge `mkdocs.yml` staticamente (nessun binario `mkdocs` invocato).
-- Il plugin `zenzic` dichiarato in `mkdocs.yml` — attiva `check all` come gate di build durante `mkdocs build`.
-- Struttura i18n a cartelle con contenuto in inglese e italiano.
+**Inizia qui se:** usi MkDocs e vuoi validare link, nav e struttura i18n prima di eseguire la build.
+
+:::note CLI Sovrana
+Il plugin MkDocs nativo (`zenzic.integrations.mkdocs`) è stato rimosso in v0.7.0.
+Esegui Zenzic come step CI — fornisce la stessa applicazione con copertura completa di VSM,
+Shield e Blood Sentinel:
 
 ```yaml
-# Da mkdocs.yml in questo esempio
-plugins:
-  - search
-  - zenzic      # zenzic.integrations.mkdocs scoperto automaticamente via entry point
+- run: zenzic check all --strict
 ```
-
-**Inizia qui se:** usi MkDocs e vuoi un quality gate al momento della build.
+:::
 
 ---
 

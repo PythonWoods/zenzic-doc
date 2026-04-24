@@ -80,7 +80,7 @@ Rules with `severity = "info"` are printed without the `│` snippet.
 ## Adapter-independence
 
 **Custom rules are adapter-independent.** A rule searching for `DRAFT` fires identically whether
-the project uses `MkDocsAdapter`, `ZensicalAdapter`, or `VanillaAdapter`. The rule engine
+the project uses `MkDocsAdapter`, `ZensicalAdapter`, or `StandaloneAdapter`. The rule engine
 operates on raw Markdown text; it has no knowledge of the build engine. This means:
 
 - Rules you write for a MkDocs project require no changes after [migrating to Zensical](./migrate-engines.mdx).
