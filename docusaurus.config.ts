@@ -156,6 +156,36 @@ const config: Config = {
       // Language support for Zenzic-scanned file types
       additionalLanguages: ['toml', 'bash', 'yaml', 'json'],
     },
+    // ── ObsidianPalette Mermaid Integration ──────────────────────────────────
+    // Hex values only — Mermaid's renderer cannot consume CSS var().
+    // Dark mode: exact CLI ObsidianPalette matches.
+    // Light mode uses Docusaurus 'neutral' base; themeVariables below are
+    // applied to both — optimised for the default dark surface.
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
+      options: {
+        themeVariables: {
+          // Primary nodes → BRAND Indigo
+          primaryColor:        '#4f46e5',
+          primaryTextColor:    '#e4e4e7',
+          primaryBorderColor:  '#3730a3',
+          // Edges / connectors → DIM Slate
+          lineColor:           '#64748b',
+          // Secondary / tertiary surfaces → Obsidian depth
+          secondaryColor:      '#1e1e27',
+          tertiaryColor:       '#111118',
+          edgeLabelBackground: '#0f0f13',
+          // Cluster boxes
+          clusterBkg:          '#0c0c10',
+          clusterBorder:       '#3730a3',
+          // Error nodes → ERROR Rose (exit codes 1–3)
+          errorBkgColor:       '#1a0005',
+          errorTextColor:      '#f43f5e',
+          // Title and general text
+          titleColor:          '#fafafa',
+        },
+      },
+    },
   } satisfies Preset.ThemeConfig,
 };
 

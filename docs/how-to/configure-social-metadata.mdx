@@ -1,0 +1,154 @@
+---
+icon: lucide/share-2
+sidebar_label: "Social Metadata & SEO"
+description: "Configure Open Graph tags, Twitter Cards, and per-page SEO metadata in your Docusaurus project using Zenzic as the documentation model."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Configure Social Metadata & SEO
+
+Docusaurus handles social metadata at two levels: **site-wide defaults** in
+`docusaurus.config.ts`, and **per-page overrides** in each file's frontmatter.
+This guide shows both, using Zenzic's own configuration as the reference model.
+
+---
+
+## Site-wide Defaults (`docusaurus.config.ts`)
+
+The global OG image and Twitter Card settings live in `themeConfig`:
+
+```ts title="docusaurus.config.ts"
+const config: Config = {
+  title: 'Zenzic',
+  tagline: 'Documentation security layer',
+  url: 'https://zenzic.dev',
+  baseUrl: '/',
+
+  themeConfig: {
+    // Default OG + Twitter Card image for every page
+    image: 'assets/social/social-card.png',   // relative to static/
+
+    metadata: [
+      { name: 'twitter:card',    content: 'summary_large_image' },
+      { name: 'twitter:site',    content: '@PythonWoods' },
+      { name: 'twitter:creator', content: '@PythonWoods' },
+      { name: 'twitter:image:alt',
+        content: 'Zenzic — The Safe Harbor for Markdown Documentation' },
+      { name: 'theme-color',     content: '#4f46e5' },
+      { property: 'og:image',        content: 'https://zenzic.dev/assets/social/social-card.png' },
+      { property: 'og:image:width',  content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:type',         content: 'website' },
+      { property: 'og:url',          content: 'https://zenzic.dev/' },
+    ],
+  },
+};
+```
+
+The `image` path is relative to `static/`. Docusaurus prepends `baseUrl`
+automatically. The explicit `og:image` in `metadata` uses the full absolute
+URL so external crawlers can resolve it without following redirects.
+
+:::tip[OG image specification]
+Social card images must be **1200 × 630 px** (1.91:1 ratio). Files smaller
+than this are cropped or rejected by LinkedIn and Twitter. Use PNG for
+screenshots and SVG-exported graphics; avoid JPEG for text-heavy cards.
+:::
+
+---
+
+## Per-page Overrides (Frontmatter)
+
+Any page can override the global defaults by adding fields to its frontmatter:
+
+```mdx title="docs/explanation/architecture.mdx"
+---
+title: "Architecture — How Zenzic Works"
+description: "Deep dive into the Two-Pass Pipeline, VSM, and Blood Sentinel."
+image: /assets/social/social-card.png
+keywords: [zenzic, architecture, vsm, pipeline, documentation linter]
+---
+```
+
+| Frontmatter key | Maps to | Notes |
+| :--- | :--- | :--- |
+| `title` | `<title>`, `og:title`, `twitter:title` | Docusaurus appends the site title automatically |
+| `description` | `<meta name="description">`, `og:description` | Keep under 155 characters for search snippets |
+| `image` | `og:image`, `twitter:image` | Absolute or root-relative; overrides site default |
+| `keywords` | `<meta name="keywords">` | Comma-separated list |
+
+Blog posts use the same keys inside their frontmatter block, plus `authors`
+and `tags` which Docusaurus renders in the post header.
+
+---
+
+## Storing Social Images
+
+Place all social card assets in `static/assets/social/`:
+
+```
+static/assets/social/
+├── social-card.png          ← default OG image (1200 × 630, dark)
+├── social-card-light.png    ← light-mode variant
+├── social-card.svg          ← source SVG (do not serve directly as OG)
+└── social-card-light.svg
+```
+
+:::caution[SVG as OG image]
+Most social crawlers (LinkedIn, Slack, iMessage) do not render SVG. Always
+export a PNG from the SVG source. The SVG files are kept in `static/assets/social/`
+as design sources only.
+:::
+
+For page-specific cards (e.g. a blog post announcing a release), add the PNG
+to `static/assets/social/` and reference it in the post's frontmatter:
+
+```mdx
+---
+title: "Zenzic v0.7.0 — Obsidian Maturity"
+image: /assets/social/social-card.png
+---
+```
+
+---
+
+## Verification
+
+After updating metadata, verify the output locally:
+
+```bash
+npm run build && npm run serve
+```
+
+Then inspect any page's `<head>` with browser DevTools (Elements tab, search for
+`og:image`). For production verification, use the
+[Twitter Card Validator](https://cards-dev.twitter.com/validator) or
+[Open Graph Debugger](https://developers.facebook.com/tools/debug/) — both
+accept a URL and display which tags they resolved.
+
+:::info[Docusaurus renders OG tags server-side]
+OG meta tags appear in the **built** HTML, not in the Docusaurus dev server
+(`npm run start`). Always validate against `npm run build` output or the
+deployed site, not the local dev URL.
+:::
+
+---
+
+## Zenzic Sentinel & Social Assets
+
+Zenzic does not validate external social URLs, but it **does** detect unused
+static assets. If you add a custom social card PNG and never reference it in
+frontmatter or `themeConfig`, Zenzic will flag it as an unused asset on the
+next `zenzic check all` run.
+
+Exclude intentional source-only files in `zenzic.toml`:
+
+```toml
+# zenzic.toml
+excluded_assets = [
+    "**/_category_.json",
+    "assets/social/*.svg",   # SVG sources — not served as OG images
+]
+```
