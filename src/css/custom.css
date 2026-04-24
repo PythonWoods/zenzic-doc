@@ -30,6 +30,17 @@
   --ifm-color-primary-lightest: #818cf8;
   --obsidian-accent: #0891b2;             /* Cyan profondo — leggibile su sfondo chiaro */
   --obsidian-blood: #991b1b;              /* Rosso mattone tecnico */
+
+  /* ── ObsidianWebPalette — CLI semantic color bridge ──
+     Dark mode: optical match with CLI terminal.
+     Light mode (these defaults): WCAG-calibrated for white backgrounds. */
+  --zenzic-brand:   #4f46e5;   /* Indigo — exact CLI match, AA on white */
+  --zenzic-success: #059669;   /* Emerald-600 — WCAG-calibrated (CLI: #10b981) */
+  --zenzic-warning: #b45309;   /* Amber-700 — WCAG-calibrated (CLI: #f59e0b) */
+  --zenzic-error:   #e11d48;   /* Rose-600 — WCAG-calibrated (CLI: #f43f5e) */
+  --zenzic-dim:     #475569;   /* Slate-600 — WCAG-calibrated (CLI: #64748b) */
+  --zenzic-fatal:   var(--obsidian-blood);  /* Follows --obsidian-blood per mode */
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
@@ -59,6 +70,15 @@
   /* ── Adaptive Palette — Dark mode ── */
   --obsidian-accent: #06b6d4;             /* Cyan elettrico */
   --obsidian-blood: #8b0000;              /* Sangue profondo */
+
+  /* ── ObsidianWebPalette — exact CLI terminal match in dark mode ── */
+  --zenzic-brand:   #4f46e5;
+  --zenzic-success: #10b981;
+  --zenzic-warning: #f59e0b;
+  --zenzic-error:   #f43f5e;
+  --zenzic-dim:     #64748b;
+  /* --zenzic-fatal inherits var(--obsidian-blood) = #8b0000 — exact CLI match */
+
 
   /* Core colours */
   --ifm-color-primary: #818cf8;

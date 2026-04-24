@@ -779,6 +779,100 @@
 
 
   <!-- ══════════════════════════════════════
+       OBSIDIANWEBPALETTE — CLI vs WEB
+       Comparison table: CLI terminal values
+       vs WCAG-calibrated web light/dark.
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">ObsidianWebPalette &mdash; CLI vs Web</span>
+    <span class="label">--zenzic-* in src/css/custom.css &middot; light: WCAG-calibrated &middot; dark: exact CLI match</span>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:24px">
+      Web colors are calibrated for WCAG AA on light and dark surfaces.
+      Where CLI and web values coincide, the identity is exact.
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Semantic</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">CSS Variable</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">CLI Terminal</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Web &mdash; Light</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Web &mdash; Dark</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- BRAND -->
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 12px"><span style="color:#4f46e5;font-weight:600">BRAND</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-brand</code></td>
+          <td style="padding:10px 12px"><span style="background:#4f46e5;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#4f46e5</span></td>
+          <td style="padding:10px 12px"><span style="background:#4f46e5;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#4f46e5</span></td>
+          <td style="padding:10px 12px"><span style="background:#4f46e5;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#4f46e5</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Exact match &mdash; AA on all surfaces</td>
+        </tr>
+        <!-- SUCCESS -->
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 12px"><span style="color:#10b981;font-weight:600">SUCCESS</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-success</code></td>
+          <td style="padding:10px 12px"><span style="background:#10b981;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#10b981</span></td>
+          <td style="padding:10px 12px"><span style="background:#059669;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#059669</span></td>
+          <td style="padding:10px 12px"><span style="background:#10b981;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#10b981</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Emerald-600 for WCAG AA</td>
+        </tr>
+        <!-- WARNING -->
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 12px"><span style="color:#f59e0b;font-weight:600">WARNING</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-warning</code></td>
+          <td style="padding:10px 12px"><span style="background:#f59e0b;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#f59e0b</span></td>
+          <td style="padding:10px 12px"><span style="background:#b45309;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#b45309</span></td>
+          <td style="padding:10px 12px"><span style="background:#f59e0b;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#f59e0b</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Amber-700 for WCAG AA</td>
+        </tr>
+        <!-- ERROR -->
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 12px"><span style="color:#f43f5e;font-weight:600">ERROR</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-error</code></td>
+          <td style="padding:10px 12px"><span style="background:#f43f5e;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#f43f5e</span></td>
+          <td style="padding:10px 12px"><span style="background:#e11d48;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#e11d48</span></td>
+          <td style="padding:10px 12px"><span style="background:#f43f5e;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#f43f5e</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Rose-600 for WCAG AA</td>
+        </tr>
+        <!-- DIM -->
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 12px"><span style="color:#94a3b8;font-weight:600">DIM</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-dim</code></td>
+          <td style="padding:10px 12px"><span style="background:#64748b;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#64748b</span></td>
+          <td style="padding:10px 12px"><span style="background:#475569;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#475569</span></td>
+          <td style="padding:10px 12px"><span style="background:#64748b;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#64748b</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Slate-600 for WCAG AA</td>
+        </tr>
+        <!-- FATAL -->
+        <tr>
+          <td style="padding:10px 12px"><span style="color:#f87171;font-weight:600">FATAL</span></td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-fatal</code></td>
+          <td style="padding:10px 12px"><span style="background:#8b0000;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#8b0000</span></td>
+          <td style="padding:10px 12px"><span style="background:#991b1b;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#991b1b</span></td>
+          <td style="padding:10px 12px"><span style="background:#8b0000;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#8b0000</span></td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Follows <code>--obsidian-blood</code> &mdash; security-only</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:20px;padding:14px 16px;background:#09090b;border:1px solid var(--border);border-left:3px solid #4f46e5;border-radius:3px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin:0">
+        <strong style="color:var(--lead)">Mermaid exception:</strong>
+        Diagram nodes (<code>style NODE fill:#&hellip;</code> / <code>classDef fill:#&hellip;</code>)
+        cannot consume CSS custom properties &mdash; Mermaid resolves colors in its own rendering pipeline.
+        Hex values inside Mermaid code blocks are not subject to the Zero Hex Law.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
        OFFICIAL BADGES
   ══════════════════════════════════════ -->
   <div class="card">
