@@ -1,11 +1,11 @@
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 548" role="img" aria-label="Zenzic Two-Pass Analysis Pipeline">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 548" width="760" height="548" role="img" aria-label="Zenzic Two-Pass Analysis Pipeline">
   <title>Zenzic — Two-Pass Analysis Pipeline</title>
 
   <defs>
     <marker id="pf-ar"  viewBox="0 0 10 8" markerWidth="8" markerHeight="6" refX="9" refY="4" orient="auto">
-      <path d="M0 0 L10 4 L0 8Z" fill="#64748b"/>
+      <path d="M0 0 L10 4 L0 8Z" fill="#475569"/>
     </marker>
     <marker id="pf-ar-e" viewBox="0 0 10 8" markerWidth="8" markerHeight="6" refX="9" refY="4" orient="auto">
       <path d="M0 0 L10 4 L0 8Z" fill="#e11d48"/>
@@ -18,7 +18,7 @@
   <!-- ── FILE SET (input) ─────────────────────────────────────── -->
   <rect x="280" y="20" width="200" height="48" rx="8" fill="#f8fafc" stroke="#4f46e5" stroke-width="2"/>
   <text x="380" y="40" text-anchor="middle" fill="#1e1b4b" font-family="Inter,Geist,system-ui,sans-serif" font-size="13" font-weight="700">File Set</text>
-  <text x="380" y="57" text-anchor="middle" fill="#64748b" font-family="Inter,Geist,system-ui,sans-serif" font-size="10">docs/**/*.md · docs/**/*.mdx</text>
+  <text x="380" y="57" text-anchor="middle" fill="#475569" font-family="Inter,Geist,system-ui,sans-serif" font-size="10">docs/**/*.md · docs/**/*.mdx</text>
 
   <!-- Arrow: File Set → Pass 1 -->
   <line x1="380" y1="68" x2="380" y2="90" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#pf-ar)"/>
@@ -68,7 +68,7 @@
   <text x="312" y="256" fill="#312e81" font-family="Inter,system-ui,sans-serif" font-size="10" font-style="italic">↓ if no SECRET event</text>
 
   <!-- ── Arrow: Pass 1 → Pass 2 ──────────────────────────────── -->
-  <line x1="380" y1="280" x2="380" y2="302" stroke="#64748b" stroke-width="1.5" marker-end="url(#pf-ar)"/>
+  <line x1="380" y1="280" x2="380" y2="302" stroke="#475569" stroke-width="1.5" marker-end="url(#pf-ar)"/>
 
   <!-- ── PASS 2 ────────────────────────────────────────────────── -->
   <rect x="110" y="304" width="540" height="76" rx="10" fill="#f8fafc" stroke="#6366f1" stroke-width="1.5"/>
@@ -79,7 +79,7 @@
   <text x="380" y="363" text-anchor="middle" fill="#475569" font-family="Inter,system-ui,sans-serif" font-size="10">Phase 1→1.5 (cycle DFS)→2→3 link pipeline · async HTTP HEAD (strict mode, 20 workers)</text>
 
   <!-- ── Arrow: Pass 2 → Pass 3 ──────────────────────────────── -->
-  <line x1="380" y1="380" x2="380" y2="402" stroke="#64748b" stroke-width="1.5" marker-end="url(#pf-ar)"/>
+  <line x1="380" y1="380" x2="380" y2="402" stroke="#475569" stroke-width="1.5" marker-end="url(#pf-ar)"/>
 
   <!-- ── PASS 3 ────────────────────────────────────────────────── -->
   <rect x="110" y="404" width="540" height="76" rx="10" fill="#f8fafc" stroke="#6366f1" stroke-width="1.5"/>
