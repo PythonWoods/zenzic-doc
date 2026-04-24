@@ -356,6 +356,31 @@
       </div>
 
     </div>
+
+    <!-- Logo Usage Guidelines -->
+    <div style="margin-top:32px;border-top:1px solid var(--rule);padding-top:24px">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Wordmark Usage — Dark &amp; Light</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);line-height:1.9">
+        <div>
+          <p style="color:var(--lead);font-weight:600;margin-bottom:6px">Dark background</p>
+          <ul style="list-style:none;padding:0">
+            <li>&#10003;&nbsp; Background: <code>#09090b</code> (Obsidian Lead) or deeper</li>
+            <li>&#10003;&nbsp; Wordmark text: <code>#F8FAFC</code> near-white</li>
+            <li>&#10003;&nbsp; Tagline: <code>#38bdf8</code> Harbor Cyan</li>
+            <li>&#10003;&nbsp; Minimum clear space: 1× artifact width on all sides</li>
+          </ul>
+        </div>
+        <div>
+          <p style="color:var(--lead);font-weight:600;margin-bottom:6px">Light background</p>
+          <ul style="list-style:none;padding:0">
+            <li>&#10003;&nbsp; Background: <code>#F1F5F9</code> or lighter</li>
+            <li>&#10003;&nbsp; Wordmark text: <code>#0F172A</code> near-black</li>
+            <li>&#10003;&nbsp; Tagline: <code>#4f46e5</code> Sentinel Indigo</li>
+            <li>&#10003;&nbsp; Never use the dark wordmark on a light surface</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 
 
@@ -529,6 +554,227 @@
       </div>
     </div>
 
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       OBSIDIAN PALETTE — CLI SEMANTIC COLORS
+       The sole source of truth for every
+       colour emitted to stdout / stderr.
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">ObsidianPalette &mdash; CLI Semantic Color System</span>
+    <span class="label">zenzic.core.ui.ObsidianPalette &middot; sole source of truth for stdout / stderr color &middot; private hex, public semantics</span>
+
+    <div class="palette" style="margin-bottom:32px">
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#4f46e5"></div>
+        <div class="swatch-name">BRAND<br>#4f46e5</div>
+        <div class="swatch-role">Indigo &middot; Primary</div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#10b981"></div>
+        <div class="swatch-name">SUCCESS<br>#10b981</div>
+        <div class="swatch-role">Emerald &middot; Pass</div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#f59e0b"></div>
+        <div class="swatch-name">WARNING<br>#f59e0b</div>
+        <div class="swatch-role">Amber &middot; Advisory</div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#f43f5e"></div>
+        <div class="swatch-name">ERROR<br>#f43f5e</div>
+        <div class="swatch-role">Rose &middot; Broken</div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#64748b"></div>
+        <div class="swatch-name">DIM<br>#64748b</div>
+        <div class="swatch-role">Slate &middot; Muted</div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-block" style="background:#8b0000;border-color:rgba(139,0,0,0.6)"></div>
+        <div class="swatch-name" style="color:#f87171">FATAL<br>#8b0000</div>
+        <div class="swatch-role" style="color:#ef4444;font-weight:600">Security only ⚠</div>
+      </div>
+
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">
+      <thead>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Semantic Name</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Private Hex</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Value</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Usage in CLI output</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--lead)">Exit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><span style="color:#4f46e5;font-weight:600">BRAND</span></td>
+          <td style="padding:6px 8px">_INDIGO</td>
+          <td style="padding:6px 8px">#4f46e5</td>
+          <td style="padding:6px 8px">Sentinel banner, panel borders, primary accent</td>
+          <td style="padding:6px 8px">&mdash;</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><span style="color:#10b981;font-weight:600">SUCCESS</span></td>
+          <td style="padding:6px 8px">_EMERALD</td>
+          <td style="padding:6px 8px">#10b981</td>
+          <td style="padding:6px 8px">Clean check, ✨ Obsidian Seal, pass findings</td>
+          <td style="padding:6px 8px">0</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><span style="color:#f59e0b;font-weight:600">WARNING</span></td>
+          <td style="padding:6px 8px">_AMBER</td>
+          <td style="padding:6px 8px">#f59e0b</td>
+          <td style="padding:6px 8px">Advisory findings, non-blocking issues</td>
+          <td style="padding:6px 8px">0 / 1*</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><span style="color:#f43f5e;font-weight:600">ERROR</span></td>
+          <td style="padding:6px 8px">_ROSE</td>
+          <td style="padding:6px 8px">#f43f5e</td>
+          <td style="padding:6px 8px">Broken links, orphan pages, snippet failures</td>
+          <td style="padding:6px 8px">1</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule)">
+          <td style="padding:6px 8px"><span style="color:#64748b;font-weight:600">DIM</span></td>
+          <td style="padding:6px 8px">_SLATE</td>
+          <td style="padding:6px 8px">#64748b</td>
+          <td style="padding:6px 8px">Secondary text, file paths, timestamps</td>
+          <td style="padding:6px 8px">&mdash;</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px"><span style="color:#f87171;font-weight:700">FATAL</span></td>
+          <td style="padding:6px 8px">_BLOOD</td>
+          <td style="padding:6px 8px">#8b0000</td>
+          <td style="padding:6px 8px"><strong style="color:#f87171">Security incidents only</strong> &mdash; Shield (Z201) and Blood Sentinel (Z202&ndash;203)</td>
+          <td style="padding:6px 8px">2 / 3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:14px;line-height:1.8">
+      <strong style="color:var(--lead)">Law:</strong> External code must reference semantic names only
+      (<code>ObsidianPalette.BRAND</code>, <code>.SUCCESS</code>, &hellip;).
+      Private hex constants (<code>_INDIGO</code>, <code>_BLOOD</code>, &hellip;) are internal implementation details.
+      *WARNING exits as 1 under <code>--strict</code>.
+    </p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       ARCHITECTURE OF COLOR
+       ObsidianPalette as the single contract
+       between the CLI and the terminal.
+  ══════════════════════════════════════ -->
+  <div class="card">
+    <span class="section-title">The Architecture of Color</span>
+    <span class="label">Every pixel of CLI output is governed by ObsidianPalette — the single authoritative color contract</span>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+
+      <div>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:16px">
+          Every character of color that Zenzic emits to <strong style="color:var(--lead)">stdout</strong>
+          and <strong style="color:var(--lead)">stderr</strong> flows through a single class:
+          <code>zenzic.core.ui.ObsidianPalette</code>.
+          No hex value is hardcoded outside of that class &mdash; not in report templates, not in
+          scanner output, not in the Sentinel banner.
+        </p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9">
+          When you read a Zenzic terminal output, you are reading a semantically governed document.
+          An emerald line is always a <em>pass</em>. A rose line is always an <em>error</em>.
+          Dark red is always a <em>security incident</em> &mdash; never a style choice.
+          This guarantee holds across stdout, stderr, JSON output, and the <code>--quiet</code> mode.
+        </p>
+      </div>
+
+      <div>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px">CLI Output &mdash; Color Mapping</p>
+        <div style="background:#09090b;border:1px solid var(--border);border-radius:3px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.1">
+          <span style="color:#4f46e5">&#9646; ZENZIC SENTINEL v0.7.0</span><br>
+          <span style="color:#10b981">&#10024; Obsidian Seal: All checks passed.</span><br>
+          <span style="color:#f59e0b">&#9888;  WARNING  docs/guide.md:14</span><br>
+          <span style="color:#f43f5e">&#10007;  ERROR    docs/api.md:88</span><br>
+          <span style="color:#64748b">    23 files &middot; 0.8 s &middot; exit 1</span><br>
+          <span style="color:#f87171;font-weight:600">&#128308; SECURITY INCIDENT &mdash; Exit 3</span>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-top:10px;line-height:1.8">
+          <span style="color:#4f46e5">&#9646;</span> BRAND &nbsp;
+          <span style="color:#10b981">&#9646;</span> SUCCESS &nbsp;
+          <span style="color:#f59e0b">&#9646;</span> WARNING &nbsp;
+          <span style="color:#f43f5e">&#9646;</span> ERROR<br>
+          <span style="color:#64748b">&#9646;</span> DIM &nbsp;
+          <span style="color:#f87171">&#9646;</span> FATAL
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:24px;padding:16px 20px;background:#09090b;border:1px solid var(--border);border-left:3px solid #4f46e5;border-radius:3px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9">
+        <strong style="color:var(--lead)">For plugin and extension builders:</strong>
+        If your rule emits a finding, the Zenzic engine maps severity to color automatically via
+        <code>ObsidianPalette</code>. You supply the semantic severity
+        (<code>"error"</code>, <code>"warning"</code>, <code>"info"</code>);
+        the color contract is enforced for you. Never hardcode ANSI codes in a plugin.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       BLOOD SENTINEL NOTE
+       FATAL (#8b0000) — reserved exclusively
+       for security incidents.
+  ══════════════════════════════════════ -->
+  <div style="border:1px solid #8b0000;border-left:4px solid #8b0000;border-radius:3px;padding:28px 32px;background:#09090b">
+    <span class="section-title" style="color:#f87171">Blood Sentinel &mdash; FATAL (#8b0000)</span>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#f87171;font-weight:600;margin-bottom:16px">
+      This color is reserved exclusively for security incidents. It may never be repurposed.
+    </p>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:14px">
+      <code style="color:#f87171">ObsidianPalette.FATAL</code> &nbsp;(<code>#8b0000</code>)&nbsp;
+      is emitted only by two scanner families inside the Zenzic core:
+    </p>
+
+    <ul style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:2;list-style:none;padding:0;margin-bottom:20px">
+      <li style="border-left:2px solid #8b0000;padding-left:14px;margin-bottom:10px">
+        <strong style="color:#f87171">The Shield (Z201)</strong> &mdash; detects a known credential pattern
+        (AWS key, GitHub token, Stripe secret, OpenAI key, and 5 others) embedded in a reference URL.
+        Exits with code <strong style="color:#f87171">2</strong>.
+        Never suppressed by <code>--exit-zero</code>.
+      </li>
+      <li style="border-left:2px solid #8b0000;padding-left:14px">
+        <strong style="color:#f87171">Blood Sentinel (Z202&ndash;203)</strong> &mdash; detects a link resolving
+        to an OS system directory (<code>/etc/</code>, <code>/root/</code>, <code>/var/</code>,
+        <code>/proc/</code>, <code>/sys/</code>, <code>/usr/</code>).
+        Exits with code <strong style="color:#f87171">3</strong>.
+        Highest priority in the exit hierarchy (<code>3 &gt; 2 &gt; 1</code>).
+        Never suppressed.
+      </li>
+    </ul>
+
+    <div style="padding:14px 16px;background:#0d0000;border:1px solid rgba(139,0,0,0.4);border-radius:3px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin:0">
+        <strong style="color:#f87171">Design invariant for builders:</strong>
+        If you build a tool or plugin for Zenzic and need to signal a security event,
+        use <code>ObsidianPalette.FATAL</code>. If you use it for anything else, you are
+        violating the semantic contract of the Sentinel color system.
+        <em>One color. One meaning. Non-negotiable.</em>
+      </p>
+    </div>
   </div>
 
 
