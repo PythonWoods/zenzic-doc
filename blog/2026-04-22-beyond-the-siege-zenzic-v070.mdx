@@ -21,7 +21,7 @@ became v0.7.0 rather than v0.6.2.
 :::
 
 The [siege is over](/blog/ai-driven-siege-shield-postmortem). All four bypass vectors
-are closed. 1,116 tests pass. The Bastion holds.
+are closed. 1,195 tests pass. The Bastion holds.
 
 {/* truncate */}
 
@@ -131,7 +131,7 @@ That command now works correctly against four engine types, with:
 | Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
 | i18n locale discovery | `path` config enforced; silent fallback documented |
 | Lab (interactive showroom) | 10 Acts covering all engine types |
-| Test suite | 1,116 passing tests |
+| Test suite | 1,195 passing tests |
 | Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
@@ -162,9 +162,12 @@ filterable, and auditable across releases.
 ## The Vanilla-to-Standalone Sunset
 
 This release also completes the `engine = "vanilla"` → `engine = "standalone"` migration.
-The migration guard in `_factory.py` that raised `ConfigurationError [Z000]` with a
-clear remediation message has been removed entirely in v0.7.0. The guard existed in
-v0.6.x to guide users through the breaking change. It served its purpose. It's gone.
+The migration guard in `_factory.py` that raises `ConfigurationError [Z000]` with a
+clear remediation message was originally annotated `# TODO: Remove this migration guard in v0.7.0`,
+implying it was temporary scaffolding. That annotation was wrong. The guard is intentionally
+permanent: `engine = "vanilla"` is removed and will never return, so the error message
+that tells users exactly how to migrate is load-bearing, not transitional.
+The TODO was removed. The guard stays.
 
 "Standalone Mode" is the canonical identity for documentation projects without a
 declared build system. It is not a fallback. It is not a default. It is a first-class
@@ -196,6 +199,42 @@ The fix was not just to close the bugs. It was to encode the knowledge:
 A process that catches bugs is valuable. A process that prevents the same bug from
 recurring is more valuable. The institutional memory protocol is how you get from the
 first to the second.
+
+## The Parity Sprint: When Coverage IS the Audit
+
+Two days after the initial v0.7.0 write-up, a second forensic sprint surfaced failures
+that the test suite had not seen — not because the tests were wrong, but because entire
+modules were untested.
+
+**`cache.py` — zero coverage.** The content-addressable finding cache (284 lines) had no
+test file. Pure hash functions, `CacheManager` roundtrips, atomic save, parent-directory
+creation, corrupt-JSON fallback — all running in production, none exercised.
+Twenty-nine tests were written. One boundary required a non-obvious fix: atomic write
+failure is validated by patching `zenzic.core.cache.json.dump`, not `builtins.open`,
+because `save()` uses `Path.open()`. The distinction is silent and the kind of thing
+that lets a bad mutant survive indefinitely.
+
+**Mutation testing.** `mutmut` was run across `rules.py`, `shield.py`, and `reporter.py`.
+The survivors diagnosed precisely what was missing. `_to_canonical_url` had no test
+targeting its `rstrip("/")` normalisation, its backslash conversion, or the boolean
+logic guarding context-aware `..`-resolution — a `and … or` mutation that would make
+the guard fire on partial input. `_obfuscate_secret` had no boundary test at
+`len(raw) == 8` (the `<= 8` threshold). New mutant-killing test classes were added
+to make those mutations observable and fatal.
+
+**Cross-platform regression.** `resolve_asset()` in all three adapter modules used
+`Path.exists()` for fallback path validation. On Windows (NTFS) and macOS (HFS+) this
+returns `True` regardless of capitalisation — `Logo.png` passes when the file on disk
+is `logo.png`. A new `case_sensitive_exists()` helper using `os.listdir()` enforces
+exact case on every platform, fixing a CI regression on the Windows and macOS legs of
+the cross-platform matrix.
+
+**CVE-2026-3219.** `pip 26.0.1` is affected by a polyglot archive vulnerability (no
+patched release on PyPI). Zenzic uses `uv` for all package management and never invokes
+pip programmatically — the exposure is zero. The `nox security` session was updated to
+suppress the advisory with a documented removal reminder.
+
+The test count at the close of the parity sprint: **1,195 tests, all passing.**
 
 ## What Comes Next
 
