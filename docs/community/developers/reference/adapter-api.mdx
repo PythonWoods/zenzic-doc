@@ -70,3 +70,72 @@ Configuration model.
     options:
       members:
         - ZenzicConfig
+
+---
+
+## `zenzic.rules` — Plugin SDK façade
+
+`zenzic.rules` is the **canonical entry point for plugin authors**. It re-exports the stable
+API surface from `zenzic.core.rules` and is the only path that is guaranteed to remain stable
+across major versions.
+
+```python
+from zenzic.rules import BaseRule, RuleFinding, Severity, run_rule
+```
+
+### `BaseRule`
+
+Abstract base class for all plugin rules. Subclass this and implement `check()`:
+
+```python
+from zenzic.rules import BaseRule, RuleFinding, Severity
+
+class NoDraftRule(BaseRule):
+    rule_id = "no-draft"
+
+    def check(self, file_path, line_no, line):
+        if "DRAFT" in line:
+            return [RuleFinding(
+                rule_id=self.rule_id,
+                file_path=file_path,
+                line_no=line_no,
+                message="DRAFT marker found",
+                severity=Severity.WARNING,
+            )]
+        return []
+```
+
+### `run_rule` — Test helper
+
+Runs a single rule against a Markdown string. No engine setup required — designed for unit tests:
+
+```python
+from zenzic.rules import BaseRule, RuleFinding, run_rule
+
+def test_no_draft_rule():
+    findings = run_rule(NoDraftRule(), "# My Page\n\nDRAFT content here.")
+    assert len(findings) == 1
+    assert findings[0].severity == "warning"
+```
+
+**Canonical location:** `run_rule` is implemented in `zenzic.core.rules` and re-exported from
+`zenzic.rules`. Both import paths work; prefer `from zenzic.rules import run_rule` in plugin code.
+
+### `RuleFinding`, `Severity`, `Violation`, `CustomRule`
+
+| Name | Purpose |
+| :--- | :--- |
+| `RuleFinding` | Dataclass returned by `BaseRule.check()` — carries `rule_id`, `file_path`, `line_no`, `message`, `severity` |
+| `Severity` | Enum: `Severity.ERROR`, `Severity.WARNING`, `Severity.INFO` |
+| `Violation` | Alias of `RuleFinding` — kept for backward compatibility |
+| `CustomRule` | TOML-declared rule engine — used internally; not for subclassing |
+
+### Entry-point registration
+
+Register your rule so `zenzic inspect capabilities` discovers it:
+
+```toml
+# In your plugin's pyproject.toml
+[project.entry-points."zenzic.rules"]
+my-rule-name = "my_package.rules:MyRuleClass"
+```

@@ -203,3 +203,138 @@ Prima di sottomettere una PR, verificare:
 - [ ] Nessun code fence nudo esiste (§5).
 - [ ] L'header SPDX è presente (§6).
 - [ ] Il mirror italiano è strutturalmente identico all'inglese.
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ObsidianPalette._*` (§9).
+- [ ] Tutti i riferimenti ai colori usano `ObsidianPalette.*` — nessuna costante piatta rimossa (§9).
+
+---
+
+## 8. Gateway ObsidianUI {#obsidianui-gateway}
+
+Tutto l'output terminale brandizzato di Zenzic fluisce attraverso un unico oggetto: `ObsidianUI` in
+`src/zenzic/ui.py`. I moduli di comando non devono **mai** istanziare `Console` o `ObsidianUI`
+direttamente — devono chiamare `get_ui()` e `get_console()` da `zenzic.cli._shared`.
+
+### Metodi principali
+
+| Metodo | Quando usare |
+| :--- | :--- |
+| `print_header(version)` | Il banner Forge Frame ad inizio output — una volta per invocazione del comando |
+| `make_panel(content, *, title, border_style)` | Rich `Panel` stilizzato — per blocchi di output strutturati |
+| `print_exception_alert(message, *, context, title, border_style)` | Pannelli di errore per `ZenzicError` e `PluginContractError` |
+
+### Pattern di utilizzo
+
+```python
+# In qualsiasi modulo _check.py / _clean.py / _standalone.py
+from . import _shared
+
+# Stampa il banner Zenzic
+_shared.get_ui().print_header(__version__)
+
+# Stampa un pannello stilizzato
+panel = _shared.get_ui().make_panel(
+    "Contenuto qui",
+    title="Titolo Pannello",
+    border_style="bold cyan",
+)
+_shared.get_console().print(panel)
+```
+
+### Perché il gateway è importante
+
+I flag CLI `--no-color` e `--force-color` chiamano `configure_console()`, che sostituisce
+atomicamente i singleton `console` e `_ui` a livello di modulo. Qualsiasi istanza di
+`Console` o `ObsidianUI` creata localmente sarà congelata prima che il flag abbia effetto,
+ignorando silenziosamente la preferenza colore dell'utente.
+
+Il parametro `force_terminal` deve essere **sempre** `None` (auto-detect) nella `Console`
+a livello di modulo, mai `False`. Un `False` esplicito disabilita completamente il
+rilevamento del sistema colori — producendo zero styling ANSI anche nei terminali truecolor.
+Questa è la fonte più comune di regressioni visive nel layer CLI di Zenzic.
+
+### Aggiunta alla checklist
+
+Aggiungere alla checklist della tua PR:
+
+- [ ] Nessuna istanziazione `Console(...)` o `ObsidianUI(...)` nei moduli di comando.
+- [ ] Tutto l'output banner usa `get_ui().print_header()`, non un'istanza UI creata localmente.
+- [ ] `force_terminal` su qualsiasi nuova chiamata `Console` è `None` o condizionale (`True if ... else None`), mai `False`.
+
+---
+
+## 9. ObsidianPalette — Legge Zero Hex {#obsidian-palette}
+
+`ObsidianPalette` in `src/zenzic/ui.py` è la **sola fonte autorizzata di valori colore**
+nell'intera codebase Zenzic. Questa è la Legge Zero Hex.
+
+### La Legge
+
+:::warning Vincolo di Design
+
+Nessuna stringa colore esadecimale (es. `#4f46e5`) e nessun nome colore Rich grezzo (es. `"red"`, `"cyan"`)
+possono comparire in `src/` **eccetto** all'interno degli attributi privati `ObsidianPalette._*`.
+Ogni altro file deve indirizzare esclusivamente gli attributi pubblici semantici indicati di seguito.
+
+:::
+
+### Palette semantica
+
+| Attributo | Hex | Significato |
+| :--- | :---: | :--- |
+| `ObsidianPalette.BRAND` | `#4f46e5` | Colore primario / brand Zenzic (Indigo) |
+| `ObsidianPalette.SUCCESS` | `#10b981` | OK · pulito · passato (Emerald) |
+| `ObsidianPalette.WARNING` | `#f59e0b` | Attenzione · advisory (Amber) |
+| `ObsidianPalette.ERROR` | `#f43f5e` | Errore · link rotti (Rose) |
+| `ObsidianPalette.DIM` | `#64748b` | Testo muto · secondario (Slate) |
+| `ObsidianPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
+
+### Stringhe stile pre-composte
+
+Per le combinazioni più comuni, usare una costante `STYLE_*` invece di costruire
+`f"bold {X}"` inline:
+
+| Costante | Espande in |
+| :--- | :--- |
+| `ObsidianPalette.STYLE_BRAND` | `"bold #4f46e5"` |
+| `ObsidianPalette.STYLE_OK` | `"bold #10b981"` |
+| `ObsidianPalette.STYLE_WARN` | `"bold #f59e0b"` |
+| `ObsidianPalette.STYLE_ERR` | `"bold #f43f5e"` |
+| `ObsidianPalette.STYLE_DIM` | `"#64748b"` |
+
+### Pattern di utilizzo
+
+```python
+# CORRETTO — alias semantico tramite ObsidianPalette
+from zenzic.ui import ObsidianPalette
+
+table = Table(border_style=ObsidianPalette.DIM, header_style=ObsidianPalette.STYLE_BRAND)
+text = Text.from_markup(f"[{ObsidianPalette.BRAND}]Zenzic[/]")
+panel = Panel("...", border_style=ObsidianPalette.STYLE_ERR)
+```
+
+```python
+# VIETATO — literal hex al di fuori di ObsidianPalette
+text = Text.from_markup("[#4f46e5]Zenzic[/]")   # ✗
+
+# VIETATO — import di costante piatta (rimossa in v0.7.0)
+from zenzic.ui import INDIGO, EMERALD            # ✗
+
+# VIETATO — alias locale
+P = ObsidianPalette                              # ✗  usare sempre il nome completo della classe
+```
+
+### Aggiornare la palette
+
+Per cambiare un colore, modificare **solo** l'attributo esadecimale `_PRIVATO` corrispondente
+all'interno di `ObsidianPalette` in `src/zenzic/ui.py`. Tutti gli alias semantici e le
+stringhe stile pre-composte derivano da quegli attributi privati — l'intera codebase
+si aggiorna automaticamente.
+
+### Aggiunta alla checklist
+
+Aggiungere alla checklist della tua PR:
+
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ObsidianPalette._*`.
+- [ ] Nessun nome colore Rich grezzo (`"red"`, `"cyan"`) per uso della palette brand — usare `ObsidianPalette.*`.
+- [ ] Nessun alias locale `P = ObsidianPalette` — usare sempre il nome completo della classe.
+- [ ] Nessun `from zenzic.ui import INDIGO` (o qualsiasi costante piatta rimossa).
