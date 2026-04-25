@@ -1,7 +1,7 @@
 # 📚 ZENZIC DOCS — Obsidian Ledger v0.7.0 "Obsidian Maturity"
 
 > **Single Source of Truth for all agents and contributors to the zenzic-doc repository.**
-> Schema: [MANIFESTO] → [POLICIES] → [ARCHITECTURE] → [ADR] → [CHRONICLES]
+> Schema: [MANIFESTO] → [POLICIES] → [ARCHITECTURE] → [ADR] → [ACTIVE SPRINT] → [ARCHIVE LINK]
 
 ---
 
@@ -43,7 +43,9 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 ### Step 1 — Update This File
 - [ ] New architectural facts? → Update **[ARCHITECTURE]**
 - [ ] New decisions made? → Add an **[ADR]** entry (tagged `[DECISION]`)
-- [ ] Bug found and fixed? → Add a **[CHRONICLES]** entry (tagged `[BUG-xxx]` / `[LESSON]`)
+- [ ] Bug found and fixed? → Promote the lesson to a **[POLICY]** rule or **[ADR]** (permanent invariants only). Update **[ACTIVE SPRINT]**.
+- [ ] Sprint complete? → Update **[ACTIVE SPRINT]**. Purge previous-sprint entry to `CHANGELOG.md` in core repo.
+- [ ] **Size Guardrail:** This file exceeds 400 lines? → Trigger a curation task (Law of Evolutionary Curation).
 
 ### Step 2 — Update Documentation Artifacts
 - [ ] Content-only changes: add prose section to core repo `RELEASE.md` if user-visible
@@ -232,164 +234,30 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ---
 
-## [CHRONICLES] — Post-Mortem & Lessons Learned
+## [ACTIVE SPRINT] — Working Context
 
-### [BUG-001] The /docs/ 404 — Missing Landing Page (Commit `9a1c041`)
-- **ID:** BUG-001
-- **Severity:** SEO + UX failure (root docs URL returned 404)
-- **Symptom:** Navigating to `https://zenzic.dev/docs/` returned 404. Reported via Google Search Console.
-- **Root Cause:** Docusaurus 3.10 requires an explicit `index.mdx` file at `docs/` root for the `/docs/` route. The previous structure did not provide one. After the Diátaxis restructure, the old implicit index was lost.
-- **[LESSON]** Every Docusaurus doc section root must have an explicit `index.mdx`. Never rely on implicit routing for section roots. The file serves as a Unified Gateway — a navigation table linking to all major quadrants.
-- **Permanent Fix:** `docs/index.mdx` + `i18n/it/.../current/index.mdx` created.
+### D073 — The Law of Evolutionary Curation (Current)
 
-### [BUG-002] Diátaxis 404 Cascade — Blanket URL Exclusion (D079 — 2026-04-22)
-- **ID:** BUG-002
-- **Severity:** Silent link rot (3 broken links invisible to Zenzic Sentinel)
-- **Symptom:** Three links in `README.md` and `README.it.md` pointed to old pre-Diátaxis URLs. `zenzic check all` did not catch them.
-- **Root Cause:** `zenzic.toml` in the core repo contained `excluded_external_urls = "https://zenzic.dev/"` — a blanket bypass added when the site was undeployed. After the Diátaxis restructure, the renamed URLs were hidden behind this curtain.
-- **Dead paths (old → correct):**
-  - `/docs/usage/badges/` → `/docs/how-to/add-badges/`
-  - `/docs/guides/ci-cd/` → `/docs/how-to/configure-ci-cd/`
-  - `/docs/internals/architecture-overview/` → `/docs/explanation/architecture/`
-- **[LESSON]** Never use domain-level URL exclusions. They create permanent blind spots that survive restructures. Use `--exclude-url <url>` at CLI runtime for temporary skips only.
-- **Permanent Fix:** Blanket exclusion removed from `zenzic.toml`. All three links corrected.
+**Version:** 0.7.0 · **Date:** 2026-04-25
 
-### [BUG-003] i18n Silent Fallback — Missing `path` in localeConfigs (D090)
-- **ID:** BUG-003
-- **Severity:** Silent UX failure (Italian pages served English content)
-- **Symptom:** Italian locale pages served English content without any build error or console warning.
-- **Root Cause:** `localeConfigs.it` was missing the explicit `path: 'it'` field. Docusaurus derived the locale path from `htmlLang: 'it-IT'`, looking for `i18n/it-IT/` which didn't exist. Fell back silently to English.
-- **[LESSON]** Always set `path` explicitly in every `localeConfigs` entry. Never let Docusaurus infer it from `htmlLang`. Verify by switching to the Italian locale in local dev (`npm run start`) after any `docusaurus.config.ts` change.
-- **Permanent Fix:** `path: 'it'` added to `localeConfigs.it`. See ADR-005.
+All three Obsidian Ledgers (core, doc, action) refactored from "historical diaries" to "operational
+manuals". [CHRONICLES] removed — bug lessons promoted to [POLICIES] rules or [ADR] entries.
+[SPRINT LOG] replaced by [ACTIVE SPRINT] (2-sprint window). Law of Evolutionary Curation codified
+in [POLICIES] of all three ledgers. Schema updated across all three repos.
 
-### [BUG-004] Z404 Engine-Specific Flaw (D087 — 2026-04-22)
-- **ID:** BUG-004
-- **Severity:** Architecture failure (config asset check was Docusaurus-only)
-- **Symptom:** A broken `theme.favicon` in `mkdocs.yml` was not caught by `zenzic check all`. Only Docusaurus config assets were validated.
-- **Root Cause:** `check_config_assets()` was only wired for `engine = "docusaurus"` in `cli/_check.py`.
-- **[LESSON]** A Safe Harbor claiming engine-agnosticism cannot have engine-specific integrity guards. Every guard that applies conceptually to all engines must be implemented for all engines.
-- **Permanent Fix:** Z404 extended to MkDocs (`theme.favicon`, `theme.logo`) and Zensical (`[project].favicon`, `[project].logo`). CLI dispatch uses multi-engine routing.
+### Last Closed — D067+D068+D071 — Obsidian Archive + Curation Law + Knowledge Purge
+
+**Version:** 0.7.0 · **Date:** 2026-04-25
+
+Core repo: `CHANGELOG.md` split — pre-v0.6.0a1 history archived. `RELEASE.md` condensed to 114
+lines. Core Obsidian Ledger pruned — sprint history removed; Law of Executive Brevity codified.
+This ledger: schema updated, CLOSING PROTOCOL Step 1/2 updated, Law of Executive Brevity added.
 
 ---
 
-## [SPRINT LOG] — CEO Directive History
+## [ARCHIVE LINK]
 
-### D109–D116 — Typography, Navigation & Layout Polish
-**Version:** 0.7.0 · **Date:** 2026-04-22
-Geist + JetBrains Mono typography system, navigation arrows, responsive layout hardening, hero/feature section refinements.
+Complete sprint history, bug post-mortems, and documentation decisions:
 
-### D117 — `pathname:` Protocol Support
-**Version:** 0.7.0 · **Date:** 2026-04-22
-Documentation for Docusaurus `pathname:///` escape hatch added to `reference/engines.mdx` (EN + IT).
-
-### D118–D119 — Blog Title Consistency & Sibling Release Protocol
-**Version:** 0.7.0 · **Date:** 2026-04-22
-Blog `h2 a` colors locked. RELEASE.md rewritten as Sibling Release Protocol. `scripts/bump-version.sh` + `just bump` recipe added.
-
-### D122 — Governance Pack
-**Version:** 0.7.0 · **Date:** 2026-04-22
-`CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff`, `SECURITY.md` created. REUSE compliant (blog/** added to `REUSE.toml`).
-
-### D123–D125 — Global Brand Sync
-**Version:** 0.7.0 · **Date:** 2026-04-22
-4 badges added to `README.md`. Node 20 → 22 → 24 corrected. Obsidian Chronicles added. PythonWoods logo SVG/PNG assets in `static/img/`.
-
-### D127 (CEO) — The Sovereign Identity Protocol
-**Version:** 0.7.0 · **Date:** 2026-04-22
-X.com / Twitter links removed. Italian flag 🇮🇹 restored. Social links: GitHub + Journal only. RELEASE.md cross-reference to core repo added.
-
-### D042 (CEO) — The Perpetual Memory Protocol
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Memory Law (section 9) codified in both `.github/copilot-instructions.md` files.
-
-### D043 (CEO) — The Sentinel's Sanity Pass
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Blood Sentinel false positive fixed in core repo. Banner hoisted before validation. Test added. (Core repo change; documented here for cross-repo awareness.)
-
-### D045 (CEO) — Codifying the Symmetry
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Law of Italian Mirroring codified. Symmetry audit (docs/ vs i18n/it/) confirms zero asymmetries. Validation diff command documented above.
-
-### D046 (CEO) — The Knowledge Refactoring
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Obsidian Ledger schema adopted for all three repo agent instructions. Changelog audit completed before writing.
-
-### D047 (CEO) — The Knowledge Trinity
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Full rewrite (Option 1) of all three copilot-instructions.md files. zenzic-action receives its first agent instructions file.
-
-### D049 (CEO) — The Obsidian Memory Law
-**Version:** 0.7.0 · **Date:** 2026-04-25
-`[CLOSING PROTOCOL]` section added to all three Obsidian Ledger files. Memory Law upgraded to "The Custodian's Contract" — the agent's only persistent memory. A sprint is not closed until the protocol checklist is fully ticked. Resolves the Paradox of the Custodian without Memory.
-
-### D050 (CEO) — The Intelligent Perimeter
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Core repo fix: Z903 false positives on engine config and infrastructure files eliminated via two-layer guardrail (L1a: system file names/patterns; L1b: `BaseAdapter.get_metadata_files()`). No documentation changes in this repo — documented here for cross-repo awareness.
-
-### D051 (CEO) — Documentation as an Invariant
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Documentation Law "The Obsidian Testimony" added to `[POLICIES]`. `[CLOSING PROTOCOL]` Step 3 upgraded to "Staleness & Testimony Audit". Four pages updated: `finding-codes.mdx` (Z502 semantic word count, Z503 absolute line number), `configuration.mdx` (System Guardrails section — L1a/L1b automatic exclusions, `_category_.json` no longer required), `configure-adapter.mdx` (L1b tip box after adapter discovery table). All EN + IT mirrors updated.
-
-### D052 (CEO) — The Sovereign Root Fix
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Core repo fix: BUG-010 (Context Hijacking) — `find_repo_root()` now accepts `search_from`; `_apply_target()` sovereign root guard preserves `docs_dir` when target equals repo root. No documentation changes in this repo — documented here for cross-repo awareness.
-
-### D053 (CEO) — The Portability Invariant
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Fixed absolute link violations in `configure-adapter.mdx` (EN + IT) introduced by D051: replaced `/docs/reference/configuration#system-guardrails` with `../reference/configuration.mdx#system-guardrails`. Rule R14 codified in core repo: Z105 is an unconditional pre-resolution gate.
-
-### D054 (CEO) — The Strict Perimeter Law
-**Version:** 0.7.0 · **Date:** 2026-04-25
-BUG-011 fixed: `configuration.mdx` (EN + IT) wrongly listed `"assets"` in the `excluded_dirs` default. Corrected to `["includes", "stylesheets", "overrides", "hooks"]`; tip box added explaining why `"assets"` is intentionally absent. Rule R15 "Scope Integrity" codified in core repo. Forensic diagnosis: the Z104 incident was a CEO-052 artifact, not a perimeter failure — the Shield resolver was already correct.
-
-### D055 (CEO) — The Precision Calibration
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Core repo fixes: BUG-012 (Z502 MDX frontmatter leak — MDX comment stripping must precede frontmatter regex) and BUG-013 (Z105 `pathname:///` false positive — Z105 gate conditioned on `not parsed.scheme`). Rule R16 "Protocol Awareness" codified in core repo. CONTRIBUTING.md + CONTRIBUTING.it.md: Nox development note added (EN + IT). Regression tests in `tests/guardians/test_precision.py`. No documentation page changes required in this repo — documented here for cross-repo awareness.
-
-### D056 (CEO) — Universal Path Awareness
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Core repo: `zenzic score [PATH]` and `zenzic diff [PATH]` now accept an optional positional argument — sovereign root semantics identical to `check all`. Rule R17 "CLI Symmetry" codified in core repo. No documentation page changes in this repo — documented for cross-repo awareness.
-
-### D058 (CEO) — The Precedence Audit
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Documentation audit of configuration priority. Four pages updated in this repo: `reference/configuration-reference.mdx` (EN + IT): Config File Priority table upgraded from 3-level to 4-level — CLI flags added as Priority 1 with cumulative note for exclusions. `reference/configuration.mdx` (EN + IT): new "Configuration Priority" section added. "Precedence Table" checklist item added to [CLOSING PROTOCOL] Step 3 in all three Obsidian Ledgers.
-
-### D059 (CEO) — The Law of Contemporary Testimony
-**Version:** 0.7.0 · **Date:** 2026-04-25
-Law of Contemporary Testimony codified as mandatory policy in [POLICIES] at top of all three Obsidian Ledgers. Step 0 "Pre-Task Alignment" added to [CLOSING PROTOCOL]. Step 3 enhanced with "Contemporary Check" bullets and "Bilingual Mirroring" + "Precedence Table" items.
-
-### D060 (CEO) — Total CLI Symmetry
-**Version:** 0.7.0 · **Date:** 2026-04-25
-PATH argument applied to all check sub-commands and `init` in zenzic core. CLI reference docs updated (EN + IT): PATH usage examples for all `check` commands and init Nomad mode. Rule R18 "Total CLI Symmetry" codified in zenzic Obsidian Ledger.
-
-### D062 (CEO) — The Genesis Nomad Enforcement
-**Version:** 0.7.0 · **Date:** 2026-04-25
-"Sovereign Root Protocol" section added to `docs/explanation/architecture.mdx` (EN + IT): documents the three-step sovereignty protocol, Genesis Nomad invariants, and Context Hijacking problem/solution.
-
-### D061 (CEO) — The Maturity Narrative
-**Version:** 0.7.0 · **Date:** 2026-04-25
-v0.7.0 launch blog article (`blog/2026-04-22-beyond-the-siege-zenzic-v070.mdx`) revised as a case study in software engineering maturity. Additions (EN + IT simultaneously): "Treating Documentation as Untrusted Input" framing section; "The Precision Sprint" (Z502 BUG-012 + Z105 BUG-013 false positive narrative); "Total CLI Symmetry: The Sovereign Root Protocol" (D060/D062 coverage with terminal output examples); "The Law of Contemporary Testimony" (CEO-059). Capabilities table updated with new rows. Test count updated 1195 → 1225. CTA changed from `pip install zenzic; zenzic check all` to `uvx zenzic lab`.
-
-### D063 (CEO) — The Obsidian Hygiene
-**Version:** 0.7.0 · **Date:** 2026-04-25
-No documentation changes in zenzic-doc. Forensic debt audit in zenzic repo confirmed zero TODO/FIXME/HACK markers in production source.
-
-### D064 (CEO) — Operation Matrix Laboratory
-**Version:** 0.7.0 · **Date:** 2026-04-25
-No documentation changes in zenzic-doc. Six new example projects added to zenzic repo `examples/os/` and `examples/rules/`. `zenzic lab` UI upgraded to four-section Rich layout (Acts 0–16). `examples/run_demo.sh` updated with section banners and Acts 9–16.
-
-### D070 (CEO) — The Idempotent Sentinel
-**Version:** 0.7.0 · **Date:** 2026-04-25
-No documentation changes in zenzic-doc. Banner shadowing fix in zenzic core `_lab.py`: `get_ui().print_header()` removed from three locations (the `for act` loop, `_print_act_seal()`, and `_print_summary()`). The `🛡 ZENZIC SENTINEL` header now prints exactly once per `zenzic lab` invocation regardless of how many acts are run.
-
-### D069 (CEO) — The Range Master Protocol
-**Version:** 0.7.0 · **Date:** 2026-04-25
-`docs/reference/cli.mdx` (EN + IT) updated: `## Interactive Lab {#lab}` section added documenting act selection syntax (integer, `N-M` inclusive range, `all` shorthand), the four thematic sections (🛡/🔗/🏢/🔴), outcome label table, and usage examples including `zenzic lab 11-16` for the Red/Blue matrix. ADR-010 "Range-Aware Showroom Commands" + Rule R18 "Range Awareness" codified in zenzic Obsidian Ledger.
-
-### D072 (CEO) — The Ghost Content Fix
-**Version:** 0.7.0 · **Date:** 2026-04-25
-No documentation changes in zenzic-doc. BUG-014 fixed in zenzic core `scanner.py`: `_first_content_line()` now skips REUSE-compliant `<!-- SPDX … -->` HTML comments and YAML frontmatter before computing the Z502 pointer line. The `❱` arrow in Z502 short-content findings now lands on the first prose word, not on the licence header.
-
-### D067+D068+D071 (CEO) — Obsidian Archive + Curation Law + Knowledge Purge
-**Version:** 0.7.0 · **Date:** 2026-04-25
-No documentation page changes in zenzic-doc. Core repo governance: `CHANGELOG.md` and `CHANGELOG.it.md` split — pre-v0.6.0a1 history moved to `CHANGELOG.archive.md` and `CHANGELOG.it.archive.md`. `RELEASE.md` condensed from 1079 to 114 lines (Big Three + Security + Install CTA). Core repo `.github/copilot-instructions.md` pruned — entire `[SPRINT LOG]` removed; Law of Executive Brevity codified in `[POLICIES]` of all three Obsidian Ledgers (core, doc, action).
+- **[CHANGELOG.md](https://github.com/PythonWoods/zenzic/blob/main/CHANGELOG.md)** — core release cycle (v0.7.0)
+- **[CHANGELOG.archive.md](https://github.com/PythonWoods/zenzic/blob/main/CHANGELOG.archive.md)** — pre-v0.6.0 history
