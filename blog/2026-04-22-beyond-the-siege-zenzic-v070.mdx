@@ -35,6 +35,28 @@ inflation.
 This is the story of what happened in the final weeks before v0.7.0, and why the
 version number itself carries meaning.
 
+## Treating Documentation as Untrusted Input
+
+In application security, the foundational discipline is: never trust input. Passwords are
+hashed, not stored. Filenames are validated before they touch the filesystem. URLs are
+parsed and normalised — never concatenated from fragments. The moment you trust your inputs,
+you have implicitly transferred control to whoever provides them.
+
+Documentation pipelines operate under the opposite assumption. Links are "probably fine."
+Asset paths are "probably correct." Placeholder values are "probably temporary." The result
+is exactly what you expect from systems that trust their inputs: slow, silent rot that
+surfaces as broken experiences for readers — weeks or months after the damage was done.
+
+Zenzic's thesis is that documentation is input, and should be treated with the same
+skepticism. The Zxxx diagnostic system is input validation. The Shield scanner is a
+credential sanitiser. The Z502 frontmatter leak fix is a parser boundary constraint. The
+Z105 `pathname:///` false-positive fix is protocol normalisation. Each one applies a
+discipline that security engineers have practised for decades to a domain that has, until
+now, operated on optimism.
+
+That transfer of security thinking to documentation quality is what **Obsidian Maturity**
+actually means.
+
 ## The Arc: From Sentinel to Maturity
 
 The Zenzic Engineering Series has documented a continuous thread:
@@ -131,7 +153,10 @@ That command now works correctly against four engine types, with:
 | Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
 | i18n locale discovery | `path` config enforced; silent fallback documented |
 | Lab (interactive showroom) | 10 Acts covering all engine types |
-| Test suite | 1,195 passing tests |
+| Universal PATH argument | All 6 `check` sub-commands + `init` (sovereign root semantics) |
+| Sovereign root banner hint | Active scanning target printed after Obsidian header |
+| Z502/Z105 precision | MDX frontmatter leak + `pathname:///` false positive eliminated |
+| Test suite | 1,225 passing tests |
 | Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
@@ -236,6 +261,86 @@ suppress the advisory with a documented removal reminder.
 
 The test count at the close of the parity sprint: **1,195 tests, all passing.**
 
+## The Precision Sprint: Eliminating False Positives
+
+After CLI symmetry was established, two false-positive bugs were closed.
+
+**BUG-012 — Z502 MDX Frontmatter Leak.** The placeholder detector (`Z502 PLACEHOLDER`)
+was firing on React-style template expressions inside MDX files — `{children}`,
+`{props.title}` — because the frontmatter extraction boundary was too permissive. The fix
+constrained YAML extraction to terminate at the first `---` close marker, preventing MDX
+body content from bleeding into the frontmatter scan. No legitimate placeholder finding was
+affected.
+
+**BUG-013 — Z105 `pathname:///` False Positive.** Docusaurus uses `pathname:///` as a
+pseudo-protocol for links that resolve at build time into absolute paths. Zenzic's absolute
+link detector (`Z105 ABSOLUTE_LINK`) was flagging these as portability violations. The fix
+adds `pathname:` to the recognised protocol allowlist (Rule R16: Protocol Awareness). Teams
+migrating Docusaurus projects to Zenzic no longer see spurious Z105 warnings on
+build-generated links.
+
+The pattern is significant: precision failures are more dangerous than false negatives. A
+scanner that cries wolf trains engineers to suppress its output — and the one real finding
+gets lost in the noise. Every false positive is a credibility tax on the tool that emits it.
+
+## Total CLI Symmetry: The Sovereign Root Protocol
+
+The original v0.7.0 release shipped with `check all` accepting a `PATH` argument. The other
+six `check` sub-commands (`links`, `orphans`, `snippets`, `placeholders`, `assets`,
+`references`) and `init` did not. The gap was architectural inconsistency — a tool that
+claims uniform behaviour with a non-uniform interface.
+
+D060 closed the gap. Every filesystem-interacting CLI command now accepts an optional `PATH`
+with full sovereign root semantics:
+
+```bash
+zenzic check links   ../other-project       # config follows target, not CWD
+zenzic check orphans content/               # sub-directory scope
+zenzic check assets  /abs/path/to/docs      # absolute paths accepted
+zenzic init          /workspace/new-docs    # Genesis Nomad: create and scaffold
+```
+
+The sovereign root protocol ensures configuration follows the target, not the caller.
+Running `zenzic check links ../other-project` from your current working directory loads
+`../other-project/zenzic.toml`, not your project's config. Context cannot be hijacked.
+
+D062 added visual confirmation — the resolved scanning target is printed immediately after
+the Obsidian header when `PATH` is provided:
+
+```text
+  Scanning: ../other-project/docs
+```
+
+For `init` in Genesis Nomad mode:
+
+```text
+  Target: ../new-project
+```
+
+Operators now see exactly which root Zenzic has elected before the first result appears.
+
+## The Law of Contemporary Testimony
+
+In parallel with the code changes, a policy was codified: the **Law of Contemporary
+Testimony**.
+
+> *Code and documentation are a single, indivisible unit of work. No sprint is closed if
+> the documentation still reflects the previous state of the code.*
+
+The enforcement mechanism is a mandatory Closing Protocol checklist that every sprint must
+complete before the commit lands. If a wrapper behavior changed, the architecture diagram
+must be updated. If a CLI flag was added, the reference must be updated. If an exit code
+semantic changed, the policy table and the user documentation must both be updated.
+
+This sounds like documentation discipline. It is actually a defect prevention system. The
+navbar badge drift, the i18n silent fallback, the README links pointing at URL paths that no
+longer exist — every one of these was a failure of the implicit contract between code author
+and documentation author. When those roles are collapsed (as they are in any sufficiently
+small team), the failure mode is: *I know this in my head, I'll update the docs later.*
+Later compounds. The Law makes "later" unconstitutional.
+
+The test count at close of all v0.7.0 sprints: **1,225 passing tests.**
+
 ## What Comes Next
 
 v0.7.0 is not an ending. It is a reference point. The Obsidian series has established:
@@ -256,8 +361,7 @@ docs. See what it finds. The pipe is probably still leaking somewhere — before
 users find it.
 
 ```bash
-pip install zenzic
-zenzic check all
+uvx zenzic lab
 ```
 
 ---

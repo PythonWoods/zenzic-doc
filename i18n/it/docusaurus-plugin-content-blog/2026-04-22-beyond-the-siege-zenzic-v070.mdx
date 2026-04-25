@@ -34,6 +34,31 @@ facciano i tuoi utenti, e se hai la disciplina istituzionale per chiuderle senza
 Questa è la storia di cosa è successo nelle ultime settimane prima di v0.7.0, e perché
 il numero di versione stesso porta un significato.
 
+## Trattare la Documentazione come Input Non Fidato
+
+Nella sicurezza applicativa, la disciplina fondamentale è: non fidarsi mai dell'input.
+Le password vengono hashate, non salvate in chiaro. I nomi di file vengono validati prima
+di toccare il filesystem. Gli URL vengono analizzati e normalizzati — mai concatenati da
+frammenti. Nel momento in cui si fidano dei propri input, i sistemi cedono il controllo
+a chiunque li fornisca.
+
+Le pipeline di documentazione operano secondo l'assunzione opposta. I link sono
+"probabilmente corretti". I percorsi degli asset sono "probabilmente giusti". I valori
+segnaposto sono "probabilmente temporanei". Il risultato è esattamente quello che ci si
+aspetta da sistemi che si fidano dei propri input: un decadimento silenzioso e lento che
+emerge come esperienza rotta per i lettori — settimane o mesi dopo che il danno è stato
+compiuto.
+
+La tesi di Zenzic è che la documentazione è input, e va trattata con lo stesso scetticismo.
+Il sistema di codici diagnostici Zxxx è validazione dell'input. Lo Shield scanner è un
+sanitizzatore di credenziali. Il fix della perdita di frontmatter Z502 è un vincolo al
+confine del parser. Il fix del falso positivo Z105 `pathname:///` è normalizzazione del
+protocollo. Ognuno applica una disciplina che gli ingegneri della sicurezza praticano da
+decenni a un dominio che fino ad ora aveva operato sull'ottimismo.
+
+Questo trasferimento del pensiero sulla sicurezza alla qualità della documentazione è ciò
+che **Obsidian Maturity** significa davvero.
+
 ## L'Arco: Dal Sentinel alla Maturità
 
 La Zenzic Engineering Series ha documentato un filo continuo:
@@ -68,6 +93,10 @@ Sicuro multi-engine e un sistema che **è** effettivamente tale.
 | Zenzic Lab — 10 Atti | Atti 9 e 10: MkDocs Favicon Guard e Zensical Logo Guard |
 | Vanilla purge completa | `engine = "vanilla"` solleva `ConfigurationError [Z000]` |
 | Standalone Mode | Identità canonica per progetti senza build config |
+| Argomento PATH universale | Tutti e 6 i sotto-comandi `check` + `init` (semantica sovereign root) |
+| Banner hint sovereign root | Target di scansione attivo stampato dopo l'intestazione Obsidian |
+| Precisione Z502/Z105 | Perdita frontmatter MDX + falso positivo `pathname:///` eliminati |
+| Suite di test | 1.225 test, tutti passanti |
 | Brand System HTML | Documento di riferimento standalone per il brand team |
 | Pipeline PNG deterministica | `cairosvg` puro, zero subprocess, conforme al Pillar 2 |
 | Obsidian Lead `#09090b` | Background canonico unificato su tutte le superfici |
@@ -101,6 +130,62 @@ ha rilevato tre link obsoleti nel `README.md` non appena il bypass di esclusione
 globale `zenzic.dev` è stato rimosso. Lo strumento ha intercettato la propria deriva
 documentale.
 
+## Il Sprint di Precisione: Eliminare i Falsi Positivi
+
+Due bug di falso positivo sono stati chiusi dopo la v0.7.0 iniziale.
+
+**BUG-012 — Perdita Frontmatter Z502 in MDX.** Il rilevatore di segnaposto (`Z502 PLACEHOLDER`)
+si attivava su espressioni template in stile React nei file MDX — `{children}`,
+`{props.title}` — perché il confine di estrazione del frontmatter era troppo permissivo.
+Il fix vincola l'estrazione YAML al primo marcatore `---` di chiusura. Nessun finding
+legittimo è stato influenzato.
+
+**BUG-013 — Falso Positivo Z105 `pathname:///`.** Docusaurus usa `pathname:///` come
+pseudo-protocollo per link che si risolvono in percorsi assoluti al momento del build.
+Il rilevatore di link assoluti di Zenzic (`Z105 ABSOLUTE_LINK`) li segnalava come
+violazioni di portabilità. Il fix aggiunge `pathname:` alla lista di protocolli riconosciuti
+(Regola R16: Protocol Awareness). I team che migrano progetti Docusaurus a Zenzic non vedono
+più avvisi Z105 spuri.
+
+## Simmetria CLI Totale: Il Protocollo Sovereign Root
+
+D060 ha chiuso il gap architetturale: ogni comando CLI che interagisce con il filesystem
+accetta ora un argomento opzionale `PATH` con semantica sovereign root completa:
+
+```bash
+zenzic check links   ../altro-progetto      # la configurazione segue il target, non la CWD
+zenzic check orphans contenuto/             # scope di sotto-directory
+zenzic init          /workspace/nuovi-docs  # Genesis Nomad: crea e scaffolda
+```
+
+La configurazione segue il target, non il chiamante — il Context Hijacking è impossibile.
+
+D062 ha aggiunto conferma visiva: il target di scansione risolto viene stampato
+immediatamente dopo l'intestazione Obsidian quando `PATH` è fornito:
+
+```text
+  Scanning: ../altro-progetto/docs
+```
+
+## La Legge della Testimonianza Contemporanea
+
+È stata codificata una policy: la **Legge della Testimonianza Contemporanea**.
+
+> *Codice e documentazione sono un'unica unità di lavoro indivisibile. Nessun sprint è
+> chiuso se la documentazione riflette ancora lo stato precedente del codice.*
+
+Il meccanismo di applicazione è una checklist di Closing Protocol obbligatoria che ogni
+sprint deve completare prima del commit finale. Se il comportamento di un wrapper è cambiato,
+il diagramma architetturale deve essere aggiornato. Se è stato aggiunto un flag CLI, la
+reference deve essere aggiornata.
+
+La deriva del badge navbar, il fallback silenzioso i18n, i link nel README che puntavano a
+percorsi URL non più esistenti — ognuno di questi era un fallimento del contratto implicito
+tra autore del codice e autore della documentazione. La Legge rende il "più tardi"
+incostituzionale.
+
+Il conteggio test al termine di tutti gli sprint v0.7.0: **1.225 test, tutti passanti.**
+
 ## Il Sigillo di Ossidiana (conclusione)
 
 v0.7.0 è la prima versione di Zenzic che può essere chiamata **stabile** senza riserve.
@@ -110,6 +195,10 @@ garantisce sono stati messi alla prova con attacchi diretti, i confini architett
 e il processo per mantenere quella coerenza è ora documentato e applicato.
 
 Il Porto Sicuro è operativo.
+
+```bash
+uvx zenzic lab
+```
 
 → [Leggi l'analisi completa in inglese](/blog/beyond-the-siege-zenzic-v070-new-standard)  
 → [Documenta il tuo progetto con Zenzic](/docs/how-to/install)
