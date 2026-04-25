@@ -13,6 +13,21 @@ Tutti i campi di primo livello in `zenzic.toml` che controllano percorsi, soglie
 
 ---
 
+## Priorità di Configurazione {#config-priority}
+
+Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sorgente più specifica vince:
+
+| Priorità | Sorgente | Descrizione |
+| :---: | :--- | :--- |
+| **1 (massima)** | **Flag CLI** | `--engine`, `--exclude-dir`, `--strict`, ecc. Sovrascrivono ogni altra sorgente per la singola esecuzione. |
+| 2 | `zenzic.toml` | File standalone alla radice del repository — la configurazione sovrana autorevole |
+| 3 | `pyproject.toml` | Tabella `[tool.zenzic]` dentro `pyproject.toml` |
+| 4 (minima) | Valori predefiniti integrati | Default hardcoded quando nessun file di configurazione viene trovato |
+
+**I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `zenzic.toml` per quella singola esecuzione senza modificare alcun file.
+
+---
+
 ## `docs_dir`
 
 **Tipo:** stringa (percorso) — **Default:** `"docs"`
@@ -27,7 +42,7 @@ docs_dir = "documentation"
 
 ## `excluded_dirs`
 
-**Tipo:** lista di stringhe — **Default:** `["includes", "assets", "stylesheets", "overrides", "hooks"]`
+**Tipo:** lista di stringhe — **Default:** `["includes", "stylesheets", "overrides", "hooks"]`
 
 Nomi di directory (non percorsi completi) all'interno di `docs_dir` escluse da tutti i controlli.
 Qualsiasi directory il cui **nome** corrisponde a una voce in questa lista viene saltata,
@@ -37,9 +52,53 @@ indipendentemente dalla profondità nell'albero. Questo significa che
 La lista predefinita copre le directory speciali standard di MkDocs e Material for MkDocs, che
 contengono override del tema, CSS e include di snippet piuttosto che contenuto documentale.
 
+:::tip[Le directory asset non sono escluse di default]
+`assets/` è volutamente **assente** dal default. Le directory chiamate `assets/` contengono
+tipicamente immagini e file *referenziati* dalle pagine di documentazione — escluderle
+impedirebbe a Zenzic di costruire l'indice degli asset, causando la segnalazione come Z104 di
+link validi. Aggiungi `"assets"` a `excluded_dirs` solo se la tua directory `assets/` contiene
+file che non vengono *mai* linkati dal Markdown (es. risorse di build consumate dal motore, non
+dai lettori).
+:::
+
 ```toml
 excluded_dirs = ["includes", "assets", "partials", "_templates"]
 ```
+
+---
+
+## Protezioni di Sistema (Esclusioni di Livello 1) {#system-guardrails}
+
+Zenzic esclude automaticamente certi file da tutti i controlli di qualità — incluso il controllo asset non utilizzati (Z903). Queste **Protezioni di Livello 1** sono immutabili e non richiedono alcuna configurazione utente.
+
+### Livello 1a — Infrastruttura Universale
+
+File comuni della toolchain che non sono mai contenuto documentale:
+
+| Categoria | File esclusi automaticamente |
+|-----------|-------------------------------|
+| JavaScript / Node.js | `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `tsconfig.json`, `tsconfig.base.json` |
+| Python | `pyproject.toml`, `poetry.lock`, `uv.lock`, `setup.cfg`, `setup.py` |
+| Toolchain generica | `Makefile`, `justfile` |
+| File di lock | Qualsiasi file che corrisponde a `*.lock` |
+| Config linter | File che corrispondono a `eslint.config.*`, `.prettierrc*`, `.editorconfig` |
+
+### Livello 1b — Config Engine Dichiarate dall'Adapter
+
+Ogni adapter esclude automaticamente i file di configurazione del motore che consuma:
+
+| Motore | File esclusi automaticamente |
+|--------|-------------------------------|
+| Docusaurus | `docusaurus.config.ts`, `docusaurus.config.js`, `docusaurus.config.mjs`, `sidebars.ts`, `sidebars.js`, `versions.json`, `_category_.json` |
+| MkDocs | `mkdocs.yml` |
+| Zensical | `zensical.toml` |
+| Standalone | *(nessuno — nessuna config motore)* |
+
+:::tip
+**Non è necessario** aggiungere questi file a `excluded_assets`. Zenzic li protegge a livello di
+engine. Eseguendo `zenzic check all .` dalla root del progetto non verranno mai prodotti warning
+Z903 su `docusaurus.config.ts`, `package.json` o qualsiasi altro file di configurazione del motore.
+:::
 
 ---
 
@@ -75,9 +134,10 @@ excluded_assets = [
 ]
 ```
 
-Il pattern `**/_category_.json` è raccomandato per i progetti Docusaurus, dove ogni
-sotto-directory può contenere un file `_category_.json` consumato dal plugin sidebar
-piuttosto che referenziato da qualsiasi pagina.
+Il pattern `**/_category_.json` era precedentemente raccomandato per i progetti Docusaurus.
+A partire dalla v0.7.0, `_category_.json` è automaticamente protetto come [protezione di Livello 1b](#system-guardrails)
+dall'adapter Docusaurus — la voce manuale non è più necessaria. Le voci esistenti in
+`excluded_assets` restano valide e vengono silenziosamente deduplicate.
 
 ---
 

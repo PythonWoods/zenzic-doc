@@ -215,7 +215,7 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 ### Z502: SHORT_CONTENT {#z502}
 
 *   **Severità:** `warning`
-*   **Contesto Tecnico:** Le pagine con pochissimo testo (default < 50 parole) forniscono uno scarso valore all'utente e possono danneggiare il posizionamento nei motori di ricerca.
+*   **Contesto Tecnico:** Le pagine con pochissimo testo (default < 50 parole) forniscono uno scarso valore all'utente e possono danneggiare il posizionamento nei motori di ricerca. Il conteggio delle parole è puramente **semantico**: il frontmatter YAML, i commenti MDX (`{/* */}`) e i commenti HTML (`<!-- -->`) vengono esclusi — solo la prosa renderizzata viene conteggiata.
 *   **Passaggi di Rimedio:**
     1. Espandi la documentazione con maggiori dettagli.
     2. Se la pagina è un segnaposto, combinala con una pagina correlata.
@@ -223,7 +223,7 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 ### Z503: SNIPPET_ERROR {#z503}
 
 *   **Severità:** `error`
-*   **Contesto Tecnico:** Lo **Snippet Guard** ha identificato un errore di sintassi in un blocco di codice delimitato contrassegnato da un tag di linguaggio (es. `py`, `js`). Ciò impedisce agli utenti di copiare ed eseguire esempi di codice errati.
+*   **Contesto Tecnico:** Lo **Snippet Guard** ha identificato un errore di sintassi in un blocco di codice delimitato contrassegnato da un tag di linguaggio (es. `py`, `js`). Ciò impedisce agli utenti di copiare ed eseguire esempi di codice errati. Il numero di riga riportato è **assoluto** — relativo al file sorgente, non all'inizio dello snippet — consentendo la navigazione immediata all'errore.
 *   **Passaggi di Rimedio:**
     1. Correggi la sintassi all'interno del blocco di codice.
     2. Se il blocco contiene codice intenzionalmente errato (es. per mostrare cosa NON fare), usa il tag di linguaggio `text` per saltare la validazione.

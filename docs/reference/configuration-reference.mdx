@@ -10,13 +10,20 @@ Zenzic is configured through a TOML file. Every field has a sensible default, so
 
 ## Config File Priority {#config-priority}
 
-Zenzic resolves configuration using a **first-match-wins** priority chain:
+Zenzic resolves configuration using a **4-level hierarchy** — the most specific source wins:
 
 | Priority | Source | Description |
 | :---: | :--- | :--- |
-| 1 | `zenzic.toml` | Standalone file at the repository root -- the authoritative sovereign config |
-| 2 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
-| 3 | Built-in defaults | Hardcoded defaults when no config file is found |
+| **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
+| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
+| 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
+
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+
+**Exclusions and inclusions are cumulative, not replacing:**
+- `--exclude-dir` *adds* to the list already defined in the config file.
+- `--include-dir` is a **force override**: a directory excluded in `zenzic.toml` but included via `--include-dir` will be scanned. The only exception is Level 1 System Guardrails (`node_modules`, `.git`, etc.) — these cannot be force-included.
 
 When a config file is present but contains a TOML syntax error, Zenzic raises a `ConfigurationError` with a Rich-formatted message. It will **never** silently fall back to defaults when a file exists but cannot be parsed.
 
@@ -223,6 +230,10 @@ excluded_external_urls = [
   "https://github.com/PythonWoods/unreleased-repo",
 ]
 ```
+
+:::warning[Rule R19 — No Domain-Level Exclusions]
+Never add an entire domain as an exclusion (e.g. `"https://zenzic.dev/"`). A blanket domain exclusion creates a permanent blindspot that survives content restructures and silently masks broken links. Entries must target **specific URLs or prefixes**, not root domains. Use `--exclude-url <url>` at the CLI for temporary, one-off skips.
+:::
 
 ---
 

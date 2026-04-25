@@ -468,6 +468,63 @@ Chiamato da `iter_markdown_sources()` per ogni file che supera il filtraggio per
 
 ---
 
+## Protocollo Sovereign Root {#sovereign-root}
+
+Ogni comando CLI che interagisce con il filesystem accetta un argomento `PATH` opzionale.
+Quando fornito, Zenzic applica il **Protocollo Sovereign Root**: la configurazione e la
+scansione seguono la destinazione, non la directory corrente del chiamante.
+
+### Il Problema: Context Hijacking
+
+Senza questo protocollo, eseguire `zenzic check links ../altro-progetto` dall'interno di
+`progetto-A` caricherebbe il `zenzic.toml` di `progetto-A`, userebbe il suo adapter e
+applicherebbe le sue regole di esclusione — alla documentazione di `altro-progetto`.
+Questo è il **Context Hijacking**: l'ambiente del chiamante sovrascrive silenziosamente
+quello della destinazione.
+
+### La Soluzione: Sovranità in Tre Passi
+
+```text
+Passo 1 — find_repo_root(search_from=target)
+          Ricerca verso l'alto a partire dal percorso risolto della destinazione,
+          non da os.getcwd(). Carica esclusivamente il zenzic.toml del repository
+          di destinazione.
+
+Passo 2 — _apply_target(repo_root, config, raw_path)
+          Ricalibra docs_root: se il percorso è una directory, docs_dir viene
+          aggiornato. Se è un file, la directory padre diventa docs_root e il file
+          è l'unico target di audit. Guardia sovereign root: quando target ==
+          repo_root, il docs_dir configurato viene preservato (non sovrascritto).
+
+Passo 3 — Guardia Sandbox CEO-043
+          Se docs_root cade fuori da repo_root (target esterno), adotta docs_root
+          come nuovo repo_root in modo che Blood Sentinel protegga le fughe dal
+          target, non dalla posizione del chiamante.
+```
+
+### Il Genesis Nomad (`init`)
+
+`zenzic init <percorso>` è un caso speciale: **crea** un progetto invece di verificarlo.
+Il percorso indicato diventa direttamente il `repo_root`, e la directory viene creata
+(`mkdir -p`) se non esiste. Il rilevamento automatico dell'engine opera sulla directory
+di destinazione (anche vuota). La CWD del chiamante non viene mai modificata.
+
+```bash
+zenzic init ../nuovo-progetto          # crea ../nuovo-progetto/zenzic.toml
+zenzic init /workspace/docs-freschi    # crea la directory se necessario
+```
+
+### Invarianti
+
+| Invariante | Garanzia |
+| :--- | :--- |
+| Isolamento della config | Il `zenzic.toml` della destinazione viene caricato; la config del chiamante non viene mai consultata |
+| Guardia sandbox | Il perimetro di Blood Sentinel è ancorato a `docs_root`, non a `cwd` |
+| Nessuna mutazione della CWD | `init` scrive nella destinazione; la directory di lavoro del chiamante non viene modificata |
+| Visualizzazione dell'hint | Il banner mostra il percorso assoluto risolto della destinazione per la fiducia dell'operatore |
+
+---
+
 ## Codici di uscita {#exit-codes}
 
 Zenzic usa quattro codici di uscita, ognuno con una semantica precisa:

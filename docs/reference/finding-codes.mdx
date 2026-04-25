@@ -215,7 +215,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 ### Z502: SHORT_CONTENT {#z502}
 
 *   **Severity:** `warning`
-*   **Technical Context:** Pages with very little text (default < 50 words) provide poor user value and can hurt search engine rankings.
+*   **Technical Context:** Pages with very little text (default < 50 words) provide poor user value and can hurt search engine rankings. The word count is purely **semantic**: YAML frontmatter, MDX comments (`{/* */}`), and HTML comments (`<!-- -->`) are excluded — only rendered prose is counted.
 *   **Remediation Steps:**
     1. Expand the documentation with more detail.
     2. If the page is a placeholder, combine it with a related page.
@@ -223,7 +223,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 ### Z503: SNIPPET_ERROR {#z503}
 
 *   **Severity:** `error`
-*   **Technical Context:** The **Snippet Guard** identified a syntax error in a fenced code block marked with a language tag (e.g., `py`, `js`). This prevents users from copying and running broken code examples.
+*   **Technical Context:** The **Snippet Guard** identified a syntax error in a fenced code block marked with a language tag (e.g., `py`, `js`). This prevents users from copying and running broken code examples. The reported line number is **absolute** — relative to the source file, not to the start of the snippet — enabling immediate navigation to the error.
 *   **Remediation Steps:**
     1. Correct the syntax within the code block.
     2. If the block contains intentionally broken code (e.g., to show what NOT to do), use the `text` language tag to bypass validation.

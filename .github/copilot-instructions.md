@@ -236,22 +236,22 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ## [ACTIVE SPRINT] — Working Context
 
-### D073 — The Law of Evolutionary Curation (Current)
+### D074+D075 — Coverage Iron Gate + R19 Testimony (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-25
 
-All three Obsidian Ledgers (core, doc, action) refactored from "historical diaries" to "operational
-manuals". [CHRONICLES] removed — bug lessons promoted to [POLICIES] rules or [ADR] entries.
+D075: R19 `:::warning` admonition added to `configuration-reference.mdx` (EN + IT) — domain-level
+URL exclusion prohibition now visible at the point of use. Bilingual symmetry maintained; preflight
+passes. All v0.7.0 documentation obligations fulfilled.
+
+### Last Closed — D073 — The Law of Evolutionary Curation
+
+**Version:** 0.7.0 · **Date:** 2026-04-25
+
+All three Obsidian Ledgers refactored from "historical diaries" to "operational manuals".
+[CHRONICLES] removed — bug lessons promoted to [POLICIES] rules or [ADR] entries.
 [SPRINT LOG] replaced by [ACTIVE SPRINT] (2-sprint window). Law of Evolutionary Curation codified
 in [POLICIES] of all three ledgers. Schema updated across all three repos.
-
-### Last Closed — D067+D068+D071 — Obsidian Archive + Curation Law + Knowledge Purge
-
-**Version:** 0.7.0 · **Date:** 2026-04-25
-
-Core repo: `CHANGELOG.md` split — pre-v0.6.0a1 history archived. `RELEASE.md` condensed to 114
-lines. Core Obsidian Ledger pruned — sprint history removed; Law of Executive Brevity codified.
-This ledger: schema updated, CLOSING PROTOCOL Step 1/2 updated, Law of Executive Brevity added.
 
 ---
 

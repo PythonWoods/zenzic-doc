@@ -10,13 +10,16 @@ Zenzic si configura tramite un singolo file TOML. La configurazione e facoltativ
 
 ## Priorita di caricamento {#loading-priority}
 
-La catena di priorita segue il modello **Agnostic Citizen** (il primo file trovato vince):
+Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sorgente più specifica vince:
 
-| Priorita | Sorgente | Note |
+| Priorita | Sorgente | Descrizione |
 | :---: | :--- | :--- |
-| 1 | `zenzic.toml` nella radice del repository | File sovrano — la fonte autorevole |
-| 2 | `[tool.zenzic]` in `pyproject.toml` | Alternativa per progetti che preferiscono un unico file di configurazione |
-| 3 | Valori predefiniti integrati | Nessun file trovato — Zenzic funziona comunque |
+| **1 (massima)** | **Flag CLI** | `--engine`, `--exclude-dir`, `--strict`, ecc. Sovrascrivono ogni altra sorgente per la singola esecuzione. |
+| 2 | `zenzic.toml` | File standalone alla radice del repository — la configurazione sovrana autorevole |
+| 3 | `pyproject.toml` | Tabella `[tool.zenzic]` dentro `pyproject.toml` |
+| 4 (minima) | Valori predefiniti integrati | Default hardcoded quando nessun file di configurazione viene trovato |
+
+**I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `zenzic.toml` per quella singola esecuzione senza modificare alcun file.
 
 Quando il file vincente esiste ma contiene un errore di sintassi TOML, Zenzic solleva un errore con messaggio Rich-formattato. Non c'e fallback silenzioso: nascondere errori dell'utente sarebbe un rischio.
 
@@ -238,6 +241,10 @@ excluded_external_urls = ["https://github.com/PythonWoods/zenzic"]
 | `excluded_external_urls` | `list[string]` | `[]` | URL esterni (o prefissi URL) esclusi dal controllo link rotti. Un URL viene saltato quando inizia con una delle voci di questa lista |
 
 La validazione delle ancore stessa pagina è disabilitata per default perché gli ID ancora possono essere generati da attributi HTML, plugin personalizzati o macro a tempo di build che sono invisibili durante la scansione del sorgente.
+
+:::warning[Regola R19 — Nessuna esclusione a livello di dominio]
+Non aggiungere mai un intero dominio come esclusione (es. `"https://zenzic.dev/"`). Un'esclusione di dominio generico crea un angolo buio permanente che sopravvive alle ristrutturazioni dei contenuti e nasconde silenziosamente i link rotti. Le voci devono puntare a **URL specifici o prefissi**, non a domini radice. Usa `--exclude-url <url>` dalla CLI per esclusioni temporanee e puntuali.
+:::
 
 ---
 

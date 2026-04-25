@@ -445,6 +445,62 @@ Called by `iter_markdown_sources()` for each file that passes directory filterin
 
 ---
 
+## Sovereign Root Protocol {#sovereign-root}
+
+Every CLI command that interacts with the filesystem accepts an optional `PATH` argument.
+When provided, Zenzic applies the **Sovereign Root Protocol**: configuration and scanning
+follow the target, not the caller's current working directory.
+
+### The Problem: Context Hijacking
+
+Without this protocol, running `zenzic check links ../other-project` from inside `project-A`
+would load `project-A`'s `zenzic.toml`, use `project-A`'s engine adapter, and apply
+`project-A`'s exclusion rules — to `other-project`'s documentation. This is **Context
+Hijacking**: the caller's environment silently overrides the target's.
+
+### The Solution: Three-Step Sovereignty
+
+```text
+Step 1 — find_repo_root(search_from=target)
+         Searches upward from the resolved target path, not from os.getcwd().
+         Loads the target repository's zenzic.toml exclusively.
+
+Step 2 — _apply_target(repo_root, config, raw_path)
+         Recalibrates docs_root: if the path is a directory, docs_dir is
+         patched to that directory. If it is a file, the parent directory
+         becomes docs_root and the file is the single audit target.
+         Sovereign root guard: when target == repo_root, the configured
+         docs_dir is preserved (not overridden to ".").
+
+Step 3 — CEO-043 Sandbox Guard
+         If docs_root falls outside repo_root (external target), adopt
+         docs_root as the new repo_root so Blood Sentinel guards escapes
+         from the target, not the location of the caller.
+```
+
+### The Genesis Nomad (`init`)
+
+`zenzic init <path>` is a special case: it **creates** a project rather than auditing one.
+The given path becomes the `repo_root` directly, and the directory is created
+(`mkdir -p`) if it does not exist. Engine auto-detection runs on the (possibly empty)
+target directory. The caller's CWD is never written to.
+
+```bash
+zenzic init ../new-project          # creates ../new-project/zenzic.toml
+zenzic init /workspace/fresh-docs   # creates the directory if needed
+```
+
+### Invariants
+
+| Invariant | Guarantee |
+| :--- | :--- |
+| Config isolation | Target's `zenzic.toml` is loaded; caller's config is never consulted |
+| Sandbox guard | Blood Sentinel perimeter is anchored at `docs_root`, not `cwd` |
+| No CWD mutation | `init` writes to the target; caller's working directory is untouched |
+| Hint display | Banner shows the resolved target path for operator confidence |
+
+---
+
 ## Exit Codes {#exit-codes}
 
 Zenzic uses a structured exit code contract:

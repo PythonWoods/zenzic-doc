@@ -91,6 +91,13 @@ Zenzic deterministically resolves the correct adapter from `build_context.engine
 | `"docusaurus"` | `docusaurus.config.ts` found | `DocusaurusAdapter` — reads configuration statically |
 | any unknown string | — | `StandaloneAdapter` — no registered adapter for this engine |
 
+:::tip[Engine config files are automatically excluded]
+Each adapter shields its engine configuration file from the unused-assets check (Z903). You do
+**not** need to add `docusaurus.config.ts`, `mkdocs.yml`, or `zensical.toml` to `excluded_assets`
+in `zenzic.toml`. See [System Guardrails](../reference/configuration.mdx#system-guardrails) for the
+full list of automatically excluded files.
+:::
+
 ### Standalone mode
 
 When `StandaloneAdapter` is selected, Zenzic has no knowledge of the project's nav structure. In

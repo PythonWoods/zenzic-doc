@@ -13,6 +13,21 @@ All top-level fields in `zenzic.toml` that control paths, thresholds, and scorin
 
 ---
 
+## Configuration Priority {#config-priority}
+
+Zenzic resolves configuration using a **4-level hierarchy** — the most specific source wins:
+
+| Priority | Source | Description |
+| :---: | :--- | :--- |
+| **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
+| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
+| 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
+
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+
+---
+
 ## `docs_dir`
 
 **Type:** string (path) — **Default:** `"docs"`
@@ -27,7 +42,7 @@ docs_dir = "documentation"
 
 ## `excluded_dirs`
 
-**Type:** list of strings — **Default:** `["includes", "assets", "stylesheets", "overrides", "hooks"]`
+**Type:** list of strings — **Default:** `["includes", "stylesheets", "overrides", "hooks"]`
 
 Directory names (not full paths) inside `docs_dir` that are excluded from all checks. Any
 directory whose **name** matches an entry in this list is skipped, regardless of its depth in
@@ -37,9 +52,52 @@ the tree. This means `excluded_dirs = ["assets"]` excludes both `docs/assets/` a
 The default list covers the standard MkDocs and Material for MkDocs special directories, which
 contain theme overrides, CSS, and snippet includes rather than documentation content.
 
+:::tip[Asset directories are not excluded by default]
+`assets/` is intentionally **absent** from the default. Directories named `assets/` typically
+contain images and files that are *referenced* by documentation pages — excluding them would
+prevent Zenzic from building the asset index, causing valid links to be flagged as Z104. Add
+`"assets"` to `excluded_dirs` only if your `assets/` directory holds files that are *never*
+linked from Markdown (e.g. build-time resources consumed by the engine, not by readers).
+:::
+
 ```toml
 excluded_dirs = ["includes", "assets", "partials", "_templates"]
 ```
+
+---
+
+## System Guardrails (Level 1 Exclusions) {#system-guardrails}
+
+Zenzic automatically excludes certain files from all quality checks — including the unused-assets check (Z903). These **Level 1 Guardrails** are immutable and require no user configuration.
+
+### Level 1a — Universal Infrastructure
+
+Common toolchain files that are never documentation content:
+
+| Category | Files excluded automatically |
+|----------|------------------------------|
+| JavaScript / Node.js | `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `tsconfig.json`, `tsconfig.base.json` |
+| Python | `pyproject.toml`, `poetry.lock`, `uv.lock`, `setup.cfg`, `setup.py` |
+| Generic toolchain | `Makefile`, `justfile` |
+| Lock files | Any file matching `*.lock` |
+| Linter configs | Files matching `eslint.config.*`, `.prettierrc*`, `.editorconfig` |
+
+### Level 1b — Adapter-Declared Engine Configs
+
+Each adapter automatically excludes the engine configuration files it consumes:
+
+| Engine | Files excluded automatically |
+|--------|------------------------------|
+| Docusaurus | `docusaurus.config.ts`, `docusaurus.config.js`, `docusaurus.config.mjs`, `sidebars.ts`, `sidebars.js`, `versions.json`, `_category_.json` |
+| MkDocs | `mkdocs.yml` |
+| Zensical | `zensical.toml` |
+| Standalone | *(none — no engine config)* |
+
+:::tip
+You do **not** need to add these files to `excluded_assets`. Zenzic guards them at the engine level.
+Running `zenzic check all .` from the project root will never produce Z903 warnings on your
+`docusaurus.config.ts`, `package.json`, or any other engine configuration file.
+:::
 
 ---
 
@@ -75,9 +133,10 @@ excluded_assets = [
 ]
 ```
 
-The `**/_category_.json` pattern is recommended for Docusaurus projects, where every
-subdirectory may contain a `_category_.json` file consumed by the sidebar plugin rather
-than referenced from any page.
+The `**/_category_.json` pattern was previously recommended for Docusaurus projects.
+Since v0.7.0, `_category_.json` is automatically shielded as a [Level 1b guardrail](#system-guardrails)
+by the Docusaurus adapter — the manual entry is no longer required. Existing entries in
+`excluded_assets` remain valid and are silently deduplicated.
 
 ---
 

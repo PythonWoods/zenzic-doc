@@ -35,6 +35,17 @@ zenzic check all --offline          # Force flat URL resolution (e.g. for USB / 
 zenzic check links --show-info      # Show info-level findings (e.g. circular links)
 ```
 
+All `check` sub-commands accept an optional `PATH` argument to scope the check to a specific
+directory or project. Zenzic loads the config from the target, not the caller's CWD
+(sovereign root semantics — identical to `check all`):
+
+```bash
+zenzic check links   ../other-project        # check links in a sibling project
+zenzic check orphans content/                # check orphans in a sub-directory
+zenzic check assets  /abs/path/to/docs       # absolute path also accepted
+zenzic check all     /abs/path/to/docs       # all checks on a remote project
+```
+
 ## Global flags {#global-flags}
 
 These flags control Zenzic's signal-to-noise profile across routine scans, CI gates,
@@ -155,6 +166,7 @@ zenzic check all --no-color --format json > report.json
 
 ```bash
 zenzic init                               # Scaffold zenzic.toml in the current project
+zenzic init ../new-project                # Initialize a remote directory (creates it if needed)
 zenzic init --pyproject                   # Write config into pyproject.toml [tool.zenzic]
 zenzic init --force                       # Overwrite existing config without prompting
 zenzic init --plugin plugin-scaffold-demo # Scaffold a plugin SDK package
@@ -164,6 +176,9 @@ zenzic init --plugin plugin-scaffold-demo # Scaffold a plugin SDK package
 asks whether to embed the configuration there as a `[tool.zenzic]` table instead of
 creating a separate `zenzic.toml`.  Pass `--pyproject` to skip the prompt and write
 directly into `pyproject.toml`.
+
+**Nomad mode** — `zenzic init <path>` treats the given path as the target project root.
+The directory is created if it does not exist. The caller's CWD is not affected.
 
 Engine auto-detection is included in both modes: if `mkdocs.yml` or `zensical.toml`
 is present, the generated configuration pre-sets the `engine` field accordingly.
@@ -410,6 +425,67 @@ Each row in the Extensible Rules table shows the entry-point name, the rule's st
 or the package name for third-party plugins), and the fully qualified Python class name.
 
 Use this command to verify which rules are active after installing a plugin package.
+
+---
+
+## Interactive Lab {#lab}
+
+```bash
+zenzic lab [ACT] [--list]
+```
+
+`zenzic lab` is an interactive showcase that runs bundled documentation examples against
+the Sentinel and reports whether each act met its expected outcome.
+
+### Act selection
+
+| Syntax | Behaviour |
+| :--- | :--- |
+| `zenzic lab` | Display the act menu |
+| `zenzic lab 3` | Run a single act |
+| `zenzic lab 11-16` | Run a range of acts (inclusive) |
+| `zenzic lab all` | Run all 17 acts in sequence |
+| `zenzic lab --list` | Print the act index without running |
+
+### Act menu
+
+Acts are grouped into four thematic sections:
+
+| Section | Icon | Acts | Focus |
+| :--- | :---: | :---: | :--- |
+| OS & Environment Guardrails | 🛡 | 0–3 | Core linting, The Shield, baseline pass |
+| Structural & SEO Integrity | 🔗 | 4–6 | Single-file, custom dir, transparent proxy |
+| Enterprise Adapters & Migration | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, Z404 guards |
+| Red/Blue Team Matrix | 🔴 | 11–16 | Attack/defense, obfuscated creds, stress tests |
+
+### Outcome labels
+
+Each act declares its expected outcome. After execution, the Obsidian Seal reports
+whether the expectation was met:
+
+| Label | Meaning |
+| :--- | :--- |
+| `PASS ✓` | Expected clean run — zero findings |
+| `EXPECTED FAIL ✓` | Expected errors were found |
+| `BREACH ✓` | Expected Shield credential detection |
+| `FAIL (unexpected)` | Act expected to pass but errors found |
+| `BREACH expected — not triggered` | Expected Shield hit was not produced |
+
+### Examples
+
+```bash
+# Run the Red/Blue Team Matrix (all 6 attack/defense acts)
+zenzic lab 11-16
+
+# Run the full tour
+zenzic lab all
+
+# Run a single act
+zenzic lab 3
+
+# Print the menu without running
+zenzic lab --list
+```
 
 ---
 

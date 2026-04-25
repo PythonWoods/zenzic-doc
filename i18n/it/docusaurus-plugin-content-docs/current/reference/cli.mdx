@@ -35,6 +35,17 @@ zenzic check all --offline          # Forza URL piatti (es. per build su USB o r
 zenzic check links --show-info      # Mostra finding di livello info (es. link circolari)
 ```
 
+Tutti i sotto-comandi `check` accettano un argomento opzionale `PATH` per limitare il
+controllo a una directory o a un progetto specifico. Zenzic carica la configurazione dalla
+destinazione, non dalla CWD del chiamante (semantica sovereign root — identica a `check all`):
+
+```bash
+zenzic check links   ../altro-progetto      # controlla i link in un progetto adiacente
+zenzic check orphans content/               # controlla gli orfani in una sotto-directory
+zenzic check assets  /percorso/assoluto     # percorso assoluto accettato
+zenzic check all     /percorso/assoluto     # tutti i controlli su un progetto remoto
+```
+
 ## Flag globali {#global-flags}
 
 Questi flag controllano il profilo signal-to-noise di Zenzic tra scansioni quotidiane,
@@ -161,6 +172,7 @@ zenzic check all --no-color --format json > report.json
 
 ```bash
 zenzic init                               # Crea zenzic.toml nel progetto corrente
+zenzic init ../nuovo-progetto             # Inizializza una directory remota (la crea se necessario)
 zenzic init --pyproject                   # Scrive la config in pyproject.toml [tool.zenzic]
 zenzic init --force                       # Sovrascrive la config esistente senza prompt
 zenzic init --plugin plugin-scaffold-demo # Crea un pacchetto SDK plugin
@@ -170,6 +182,10 @@ zenzic init --plugin plugin-scaffold-demo # Crea un pacchetto SDK plugin
 `zenzic init` chiede se incorporare la configurazione lì come tabella `[tool.zenzic]`
 invece di creare un file `zenzic.toml` separato.  Usa `--pyproject` per saltare il
 prompt e scrivere direttamente in `pyproject.toml`.
+
+**Modalità Nomad** — `zenzic init <percorso>` tratta il percorso indicato come root del
+progetto di destinazione. La directory viene creata se non esiste. La CWD del chiamante
+non viene modificata.
 
 Il rilevamento automatico dell'engine è incluso in entrambe le modalità: se `mkdocs.yml`
 o `zensical.toml` è presente, la configurazione generata preimposta il campo `engine`.
@@ -399,6 +415,67 @@ entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
 Usa questo comando per verificare quali regole sono attive dopo aver installato un pacchetto
 plugin.
+
+---
+
+## Lab Interattivo {#lab}
+
+```bash
+zenzic lab [ATTO] [--list]
+```
+
+`zenzic lab` è una vetrina interattiva che esegue esempi di documentazione inclusi nel
+pacchetto contro il Sentinel e riporta se ogni atto ha soddisfatto l'esito atteso.
+
+### Selezione degli atti
+
+| Sintassi | Comportamento |
+| :--- | :--- |
+| `zenzic lab` | Mostra il menu degli atti |
+| `zenzic lab 3` | Esegue un singolo atto |
+| `zenzic lab 11-16` | Esegue un intervallo di atti (inclusivo) |
+| `zenzic lab all` | Esegue tutti i 17 atti in sequenza |
+| `zenzic lab --list` | Stampa l'indice degli atti senza eseguire |
+
+### Menu degli atti
+
+Gli atti sono raggruppati in quattro sezioni tematiche:
+
+| Sezione | Icona | Atti | Focus |
+| :--- | :---: | :---: | :--- |
+| Guardrail OS & Ambiente | 🛡 | 0–3 | Linting base, The Shield, run pulito |
+| Integrità Strutturale & SEO | 🔗 | 4–6 | File singolo, dir custom, proxy trasparente |
+| Adattatori Enterprise & Migrazione | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, guardie Z404 |
+| Matrice Red/Blue Team | 🔴 | 11–16 | Attacco/difesa, credenziali offuscate, stress test |
+
+### Etichette di esito
+
+Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, l'Obsidian Seal riporta
+se l'aspettativa è stata soddisfatta:
+
+| Etichetta | Significato |
+| :--- | :--- |
+| `PASS ✓` | Esecuzione pulita attesa — zero finding |
+| `EXPECTED FAIL ✓` | Gli errori attesi sono stati trovati |
+| `BREACH ✓` | Rilevamento credenziali Shield atteso |
+| `FAIL (unexpected)` | L'atto doveva passare ma ha trovato errori |
+| `BREACH expected — not triggered` | Il rilevamento Shield atteso non si è prodotto |
+
+### Esempi
+
+```bash
+# Esegui la Matrice Red/Blue Team (tutti e 6 gli atti attacco/difesa)
+zenzic lab 11-16
+
+# Esegui il tour completo
+zenzic lab all
+
+# Esegui un singolo atto
+zenzic lab 3
+
+# Stampa il menu senza eseguire
+zenzic lab --list
+```
 
 ---
 
