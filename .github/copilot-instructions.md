@@ -1,7 +1,7 @@
 # 📚 ZENZIC DOCS — Obsidian Ledger v0.7.0 "Obsidian Maturity"
 
 > **Single Source of Truth for all agents and contributors to the zenzic-doc repository.**
-> Schema: [MANIFESTO] → [POLICIES] → [ARCHITECTURE] → [ADR] → [CHRONICLES] → [SPRINT LOG]
+> Schema: [MANIFESTO] → [POLICIES] → [ARCHITECTURE] → [ADR] → [CHRONICLES]
 
 ---
 
@@ -44,11 +44,11 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - [ ] New architectural facts? → Update **[ARCHITECTURE]**
 - [ ] New decisions made? → Add an **[ADR]** entry (tagged `[DECISION]`)
 - [ ] Bug found and fixed? → Add a **[CHRONICLES]** entry (tagged `[BUG-xxx]` / `[LESSON]`)
-- [ ] Sprint complete? → Add entry to **[SPRINT LOG]**
 
 ### Step 2 — Update Documentation Artifacts
-- [ ] Content-only changes: add prose section to `RELEASE.md`
+- [ ] Content-only changes: add prose section to core repo `RELEASE.md` if user-visible
 - [ ] Structural or tooling changes: add section to `RELEASE.md` + notify core repo for cross-repo CHANGELOG entry
+- [ ] **Executive Filter:** `RELEASE.md` must stay ≤ 200 lines (Law of Executive Brevity). Technical fluff belongs in `CHANGELOG.md`, not the release notes.
 
 ### Step 3 — Staleness & Testimony Audit
 - [ ] `README.md` — check: Node.js version, Zenzic version badge, `just` recipe list, prerequisite table
@@ -136,9 +136,19 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - **[INVARIANT] The [CLOSING PROTOCOL] is a non-negotiable Engineering Contract.**
   An agent that ends a session without completing it commits a Class 1 violation (Technical Debt). The successor inherits a ghost, not a project.
 - **[INVARIANT] This file is the agent's only persistent memory.** Update it before the final commit — not after.
-- **[INVARIANT] Definition of Done:** A sprint is not closed until [SPRINT LOG] is updated, RELEASE.md is current, and the staleness audit (including symmetry diff) is complete.
+- **[INVARIANT] Definition of Done:** A sprint is not closed until RELEASE.md is current and the staleness audit (including symmetry diff) is complete.
 - **[INVARIANT] Proactivity:** Agents must notify the Tech Lead when a code change contradicts or expands the current guidelines.
 - **[INVARIANT] Sovereignty:** This file is the single source of truth for agent behavior in this repository.
+
+### The Law of Executive Brevity [MANDATORY] — D068
+
+- **[INVARIANT] `RELEASE.md` in the core repo must never exceed 200 lines.**
+  - User-visible narrative only: Big Three features, security wins, breaking changes, install CTA.
+  - No mutation tables, internal sprint IDs, bug IDs, or CVE traces in release notes.
+  - Technical details belong in `CHANGELOG.md` (core repo), not in `RELEASE.md`.
+- **[INVARIANT] `CHANGELOG.md` archive trigger:** When the core repo's `CHANGELOG.md` exceeds 500 lines, pre-release versions are moved to `CHANGELOG.archive.md`. The main file carries only the current release cycle.
+- **[RULE] 5-sprint summarisation:** When a CHANGELOG section for a single version exceeds 5 detailed sprint entries, summarise into thematic paragraphs. Preserve the facts; compress the format.
+- **Enforcement:** [CLOSING PROTOCOL] Step 2 "Executive Filter" check implements this law.
 
 ---
 
@@ -359,3 +369,27 @@ PATH argument applied to all check sub-commands and `init` in zenzic core. CLI r
 ### D061 (CEO) — The Maturity Narrative
 **Version:** 0.7.0 · **Date:** 2026-04-25
 v0.7.0 launch blog article (`blog/2026-04-22-beyond-the-siege-zenzic-v070.mdx`) revised as a case study in software engineering maturity. Additions (EN + IT simultaneously): "Treating Documentation as Untrusted Input" framing section; "The Precision Sprint" (Z502 BUG-012 + Z105 BUG-013 false positive narrative); "Total CLI Symmetry: The Sovereign Root Protocol" (D060/D062 coverage with terminal output examples); "The Law of Contemporary Testimony" (CEO-059). Capabilities table updated with new rows. Test count updated 1195 → 1225. CTA changed from `pip install zenzic; zenzic check all` to `uvx zenzic lab`.
+
+### D063 (CEO) — The Obsidian Hygiene
+**Version:** 0.7.0 · **Date:** 2026-04-25
+No documentation changes in zenzic-doc. Forensic debt audit in zenzic repo confirmed zero TODO/FIXME/HACK markers in production source.
+
+### D064 (CEO) — Operation Matrix Laboratory
+**Version:** 0.7.0 · **Date:** 2026-04-25
+No documentation changes in zenzic-doc. Six new example projects added to zenzic repo `examples/os/` and `examples/rules/`. `zenzic lab` UI upgraded to four-section Rich layout (Acts 0–16). `examples/run_demo.sh` updated with section banners and Acts 9–16.
+
+### D070 (CEO) — The Idempotent Sentinel
+**Version:** 0.7.0 · **Date:** 2026-04-25
+No documentation changes in zenzic-doc. Banner shadowing fix in zenzic core `_lab.py`: `get_ui().print_header()` removed from three locations (the `for act` loop, `_print_act_seal()`, and `_print_summary()`). The `🛡 ZENZIC SENTINEL` header now prints exactly once per `zenzic lab` invocation regardless of how many acts are run.
+
+### D069 (CEO) — The Range Master Protocol
+**Version:** 0.7.0 · **Date:** 2026-04-25
+`docs/reference/cli.mdx` (EN + IT) updated: `## Interactive Lab {#lab}` section added documenting act selection syntax (integer, `N-M` inclusive range, `all` shorthand), the four thematic sections (🛡/🔗/🏢/🔴), outcome label table, and usage examples including `zenzic lab 11-16` for the Red/Blue matrix. ADR-010 "Range-Aware Showroom Commands" + Rule R18 "Range Awareness" codified in zenzic Obsidian Ledger.
+
+### D072 (CEO) — The Ghost Content Fix
+**Version:** 0.7.0 · **Date:** 2026-04-25
+No documentation changes in zenzic-doc. BUG-014 fixed in zenzic core `scanner.py`: `_first_content_line()` now skips REUSE-compliant `<!-- SPDX … -->` HTML comments and YAML frontmatter before computing the Z502 pointer line. The `❱` arrow in Z502 short-content findings now lands on the first prose word, not on the licence header.
+
+### D067+D068+D071 (CEO) — Obsidian Archive + Curation Law + Knowledge Purge
+**Version:** 0.7.0 · **Date:** 2026-04-25
+No documentation page changes in zenzic-doc. Core repo governance: `CHANGELOG.md` and `CHANGELOG.it.md` split — pre-v0.6.0a1 history moved to `CHANGELOG.archive.md` and `CHANGELOG.it.archive.md`. `RELEASE.md` condensed from 1079 to 114 lines (Big Three + Security + Install CTA). Core repo `.github/copilot-instructions.md` pruned — entire `[SPRINT LOG]` removed; Law of Executive Brevity codified in `[POLICIES]` of all three Obsidian Ledgers (core, doc, action).
