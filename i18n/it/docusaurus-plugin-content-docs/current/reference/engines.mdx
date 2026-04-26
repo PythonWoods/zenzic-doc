@@ -180,6 +180,18 @@ Solo i codici ISO 639-1 validi di due lettere minuscole producono pattern di esc
 tag di versione (`v1`, `v2`), tag di build (`beta`, `rc1`), codici a tre lettere e codici
 BCP 47 con regione vengono rifiutati silenziosamente — non producono esclusioni false.
 
+### Risoluzione degli URL di route
+
+MkDocs costruisce gli URL dai percorsi sorgente quando `use_directory_urls: true` (impostazione
+predefinita): `docs/guide/install.md` → `/guide/install/`. Zenzic valida i **link relativi a
+livello sorgente**, non gli URL costruiti — quindi i link inter-documento sono identici in entrambe
+le modalità di routing.
+
+Se `use_directory_urls: false` è impostato, MkDocs genera file `.html` piatti. La validazione
+dei link di Zenzic non è influenzata: i link relativi `../api.md` si risolvono correttamente
+indipendentemente da questa impostazione. Solo i link assoluti (`/guide/`) vengono sempre
+segnalati come `Z105 ABSOLUTE_PATH`.
+
 ---
 
 ## Zensical
@@ -196,18 +208,33 @@ né richiesto.
 engine = "zensical"
 ```
 
-### Proxy Trasparente (Ponte di Migrazione)
+### Proxy Trasparente (Ponte di Migrazione) {#zensical-transparent-proxy}
 
-Per facilitare una migrazione fluida da MkDocs a Zensical, l'adapter implementa una modalità **Proxy Trasparente**. Se `zensical.toml` è **assente** ma `mkdocs.yml` è presente nella root del progetto, l'adapter Zensical utilizzerà automaticamente la configurazione MkDocs come ponte.
+Il Proxy Trasparente è la feature di migrazione distintiva di Zensical: se `zensical.toml` è
+**assente** ma `mkdocs.yml` è presente nella root del progetto, `ZensicalAdapter` legge
+automaticamente la configurazione MkDocs come ponte — senza alcuna configurazione manuale.
 
-Questo permette di testare Zenzic con l'engine Zensical ancora prima di aver completato il passaggio a un file `zensical.toml` nativo. In questo caso, il banner Sentinel ti avviserà:
+Questo significa che puoi adottare Zenzic con l'engine Zensical **dal primo giorno di migrazione**,
+prima di scrivere una singola riga di `zensical.toml`. Quando il ponte si attiva, il banner
+Sentinel ti notifica:
 
 ```text
 SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
 ```
 
-:::warning[Regola del Custode Strutturale]
-Sebbene questo ponte permetta a Zenzic di funzionare, Zensical stesso potrebbe gestire alcune feature di MkDocs in modo diverso. Usa il ponte come rete di sicurezza temporanea durante la migrazione e punta a un file `zensical.toml` nativo per ottenere la piena parità.
+**Cosa legge il ponte da `mkdocs.yml`:**
+
+| Campo MkDocs | Usato da Zensical Adapter per |
+| :--- | :--- |
+| `docs_dir` | Rilevamento della directory sorgente |
+| `nav` | Appartenenza alla nav (rilevamento orphan) |
+| `plugins.i18n.languages` | Identificazione delle directory locale |
+| `theme.favicon`, `theme.logo` | Guardia asset Z404 |
+
+:::tip[Strategia di migrazione]
+Usa il Proxy Trasparente per eseguire `zenzic check all` sul tuo progetto MkDocs *prima* di
+impegnarti con Zensical. Una volta soddisfatto dei risultati, crea un `zensical.toml` nativo per
+la piena parità e sblocca le funzionalità specifiche di Zensical.
 :::
 
 ### Formato nav di zensical.toml
@@ -242,6 +269,16 @@ Il risultato:
 - Nessuna ambiguità `fallback_to_default`
 - Nessuna euristica "quale blocco plugin si applica?"
 - `ConfigurationError` è impossibile per i18n mal configurato — lo schema TOML è esplicito
+
+### Limitazioni
+
+- **Nav generata da plugin** — I plugin Zensical che modificano la nav a runtime non vengono
+  valutati. Le pagine incluse solo da tali plugin potrebbero essere segnalate come orphan. Aggiungi
+  i loro percorsi a `excluded_dirs` in `zenzic.toml` per sopprimere i report falsi.
+- **Contenuto dinamico** — `zensical.toml` viene analizzato come TOML statico. Le espressioni
+  template o i campi calcolati non vengono valutati.
+- **Scope di rilevamento** — `ZensicalAdapter` cerca `zensical.toml` (o il ponte MkDocs) solo
+  nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `zenzic.toml`.
 
 ---
 
@@ -441,7 +478,35 @@ Gli URL esterni (`https://...`, `http://...`) non sono interessati.
 ## Standalone (nessun motore)
 
 `StandaloneAdapter` viene restituito quando non è presente alcun file di configurazione del
-motore e non sono dichiarati locale. Tutti i metodi dell'adapter sono no-op:
+motore e non sono dichiarati locale. È la modalità universale di Zenzic — compatibile con
+qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
+
+### Quando usare Standalone
+
+- **Repository Markdown statici** — wiki, ADR log, documentazione in testo semplice senza
+  pipeline di build.
+- **Validazione pre-migrazione** — esegui Zenzic su un progetto prima di scegliere un SSG per
+  rilevare link rotti e credenziali prima dell'introduzione di un framework.
+- **Progetti SSG personalizzati** — qualsiasi generatore non ancora coperto da un adapter nativo.
+  Usa `excluded_dirs` per sopprimere i falsi positivi delle directory di output generate.
+
+### Configurazione minimale
+
+```toml
+# zenzic.toml — minimo richiesto per standalone
+docs_dir = "docs"
+```
+
+Nessuna sezione `[build_context]` è necessaria. Zenzic rileva l'assenza di file di configurazione
+del motore e seleziona automaticamente `StandaloneAdapter`.
+
+### Capacità
+
+I controlli snippet, placeholder, link e asset vengono eseguiti a piena potenza. Il rilevamento
+credenziali Z201, il rilevamento path traversal Z202/Z203 e le guardie logo/favicon Z401
+funzionano tutti normalmente.
+
+Tutti i metodi dell'adapter sono no-op:
 
 - `is_locale_dir` → sempre `False`
 - `resolve_asset` → sempre `None`
@@ -449,9 +514,11 @@ motore e non sono dichiarati locale. Tutti i metodi dell'adapter sono no-op:
 - `get_nav_paths` → `frozenset()`
 - `get_ignored_patterns` → `set()`
 
-`find_orphans` restituisce `[]` immediatamente — senza una nav, non c'è un insieme di
-riferimento con cui confrontarsi. I controlli snippet, placeholder, link e asset vengono
-comunque eseguiti normalmente.
+### Limitazioni
 
-Questo significa che Zenzic funziona out-of-the-box con qualsiasi altro sistema basato su
-Markdown senza produrre falsi positivi.
+`find_orphans` restituisce `[]` immediatamente — senza una nav dichiarata, non c'è un insieme
+di riferimento con cui confrontarsi. Il rilevamento orphan richiede una dichiarazione nav: MkDocs
+`nav:`, Zensical `[nav]`, o Docusaurus `sidebars.ts`.
+
+Per progetti con localizzazione senza un engine supportato, aggiungi i nomi delle directory
+locale a `excluded_dirs` in `zenzic.toml` per evitare falsi report orphan.
