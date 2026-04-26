@@ -27,34 +27,44 @@ This is the recommended workflow for CI and for trying Zenzic on an unfamiliar r
 
 ---
 
-## Step 2 — Explore the Sentinel Arsenal {#step-2-lab}
+## Step 2 — The Siege & The Shield {#step-2-siege}
 
-Before configuring anything, watch what the Sentinel can detect:
+Before configuring anything, watch Zenzic protect a deliberately broken repo:
+
+**The Siege** — run act 2 (leaked credential demo):
 
 ```bash
-uvx zenzic lab
+uvx zenzic lab 2
 ```
 
-The interactive Lab presents a menu of scenarios — broken links, leaked credentials,
-path-traversal probes, orphaned pages, and more. Pick any act and see Zenzic diagnose
-it live with the same output format it uses in production.
+Zenzic scans the bundled `security_lab` fixture and fires **exit code 2** with the
+Security Breach banner — the non-suppressible alert for a leaked credential:
 
 ```text
-┌─────────────────────────────────────────────────┐
-│  Zenzic Lab — choose an act or press Enter for  │
-│  the full showcase                               │
-│                                                  │
-│   1 · Z101 Broken Link                          │
-│   2 · Z201 Shield — leaked credential           │
-│   3 · Z202 Blood Sentinel — path traversal      │
-│   …                                             │
-└─────────────────────────────────────────────────┘
+╭────────────────────── SECURITY BREACH DETECTED ──────────────────────╮
+│                                                                       │
+│  ✘ Finding:   Secret detected (aws-access-key) — rotate immediately. │
+│  ✘ Location:  docs/how-to/configure.md:4                             │
+│  ✘ Credential: AKIA************MPLE                                  │
+│                                                                       │
+╰───────────────────────────────────────────────────────────────────────╯
 ```
 
-Run a specific act directly:
+The masked credential, the non-zero exit: this is how Zenzic teaches.
+
+**The Shield (Obsidian Seal)** — now run act 0:
 
 ```bash
-uvx zenzic lab 3   # path-traversal detection live demo
+uvx zenzic lab 0
+```
+
+You'll see the Obsidian Seal: every check green, exit 0. The contrast is the lesson —
+the same engine that caught the secret just confirmed that clean docs are genuinely clean.
+
+**Explore the full arsenal:**
+
+```bash
+uvx zenzic lab   # interactive menu of all scenarios
 ```
 
 ---

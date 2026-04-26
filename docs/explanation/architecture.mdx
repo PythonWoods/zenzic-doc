@@ -334,6 +334,45 @@ This ensures that Zenzic remains a **Structural Custodian** for documentation di
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js/ts` | Static JS config parsing, frontmatter slug support, route base path |
 | `StandaloneAdapter` | `standalone` | (none) | Engine-agnostic adapter for plain Markdown projects; orphan check skipped |
 
+### Protocol Sovereignty {#protocol-sovereignty}
+
+**Rule R21 (D080):** the Core (`validator.py`, `scanner.py`) must never hardcode engine
+names as conditions for validation logic. Engine-specific behaviour is declared in the
+adapter and queried by the Core via protocol methods.
+
+The canonical pattern is `get_link_scheme_bypasses() -> frozenset[str]`. If an engine
+uses a non-standard URI scheme for internal links, its adapter returns that scheme name
+and the validator exempts matching URLs from the Z105 absolute-path check:
+
+| Adapter | `get_link_scheme_bypasses()` | Reason |
+| :--- | :--- | :--- |
+| `DocusaurusAdapter` | `frozenset({"pathname"})` | `pathname:///` links reference `static/` assets via the React router escape hatch |
+| `MkDocsAdapter` | `frozenset()` | No engine-specific bypass required |
+| `ZensicalAdapter` | `frozenset()` | No engine-specific bypass required |
+| `StandaloneAdapter` | `frozenset()` | No engine-specific bypass required |
+
+**Architectural invariant:** adding a new engine adapter that needs a link-scheme bypass
+requires zero changes to `validator.py`. Implement `get_link_scheme_bypasses()` in the
+adapter alone — the Core queries it at runtime.
+
+### Cross-Engine Validation Parity {#cross-engine-parity}
+
+Zenzic's Core is a pure algorithm — it has no knowledge of which engine produced the
+docs it is inspecting. The four primary check categories fire identically for the same
+content regardless of the active adapter:
+
+| Category | Rule | Engine dependency |
+| :--- | :--- | :--- |
+| Secret detection | Z201 | None — raw frontmatter scan |
+| Absolute path links | Z105 | Adapter-declared bypass schemes only |
+| Short content | Z502 | None — word count after frontmatter strip |
+| Missing directory index | Z401 | `adapter.provides_index()` — uniform across engines |
+
+The `examples/matrix/` directory in this repository contains the living proof: identical
+red-team attack vectors produce identical findings across `standalone`, `mkdocs`, and
+`zensical` engines. The blue-team fixtures produce an identical Obsidian Seal on all
+three. Zero asymmetries.
+
 ### Link Resolution and Slug Mapping {#link-resolution}
 
 Adapters that support frontmatter `slug` overrides (currently `DocusaurusAdapter`) map slugs into the Virtual Site Map for **reachability** validation: a page with `slug: /quick-start` at URL `/docs/quick-start` is correctly marked `REACHABLE` even though its file path is `docs/guides/getting-started.mdx`.

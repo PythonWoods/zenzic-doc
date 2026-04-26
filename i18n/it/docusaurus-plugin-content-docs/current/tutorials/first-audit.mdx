@@ -27,34 +27,45 @@ Questo è il workflow consigliato per la CI e per provare Zenzic su repository s
 
 ---
 
-## Step 2 — Esplora l'arsenale della Sentinella {#step-2-lab}
+## Step 2 — L'Assedio e lo Scudo {#step-2-siege}
 
-Prima di configurare qualsiasi cosa, osserva cosa sa rilevare la Sentinella:
+Prima di configurare qualsiasi cosa, osserva Zenzic proteggere un repo volutamente compromesso:
+
+**L'Assedio** — esegui l'atto 2 (demo credenziale esposta):
 
 ```bash
-uvx zenzic lab
+uvx zenzic lab 2
 ```
 
-Il Lab interattivo presenta un menu di scenari — link spezzati, credenziali esposte,
-probe di path-traversal, pagine orfane e altro. Scegli un atto e guarda Zenzic diagnosticarlo
-in tempo reale con lo stesso formato di output usato in produzione.
+Zenzic scansiona il fixture `security_lab` incluso e attiva l'**exit code 2** con
+il banner Security Breach — l'allerta non sopprimibile per una credenziale esposta:
 
 ```text
-┌─────────────────────────────────────────────────┐
-│  Zenzic Lab — scegli un atto o premi Enter per  │
-│  la showcase completa                            │
-│                                                  │
-│   1 · Z101 Link spezzato                        │
-│   2 · Z201 Shield — credenziale esposta         │
-│   3 · Z202 Blood Sentinel — path traversal      │
-│   …                                             │
-└─────────────────────────────────────────────────┘
+╭────────────────────── SECURITY BREACH DETECTED ──────────────────────╮
+│                                                                       │
+│  ✘ Finding:   Secret detected (aws-access-key) — rotate immediately. │
+│  ✘ Location:  docs/how-to/configure.md:4                             │
+│  ✘ Credential: AKIA************MPLE                                  │
+│                                                                       │
+╰───────────────────────────────────────────────────────────────────────╯
 ```
 
-Esegui un atto direttamente:
+La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
+
+**Lo Scudo (Obsidian Seal)** — ora esegui l'atto 0:
 
 ```bash
-uvx zenzic lab 3   # demo live del rilevamento path-traversal
+uvx zenzic lab 0
+```
+
+Vedrai l'Obsidian Seal: ogni controllo verde, exit 0. Il contrasto è la lezione —
+lo stesso motore che ha rilevato il segreto ha appena confermato che la documentazione
+pulita è genuinamente pulita.
+
+**Esplora l'arsenale completo:**
+
+```bash
+uvx zenzic lab   # menu interattivo di tutti gli scenari
 ```
 
 ---

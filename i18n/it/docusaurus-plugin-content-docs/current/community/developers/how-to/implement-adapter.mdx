@@ -269,6 +269,41 @@ compatibili con un nuovo adapter.
 
 ---
 
+## Step 6 — Dichiarare i Bypass per gli Schemi Link (Opzionale) {#step-6-bypasses}
+
+Se il tuo engine usa uno schema URI non standard per i link interni, implementa
+`get_link_scheme_bypasses()` per comunicare al Core quali nomi di schema esentare
+dal controllo Z105 e dall'errore schema-sconosciuto (Regola R21 — Sovranità del
+Protocollo):
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    """Restituisce i nomi di schema URI che l'engine usa legittimamente.
+
+    Il validator aggiunge ``<schema>:`` alla sua lista di skip per ogni nome
+    restituito, sopprimendo sia l'avviso schema-sconosciuto sia il controllo
+    Z105 per gli URL che usano quello schema.
+
+    Restituisci ``frozenset()`` se l'engine non ha bypass per schemi link.
+    """
+    return frozenset()
+```
+
+La maggior parte degli engine restituisce `frozenset()`. Il `DocusaurusAdapter`
+built-in restituisce `frozenset({"pathname"})` perché Docusaurus usa link
+`pathname:///` per riferimenti agli asset statici che bypassano il React router
+— il `/` iniziale nel componente path è un artefatto della convenzione URI, non
+un percorso assoluto del server.
+
+:::info[Regola R21 — Sovranità del Protocollo]
+Il Core non codifica mai nomi di engine. Il comportamento engine-specifico è
+dichiarato nell'adapter e interrogato dal Core tramite questo metodo. Aggiungere
+un nuovo adapter che necessita di un bypass per lo schema dei link richiede
+**zero modifiche a `validator.py`**.
+:::
+
+---
+
 ## Garanzie del Contratto Adapter
 
 Il tuo adapter deve soddisfare queste invarianti, altrimenti lo scanner di
@@ -298,6 +333,10 @@ Zenzic potrebbe produrre risultati errati:
     landing page per la directory (es. tramite `index.md`, `README.md`, o una voce
     di configurazione dinamica come `_category_.json` con `"link": {"type": "generated-index"}`).  Non
     sollevare mai eccezioni — restituisci `False` in caso di errore I/O.
+11. `get_link_scheme_bypasses()` deve restituire un `frozenset[str]` di nomi di
+    schema (senza i due punti finali) — mai `None`, mai sollevare eccezioni.
+    Restituisci `frozenset()` se l'engine non ha requisiti di bypass per gli
+    schemi link.
 
 ---
 

@@ -307,6 +307,47 @@ Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la doc
 | `docusaurus` | `DocusaurusAdapter` | `docusaurus.config.js` / `.ts` |
 | `standalone` | `StandaloneAdapter` | Nessuna — adapter agnostico, orphan check saltato |
 
+### Sovranità del Protocollo {#protocol-sovereignty}
+
+**Regola R21 (D080):** il Core (`validator.py`, `scanner.py`) non deve mai codificare
+nomi di engine come condizioni per la logica di validazione. Il comportamento
+engine-specifico viene dichiarato nell'adapter e interrogato dal Core tramite metodi
+del protocollo.
+
+Il pattern canonico è `get_link_scheme_bypasses() -> frozenset[str]`. Se un engine
+utilizza uno schema URI non standard per i link interni, il suo adapter restituisce
+quel nome di schema e il validator esonera gli URL corrispondenti dal controllo Z105:
+
+| Adapter | `get_link_scheme_bypasses()` | Motivo |
+| :--- | :--- | :--- |
+| `DocusaurusAdapter` | `frozenset({"pathname"})` | I link `pathname:///` referenziano asset `static/` tramite l'escape hatch del React router |
+| `MkDocsAdapter` | `frozenset()` | Nessun bypass engine-specifico richiesto |
+| `ZensicalAdapter` | `frozenset()` | Nessun bypass engine-specifico richiesto |
+| `StandaloneAdapter` | `frozenset()` | Nessun bypass engine-specifico richiesto |
+
+**Invariante architetturale:** aggiungere un nuovo adapter che necessita di un bypass
+per lo schema dei link richiede zero modifiche a `validator.py`. Implementa
+`get_link_scheme_bypasses()` nell'adapter — il Core lo interroga a runtime.
+
+### Parità di Validazione Cross-Engine {#cross-engine-parity}
+
+Il Core di Zenzic è un algoritmo puro — non ha conoscenza di quale engine ha prodotto
+la documentazione che sta ispezionando. Le quattro categorie principali di controllo
+si attivano in modo identico per lo stesso contenuto indipendentemente dall'adapter
+attivo:
+
+| Categoria | Regola | Dipendenza engine |
+| :--- | :--- | :--- |
+| Rilevamento segreti | Z201 | Nessuna — scansione raw del frontmatter |
+| Link con percorso assoluto | Z105 | Solo schemi di bypass dichiarati dall'adapter |
+| Contenuto breve | Z502 | Nessuna — conteggio parole dopo strip del frontmatter |
+| Indice directory mancante | Z401 | `adapter.provides_index()` — uniforme tra engine |
+
+La directory `examples/matrix/` in questo repository contiene la prova vivente:
+vettori d'attacco red-team identici producono findings identici su engine `standalone`,
+`mkdocs` e `zensical`. I fixture blue-team producono un Obsidian Seal identico su tutti
+e tre. Zero asimmetrie.
+
 ### Risoluzione Link e Mapping degli Slug {#link-resolution}
 
 Gli adapter che supportano override `slug` nel frontmatter (attualmente `DocusaurusAdapter`) mappano gli slug nella Virtual Site Map per la validazione della **raggiungibilità**: una pagina con `slug: /quick-start` all'URL `/docs/quick-start` viene correttamente marcata `REACHABLE` anche se il suo percorso file è `docs/guides/getting-started.mdx`.

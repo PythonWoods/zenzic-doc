@@ -269,6 +269,39 @@ adapter.
 
 ---
 
+## Step 6 — Declare Link-Scheme Bypasses (Optional) {#step-6-bypasses}
+
+If your engine uses a non-standard URI scheme for internal links, implement
+`get_link_scheme_bypasses()` to tell the Core which scheme names to exempt from
+the Z105 absolute-path check and the unknown-scheme error (Rule R21 — Protocol
+Sovereignty):
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    """Return URI scheme names this engine uses legitimately.
+
+    The validator adds ``<scheme>:`` to its skip list for each returned name,
+    suppressing both the unknown-scheme warning and the Z105 absolute-path check
+    for URLs that use that scheme.
+
+    Return ``frozenset()`` if your engine has no special link-scheme bypass.
+    """
+    return frozenset()
+```
+
+Most engines return `frozenset()`. The built-in `DocusaurusAdapter` returns
+`frozenset({"pathname"})` because Docusaurus uses `pathname:///` links for
+static-asset references that bypass the React router — the leading `/` in the
+path component is a URI convention artifact, not a server-absolute path.
+
+:::info[Rule R21 — Protocol Sovereignty]
+The Core never hardcodes engine names. Engine-specific behaviour is declared in
+the adapter and queried by the Core via this method. Adding a new adapter that
+needs a link-scheme bypass requires **zero changes to `validator.py`**.
+:::
+
+---
+
 ## Adapter Contract Guarantees
 
 Your adapter must satisfy these invariants, or Zenzic's scanner may produce
@@ -298,6 +331,9 @@ incorrect results:
     the directory (e.g. via `index.md`, `README.md`, or a dynamic config entry
     like `_category_.json` with `"link": {"type": "generated-index"}`).  Never
     raise — return `False` on any I/O failure.
+11. `get_link_scheme_bypasses()` must return a `frozenset[str]` of scheme names
+    (without the trailing colon) — never `None`, never raise.  Return
+    `frozenset()` if your engine has no special link-scheme bypass requirement.
 
 ---
 
