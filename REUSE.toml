@@ -1,5 +1,17 @@
 version = 1
 
+# ── Generated / build artefacts ───────────────────────────────────────────────
+
+[[annotations]]
+path = "**/__pycache__/**"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "__pycache__/**"
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
+
 # ── Documentation content ────────────────────────────────────────────────────
 
 [[annotations]]
