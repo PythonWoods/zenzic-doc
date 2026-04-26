@@ -10,6 +10,7 @@
 .cache-loader
 *.tsbuildinfo
 .eslintcache
+__pycache__/
 
 # Misc
 .DS_Store
