@@ -111,30 +111,35 @@ The same logic applies to footer-only files. A legal notice linked only in the f
 has been invisible to Zenzic's orphan detector until now. In v0.7.0, it is REACHABLE
 because a user can reach it by clicking.
 
-## Zenzic vs The World
+## Architectural Philosophy: A Different Axis
 
 Documentation quality tools exist on a spectrum. Most operate on one axis — link
-existence — and stop there. Zenzic operates on a different axis entirely.
+existence — and stop there. Zenzic operates on a different axis entirely: **trust**.
 
-| Capability | markdown-link-check | htmlproofer | Zenzic v0.7.0 |
-| :--- | :---: | :---: | :---: |
-| Broken link detection | ✅ | ✅ | ✅ |
-| Multi-engine support | ❌ | ❌ | ✅ (Docusaurus, MkDocs, Zensical, Standalone) |
-| Orphan page detection | ❌ | ❌ | ✅ (Z402) |
-| UX-Discoverability (navbar + footer) | ❌ | ❌ | ✅ (R21) |
-| Credential / secret scanning | ❌ | ❌ | ✅ (Shield, Z201) |
-| Config asset checking (favicon, logo) | ❌ | ❌ | ✅ (Z404 across all engines) |
-| SARIF 2.1.0 output | ❌ | ❌ | ✅ |
-| Structured diagnostic codes | ❌ | ❌ | ✅ (Zxxx registry) |
-| Works fully offline | ✅ | ❌ | ✅ |
-| Zero subprocesses | ✅ | ❌ | ✅ |
-| Interactive demonstration lab | ❌ | ❌ | ✅ (17 Acts) |
-| Runtime dependencies | — | — | 5 |
+`markdown-link-check` and `htmlproofer` are correct tools for what they declare. They
+are link checkers — fast, composable, well-understood. Zenzic is not a link checker
+that also happens to check orphans and scan for secrets. It is a **Static Analysis
+Framework** built on a fundamentally different trust model. Comparing them on a
+feature checklist alone is like comparing a compiler and a formatter because both
+read source files.
 
-The claim is not that Zenzic replaces all of these tools in all contexts. The claim is
-that documentation quality — as distinct from link checking — requires understanding
-the navigation contract of your specific build system. Link checkers cannot tell you
-that a file is unreachable by navigation. Only an engine-aware tool can.
+The meaningful comparison is architectural:
+
+| Design Dimension | Generic Link Checkers | Zenzic Obsidian Guard |
+| :--- | :--- | :--- |
+| **Trust Model** | Trusts the source content | **Zero-Trust** — every file is untrusted input |
+| **Site Awareness** | Filesystem-only | **Virtual Site Map** — engine-aware projection |
+| **Security Layer** | None | **Shield** (9 secret families) + **Blood Sentinel** (path traversal) |
+| **CI/CD Footprint** | Requires build step or Node.js | **Pure Python**, subprocess-free, `uvx`-ready |
+| **Diagnostic System** | Free-form messages | **Zxxx Registry** — traceable, filterable codes |
+| **Orphan Detection** | Not in scope | **R21 Law** — nav-surface awareness |
+| **Output Format** | Text / exit code | Text, JSON, **SARIF 2.1.0** |
+
+The choice of which tool to run depends on which question you need to answer. If the
+question is *"do these links resolve?"*, a link checker is the right tool. If the
+question is *"is this documentation safe, complete, and navigable?"*, the trust model
+matters — and Zero-Trust is the only honest answer when documentation is produced by
+teams, contributors, or automated agents you do not fully control.
 
 ## The Safe Harbor: What v0.7.0 Completes
 
