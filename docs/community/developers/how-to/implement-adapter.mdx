@@ -58,7 +58,7 @@ to `get_route_info()`.
 
 ## Step 1 — Create the Adapter Class
 
-```python
+```python title="my_engine_adapter/adapter.py"
 # my_engine_adapter/adapter.py
 
 from __future__ import annotations
@@ -194,7 +194,7 @@ class MyEngineAdapter:
 Zenzic discovers adapters through the `zenzic.adapters` entry-point group.
 Register your adapter in your package's `pyproject.toml`:
 
-```toml
+```toml title="pyproject.toml"
 [project.entry-points."zenzic.adapters"]
 myengine = "my_engine_adapter.adapter:MyEngineAdapter"
 ```
@@ -202,7 +202,7 @@ myengine = "my_engine_adapter.adapter:MyEngineAdapter"
 The **key** (left of `=`) becomes the engine name users pass to `--engine` or
 set as `engine` in `zenzic.toml`:
 
-```toml
+```toml title="zenzic.toml"
 # In the user's zenzic.toml
 [build_context]
 engine = "myengine"

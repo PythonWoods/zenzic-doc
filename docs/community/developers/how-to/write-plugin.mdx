@@ -80,7 +80,7 @@ completion.  All state must be returned as `RuleFinding` objects.
 
 ## Minimal example
 
-```python
+```python title="my_org_rules/rules.py"
 # my_org_rules/rules.py
 import re
 from pathlib import Path
@@ -120,7 +120,7 @@ class NoInternalHostnameRule(BaseRule):
 Expose the rule through the `zenzic.rules` entry-point group in your package's
 `pyproject.toml`:
 
-```toml
+```toml title="pyproject.toml"
 [project.entry-points."zenzic.rules"]
 no-internal-hostname = "my_org_rules.rules:NoInternalHostnameRule"
 ```
@@ -193,7 +193,7 @@ Core rules (registered under `zenzic.rules` by Zenzic itself) are always
 active.  External plugin rules must be explicitly enabled in `zenzic.toml`
 under the `plugins` key:
 
-```toml
+```toml title="zenzic.toml"
 # zenzic.toml
 [build_context]
 engine = "mkdocs"

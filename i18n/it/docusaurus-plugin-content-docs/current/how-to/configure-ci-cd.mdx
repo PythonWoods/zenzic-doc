@@ -232,7 +232,7 @@ Dopo l'esecuzione del workflow, i finding di Zenzic appaiono in tre punti:
 L'output `findings-count` può essere consumato dagli step successivi per aggiornare badge personalizzati
 o notifiche Slack senza dover rileggere il file SARIF:
 
-```yaml
+```yaml title=".github/workflows/docs.yml"
       - name: Esegui Zenzic
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
@@ -299,7 +299,7 @@ steps:
 3. Salva l'ID del tuo Gist (l'esadecimale lungo nell'URL) come `ZENZIC_GIST_ID` nei segreti del repository.
 4. Aggiungi l'URL del badge dinamico al tuo `README.md`:
 
-```markdown
+```markdown title="README.md"
 [![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/<user>/<gist-id>/raw/zenzic-score.json)](https://github.com/PythonWoods/zenzic)
 ```
 
@@ -311,7 +311,7 @@ steps:
 
 `zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato:
 
-```yaml
+```yaml title=".github/workflows/docs.yml"
 - name: Rileva regressione del punteggio
   run: |
     uvx zenzic score --save         # aggiorna snapshot

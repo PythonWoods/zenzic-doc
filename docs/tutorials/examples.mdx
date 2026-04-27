@@ -63,7 +63,7 @@ The MkDocs native plugin (`zenzic.integrations.mkdocs`) was removed in v0.7.0.
 Run Zenzic as a CI step instead — it provides the same enforcement with full VSM,
 Shield, and Blood Sentinel coverage:
 
-```yaml
+```yaml title=".github/workflows/docs.yml"
 - run: zenzic check all --strict
 ```
 :::
@@ -78,7 +78,7 @@ Shield, and Blood Sentinel coverage:
 
 Demonstrates `DocusaurusAdapter` parsing `docusaurus.config.ts` as plain text — no Node.js installation required. Key feature: `docs/guide/about.mdx` uses a frontmatter `slug: /about` override, demonstrating that Zenzic correctly maps the canonical URL via `_extract_frontmatter_slug()` rather than deriving it from the filesystem path.
 
-```mdx
+```mdx title="docs/guide/about.mdx"
 ---
 title: About This Project
 slug: /about

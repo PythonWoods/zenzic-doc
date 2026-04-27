@@ -608,7 +608,7 @@ gating from build tooling and makes every enforcement point engine-agnostic.
 
 **Migration:** Replace the `plugins: - zenzic` entry in `mkdocs.yml` with a CI step:
 
-```yaml
+```yaml title=".github/workflows/docs.yml"
 # GitHub Actions
 - run: zenzic check all --strict
 ```

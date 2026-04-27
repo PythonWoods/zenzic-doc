@@ -86,7 +86,7 @@ External link validation only runs when `--strict` is passed — omitting the fl
 network requests entirely. To permanently suppress specific URLs without removing strict mode,
 add their prefixes to `excluded_external_urls` in `zenzic.toml`:
 
-```toml
+```toml title="zenzic.toml"
 excluded_external_urls = [
     "https://internal.company.com",
     "https://github.com/MyOrg/private-repo",
@@ -104,7 +104,7 @@ and same-page anchors (if `validate_same_page_anchors: true` is set).
 
 **How do I integrate Zenzic in GitHub Actions?**
 
-```yaml
+```yaml title=".github/workflows/docs.yml"
 - name: Lint documentation
   run: uvx zenzic check all --strict
 ```
@@ -169,7 +169,7 @@ locale entry has `"translate": false`. If so, the path mismatch is the cause.
 
 **Solution:** add `path` explicitly to every locale that uses a regional `htmlLang` tag:
 
-```ts
+```ts title="docusaurus.config.ts"
 localeConfigs: {
   it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
 }
