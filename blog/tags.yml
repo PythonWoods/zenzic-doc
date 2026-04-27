@@ -68,3 +68,13 @@ quickstart:
   label: "Quickstart"
   permalink: /quickstart
   description: "Fast-path getting-started content for new users."
+
+engineering-chronicles:
+  label: "Engineering Chronicles"
+  permalink: /chronicles
+  description: "The five-part engineering saga: from the Leaking Pipe to Obsidian Maturity."
+
+user-tutorials:
+  label: "User Tutorials"
+  permalink: /tutorials
+  description: "Practical guides for getting started with Zenzic — zero configuration required."

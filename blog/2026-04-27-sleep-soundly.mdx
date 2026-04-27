@@ -1,0 +1,99 @@
+---
+slug: sleep-soundly
+title: "Sleep Soundly: Protect Your Docs in 5 Minutes"
+sidebar_label: "⚡ Start Here: Sleep Soundly"
+authors: [pythonwoods]
+tags: [user-tutorials, tutorial, quickstart, python, devtools]
+date: 2026-04-27T23:59:00
+description: >
+  That nagging anxiety after pressing 'Merge'? With Zenzic, it ends today.
+  Three steps to a documentation pipeline you can trust — zero configuration required.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+Have you ever felt that strange anxiety a minute after pressing **Merge** on a documentation
+pull request? That nagging doubt:
+
+> *"Did I break the links in the main guide?"*
+> *"Did I accidentally leave the API key in the code example?"*
+
+With Zenzic, that anxiety ends today. **Welcome to the Safe Harbor.**
+
+{/* truncate */}
+
+## Three Steps to Documentation Peace
+
+### Step 1 — The Illumination
+
+Run one command. No installation. No configuration. No build required:
+
+```bash
+uvx zenzic check all .
+```
+
+In under a second, Zenzic builds a complete mental map of your documentation and shows you
+everything the human eye misses: broken links, unreachable files, leaked credentials,
+placeholder text. Every finding comes with a **code**, a **file**, and a **line number**.
+
+This is your first look at the truth.
+
+---
+
+### Step 2 — The Training Ground
+
+Your documentation is clean? Now make it bulletproof:
+
+```bash
+zenzic lab
+```
+
+Pick an Act and watch the Sentinel put itself under siege. It simulates broken links,
+credential leaks, and circular references so you understand exactly what it's protecting
+against. It's a flight simulator for Technical Writers.
+
+:::tip[Try this now]
+Run `zenzic lab 2` to see the Shield catch a live credential leak in real time.
+Then run `zenzic lab 0` to see the Clean Harbor — the baseline you're defending.
+:::
+
+---
+
+### Step 3 — The Automation
+
+Copy these lines into your GitHub workflow. From this moment, no broken link, no leaked
+credential will ever reach your `main` branch again:
+
+```yaml title=".github/workflows/zenzic.yml"
+name: Zenzic Documentation Gate
+
+on: [push, pull_request]
+
+jobs:
+  docs-quality:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.7.0"
+```
+
+The Safe Harbor is sealed. **Now you can sleep soundly.**
+
+---
+
+## Why Zenzic?
+
+| Without Zenzic | With Zenzic |
+|----------------|-------------|
+| Broken links discovered by readers | Caught before the build |
+| Leaked credentials found by bots | Intercepted at commit time |
+| Orphan pages invisible in navigation | Reported with file and line number |
+| CI passes, production breaks | Gate fails, `main` stays clean |
+
+---
+
+*Curious about the engineering story behind the Safe Harbor?
+Read the [🛡️ Obsidian Chronicles →](/blog/hardening-the-documentation-pipeline)*
