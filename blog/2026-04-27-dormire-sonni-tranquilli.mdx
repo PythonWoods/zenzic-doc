@@ -1,0 +1,79 @@
+---
+slug: dormire-sonni-tranquilli
+title: "Dormire Sonni Tranquilli: Smetti di Scusarti per le Pagine Rotte"
+sidebar_label: "⚡ Inizia Qui: Dormire Sonni Tranquilli"
+authors: [pythonwoods]
+tags: [user-tutorials, tutorial, quickstart, python, devtools]
+date: 2026-04-27T23:58:00
+description: >
+  Hai appena premuto Merge. Un minuto dopo, il dubbio ti assale. Zenzic esiste
+  perché tu possa pubblicare documentazione e andare davvero a dormire.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+Hai appena premuto **'Merge'**. La tua nuova guida è online.
+
+Ma un minuto dopo, il dubbio ti assale: *"E se quel link che ho spostato ora punta al nulla?"*
+
+Quell'ansia è il segnale che la tua documentazione **non è al sicuro**. Zenzic è qui per ridarti il sonno.
+
+{/* truncate */}
+
+---
+
+## ⚡ Atto I — L'Illuminazione
+
+**Non serve configurare nulla. Non serve Node.js. Non serve aspettare il build.**
+
+Lancia questo comando e guarda la Sentinella fare a pezzi le tue incertezze:
+
+```bash
+uvx zenzic check all .
+```
+
+In **meno di un secondo**, vedrai quello che il tuo motore di build ti nasconde.
+
+> *Link rotti. Pagine orfane. Un segreto che qualcuno ha incollato in un esempio tre sprint fa.*
+> Tutto, esposto prima che il mondo lo veda.
+
+---
+
+## 🛡️ Atto II — Il Simulatore di Volo
+
+Vuoi capire come lavora una Sentinella?
+
+```bash
+zenzic lab
+```
+
+Guarda Zenzic che mette **sotto assedio se stesso** per insegnarti a prevenire disastri,
+leak di segreti e attacchi di sicurezza.
+
+> *È l'unico strumento che **ti addestra mentre lo usi**.*
+
+Non leggi la documentazione per imparare Zenzic. **Lo guardi lavorare.**
+
+---
+
+## 🚢 Atto III — Il Sigillo
+
+Copia queste **5 righe** nel tuo GitHub Action.
+
+Da oggi, Zenzic è il tuo **guardiano notturno**. Se qualcosa si rompe, la Sentinella
+blocca tutto prima che il mondo lo veda.
+
+```yaml title=".github/workflows/zenzic.yml"
+- uses: PythonWoods/zenzic-action@v1
+  with:
+    version: "0.7.0"
+    format: sarif
+    upload-sarif: "true"
+```
+
+Tutto qui.
+
+**Dormi tranquillo. Al resto pensiamo noi.** 🛡️
+
+---
+
+*Curioso di sapere come è stata costruita questa fortezza? Leggi la storia ingegneristica nelle [🛡️ Obsidian Chronicles →](/blog/hardening-the-documentation-pipeline)*

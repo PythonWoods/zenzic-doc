@@ -6,6 +6,12 @@ docs_dir   = "docs"
 fail_under = 100
 strict     = true
 
+# --- PERIMETER GUARD (CEO 066 — The Ghost Purge) ---
+# Editorial drafts (QXDA / Dev.to / Medium copy) live in drafts/ and Draft/
+# at repo root. They must never be walked by the Sentinel during `just verify`,
+# even if the docs_dir scope expands in the future.
+excluded_dirs = ["drafts", "Draft", "node_modules"]
+
 # --- EXTERNAL VALIDATION ---
 excluded_external_urls = [
     "https://docs.github.com/en/authentication/managing-commit-signature-verification/",
