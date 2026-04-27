@@ -14,24 +14,23 @@
   --color-zinc-950: #09090b;
 }
 
-/**
- * Blog Sovereignty — locale dropdown suppression on blog routes.
- * The Obsidian Journal is published in English only. When a reader is on a
- * blog page, the locale switcher would redirect them to the IT docs home
- * (no IT blog exists), which is misleading. We suppress it via the
- * data-blog-route attribute set by NavbarContent/index.tsx.
- *
- * :has(a[hreflang]) targets the locale dropdown specifically — locale links
- * carry the hreflang attribute. Version dropdowns and other menus do not.
- *
- * visibility: hidden preserves the layout box so adjacent navbar items do not
- * shift. pointer-events: none prevents accidental interaction.
- * This is a pure CSS solution — no React swizzling required.
+/* 
+ * Blog Sovereignty: Hide locale dropdown on blog routes.
+ * Uses the Docusaurus native 'plugin-blog' class on the <html> element
+ * (added by PluginHtmlClassNameProvider for @docusaurus/plugin-content-blog).
+ * Targets <a lang="..."> — the attribute Docusaurus sets on locale dropdown links
+ * (NOT hreflang, which is only used in <head> alternates, not in navbar anchors).
+ * visibility:hidden prevents layout shift (preserves the box).
  */
-[data-blog-route] .navbar__item:has(a[hreflang]),
-[data-blog-route] .navbar__item.dropdown--hoverable:has(a[hreflang]) {
+html.plugin-blog .navbar__item.dropdown--hoverable:has(a[lang]),
+html.plugin-blog .navbar__item:has(a[lang]) {
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+/* Hide entire navbar on homepage to replace the deleted React swizzle */
+body:has(.zz-homepage) .navbar {
+  display: none !important;
 }
 
 /**
