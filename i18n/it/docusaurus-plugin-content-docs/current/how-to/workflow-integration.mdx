@@ -1,0 +1,184 @@
+---
+icon: lucide/shield-check
+sidebar_label: "Sentinel Gate Locale"
+description: "Chiudi il cancello prima della build. Integra Zenzic nel tuo workflow locale così gli errori di documentazione non raggiungono mai la CI."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Sentinel Gate Locale
+
+> *Non debuggare l'output della build. Correggi i sorgenti prima che la build inizi.*
+
+Un errore di documentazione scoperto in CI significa una pipeline fallita, un cambio di
+contesto e un minuto di build sprecato. Scoperto **prima** della build, è solo una
+correzione di una riga.
+
+Il pattern Sentinel Gate chiude il gap: Zenzic viene eseguito come pre-step obbligatorio,
+bloccando il comando di build se i sorgenti non sono puliti. Nessun finding — nessun
+cancello — nessun ciclo sprecato.
+
+---
+
+## Il Principio
+
+Il Sentinel Gate applica un invariante semplice:
+
+```
+zenzic check all [PATH] --strict  →  successo  →  il tuo strumento di build
+                                  →  fallimento →  build bloccata
+```
+
+Il cancello scatta **in locale** — prima che tu faccia push, prima che la CI veda il
+branch. È la stessa analisi che viene eseguita nel tuo workflow di GitHub Actions,
+applicata nel momento in cui correggerla è meno costoso.
+
+---
+
+## Ricettario per Ecosistema
+
+Scegli la ricetta che corrisponde al tuo toolchain di build.
+
+<Tabs>
+  <TabItem value="docusaurus" label="Docusaurus (npm scripts)">
+
+I progetti Docusaurus usano `npm run build`. Proteggi il comando in `package.json`:
+
+```json title="package.json"
+{
+  "scripts": {
+    "zenzic": "uvx zenzic check all . --strict",
+    "build": "npm run zenzic && docusaurus build"
+  }
+}
+```
+
+`npm run build` esegue ora Zenzic per primo. Se viene rilevato qualsiasi finding,
+`docusaurus build` non viene mai avviato. Il tuo comando CI esistente (`npm run build`)
+acquisisce il cancello automaticamente — non sono necessarie modifiche al YAML del workflow.
+
+:::tip[Versione fissata in produzione]
+Sostituisci `uvx zenzic` con `uvx "zenzic==0.7.0"` per una CI deterministica. Al primo
+install a caldo, uv memorizza nella cache la wheel — le esecuzioni successive sono
+quasi istantanee.
+:::
+
+  </TabItem>
+
+  <TabItem value="mkdocs" label="MkDocs (justfile / Makefile)">
+
+I progetti MkDocs usano tipicamente `mkdocs build` o un `justfile`. Proteggi la
+ricetta di build:
+
+```just title="justfile"
+# Sentinel Gate — Zenzic deve passare prima che MkDocs compili
+build:
+    uv run zenzic check all . --strict
+    mkdocs build --strict
+```
+
+O se preferisci una ricetta shell senza uv:
+
+```just title="justfile"
+build:
+    uvx zenzic check all . --strict
+    mkdocs build --strict
+```
+
+Per chi usa `Makefile`:
+
+```makefile title="Makefile"
+build:
+	uvx zenzic check all . --strict
+	mkdocs build --strict
+```
+
+Entrambi i comandi nella ricetta vengono eseguiti sequenzialmente. Un'uscita non-zero
+da `zenzic check all` interrompe la ricetta prima che `mkdocs build` venga raggiunto.
+
+  </TabItem>
+
+  <TabItem value="zensical" label="Zensical (shell / justfile)">
+
+I progetti Zensical possono proteggere la build con una semplice concatenazione di comandi:
+
+```bash title="build.sh"
+#!/usr/bin/env bash
+set -euo pipefail
+
+uvx zenzic check all . --strict
+zensical build
+```
+
+Oppure tramite una ricetta `justfile`:
+
+```just title="justfile"
+# Sentinel Gate — la documentazione deve essere pulita prima che Zensical la renderizzi
+build:
+    uvx zenzic check all . --strict
+    zensical build
+```
+
+`set -euo pipefail` nello script shell garantisce che un'uscita non-zero da
+`zenzic check all` si propaghi immediatamente — `zensical build` non viene mai raggiunto.
+
+  </TabItem>
+
+  <TabItem value="standalone" label="Standalone (qualsiasi strumento)">
+
+Per i progetti senza motore di build — generatori di siti statici, documentazione
+distribuita come Markdown, o pipeline personalizzate — il pattern è sempre lo stesso:
+
+```bash
+uvx zenzic check all . --strict && il_tuo_comando_di_build
+```
+
+L'operatore `&&` fa cortocircuito: se Zenzic esce con codice non-zero,
+`il_tuo_comando_di_build` non viene mai eseguito. Combina con qualsiasi `Makefile`,
+`justfile`, script `package.json` o punto di ingresso shell.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Perché il Gate in Locale e Non Solo in CI?
+
+| Punto di scoperta | Costo per correggere |
+| :--- | :--- |
+| **Prima della build** (gate locale) | Secondi — l'editor è ancora aperto |
+| **Pipeline CI** | Minuti — push, attesa, lettura log, correzione, re-push |
+| **Deploy in produzione** | Ore — rollback, triage, hotfix |
+
+Il Sentinel Gate sposta la scoperta nel momento meno costoso possibile. Quando la CI
+viene eseguita, la documentazione è già pulita — la CI diventa una **conferma**
+piuttosto che un **rilevatore**.
+
+---
+
+## Riferimento Codici di Uscita
+
+| Codice | Significato | Comportamento del Gate |
+| :--- | :--- | :--- |
+| `0` | Tutti i controlli superati | Build procede |
+| `1` | Finding di qualità (link, orfani, placeholder) | Build bloccata per default; aggiungi `--no-fail-under` per permetterlo |
+| `2` | Violazione Shield — credenziale rilevata | Sempre bloccata. Non sopprimibile. |
+| `3` | Blood Sentinel — path traversal di sistema | Sempre bloccata. Non sopprimibile. |
+
+I codici di uscita 2 e 3 sono stop incondizionati. Nessun flag o configurazione può
+sopprimere un incidente di sicurezza.
+
+---
+
+## Correlati
+
+- [Integrazione CI/CD](./configure-ci-cd.mdx) — workflow GitHub Actions che applicano lo
+  stesso cancello nella tua pipeline
+- [Metriche di Salute](../explanation/health-metrics.mdx) — come Zenzic calcola il
+  punteggio di qualità che il Sentinel Gate difende
+- [Riferimento Codici di Uscita](../reference/cli.mdx#exit-codes) — semantica completa
+  dei codici di uscita

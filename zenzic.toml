@@ -12,6 +12,10 @@ excluded_external_urls = [
     # zenzic-action is a private GitHub repository — not yet publicly visible.
     # Links are editorially correct; the repo will be made public at v0.7.0 GA.
     "https://github.com/PythonWoods/zenzic-action",
+    # Release Bridge (CEO 154): blog posts are live on the repo but not yet deployed
+    # at zenzic.dev. These exclusions are temporary — remove 5 minutes after v0.7.0 GA deploy.
+    "https://zenzic.dev/blog/ai-driven-siege-shield-postmortem",
+    "https://zenzic.dev/blog/beyond-the-siege-zenzic-v070",
 ]
 
 # --- PROTEZIONE DOGFOODING ---

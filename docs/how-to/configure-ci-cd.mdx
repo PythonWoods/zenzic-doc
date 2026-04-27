@@ -111,6 +111,17 @@ on:
   push:
     branches: [main]
     paths: ['docs/**', 'mkdocs.yml']
+
+jobs:
+  zenzic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Lint documentation
+        run: uvx zenzic check all --strict
+
+      - name: Check references and run Shield
         run: uvx zenzic check references
 ```
 
@@ -128,6 +139,14 @@ on:
   push:
     branches: [main]
     paths: ['docs/**', 'mkdocs.yml']
+
+jobs:
+  zenzic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup uv
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
