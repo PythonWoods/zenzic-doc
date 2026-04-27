@@ -1,0 +1,169 @@
+---
+sidebar_label: "ADR 006: Perimetro Unificato"
+sidebar_position: 8
+description: "ADR 006: Correzione del theme flip e del locale bleed del Journal su zenzic.dev — unificazione del namespace di storage e link navbar locale-sovrani."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 006: Perimetro Unificato — Storage Namespace e Sovranità Locale del Journal
+
+**Stato:** Attivo  
+**Decisore:** Architecture Lead  
+**Data:** 2026-04-27 (sprint v0.7.0, CEO 051, commit `3188387`)
+
+---
+
+## Contesto
+
+Questo ADR è specifico al **sito di documentazione zenzic.dev** (questo repository),
+non al core CLI di Zenzic. Documenta due bug indipendenti di locale bleed introdotti
+quando `future.v4: true` è stato attivato in `docusaurus.config.ts`.
+
+### Bug 1 — Il Theme Flip
+
+Con `future.v4: true`, Docusaurus abilita `siteStorageNamespacing`: genera
+automaticamente una chiave localStorage per locale, calcolando l'hash di
+`url + baseUrl + locale`. Questo produceva:
+
+| Locale | Chiave localStorage |
+|--------|-------------------|
+| Inglese (`/`) | `theme-926` |
+| Italiano (`/it/`) | `theme-3d7` |
+
+Quando un utente passava dalla documentazione inglese a quella italiana, il browser
+caricava una **chiave localStorage diversa**. Poiché la chiave italiana non aveva
+nessuna preferenza salvata, Docusaurus tornava al `defaultMode: 'dark'`. Se
+l'utente aveva precedentemente attivato la modalità chiara in inglese, il cambio
+causava un **ripristino immediato alla modalità scura** — un FOUC (Flash of
+Unstyled Content) visibile ad ogni cambio di locale.
+
+### Bug 2 — Il Locale Bleed del Journal
+
+Il link Journal nella navbar puntava al blog usando un elemento navbar standard
+di Docusaurus:
+
+```ts
+// docusaurus.config.ts — originale, difettoso
+{ to: '/blog', label: 'Journal', position: 'left' }
+```
+
+La pipeline di build statica di Docusaurus **riscrive** i valori `to:` e `href:`
+negli elementi navbar per l'output HTML di ogni locale. Nella build statica
+italiana, questo diventava:
+
+```html
+<!-- build/it/docs/*/index.html -->
+<a href="/it/blog">Journal</a>
+```
+
+Quando un utente navigava dalla documentazione italiana al Journal tramite quel
+link, atterrava su `/it/blog` — che caricava il blog con l'interfaccia in locale
+italiano: le date erano renderizzate come `"25 aprile 2026"`, le etichette
+apparivano come `"Etichette"`, il tempo di lettura mostrava `"9 minuti di lettura"`.
+Il Journal è uno spazio di contenuto solo in inglese e non deve mai essere
+tradotto localicamente.
+
+Il passaggio da `to:` a `href:` **non** risolveva il problema: anche i valori
+`href:` negli elementi navbar standard vengono riscritti dalla pipeline di build
+i18n di Docusaurus.
+
+---
+
+## Decisione
+
+Due fix indipendenti sono stati applicati a `docusaurus.config.ts`:
+
+### Fix 1 — Namespace di Storage Unificato
+
+```ts
+// docusaurus.config.ts
+storage: {
+  namespace: false,
+},
+```
+
+Il `storage.namespace: false` di primo livello sovrascrive il comportamento di
+namespacing di `future.v4`. Entrambi i locale condividono ora la singola chiave
+`"theme"` nel localStorage. La preferenza della modalità scura persiste attraverso
+tutti i cambi di locale.
+
+**Verificato nel build output:** Lo script anti-FOUC inline sia in
+`build/index.html` che in `build/it/index.html` legge:
+
+```js
+localStorage.getItem("theme")
+```
+
+### Fix 2 — Link Locale-Sovrano con `type: 'html'`
+
+```ts
+// docusaurus.config.ts — elemento navbar Journal
+{
+  type: 'html',
+  value: '<a class="navbar__item navbar__link" href="/blog">Journal</a>',
+  position: 'left',
+},
+```
+
+Docusaurus **non** processa l'`innerHTML` degli elementi navbar di `type: 'html'`
+attraverso la pipeline di riscrittura i18n. Il `href="/blog"` grezzo viene
+preservato verbatim nell'output HTML statico di ogni locale.
+
+**Verificato nel build output:** L'HTML del locale italiano contiene:
+
+```html
+href=/blog>Journal</a>
+```
+
+Non `/it/blog` — locale-sovrano.
+
+---
+
+## Approcci Rifiutati
+
+### `themeConfig.siteStorage.themeKey`
+
+Proposto nella direttiva CEO come modo per controllare la chiave di storage.
+Questa proprietà **non esiste** in Docusaurus 3.x. Non esiste il namespace
+`themeConfig.siteStorage`. La API corretta è l'oggetto `storage` di primo livello.
+
+### `respectPrefersColorScheme: true`
+
+Anch'esso proposto nella direttiva CEO. Questo avrebbe istruito Docusaurus a
+seguire la preferenza di combinazione di colori a livello di OS ad ogni caricamento
+di pagina — **sovrascrivendo la preferenza esplicita dell'utente nell'app**.
+Questo revoca direttamente l'invariante CEO 149 (`respectPrefersColorScheme: false`)
+stabilita come protezione permanente contro i reset del tema guidati dalle
+preferenze OS. Non è stato applicato.
+
+---
+
+## Invarianti (Non Negoziabili)
+
+- `storage: { namespace: false }` deve rimanere in `docusaurus.config.ts` finché
+  `future.v4: true` è attivo e il locale italiano è supportato. Rimuoverlo
+  reintroduce silenziosamente la frammentazione della chiave di storage per locale.
+- `colorMode.respectPrefersColorScheme` deve rimanere `false`. Questo è un
+  invariante immutabile (CEO 149). Qualsiasi PR che lo imposta a `true` è un
+  candidato automatico al revert.
+- L'elemento navbar Journal deve rimanere `type: 'html'`. Riconvertirlo a un
+  elemento `to:` o `href:` standard reintrodurrà il locale bleed nella prossima
+  build. Questo **non è visibile in modalità sviluppo** (`npm run start`) perché
+  serve un solo locale senza la pipeline di riscrittura. **I bug di questa classe
+  sono visibili solo nell'output di `just build`.**
+
+---
+
+## Conseguenze
+
+- La preferenza della modalità scura è ora completamente indipendente dal locale.
+  Un utente che imposta la modalità scura nella documentazione inglese mantiene la
+  modalità scura quando passa all'italiano.
+- Il Journal (blog) si carica sempre su `/blog` indipendentemente dal locale da
+  cui l'utente ha navigato.
+- L'elemento navbar `type: 'html'` non partecipa alla pipeline di traduzione
+  `i18n` di Docusaurus (non appare nelle chiavi di traduzione `code.json`).
+  L'etichetta "Journal" è quindi codificata nel valore HTML — questo è intenzionale,
+  poiché il blog è solo in inglese e l'etichetta non richiede traduzione.

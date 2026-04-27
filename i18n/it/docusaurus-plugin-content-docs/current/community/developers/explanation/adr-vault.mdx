@@ -1,0 +1,105 @@
+---
+sidebar_label: "ADR Vault"
+sidebar_position: -3
+description: "L'indice completo degli Architectural Decision Record di Zenzic — ogni scelta tecnica rilevante, il suo contesto e le sue conseguenze permanenti."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR Vault
+
+> *"Uno strumento che funziona per ragioni misteriose non è uno strumento — è un
+> rituale. Zenzic funziona per ragioni documentate. Questo vault è la prova."*
+
+Questa pagina è l'indice completo degli **Architectural Decision Records (ADR)**
+del progetto Zenzic. Ogni ADR documenta una decisione tecnica rilevante: il suo
+contesto (perché esisteva il problema), la sua decisione (cosa è stato scelto) e
+i suoi invarianti (cosa non deve mai cambiare come conseguenza).
+
+Gli ADR sono la **memoria immutabile** del progetto. Spiegano non solo cosa fa
+Zenzic, ma perché — in modo che i futuri contributori possano estendere il sistema
+senza violare inconsapevolmente i vincoli che lo rendono affidabile.
+
+---
+
+## Decisioni Genesi
+
+Questi ADR sono stati stabiliti prima del primo rilascio pubblico. Definiscono le
+fondamenta filosofiche e tecniche su cui si basano tutte le decisioni successive.
+
+| ADR | Titolo | Sprint |
+|-----|-------|--------|
+| [ADR 001](./adr-lint-source.mdx) | Analizza il Sorgente, Non la Build | Genesi (pre-v0.1.0) |
+| [ADR 002](./adr-zero-subprocesses.mdx) | Policy Zero Subprocesses | Genesi (pre-v0.1.0) |
+
+---
+
+## Decisioni di Architettura Core
+
+Questi ADR documentano le decisioni strutturali prese durante lo sviluppo attivo
+di Zenzic v0.6.x e v0.7.0.
+
+| ADR | Titolo | Sprint |
+|-----|-------|--------|
+| [ADR 003](./adr-discovery.mdx) | Root Discovery Protocol | D036 / ZRT-005 |
+| [ADR 004](./adr-decentralized-cli.mdx) | Package CLI Decentralizzata | D062-B / D064 |
+| [ADR 005](./adr-agnostic-universalism.mdx) | Agnosticismo Universale Z404 | D087 |
+| [ADR 007](./adr-sovereign-sandbox.mdx) | Sandbox Sovrana | D043 |
+| [ADR 008](./adr-bilingual-structural.mdx) | Invariante Strutturale Bilingue | D045 |
+| [ADR 009](./adr-path-sovereignty.mdx) | Sovranità del Percorso | CEO-052 |
+
+---
+
+## Decisioni del Sito di Documentazione
+
+Questi ADR documentano decisioni architetturali specifiche a questo sito di
+documentazione (`zenzic.dev`) — scelte su come il sito Docusaurus viene costruito,
+localizzato e mantenuto.
+
+| ADR | Titolo | Sprint |
+|-----|-------|--------|
+| [ADR 006](./adr-unified-perimeter.mdx) | Perimetro Unificato (Storage + Journal) | CEO 051 |
+
+---
+
+## Guida alla Lettura
+
+Ogni ADR segue una struttura coerente:
+
+- **Contesto** — il problema che esisteva prima che la decisione fosse presa.
+  Leggere il Contesto di un ADR ti dice quale dolore la decisione stava
+  eliminando.
+- **Decisione** — la scelta che è stata fatta, enunciata con precisione e senza
+  ambiguità. Se ti chiedi mai "perché Zenzic fa X?", la sezione Decisione
+  dell'ADR pertinente è la risposta.
+- **Motivazione** — il ragionamento ingegneristico alla base della decisione.
+  Questa sezione è il "perché non l'alternativa?" — registra gli approcci
+  rifiutati e spiega perché erano insufficienti.
+- **Invarianti** — i vincoli che non devono mai essere violati come conseguenza
+  della decisione. Questi sono permanenti. Non scadono con gli incrementi di
+  versione. Una PR che viola un invariante elencato in un ADR è un candidato
+  automatico al revert, indipendentemente dai suoi altri meriti.
+- **Conseguenze** — i trade-off noti e le capacità che la decisione abilita o
+  preclude. Leggere le Conseguenze aiuta i contributori a comprendere i confini
+  di ciò che Zenzic può e non può fare per progetto.
+
+---
+
+## Aggiungere un Nuovo ADR
+
+Quando viene presa una decisione architetturale significativa — una che vincola
+i futuri contributori o risolve una tensione strutturale — deve essere registrata
+qui.
+
+1. Creare `docs/community/developers/explanation/adr-<slug>.mdx` con il prossimo
+   numero ADR disponibile.
+2. Creare il mirror italiano al percorso corrispondente in `i18n/it/`.
+3. Aggiungere entrambi i file alla tabella qui sopra nella sezione appropriata.
+4. Registrare la decisione nella sezione `[ADR]` dell'Obsidian Ledger rilevante
+   (`.github/copilot-instructions.md`) nel repository dove la decisione è stata
+   implementata.
+
+L'ADR è permanente una volta pubblicato. Per modificare una decisione, aggiungere
+un nuovo ADR che fa riferimento all'originale e documenta la modifica — non
+riscrivere mai la storia.

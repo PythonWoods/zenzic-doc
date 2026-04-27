@@ -1,0 +1,152 @@
+---
+sidebar_label: "ADR 002: Zero Subprocesses"
+sidebar_position: -1
+description: "ADR 002: The Security & Portability Decision — why Zenzic is 100% pure Python and never spawns external processes."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 002: Zero Subprocesses Policy
+
+**Status:** Active (Genesis Decision)  
+**Decider:** Architecture Lead  
+**Date:** 2026-01-01 (founding principle, pre-v0.1.0)
+
+---
+
+## Context
+
+Many documentation tools that need to understand multiple build engines solve
+the problem by **delegating to those engines**: they call `mkdocs build`,
+`npm run build`, or `node scripts/generate-nav.js` as subprocesses, then
+parse the output. This approach appears pragmatic — it re-uses the engine's
+own logic rather than reimplementing it.
+
+In practice, subprocess delegation creates a cascade of problems that become
+acute in enterprise CI/CD environments:
+
+1. **Security surface.** A tool that executes arbitrary subprocesses in the
+   context of a documentation repository becomes a **code execution vector**.
+   Any `Makefile`, `justfile`, or `package.json` `scripts` entry near the
+   documentation root is potentially reachable. In repositories with complex
+   monorepo structures, the boundary between "running the doc validator" and
+   "running project build scripts" becomes dangerously blurred.
+2. **Portability collapse.** A subprocess call to `node` requires Node.js to
+   be installed at a specific path. A call to `mkdocs` requires the MkDocs
+   virtual environment to be active. In Docker containers, GitHub Actions
+   runners, and air-gapped CI systems, the presence of these binaries cannot
+   be assumed. A tool that requires Node.js to validate a Markdown repository
+   is not portable — it is fragile.
+3. **Version coupling.** When the subprocess's binary is upgraded independently
+   of the validator, output format changes silently break the parser. The
+   validator is now coupled to the binary's `--format json` contract, which
+   may not be stable across minor versions.
+4. **Performance overhead.** Starting a Node.js process, loading `docusaurus`
+   dependencies, and building a partial site map takes 5–30 seconds. Performing
+   this for every CI run, for every file change, makes incremental development
+   loops slow. For a tool that is supposed to be a fast pre-commit gate, this
+   is unacceptable.
+5. **Zero-Trust violation.** In regulated or security-sensitive environments,
+   a CI gate that executes code from the repository being validated is a
+   trust-boundary violation. The validator must be a **passive reader**, not
+   an **active executor**, to satisfy Zero-Trust CI requirements.
+
+---
+
+## Decision
+
+> **The Zenzic core is 100% pure Python. No subprocess call, no `os.system`,
+> no external binary execution, and no network access occurs during analysis.**
+
+Every piece of information that Zenzic needs about a documentation engine's
+behavior is extracted through **static parsing** of configuration files:
+
+| Engine config | Parsing method |
+|---|---|
+| `docusaurus.config.ts` | Pure-Python regex extraction of `to:`, `href:`, `docId:`, and `themeConfig` fields |
+| `mkdocs.yml` | PyYAML — pure Python, no subprocess |
+| `zensical.toml` | `tomllib` / `tomli` — pure Python, no subprocess |
+| `pyproject.toml` | `tomllib` / `tomli` — pure Python, no subprocess |
+| `sidebars.ts` | Pure-Python regex extraction of doc IDs and paths |
+
+The constraint is enforced at the module level: `core/` contains no `import
+subprocess` statement. This is verifiable by static analysis and is covered by
+the `test_cli_e2e.py` test suite, which monkey-patches `subprocess` and asserts
+it is never reached during any analysis path.
+
+---
+
+## Rationale
+
+### 1. Zero-Trust Execution
+
+Zenzic is a validator — its security model requires that it be a **passive
+reader** of the repository, not an active participant in its build system. A
+tool that executes `package.json` scripts or `Makefile` targets as part of its
+analysis cannot be granted Zero-Trust status in a regulated CI environment.
+The subprocess prohibition is not a performance optimization — it is a
+**security invariant**.
+
+### 2. Portability is Non-Negotiable
+
+Zenzic runs via `uvx zenzic` — a single command that requires only Python and
+`uv` on the PATH. No Node.js, no npm, no MkDocs, no Jekyll, no Hugo. This
+install profile works identically on Ubuntu 22.04, Windows 11, macOS Sequoia,
+Alpine Linux Docker containers, and air-gapped CI runners. The moment Zenzic
+adds a subprocess call, it inherits the portability matrix of the subprocess
+target.
+
+### 3. Static Analysis is Sufficient
+
+The concern that static parsing of TypeScript config files is fragile is valid
+but manageable. The adapter layer uses conservative regex patterns that target
+structural constants in each engine's configuration format — properties like
+`to:`, `href:`, and `docId:` that are part of the engine's public API and
+change infrequently. When an engine changes its config format, the adapter
+is updated — a contained, testable change. This is preferable to subprocess
+coupling, where a binary version bump silently breaks the output parser.
+
+### 4. Speed as a First-Class Requirement
+
+A pre-commit gate that takes 30 seconds is a gate that developers disable.
+Zenzic's source-based, subprocess-free analysis completes in 1–5 seconds for
+most documentation repositories. This speed is a consequence of the subprocess
+prohibition: there is no process startup overhead, no dependency installation,
+no partial build to execute. Pure Python on warm bytecode cache is consistently
+fast.
+
+---
+
+## Invariants (Non-Negotiable)
+
+- No file in `src/zenzic/` may contain `import subprocess`, `import os` used
+  for `os.system`/`os.popen`, or any equivalent mechanism for spawning
+  external processes.
+- No file in `src/zenzic/` may make HTTP requests (no `urllib`, no `requests`,
+  no `httpx`) during analysis. External URL validation (Z103) uses only socket-
+  level connectivity checks, which are isolated in the dedicated external link
+  checker module and are explicitly opt-in.
+- TypeScript and JavaScript configuration files are parsed as text, not executed.
+  Any "execution" of a config file — even via a sandboxed Node.js `eval` — is
+  permanently forbidden.
+- The `test_cli_e2e.py` test suite must include at least one test that verifies
+  `subprocess.run` is never called during a `check all` invocation.
+
+---
+
+## Consequences
+
+- Zenzic cannot validate documentation that is generated entirely at runtime
+  (e.g., API docs generated from source code annotations via `mkdocstrings`).
+  This is an intentional scope boundary — Zenzic validates the **authored**
+  documentation, not the generated portions. Generated sections are outside
+  the Safe Harbor perimeter by definition.
+- Configuration files written in languages that require execution to evaluate
+  (e.g., Starlark `BUILD` files, Python-based `mkdocs_macros` plugins) are
+  parsed conservatively. Zenzic extracts what static analysis can safely
+  determine and treats the rest as opaque.
+- The subprocess prohibition means Zenzic cannot auto-detect the installed
+  version of the documentation engine. Version-specific behavior differences
+  are handled by adapter configuration (e.g., `engine: "docusaurus"` in
+  `zenzic.toml`) rather than runtime version negotiation.

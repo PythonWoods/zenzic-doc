@@ -253,35 +253,36 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 051 — The Unified Perimeter (Current)
+### CEO 052/054/055 — ADR Vault & Genesis Documentation (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-**Blog Sovereignty CSS fix (`2ad44ad`):**
-- `src/css/custom.css`: `a[hreflang]` → `a[lang]`. Docusaurus renders locale dropdown
-  links with `lang="it-IT"` (HTML attribute), not `hreflang`. Prior selector never matched.
+9 new ADR MDX files created to complete full ADR documentation coverage (001–009 + vault):
 
-**Unified Perimeter (`3188387`):**
-- `docusaurus.config.ts`: `storage: { namespace: false }` — unified localStorage key `'theme'`
-  across EN+IT. Previously `future.v4` hashed different keys per locale (`theme-926` / `theme-3d7`).
-- Journal navbar: `type: 'html'` with raw `href=/blog` anchor — bypasses Docusaurus i18n rewrite
-  pipeline that converts `/blog` → `/it/blog` in IT locale static build.
-- Forensic verification: `localStorage.getItem("theme")` identical in EN+IT built HTML;
-  IT docs pages show `href=/blog>Journal` (not `/it/blog`).
+**Genesis ADRs (backfilled):**
+- `adr-lint-source.mdx` (EN + IT): ADR 001 — Lint the Source, Not the Build. Foundational
+  pre-build analysis decision; VSM rationale; engine agnosticism; Ghost Route capability.
+- `adr-zero-subprocesses.mdx` (EN + IT): ADR 002 — Zero Subprocesses Policy. 100% pure
+  Python; static config parsing table; Zero-Trust + portability invariants.
 
-**CEO 051 API corrections applied:**
-- `themeConfig.siteStorage.themeKey` rejected (non-existent API) — correct API is `storage.namespace`.
-- `respectPrefersColorScheme:true` rejected — would revert CEO 149 immutable invariant.
+**ADR index:**
+- `adr-vault.mdx` (EN + IT): Complete ADR index with Genesis / Core Architecture /
+  Doc Site sections; Reading Guide; "Adding a New ADR" instructions.
 
-SENTINEL_EXIT:0 | BUILD_EXIT:0 (just build — Sentinel Gate + Docusaurus EN+IT confirmed).
+**Previously committed (ADR 004/006/008):**
+- `adr-decentralized-cli.mdx` (EN + IT): ADR 004 — Decentralized CLI Package (D062-B/D064).
+- `adr-unified-perimeter.mdx` (EN + IT): ADR 006 — Unified Perimeter (CEO 051 storage + journal).
+- `adr-bilingual-structural.mdx` (EN + IT): ADR 008 — Bilingual Structural Invariant (D045).
 
-### Last Closed — D156–D157 — Pixel-Perfect Parity Audit
+Symmetry diff: EXIT:0. SENTINEL_EXIT:0 | BUILD_EXIT:0 (just build EN+IT confirmed).
+
+### Last Closed — CEO 051 — The Unified Perimeter
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-CEO 156 "Next Label": `i18n/it current.json` already `"0.7.0"` — bug did not exist.
-CEO 157 "Theme Flip": root cause found — `future.v4` siteStorageNamespacing creates
-per-locale storage keys; closed in CEO 051 Unified Perimeter sprint.
+`storage: { namespace: false }` — unified localStorage `'theme'` key across EN+IT locales
+(`future.v4` was hashing different keys). Journal navbar → `type: 'html'` with raw
+`href=/blog` — bypasses Docusaurus i18n rewrite pipeline. COMMITTED `3188387`.
 
 ### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
 
