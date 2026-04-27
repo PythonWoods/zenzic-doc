@@ -236,57 +236,54 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ## [ACTIVE SPRINT] — Working Context
 
-### D127–D142 — SentinelOutput Visual System + Chromatic Sovereignty (Current)
+### D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-**CEO 127–132 "SentinelOutput Genesis":**
-- `src/components/SentinelOutput.tsx` created: 4 variants (`clean`, `breach`, `findings`, `inspect`).
-  Registered globally in `src/theme/MDXComponents.js`. Props: `variant`, `showFrame`, `compact`,
-  `rows`, `scanners`, `location`, `masked`, `credentialType`. `CONTAINER_CLASSES` per variant
-  (`max-w-2xl` for inspect, `max-w-xl` for others).
-- 30 live instances deployed (15 EN + 15 IT): index, first-audit, cli, finding-codes,
-  health-metrics, add-custom-rules. All TerminalWindow→SentinelOutput replacements complete.
-- `showFrame` policy: macOS title bar only on `index.mdx` + `first-audit.mdx`. `compact` policy:
-  Reference pages. `rows`/`scanners` prop for i18n-safe content override.
+**CEO 144–145 "Full-Spectrum title= Audit" (`599d462`):**
+- `title=` added to all file-representative code blocks across all languages (yaml, toml, ts, python,
+  markdown, mdx) in docs/ + i18n/it/. 22 files, BUILD_EXIT:0.
 
-**CEO 133–136 "Arsenal Infiltration":**
-- `variant="inspect"` added: `InspectOutput` renders CORE SCANNERS table (5 rows: Shield/Blood
-  Sentinel/Link Validator/Structure Guard/Content Sentinel). `DEFAULT_SCANNERS` + `InspectRow` interface.
-- `docs/reference/cli.mdx` (EN + IT): ASCII box-drawing `text` block removed; replaced with
-  `<SentinelOutput variant="inspect" />`. IT uses `scanners={[...IT translations...]}`.
-- `docs/reference/finding-codes.mdx` (EN + IT): Z404 added; Z201 updated to GitHub PAT example
-  (`masked="ghp_****Kx9mR2"`, `credentialType="github-personal-token"`).
+**CEO 147–148 "Sovereign Naming Law" (`982c2d9`):**
+- `docs.yml` → `zenzic.yml` (22× EN+IT), `zenzic-badge.yml` → `zenzic-score.yml` (4× EN+IT).
+  14 files, 26 substitutions. BUILD_EXIT:0.
 
-**CEO 137–138 "Bimodal Indigo":**
-- `SentinelOutput.tsx` inspect variant: `text-indigo-400` → `text-indigo-700 dark:text-indigo-300`
-  (WCAG AAA: 7.4:1 light / 8.9:1 dark). Borders: `border-indigo-200 dark:border-indigo-500/20`.
-- `docs/community/brand-kit.mdx` (EN + IT): "The Bimodal Palette / La Palette Bimodale" section added.
-- `static/assets/brand/zenzic-brand-system.html`: `--indigo: #4338ca`, `--indigo-dark: #a5b4fc`,
-  Palette v0.7.0 header annotation.
+**CEO 149–151 "Event Isolation + Mirror of Truth + Sentinel Gate" (`b2c1ef5`):**
+- `docusaurus.config.ts`: `respectPrefersColorScheme: false` — root cause of language switcher
+  triggering theme change was OS preference overriding `defaultMode` on SPA navigation.
+  Swizzled components (LocaleDropdownNavbarItem, Navbar/Content) confirmed architecturally clean.
+- `health-metrics.mdx` + IT: 21× `/docs/reference/` → `../reference/finding-codes.mdx#zXXX` (R19 compliance).
+- `finding-codes.mdx` (EN + IT): 21× `/docs/explanation/health-metrics` → `../explanation/health-metrics.mdx`.
+- `architecture-gaps.mdx` (EN + IT): blog link → `https://zenzic.dev/blog/...` full URL.
+- `justfile`: `build` recipe now depends on `sentinel` (Sentinel Gate mandatory prerequisite).
 
-**CEO 139 "Global Chromatic Sovereignty":**
-- `src/css/custom.css`: `:root` and `[data-theme='light']` shifted from indigo-800 (`#3730a3`) base
-  to indigo-700 (`#4338ca`) base. Scale: `dark=#3730a3`, `darker=#312e81`, `darkest=#1e1b6e`.
-  Dark mode `#818cf8` unchanged. Blog + Docs + static pages all receive calibration via `--ifm-color-primary`.
+**CEO 152 "Purity of Events" (analysis only):**
+- `LocaleDropdownNavbarItem/index.tsx`: confirmed architecturally pure — zero colorMode references.
+- `Navbar/Content/index.tsx`: confirmed clean — null on `/` and `/it/`, data-blog-route on blog.
+- CEO 149 fix (`respectPrefersColorScheme: false`) is the complete and canonical fix.
 
-**CEO 140 "Seamless Obsidian":**
-- `SentinelOutput.tsx`: all `border` / `dark:border-*` classes removed from `WRAPPER_CLASSES`.
+**CEO 153–154 "Sentinel Gate Manifesto + Release Bridge + Z503" (`30d545c`):**
+- `docs/how-to/workflow-integration.mdx` (new): 'Local Sentinel Gate' how-to guide.
+  Recipes for Docusaurus (npm scripts), MkDocs (justfile/Makefile), Zensical (shell/justfile),
+  Standalone (any tool). Discovery cost table. Exit code reference. Related links (Z105-compliant).
+- `i18n/it/.../how-to/workflow-integration.mdx` (new): bilingual IT mirror — 'Sentinel Gate Locale'.
+- `zenzic.toml`: 2 specific blog URLs added to `excluded_external_urls` (Release Bridge, R19-surgical).
+  Remove after v0.7.0 GA deploy: `https://zenzic.dev/blog/ai-driven-siege-shield-postmortem`,
+  `https://zenzic.dev/blog/beyond-the-siege-zenzic-v070`.
+- `configure-ci-cd.mdx` (EN): restored complete `jobs:`/`steps:` structure in 'uvx (zero-setup)'
+  and 'astral-sh/setup-uv' tabs (truncated by prior title= audit, causing Z503 YAML parse failures).
 
-**CEO 142 "Conditional Perimeter":**
-- `SentinelOutput.tsx`: `BORDER_CLASSES` map added (variant-specific reduced-opacity borders).
-  `borderClass = showFrame ? '' : BORDER_CLASSES[variant]` — border present only when no macOS
-  frame wraps the component. Seamless when `showFrame=true`, perimeter when `showFrame=false`.
+SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT, `just build` with Sentinel Gate passes).
 
-**CEO 141 "Contextual Snippets":**
-- `docs/how-to/configure-ci-cd.mdx` (EN + IT): 5 yaml blocks → `title=` (3× docs.yml,
-  1× zenzic-badge.yml, 1× .pre-commit-config.yaml). Inline `# filename` comments removed.
-- `docs/reference/configuration-reference.mdx` (EN + IT): 4 toml blocks → `title=`
-  (zenzic.toml standalone, pyproject.toml, exclusions precedence, full example).
+### Last Closed — D127–D142 — SentinelOutput Visual System + Chromatic Sovereignty
 
-Final gate: BUILD_EXIT:0 (EN + IT, `just build` passes).
+**Version:** 0.7.0 · **Date:** 2026-04-27
 
-### Last Closed — D122–D124 — Obsidian Ascension + Visual Fidelity Protocol
+SentinelOutput component (4 variants: clean/breach/findings/inspect), 30 live instances EN+IT,
+Bimodal Indigo palette (WCAG AAA), Global Chromatic Sovereignty (indigo-700 base), Conditional
+Perimeter borders, Contextual Snippets (title= on all YAML/TOML blocks). BUILD_EXIT:0.
+
+### Last Last Closed — D122–D124 — Obsidian Ascension + Visual Fidelity Protocol
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
