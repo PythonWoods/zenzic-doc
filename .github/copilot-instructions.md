@@ -262,6 +262,13 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 - `Navbar/Content/index.tsx`: confirmed clean — null on `/` and `/it/`, data-blog-route on blog.
 - CEO 149 fix (`respectPrefersColorScheme: false`) is the complete and canonical fix.
 
+**CEO 152 "Sovereign Silence" (`9c4a715`):**
+- `src/theme/NavbarItem/LocaleDropdownNavbarItem/` deleted (Tabula Rasa).
+  CSS already suppresses locale dropdown on blog via `data-blog-route`; React wrapper was redundant.
+- `src/css/custom.css`: Blog Sovereignty rule `display: none` → `visibility: hidden + pointer-events: none`
+  (zero layout shift; pure declarative; upgrade-proof).
+- `Navbar/Content` swizzle retained: homepage `null` return cannot be CSS-only.
+
 **CEO 153–154 "Sentinel Gate Manifesto + Release Bridge + Z503" (`30d545c`):**
 - `docs/how-to/workflow-integration.mdx` (new): 'Local Sentinel Gate' how-to guide.
   Recipes for Docusaurus (npm scripts), MkDocs (justfile/Makefile), Zensical (shell/justfile),
