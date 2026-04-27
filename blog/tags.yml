@@ -78,3 +78,8 @@ user-tutorials:
   label: "User Tutorials"
   permalink: /tutorials
   description: "Practical guides for getting started with Zenzic — zero configuration required."
+
+obsidian-maturity:
+  label: "Obsidian Maturity"
+  permalink: /obsidian-maturity
+  description: "🛡️ Codename for Zenzic v0.7.0 — the Safe Harbor reaches production maturity."
