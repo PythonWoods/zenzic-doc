@@ -59,7 +59,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 ### Z101: LINK_BROKEN {#z101}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z101 counts toward the **Link Integrity** category in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each broken link applies a −20% decay to the 35%-weighted link category.
+Z101 counts toward the **Link Integrity** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each broken link applies a −20% decay to the 35%-weighted link category.
 :::
 
 *   **Severity:** `error`
@@ -79,7 +79,7 @@ Z101 counts toward the **Link Integrity** category in the [Deterministic Quality
 ### Z102: ANCHOR_MISSING {#z102}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z102 counts toward the **Link Integrity** category. An unresolved anchor is penalised identically to a broken file link. See [Health Metrics](/docs/explanation/health-metrics).
+Z102 counts toward the **Link Integrity** category. An unresolved anchor is penalised identically to a broken file link. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 *   **Severity:** `error`
@@ -92,7 +92,7 @@ Z102 counts toward the **Link Integrity** category. An unresolved anchor is pena
 ### Z103: ORPHAN_LINK {#z103}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z103 counts toward the **Link Integrity** category. A link targeting a navigation-orphaned page is treated as a link integrity violation. See [Health Metrics](/docs/explanation/health-metrics).
+Z103 counts toward the **Link Integrity** category. A link targeting a navigation-orphaned page is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 *   **Severity:** `warning`
@@ -104,7 +104,7 @@ Z103 counts toward the **Link Integrity** category. A link targeting a navigatio
 ### Z104: FILE_NOT_FOUND {#z104}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z104 counts toward the **Link Integrity** category. A missing target file is penalised identically to a broken VSM link. See [Health Metrics](/docs/explanation/health-metrics).
+Z104 counts toward the **Link Integrity** category. A missing target file is penalised identically to a broken VSM link. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 *   **Severity:** `error`
@@ -116,7 +116,7 @@ Z104 counts toward the **Link Integrity** category. A missing target file is pen
 ### Z105: ABSOLUTE_PATH {#z105}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z105 counts toward the **Link Integrity** category. A non-portable absolute path is treated as a link integrity violation. See [Health Metrics](/docs/explanation/health-metrics).
+Z105 counts toward the **Link Integrity** category. A non-portable absolute path is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 *   **Severity:** `warning`
@@ -128,7 +128,7 @@ Z105 counts toward the **Link Integrity** category. A non-portable absolute path
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::info[Quality Score — Link Integrity (35%)]
-Z106 counts toward the **Link Integrity** category at `info` severity. Circular reference cycles flagged by the Graph Integrity module contribute to the link issue count. See [Health Metrics](/docs/explanation/health-metrics).
+Z106 counts toward the **Link Integrity** category at `info` severity. Circular reference cycles flagged by the Graph Integrity module contribute to the link issue count. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 *   **Severity:** `info`
@@ -183,7 +183,7 @@ Z106 counts toward the **Link Integrity** category at `info` severity. Circular 
 ### Z301: DANGLING_REF {#z301}
 
 :::warning[Not included in the Quality Score]
-Z301 is a **reference integrity error**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). It causes exit 1 and appears in `zenzic check references` output.
+Z301 is a **reference integrity error**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). It causes exit 1 and appears in `zenzic check references` output.
 :::
 
 *   **Severity:** `error`
@@ -195,7 +195,7 @@ Z301 is a **reference integrity error**. It does not reduce the [Deterministic Q
 ### Z302: DEAD_DEF {#z302}
 
 :::warning[Not included in the Quality Score]
-Z302 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Fix it to eliminate maintenance debt, but it will not affect your score.
+Z302 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it to eliminate maintenance debt, but it will not affect your score.
 :::
 
 *   **Severity:** `warning`
@@ -207,7 +207,7 @@ Z302 is a **reference integrity warning**. It does not reduce the [Deterministic
 ### Z303: DUPLICATE_DEF {#z303}
 
 :::warning[Not included in the Quality Score]
-Z303 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Resolve it to avoid CommonMark ambiguity, but it will not affect your score.
+Z303 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Resolve it to avoid CommonMark ambiguity, but it will not affect your score.
 :::
 
 *   **Severity:** `warning`
@@ -223,7 +223,7 @@ Z303 is a **reference integrity warning**. It does not reduce the [Deterministic
 ### Z401: MISSING_DIRECTORY_INDEX {#z401}
 
 :::warning[Not included in the Quality Score]
-Z401 is a **structural hint** emitted only in Standalone mode. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Create an `index.md` in the flagged directory to resolve it.
+Z401 is a **structural hint** emitted only in Standalone mode. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Create an `index.md` in the flagged directory to resolve it.
 :::
 
 *   **Severity:** `info`
@@ -235,7 +235,7 @@ Z401 is a **structural hint** emitted only in Standalone mode. It does not reduc
 ### Z402: ORPHAN_PAGE {#z402}
 
 :::info[Quality Score — Orphan Detection (20%)]
-Z402 counts toward the **Orphan Detection** category, which carries a 20% weight in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each orphan page applies a −20% decay to this category.
+Z402 counts toward the **Orphan Detection** category, which carries a 20% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each orphan page applies a −20% decay to this category.
 :::
 
 *   **Severity:** `warning`
@@ -247,7 +247,7 @@ Z402 counts toward the **Orphan Detection** category, which carries a 20% weight
 ### Z403: MISSING_ALT {#z403}
 
 :::warning[Not included in the Quality Score]
-Z403 is an **accessibility warning**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Fix it for SEO and accessibility compliance.
+Z403 is an **accessibility warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it for SEO and accessibility compliance.
 :::
 
 *   **Severity:** `warning`
@@ -259,7 +259,7 @@ Z403 is an **accessibility warning**. It does not reduce the [Deterministic Qual
 ### Z404: CONFIG_ASSET_MISSING {#z404}
 
 :::warning[Not included in the Quality Score]
-Z404 is a **configuration integrity warning**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Fix it to ensure site branding (logo, favicon) renders correctly.
+Z404 is a **configuration integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it to ensure site branding (logo, favicon) renders correctly.
 :::
 
 *   **Severity:** `warning`
@@ -281,7 +281,7 @@ Z404 is a **configuration integrity warning**. It does not reduce the [Determini
 ### Z501: PLACEHOLDER {#z501}
 
 :::info[Quality Score — Content Quality (15%)]
-Z501 counts toward the **Content Quality** category, which carries a 15% weight in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each placeholder found applies a −20% decay to this category.
+Z501 counts toward the **Content Quality** category, which carries a 15% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each placeholder found applies a −20% decay to this category.
 :::
 
 *   **Severity:** `warning`
@@ -293,7 +293,7 @@ Z501 counts toward the **Content Quality** category, which carries a 15% weight 
 ### Z502: SHORT_CONTENT {#z502}
 
 :::info[Quality Score — Content Quality (15%)]
-Z502 counts toward the **Content Quality** category alongside Z501, which carries a 15% weight in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each short page applies a −20% decay to this category.
+Z502 counts toward the **Content Quality** category alongside Z501, which carries a 15% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each short page applies a −20% decay to this category.
 :::
 
 *   **Severity:** `warning`
@@ -311,7 +311,7 @@ Z502 counts toward the **Content Quality** category alongside Z501, which carrie
 ### Z503: SNIPPET_ERROR {#z503}
 
 :::info[Quality Score — Snippet Validation (20%)]
-Z503 counts toward the **Snippet Validation** category, which carries a 20% weight in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each invalid snippet applies a −20% decay to this category.
+Z503 counts toward the **Snippet Validation** category, which carries a 20% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each invalid snippet applies a −20% decay to this category.
 :::
 
 *   **Severity:** `error`
@@ -323,7 +323,7 @@ Z503 counts toward the **Snippet Validation** category, which carries a 20% weig
 ### Z504: QUALITY_REGRESSION {#z504}
 
 *   **Severity:** `warning`
-*   **Technical Context:** Emitted by `zenzic diff` when the current [Deterministic Quality Score](/docs/explanation/health-metrics) is lower than the saved baseline (`.zenzic-score.json`). Z504 is the signal that bridges the scoring layer and the finding layer — it identifies *which commit introduced a regression*. It is not itself weighted into the score (that would be circular); it is the diagnostic consequence of score degradation.
+*   **Technical Context:** Emitted by `zenzic diff` when the current [Deterministic Quality Score](../explanation/health-metrics.mdx) is lower than the saved baseline (`.zenzic-score.json`). Z504 is the signal that bridges the scoring layer and the finding layer — it identifies *which commit introduced a regression*. It is not itself weighted into the score (that would be circular); it is the diagnostic consequence of score degradation.
 *   **Remediation Steps:**
     1. Run `zenzic score` to see the current score breakdown by category.
     2. Compare with the baseline: identify which category's issue count increased.
@@ -337,7 +337,7 @@ Z503 counts toward the **Snippet Validation** category, which carries a 20% weig
 ### Z901: RULE_ENGINE_ERROR {#z901}
 
 :::warning[Not included in the Quality Score]
-Z901 is a **system-level error**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Investigate the plugin or rule that raised the exception and report a bug if it is a core scanner.
+Z901 is a **system-level error**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Investigate the plugin or rule that raised the exception and report a bug if it is a core scanner.
 :::
 
 *   **Severity:** `error`
@@ -349,7 +349,7 @@ Z901 is a **system-level error**. It does not reduce the [Deterministic Quality 
 ### Z902: RULE_TIMEOUT {#z902}
 
 :::warning[Not included in the Quality Score]
-Z902 is a **system-level timeout**. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). Simplify the offending custom rule's regex pattern to resolve it.
+Z902 is a **system-level timeout**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Simplify the offending custom rule's regex pattern to resolve it.
 :::
 
 *   **Severity:** `error`
@@ -362,7 +362,7 @@ Z902 is a **system-level timeout**. It does not reduce the [Deterministic Qualit
 ### Z903: UNUSED_ASSET {#z903}
 
 :::info[Quality Score — Asset Integrity (10%)]
-Z903 counts toward the **Asset Integrity** category, which carries a 10% weight in the [Deterministic Quality Score](/docs/explanation/health-metrics). Each unused asset applies a −20% decay to this category.
+Z903 counts toward the **Asset Integrity** category, which carries a 10% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each unused asset applies a −20% decay to this category.
 :::
 
 *   **Severity:** `warning`
@@ -374,7 +374,7 @@ Z903 counts toward the **Asset Integrity** category, which carries a 10% weight 
 ### Z904: NAV_CONTRACT {#z904}
 
 :::warning[Not included in the Quality Score]
-Z904 is a **structural error**, not a quality metric. It does not reduce the [Deterministic Quality Score](/docs/explanation/health-metrics). It causes exit 1 and appears in `zenzic check all` output. Fix the navigation config to resolve it.
+Z904 is a **structural error**, not a quality metric. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). It causes exit 1 and appears in `zenzic check all` output. Fix the navigation config to resolve it.
 :::
 
 *   **Severity:** `error`

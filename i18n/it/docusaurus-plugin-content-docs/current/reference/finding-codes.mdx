@@ -59,7 +59,7 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 ### Z101: LINK_BROKEN {#z101}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z101 conta verso la categoria **Integrità dei Link** nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni link rotto applica un −20% di decadimento alla categoria dei link pesata al 35%.
+Z101 conta verso la categoria **Integrità dei Link** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni link rotto applica un −20% di decadimento alla categoria dei link pesata al 35%.
 :::
 
 *   **Severità:** `error`
@@ -79,7 +79,7 @@ Z101 conta verso la categoria **Integrità dei Link** nel [Punteggio di Qualità
 ### Z102: ANCHOR_MISSING {#z102}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z102 conta verso la categoria **Integrità dei Link**. Un ancoraggio non risolto viene penalizzato in modo identico a un link di file rotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+Z102 conta verso la categoria **Integrità dei Link**. Un ancoraggio non risolto viene penalizzato in modo identico a un link di file rotto. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 *   **Severità:** `error`
@@ -92,7 +92,7 @@ Z102 conta verso la categoria **Integrità dei Link**. Un ancoraggio non risolto
 ### Z103: ORPHAN_LINK {#z103}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z103 conta verso la categoria **Integrità dei Link**. Un link verso una pagina irraggiungibile dalla navigazione è penalizzato identicamente a un link interrotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+Z103 conta verso la categoria **Integrità dei Link**. Un link verso una pagina irraggiungibile dalla navigazione è penalizzato identicamente a un link interrotto. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 *   **Severità:** `warning`
@@ -104,7 +104,7 @@ Z103 conta verso la categoria **Integrità dei Link**. Un link verso una pagina 
 ### Z104: FILE_NOT_FOUND {#z104}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z104 conta verso la categoria **Integrità dei Link**. Un file di destinazione mancante è penalizzato identicamente a un link VSM interrotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+Z104 conta verso la categoria **Integrità dei Link**. Un file di destinazione mancante è penalizzato identicamente a un link VSM interrotto. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 *   **Severità:** `error`
@@ -116,7 +116,7 @@ Z104 conta verso la categoria **Integrità dei Link**. Un file di destinazione m
 ### Z105: ABSOLUTE_PATH {#z105}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z105 conta verso la categoria **Integrità dei Link**. Un percorso assoluto non portabile è trattato come una violazione dell'integrità dei link. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+Z105 conta verso la categoria **Integrità dei Link**. Un percorso assoluto non portabile è trattato come una violazione dell'integrità dei link. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 *   **Severità:** `warning`
@@ -128,7 +128,7 @@ Z105 conta verso la categoria **Integrità dei Link**. Un percorso assoluto non 
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::info[Punteggio di Qualità — Integrità dei Link (35%)]
-Z106 conta verso la categoria **Integrità dei Link** a severità `info`. I cicli di riferimento circolari rilevati dal modulo di Integrità del Grafo contribuiscono al conteggio dei problemi di link. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+Z106 conta verso la categoria **Integrità dei Link** a severità `info`. I cicli di riferimento circolari rilevati dal modulo di Integrità del Grafo contribuiscono al conteggio dei problemi di link. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 *   **Severità:** `info`
@@ -183,7 +183,7 @@ Z106 conta verso la categoria **Integrità dei Link** a severità `info`. I cicl
 ### Z301: DANGLING_REF {#z301}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z301 è un **errore di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Causa exit 1 e appare nell'output di `zenzic check references`.
+Z301 è un **errore di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Causa exit 1 e appare nell'output di `zenzic check references`.
 :::
 
 *   **Severità:** `error`
@@ -195,7 +195,7 @@ Z301 è un **errore di integrità dei riferimenti**. Non riduce il [Punteggio di
 ### Z302: DEAD_DEF {#z302}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z302 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolverlo elimina il debito tecnico, ma non influirà sul punteggio.
+Z302 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolverlo elimina il debito tecnico, ma non influirà sul punteggio.
 :::
 
 *   **Severità:** `warning`
@@ -207,7 +207,7 @@ Z302 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di
 ### Z303: DUPLICATE_DEF {#z303}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z303 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per evitare ambiguità CommonMark, ma non influirà sul punteggio.
+Z303 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolvilo per evitare ambiguità CommonMark, ma non influirà sul punteggio.
 :::
 
 *   **Severità:** `warning`
@@ -223,7 +223,7 @@ Z303 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di
 ### Z401: MISSING_DIRECTORY_INDEX {#z401}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z401 è un **suggerimento strutturale** emesso solo in modalità Standalone. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Crea un `index.md` nella directory segnalata per risolverlo.
+Z401 è un **suggerimento strutturale** emesso solo in modalità Standalone. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Crea un `index.md` nella directory segnalata per risolverlo.
 :::
 
 *   **Severità:** `info`
@@ -235,7 +235,7 @@ Z401 è un **suggerimento strutturale** emesso solo in modalità Standalone. Non
 ### Z402: ORPHAN_PAGE {#z402}
 
 :::info[Punteggio di Qualità — Rilevamento Orfani (20%)]
-Z402 conta verso la categoria **Rilevamento Orfani**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni pagina orfana applica un −20% di decadimento a questa categoria.
+Z402 conta verso la categoria **Rilevamento Orfani**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni pagina orfana applica un −20% di decadimento a questa categoria.
 :::
 
 *   **Severità:** `warning`
@@ -247,7 +247,7 @@ Z402 conta verso la categoria **Rilevamento Orfani**, che ha un peso del 20% nel
 ### Z403: MISSING_ALT {#z403}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z403 è un **avviso di accessibilità**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per la conformità SEO e accessibilità.
+Z403 è un **avviso di accessibilità**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolvilo per la conformità SEO e accessibilità.
 :::
 
 *   **Severità:** `warning`
@@ -259,7 +259,7 @@ Z403 è un **avviso di accessibilità**. Non riduce il [Punteggio di Qualità De
 ### Z404: CONFIG_ASSET_MISSING {#z404}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z404 è un **avviso di integrità della configurazione**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per garantire che il branding del sito (logo, favicon) venga reso correttamente.
+Z404 è un **avviso di integrità della configurazione**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolvilo per garantire che il branding del sito (logo, favicon) venga reso correttamente.
 :::
 
 *   **Severità:** `warning`
@@ -281,7 +281,7 @@ Z404 è un **avviso di integrità della configurazione**. Non riduce il [Puntegg
 ### Z501: PLACEHOLDER {#z501}
 
 :::info[Punteggio di Qualità — Qualità del Contenuto (15%)]
-Z501 conta verso la categoria **Qualità del Contenuto**, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni placeholder trovato applica un −20% di decadimento a questa categoria.
+Z501 conta verso la categoria **Qualità del Contenuto**, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni placeholder trovato applica un −20% di decadimento a questa categoria.
 :::
 
 *   **Severità:** `warning`
@@ -293,7 +293,7 @@ Z501 conta verso la categoria **Qualità del Contenuto**, che ha un peso del 15%
 ### Z502: SHORT_CONTENT {#z502}
 
 :::info[Punteggio di Qualità — Qualità dei Contenuti (15%)]
-Z502 conta verso la categoria **Qualità dei Contenuti** insieme a Z501, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni pagina troppo corta applica un −20% di decadimento a questa categoria.
+Z502 conta verso la categoria **Qualità dei Contenuti** insieme a Z501, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni pagina troppo corta applica un −20% di decadimento a questa categoria.
 :::
 
 *   **Severità:** `warning`
@@ -311,7 +311,7 @@ Z502 conta verso la categoria **Qualità dei Contenuti** insieme a Z501, che ha 
 ### Z503: SNIPPET_ERROR {#z503}
 
 :::info[Punteggio di Qualità — Validazione Snippet (20%)]
-Z503 conta verso la categoria **Validazione Snippet**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni snippet non valido applica un −20% di decadimento a questa categoria.
+Z503 conta verso la categoria **Validazione Snippet**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni snippet non valido applica un −20% di decadimento a questa categoria.
 :::
 
 *   **Severità:** `error`
@@ -323,7 +323,7 @@ Z503 conta verso la categoria **Validazione Snippet**, che ha un peso del 20% ne
 ### Z504: QUALITY_REGRESSION {#z504}
 
 *   **Severità:** `warning`
-*   **Contesto Tecnico:** Emesso da `zenzic diff` quando il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics) attuale è inferiore al baseline salvato (`.zenzic-score.json`). Z504 è il segnale che fa da ponte tra il layer di scoring e il layer di finding — identifica *quale commit ha introdotto una regressione*. Non viene esso stesso pesato nel punteggio (sarebbe circolare); è la conseguenza diagnostica del degrado del punteggio.
+*   **Contesto Tecnico:** Emesso da `zenzic diff` quando il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx) attuale è inferiore al baseline salvato (`.zenzic-score.json`). Z504 è il segnale che fa da ponte tra il layer di scoring e il layer di finding — identifica *quale commit ha introdotto una regressione*. Non viene esso stesso pesato nel punteggio (sarebbe circolare); è la conseguenza diagnostica del degrado del punteggio.
 *   **Passaggi di Rimedio:**
     1. Esegui `zenzic score` per vedere il breakdown attuale del punteggio per categoria.
     2. Confronta con il baseline: identifica quale categoria ha aumentato il suo conteggio di problemi.
@@ -337,7 +337,7 @@ Z503 conta verso la categoria **Validazione Snippet**, che ha un peso del 20% ne
 ### Z901: RULE_ENGINE_ERROR {#z901}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z901 è un **errore a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Investiga il plugin o la regola che ha sollevato l'eccezione e segnala un bug se è uno scanner core.
+Z901 è un **errore a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Investiga il plugin o la regola che ha sollevato l'eccezione e segnala un bug se è uno scanner core.
 :::
 
 *   **Severità:** `error`
@@ -349,7 +349,7 @@ Z901 è un **errore a livello di sistema**. Non riduce il [Punteggio di Qualità
 ### Z902: RULE_TIMEOUT {#z902}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z902 è un **timeout a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Semplifica il pattern regex della regola personalizzata incriminata per risolverlo.
+Z902 è un **timeout a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Semplifica il pattern regex della regola personalizzata incriminata per risolverlo.
 :::
 
 *   **Severità:** `error`
@@ -362,7 +362,7 @@ Z902 è un **timeout a livello di sistema**. Non riduce il [Punteggio di Qualit�
 ### Z903: UNUSED_ASSET {#z903}
 
 :::info[Punteggio di Qualità — Integrità degli Asset (10%)]
-Z903 conta verso la categoria **Integrità degli Asset**, che ha un peso del 10% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni asset inutilizzato applica un −20% di decadimento a questa categoria.
+Z903 conta verso la categoria **Integrità degli Asset**, che ha un peso del 10% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni asset inutilizzato applica un −20% di decadimento a questa categoria.
 :::
 
 *   **Severità:** `warning`
@@ -374,7 +374,7 @@ Z903 conta verso la categoria **Integrità degli Asset**, che ha un peso del 10%
 ### Z904: NAV_CONTRACT {#z904}
 
 :::warning[Non incluso nel Punteggio di Qualità]
-Z904 è un **errore strutturale**, non una metrica di qualità. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Causa l'uscita con 1 e appare nell'output di `zenzic check all`. Correggi la configurazione di navigazione per risolverlo.
+Z904 è un **errore strutturale**, non una metrica di qualità. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Causa l'uscita con 1 e appare nell'output di `zenzic check all`. Correggi la configurazione di navigazione per risolverlo.
 :::
 
 *   **Severità:** `error`

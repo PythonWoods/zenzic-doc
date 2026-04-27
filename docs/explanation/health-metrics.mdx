@@ -18,7 +18,7 @@ Zenzic’s Quality Score is not a vanity metric. It is a **deterministic 0–100
 from the concrete issue count across every check. Zero issues means 100/100 — a formal proof,
 not an estimate. No partial credit, no rounding favors, no surprises.
 
-> **Find out where you stand right now:** `uvx zenzic score` — no install, no config required.
+> **Find out where you stand right now:** `uvx zenzic score [PATH]` — no install, no config required.
 
 ---
 
@@ -29,21 +29,21 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 
 | Category | Command | Finding Codes | Weight |
 |----------|---------|---------------|--------|
-| **Link Integrity** | `zenzic check links` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
-| **Orphan Detection** | `zenzic check orphans` | [Z402] | **20 %** |
-| **Snippet Validation** | `zenzic check snippets` | [Z503] | **20 %** |
-| **Content Quality** | `zenzic check all` | [Z501] | **15 %** |
-| **Asset Integrity** | `zenzic check assets` | [Z903] | **10 %** |
+| **Link Integrity** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
+| **Orphan Detection** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
+| **Snippet Validation** | `zenzic check snippets [PATH]` | [Z503] | **20 %** |
+| **Content Quality** | `zenzic check all [PATH]` | [Z501] | **15 %** |
+| **Asset Integrity** | `zenzic check assets [PATH]` | [Z903] | **10 %** |
 
-[Z101]: /docs/reference/finding-codes#z101
-[Z102]: /docs/reference/finding-codes#z102
-[Z103]: /docs/reference/finding-codes#z103
-[Z104]: /docs/reference/finding-codes#z104
-[Z105]: /docs/reference/finding-codes#z105
-[Z402]: /docs/reference/finding-codes#z402
-[Z501]: /docs/reference/finding-codes#z501
-[Z503]: /docs/reference/finding-codes#z503
-[Z903]: /docs/reference/finding-codes#z903
+[Z101]: ../reference/finding-codes.mdx#z101
+[Z102]: ../reference/finding-codes.mdx#z102
+[Z103]: ../reference/finding-codes.mdx#z103
+[Z104]: ../reference/finding-codes.mdx#z104
+[Z105]: ../reference/finding-codes.mdx#z105
+[Z402]: ../reference/finding-codes.mdx#z402
+[Z501]: ../reference/finding-codes.mdx#z501
+[Z503]: ../reference/finding-codes.mdx#z503
+[Z903]: ../reference/finding-codes.mdx#z903
 
 The **Shield** (Z2xx security findings) and **Nav Contract** (Z904) are not scored —
 they cause a non-suppressible exit 2 or 3 before scoring can complete. You cannot
@@ -83,16 +83,16 @@ broken links on user experience versus unused asset files.
 
 ```bash
 # Compute and display the score (no file written)
-zenzic score
+zenzic score [PATH]
 
 # Compute, display, and persist to .zenzic-score.json
-zenzic score --save
+zenzic score [PATH] --save
 
 # Compute and fail if score falls below N
-zenzic score --fail-under 80
+zenzic score [PATH] --fail-under 80
 
 # Compare current score against the saved baseline (CI regression gate)
-zenzic diff
+zenzic diff [PATH]
 ```
 
 The snapshot is written to `.zenzic-score.json` at the repository root. It is a
@@ -120,7 +120,7 @@ When `zenzic diff` detects a score drop, it emits **[Z504 QUALITY_REGRESSION][z5
 as a finding. This is the only finding code that bridges the scoring layer and the
 finding layer — it means: *"something you changed made the score worse."*
 
-[z504]: /docs/reference/finding-codes#z504
+[z504]: ../reference/finding-codes.mdx#z504
 
 Z504 is not weighted into the score itself (that would be circular). It is the
 signal that communicates *which commit introduced a regression*.
@@ -155,7 +155,7 @@ mathematical invariants.
 The CEO's audit noted a terminological correction: what users sometimes call
 "Nav Isolation" is formally **Nav Contract Integrity ([Z904])**.
 
-[Z904]: /docs/reference/finding-codes#z904
+[Z904]: ../reference/finding-codes.mdx#z904
 
 Z904 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
 `nav:` entry or a Docusaurus `sidebars.ts` explicit entry) does not exist on disk.

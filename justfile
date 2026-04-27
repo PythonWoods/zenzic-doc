@@ -25,8 +25,8 @@ serve:
 preview:
     npm run serve
 
-# Build production static site
-build:
+# Build production static site — Sentinel Gate: Zenzic must pass before Docusaurus builds
+build: sentinel
     npm run build
 
 # Static type check

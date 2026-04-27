@@ -19,7 +19,7 @@ calcolato dal conteggio concreto dei problemi rilevati da ogni controllo. Zero p
 100/100 — una prova formale, non una stima. Nessun credito parziale, nessun arrotondamento favorevole,
 nessuna sorpresa.
 
-> **Scopri dove sei adesso:** `uvx zenzic score` — nessuna installazione, nessuna configurazione richiesta.
+> **Scopri dove sei adesso:** `uvx zenzic score [PATH]` — nessuna installazione, nessuna configurazione richiesta.
 
 ---
 
@@ -31,21 +31,21 @@ codici di finding `Zxxx` che emette.
 
 | Categoria | Comando | Codici Finding | Peso |
 |-----------|---------|----------------|------|
-| **Integrità dei Link** | `zenzic check links` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
-| **Rilevamento Orfani** | `zenzic check orphans` | [Z402] | **20 %** |
-| **Validazione Snippet** | `zenzic check snippets` | [Z503] | **20 %** |
-| **Qualità del Contenuto** | `zenzic check all` | [Z501] | **15 %** |
-| **Integrità degli Asset** | `zenzic check assets` | [Z903] | **10 %** |
+| **Integrità dei Link** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
+| **Rilevamento Orfani** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
+| **Validazione Snippet** | `zenzic check snippets [PATH]` | [Z503] | **20 %** |
+| **Qualità del Contenuto** | `zenzic check all [PATH]` | [Z501] | **15 %** |
+| **Integrità degli Asset** | `zenzic check assets [PATH]` | [Z903] | **10 %** |
 
-[Z101]: /docs/reference/finding-codes#z101
-[Z102]: /docs/reference/finding-codes#z102
-[Z103]: /docs/reference/finding-codes#z103
-[Z104]: /docs/reference/finding-codes#z104
-[Z105]: /docs/reference/finding-codes#z105
-[Z402]: /docs/reference/finding-codes#z402
-[Z501]: /docs/reference/finding-codes#z501
-[Z503]: /docs/reference/finding-codes#z503
-[Z903]: /docs/reference/finding-codes#z903
+[Z101]: ../reference/finding-codes.mdx#z101
+[Z102]: ../reference/finding-codes.mdx#z102
+[Z103]: ../reference/finding-codes.mdx#z103
+[Z104]: ../reference/finding-codes.mdx#z104
+[Z105]: ../reference/finding-codes.mdx#z105
+[Z402]: ../reference/finding-codes.mdx#z402
+[Z501]: ../reference/finding-codes.mdx#z501
+[Z503]: ../reference/finding-codes.mdx#z503
+[Z903]: ../reference/finding-codes.mdx#z903
 
 Lo **Shield** (finding di sicurezza Z2xx) e il **Nav Contract** (Z904) non vengono
 valutati nel punteggio — causano un'uscita non sopprimibile 2 o 3 prima che il
@@ -87,16 +87,16 @@ ai file asset inutilizzati.
 
 ```bash
 # Calcola e mostra il punteggio (nessun file scritto)
-zenzic score
+zenzic score [PATH]
 
 # Calcola, mostra e persiste in .zenzic-score.json
-zenzic score --save
+zenzic score [PATH] --save
 
 # Calcola e fallisce se il punteggio scende sotto N
-zenzic score --fail-under 80
+zenzic score [PATH] --fail-under 80
 
 # Confronta il punteggio attuale con il baseline salvato (gate di regressione CI)
-zenzic diff
+zenzic diff [PATH]
 ```
 
 Lo snapshot è scritto in `.zenzic-score.json` nella root del repository. È un file
@@ -125,7 +125,7 @@ Quando `zenzic diff` rileva una diminuzione del punteggio, emette
 che fa da ponte tra il layer di scoring e il layer di finding — significa:
 *"qualcosa che hai cambiato ha peggiorato il punteggio."*
 
-[z504]: /docs/reference/finding-codes#z504
+[z504]: ../reference/finding-codes.mdx#z504
 
 Z504 non viene pesato nel punteggio stesso (sarebbe circolare). È il segnale che
 comunica *quale commit ha introdotto una regressione*.
@@ -161,7 +161,7 @@ per garantire gli invarianti matematici.
 L'audit del CEO ha segnalato una correzione terminologica: quello che gli utenti
 chiamano a volte "Nav Isolation" è formalmente **Integrità del Nav Contract ([Z904])**.
 
-[Z904]: /docs/reference/finding-codes#z904
+[Z904]: ../reference/finding-codes.mdx#z904
 
 Z904 si attiva quando un file dichiarato nella configurazione di navigazione del motore
 (es. una voce `nav:` di `mkdocs.yml` o una voce esplicita di `sidebars.ts` in

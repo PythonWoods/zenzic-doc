@@ -132,7 +132,7 @@ const config: Config = {
     ],
     colorMode: {
       defaultMode: 'dark',
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Zenzic',
