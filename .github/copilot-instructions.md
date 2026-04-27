@@ -232,28 +232,56 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 - **Why:** Without explicit `path: 'it'`, Docusaurus derives the filesystem path from `htmlLang: 'it-IT'`. The derived path `it-IT` does not match the actual directory `i18n/it/`, causing the Italian locale to silently fall back to English content — no build error, no visible warning.
 - **Implementation:** `localeConfigs: { it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' } }`.
 
+### ADR-006: Unified Perimeter — Storage + Journal Locale Sovereignty (CEO 051, `3188387`)
+**[DECISION]** Two locale-bleed bugs fixed via `docusaurus.config.ts`.
+
+**Theme Flip:** `future.v4` enables `siteStorageNamespacing` which hashes `url+baseUrl` per locale,
+producing different localStorage keys (`theme-926` EN, `theme-3d7` IT). Dark mode preference is
+siloed per locale — switching locale causes a theme reset. Fix: `storage: { namespace: false }` →
+unified key `'theme'` across all locales. Verified in anti-FOUC inline script in built HTML.
+
+**Journal locale bleed:** `to:'/blog'` and `href:'/blog'` are both rewritten to `/it/blog` in IT
+locale by the Docusaurus static build pipeline. Fix: `type: 'html'` navbar item with a raw anchor
+`href=/blog` — Docusaurus does not process innerHTML of `html`-type items, so the href is
+preserved verbatim. Blog remains EN-only regardless of active locale.
+
+**[INVARIANT] CEO directive corrections:**
+- `themeConfig.siteStorage.themeKey` — does NOT exist in Docusaurus 3.x. Correct API is top-level `storage.namespace`.
+- `respectPrefersColorScheme: true` — NOT applied; would revert CEO 149 immutable invariant. `false` is maintained.
+
 ---
 
 ## [ACTIVE SPRINT] — Working Context
 
-### D156–D157 — Pixel-Perfect Parity Audit (Current)
+### CEO 051 — The Unified Perimeter (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-**CEO 156 "Next Label Audit" (analysis only — no commit required):**
-- `i18n/it/docusaurus-plugin-content-docs/current.json`: `version.label` already `"0.7.0"`. Bug does not exist.
-- `docusaurus.config.ts`: `versions.current.label: '0.7.0'` confirmed. EN+IT parity intact.
+**Blog Sovereignty CSS fix (`2ad44ad`):**
+- `src/css/custom.css`: `a[hreflang]` → `a[lang]`. Docusaurus renders locale dropdown
+  links with `lang="it-IT"` (HTML attribute), not `hreflang`. Prior selector never matched.
 
-**CEO 157 "Theme Flip Audit" (analysis only — no commit required):**
-- Root cause: Docusaurus locale switching = full page reload (not SPA), causing FOUC during hydration.
-- `respectPrefersColorScheme: false` (CEO 149) is the canonical and complete fix.
-- CEO's proposed NavbarWrapper code rejected as non-viable: `@generated/docusaurus.config` does not
-  exist in Docusaurus 3.x; `<Navbar items={...}>` is not a valid prop signature. Implementing it
-  would break the build.
-- `ColorModeContext` is provided by `DocusaurusRoot` (above all navbar components) — Navbar swizzle
-  physically cannot cause theme flips. Architecture is correct.
+**Unified Perimeter (`3188387`):**
+- `docusaurus.config.ts`: `storage: { namespace: false }` — unified localStorage key `'theme'`
+  across EN+IT. Previously `future.v4` hashed different keys per locale (`theme-926` / `theme-3d7`).
+- Journal navbar: `type: 'html'` with raw `href=/blog` anchor — bypasses Docusaurus i18n rewrite
+  pipeline that converts `/blog` → `/it/blog` in IT locale static build.
+- Forensic verification: `localStorage.getItem("theme")` identical in EN+IT built HTML;
+  IT docs pages show `href=/blog>Journal` (not `/it/blog`).
+
+**CEO 051 API corrections applied:**
+- `themeConfig.siteStorage.themeKey` rejected (non-existent API) — correct API is `storage.namespace`.
+- `respectPrefersColorScheme:true` rejected — would revert CEO 149 immutable invariant.
 
 SENTINEL_EXIT:0 | BUILD_EXIT:0 (just build — Sentinel Gate + Docusaurus EN+IT confirmed).
+
+### Last Closed — D156–D157 — Pixel-Perfect Parity Audit
+
+**Version:** 0.7.0 · **Date:** 2026-04-27
+
+CEO 156 "Next Label": `i18n/it current.json` already `"0.7.0"` — bug did not exist.
+CEO 157 "Theme Flip": root cause found — `future.v4` siteStorageNamespacing creates
+per-locale storage keys; closed in CEO 051 Unified Perimeter sprint.
 
 ### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
 
