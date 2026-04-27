@@ -6,24 +6,31 @@ authors: [pythonwoods]
 tags: [user-tutorials, tutorial, quickstart, python, devtools]
 date: 2026-04-27T23:59:00
 description: >
-  That nagging anxiety after pressing 'Merge'? With Zenzic, it ends today.
-  Three steps to a documentation pipeline you can trust — zero configuration required.
+  The complete Zenzic masterclass: instant audit, lab training, hardening policy,
+  CI gate, and pre-commit workflow for documentation you can trust.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-Have you ever felt that strange anxiety a minute after pressing **Merge** on a documentation
-pull request? That nagging doubt:
+Have you ever felt that cold jolt a minute after pressing **Merge** on a documentation
+pull request? The one that sounds like this:
 
 > *"Did I break the links in the main guide?"*
 > *"Did I accidentally leave the API key in the code example?"*
+> *"Will production be the first place I hear about it?"*
 
 With Zenzic, that anxiety ends today. **Welcome to the Safe Harbor.**
 
 {/* truncate */}
 
-## Three Steps to Documentation Peace
+Markdown is forgiving. That is the problem.
 
-### Step 1 — The Illumination
+Your site can build cleanly while your readers hit a 404, your navigation hides an orphan page,
+or a credential slips into a code example. Zenzic treats documentation as **untrusted input** and
+checks the source before the build starts.
+
+This is the full workflow: instant audit, team training, quality hardening, and automation.
+
+## 1. The Instant Check
 
 Run one command. No installation. No configuration. No build required:
 
@@ -31,34 +38,65 @@ Run one command. No installation. No configuration. No build required:
 uvx zenzic check all .
 ```
 
-In under a second, Zenzic builds a complete mental map of your documentation and shows you
-everything the human eye misses: broken links, unreachable files, leaked credentials,
-placeholder text. Every finding comes with a **code**, a **file**, and a **line number**.
+Zenzic scans the raw source before your build tool can hide the problem. It finds broken links,
+unreachable pages, placeholders, path traversal attempts, and leaked credentials in one pass.
+Every finding comes with a **Z code**, a **file**, and a **line number**.
 
-This is your first look at the truth.
+This is the moment of truth: the exact place where uncertainty becomes a list you can fix.
 
----
-
-### Step 2 — The Training Ground
-
-Your documentation is clean? Now make it bulletproof:
-
-```bash
-zenzic lab
-```
-
-Pick an Act and watch the Sentinel put itself under siege. It simulates broken links,
-credential leaks, and circular references so you understand exactly what it's protecting
-against. It's a flight simulator for Technical Writers.
-
-:::tip[Try this now]
-Run `zenzic lab 2` to see the Shield catch a live credential leak in real time.
-Then run `zenzic lab 0` to see the Clean Harbor — the baseline you're defending.
+:::tip[What this replaces]
+Without Zenzic, the first alarm often comes from the build log, a reader, or a bot.
+With Zenzic, the source is checked before any of them get a chance.
 :::
 
 ---
 
-### Step 3 — The Automation
+## 2. The Lab Experience
+
+If you want your team to trust the gate, show them the breach first.
+
+Start with the live credential breach:
+
+```bash
+zenzic lab 2
+```
+
+Then return to the sealed baseline:
+
+```bash
+zenzic lab 0
+```
+
+The Lab is not a gimmick. It is the fastest way to teach your team what the Sentinel is
+protecting against. Broken links, circular references, leaked secrets, adapter edge cases,
+red-team scenarios: they are all there as runnable Acts.
+
+:::tip[Try this now]
+Run `zenzic lab --list` to see the available Acts, then use `zenzic lab 11-16` for the
+full red-team block when your team is ready for the advanced tour.
+:::
+
+---
+
+## 3. Advanced Hardening
+
+Once your first audit is clean, set a floor for quality.
+
+Create a `zenzic.toml` in the project root:
+
+```toml title="zenzic.toml"
+fail_under = 100
+strict = true
+```
+
+`fail_under = 100` turns the quality score into a hard gate: any regression fails the command.
+`strict = true` makes external URL validation part of the contract and treats warnings as errors.
+
+This is how a team moves from “helpful lint output” to a true documentation policy.
+
+---
+
+## 4. Automazione Totale
 
 Copy these lines into your GitHub workflow. From this moment, no broken link, no leaked
 credential will ever reach your `main` branch again:
@@ -78,20 +116,58 @@ jobs:
       - uses: PythonWoods/zenzic-action@v1
         with:
           version: "0.7.0"
+          format: sarif
+          upload-sarif: "true"
+          fail-on-error: "true"
 ```
 
-The Safe Harbor is sealed. **Now you can sleep soundly.**
+For local discipline, use the same gate before commit or before build. For example, in a
+Docusaurus project:
+
+```json title="package.json"
+{
+  "scripts": {
+    "zenzic": "uvx zenzic check all . --strict",
+    "build": "npm run zenzic && docusaurus build"
+  }
+}
+```
+
+If you want a lighter hook for staged work, wire your pre-commit command to run:
+
+```bash
+uvx zenzic check all . --quiet
+```
+
+That gives you a fast local gate in the same spirit as a Husky or lint-staged workflow,
+without pretending Zenzic ships a built-in Git hook manager.
+
+The Safe Harbor is sealed locally and in CI. **Now you can sleep soundly.**
 
 ---
 
-## Why Zenzic?
+## 5. Zenzic vs Built-In Checks
 
-| Without Zenzic | With Zenzic |
-|----------------|-------------|
-| Broken links discovered by readers | Caught before the build |
-| Leaked credentials found by bots | Intercepted at commit time |
-| Orphan pages invisible in navigation | Reported with file and line number |
-| CI passes, production breaks | Gate fails, `main` stays clean |
+| What you rely on today | What Zenzic adds |
+|------------------------|------------------|
+| Build engine reports what it sees while rendering | Zenzic inspects the raw source before the build starts |
+| Generic failures or broken output | Z codes, file paths, and exact line numbers |
+| No built-in secret awareness in docs examples | Shield catches leaked credentials as security events |
+| No training surface for onboarding | Lab Acts let teams learn the failure modes by running them |
+| CI may fail late, after context switching | Local gate and CI gate enforce the same contract |
+
+---
+
+## 6. Why Teams Keep It
+
+The value is not that Zenzic tells you a link is broken.
+
+The value is that it turns documentation quality into a repeatable engineering system:
+
+- one command to audit the source
+- one lab to train the team
+- one policy file to define the floor
+- one CI gate to keep `main` clean
 
 ---
 
