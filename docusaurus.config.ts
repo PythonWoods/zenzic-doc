@@ -150,7 +150,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          to: '/blog',
+          href: '/blog',
           label: 'Journal',
           position: 'left',
         },
