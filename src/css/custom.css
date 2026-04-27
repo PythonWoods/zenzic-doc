@@ -23,12 +23,15 @@
  *
  * :has(a[hreflang]) targets the locale dropdown specifically — locale links
  * carry the hreflang attribute. Version dropdowns and other menus do not.
- * !important is deliberate — CEO-111 executive override: unconditional silence
- * on all blog routes, no specificity battle with Infima navbar rules.
+ *
+ * visibility: hidden preserves the layout box so adjacent navbar items do not
+ * shift. pointer-events: none prevents accidental interaction.
+ * This is a pure CSS solution — no React swizzling required.
  */
 [data-blog-route] .navbar__item:has(a[hreflang]),
 [data-blog-route] .navbar__item.dropdown--hoverable:has(a[hreflang]) {
-  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /**
