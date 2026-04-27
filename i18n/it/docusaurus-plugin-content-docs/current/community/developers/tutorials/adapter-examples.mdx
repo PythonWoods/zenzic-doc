@@ -163,3 +163,178 @@ uscita attesi:
 # Plugin scaffold demo: il template generato deve essere pulito
 (cd examples/plugin-scaffold-demo && zenzic check all)
 ```
+
+---
+
+## Adapter Internals — Confronto Pedagogico
+
+Questa sezione illustra due metodi concreti degli adapter fianco a fianco.
+Il contrasto tra `DocusaurusAdapter` e `StandaloneAdapter` mostra come il
+protocollo adapter abiliti la logica Core engine-agnostica.
+
+### `provides_index()` — Questa directory ha una landing page?
+
+Il Core chiama `provides_index(directory_path)` una volta per directory durante
+il rilevamento degli orfani. Risponde alla domanda: *"Il motore genererà un indice
+navigabile per questa directory, così che i file al suo interno non siano
+strutturalmente orfani?"*
+
+**`DocusaurusAdapter.provides_index()`** — piena consapevolezza del motore:
+
+```python
+def provides_index(self, directory_path: Path) -> bool:
+    # File di indice fisici — Docusaurus li serve direttamente.
+    index_files = ("index.md", "index.mdx", "README.md", "README.mdx")
+    if any((directory_path / f).exists() for f in index_files):
+        return True
+
+    # _category_.json con link "generated-index" — Docusaurus auto-genera
+    # una landing page di categoria anche senza un file di indice fisico.
+    category_json = directory_path / "_category_.json"
+    if category_json.exists():
+        try:
+            import json as _json
+            data = _json.loads(category_json.read_text(encoding="utf-8"))
+            link = data.get("link", {})
+            return isinstance(link, dict) and link.get("type") == "generated-index"
+        except Exception:
+            return True  # conservativo: si assume che fornisca un indice
+    return False
+```
+
+**`StandaloneAdapter.provides_index()`** — zero assunzioni sul motore:
+
+```python
+def provides_index(self, directory_path: Path) -> bool:
+    # Nessun config motore — solo un index.md semplice segnala una landing page.
+    return (directory_path / "index.md").exists()
+```
+
+**Differenza chiave:** `DocusaurusAdapter` conosce `_category_.json` e `README.mdx`
+perché sono convenzioni Docusaurus. `StandaloneAdapter` non fa assunzioni — riconosce
+solo la convenzione universale `index.md`.
+
+---
+
+### `get_nav_paths()` — Quali file sono raggiungibili?
+
+`get_nav_paths()` restituisce l'insieme dei percorsi file raggiungibili tramite
+l'interfaccia di navigazione del sito. Un file assente da questo insieme è
+candidato per Z402 (`ORPHAN_BUT_EXISTING`).
+
+**`DocusaurusAdapter.get_nav_paths()`** — aggregazione da tre sorgenti:
+
+```python
+def get_nav_paths(self) -> frozenset[str]:
+    if self._sidebar_path is not None:
+        sidebar_paths = _parse_sidebars(self._sidebar_path, self._docs_root)
+        if sidebar_paths is not None:
+            # Sidebar esplicita: unisci con i percorsi navbar.
+            # Un file è REACHABLE se appare nella sidebar O nella navbar.
+            return sidebar_paths | self._navbar_paths
+    # Autogenerata o nessuna sidebar: tutti i file sono già REACHABLE.
+    return frozenset()
+```
+
+`self._navbar_paths` è popolato da `_parse_config_navigation()` da
+`docusaurus.config.*` — estrae percorsi URL `to:` e attributi `docId:` da voci
+**navbar** e **footer**. Un file linkato solo nel footer è comunque considerato
+raggiungibile (Legge UX-Discoverability, Regola R21).
+
+**`StandaloneAdapter.get_nav_paths()`** — intenzionalmente vuoto:
+
+```python
+def get_nav_paths(self) -> frozenset[str]:
+    """Frozenset vuoto — nessun config motore significa nessuna nav dichiarata."""
+    return frozenset()
+```
+
+Quando `get_nav_paths()` restituisce un frozenset vuoto, `classify_route()` tratta
+**tutti** i file come `REACHABLE`. È intenzionale: in modalità Standalone non esiste
+un contratto di navigazione, quindi il rilevamento degli orfani (Z402) è disabilitato.
+
+---
+
+### `classify_route()` — Questo file è raggiungibile?
+
+`classify_route(rel, nav_paths)` mappa il percorso di un file sorgente al suo stato
+di route.
+
+**`DocusaurusAdapter.classify_route()`** — quattro regole di classificazione:
+
+```python
+def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+    # Regola 1: File privati/meta (es. _category_.json) → IGNORED
+    non_sentinel_parts = [p for p in rel.parts if p != "_version_"]
+    if any(part.startswith("_") for part in non_sentinel_parts):
+        return "IGNORED"
+
+    # Version Ghost Routes: file sotto _version_/<label>/ sono sempre REACHABLE.
+    if len(rel.parts) >= 2 and rel.parts[0] == "_version_":
+        return "REACHABLE"
+
+    # Regola 2: Nessuna nav esplicita → sidebar autogenerata → tutti REACHABLE
+    if not nav_paths:
+        return "REACHABLE"
+
+    # Regola 3: Corrispondenza nav esplicita (sidebar o navbar)
+    if rel.as_posix() in nav_paths:
+        return "REACHABLE"
+
+    # Le shadow locale ereditano l'appartenenza alla nav
+    if self.is_shadow_of_nav_page(rel, nav_paths):
+        return "REACHABLE"
+
+    # Ghost Routes: entry point di locale (es. it/index.mdx)
+    if rel.name in ("index.md", "index.mdx") and len(rel.parts) == 2:
+        if rel.parts[0] in self._locale_dirs:
+            return "REACHABLE"
+
+    # Regola 4: Il file esiste ma non è raggiungibile tramite alcun punto di accesso UI
+    return "ORPHAN_BUT_EXISTING"
+```
+
+**`StandaloneAdapter.classify_route()`** — sempre raggiungibile:
+
+```python
+def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+    """Sempre REACHABLE — nessuna nav con cui confrontare."""
+    return "REACHABLE"
+```
+
+Il contrasto è netto. `DocusaurusAdapter` implementa una cascata di quattro regole
+perché Docusaurus ha contratti di navigazione espliciti (`sidebars.ts`,
+`docusaurus.config.*`). `StandaloneAdapter` restituisce una costante perché senza
+motore non esiste un contratto di navigazione — ogni file che esiste è raggiungibile.
+
+---
+
+### `get_link_scheme_bypasses()` — Schemi URI specifici del motore
+
+La Regola R21 (Protocol Sovereignty) impone che il Core non hardcodi mai i nomi dei
+motori nella logica di validazione. Gli schemi URI specifici del motore sono dichiarati
+dall'adapter e interrogati dal Core.
+
+**`DocusaurusAdapter.get_link_scheme_bypasses()`:**
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    # Docusaurus usa link pathname:/// per referenziare file in static/
+    # che bypassano il router React. Il / iniziale è un artefatto
+    # convenzionale URI, non un percorso server-assoluto.
+    return frozenset({"pathname"})
+```
+
+**`StandaloneAdapter.get_link_scheme_bypasses()`:**
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    """I progetti Standalone non hanno bypass di schema link specifici del motore."""
+    return frozenset()
+```
+
+Quando un link come `pathname:///assets/brand.html` viene incontrato in un progetto
+Docusaurus, il Core controlla `adapter.get_link_scheme_bypasses()`. Trova `"pathname"`
+nell'insieme restituito e salta il controllo Z105 (percorso assoluto). In un progetto
+Standalone, lo stesso link attiva Z105 — correttamente, perché `pathname:///` è un
+escape hatch specifico di Docusaurus senza significato in un progetto Markdown generico.

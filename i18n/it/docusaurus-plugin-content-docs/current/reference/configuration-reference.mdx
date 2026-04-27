@@ -150,8 +150,7 @@ I campi `excluded_dirs` e `excluded_file_patterns` nel file di configurazione de
 - **Verificabili** — un nuovo collaboratore che esegue `git diff` vede esattamente cosa esclude Zenzic e perché
 - **Stabili** — le esclusioni non cambiano quando uno sviluppatore aggiorna `.gitignore` per ragioni di tooling non correlate
 
-```toml
-# zenzic.toml (o [tool.zenzic] in pyproject.toml)
+```toml title="zenzic.toml"
 # Le esclusioni esplicite sono manutenibili e verificabili
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
@@ -358,8 +357,7 @@ I flag CLI sovrascrivono la configurazione del file per la singola esecuzione:
 
 ## Esempio completo {#full-example}
 
-```toml
-# zenzic.toml — configurazione completa di esempio
+```toml title="zenzic.toml"
 
 docs_dir = "docs"
 

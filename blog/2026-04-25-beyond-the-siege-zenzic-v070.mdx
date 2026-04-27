@@ -1,22 +1,23 @@
 ---
 slug: beyond-the-siege-zenzic-v070-new-standard
-title: "Zenzic v0.7.0 — Obsidian Maturity"
+title: "Beyond the Siege: The Sovereign Root"
+sidebar_label: "04. Sovereign Root"
 authors: [pythonwoods]
-tags: [release, engineering, python, opensource]
-date: 2026-04-22
+tags: [release, engineering, python, opensource, security, obsidian-chronicles]
+date: 2026-04-24
 description: >
-  After Obsidian Stress and the Mirror audit closed every gap, one question remained:
-  what does maturity look like? This is v0.7.0 — the definitive reference.
+  After four AI agents tried to break Zenzic's Shield, we didn't patch bugs —
+  we rewrote the rules. The Sovereign Root Protocol, Purity Protocol, and 1,260 tests
+  later: this is the technical deep-dive.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
 
-:::info[Exclusive to zenzic.dev]
+:::info[The Obsidian Chronicles — Part 4 of 5]
 
-This is the fourth and final installment of the Zenzic Engineering Series —
-published exclusively here. It documents what happened **after** the siege: the
-consolidation audit, the i18n fix, the Z404 universalization, and why this moment
-became v0.7.0 rather than v0.6.2.
+This is the official engineering record of Zenzic's journey to v0.7.0.
+
+[Part 1](/blog/hardening-the-documentation-pipeline) | [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Part 3](/blog/ai-driven-siege-shield-postmortem) | **Part 4** | [Part 5](/blog/zenzic-v070-obsidian-maturity-stable)
 
 :::
 
@@ -66,7 +67,8 @@ The Zenzic Engineering Series has documented a continuous thread:
 | [Part 1](/blog/hardening-the-documentation-pipeline) | Why Zenzic exists: the leaking pipe problem | v0.5.x Sentinel |
 | [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | Ripping the foundation out: Headless Architecture | v0.6.1rc2 Bastion |
 | [Part 3](/blog/ai-driven-siege-shield-postmortem) | The siege: 4 bypass vectors found and closed | v0.6.1rc2 → v0.6.1 |
-| Part 4 (this post) | The consolidation: what maturity actually means | **v0.7.0** |
+| Part 4 (this post) | The consolidation: Sovereignty, Purity, precision | **v0.7.0** |
+| [Part 5](/blog/zenzic-v070-obsidian-maturity-stable) | The vision: UX-Discoverability and the new standard | **v0.7.0 Stable** |
 
 The version jump from v0.6.1 to v0.7.0 was not about features. It was about something
 more specific: the deliberate rejection of a framing.
@@ -152,11 +154,12 @@ That command now works correctly against four engine types, with:
 | Standalone Mode | Orphan detection disabled (no nav contract) |
 | Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
 | i18n locale discovery | `path` config enforced; silent fallback documented |
-| Lab (interactive showroom) | 10 Acts covering all engine types |
+| Lab (interactive showroom) | 17 Acts covering all engine types + Red/Blue Team Matrix |
 | Universal PATH argument | All 6 `check` sub-commands + `init` (sovereign root semantics) |
 | Sovereign root banner hint | Active scanning target printed after Obsidian header |
 | Z502/Z105 precision | MDX frontmatter leak + `pathname:///` false positive eliminated |
-| Test suite | 1,225 passing tests |
+| Core purity | `validator.py` — zero engine-name references (Purity Protocol) |
+| Test suite | 1,260 passing tests |
 | Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
@@ -339,26 +342,43 @@ and documentation author. When those roles are collapsed (as they are in any suf
 small team), the failure mode is: *I know this in my head, I'll update the docs later.*
 Later compounds. The Law makes "later" unconstitutional.
 
-The test count at close of all v0.7.0 sprints: **1,225 passing tests.**
+The test count at close of all v0.7.0 consolidation sprints: **1,260 passing tests.**
 
-## What Comes Next
+## The Purity Protocol: Zero Engine Leaks in Core
 
-v0.7.0 is not an ending. It is a reference point. The Obsidian series has established:
+One invariant that emerged from the consolidation: `validator.py` — the heart of Zenzic —
+must contain no reference to any engine by name. No "docusaurus", no "sidebar", no
+"navbar". The Core receives a `frozenset[str]` of navigable paths from
+`adapter.get_nav_paths()`. What lives inside that method is the adapter's problem, not
+the Core's.
 
-- A verified security architecture (zero subprocesses, non-bypassable exit codes)
-- A hardened credential scanner (8-step normalization, 4 bypass vectors closed)
-- A universal engine abstraction (3 engines + Standalone, Z404 across all)
-- A documented i18n invariant
-- A Quality Score metric for regression detection
+This is not aesthetic. It is architectural insurance. A Core that knows about Docusaurus
+is a Core that will accumulate Docusaurus special-cases. A Core that knows about MkDocs
+nav-plugins will accumulate MkDocs exceptions. Every engine leak is a future maintenance
+trap.
 
-The next series will follow a different question: not "is the documentation secure?"
-but "does the documentation make sense?" Adaptive rule engines. Intent-aware analysis.
-What does a linter look like when it starts understanding the content it reads, not just
-the structure it imposes?
+The **Purity Protocol** (confirmed by `grep -n "docusaurus\|sidebar\|navbar\|footer"
+validator.py` → 0 matches) is the enforcement gate. Adding a new adapter that modifies
+`validator.py` is a protocol violation. The adapter contract is the boundary — everything
+engine-specific must live behind it.
 
-That work begins after this release is stable. In the meantime: run Zenzic against your
-docs. See what it finds. The pipe is probably still leaking somewhere — before your
-users find it.
+Part 5 of this series explains what the Purity Protocol unlocks for the Docusaurus
+adapter specifically — how `get_nav_paths()` became a Multi-Source Harvester covering
+sidebar, navbar, and footer simultaneously.
+
+## The Safe Harbor Is Open
+
+v0.7.0 is a point of arrival. The documentation pipeline is verified, the Shield is
+hardened, the adapters are parity-complete, and the Core is pure. Every claim Zenzic
+makes about itself — engine-agnostic architecture, sovereign root semantics, zero
+subprocesses — holds when checked against the actual codebase.
+
+The pipe is probably still leaking somewhere in your documentation — a broken link,
+a credential fragment in a frontmatter field, a file invisible to every reader because
+no clickable navigation surface references it. Find out before your users do.
+
+[Part 5 →](/blog/zenzic-v070-obsidian-maturity-stable) covers what v0.7.0 unlocks
+for UX-Discoverability and the full product vision.
 
 ```bash
 uvx zenzic lab
@@ -373,4 +393,10 @@ uvx zenzic lab
 | **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
 | **Changelog** | [v0.7.0 Release Notes](https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0) |
 
-_Exclusive to zenzic.dev — the fourth and final chapter of the Zenzic Engineering Series._
+:::note[The Obsidian Chronicles]
+This is **Part 4** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
+
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Obsidian Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Obsidian Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+:::
+
+_Part 4 of the **Obsidian Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._

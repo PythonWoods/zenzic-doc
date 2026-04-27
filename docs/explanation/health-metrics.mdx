@@ -1,0 +1,185 @@
+---
+sidebar_label: "Health Metrics"
+sidebar_position: 4
+description: "The Deterministic Quality Score — how Zenzic measures, tracks, and enforces documentation health over time."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Health Metrics — Why 100/100 Is the Only Number That Counts
+
+> *"A Safe Harbor must be able to say exactly how solid its pier is."*
+
+**For your users, a broken link is a lost sale. For your team, a leaked credential is a crisis at midnight.
+For your brand, a score of 97 means three things you haven’t fixed yet.**
+
+Zenzic’s Quality Score is not a vanity metric. It is a **deterministic 0–100 value** computed
+from the concrete issue count across every check. Zero issues means 100/100 — a formal proof,
+not an estimate. No partial credit, no rounding favors, no surprises.
+
+> **Find out where you stand right now:** `uvx zenzic score` — no install, no config required.
+
+---
+
+## What the Score Measures
+
+The Quality Score is a **weighted composite** of five check categories. Each category
+maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it emits.
+
+| Category | Command | Finding Codes | Weight |
+|----------|---------|---------------|--------|
+| **Link Integrity** | `zenzic check links` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
+| **Orphan Detection** | `zenzic check orphans` | [Z402] | **20 %** |
+| **Snippet Validation** | `zenzic check snippets` | [Z503] | **20 %** |
+| **Content Quality** | `zenzic check all` | [Z501] | **15 %** |
+| **Asset Integrity** | `zenzic check assets` | [Z903] | **10 %** |
+
+[Z101]: /docs/reference/finding-codes#z101
+[Z102]: /docs/reference/finding-codes#z102
+[Z103]: /docs/reference/finding-codes#z103
+[Z104]: /docs/reference/finding-codes#z104
+[Z105]: /docs/reference/finding-codes#z105
+[Z402]: /docs/reference/finding-codes#z402
+[Z501]: /docs/reference/finding-codes#z501
+[Z503]: /docs/reference/finding-codes#z503
+[Z903]: /docs/reference/finding-codes#z903
+
+The **Shield** (Z2xx security findings) and **Nav Contract** (Z904) are not scored —
+they cause a non-suppressible exit 2 or 3 before scoring can complete. You cannot
+score a repository that is actively leaking a credential.
+
+---
+
+## The Decay Formula
+
+Each category's raw score decays linearly with issue count:
+
+$$
+\text{category\_score}(n) = \max\bigl(0.0,\ 1.0 - n \times 0.20\bigr)
+$$
+
+Where `n` is the number of issues in that category.
+
+This means:
+- **0 issues → 1.0** (perfect)
+- **1 issue → 0.80**
+- **2 issues → 0.60**
+- **5 issues → 0.00** (floor)
+
+The final 0–100 score is the sum of weighted contributions:
+
+$$
+\text{score} = \left\lfloor \sum_i \text{category\_score}(n_i) \times w_i \times 100 \right\rceil
+$$
+
+A single issue in a high-weight category (links, 35%) causes a larger score drop than
+a single issue in a low-weight category (assets, 10%). This reflects the impact of
+broken links on user experience versus unused asset files.
+
+---
+
+## Running the Score
+
+```bash
+# Compute and display the score (no file written)
+zenzic score
+
+# Compute, display, and persist to .zenzic-score.json
+zenzic score --save
+
+# Compute and fail if score falls below N
+zenzic score --fail-under 80
+
+# Compare current score against the saved baseline (CI regression gate)
+zenzic diff
+```
+
+The snapshot is written to `.zenzic-score.json` at the repository root. It is a
+machine-readable JSON file — commit it to your repository so `zenzic diff` has a
+baseline to compare against.
+
+### Recommended CI pattern
+
+```yaml
+# On main branch pushes: save the new baseline
+- run: zenzic score --save --fail-under 80
+
+# On pull requests: fail if score has dropped
+- run: zenzic diff --threshold 0
+```
+
+`zenzic diff` exits 1 if the current score is **lower** than the saved baseline
+(adjusted by `--threshold`). It does not fail if the score is stable or improving.
+
+---
+
+## Quality Regression — Z504
+
+When `zenzic diff` detects a score drop, it emits **[Z504 QUALITY_REGRESSION][z504]**
+as a finding. This is the only finding code that bridges the scoring layer and the
+finding layer — it means: *"something you changed made the score worse."*
+
+[z504]: /docs/reference/finding-codes#z504
+
+Z504 is not weighted into the score itself (that would be circular). It is the
+signal that communicates *which commit introduced a regression*.
+
+---
+
+## Connection to the Three Pillars
+
+The Quality Score is the operational proof of Zenzic's [Three Pillars](architecture.mdx):
+
+**1. Lint the Source, Not the Build.**
+The score is computed from raw Markdown source analysis — never from HTML output
+or a running web server. The 35% link weight rewards a source that is internally
+coherent before any build step runs.
+
+**2. No Subprocesses.**
+`compute_score()` in `core/scorer.py` is a pure Python function — no shell calls,
+no `subprocess.run`, no network requests. It receives five integers and returns a
+`ScoreReport`. This guarantees identical results across every OS and Python version
+in the CI matrix (ubuntu / windows / macos × Python 3.11–3.13).
+
+**3. Pure Functions First.**
+`compute_score()` has no side effects. `save_snapshot()` is the only I/O function
+and it is called explicitly only when the user passes `--save`. The test suite
+verifies score calculations with property-based tests (Hypothesis) to guarantee
+mathematical invariants.
+
+---
+
+## Nav Contract Integrity — Not Scored, But Fatal
+
+The CEO's audit noted a terminological correction: what users sometimes call
+"Nav Isolation" is formally **Nav Contract Integrity ([Z904])**.
+
+[Z904]: /docs/reference/finding-codes#z904
+
+Z904 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
+`nav:` entry or a Docusaurus `sidebars.ts` explicit entry) does not exist on disk.
+This is **not a quality issue** — it is a **structural error**. It does not reduce the
+Quality Score. It appears in `zenzic check all` output and causes exit 1.
+
+---
+
+## Safe Harbor Guarantee
+
+When `zenzic score` returns 100/100, it is a formal guarantee that:
+
+- Every internal link resolves (zero Z101/Z102/Z103/Z104/Z105)
+- Every page is reachable from at least one navigation entry point (zero Z402)
+- Every code snippet is syntactically valid (zero Z503)
+- No placeholder content exists (zero Z501)
+- No unused assets exist (zero Z903)
+- The Shield found no credentials in any file (zero Z201 — implicit, blocks scoring)
+
+<SentinelOutput variant="clean" />
+
+This is the **Obsidian Seal**: the state where the documentation is structurally
+complete, content-clean, and security-verified.
+
+> **Carry the Seal in your README:** once you reach 100/100, run `zenzic score --save`
+> and add the dynamic score badge to your project. Let contributors see the standard
+> they’re committing to. See [Official Badges](../how-to/add-badges) for copy-paste badge URLs.

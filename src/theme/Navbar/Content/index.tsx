@@ -15,6 +15,17 @@ export default function NavbarContentWrapper(props: WrapperProps): React.JSX.Ele
     return null;
   }
 
+  // "Blog Sovereignty": The Obsidian Journal is English-only.
+  // Add data-blog-route attribute so CSS can suppress the locale switcher
+  // on blog routes without misdirecting readers to the IT home page.
+  if (pathname.startsWith('/blog')) {
+    return (
+      <div data-blog-route>
+        <NavbarContentNative {...(props as object)} />
+      </div>
+    );
+  }
+
   // "Native Bastion": For all other pages, use pure Docusaurus native navbar.
   return <NavbarContentNative {...(props as object)} />;
 }

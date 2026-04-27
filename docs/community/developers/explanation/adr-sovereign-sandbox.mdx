@@ -1,0 +1,107 @@
+---
+sidebar_label: "ADR 007: Sovereign Sandbox"
+sidebar_position: 3
+description: "ADR 007: The Blood Sentinel guards escapes FROM the target, not the location OF the target."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 007: Sovereign Sandbox
+
+**Status:** Active  
+**Decider:** Architecture Lead  
+**Date:** 2026-04-08 (v0.7.0 sprint, D043)
+
+---
+
+## Context
+
+When a user runs `zenzic check all /path/to/target`, Zenzic must establish two
+boundaries: the **analysis root** (what to scan) and the **perimeter** (what
+links are permitted to resolve to). The Blood Sentinel (`Z202`, `Z203`) enforces
+the perimeter — it detects links that escape the documentation sandbox.
+
+The early implementation had a geometric bug: it anchored the perimeter to the
+**invoking shell's repo root** rather than to the **target**. This caused a
+false positive when a user ran Zenzic from repo A pointing at repo B:
+
+```bash
+cd /home/user/repo-a
+zenzic check all /home/user/repo-b/docs
+```
+
+Zenzic would compute `repo_root = /home/user/repo-a`, then classify any link in
+`repo-b/docs` that resolved outside `/home/user/repo-a` as a path traversal
+attempt — even though the user explicitly specified `repo-b/docs` as the analysis
+target. The Blood Sentinel was firing on legitimate cross-project invocations.
+
+---
+
+## Decision
+
+**The explicit `PATH` argument provided by the user is the sovereign sandbox
+root.** Blood Sentinel guards escapes **from** the target, not the location
+**of** the target.
+
+Implementation: after computing `docs_root` from the user-provided path, if
+`docs_root.relative_to(repo_root)` raises `ValueError` (i.e. `docs_root` is
+outside the CWD's repo root), `repo_root` is dynamically reassigned:
+
+```python
+# cli/_check.py — sovereign root guard
+try:
+    docs_root.relative_to(repo_root)
+except ValueError:
+    # docs_root is outside the current repo — honour the explicit target.
+    repo_root = docs_root
+```
+
+This change is **additive**: it only fires when the user provides an explicit
+`PATH` that falls outside the CWD repo. When `zenzic check all` is invoked
+without a `PATH`, the original behaviour is unchanged.
+
+---
+
+## Rationale
+
+### 1. Intent Sovereignty
+
+A user who types `zenzic check all /home/user/repo-b/docs` has stated their
+intent unambiguously. The tool must respect that intent. Overriding an explicit
+argument with an implicit context-derived boundary is a **violation of the
+Principle of Least Surprise**.
+
+### 2. The Blood Sentinel's Correct Domain
+
+Z202 (`PATH_TRAVERSAL`) was designed to catch Markdown authors who write links
+like `[config](../../../etc/passwd)` attempting to escape the documentation
+sandbox. Its domain is **relative link escape detection within a known source
+tree**. It was never designed to penalise the user's legitimate choice of which
+source tree to analyse.
+
+### 3. Remote CI Use Case
+
+The Sovereign Sandbox change directly enables a valid DevOps pattern: a
+centralised `zenzic-runner` repository that executes `zenzic check all` on
+multiple downstream documentation repositories as part of a cross-repo CI gate.
+Without this fix, such a setup was impossible.
+
+---
+
+## Invariants (Non-Negotiable)
+
+- The Sovereign Sandbox override fires **only** when an explicit `PATH` argument
+  is provided and that path falls outside the CWD repo root.
+- Blood Sentinel (`Z202`/`Z203`) remains unconditionally active within the
+  sovereign sandbox. No path traversal is permitted inside the declared target.
+- The change does not affect `fail-on-error` semantics or exit codes.
+
+---
+
+## Consequences
+
+- Remote CI patterns (cross-repo scanning) now work correctly.
+- `_validate_docs_root` (the F4-1 guard) continues to protect against config-file
+  injection attacks (`docs_dir = "../../etc"`). The Sovereign Sandbox override
+  only fires for **user-supplied** paths, not config-file-derived paths.

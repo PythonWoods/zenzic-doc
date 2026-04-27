@@ -15,16 +15,33 @@
 }
 
 /**
+ * Blog Sovereignty — locale dropdown suppression on blog routes.
+ * The Obsidian Journal is published in English only. When a reader is on a
+ * blog page, the locale switcher would redirect them to the IT docs home
+ * (no IT blog exists), which is misleading. We suppress it via the
+ * data-blog-route attribute set by NavbarContent/index.tsx.
+ *
+ * :has(a[hreflang]) targets the locale dropdown specifically — locale links
+ * carry the hreflang attribute. Version dropdowns and other menus do not.
+ * !important is deliberate — CEO-111 executive override: unconditional silence
+ * on all blog routes, no specificity battle with Infima navbar rules.
+ */
+[data-blog-route] .navbar__item:has(a[hreflang]),
+[data-blog-route] .navbar__item.dropdown--hoverable:has(a[hreflang]) {
+  display: none !important;
+}
+
+/**
  * Zenzic Bastion Global Design System
  * 100% Native Architecture. Zero `!important` hacks.
  */
 
 :root {
   /* ── Light mode defaults ── */
-  --ifm-color-primary: #3730a3;           /* Indigo profondo — leggibile su bianco */
-  --ifm-color-primary-dark: #312e81;
-  --ifm-color-primary-darker: #1e1b6e;
-  --ifm-color-primary-darkest: #1a1863;
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.4:1 on white) */
+  --ifm-color-primary-dark: #3730a3;
+  --ifm-color-primary-darker: #312e81;
+  --ifm-color-primary-darkest: #1e1b6e;
   --ifm-color-primary-light: #4f46e5;
   --ifm-color-primary-lighter: #6366f1;
   --ifm-color-primary-lightest: #818cf8;
@@ -59,8 +76,8 @@
   --obsidian-author-signature: #3730a3;   /* Indigo-800 — deep, ink-grade */
 
   /* Links/actions: Indigo for function */
-  --ifm-color-primary: #3730a3;           /* Indigo inchiostro */
-  --ifm-link-color: #3730a3;
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light */
+  --ifm-link-color: #4338ca;
 
   --obsidian-accent: #0891b2;             /* Cyan profondo */
   --obsidian-blood: #991b1b;              /* Rosso mattone */

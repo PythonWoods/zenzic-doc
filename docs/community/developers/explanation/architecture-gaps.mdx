@@ -1,108 +1,177 @@
 ---
 sidebar_label: "Architectural Gaps"
 sidebar_position: 5
-description: "Known architectural gaps, technical debt, and planned improvements."
+description: "Gaps closed in v0.7.0 by Operation Obsidian Stress, and open items planned for v0.8.0."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Zenzic - Architectural Gaps & Technical Debt
+# Zenzic — Architectural Gaps & Roadmap
 
 > *"What is not documented, does not exist; what is documented poorly, is an ambush."*
 >
-> This document tracks architectural gaps and technical debt identified during development, which require resolution before specific milestones (like rc1).
+> This page tracks gaps that were closed during the v0.7.0 cycle and those that
+> remain open for the v0.8.0 roadmap. It is a living document — updated each sprint.
 
 ---
 
-## Target: v0.5.0rc1 (The Bastion)
+## Open — Target v0.8.0
 
-### 1. Versioning Automation (Noxfile)
+### GAP-001 — Auto-Fix Engine
 
-**Identified in:** v0.5.0a4 (`fix/sentinel-hardening`)
-**Component:** `noxfile.py`
-**Description:** The noxfile currently only supports `patch`, `minor`, and `major` bumps. During alpha/beta iterations, it is not possible to execute a prerelease bump directly via the automation framework (`nox -s bump -- prerelease`).
-**Required Action:** The noxfile must be updated to extract and support pre-release tags (bumping `pre_l` and `pre_n`) by properly interfacing with `bump-my-version`, enabling rapid iteration of testing releases without circumventing automation.
+**Component:** `cli/_check.py`, new `core/fixer.py`  
+**Description:** Zenzic detects but does not repair. A contributor who receives a Z501
+(placeholder) or Z502 (short content) finding must locate and edit the file manually.
+An Auto-Fix engine would apply safe, reversible patches directly to source files —
+replacing placeholder tokens, stubbing short sections, and reporting what was changed.
 
-### 2. Security Pipeline Coverage (CLI Integration)
+**Planned semantics:**
 
-**Identified in:** v0.5.0a4 (`fix/sentinel-hardening`)
-**Component:** `zenzic/cli.py`
-**Description:** The scanner and reporter now have complete mutation tests safeguarding the effectiveness of the Shield (The Sentinel's Trial). However, the silencer mutant (`findings.append(...) -> pass`) within `cli.py` is not covered by the current suite because it bypasses the CLI to interface with the proxy.
-**Required Action:** An end-to-end (e2e) test that triggers the full CLI and verifies the exit with code 2 and the presence of the reporter to ensure the routing is not vulnerable to amnesia (Commit 4b or later).
+```bash
+zenzic fix all            # dry-run by default: shows diff, writes nothing
+zenzic fix all --apply    # writes changes; staged via git diff
+zenzic fix links          # fixes only Z101/Z104 (dead links) — renames or stubs
+```
+
+**Design constraints:**
+- Auto-fix must never touch files that triggered Z201 (Shield secret) — those require
+  human judgment.
+- Exit code semantics are unchanged: `--apply` still exits 1 if unfixed findings remain.
+- Pure Python, no subprocess (Pillar 2).
+
+**Status:** Design phase. No code merged.
 
 ---
 
-## Resolved
+### GAP-002 — Dynamic Navbar/Footer Plugin Support
+
+**Component:** `core/adapters/_docusaurus.py`, `_parse_config_navigation()`  
+**Description:** Docusaurus supports navbar items declared via `@docusaurus/plugin-*`
+plugins (e.g. `plugin-content-docs` multi-instance, custom navbar components). When
+the navbar is populated dynamically at build time, Zenzic's static regex parser cannot
+extract those paths — it falls back to treating all files as `REACHABLE`.
+
+**Impact:** Low false-positive risk (the fallback is conservative), but some true orphans
+may be missed in plugin-heavy configurations.
+
+**Planned resolution:** A structured warning (`::warning` annotation in CI mode) when
+Zenzic detects dynamic navbar plugins, indicating that orphan detection may be
+incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `zenzic.toml`.
+
+**Status:** Tracked. RFC open.
+
+---
+
+## Closed in v0.7.0 — Operation Obsidian Stress
+
+:::info[What was the Operation?]
+
+Before the v0.7.0 release, four AI agents were instructed to break Zenzic's Shield
+(credential scanner) using realistic bypass techniques. They found four real vectors.
+All were closed before stable release.
+
+See the full technical post-mortem: [AI Red Team Attacks Code Linter](/blog/ai-driven-siege-shield-postmortem)
+
+:::
+
+### ZRT-001 — Unicode Normalization Bypass (Shield)
+
+**Identified by:** AI Red Team agent "Alpha" during Operation Obsidian Stress  
+**Component:** `core/shield.py`, `scan_lines_with_lookback()`  
+**Description:** The Shield's regex patterns matched ASCII credential shapes. An attacker
+controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
+using fullwidth Latin letters) into what appeared to be a token. The Shield would not
+fire because the byte sequence did not match the ASCII pattern.
+
+**Resolution:** Unicode normalization (NFKC) is applied to each line before pattern
+matching. `unicodedata.normalize("NFKC", line)` collapses fullwidth, superscript,
+enclosed, and other Unicode lookalikes to their ASCII canonical form. The original line
+content is preserved for output; only the normalized copy is matched against.
+
+**Lesson:** Regex-based credential detection must normalize input. The attack surface
+is not the pattern — it is the encoding.
+
+**Closed in:** v0.7.0 sprint D038.
+
+---
+
+### ZRT-002 — Lookback Buffer Escape (Shield)
+
+**Identified by:** AI Red Team agent "Bravo" during Operation Obsidian Stress  
+**Component:** `core/shield.py`, `scan_lines_with_lookback()`  
+**Description:** The Shield's lookback buffer was used to detect multi-line credential
+constructs (e.g. a `password:` key on one line, the value on the next). Agent Bravo
+inserted a sufficiently long "filler" block (> buffer size) between the key and value
+lines. The buffer emptied before the value line was scanned, breaking the association
+and suppressing the Z201 finding.
+
+**Resolution:** The lookback buffer size was validated against the maximum known
+multi-line credential pattern length in the registry (`codes.py`). The buffer is now
+guaranteed to span the maximum pattern window. Additionally, the buffer is flushed on
+file boundaries only — never mid-file.
+
+**Lesson:** Buffer-based detection requires formal sizing against the worst-case
+pattern. An informal "large enough" buffer is not a security guarantee.
+
+**Closed in:** v0.7.0 sprint D039.
+
+---
+
+### ZRT-003 — HTML Entity Obfuscation (Shield)
+
+**Identified by:** AI Red Team agent "Charlie" during Operation Obsidian Stress  
+**Component:** `core/shield.py`  
+**Description:** The Shield scanned raw Markdown bytes. Agent Charlie used HTML entity
+encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The Shield's patterns
+did not match the entity-encoded form, allowing a fake credential to pass undetected.
+
+**Resolution:** A lightweight HTML entity decoder is applied to each line before Shield
+pattern matching (after NFKC normalization). The decoder handles numeric (`&#103;`) and
+named (`&amp;`) entities. XML/HTML character references are normalized to their Unicode
+codepoints before the regex runs.
+
+**Lesson:** Multi-encoding defense requires layered normalization. A single normalization
+pass (NFKC only) is insufficient when HTML rendering is part of the content pipeline.
+
+**Closed in:** v0.7.0 sprint D040.
+
+---
+
+### ZRT-004 — Fenced Block Scope Confusion (Shield)
+
+**Identified by:** AI Red Team agent "Delta" during Operation Obsidian Stress  
+**Component:** `core/shield.py`, fenced block state machine  
+**Description:** The Shield originally skipped scanning inside triple-backtick fenced
+blocks, reasoning that code examples are not live secrets. Agent Delta embedded a
+`ghp_` pattern inside a `bash` fenced block. The Shield did not fire.
+
+**Resolution after deliberation:** The "skip fenced blocks" heuristic was **reversed**.
+The Shield now scans all lines, including fenced code blocks. The rationale: a
+documentation file that leaks a real credential inside a `bash` block is still leaking
+a real credential. The example nature of the block is irrelevant to the security outcome.
+
+A `# zenzic: ignore-next-line` comment is the authorized mechanism for authors who need
+to include a credential-shaped string in a documented example (e.g. showing the format
+of a GitHub token without using a real one). The `examples/matrix/red-team/` fixtures
+demonstrate this pattern.
+
+**Lesson:** Heuristic scope exclusions that reduce false positives often create false
+negatives in adversarial conditions. Security-critical passes should default to
+**scan everything, authorize exceptions explicitly**.
+
+**Closed in:** v0.7.0 sprint D041.
+
+---
+
+## Closed Earlier (Pre-v0.7.0)
 
 ### ZRT-005 — Bootstrap Paradox
 
-**Identified in:** v0.5.0a3
-**Component:** `zenzic/cli.py`, `zenzic/core/scanner.py`
-**Description:** `zenzic init` crashed with a configuration error when invoked in an empty directory (no existing `zenzic.toml`). The bootstrap command incorrectly assumed a valid project context was already present before it could be created.
-**Resolution:** Implemented a two-phase initialization sequence: (1) write `zenzic.toml` via a template isolated from the context resolver, (2) start the validation cycle only if the configuration file already exists. The resolver now tolerates an empty directory and delegates bootstrapping to the `init` command. Verified via Genesis Test: `zenzic init` in a completely empty directory correctly generates `zenzic.toml` with the commented Shield block visible.
-**Closed in:** v0.5.0a4 (`fix/sentinel-hardening`) — commit `38be6f1`
-
-### CI-001 — Node.js 24 / npx Non-Interactive Prompt (Cloudflare Pages)
-
-**Identified in:** v0.5.0a4 (`fix/v050a4-infra-alignment`)
-**Component:** `.github/workflows/deploy-docs.yml`
-**Description:** `cloudflare/wrangler-action@v3` (latest stable) calls `npx wrangler`
-without the `--yes` flag. npm 10+ on Node.js 24 GitHub Actions runners blocks
-non-interactive package installation, aborting the deploy with:
-`"npx canceled due to missing packages and no YES option: [wrangler@4.81.0]"`.
-**Resolution:** Pre-install `wrangler@latest` globally via `npm install -g` before the
-action step. npx finds the binary already in PATH and skips the interactive download
-entirely. `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` added to suppress the Node.js 20
-deprecation warning. Remove the pre-install step only when `wrangler-action` ships a
-release that passes `--yes` to npx natively.
-**Closed in:** v0.5.0a4 (`fix/v050a4-infra-alignment`)
-
-### BRAND-001 — Brand System Static Asset (D096)
-
-**Identified in:** v0.7.0 (`release/v0.7.0`)
-**Component:** `static/assets/brand/zenzic-brand-system.html`, `docs/community/brand-kit.mdx`
-**Description:** The brand kit page lacked a machine-readable, human-navigable reference
-document that engineers and designers could open without a running Docusaurus server.
-A standalone HTML file (`zenzic-brand-system.html`) was required, but Docusaurus's
-`onBrokenLinks: 'throw'` rejects links to static HTML assets via normal relative paths.
-**Resolution:** Created `static/assets/brand/zenzic-brand-system.html` as a self-contained
-hardware-manual-style document (Sentinel Palette, SVG logos, social card preview, typography,
-badge visuals, usage laws). Linked from `brand-kit.mdx` (EN + IT) using the `pathname:///`
-prefix, which bypasses Docusaurus link validation for non-page static assets while keeping
-the URL resolvable in production. Font stack aligned to site standard: Inter + JetBrains Mono.
-**Closed in:** v0.7.0 — commit `1603dc4`
-
-### BRAND-002 — Obsidian Lead Alignment (D097)
-
-**Identified in:** v0.7.0 (`release/v0.7.0`)
-**Component:** `static/assets/social/social-card.svg`, `static/assets/brand/zenzic-brand-system.html`, `src/css/custom.css`
-**Description:** Three distinct background values (`#0d1117`, `#09090b`, `#111118`) were
-used across social cards, the brand system HTML, and the homepage CSS — resulting in a
-visually inconsistent "Obsidian" surface that varied by 3–5% luminance across surfaces.
-**Resolution:** `#09090b` (Obsidian Lead) adopted as the single canonical background across
-all dark surfaces. Changes: `social-card.svg` background `#0d1117` → `#09090b`, circle
-`#161b22` → `#111118`; `brand-system.html` CSS vars `--obsidian` → `#09090b`,
-`--slate` → `#0f0f13`, `--surface` → `#111118`; inline social SVG inside `brand-system.html`
-aligned identically. Palette swatch "Obsidian Lead #09090b · Primary BG" added.
-Social card PNGs (dark + light, 1200×630) regenerated via `cairosvg`.
-**Closed in:** v0.7.0 — commits `1224309`, `070021d`
-
-### INFRA-001 — Brand PNG Pipeline: No Subprocess (D097 Follow-up)
-
-**Identified in:** v0.7.0 (`release/v0.7.0`)
-**Component:** `scripts/bump-version.sh`, `scripts/build-assets.js`
-**Description:** The `bump-version.sh` script regenerated only social card PNGs after a
-version bump, leaving the four brand PNGs (`icon-512`, `nav-dark`, `nav-light`, `wordmark`)
-stale. Additionally, `brand-kit.zip` was rebuilt exclusively by `build-assets.js` (Node.js /
-AdmZip) during `npm run build` — meaning a plain version bump without a full Docusaurus
-build produced a zip with outdated assets. This also violated Pillar 2 (No Subprocesses):
-the bump pipeline spawned a Node.js process implicitly.
-**Resolution:** `bump-version.sh` step 9 expanded to a `BRAND_PNG_MANIFEST`-driven loop
-using `cairosvg` (pure Python): all 6 PNGs (4 brand + 2 social cards) are regenerated on
-every bump. `BRAND_PNG_MIRRORS` dict handles `shutil.copy2` of brand PNGs to
-`static/assets/brand/png/` (in-site serving for `brand-system.html`). Step 10 added:
-`brand-kit.zip` rebuilt via Python `zipfile.ZipFile` + `ZIP_DEFLATED` — identical manifest
-to `build-assets.js` (`static/brand/` → prefix `brand`, `static/assets/social/` → prefix
-`social`). Zero subprocess calls. Dry-run verified: 6/6 SVGs → PNGs, zip 87 KB / 27 entries.
-**Closed in:** v0.7.0 — commit `1cd712f`
+**Component:** `core/scanner.py`  
+**Description:** `zenzic init` crashed with a configuration error when invoked in an
+empty directory. The `find_repo_root()` function had no fallback, making it impossible
+to initialize a project that did not yet have a `.git` or `zenzic.toml` marker.  
+**Resolution:** `fallback_to_cwd=True` parameter added to `find_repo_root()`, used
+exclusively by `zenzic init`. See [ADR 003](adr-discovery.mdx).  
+**Closed in:** v0.6.0a4.

@@ -1,6 +1,8 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
   title: 'Zenzic',
@@ -16,6 +18,16 @@ const config: Config = {
   baseUrl: '/',
   organizationName: 'PythonWoods',
   projectName: 'zenzic-doc',
+
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib',
+      crossorigin: 'anonymous',
+    },
+  ],
 
   onBrokenLinks: 'throw',
 
@@ -46,6 +58,8 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
           lastVersion: 'current',
           versions: {
             current: {
@@ -58,11 +72,12 @@ const config: Config = {
         blog: {
           blogTitle: 'The Obsidian Journal',
           blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
-          blogSidebarTitle: 'All posts',
+          blogSidebarTitle: 'Recent Posts',
           blogSidebarCount: 'ALL',
           postsPerPage: 5,
           showReadingTime: true,
           admonitions: true,
+          onInlineTags: 'throw',
           feedOptions: {
             type: ['rss', 'atom'],
             title: 'The Obsidian Journal — Zenzic Engineering Blog',

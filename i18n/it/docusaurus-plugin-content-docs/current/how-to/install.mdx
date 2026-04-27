@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 sidebar_label: "Panoramica"
 icon: lucide/play
 description: "Installa, configura ed esegui Zenzic sul tuo progetto documentale."
@@ -168,7 +169,7 @@ Run zenzic check all to validate your documentation.
 ```
 
 Se non viene rilevato alcun file di configurazione engine, `zenzic init` produce uno scaffold
-engine-agnostico (modalità Vanilla). In entrambi i casi, tutte le impostazioni sono commentate
+engine-agnostico (modalità Standalone). In entrambi i casi, tutte le impostazioni sono commentate
 per default — decommenta e modifica solo i campi di cui hai bisogno.
 
 Eseguendo Zenzic senza un `zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
@@ -260,5 +261,5 @@ zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 **Prossimi passi:**
 
 - [Riferimento comandi CLI](../reference/cli.mdx) — ogni comando, flag e codice di uscita
-- [Funzionalità avanzate](./advanced-options.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
+- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hook, gestione del baseline

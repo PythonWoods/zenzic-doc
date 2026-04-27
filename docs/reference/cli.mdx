@@ -125,6 +125,27 @@ The `--offline` flag has **identical behaviour** on MkDocs, Zensical, and Docusa
 This ensures Zenzic remains a consistent Structural Custodian regardless of your build engine.
 :::
 
+### `--exclude-dir` / `--include-dir`
+
+Available on `zenzic check all` (and individual sub-commands). These flags provide
+one-shot directory scope overrides **per invocation** without touching `zenzic.toml`:
+
+| Flag | Effect |
+| :--- | :--- |
+| `--exclude-dir DIR` | Skip this directory during the scan (repeatable) |
+| `--include-dir DIR` | Force-include a directory even if excluded by config (repeatable) |
+
+`--include-dir` cannot override **system guardrails** (Level 1a/1b exclusions such as
+`node_modules/` or adapter metadata files).
+
+```bash
+# Exclude a generated folder for this run only
+zenzic check all --exclude-dir build/ --exclude-dir .cache/
+
+# Force-include a directory that was excluded in zenzic.toml
+zenzic check all --include-dir legacy-docs/
+```
+
 ### `--no-color` / `--force-color` {#output-flags}
 
 These global flags (accepted by all commands) control ANSI output independently of TTY detection.
@@ -229,6 +250,20 @@ never suppressed by `--exit-zero`. See
 [Checks: Blood Sentinel](./checks#blood-sentinel) for details.
 :::
 
+Each exit code has a distinct visual signature in the Sentinel Report:
+
+**Exit 0 — Obsidian Seal**
+
+<SentinelOutput variant="clean" compact />
+
+**Exit 1 — Quality findings**
+
+<SentinelOutput variant="findings" compact />
+
+**Exit 2 — Shield security breach**
+
+<SentinelOutput variant="breach" compact />
+
 ---
 
 ## JSON output
@@ -298,6 +333,103 @@ exit 3 on Blood Sentinel path traversal — the same contract as text output.
 
 ---
 
+## SARIF output {#sarif-output}
+
+All check commands support `--format sarif` to emit a **SARIF 2.1.0**-compliant report, ready
+for direct upload to [GitHub Code Scanning](https://docs.github.com/code-security/code-scanning).
+
+```bash
+zenzic check all --format sarif > zenzic-results.sarif
+```
+
+:::note[Machine Silence — Rule R20]
+When `--format sarif` (or `--format json`) is active, **all Rich banners and informational
+panels are suppressed on `stdout`**. Only the machine-readable payload is emitted. This
+guarantees the output is always valid against the SARIF schema, regardless of terminal state.
+:::
+
+### `Zxxx` → SARIF `ruleId` mapping
+
+Every Zenzic finding maps verbatim: the `Zxxx` code becomes the `ruleId`. The
+`tool.driver.rules` array is populated dynamically — only codes that produced at least one
+result in the run are declared. Each rule entry carries a `helpUri` pointing to the anchor
+in this reference page.
+
+| Finding | `ruleId` | SARIF `level` |
+| :--- | :---: | :---: |
+| Z101 LINK_BROKEN | `Z101` | `error` |
+| Z102 ANCHOR_MISSING | `Z102` | `warning` |
+| Z103 ORPHAN_LINK | `Z103` | `warning` |
+| Z104 FILE_NOT_FOUND | `Z104` | `error` |
+| Z105 ABSOLUTE_PATH | `Z105` | `warning` |
+| Z106 CIRCULAR_LINK | `Z106` | `note` |
+| Z201 SHIELD_SECRET | `Z201` | `error` |
+| Z202 PATH_TRAVERSAL | `Z202` | `error` |
+| Z203 PATH_TRAVERSAL_FATAL | `Z203` | `error` |
+| Z301–Z303 Reference Integrity | `Z301`–`Z303` | `error` / `warning` |
+| Z401–Z404 Structure | `Z401`–`Z404` | `note` / `warning` |
+| Z501–Z504 Content Quality | `Z501`–`Z504` | `warning` / `error` |
+| Z901–Z904 System | `Z901`–`Z904` | `error` / `warning` |
+
+### Example SARIF 2.1.0 output
+
+```json
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Zenzic",
+          "version": "0.7.0",
+          "informationUri": "https://zenzic.dev",
+          "rules": [
+            {
+              "id": "Z104",
+              "name": "FILE_NOT_FOUND",
+              "shortDescription": { "text": "File not found" },
+              "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z104"
+            },
+            {
+              "id": "Z201",
+              "name": "SHIELD_SECRET",
+              "shortDescription": { "text": "Credential detected" },
+              "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z201"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "Z104",
+          "level": "error",
+          "message": { "text": "docs/guides/setup.md:42: 'install.md' not found in docs" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docs/guides/setup.md",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": { "startLine": 42 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+For automated upload to GitHub Code Scanning, use the
+[Zenzic GitHub Action](../how-to/configure-ci-cd#github-actions-zenzic-shield-gate) —
+it validates SARIF integrity before upload (truncation guard) and surfaces findings as
+inline PR annotations.
+
+---
+
 ## Engine override
 
 The `--engine` flag overrides the build engine adapter for a single run without modifying
@@ -333,10 +465,12 @@ zenzic score                   # Compute 0–100 quality score
 zenzic score --save            # Compute and persist snapshot to .zenzic-score.json
 zenzic score --fail-under 80   # Exit 1 if score is below threshold
 zenzic score --format json     # Machine-readable score report
+zenzic score [PATH]            # Score a remote project (sovereign root)
 
 zenzic diff                    # Compare current score against saved snapshot
 zenzic diff --threshold 5      # Exit 1 only if score dropped by more than 5 points
 zenzic diff --format json      # Machine-readable diff report
+zenzic diff [PATH]             # Diff a remote project against its saved baseline
 ```
 
 ### How the score is computed
@@ -392,7 +526,7 @@ zenzic score                   # show score for visibility
 ## Arsenal Inspection
 
 ```bash
-zenzic inspect capabilities   # Show all built-in scanners and registered plugin rules
+zenzic inspect capabilities   # Show all built-in scanners, plugin rules, and engine-specific link bypasses
 ```
 
 `zenzic inspect capabilities` shows Zenzic's complete scanner arsenal in two sections:
@@ -404,21 +538,7 @@ suppressible with `--exit-zero`.
 **Section B — Extensible Rules (Plugin System):** rules registered via the `zenzic.rules`
 entry-point group from any installed third-party package.
 
-```text
-Core Scanners  (built-in)
-┌──────────────┬───────────────────┬──────────────────────────────────────┬──────┐
-│ Codes        │ Scanner           │ Capability                           │ Exit │
-├──────────────┼───────────────────┼──────────────────────────────────────┼──────┤
-│ Z201         │ The Shield        │ Credential & security detection      │ 2 ⚠  │
-│ Z202–203     │ Blood Sentinel    │ Path-traversal & jailbreak detection │ 3 ⚠  │
-│ Z101–106     │ Link Validator    │ Broken links & anchor resolution     │ 1    │
-│ …            │ …                 │ …                                    │ …    │
-└──────────────┴───────────────────┴──────────────────────────────────────┴──────┘
-⚠  Exit 2 and Exit 3 are non-suppressible — --exit-zero has no effect on Shield or Blood Sentinel.
-
-Extensible Rules  (plugin system — zenzic.rules entry-point group)
-  — No third-party plugins installed. Register rules via the zenzic.rules entry-point group.
-```
+<SentinelOutput variant="inspect" />
 
 Each row in the Extensible Rules table shows the entry-point name, the rule's stable `rule_id`
 (used in findings and suppression lists), the origin distribution (`(core)` for built-in rules,

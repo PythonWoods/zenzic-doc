@@ -1,0 +1,99 @@
+---
+sidebar_label: "ADR 005: Universalismo Agnostico"
+sidebar_position: 2
+description: "ADR 005: Z404 CONFIG_ASSET_MISSING esteso a tutti i motori supportati — non solo Docusaurus."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 005: Universalismo Agnostico — Z404 per Tutti i Motori
+
+**Stato:** Attivo  
+**Decisore:** Architecture Lead  
+**Data:** 2026-04-20 (sprint v0.7.0)
+
+---
+
+## Contesto
+
+Z404 (`CONFIG_ASSET_MISSING`) era originariamente implementato esclusivamente per
+l'adapter Docusaurus. Rilevava quando un file dichiarato in `docusaurus.config.ts`
+(favicon, immagine Open Graph, CSS personalizzato) non esisteva su disco.
+
+Questa scelta creava una contraddizione strutturale: Zenzic si presenta come un
+**Safe Harbor per tutti i motori di documentazione**. Offrire un controllo
+dell'integrità degli asset di configurazione solo agli utenti Docusaurus violava
+questa garanzia. Un progetto MkDocs che dichiarava un `theme.favicon` puntante
+a un file inesistente non riceveva alcuna diagnostica — una lacuna silenziosa
+nel perimetro di sicurezza.
+
+---
+
+## Decisione
+
+Z404 è stato esteso da un controllo Docusaurus-specifico a un **controllo
+universale** che copre tutti i motori supportati. Ogni adapter dichiara quali
+asset di configurazione gestisce, e il motore centrale invoca
+`check_config_assets()` uniformemente su tutti gli adapter.
+
+| Motore | Asset controllati |
+|--------|------------------|
+| Docusaurus | `customCss`, `favicon`, Open Graph `image`, percorsi social card in `themeConfig` |
+| MkDocs | `theme.favicon`, `theme.logo` (risolti relativamente a `docs_dir/`) |
+| Zensical | `[project].favicon`, `[project].logo` |
+| Standalone | — (nessun file di configurazione motore; il controllo è un no-op) |
+
+---
+
+## Motivazione
+
+### 1. Safe Harbor Significa Tutti i Porti
+
+Un porto sicuro solo per le navi Docusaurus non è un Safe Harbor — è un
+**porto di marca con una limitazione di stazza**. Nel momento in cui un
+controllo è specifico per un motore senza una ragione tecnica, si segnala ai
+contributori che la parità tra motori è opzionale. Quel segnale si amplifica
+nel corso delle versioni.
+
+### 2. Il Protocollo Adapter Fornisce Già il Hook
+
+`BaseAdapter` definiva già `check_config_assets()` come metodo opzionale. La
+decisione di universalismo non era un cambiamento architetturale — era
+**l'attivazione di un contratto architetturale già presente**. Ogni adapter
+aveva già l'infrastruttura; mancavano solo le implementazioni per MkDocs e
+Zensical.
+
+### 3. Prevenire l'Assunzione di "Config Fidata"
+
+L'assunzione implicita che i file di configurazione del motore contengano percorsi
+di asset validi è la stessa categoria di errore di fiducia che Zenzic è stato
+progettato per eliminare. Un `theme.favicon: assets/icon.png` che non esiste è
+un link rotto — capita solo di trovarsi in un file YAML invece che in un documento
+Markdown.
+
+---
+
+## Implementazione
+
+Il metodo `check_config_assets()` di ogni adapter:
+
+1. Legge il file di configurazione del motore (I/O una tantum, non in un hot loop).
+2. Risolve ogni percorso di asset dichiarato rispetto a `docs_root`.
+3. Emette un `Finding` con codice `Z404` per ogni percorso che non esiste su disco.
+
+La pipeline `check_all()` del core invoca `adapter.check_config_assets()` dopo la
+fase di scansione per file, assicurando che i finding Z404 compaiano nello stesso
+report SARIF e nel conteggio dei codici di uscita di tutti gli altri finding.
+
+---
+
+## Conseguenze
+
+- Gli utenti MkDocs e Zensical ottengono la validazione dell'integrità degli asset
+  senza alcuna modifica alla configurazione.
+- L'aggiunta di un nuovo adapter richiede l'implementazione di `check_config_assets()`
+  — il protocollo ora lo impone esplicitamente (viene sollevato un `NotImplementedError`
+  per gli adapter che lo omettono).
+- Z404 è ora classificato come **controllo di qualità universale**, non come
+  funzionalità specifica di un motore, in `reference/finding-codes.mdx`.

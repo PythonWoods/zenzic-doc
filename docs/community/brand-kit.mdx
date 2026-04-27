@@ -54,6 +54,21 @@ that cannot reach `img.shields.io`:
 
 For dynamic Shields.io variants and CI/CD wiring, see the [Badges guide](../how-to/add-badges.mdx).
 
+## The Bimodal Palette {#bimodal-palette}
+
+Zenzic adapts its visual frequency to the ambient light of the engineer's environment. The Indigo that guides you through a midnight audit must be different from the Indigo that greets you on a bright conference screen. This is not inconsistency — it is ergonomic design.
+
+| Mode | Token | Hex | Contrast Ratio | WCAG Level |
+|------|-------|-----|---------------|------------|
+| Light | `indigo-700` | `#4338ca` | 7.4:1 on white | AAA |
+| Dark | `indigo-300` | `#a5b4fc` | 8.9:1 on `#09090b` | AAA |
+| Borders (Light) | `indigo-200` | `#c7d2fe` | structural | — |
+| Borders (Dark) | `indigo-500/20` | `#6366f1` at 20% | structural | — |
+
+**Philosophy:** The Indigo of Zenzic is not a decorative choice — it is a semantic signal. It marks the architecture (the arsenal of scanners, the structural columns of the UI). In light mode it carries the authority of engineering ink. In dark mode it radiates softly, like a control-room indicator: always present, never aggressive.
+
+The `backdrop-blur` layer that sits beneath every `SentinelOutput` panel acts as an additional dampener, smearing the border glow and preventing the "neon" effect on Obsidian-dark surfaces.
+
 ## Brand System Reference
 
 The interactive Brand System document shows the full Sentinel Palette, logomark variants,

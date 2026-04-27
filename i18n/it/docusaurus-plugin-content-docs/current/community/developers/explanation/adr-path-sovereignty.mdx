@@ -1,0 +1,146 @@
+---
+sidebar_label: "ADR 009: Sovranità del Percorso"
+sidebar_position: 4
+description: "ADR 009: La configurazione segue il target, non il chiamante — prevenzione del Context Hijacking."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 009: Sovranità del Percorso — La Configurazione Segue il Target
+
+**Stato:** Attivo  
+**Decisore:** Architecture Lead  
+**Data:** 2026-04-12 (sprint v0.7.0, CEO-052)
+
+---
+
+## Contesto
+
+`find_repo_root()` cercava originariamente verso l'alto a partire da `os.getcwd()`
+— la directory di lavoro corrente della shell invocante. Funzionava correttamente
+per il caso standard in cui l'utente esegue Zenzic dall'interno del repository
+che vuole analizzare.
+
+Falliva in qualsiasi scenario in cui la directory di lavoro del chiamante differiva
+dal repository target:
+
+```bash
+# CWD = /home/user/my-tools
+# Target = /home/user/another-project/docs
+zenzic check all /home/user/another-project/docs
+```
+
+In questo caso, `find_repo_root()` avrebbe navigato verso l'alto da
+`/home/user/my-tools`, trovato il `zenzic.toml` di *quel* repository, e caricato
+la configurazione di *quel* repository — inclusi il suo `engine`, `docs_dir`,
+`excluded_dirs` e le regole personalizzate. Il target di analisi era
+`another-project`, ma la configurazione applicata era quella di `my-tools`.
+Questo è un **Context Hijacking**.
+
+---
+
+## Decisione
+
+> **"La configurazione segue il target, non il chiamante."**
+
+Quando viene fornito un argomento `PATH` esplicito a qualsiasi comando CLI che
+interagisce con il filesystem, `find_repo_root()` viene chiamato con
+`search_from=target_path` — navigando verso l'alto dal **target**, non dalla CWD:
+
+```python
+# core/scanner.py
+def find_repo_root(
+    search_from: Path | None = None,
+    fallback_to_cwd: bool = False,
+) -> Path:
+    start = search_from or Path.cwd()
+    for parent in [start, *start.parents]:
+        if (parent / ".git").exists() or (parent / "zenzic.toml").exists():
+            return parent
+    if fallback_to_cwd:
+        return Path.cwd()
+    raise RuntimeError(...)
+```
+
+`_apply_target()` in `cli/_check.py` orchestra la ricalibrazione: dopo aver
+derivato `docs_root` dal percorso fornito dall'utente, chiama
+`find_repo_root(search_from=docs_root)` per caricare il `zenzic.toml` corretto,
+poi ri-deriva `docs_dir` dalla configurazione del repo target.
+
+---
+
+## L'Invariante `_apply_target()`
+
+Quando `target == repo_root` (l'utente punta direttamente alla radice del repo,
+non a una sottodirectory), `docs_dir` viene **preservato dalla config** invece di
+essere sovrascritto con `"."`. Questo previene una regressione sottile: un utente
+che esegue `zenzic check all /path/to/repo` deve rispettare l'impostazione
+`docs_dir = "docs"` di quel repo, non appiattirla alla radice.
+
+```python
+# _apply_target() — logica canonica
+if resolved_target == repo_root:
+    # Il target È la radice del repo: rispetta il docs_dir della config.
+    docs_root = repo_root / config.docs_dir
+else:
+    # Il target è una sottodirectory: trattala direttamente come docs root.
+    docs_root = resolved_target
+```
+
+---
+
+## Motivazione
+
+### 1. Il Principio dell'Integrità Contestuale
+
+Un file di configurazione appartiene al progetto in cui risiede. Caricare un
+`zenzic.toml` straniero per una coincidenza di directory di lavoro è una
+**vulnerabilità della supply chain di configurazione** — l'analisi è segretamente
+governata da regole che l'utente non intendeva applicare.
+
+### 2. Correttezza CI/CD
+
+Nelle pipeline CI, la directory di lavoro è spesso la home del runner, una
+workspace root, o una directory di strumenti — non il repository di
+documentazione. La Sovranità del Percorso assicura che `zenzic check all $DOCS_PATH`
+in CI applichi sempre le regole specifiche del progetto corretto,
+indipendentemente da `$PWD` del runner.
+
+### 3. Simmetria con ADR-007
+
+ADR-007 (Sandbox Sovrano) ha stabilito che il **perimetro** segue il target.
+ADR-009 completa il quadro: anche la **configurazione** segue il target. Insieme
+garantiscono che ogni aspetto di un'analisi — cosa viene scansionato, quali regole
+si applicano e quali fughe sono vietate — sia determinato esclusivamente dal
+repository target.
+
+---
+
+## Ambito
+
+La Sovranità del Percorso si applica a ogni comando CLI che accetta un argomento
+posizionale `PATH` opzionale (Regola R18 — Simmetria CLI Totale):
+
+| Comando | Semantica PATH |
+|---------|---------------|
+| `zenzic check all [PATH]` | Radice sovrana: `find_repo_root(search_from=PATH)` |
+| `zenzic score [PATH]` | Identica |
+| `zenzic diff [PATH]` | Identica; percorso snapshot derivato dalla `repo_root` risolta |
+| `zenzic init [PATH]` | Genesis Nomad: `PATH` è la `repo_root` direttamente; creata se assente |
+| `zenzic lab`, `zenzic inspect` | Nessun argomento PATH — esenti |
+
+---
+
+## Conseguenze
+
+- Eseguire Zenzic da qualsiasi directory ora produce risultati identici a
+  eseguirlo dall'interno del repository target — nessuna sorpresa per gli
+  operatori CI.
+- I contributori che implementano nuovi comandi CLI con argomento `PATH` **devono**
+  chiamare `find_repo_root(search_from=resolved_path)` e invocare
+  `_apply_target()`. Questo è ora un invariante documentato nella guida al
+  contributo.
+- Il parametro `fallback_to_cwd=True` di `find_repo_root()` è riservato
+  esclusivamente al comando `init` (Genesis Fallback — vedi ADR-003). Nessun
+  altro comando può usarlo.

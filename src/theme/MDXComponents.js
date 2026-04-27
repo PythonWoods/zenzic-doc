@@ -9,9 +9,13 @@
 import MDXComponents from '@theme-original/MDXComponents';
 import Icon from '@site/src/components/Icon';
 import SentinelSection from '@site/src/components/Homepage/SentinelSection';
+import TerminalWindow from '@site/src/components/TerminalWindow';
+import SentinelOutput from '@site/src/components/SentinelOutput';
 
 export default {
   ...MDXComponents,
   Icon,
   SentinelSection,
+  TerminalWindow,
+  SentinelOutput,
 };

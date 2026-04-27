@@ -236,22 +236,71 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ## [ACTIVE SPRINT] — Working Context
 
-### D074+D075 — Coverage Iron Gate + R19 Testimony (Current)
+### D127–D142 — SentinelOutput Visual System + Chromatic Sovereignty (Current)
+
+**Version:** 0.7.0 · **Date:** 2026-04-27
+
+**CEO 127–132 "SentinelOutput Genesis":**
+- `src/components/SentinelOutput.tsx` created: 4 variants (`clean`, `breach`, `findings`, `inspect`).
+  Registered globally in `src/theme/MDXComponents.js`. Props: `variant`, `showFrame`, `compact`,
+  `rows`, `scanners`, `location`, `masked`, `credentialType`. `CONTAINER_CLASSES` per variant
+  (`max-w-2xl` for inspect, `max-w-xl` for others).
+- 30 live instances deployed (15 EN + 15 IT): index, first-audit, cli, finding-codes,
+  health-metrics, add-custom-rules. All TerminalWindow→SentinelOutput replacements complete.
+- `showFrame` policy: macOS title bar only on `index.mdx` + `first-audit.mdx`. `compact` policy:
+  Reference pages. `rows`/`scanners` prop for i18n-safe content override.
+
+**CEO 133–136 "Arsenal Infiltration":**
+- `variant="inspect"` added: `InspectOutput` renders CORE SCANNERS table (5 rows: Shield/Blood
+  Sentinel/Link Validator/Structure Guard/Content Sentinel). `DEFAULT_SCANNERS` + `InspectRow` interface.
+- `docs/reference/cli.mdx` (EN + IT): ASCII box-drawing `text` block removed; replaced with
+  `<SentinelOutput variant="inspect" />`. IT uses `scanners={[...IT translations...]}`.
+- `docs/reference/finding-codes.mdx` (EN + IT): Z404 added; Z201 updated to GitHub PAT example
+  (`masked="ghp_****Kx9mR2"`, `credentialType="github-personal-token"`).
+
+**CEO 137–138 "Bimodal Indigo":**
+- `SentinelOutput.tsx` inspect variant: `text-indigo-400` → `text-indigo-700 dark:text-indigo-300`
+  (WCAG AAA: 7.4:1 light / 8.9:1 dark). Borders: `border-indigo-200 dark:border-indigo-500/20`.
+- `docs/community/brand-kit.mdx` (EN + IT): "The Bimodal Palette / La Palette Bimodale" section added.
+- `static/assets/brand/zenzic-brand-system.html`: `--indigo: #4338ca`, `--indigo-dark: #a5b4fc`,
+  Palette v0.7.0 header annotation.
+
+**CEO 139 "Global Chromatic Sovereignty":**
+- `src/css/custom.css`: `:root` and `[data-theme='light']` shifted from indigo-800 (`#3730a3`) base
+  to indigo-700 (`#4338ca`) base. Scale: `dark=#3730a3`, `darker=#312e81`, `darkest=#1e1b6e`.
+  Dark mode `#818cf8` unchanged. Blog + Docs + static pages all receive calibration via `--ifm-color-primary`.
+
+**CEO 140 "Seamless Obsidian":**
+- `SentinelOutput.tsx`: all `border` / `dark:border-*` classes removed from `WRAPPER_CLASSES`.
+
+**CEO 142 "Conditional Perimeter":**
+- `SentinelOutput.tsx`: `BORDER_CLASSES` map added (variant-specific reduced-opacity borders).
+  `borderClass = showFrame ? '' : BORDER_CLASSES[variant]` — border present only when no macOS
+  frame wraps the component. Seamless when `showFrame=true`, perimeter when `showFrame=false`.
+
+**CEO 141 "Contextual Snippets":**
+- `docs/how-to/configure-ci-cd.mdx` (EN + IT): 5 yaml blocks → `title=` (3× docs.yml,
+  1× zenzic-badge.yml, 1× .pre-commit-config.yaml). Inline `# filename` comments removed.
+- `docs/reference/configuration-reference.mdx` (EN + IT): 4 toml blocks → `title=`
+  (zenzic.toml standalone, pyproject.toml, exclusions precedence, full example).
+
+Final gate: BUILD_EXIT:0 (EN + IT, `just build` passes).
+
+### Last Closed — D122–D124 — Obsidian Ascension + Visual Fidelity Protocol
+
+**Version:** 0.7.0 · **Date:** 2026-04-27
+
+CEO 122/123/124: index/first-audit/health-metrics rewritten user-benefit-first. TerminalWindow
+component + 3 SVG assets via rich.console. engineering-ledger.mdx (EN + IT) created.
+BUILD_EXIT:0.
+
+### Last Last Closed — D114–D119 — Obsidian Mirror + Sovereign Integration Audit
 
 **Version:** 0.7.0 · **Date:** 2026-04-25
 
 D075: R19 `:::warning` admonition added to `configuration-reference.mdx` (EN + IT) — domain-level
 URL exclusion prohibition now visible at the point of use. Bilingual symmetry maintained; preflight
 passes. All v0.7.0 documentation obligations fulfilled.
-
-### Last Closed — D073 — The Law of Evolutionary Curation
-
-**Version:** 0.7.0 · **Date:** 2026-04-25
-
-All three Obsidian Ledgers refactored from "historical diaries" to "operational manuals".
-[CHRONICLES] removed — bug lessons promoted to [POLICIES] rules or [ADR] entries.
-[SPRINT LOG] replaced by [ACTIVE SPRINT] (2-sprint window). Law of Evolutionary Curation codified
-in [POLICIES] of all three ledgers. Schema updated across all three repos.
 
 ---
 

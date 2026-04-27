@@ -58,6 +58,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z101: LINK_BROKEN {#z101}
 
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z101 conta verso la categoria **Integrità dei Link** nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni link rotto applica un −20% di decadimento alla categoria dei link pesata al 35%.
+:::
+
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Emesso durante la Fase 2 (Validazione) del Two-Pass Engine. Un link relativo punta a una risorsa che non esiste all'interno della **Virtual Site Map (VSM)**. Ciò significa che, sebbene il file possa esistere fisicamente, si trova al di fuori del perimetro docs o è stato escluso da una regola di esclusione.
 *   **Passaggi di Rimedio:**
@@ -66,7 +70,17 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     3. Assicurati che il file non sia incluso in `ignored_patterns` nella tua configurazione.
     4. Se stai referenziando un file fuori da `docs/`, usa un percorso globale o un symlink (sebbene il relativo sia preferito).
 
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Link rotto → 'install.md' (destinazione non trovata)", severity: 'error' }]}
+/>
+
 ### Z102: ANCHOR_MISSING {#z102}
+
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z102 conta verso la categoria **Integrità dei Link**. Un ancoraggio non risolto viene penalizzato in modo identico a un link di file rotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Il file di destinazione è valido (pass Z101), ma lo specifico ancoraggio HTML (es. `#setup`) non può essere trovato nel registro degli header della destinazione. Zenzic analizza tutti gli header Markdown e i tag espliciti `<a id="...">` per costruire questo registro durante la Fase 1.
@@ -77,6 +91,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z103: ORPHAN_LINK {#z103}
 
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z103 conta verso la categoria **Integrità dei Link**. Un link verso una pagina irraggiungibile dalla navigazione è penalizzato identicamente a un link interrotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Questo link punta a un file presente nella VSM ma non incluso nella struttura di navigazione del sito (sidebar/nav). Gli utenti possono collegarsi ad esso, ma non possono trovarlo tramite l'interfaccia utente (UI).
 *   **Passaggi di Rimedio:**
@@ -84,6 +102,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Se la pagina è intenzionale (es. una landing page nascosta), puoi sopprimere questo avviso usando il commento `<!-- zenzic-disable Z103 -->`.
 
 ### Z104: FILE_NOT_FOUND {#z104}
+
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z104 conta verso la categoria **Integrità dei Link**. Un file di destinazione mancante è penalizzato identicamente a un link VSM interrotto. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Un errore del filesystem di basso livello. Il motore ha tentato di aprire un file referenziato da un link o da un asset ma ha ricevuto un `FileNotFoundError`. Tipicamente accade quando un file viene spostato o eliminato durante un processo di build concorrente.
@@ -93,6 +115,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z105 conta verso la categoria **Integrità dei Link**. Un percorso assoluto non portabile è trattato come una violazione dell'integrità dei link. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** I percorsi assoluti (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) rompono la portabilità della documentazione. Zenzic li segnala per prevenire la sindrome "Funziona sulla mia macchina" nelle pipeline CI/CD.
 *   **Passaggi di Rimedio:**
@@ -100,6 +126,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Usa `@site/` o alias simili specifici dell'engine se supportati (es. in Docusaurus).
 
 ### Z106: CIRCULAR_LINK {#z106}
+
+:::info[Punteggio di Qualità — Integrità dei Link (35%)]
+Z106 conta verso la categoria **Integrità dei Link** a severità `info`. I cicli di riferimento circolari rilevati dal modulo di Integrità del Grafo contribuiscono al conteggio dei problemi di link. Vedi [Metriche di Salute](/docs/explanation/health-metrics).
+:::
 
 *   **Severità:** `info`
 *   **Contesto Tecnico:** Rilevato dal modulo di Integrità del Grafo. Un insieme di link forma un ciclo (A -> B -> A). Sebbene tecnicamente validi, i riferimenti circolari possono indicare un'architettura dei contenuti povera o "loop infiniti" nella navigazione.
@@ -120,6 +150,14 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Rimuovi il segreto dal file.
     3. Pulisci la cronologia git usando `git-filter-repo` o uno strumento simile per assicurarti che il segreto non sia solo nascosto ma eliminato.
     4. Usa segnaposto come `TUA_CHIAVE_API` per gli esempi di documentazione.
+
+<SentinelOutput
+  variant="breach"
+  compact
+  masked="ghp_****Kx9mR2"
+  credentialType="github-personal-token"
+  location="docs/setup/api-guide.md:23"
+/>
 
 ### Z202: PATH_TRAVERSAL {#z202}
 
@@ -144,6 +182,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z301: DANGLING_REF {#z301}
 
+:::warning[Non incluso nel Punteggio di Qualità]
+Z301 è un **errore di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Causa exit 1 e appare nell'output di `zenzic check references`.
+:::
+
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Un link in stile riferimento (es. `[testo][id]`) è presente, ma la definizione (es. `[id]: http://...`) manca dal file. Ciò comporta che il link venga reso come testo semplice nella maggior parte dei motori Markdown.
 *   **Passaggi di Rimedio:**
@@ -151,6 +193,11 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Controlla eventuali refusi nell'ID del riferimento.
 
 ### Z302: DEAD_DEF {#z302}
+
+:::warning[Non incluso nel Punteggio di Qualità]
+Z302 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolverlo elimina il debito tecnico, ma non influirà sul punteggio.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Esiste una definizione di riferimento ma nessun link nel file la usa. Sebbene innocua per l'utente finale, crea debito tecnico di manutenzione e appesantisce il file sorgente.
 *   **Passaggi di Rimedio:**
@@ -158,6 +205,11 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Oppure, aggiorna un link per usare questo riferimento se era previsto che venisse usato.
 
 ### Z303: DUPLICATE_DEF {#z303}
+
+:::warning[Non incluso nel Punteggio di Qualità]
+Z303 è un **avviso di integrità dei riferimenti**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per evitare ambiguità CommonMark, ma non influirà sul punteggio.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Esistono più definizioni per lo stesso ID di riferimento. Secondo le specifiche CommonMark, la prima definizione tipicamente "vince", ma questa ambiguità dovrebbe essere risolta.
 *   **Passaggi di Rimedio:**
@@ -170,6 +222,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z401: MISSING_DIRECTORY_INDEX {#z401}
 
+:::warning[Non incluso nel Punteggio di Qualità]
+Z401 è un **suggerimento strutturale** emesso solo in modalità Standalone. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Crea un `index.md` nella directory segnalata per risolverlo.
+:::
+
 *   **Severità:** `info`
 *   **Contesto Tecnico:** Nella documentazione gerarchica, ogni directory dovrebbe avere una pagina di "atterraggio" (solitamente `index.md` o `README.md`). Senza di questa, l'URL della directory potrebbe restituire un 404 o un elenco di file grezzi in alcuni motori di build.
 *   **Passaggi di Rimedio:**
@@ -177,6 +233,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Fornisci una breve panoramica dei contenuti di quella directory.
 
 ### Z402: ORPHAN_PAGE {#z402}
+
+:::info[Punteggio di Qualità — Rilevamento Orfani (20%)]
+Z402 conta verso la categoria **Rilevamento Orfani**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni pagina orfana applica un −20% di decadimento a questa categoria.
+:::
 
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Il file esiste nella cartella docs ma non è raggiungibile tramite alcun menu di navigazione. Questo è l'equivalente strutturale del "Codice Morto".
@@ -186,6 +246,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z403: MISSING_ALT {#z403}
 
+:::warning[Non incluso nel Punteggio di Qualità]
+Z403 è un **avviso di accessibilità**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per la conformità SEO e accessibilità.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Le immagini senza testo alternativo sono invisibili agli screen reader e peggiorano la SEO. Zenzic impone l'accessibilità come pilastro fondamentale della "Maturità di Ossidiana".
 *   **Passaggi di Rimedio:**
@@ -194,17 +258,31 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z404: CONFIG_ASSET_MISSING {#z404}
 
+:::warning[Non incluso nel Punteggio di Qualità]
+Z404 è un **avviso di integrità della configurazione**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Risolvilo per garantire che il branding del sito (logo, favicon) venga reso correttamente.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** La configurazione principale del motore di build (es. `docusaurus.config.ts`) fa riferimento a un logo o a una favicon che non esiste nel percorso specificato. Ciò impedisce al "Volto" del progetto di essere reso correttamente.
 *   **Passaggi di Rimedio:**
     1. Controlla i percorsi `favicon:` o `logo.src:` nel tuo file di configurazione.
     2. Assicurati che il file sia fisicamente presente nella directory `static/` (per Docusaurus) o `docs/` (per MkDocs).
 
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{ code: 'Z404', file: 'mkdocs.yml:12', message: "Asset di configurazione non trovato: theme.favicon → 'assets/favicon.png'", severity: 'warning' }]}
+/>
+
 ---
 
 ## Z5xx — Qualità dei Contenuti
 
 ### Z501: PLACEHOLDER {#z501}
+
+:::info[Punteggio di Qualità — Qualità del Contenuto (15%)]
+Z501 conta verso la categoria **Qualità del Contenuto**, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni placeholder trovato applica un −20% di decadimento a questa categoria.
+:::
 
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Rileva stringhe come `TODO`, `FIXME` o `[INSERIRE IMMAGINE QUI]`. Questi sono marcatori di lavoro incompleto che non dovrebbero essere presenti nella documentazione di produzione.
@@ -214,13 +292,27 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z502: SHORT_CONTENT {#z502}
 
+:::info[Punteggio di Qualità — Qualità dei Contenuti (15%)]
+Z502 conta verso la categoria **Qualità dei Contenuti** insieme a Z501, che ha un peso del 15% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni pagina troppo corta applica un −20% di decadimento a questa categoria.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Le pagine con pochissimo testo (default < 50 parole) forniscono uno scarso valore all'utente e possono danneggiare il posizionamento nei motori di ricerca. Il conteggio delle parole è puramente **semantico**: il frontmatter YAML, i commenti MDX (`{/* */}`) e i commenti HTML (`<!-- -->`) vengono esclusi — solo la prosa renderizzata viene conteggiata.
 *   **Passaggi di Rimedio:**
     1. Espandi la documentazione con maggiori dettagli.
     2. Se la pagina è un segnaposto, combinala con una pagina correlata.
 
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{ code: 'Z502', file: 'docs/reference/api.md', message: 'Contenuto breve: 47 parole (minimo: 100)', severity: 'warning' }]}
+/>
+
 ### Z503: SNIPPET_ERROR {#z503}
+
+:::info[Punteggio di Qualità — Validazione Snippet (20%)]
+Z503 conta verso la categoria **Validazione Snippet**, che ha un peso del 20% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni snippet non valido applica un −20% di decadimento a questa categoria.
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Lo **Snippet Guard** ha identificato un errore di sintassi in un blocco di codice delimitato contrassegnato da un tag di linguaggio (es. `py`, `js`). Ciò impedisce agli utenti di copiare ed eseguire esempi di codice errati. Il numero di riga riportato è **assoluto** — relativo al file sorgente, non all'inizio dello snippet — consentendo la navigazione immediata all'errore.
@@ -231,16 +323,22 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 ### Z504: QUALITY_REGRESSION {#z504}
 
 *   **Severità:** `warning`
-*   **Contesto Tecnico:** L'**Obsidian Scorer** ha rilevato che il punteggio di qualità per questo file è sceso significativamente rispetto alla linea di base. Ciò può indicare una perdita di struttura o leggibilità.
+*   **Contesto Tecnico:** Emesso da `zenzic diff` quando il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics) attuale è inferiore al baseline salvato (`.zenzic-score.json`). Z504 è il segnale che fa da ponte tra il layer di scoring e il layer di finding — identifica *quale commit ha introdotto una regressione*. Non viene esso stesso pesato nel punteggio (sarebbe circolare); è la conseguenza diagnostica del degrado del punteggio.
 *   **Passaggi di Rimedio:**
-    1. Confronta il file corrente con la sua versione precedente.
-    2. Assicurati che le modifiche recenti non abbiano introdotto un'eccessiva complessità o rimosso sezioni vitali.
+    1. Esegui `zenzic score` per vedere il breakdown attuale del punteggio per categoria.
+    2. Confronta con il baseline: identifica quale categoria ha aumentato il suo conteggio di problemi.
+    3. Correggi i finding sottostanti (Z101–Z503) che hanno causato la diminuzione.
+    4. Esegui `zenzic score --save` su `main` dopo la correzione per aggiornare il baseline.
 
 ---
 
 ## Z9xx — Engine e Sistema
 
 ### Z901: RULE_ENGINE_ERROR {#z901}
+
+:::warning[Non incluso nel Punteggio di Qualità]
+Z901 è un **errore a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Investiga il plugin o la regola che ha sollevato l'eccezione e segnala un bug se è uno scanner core.
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Si è verificata un'eccezione non gestita all'interno di una regola core o di un plugin. Questo è un guasto a livello di sistema che solitamente indica un bug in Zenzic o un ambiente incompatibile.
@@ -249,6 +347,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Segnala il problema su `https://github.com/PythonWoods/zenzic/issues`.
 
 ### Z902: RULE_TIMEOUT {#z902}
+
+:::warning[Non incluso nel Punteggio di Qualità]
+Z902 è un **timeout a livello di sistema**. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Semplifica il pattern regex della regola personalizzata incriminata per risolverlo.
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Una regola ha impiegato troppo tempo per essere eseguita (default > 30s). Questo è quasi sempre causato da un problema di **Backtracking Catastrofico** in un'espressione regolare personalizzata fornita in `[[custom_rules]]`.
@@ -259,6 +361,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 ### Z903: UNUSED_ASSET {#z903}
 
+:::info[Punteggio di Qualità — Integrità degli Asset (10%)]
+Z903 conta verso la categoria **Integrità degli Asset**, che ha un peso del 10% nel [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Ogni asset inutilizzato applica un −20% di decadimento a questa categoria.
+:::
+
 *   **Severità:** `warning`
 *   **Contesto Tecnico:** Un file di immagine o di asset esiste nella directory ma non è mai referenziato da alcun file Markdown. Questi "Asset Oscuri" appesantiscono il repository e gli artefatti di build.
 *   **Passaggi di Rimedio:**
@@ -266,6 +372,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
     2. Oppure, usalo in una pagina di documentazione dove appropriato.
 
 ### Z904: NAV_CONTRACT {#z904}
+
+:::warning[Non incluso nel Punteggio di Qualità]
+Z904 è un **errore strutturale**, non una metrica di qualità. Non riduce il [Punteggio di Qualità Deterministico](/docs/explanation/health-metrics). Causa l'uscita con 1 e appare nell'output di `zenzic check all`. Correggi la configurazione di navigazione per risolverlo.
+:::
 
 *   **Severità:** `error`
 *   **Contesto Tecnico:** Un conflitto tra la struttura fisica dei file e la configurazione di navigazione dell'engine. Ad esempio, una voce nav di `mkdocs.yml` che punta a `guida/setup.md` mentre il file è effettivamente in `guide/setup.md`.
@@ -302,6 +412,32 @@ Questa sezione documenta comportamento legacy ed è intenzionalmente breve.
 *   **Docusaurus:** I warning Z103 (ORPHAN_LINK) possono essere intenzionali per pagine fuori dalla sidebar principale. Considera di usare route `sidebars.js` o sopprimere queste rilevazioni.
 *   **MkDocs:** Z401 (MISSING_DIRECTORY_INDEX) è particolarmente rilevante in docs gerarchiche; assicurati che ogni directory abbia un `index.md`.
 *   **Standalone Mode:** Rilevamento orfani (Z103, Z402) è disabilitato senza contratto di navigazione. Usa esplicitamente.
+
+---
+
+## Codici Legacy \[Deprecati\] {#legacy-codes}
+
+I seguenti codici apparivano nell'output di Zenzic prima della versione **v0.6.0**. Sono
+formalmente **deprecati** e non vengono mai emessi dall'output corrente di Zenzic. La funzione
+interna `normalize()` li mappa silenziosamente ai loro equivalenti canonici, garantendo la
+compatibilità con i log CI legacy durante il periodo di transizione.
+
+| Codice Legacy | Stato | Sostituzione Canonica | Contesto |
+| :---: | :---: | :--- | :--- |
+| `Z001` | **\[DEPRECATO\]** | [`Z101` LINK\_BROKEN](#z101) | Emesso da `VSMBrokenLinkRule` pre-v0.6.0 |
+| `Z002` | **\[DEPRECATO\]** | [`Z103` ORPHAN\_LINK](#z103) | Emesso da `VSMBrokenLinkRule` pre-v0.6.0 |
+| `Z009` | **\[DEPRECATO\]** | [`Z902` RULE\_TIMEOUT](#z902) | Emesso dal motore delle regole pre-v0.6.0 |
+
+:::note[Z000 — Guardia di configurazione fatale, non un finding]
+`Z000` **non è un codice di finding** emesso durante l'analisi. È una guardia di configurazione
+fatale sollevata come `ConfigurationError` *prima* che l'analisi abbia inizio, quando viene
+rilevato un nome di engine non supportato (ad esempio, il motore `"vanilla"` rimosso in modo
+permanente). Non ha alcun finding sostitutivo canonico e non apparirà mai in un report SARIF
+o JSON.
+:::
+
+Se incontri `Z001`, `Z002` o `Z009` nei log CI, aggiorna Zenzic alla versione **v0.7.0 (Obsidian Maturity) o
+superiore**. Questi codici legacy verranno rimossi completamente nella prossima versione maggiore.
 
 ### Integrazione con CI/CD
 

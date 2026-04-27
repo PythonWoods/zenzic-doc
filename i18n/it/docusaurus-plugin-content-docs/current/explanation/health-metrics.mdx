@@ -1,0 +1,192 @@
+---
+sidebar_label: "Metriche di Salute"
+sidebar_position: 4
+description: "Il Punteggio di Qualità Deterministico — come Zenzic misura, traccia e garantisce la salute della documentazione nel tempo."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Metriche di Salute — Perché il 100/100 è l’Unico Numero che Conta
+
+> *"Un Porto Sicuro deve saper dire esattamente quanto è solido il suo molo."*
+
+**Per i tuoi utenti, un link rotto è un cliente perso. Per il tuo team, una credenziale esposta è
+una crisi a mezzanotte. Per il tuo brand, un punteggio di 97 significa tre cose che non hai ancora risolto.**
+
+Il Punteggio di Qualità di Zenzic non è una metrica di vanità. È un **valore deterministico da 0 a 100**
+calcolato dal conteggio concreto dei problemi rilevati da ogni controllo. Zero problemi significa
+100/100 — una prova formale, non una stima. Nessun credito parziale, nessun arrotondamento favorevole,
+nessuna sorpresa.
+
+> **Scopri dove sei adesso:** `uvx zenzic score` — nessuna installazione, nessuna configurazione richiesta.
+
+---
+
+## Cosa Misura il Punteggio
+
+Il Punteggio di Qualità è un **composito pesato** di cinque categorie di controllo.
+Ogni categoria corrisponde direttamente a un sotto-comando `zenzic check` e ai
+codici di finding `Zxxx` che emette.
+
+| Categoria | Comando | Codici Finding | Peso |
+|-----------|---------|----------------|------|
+| **Integrità dei Link** | `zenzic check links` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
+| **Rilevamento Orfani** | `zenzic check orphans` | [Z402] | **20 %** |
+| **Validazione Snippet** | `zenzic check snippets` | [Z503] | **20 %** |
+| **Qualità del Contenuto** | `zenzic check all` | [Z501] | **15 %** |
+| **Integrità degli Asset** | `zenzic check assets` | [Z903] | **10 %** |
+
+[Z101]: /docs/reference/finding-codes#z101
+[Z102]: /docs/reference/finding-codes#z102
+[Z103]: /docs/reference/finding-codes#z103
+[Z104]: /docs/reference/finding-codes#z104
+[Z105]: /docs/reference/finding-codes#z105
+[Z402]: /docs/reference/finding-codes#z402
+[Z501]: /docs/reference/finding-codes#z501
+[Z503]: /docs/reference/finding-codes#z503
+[Z903]: /docs/reference/finding-codes#z903
+
+Lo **Shield** (finding di sicurezza Z2xx) e il **Nav Contract** (Z904) non vengono
+valutati nel punteggio — causano un'uscita non sopprimibile 2 o 3 prima che il
+punteggio possa essere calcolato. Non è possibile calcolare il punteggio di un
+repository che sta attivamente divulgando una credenziale.
+
+---
+
+## La Formula di Decadimento
+
+Il punteggio grezzo di ogni categoria decade linearmente con il numero di problemi:
+
+$$
+\text{category\_score}(n) = \max\bigl(0.0,\ 1.0 - n \times 0.20\bigr)
+$$
+
+Dove `n` è il numero di problemi in quella categoria.
+
+Questo significa:
+- **0 problemi → 1.0** (perfetto)
+- **1 problema → 0.80**
+- **2 problemi → 0.60**
+- **5 problemi → 0.00** (pavimento)
+
+Il punteggio finale 0–100 è la somma dei contributi pesati:
+
+$$
+\text{score} = \left\lfloor \sum_i \text{category\_score}(n_i) \times w_i \times 100 \right\rceil
+$$
+
+Un singolo problema in una categoria ad alto peso (link, 35%) causa una perdita di
+punteggio maggiore rispetto a un singolo problema in una categoria a basso peso
+(asset, 10%). Questo riflette l'impatto dei link rotti sull'esperienza utente rispetto
+ai file asset inutilizzati.
+
+---
+
+## Esecuzione del Punteggio
+
+```bash
+# Calcola e mostra il punteggio (nessun file scritto)
+zenzic score
+
+# Calcola, mostra e persiste in .zenzic-score.json
+zenzic score --save
+
+# Calcola e fallisce se il punteggio scende sotto N
+zenzic score --fail-under 80
+
+# Confronta il punteggio attuale con il baseline salvato (gate di regressione CI)
+zenzic diff
+```
+
+Lo snapshot è scritto in `.zenzic-score.json` nella root del repository. È un file
+JSON leggibile dalle macchine — committalo nel repository affinché `zenzic diff`
+abbia un baseline con cui confrontarsi.
+
+### Pattern CI consigliato
+
+```yaml
+# Sui push al branch main: salva il nuovo baseline
+- run: zenzic score --save --fail-under 80
+
+# Sulle pull request: fallisce se il punteggio è sceso
+- run: zenzic diff --threshold 0
+```
+
+`zenzic diff` esce con 1 se il punteggio attuale è **inferiore** al baseline salvato
+(aggiustato da `--threshold`). Non fallisce se il punteggio è stabile o migliorante.
+
+---
+
+## Regressione di Qualità — Z504
+
+Quando `zenzic diff` rileva una diminuzione del punteggio, emette
+**[Z504 QUALITY_REGRESSION][z504]** come finding. Questo è l'unico codice di finding
+che fa da ponte tra il layer di scoring e il layer di finding — significa:
+*"qualcosa che hai cambiato ha peggiorato il punteggio."*
+
+[z504]: /docs/reference/finding-codes#z504
+
+Z504 non viene pesato nel punteggio stesso (sarebbe circolare). È il segnale che
+comunica *quale commit ha introdotto una regressione*.
+
+---
+
+## Connessione ai Tre Pilastri
+
+Il Punteggio di Qualità è la prova operativa dei [Tre Pilastri](architecture.mdx)
+di Zenzic:
+
+**1. Analizza la Sorgente, Non il Build.**
+Il punteggio è calcolato dall'analisi del sorgente Markdown grezzo — mai dall'output
+HTML o da un server web in esecuzione. Il peso del 35% per i link premia una sorgente
+che è internamente coerente prima che qualsiasi passo di build venga eseguito.
+
+**2. Zero Sottoprocessi.**
+`compute_score()` in `core/scorer.py` è una funzione Python pura — nessuna chiamata
+shell, nessun `subprocess.run`, nessuna richiesta di rete. Riceve cinque interi e
+restituisce uno `ScoreReport`. Questo garantisce risultati identici su ogni OS e
+versione Python nella matrice CI (ubuntu / windows / macos × Python 3.11–3.13).
+
+**3. Funzioni Pure Prima di Tutto.**
+`compute_score()` non ha effetti collaterali. `save_snapshot()` è l'unica funzione
+di I/O e viene chiamata esplicitamente solo quando l'utente passa `--save`. La suite
+di test verifica i calcoli del punteggio con test basati su proprietà (Hypothesis)
+per garantire gli invarianti matematici.
+
+---
+
+## Integrità del Nav Contract — Non Valutata, Ma Fatale
+
+L'audit del CEO ha segnalato una correzione terminologica: quello che gli utenti
+chiamano a volte "Nav Isolation" è formalmente **Integrità del Nav Contract ([Z904])**.
+
+[Z904]: /docs/reference/finding-codes#z904
+
+Z904 si attiva quando un file dichiarato nella configurazione di navigazione del motore
+(es. una voce `nav:` di `mkdocs.yml` o una voce esplicita di `sidebars.ts` in
+Docusaurus) non esiste su disco. Questo **non è un problema di qualità** — è un
+**errore strutturale**. Non riduce il Punteggio di Qualità. Appare nell'output di
+`zenzic check all` e causa l'uscita con 1.
+
+---
+
+## Garanzia Porto Sicuro
+
+Quando `zenzic score` restituisce 100/100, è una garanzia formale che:
+
+- Ogni link interno si risolve (zero Z101/Z102/Z103/Z104/Z105)
+- Ogni pagina è raggiungibile da almeno un punto di accesso di navigazione (zero Z402)
+- Ogni snippet di codice è sintatticamente valido (zero Z503)
+- Non esistono contenuti placeholder (zero Z501)
+- Non esistono asset inutilizzati (zero Z903)
+- Lo Shield non ha trovato credenziali in nessun file (zero Z201 — implicito, blocca il scoring)
+
+<SentinelOutput variant="clean" />
+
+Questo è il **Sigillo Ossidiana**: lo stato in cui la documentazione è strutturalmente
+completa, pulita nel contenuto e verificata per la sicurezza.
+
+> **Porta il Sigillo nel tuo README:** una volta raggiunto il 100/100, esegui `zenzic score --save`
+> e aggiungi il badge dinamico del punteggio al tuo progetto. Mostra ai contributor lo standard
+> che stanno per rispettare. Vedi [Badge Ufficiali](../how-to/add-badges) per le URL copy-paste.

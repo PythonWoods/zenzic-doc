@@ -10,7 +10,11 @@ description: "Workflow GitHub Actions, hook pre-commit e integrazione pipeline C
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Integrazione CI/CD
+# Integrazione CI/CD — Pubblica con Fiducia
+
+**Gli errori di documentazione intercettati in CI costano minuti da correggere. Gli stessi errori
+rilevati in produzione costano ore di frustrazione utente, fiducia persa e un hotfix affrettato
+nel momento peggiore. Zenzic è il gate che ti lascia libero il venerdì sera.**
 
 Zenzic è pronto all'automazione. Il flag `--format json` e l'opzione `--save` espongono output machine-readable che qualsiasi sistema CI/CD può consumare per pilotare badge dinamici, quality gate e rilevamento delle regressioni.
 
@@ -89,7 +93,7 @@ exit 3 per Blood Sentinel — lo stesso contratto dell'output da terminale.
 
 ---
 
-## GitHub Actions: Gate Zenzic Shield
+## GitHub Actions: Gate Zenzic Shield {#github-actions-zenzic-shield-gate}
 
 L'integrazione più semplice — blocca la build a qualsiasi errore di documentazione.
 
@@ -100,8 +104,7 @@ Nessun setup Python richiesto. `uvx` scarica ed esegue Zenzic in un
 ambiente temporaneo ad ogni esecuzione. Ideale per repository
 documentazione-only o team che non hanno altrimenti bisogno di Python in CI:
 
-```yaml
-# .github/workflows/docs.yml
+```yaml title=".github/workflows/docs.yml"
 name: Qualità Documentazione
 
 on:
@@ -129,8 +132,7 @@ Usa [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) quando hai bis
 Zenzic fissata, installazioni più veloci (cache wheel), o quando il progetto
 usa già uv per la gestione delle dipendenze:
 
-```yaml
-# .github/workflows/docs.yml
+```yaml title=".github/workflows/docs.yml"
 name: Qualità Documentazione
 
 on:
@@ -169,8 +171,7 @@ La [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) u
 in un unico step. I risultati appaiono come **annotazioni inline nelle PR** e nella scheda
 **Security → Code Scanning**:
 
-```yaml
-# .github/workflows/docs.yml
+```yaml title=".github/workflows/docs.yml"
 name: Qualità Documentazione
 
 on:
@@ -202,6 +203,53 @@ jobs:
 Gli incidenti di sicurezza (exit 2 e 3) non vengono mai soppressi da `fail-on-error: "false"` —
 il [Contratto Exit Code](https://github.com/PythonWoods/zenzic-action) è applicato dall'action stessa.
 
+### Riferimento agli input dell'action
+
+| Input | Default | Descrizione |
+| :--- | :---: | :--- |
+| `version` | `latest` | Versione di Zenzic da installare. `latest` = `uvx zenzic`; qualsiasi altro valore = `uvx "zenzic==X.Y.Z"`. **Fissa in produzione.** |
+| `format` | `sarif` | Formato di output: `text`, `json` o `sarif`. Usa `sarif` per GitHub Code Scanning. |
+| `sarif-file` | `zenzic-results.sarif` | Percorso del file SARIF generato (solo quando `format: sarif`). |
+| `upload-sarif` | `true` | Carica il SARIF in GitHub Code Scanning via `github/codeql-action/upload-sarif@v3`. |
+| `strict` | `false` | Tratta i warning come errori (passa `--strict` a Zenzic). |
+| `fail-on-error` | `true` | Fa fallire il workflow step sui finding di qualità (exit 1). **Non influisce su exit 2 o 3.** |
+
+### Output dell'action
+
+| Output | Descrizione |
+| :--- | :--- |
+| `sarif-file` | Percorso assoluto del file SARIF generato |
+| `findings-count` | Numero totale di finding riportati nel run SARIF |
+
+### Leggere i risultati in GitHub
+
+Dopo l'esecuzione del workflow, i finding di Zenzic appaiono in tre punti:
+
+1. **Security → Code Scanning** — ogni finding elencato con file, riga, severità e codice `Zxxx`.
+2. **Pull Request → Files changed** — annotazioni inline sulla riga esatta dove è stato rilevato il problema.
+3. **Checks tab** — il nome dello step appare come fallito se `fail-on-error: "true"` e exit 1 o superiore.
+
+L'output `findings-count` può essere consumato dagli step successivi per aggiornare badge personalizzati
+o notifiche Slack senza dover rileggere il file SARIF:
+
+```yaml
+      - name: Esegui Zenzic
+        id: zenzic
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.7.0"
+
+      - name: Mostra conteggio finding
+        run: echo "Zenzic ha trovato ${{ steps.zenzic.outputs.findings-count }} problemi"
+```
+
+:::warning[Gli incidenti di sicurezza sono sempre fatali]
+`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Shield — credenziale
+rilevata) e exit 3 (Blood Sentinel — path traversal) **non sono mai sopprimibili** con alcun input.
+L'action lo applica incondizionatamente. Vedi il
+[Contratto Exit Code](../reference/cli#exit-codes).
+:::
+
   </TabItem>
 </Tabs>
 
@@ -211,8 +259,7 @@ il [Contratto Exit Code](https://github.com/PythonWoods/zenzic-action) è applic
 
 Questo workflow legge lo snapshot `.zenzic-score.json` e pubblica il punteggio live su un [endpoint Shields.io](https://shields.io/badges/dynamic-json-badge) tramite GitHub Gist, mantenendo il badge aggiornato ad ogni push.
 
-```yaml
-# .github/workflows/zenzic-badge.yml
+```yaml title=".github/workflows/zenzic-badge.yml"
 name: Badge Zenzic Score
 
 on:
@@ -285,3 +332,91 @@ Combina con le branch protection rules per bloccare i merge che degradano la qua
 | **`3`** | **Blood Sentinel: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
 
 > Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](./add-badges.mdx).
+
+---
+
+## Recupero dallo Shield — Quando Viene Rilevata una Credenziale {#shield-recovery}
+
+Un rilevamento di credenziale (exit code 2) non è una build fallita. È un **incidente di sicurezza**.
+Il protocollo di recupero è breve e non negoziabile:
+
+### Step 1 — Identifica l'esposizione
+
+Il Sentinel Report ti dice tutto ciò di cui hai bisogno:
+
+```text
+ ✘  Z201  docs/how-to/configure.md:4    Secret rilevato (aws-access-key)
+          Credenziale: AKIA************MPLE
+          → Exit code 2 — ruota immediatamente.
+```
+
+Nota il file, la riga e il tipo di credenziale. La credenziale è sempre mascherata nel
+report — Zenzic non stampa mai il valore completo.
+
+### Step 2 — Ruota la credenziale
+
+**Prima di fare qualsiasi altra cosa** — ruota la chiave nella console del tuo cloud provider.
+Non committare prima la correzione. Una chiave ruotata è inerte anche se rimane brevemente
+nella tua git history.
+
+### Step 3 — Rimuovila dalla sorgente
+
+Elimina o sostituisci il segreto nel file segnalato da Zenzic. Committa la correzione.
+
+### Step 4 — Riscrivi la history se necessario
+
+Se la credenziale è apparsa in un commit precedente già pushato:
+
+```bash
+# Rebase interattivo fino al commit che ha introdotto il segreto
+git rebase -i <commit-prima-del-segreto>^
+
+# Oppure usa git-filter-repo (preferito rispetto a BFG per i nuovi progetti)
+git filter-repo --path docs/how-to/configure.md --force
+```
+
+:::warning[Il force-push richiede coordinamento]
+Riscrivere la history pubblica richiede un force-push. Coordina con il tuo team prima di farlo
+su un branch condiviso. Se il repository è pubblico, considera la credenziale già compromessa
+a prescindere dalla riscrittura della history — la rotazione è obbligatoria.
+:::
+
+### Step 5 — Verifica che lo Shield sia soddisfatto
+
+```bash
+uvx zenzic check all
+# Atteso: exit 0, sezione Shield mostra ✔ nessuna credenziale rilevata
+```
+
+Solo exit 0 dal pass Shield significa che il recupero è completo.
+
+:::info[Perché Zenzic ti salva da BFG Repo Cleaner]
+BFG Repo Cleaner è uno strumento potente ma irreversibile per eliminare segreti dalla git history.
+Il suo utilizzo è un sintomo di un fallimento di processo: il segreto ha raggiunto il repository
+senza essere rilevato. Lo Shield di Zenzic previene questo intercettando le credenziali **prima**
+che entrino nella pipeline CI — idealmente tramite un hook pre-commit. Vedi
+[Integrazione pre-commit](#pre-commit) per aggiungere lo Shield come gate locale che
+gira ad ogni `git commit`.
+:::
+
+---
+
+## Integrazione Pre-commit {#pre-commit}
+
+Lo Shield in CI è la tua ultima linea di difesa. L'hook pre-commit è la prima:
+
+```yaml title=".pre-commit-config.yaml"
+repos:
+  - repo: local
+    hooks:
+      - id: zenzic-shield
+        name: Zenzic Shield
+        language: system
+        entry: uvx zenzic check all
+        pass_filenames: false
+        stages: [pre-commit]
+```
+
+Con questo hook, `git commit` si rifiuterà di procedere se Zenzic rileva una credenziale,
+un link rotto o qualsiasi finding di qualità con exit 1. Il feedback è istantaneo, la
+correzione è locale, e il segreto non tocca mai il remoto.

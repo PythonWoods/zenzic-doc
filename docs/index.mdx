@@ -6,28 +6,90 @@ sidebar_label: "Overview"
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Zenzic: The Engineering Standard for Documentation Integrity
+# Your Documentation, Fully Protected
 
-Zenzic is an engine-agnostic static analyzer for Markdown-based documentation.
-It operates in the **Build-Aware Gap** — the critical window between authoring
-source files and their transformation into a published site — building a
-**Virtual Site Map (VSM)** to validate links, detect orphans, scan for exposed
-credentials, and enforce quality rules without ever invoking the documentation build.
+**Zenzic guarantees build-time safety and operational peace of mind — detecting broken links,
+leaked credentials, and orphan pages before they reach production. No configuration required to
+start. No build engine invoked. No surprises on Friday.**
 
 ---
 
-## Start Here: `zenzic lab`
-
-The fastest way to experience Zenzic is to run the interactive showcase.
-No configuration, no setup — pull and run:
+## Experience it now — zero install required
 
 ```bash
 uvx zenzic lab
 ```
 
-`zenzic lab` walks through a live audit of bundled documentation examples,
-showing every scanner in action: broken links, orphan pages, credential detection,
-and Blood Sentinel path-traversal enforcement.
+`zenzic lab` launches an interactive showcase of every scanner in action: credential detection,
+broken links, orphan pages, Blood Sentinel path-traversal enforcement. Run it against bundled
+fixtures and see the results in real time.
+
+**The full audit in one second — no installation, no setup:**
+
+```bash
+uvx zenzic check all .
+```
+
+→ **[Learn more in the Interactive Lab tutorial](./tutorials/first-audit#step-2-siege)**
+
+---
+
+## The Sentinel Dashboard — 100/100
+
+This is what success looks like:
+
+<SentinelOutput variant="clean" showFrame />
+
+A `100/100` is not an estimate. It is a **mathematical proof** that your documentation
+has zero structural issues, zero leaked credentials, and zero navigation failures.
+Anything less is a precise, actionable diagnostic — not a vague warning.
+
+> **Ready to reach 100/100?** Run `uvx zenzic score` to see exactly where you are today.
+
+---
+
+## Stop Deciphering Logs. Start Solving Problems.
+
+**Before Zenzic** — a standard CI failure:
+
+```text
+[14:23:01] BUILD FAILED
+[14:23:01]   error: Cannot read properties of undefined (reading 'path')
+[14:23:01]   at DocusaurusContentDocs.<anonymous> (content-docs.js:212:14)
+[14:23:01]   ... 47 more lines omitted ...
+[14:23:01] Process exited with code 1
+```
+
+What broke? Which file? Which line? The build engine knows it failed — but not why.
+
+**After Zenzic** — the Sentinel Report:
+
+<SentinelOutput variant="findings" showFrame />
+
+**Three lines. Three actions. Zero ambiguity.**
+
+The Sentinel Report tells you the file, the line, the `Zxxx` code, and the fix — before
+the build even starts. No log archaeology, no stack-trace spelunking.
+
+---
+
+## Shield — Your Last Line of Defense Against the Dark Crisis
+
+A leaked API key in your documentation is not a content issue. It is a security incident.
+
+<SentinelOutput variant="breach" showFrame />
+
+Zenzic's **Shield** scans every line of every file — including YAML frontmatter and code
+blocks — before any other check runs. If a credential is detected:
+
+- The pipeline **halts unconditionally** — exit code 2 cannot be suppressed by any flag
+- The credential is **masked** in the report (never printed in full)
+- You fix it **before it reaches git history** — no BFG Repo Cleaner, no emergency rotations
+  at midnight, no incident post-mortem
+
+This is not a lint check. It is a **non-negotiable security gate**.
+
+→ **[How to act when Shield blocks a secret](./how-to/configure-ci-cd#shield-recovery)**
 
 ---
 
@@ -35,24 +97,14 @@ and Blood Sentinel path-traversal enforcement.
 
 | | |
 | :--- | :--- |
-| **[Tutorials →](./tutorials/first-audit)** | Get started in 5 minutes. |
-| **[How-to →](./how-to/configure-ci-cd)** | Solve specific documentation tasks. |
-| **[Reference →](./reference/cli)** | Technical specs and CLI commands. |
-| **[Explanation →](./explanation/architecture)** | Understand the architecture and pillars. |
+| **[Tutorials →](./tutorials/first-audit)** | From zero to a passing audit in 3 minutes. |
+| **[How-to →](./how-to/configure-ci-cd)** | Ship with confidence using GitHub Actions. |
+| **[Reference →](./reference/cli)** | Every flag, every `Zxxx` code, every option. |
+| **[Explanation →](./explanation/health-metrics)** | Why 100/100 is the only number that matters. |
 
 ---
 
-## Enterprise Ready
-
-Zenzic integrates natively with professional CI pipelines:
-
-- **SARIF 2.1.0 export** — `check all --format sarif` produces a report that GitHub Code Scanning
-  reads directly. Findings appear as inline Pull Request annotations and in the Security tab,
-  without log parsing.
-- **Official GitHub Action** — [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action)
-  handles installation, execution, and SARIF upload in a single workflow step.
-- **Cross-platform validation** — every release is tested on Ubuntu, Windows, and macOS across
-  Python 3.11–3.13.
+## Enterprise Ready — Native GitHub Integration
 
 ```yaml
 - uses: PythonWoods/zenzic-action@v1
@@ -61,15 +113,12 @@ Zenzic integrates natively with professional CI pipelines:
     upload-sarif: "true"
 ```
 
----
+Findings appear as **inline Pull Request annotations** and in the **Security tab** —
+no log parsing, no custom scripts, no post-processing. The official
+[`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) handles
+installation, execution, and SARIF 2.1.0 upload in a single workflow step.
 
-## Quick Start
-
-```bash
-pip install zenzic
-zenzic init         # Detect engine, scaffold config
-zenzic check all    # Full audit
-```
+Cross-platform verified: Ubuntu · Windows · macOS · Python 3.11–3.13.
 
 ---
 

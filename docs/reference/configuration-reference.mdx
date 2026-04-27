@@ -29,8 +29,7 @@ When a config file is present but contains a TOML syntax error, Zenzic raises a 
 
 ### Standalone `zenzic.toml`
 
-```toml
-# zenzic.toml — at the repository root
+```toml title="zenzic.toml"
 docs_dir = "docs"
 snippet_min_lines = 3
 strict = true
@@ -41,8 +40,7 @@ engine = "mkdocs"
 
 ### Embedded in `pyproject.toml`
 
-```toml
-# pyproject.toml
+```toml title="pyproject.toml"
 [tool.zenzic]
 docs_dir = "docs"
 snippet_min_lines = 3
@@ -270,8 +268,7 @@ The `excluded_dirs` and `excluded_file_patterns` fields in your project config �
 - **Reviewable** — a new contributor running `git diff` sees exactly what Zenzic excludes and why
 - **Stable** — exclusions do not change when a developer updates `.gitignore` for unrelated tooling reasons
 
-```toml
-# zenzic.toml (or [tool.zenzic] in pyproject.toml)
+```toml title="zenzic.toml"
 # Explicit exclusions are maintainable and auditable
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
@@ -519,8 +516,7 @@ CLI flags > zenzic.toml > pyproject.toml [tool.zenzic] > built-in defaults
 
 ## Complete Example {#complete-example}
 
-```toml
-# zenzic.toml — full configuration example
+```toml title="zenzic.toml"
 
 docs_dir = "docs"
 snippet_min_lines = 3

@@ -166,6 +166,57 @@ Add a `Signed-off-by` line to every commit using the `-s` flag:
 git commit -s -m "<type>: <summary> (#<issue number>)"
 ```
 
+## REUSE 3.3 — Copyright headers
+
+This project enforces [REUSE 3.3](https://reuse.software/spec/) compliance via a
+pre-commit hook. Every source file must carry an SPDX copyright header.
+
+### Single-author file (default)
+
+```text
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+```
+
+### Multi-author file — append, never overwrite
+
+If you contribute to a file that already has a copyright header, **append** your
+own `SPDX-FileCopyrightText` line on a new line immediately below the existing
+one. Never replace or remove the original author's line:
+
+```text
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-FileCopyrightText: 2026 Your Name <your@email.example>
+# SPDX-License-Identifier: Apache-2.0
+```
+
+The `SPDX-License-Identifier` line stays last and appears only once per file.
+
+:::note[Zenzic Shield and copyright lines]
+
+Zenzic's normalizer skips `SPDX-FileCopyrightText` comment lines during
+word-count checks (Z502) — they are metadata, not prose. The Shield (Z201)
+does not trigger on these lines either, because copyright email addresses
+are structurally distinct from credential patterns.
+
+:::
+
+### MDX / JSX files
+
+Use MDX comment syntax:
+
+```mdx
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-FileCopyrightText: 2026 Your Name <your@email.example> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+```
+
+### Files that cannot carry inline headers
+
+For binary files, generated assets, or formats with no comment syntax, add an
+entry to `REUSE.toml` at the repository root instead of adding inline headers.
+The pre-commit hook validates both inline headers and `REUSE.toml` entries.
+
 ## Use of Generative AI
 
 AI-assisted coding can be useful, but the unreflected inclusion of AI-generated

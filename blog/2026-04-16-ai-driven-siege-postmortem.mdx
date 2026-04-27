@@ -1,21 +1,22 @@
 ---
 slug: ai-driven-siege-shield-postmortem
-title: "We Put Our Documentation Linter Under an AI-Driven Siege. Here's the Post-Mortem."
+title: "AI Red Team Attacks Code Linter: Post-Mortem"
+sidebar_label: "03. The Siege"
 authors: [pythonwoods]
-tags: [security, post-mortem, python, devtools]
+tags: [security, engineering, post-mortem, python, devtools, obsidian-chronicles]
 date: 2026-04-16
 description: >
-  Four bypass vectors. Four real findings. All closed. An AI-driven audit revealed
-  4 bypass vectors in Zenzic's credential scanner — and we sealed them all.
+  We put our documentation linter under an AI-driven siege. Four bypass vectors found,
+  four sealed. Here's the full post-mortem of Zenzic's AI red team audit.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
 
-:::info[This is Part 3 (Final) of the Zenzic Engineering Series]
+:::info[The Obsidian Chronicles — Part 3 of 5]
 
-Research conducted during the **v0.6.1rc2** pre-release cycle. All findings directly shaped the stability and features of **v0.7.0 "Obsidian Maturity"**.
+This is the official engineering record of Zenzic's journey to v0.7.0.
 
-Cross-published on [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj) and [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396). This edition is the **definitive version**, merging both publications.
+[Part 1](/blog/hardening-the-documentation-pipeline) | [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | **Part 3** | [Part 4](/blog/beyond-the-siege-zenzic-v070-new-standard) | [Part 5](/blog/zenzic-v070-obsidian-maturity-stable)
 
 :::
 
@@ -375,10 +376,6 @@ appearance of coverage without the substance.
 
 ---
 
----
-
-_This is Part 3 (Final) of the Zenzic Engineering Series._
-
 | | |
 |---|---|
 | **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
@@ -389,4 +386,10 @@ _This is Part 3 (Final) of the Zenzic Engineering Series._
 - [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj) — *AI Red Team Attacks Code Linter: Full Post-Mortem Report*
 - [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396) — *We Put Our Documentation Linter Under an AI-Driven Siege*
 
-_This edition on zenzic.dev is the **definitive version**, merging both publications._
+:::note[The Obsidian Chronicles]
+This is **Part 3** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
+
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Obsidian Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · **Part 3 — The AI Siege** · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-new-standard) · [Part 5 — Obsidian Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+:::
+
+_Part 3 of the **Obsidian Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._

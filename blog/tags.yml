@@ -48,3 +48,13 @@ markdown:
   label: Markdown
   permalink: /markdown
   description: "Markdown authoring, linting, and documentation pipelines."
+
+obsidian-chronicles:
+  label: "Obsidian Chronicles"
+  permalink: /obsidian-chronicles
+  description: "The five-part engineering saga from v0.5 Sentinel to v0.7.0 Obsidian Maturity."
+
+milestone:
+  label: "Milestone Record"
+  permalink: /milestone
+  description: "Historical records of alpha and release candidate milestones on the path to v0.7.0."

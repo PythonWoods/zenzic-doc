@@ -168,6 +168,57 @@ Aggiungi una riga `Signed-off-by` a ogni commit usando il flag `-s`:
 git commit -s -m "<tipo>: <sommario> (#<numero issue>)"
 ```
 
+## REUSE 3.3 — Header di Copyright
+
+Questo progetto applica la conformità [REUSE 3.3](https://reuse.software/spec/) tramite
+un hook pre-commit. Ogni file sorgente deve avere un header di copyright SPDX.
+
+### File con un solo autore (default)
+
+```text
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+```
+
+### File con più autori — aggiungi, non sovrascrivere
+
+Se contribuisci a un file che ha già un header di copyright, **aggiungi** la tua
+riga `SPDX-FileCopyrightText` su una nuova riga immediatamente sotto quella
+esistente. Non sostituire né rimuovere la riga dell'autore originale:
+
+```text
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-FileCopyrightText: 2026 Il Tuo Nome <tua@email.esempio>
+# SPDX-License-Identifier: Apache-2.0
+```
+
+La riga `SPDX-License-Identifier` va per ultima e appare una sola volta per file.
+
+:::note[Shield di Zenzic e righe di copyright]
+
+Il normalizzatore di Zenzic salta le righe `SPDX-FileCopyrightText` durante i
+controlli del conteggio parole (Z502) — sono metadati, non prosa. Lo Shield (Z201)
+non si attiva nemmeno su queste righe, perché gli indirizzi email di copyright sono
+strutturalmente diversi dai pattern di credenziali.
+
+:::
+
+### File MDX / JSX
+
+Usa la sintassi dei commenti MDX:
+
+```mdx
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-FileCopyrightText: 2026 Il Tuo Nome <tua@email.esempio> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+```
+
+### File che non possono avere header inline
+
+Per file binari, asset generati o formati senza sintassi per commenti, aggiungi una
+voce in `REUSE.toml` nella root del repository invece di header inline.
+L'hook pre-commit valida sia gli header inline che le voci in `REUSE.toml`.
+
 ## Uso dell'Intelligenza Artificiale Generativa
 
 La programmazione assistita da AI può essere utile, ma l'inclusione acritica di codice
