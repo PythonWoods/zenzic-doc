@@ -104,7 +104,7 @@ Nessun setup Python richiesto. `uvx` scarica ed esegue Zenzic in un
 ambiente temporaneo ad ogni esecuzione. Ideale per repository
 documentazione-only o team che non hanno altrimenti bisogno di Python in CI:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Qualità Documentazione
 
 on:
@@ -132,7 +132,7 @@ Usa [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) quando hai bis
 Zenzic fissata, installazioni più veloci (cache wheel), o quando il progetto
 usa già uv per la gestione delle dipendenze:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Qualità Documentazione
 
 on:
@@ -171,7 +171,7 @@ La [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) u
 in un unico step. I risultati appaiono come **annotazioni inline nelle PR** e nella scheda
 **Security → Code Scanning**:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Qualità Documentazione
 
 on:
@@ -232,7 +232,7 @@ Dopo l'esecuzione del workflow, i finding di Zenzic appaiono in tre punti:
 L'output `findings-count` può essere consumato dagli step successivi per aggiornare badge personalizzati
 o notifiche Slack senza dover rileggere il file SARIF:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
       - name: Esegui Zenzic
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
@@ -259,7 +259,7 @@ L'action lo applica incondizionatamente. Vedi il
 
 Questo workflow legge lo snapshot `.zenzic-score.json` e pubblica il punteggio live su un [endpoint Shields.io](https://shields.io/badges/dynamic-json-badge) tramite GitHub Gist, mantenendo il badge aggiornato ad ogni push.
 
-```yaml title=".github/workflows/zenzic-badge.yml"
+```yaml title=".github/workflows/zenzic-score.yml"
 name: Badge Zenzic Score
 
 on:
@@ -311,7 +311,7 @@ steps:
 
 `zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 - name: Rileva regressione del punteggio
   run: |
     uvx zenzic score --save         # aggiorna snapshot

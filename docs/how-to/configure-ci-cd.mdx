@@ -104,7 +104,7 @@ No Python setup required. `uvx` fetches and runs Zenzic in a throwaway
 environment on every run. Ideal for documentation-only repositories or
 teams that do not otherwise need a Python environment in their CI:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Documentation Quality
 
 on:
@@ -121,7 +121,7 @@ Use [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) when you need 
 faster installs on repeated runs (cached wheel), or when your project
 already uses uv for dependency management:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Documentation Quality
 
 on:
@@ -151,7 +151,7 @@ The official [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic
 installs `uv`, runs Zenzic, validates SARIF integrity, and uploads findings to GitHub Code Scanning — all
 in one step. Findings appear as **inline PR annotations** and in the **Security → Code Scanning** tab:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 name: Documentation Quality
 
 on:
@@ -212,7 +212,7 @@ After the workflow runs, Zenzic findings appear in three places:
 The `findings-count` output can be consumed by downstream steps to drive custom badge updates or
 Slack notifications without re-parsing the SARIF file:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
       - name: Run Zenzic
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
@@ -239,7 +239,7 @@ The action enforces this unconditionally. See the
 
 This workflow reads the `.zenzic-score.json` snapshot and pushes the live score to a [Shields.io endpoint](https://shields.io/badges/dynamic-json-badge) via a GitHub Gist, keeping your badge current on every push.
 
-```yaml title=".github/workflows/zenzic-badge.yml"
+```yaml title=".github/workflows/zenzic-score.yml"
 name: Zenzic Score Badge
 
 on:
@@ -291,7 +291,7 @@ steps:
 
 `zenzic diff` compares the current score against the saved `.zenzic-score.json` baseline:
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 - name: Detect score regression
   run: |
     uvx zenzic score --save      # update snapshot

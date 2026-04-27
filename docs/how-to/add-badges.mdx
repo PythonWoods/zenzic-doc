@@ -35,7 +35,7 @@ Use this badge for strict pipelines where any broken link, dead anchor, or leake
 
 ### Recommended CI step
 
-```yaml title=".github/workflows/docs.yml"
+```yaml title=".github/workflows/zenzic.yml"
 - name: Lint documentation (Zenzic Shield)
   run: uvx zenzic check all --strict
 ```
@@ -84,7 +84,7 @@ This file is the machine-readable bridge to dynamic Shields.io badges.
 
 The following two steps save the score and push it to a [GitHub Gist](https://gist.github.com) that Shields.io reads on every request:
 
-```yaml title=".github/workflows/zenzic-badge.yml"
+```yaml title=".github/workflows/zenzic-score.yml"
 - name: Compute Zenzic Score
   run: |
     uvx zenzic score --save
