@@ -236,7 +236,26 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ## [ACTIVE SPRINT] — Working Context
 
-### D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto (Current)
+### D156–D157 — Pixel-Perfect Parity Audit (Current)
+
+**Version:** 0.7.0 · **Date:** 2026-04-27
+
+**CEO 156 "Next Label Audit" (analysis only — no commit required):**
+- `i18n/it/docusaurus-plugin-content-docs/current.json`: `version.label` already `"0.7.0"`. Bug does not exist.
+- `docusaurus.config.ts`: `versions.current.label: '0.7.0'` confirmed. EN+IT parity intact.
+
+**CEO 157 "Theme Flip Audit" (analysis only — no commit required):**
+- Root cause: Docusaurus locale switching = full page reload (not SPA), causing FOUC during hydration.
+- `respectPrefersColorScheme: false` (CEO 149) is the canonical and complete fix.
+- CEO's proposed NavbarWrapper code rejected as non-viable: `@generated/docusaurus.config` does not
+  exist in Docusaurus 3.x; `<Navbar items={...}>` is not a valid prop signature. Implementing it
+  would break the build.
+- `ColorModeContext` is provided by `DocusaurusRoot` (above all navbar components) — Navbar swizzle
+  physically cannot cause theme flips. Architecture is correct.
+
+SENTINEL_EXIT:0 | BUILD_EXIT:0 (just build — Sentinel Gate + Docusaurus EN+IT confirmed).
+
+### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
@@ -281,30 +300,6 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
   and 'astral-sh/setup-uv' tabs (truncated by prior title= audit, causing Z503 YAML parse failures).
 
 SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT, `just build` with Sentinel Gate passes).
-
-### Last Closed — D127–D142 — SentinelOutput Visual System + Chromatic Sovereignty
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-SentinelOutput component (4 variants: clean/breach/findings/inspect), 30 live instances EN+IT,
-Bimodal Indigo palette (WCAG AAA), Global Chromatic Sovereignty (indigo-700 base), Conditional
-Perimeter borders, Contextual Snippets (title= on all YAML/TOML blocks). BUILD_EXIT:0.
-
-### Last Last Closed — D122–D124 — Obsidian Ascension + Visual Fidelity Protocol
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-CEO 122/123/124: index/first-audit/health-metrics rewritten user-benefit-first. TerminalWindow
-component + 3 SVG assets via rich.console. engineering-ledger.mdx (EN + IT) created.
-BUILD_EXIT:0.
-
-### Last Last Closed — D114–D119 — Obsidian Mirror + Sovereign Integration Audit
-
-**Version:** 0.7.0 · **Date:** 2026-04-25
-
-D075: R19 `:::warning` admonition added to `configuration-reference.mdx` (EN + IT) — domain-level
-URL exclusion prohibition now visible at the point of use. Bilingual symmetry maintained; preflight
-passes. All v0.7.0 documentation obligations fulfilled.
 
 ---
 
