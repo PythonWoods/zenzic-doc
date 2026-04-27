@@ -1,0 +1,157 @@
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+---
+sidebar_label: "Modello AI Avversariale"
+---
+
+# L'AI come Stressor Cognitivo
+
+> **`AI-Tested / Human-Governed`**
+>
+> *L'AI non è co-autrice di Zenzic. La stress-testa.*
+
+---
+
+## 1. L'Arena
+
+Lo sviluppo di Zenzic opera come un'**arena avversariale**. Le regole sono semplici:
+
+- **Gli Umani** decidono l'architettura. I Tre Pilastri, il design del VSM, la pipeline
+  dello Shield, il perimetro del Blood Sentinel — queste sono scelte strategiche umane.
+- **L'AI** viene impiegata come Red Team controllato. La sua missione è trovare falle
+  logiche, violazioni dei Pilastri e debolezze di sicurezza in ciò che l'umano ha già deciso.
+
+| Ruolo | Funzione |
+| :--- | :--- |
+| **Architetto Umano** | **Guardiano dell'Integrità.** Decide la strategia. Fissa gli invarianti. Possiede la responsabilità. Ratifica o rigetta ogni trovata dell'AI. |
+| **Red Team AI** | **Auditore Avversariale.** Attacca le assunzioni. Tenta di violare i Tre Pilastri. Trova accoppiamenti nascosti. Porta a galla contraddizioni prima che vadano in produzione. |
+
+**La Regola Fondamentale:**
+
+> *"L'output dell'AI è trattato come una pull request avversariale. Deve superare
+> l'Audit Costituzionale prima di essere integrato. Se l'AI riesce a proporre una
+> violazione valida, ha trovato un vero bug — non un suggerimento di stile."*
+
+---
+
+## 2. I Tre Pilastri come Obiettivi dello Stress Test
+
+Ogni sessione AI-assistita in Zenzic è inquadrata come un attacco diretto a uno o più
+dei Tre Pilastri.
+
+### Pilastro I — Analizza la Sorgente, Non il Build
+
+**La superficie di attacco:** Qualsiasi percorso nel codice potrebbe dipendere
+dall'output HTML, da asset compilati o da artefatti di build? Una regola potrebbe
+essere scritta in modo da scattare solo dopo che un build è completato?
+
+**L'invariante:** L'analisi opera su Markdown grezzo e file di configurazione. Se l'AI
+trova un percorso di codice che legge `build/` o richiede un passo di build, ha trovato
+una violazione del Pilastro I.
+
+### Pilastro II — Zero Sottoprocessi
+
+**La superficie di attacco:** Qualsiasi percorso di codice potrebbe portare a
+`subprocess.run`, `os.system`, `os.popen` o qualsiasi forma di invocazione di
+processi esterni?
+
+**L'invariante:** 100% Python puro. Nessuna eccezione. Se l'AI può scrivere una
+sottoclasse di `BaseRule` che chiama un sottoprocesso e supera comunque la validazione
+`PluginContractError` — quella è una vera vulnerabilità contrattuale.
+
+### Pilastro III — Pure Functions First
+
+**La superficie di attacco:** La logica di analisi può accumulare stato tra le chiamate?
+Una regola può contenere un contatore mutabile che influenza i trovati futuri?
+
+**L'invariante:** La logica di analisi è deterministica. `check(file_path, text)` restituisce
+sempre gli stessi trovati per gli stessi input. Se l'AI può costruire una implementazione
+valida di `BaseRule` con un `self._cache` nascosto che cambia comportamento alla seconda
+chiamata, ha trovato una violazione del Pilastro III.
+
+---
+
+## 3. Tipologie di Sessione Avversariale
+
+### Tipo A — Caccia alle Violazioni Architetturali
+
+L'AI riceve l'intero codebase e ha il compito di trovare qualsiasi codice che violi un
+`[INVARIANT]` dall'Obsidian Ledger.
+
+**Esito:** Se viene trovata una violazione reale, viene promossa a bug e corretta nello
+stesso sprint. Se non vengono trovate violazioni, la sessione conferma la solidità architetturale.
+
+### Tipo B — Attacco Canary Regex (ZRT-002)
+
+L'AI ha il compito di costruire un pattern regex che:
+1. Verrebbe accettato dalla costruzione di `AdaptiveRuleEngine`
+2. Esibisce backtracking catastrofico su input di dimensione > 1 KiB
+
+Questo è un test di sicurezza diretto sull'hardening ReDoS.
+
+### Tipo C — Caccia ai Bypass dello Shield
+
+L'AI riceve la pipeline di normalizzazione a 8 stadi e ha il compito di costruire un
+frammento Markdown che:
+1. Contiene una vera credenziale (da una famiglia nota in `_SECRETS`)
+2. Supera tutti gli 8 stadi di normalizzazione non rilevata
+
+Qualsiasi bypass riuscito è un **fallimento di rilevamento Z201 SHIELD_SECRET** —
+un trovato di sicurezza Critico che richiede una patch immediata.
+
+### Tipo D — Fuga dal Blood Sentinel
+
+L'AI riceve l'implementazione di `InMemoryPathResolver._build_target()` e ha il compito
+di costruire una stringa di percorso che, dopo il collasso `os.path.normpath()`, si
+risolve in un percorso fuori da `docs_root` senza contenere sequenze di attraversamento
+ovvie (letterali `../`).
+
+---
+
+## 4. Il Badge di Governance
+
+```
+AI-Tested / Human-Governed
+```
+
+Questo badge, visibile nel `README` di Zenzic, segnala:
+
+1. **L'AI è stata usata** — in sessioni avversariali, come documentato qui.
+2. **Gli Umani hanno deciso** — ogni scelta strategica, ogni invariante, ogni decisione di merge.
+3. **Trasparenza** — sai esattamente come l'AI è stata impiegata in questo progetto.
+
+Ogni sprint che ha coinvolto sessioni avversariali registra l'esito nel
+`[ACTIVE SPRINT]` dell'Obsidian Ledger: sessioni eseguite, violazioni trovate, esito.
+
+---
+
+## 5. Cosa l'AI Non Decide
+
+| Decisione | Autorità |
+| :--- | :--- |
+| Principi Architetturali (Tre Pilastri) | Umano — non delegabile |
+| Semantica dei codici di trovato (registro Zxxx) | Umano — ratificato in `core/codes.py` |
+| Contratto dei codici di uscita (0/1/2/3) | Umano — immutabile |
+| Scopo dello sprint e calendario dei rilasci | Umano |
+| Se un trovato dell'AI è una violazione reale | Guardiano dell'Integrità Umano |
+
+L'AI propone. L'AI attacca. L'AI non ratifica.
+
+---
+
+## 6. FAQ
+
+**D: Zenzic è "scritto dall'AI"?**
+
+No. Zenzic è *stress-testato* dall'AI. I Tre Pilastri, l'architettura VSM, la pipeline di
+normalizzazione dello Shield e il perimetro del Blood Sentinel sono scelte strategiche umane.
+L'AI viene usata per rafforzare queste scelte tentando di romperle.
+
+**D: Perché documentare questo?**
+
+Per evitare l'**Asimmetria Informativa**. Quando leggi un ADR di Zenzic che dice
+*"lo Shield ha 8 stadi di normalizzazione"*, devi sapere che quei 8 stadi hanno superato
+una sessione avversariale di Tipo C in cui un'AI ha tentato di costruire payload di bypass
+per ciascuno. Il rigore è deliberato. La trasparenza è parte del modello di sicurezza.
+
+> *Saga VI: The Governance of Glass — [leggi la cronaca](https://zenzic.dev/blog/governance-of-glass)*

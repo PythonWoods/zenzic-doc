@@ -266,30 +266,43 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 068-071 — Forensic Masterclass + Saga V + Blog Sovereignty (Current)
+### CEO 072-078 — Governance of Glass: Constitution + Saga VI (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-**CEO 068-070 "The Forensic Masterclass Protocol":**
-- `blog/2026-04-27-obsidian-masterclass.mdx` (new): ~1500-line forensic technical manifesto.
-  "Obsidian Guard: The Engineering of Documentation Integrity and Security". 10 Acts: Untrusted
-  Input / VSM Engine / Shield 8-Stage / Blood Sentinel / Docusaurus isCategoryIndex / Rule Engine /
-  SARIF / Benchmarks / Adapter Contract / Getting Started. All specs extracted from source forensic
-  audit. `sidebar_label: "⚡ Masterclass: Protect Your Docs"`. Date `T23:59:59` — leads sidebar.
-- `blog/2026-04-27-dormire-sonni-tranquilli.mdx`: DELETED — ADR-006 Blog Sovereignty.
-- `blog/2026-04-27-sleep-soundly.mdx`: DELETED — superseded by masterclass.
-- `blog/2026-04-08-hardening-the-documentation-pipeline.mdx`: stale `/blog/sleep-soundly`
-  link updated to `/blog/tutorial-stop-broken-links-60s`.
+**CEO 072 — Governance Section Creation:**
+- `docs/community/governance/` created with 5 files: `_category_.json`, `index.mdx`,
+  `adversarial_ai.mdx`, `exit_strategy.mdx`, `evolution_policy.mdx`, `licensing.mdx`.
+- Adapted from Structum governance model; all Structum references removed.
+- `amendment_policy.mdx` renamed to `evolution_policy.mdx` ("Amendment" → "Evolution").
+- Directory initially at `docs/governance/`, then moved to `docs/community/governance/` (CEO 075).
 
-**CEO 071 "Architectural Philosophy":**
-- `blog/2026-04-25-zenzic-v070-obsidian-maturity-stable.mdx`: "## Zenzic vs The World"
-  feature checklist replaced with "## Architectural Philosophy: A Different Axis" — 7-row
-  Design Dimension table (Trust Model / Site Awareness / Security Layer / CI/CD Footprint /
-  Diagnostic System / Orphan Detection / Output Format). Framing: trust models, not features.
+**CEO 074-076 — Full Rewrite + Badge + Read-Only:**
+- All 5 EN governance MDX files rewritten with Obsidian authority framing.
+- New label: "Governance & Sovereignty". Each file has SPDX header + Saga VI cross-link.
+- `exit_strategy.mdx`: read-only declaration added — audit core is strictly read-only;
+  future remediation via explicit `zenzic fix` utility, analysis remains 100% mutation-free.
+- `zenzic/README.md` + `README.it.md`: AI-Adversarial badge added (links to governance/adversarial-ai).
+- IT mirrors created for all 6 governance files (including `_category_.json` with "Governance & Sovranità").
 
-**COMMITTED `d72370b`. BUILD_EXIT:0 (EN + IT).**
+**CEO 077 — Saga VI Blog Post (initial stub):**
+- `blog/2026-04-27-governance-of-glass.mdx` created. Slug: `governance-of-glass`.
+- Date `T23:00:00` — positions after Saga V (T23:59:59 is Masterclass).
+- `tags.yml`: added `governance` and `sovereignty` tags (+ `engineering-chronicles` already existed).
+- Chronicles nav updated in all 5 Saga posts: ` | [Saga VI](/blog/governance-of-glass)` appended.
 
-### Last Closed — CEO 056/058/060 — Chronicles Standardization & Tutorial Launch
+**CEO 078 — Full Saga VI Rewrite (501 lines, "The Constitution of Glass"):**
+- Saga VI rewritten to 501 lines. Structure: 5 narrative parts + closing table + :::info box.
+  - Part I: The Ghost of Broken Promises (Software Mortality Table, Architecture of Trust)
+  - Part II: The Sovereignty Oath: Liberty as a Feature (Zero Residue table, read-only by constitution, `typing.Protocol` guarantee, Why we wrote the exit strategy first)
+  - Part III: The Adversarial Forge: AI as a Skeptic (Magistrate Model, 4 session types, Obsidian Glass metaphor, What AI Does Not Decide)
+  - Part IV: The Constitutional Invariants (Three Articles, Amendment Process 5 steps, Evolution Policy, Convenience Prohibition)
+  - Part V: The Safe Harbor is Permanent (First Cornerstone, Pact with Community, 6-chapter chronicle table, Glass Constitution metaphor)
+- All 6 :::info boxes updated: `"🛡️ The Obsidian Chronicles"` → `"🛡️ The Obsidian Chronicles — Complete"` with "The Chronicles are sealed." subtitle. Applied in all 5 existing Saga posts + Saga VI itself.
+- `docs/community/governance/index.mdx`: Italian Technical Abstract section added at end — 3-axis table (Libertà/Pressione/Durata), closing quote "Non fidatevi di noi. Fidatevi del sistema."
+- Symmetry diff EXIT:0. BUILD_EXIT:0 (EN + IT). UNCOMMITTED.
+
+### Last Closed — CEO 068-071 — Forensic Masterclass + Saga V + Blog Sovereignty
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 

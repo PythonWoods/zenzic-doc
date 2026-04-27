@@ -79,6 +79,16 @@ user-tutorials:
   permalink: /tutorials
   description: "Practical guides for getting started with Zenzic — zero configuration required."
 
+governance:
+  label: "Governance"
+  permalink: /governance
+  description: "Architectural constitution, Evolution Policy, and Sovereignty Oath — the laws that protect the Safe Harbor."
+
+sovereignty:
+  label: "Sovereignty"
+  permalink: /sovereignty
+  description: "Zero Residue, reversible design, and the Sovereignty Oath: why Zenzic is a sentinel, not a chain."
+
 obsidian-maturity:
   label: "Obsidian Maturity"
   permalink: /obsidian-maturity
