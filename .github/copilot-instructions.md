@@ -266,7 +266,30 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 056/058/060 — Chronicles Standardization & Tutorial Launch (Current)
+### CEO 068-071 — Forensic Masterclass + Saga V + Blog Sovereignty (Current)
+
+**Version:** 0.7.0 · **Date:** 2026-04-27
+
+**CEO 068-070 "The Forensic Masterclass Protocol":**
+- `blog/2026-04-27-obsidian-masterclass.mdx` (new): ~1500-line forensic technical manifesto.
+  "Obsidian Guard: The Engineering of Documentation Integrity and Security". 10 Acts: Untrusted
+  Input / VSM Engine / Shield 8-Stage / Blood Sentinel / Docusaurus isCategoryIndex / Rule Engine /
+  SARIF / Benchmarks / Adapter Contract / Getting Started. All specs extracted from source forensic
+  audit. `sidebar_label: "⚡ Masterclass: Protect Your Docs"`. Date `T23:59:59` — leads sidebar.
+- `blog/2026-04-27-dormire-sonni-tranquilli.mdx`: DELETED — ADR-006 Blog Sovereignty.
+- `blog/2026-04-27-sleep-soundly.mdx`: DELETED — superseded by masterclass.
+- `blog/2026-04-08-hardening-the-documentation-pipeline.mdx`: stale `/blog/sleep-soundly`
+  link updated to `/blog/tutorial-stop-broken-links-60s`.
+
+**CEO 071 "Architectural Philosophy":**
+- `blog/2026-04-25-zenzic-v070-obsidian-maturity-stable.mdx`: "## Zenzic vs The World"
+  feature checklist replaced with "## Architectural Philosophy: A Different Axis" — 7-row
+  Design Dimension table (Trust Model / Site Awareness / Security Layer / CI/CD Footprint /
+  Diagnostic System / Orphan Detection / Output Format). Framing: trust models, not features.
+
+**COMMITTED `d72370b`. BUILD_EXIT:0 (EN + IT).**
+
+### Last Closed — CEO 056/058/060 — Chronicles Standardization & Tutorial Launch
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
