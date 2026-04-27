@@ -123,6 +123,19 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - **`just preflight`** mirrors the full CI gate exactly (`uvx pre-commit run --all-files`).
 - **Broken-anchor warnings** on `#global-flags`, `#virtual-site-map-vsm` in build output are pre-existing — not regressions.
 
+### BUG-004: Frontmatter Supremacy — Blog MDX Files (CEO-060)
+
+- **[INVARIANT] In Docusaurus blog MDX files, the `---` frontmatter block MUST start at absolute line 1.**
+  No comments (SPDX, HTML, MDX), no blank lines, no content of any kind may precede the opening `---`.
+- **Root cause:** The blog plugin is anchored — if line 1 ≠ `---`, Docusaurus treats the file as
+  frontmatter-less and derives the URL from `date + filename` instead of `slug:`. With
+  `onBrokenLinks: 'throw'`, this generates ghost archive routes (e.g. `/blog/2026/04/28`) that
+  break the build with no obvious error message.
+- **Fix pattern:** SPDX license headers in blog files must appear AFTER the closing `---` of the
+  frontmatter block (or be omitted — blog posts are covered by `REUSE.toml` mapping).
+- **Note:** `docs/` MDX files may open with `{/* SPDX … */}` — the docs plugin handles this.
+  This invariant applies to `blog/` only.
+
 ### Documentation Law — The Obsidian Testimony [MANDATORY]
 
 - **[INVARIANT] No content page may silently lag behind the core behavior it documents.** If the core repo's behavior changes and the documentation is not updated in the same sprint, the documentation is a ghost — structurally present but semantically dead.
@@ -253,36 +266,42 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 052/054/055 — ADR Vault & Genesis Documentation (Current)
+### CEO 056/058/060 — Chronicles Standardization & Tutorial Launch (Current)
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-9 new ADR MDX files created to complete full ADR documentation coverage (001–009 + vault):
+**CEO 056 — The Roman Standard (5 Saga posts):**
+- `sidebar_label`: `01.`–`05.` → `🛡️ Saga I/II/III/IV/V: <subtitle>` across all 5 chronicle posts.
+- `:::info` box header: `Part X of 5` → `🛡️ The Obsidian Chronicles` in all 5 posts.
+- Breadcrumb: `Part X` → `Saga X` (Roman numerals) in all 5 posts.
 
-**Genesis ADRs (backfilled):**
-- `adr-lint-source.mdx` (EN + IT): ADR 001 — Lint the Source, Not the Build. Foundational
-  pre-build analysis decision; VSM rationale; engine agnosticism; Ghost Route capability.
-- `adr-zero-subprocesses.mdx` (EN + IT): ADR 002 — Zero Subprocesses Policy. 100% pure
-  Python; static config parsing table; Zero-Trust + portability invariants.
+**CEO 058 — The Roman Standard (title + dates):**
+- `title` (H1) cleaned: 5 posts updated to standalone Saga subtitle (e.g. "The Leaking Pipe").
+- Post 4 date: `2026-04-24` → `2026-04-27` (Obsidian Maturity Release Day alignment).
+- Post 5 date: `2026-04-25` → `2026-04-27` (same Release Day alignment).
 
-**ADR index:**
-- `adr-vault.mdx` (EN + IT): Complete ADR index with Genesis / Core Architecture /
-  Doc Site sections; Reading Guide; "Adding a New ADR" instructions.
+**CEO 060 — Tutorial Launch + BUG-004 Fix:**
+- New file: `blog/2026-04-27-tutorial-stop-broken-links.mdx` — "Stop Broken Links in 60s".
+  sidebar_label: `🛡️ Tutorial: Get Started`. Date: 2026-04-27. Tags: tutorial, quickstart,
+  python, opensource, devtools. Registered in `tags.yml`.
+- **BUG-004 fix:** Frontmatter MUST occupy line 1. SPDX comments before `---` silently
+  disable Docusaurus slug parsing, generating date-based ghost routes. Lesson codified below.
+- `blog/tags.yml`: added `tutorial` and `quickstart` entries.
 
-**Previously committed (ADR 004/006/008):**
-- `adr-decentralized-cli.mdx` (EN + IT): ADR 004 — Decentralized CLI Package (D062-B/D064).
-- `adr-unified-perimeter.mdx` (EN + IT): ADR 006 — Unified Perimeter (CEO 051 storage + journal).
-- `adr-bilingual-structural.mdx` (EN + IT): ADR 008 — Bilingual Structural Invariant (D045).
+**Invariant added (BUG-004 — Frontmatter Supremacy):**
+In any blog MDX file: the `---` frontmatter block must start at line 1 absolute.
+No comments, no blank lines, no SPDX headers before the opening `---`.
+Violation: Docusaurus ignores the frontmatter → uses date-based URL path → `onBrokenLinks: throw` fails.
 
-Symmetry diff: EXIT:0. SENTINEL_EXIT:0 | BUILD_EXIT:0 (just build EN+IT confirmed).
+SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT confirmed after all blog changes).
 
-### Last Closed — CEO 051 — The Unified Perimeter
+### Last Closed — CEO 052/054/055 — ADR Vault & Genesis Documentation
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
-`storage: { namespace: false }` — unified localStorage `'theme'` key across EN+IT locales
-(`future.v4` was hashing different keys). Journal navbar → `type: 'html'` with raw
-`href=/blog` — bypasses Docusaurus i18n rewrite pipeline. COMMITTED `3188387`.
+9 new ADR MDX files: `adr-lint-source.mdx` (ADR 001), `adr-zero-subprocesses.mdx` (ADR 002),
+`adr-vault.mdx` (index) + previously committed ADR 004/006/008. All EN+IT. Symmetry diff:
+EXIT:0. COMMITTED `4d07d4b`. justfile Obsidian Enterprise hardening: COMMITTED `2f560ab`.
 
 ### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
 
