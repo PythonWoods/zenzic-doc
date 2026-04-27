@@ -14,6 +14,15 @@ const config: Config = {
     v4: true,
   },
 
+  // Unified storage key across all locales.
+  // future.v4 enables siteStorageNamespacing (auto hash from url+baseUrl per locale),
+  // which produces different localStorage keys per locale (EN: 'theme-926', IT: 'theme-3d7').
+  // This breaks dark-mode persistence when switching locales (theme flip FOUC).
+  // namespace:false → key is always 'theme', consistent across EN and IT.
+  storage: {
+    namespace: false,
+  },
+
   url: 'https://zenzic.dev',
   baseUrl: '/',
   organizationName: 'PythonWoods',
@@ -150,8 +159,11 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: '/blog',
-          label: 'Journal',
+          // type:html renders raw HTML — Docusaurus does NOT locale-prefix raw href values.
+          // href:'/blog' or to:'/blog' both get rewritten to '/it/blog' in IT locale static HTML.
+          // This anchor always navigates to the EN blog regardless of active locale.
+          type: 'html',
+          value: '<a class="navbar__item navbar__link" href="/blog">Journal</a>',
           position: 'left',
         },
         {
