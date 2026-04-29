@@ -14,7 +14,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
 DOCS_ROOT = REPO_ROOT / "docs"
-LEDGER = REPO_ROOT / ".github" / "copilot-instructions.md"
+LEDGER = REPO_ROOT / "ZENZIC_BRAIN.md"
+SHADOW = REPO_ROOT / ".github" / "copilot-instructions.md"
 
 MAP_START = "<!-- MAP_START -->"
 MAP_END = "<!-- MAP_END -->"
@@ -146,7 +147,7 @@ def update_ledger(doc_map: str) -> None:
     if start_idx == -1 or end_idx == -1:
         print(
             f"[ERROR] Tags {MAP_START!r} or {MAP_END!r} not found in {LEDGER}.\n"
-            "Add the tags to copilot-instructions.md before running map-update.",
+            "Add the tags to ZENZIC_BRAIN.md before running map-update.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -154,7 +155,15 @@ def update_ledger(doc_map: str) -> None:
     new_block = f"{MAP_START}\n{doc_map}\n{MAP_END}"
     new_text = text[:start_idx] + new_block + text[end_idx + len(MAP_END):]
     LEDGER.write_text(new_text, encoding="utf-8")
-    print(f"[DOC MAP] updated in {LEDGER.relative_to(REPO_ROOT)}")
+    print(f"[DOC MAP] updated in {LEDGER.name}")
+
+
+def shadow_sync() -> None:
+    """Copies ZENZIC_BRAIN.md → .github/copilot-instructions.md for IDE compatibility."""
+    content = LEDGER.read_text(encoding="utf-8")
+    SHADOW.parent.mkdir(parents=True, exist_ok=True)
+    SHADOW.write_text(content, encoding="utf-8")
+    print(f"[SHADOW] {SHADOW.relative_to(REPO_ROOT)} synced from {LEDGER.name}")
 
 
 def main() -> None:
@@ -164,6 +173,7 @@ def main() -> None:
 
     doc_map = build_doc_map()
     update_ledger(doc_map)
+    shadow_sync()
 
     en_total = sum(1 for _ in DOCS_ROOT.rglob("*.mdx"))
     print(f"[OK] {en_total} EN pages mapped across Diátaxis quadrants.")
