@@ -1,4 +1,4 @@
-# 📚 ZENZIC DOCS — Obsidian Ledger v0.7.0 "Obsidian Maturity"
+# 📚 ZENZIC DOCS — Zenzic Ledger v0.7.0 "Quartz Maturity"
 
 > **Single Source of Truth for all agents and contributors to the zenzic-doc repository.**
 > Schema: [MANIFESTO] → [POLICIES] → [ARCHITECTURE] → [ADR] → [ACTIVE SPRINT] → [ARCHIVE LINK]
@@ -119,7 +119,7 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
   - `onBrokenLinks: 'throw'` is active — broken internal links fail the build.
   - `onBrokenMarkdownLinks: 'throw'` is active — broken Markdown links also fail.
   - `markdownlint` disabled rules: MD013 (line length), MD033 (inline HTML for JSX), MD041 (first-line heading).
-- **Pre-commit gate (Obsidian Guard — 8 hooks):** trailing-whitespace, EOF-fixer, YAML/JSON/TOML validation, large-file prevention, merge-conflict guard, no-direct-commits-to-main, TypeScript typecheck, Zenzic Sentinel, REUSE/SPDX compliance.
+- **Pre-commit gate (Sentinel Guard — 8 hooks):** trailing-whitespace, EOF-fixer, YAML/JSON/TOML validation, large-file prevention, merge-conflict guard, no-direct-commits-to-main, TypeScript typecheck, Zenzic Sentinel, REUSE/SPDX compliance.
 - **`just preflight`** mirrors the full CI gate exactly (`uvx pre-commit run --all-files`).
 - **Broken-anchor warnings** on `#global-flags`, `#virtual-site-map-vsm` in build output are pre-existing — not regressions.
 
@@ -136,7 +136,7 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - **Note:** `docs/` MDX files may open with `{/* SPDX … */}` — the docs plugin handles this.
   This invariant applies to `blog/` only.
 
-### Documentation Law — The Obsidian Testimony [MANDATORY]
+### Documentation Law — The Quartz Testimony [MANDATORY]
 
 - **[INVARIANT] No content page may silently lag behind the core behavior it documents.** If the core repo's behavior changes and the documentation is not updated in the same sprint, the documentation is a ghost — structurally present but semantically dead.
 - **Trigger rules (mandatory — not optional):**
@@ -216,6 +216,125 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 ---
 
+## [CODE MAP] — Struttura Documentazione (Diátaxis)
+
+> Auto-generato da `scripts/map_docs.py` via filesystem scan (CEO-085 — Universal Cartographer).
+> Aggiornare con `just map-update` dopo ogni aggiunta/rimozione di pagine.
+
+<!-- MAP_START -->
+## [CODE MAP] — Struttura Documentazione (Diátaxis)
+
+> Auto-generato da `scripts/map_docs.py` via filesystem scan.
+> Aggiornare con `just map-update` dopo ogni aggiunta/rimozione di pagine.
+
+### Regola di Posizionamento
+
+| Quadrante | Scopo | Aggiungi qui quando... |
+|-----------|-------|------------------------|
+| `tutorials/` | Learning-oriented | L'utente deve *imparare* qualcosa di nuovo |
+| `how-to/` | Task-oriented | L'utente vuole *fare* qualcosa di specifico |
+| `reference/` | Information-oriented | Si documenta un nuovo `Zxxx`, flag CLI, o config |
+| `explanation/` | Understanding-oriented | Si spiega il *perché* di una decisione architetturale |
+| `community/` | Contributing / governance | Contribuzione, governance, brand, guide sviluppatori |
+
+### Mappa Completa
+
+#### `tutorials/` — Tutorials (2 files)
+> Learning-oriented. Step-by-step guides for beginners. New file → here.
+
+- `examples.mdx`
+- `first-audit.mdx`
+
+#### `how-to/` — How-to Guides (8 files)
+> Task-oriented. Goal-driven guides for practitioners. New recipe → here.
+
+- `add-badges.mdx`
+- `add-custom-rules.mdx`
+- `configure-adapter.mdx`
+- `configure-ci-cd.mdx`
+- `configure-social-metadata.mdx`
+- `install.mdx`
+- `migrate-engines.mdx`
+- `workflow-integration.mdx`
+
+#### `reference/` — Reference (9 files)
+> Information-oriented. Exhaustive technical reference. New Zxxx code, CLI flag → here.
+
+- `advanced-features.mdx`
+- `checks.mdx`
+- `cli.mdx`
+- `configuration-reference.mdx`
+- `configuration.mdx`
+- `engines.mdx`
+- `finding-codes.mdx`
+- `glossary.mdx`
+- `index.mdx`
+
+#### `explanation/` — Explanation (6 files)
+> Understanding-oriented. Conceptual deep-dives. New ADR narrative → here.
+
+- `architecture.mdx`
+- `discovery.mdx`
+- `ecosystem.mdx`
+- `health-metrics.mdx`
+- `safe-harbor.mdx`
+- `the-zenzic-trinity.mdx`
+
+#### `community/` — Community (32 files)
+> Contributing, governance, brand, developer guides.
+
+- `brand-kit.mdx`
+- `faqs.mdx`
+- `index.mdx`
+- `license.mdx`
+- **`contribute/`** — Contribute (5 files)
+  - `index.mdx`
+  - `pull-requests.mdx`
+  - `report-a-bug.mdx`
+  - `report-a-docs-issue.mdx`
+  - `request-a-change.mdx`
+- **`developers/`** — Developer Guide (18 files)
+  - `index.mdx`
+  - **`explanation/`** — Explanation (12 files)
+    - `adr-agnostic-universalism.mdx`
+    - `adr-bilingual-structural.mdx`
+    - `adr-decentralized-cli.mdx`
+    - `adr-discovery.mdx`
+    - `adr-lint-source.mdx`
+    - `adr-path-sovereignty.mdx`
+    - `adr-sovereign-sandbox.mdx`
+    - `adr-unified-perimeter.mdx`
+    - `adr-vault.mdx`
+    - `adr-zero-subprocesses.mdx`
+    - `architecture-gaps.mdx`
+    - `engineering-ledger.mdx`
+  - **`how-to/`** — How-to (2 files)
+    - `implement-adapter.mdx`
+    - `write-plugin.mdx`
+  - **`reference/`** — Reference (2 files)
+    - `adapter-api.mdx`
+    - `sentinel-style.mdx`
+  - **`tutorials/`** — Tutorials (1 files)
+    - `adapter-examples.mdx`
+- **`governance/`** — Governance & Sovereignty (5 files)
+  - `adversarial_ai.mdx`
+  - `evolution_policy.mdx`
+  - `exit_strategy.mdx`
+  - `index.mdx`
+  - `licensing.mdx`
+
+### Bilingual Symmetry Check
+
+| Locale | Files |
+|--------|-------|
+| `docs/` (EN) | 58 |
+| `i18n/it/` (IT) | 58 |
+
+> ✅ EN/IT parity confirmed.
+<!-- MAP_END -->
+
+---
+
 ## [ADR] — Architectural Decision Records
 
 ### ADR-001: Diátaxis Adoption (2026-04-20, Commit `7d8d513`)
@@ -266,7 +385,19 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 072-078 — Governance of Glass: Constitution + Saga VI (Current)
+### CEO 088 — The Trinity of Integrity (Current)
+
+**Version:** 0.7.0 · **Date:** 2026-04-29
+
+**New Explanation page — `docs/explanation/the-zenzic-trinity.mdx`:**
+- Title: "The Zenzic Trinity: Code, Doc, and Action" — `sidebar_position: 6`.
+- Sections: The Core (The Body), The Documentation (The Soul), The Action (The Arm),
+  The Feedback Loop (ASCII cycle diagram), Architectural Awareness (AST Maps + ADR Corpus).
+- IT mirror: `i18n/it/.../explanation/the-zenzic-trinity.mdx` — full translation.
+- `just map-update` run → CODE MAP updated (58 EN pages now).
+- Symmetry diff EXIT:0. BUILD_EXIT:0 (EN + IT `[SUCCESS]`).
+
+### Last Closed — CEO 072-078 — Governance of Glass: Constitution + Saga VI
 
 **Version:** 0.7.0 · **Date:** 2026-04-27
 
@@ -278,7 +409,7 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 - Directory initially at `docs/governance/`, then moved to `docs/community/governance/` (CEO 075).
 
 **CEO 074-076 — Full Rewrite + Badge + Read-Only:**
-- All 5 EN governance MDX files rewritten with Obsidian authority framing.
+- All 5 EN governance MDX files rewritten with Sentinel authority framing.
 - New label: "Governance & Sovereignty". Each file has SPDX header + Saga VI cross-link.
 - `exit_strategy.mdx`: read-only declaration added — audit core is strictly read-only;
   future remediation via explicit `zenzic fix` utility, analysis remains 100% mutation-free.
@@ -295,7 +426,7 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 - Saga VI rewritten to 501 lines. Structure: 5 narrative parts + closing table + :::info box.
   - Part I: The Ghost of Broken Promises (Software Mortality Table, Architecture of Trust)
   - Part II: The Sovereignty Oath: Liberty as a Feature (Zero Residue table, read-only by constitution, `typing.Protocol` guarantee, Why we wrote the exit strategy first)
-  - Part III: The Adversarial Forge: AI as a Skeptic (Magistrate Model, 4 session types, Obsidian Glass metaphor, What AI Does Not Decide)
+  - Part III: The Adversarial Forge: AI as a Skeptic (Magistrate Model, 4 session types, Quartz Clarity metaphor, What AI Does Not Decide)
   - Part IV: The Constitutional Invariants (Three Articles, Amendment Process 5 steps, Evolution Policy, Convenience Prohibition)
   - Part V: The Safe Harbor is Permanent (First Cornerstone, Pact with Community, 6-chapter chronicle table, Glass Constitution metaphor)
 - All 6 :::info boxes updated: `"🛡️ The Obsidian Chronicles"` → `"🛡️ The Obsidian Chronicles — Complete"` with "The Chronicles are sealed." subtitle. Applied in all 5 existing Saga posts + Saga VI itself.
@@ -313,7 +444,7 @@ preserved verbatim. Blog remains EN-only regardless of active locale.
 
 **CEO 058 — The Roman Standard (title + dates):**
 - `title` (H1) cleaned: 5 posts updated to standalone Saga subtitle (e.g. "The Leaking Pipe").
-- Post 4 date: `2026-04-24` → `2026-04-27` (Obsidian Maturity Release Day alignment).
+- Post 4 date: `2026-04-24` → `2026-04-27` (Quartz Maturity Release Day alignment).
 - Post 5 date: `2026-04-25` → `2026-04-27` (same Release Day alignment).
 
 **CEO 060 — Tutorial Launch + BUG-004 Fix:**
@@ -337,7 +468,7 @@ SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT confirmed after all blog changes).
 
 9 new ADR MDX files: `adr-lint-source.mdx` (ADR 001), `adr-zero-subprocesses.mdx` (ADR 002),
 `adr-vault.mdx` (index) + previously committed ADR 004/006/008. All EN+IT. Symmetry diff:
-EXIT:0. COMMITTED `4d07d4b`. justfile Obsidian Enterprise hardening: COMMITTED `2f560ab`.
+EXIT:0. COMMITTED `4d07d4b`. justfile Sentinel Enterprise hardening: COMMITTED `2f560ab`.
 
 ### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
 

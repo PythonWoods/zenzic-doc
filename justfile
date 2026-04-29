@@ -74,6 +74,11 @@ markdownlint:
 # Enterprise local gate: type safety + production build
 verify: markdownlint lint typecheck build
 
+# Update the [CODE MAP] in copilot-instructions.md from the docs/ filesystem.
+# Run after adding, removing, or moving any .mdx file.
+map-update:
+    uv run scripts/map_docs.py
+
 # --- PROJECT ADMIN ---
 
 # Check REUSE/SPDX licence compliance

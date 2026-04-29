@@ -79,7 +79,7 @@ const config: Config = {
           },
         },
         blog: {
-          blogTitle: 'The Obsidian Journal',
+          blogTitle: 'The Zenzic Journal',
           blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
           blogSidebarTitle: 'Recent Posts',
           blogSidebarCount: 'ALL',
@@ -89,7 +89,7 @@ const config: Config = {
           onInlineTags: 'throw',
           feedOptions: {
             type: ['rss', 'atom'],
-            title: 'The Obsidian Journal — Zenzic Engineering Blog',
+            title: 'The Zenzic Journal — Zenzic Engineering Blog',
             description: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
             copyright: `© ${new Date().getFullYear()} PythonWoods`,
           },
@@ -193,9 +193,9 @@ const config: Config = {
       // Language support for Zenzic-scanned file types
       additionalLanguages: ['toml', 'bash', 'yaml', 'json'],
     },
-    // ── ObsidianPalette Mermaid Integration ──────────────────────────────────
+    // ── SentinelPalette Mermaid Integration ────────────────────────────────────────────
     // Hex values only — Mermaid's renderer cannot consume CSS var().
-    // Dark mode: exact CLI ObsidianPalette matches.
+    // Dark mode: exact CLI SentinelPalette matches.
     // Light mode uses Docusaurus 'neutral' base; themeVariables below are
     // applied to both — optimised for the default dark surface.
     mermaid: {
@@ -208,7 +208,7 @@ const config: Config = {
           primaryBorderColor:  '#3730a3',
           // Edges / connectors → DIM Slate
           lineColor:           '#64748b',
-          // Secondary / tertiary surfaces → Obsidian depth
+          // Secondary / tertiary surfaces → Sentinel depth
           secondaryColor:      '#1e1e27',
           tertiaryColor:       '#111118',
           edgeLabelBackground: '#0f0f13',

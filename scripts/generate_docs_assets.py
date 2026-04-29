@@ -1,17 +1,17 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 """
-generate_docs_assets.py — Zenzic v0.7.0 "Obsidian Maturity"
+generate_docs_assets.py — Zenzic v0.7.0 "Quartz Maturity"
 
 Generates SVG terminal assets for the documentation using Rich's native
-SVG export with the Obsidian brand color system.
+SVG export with the Sentinel brand color system.
 
 Run from the zenzic-doc root:
 
     python scripts/generate_docs_assets.py
 
 Output: static/assets/terminal/
-  - sentinel-clean.svg      — 100/100 Obsidian Seal
+  - sentinel-clean.svg      — 100/100 Sentinel Seal
   - sentinel-breach.svg     — Z201 Shield Breach
   - sentinel-findings.svg   — Diagnostic report (3 findings, score 67/100)
 
@@ -35,14 +35,14 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 WIDTH = 76  # characters — matches narrow terminal for docs readability
 
-# ── Obsidian Brand Theme ────────────────────────────────────────────────────
+# ── Sentinel Brand Theme ────────────────────────────────────────────────────
 # Exact Zenzic brand colors for SVG export — matches zenzic-brand-system.html
-# Background: #09090b (Obsidian Lead), Foreground: #E2E8F0 (Ghost)
+# Background: #09090b (Sentinel Lead), Foreground: #E2E8F0 (Ghost)
 OBSIDIAN_THEME = TerminalTheme(
-    background=(9, 9, 11),          # #09090b — Obsidian Lead
+    background=(9, 9, 11),          # #09090b — Sentinel Lead
     foreground=(226, 232, 240),     # #E2E8F0 — Ghost (primary text)
     normal=[
-        (9, 9, 11),                 # black → Obsidian
+        (9, 9, 11),                 # black → Sentinel
         (255, 59, 48),              # red → Blood
         (16, 185, 129),             # green → Success (Emerald)
         (245, 158, 11),             # yellow → Warning (Amber)
@@ -123,7 +123,7 @@ def _save(console: Console, name: str) -> None:
     print(f"  ✔  {name}")
 
 
-# ── Asset 1: Obsidian Seal — 100/100 clean ─────────────────────────────────
+# ── Asset 1: Sentinel Seal — 100/100 clean ─────────────────────────────────
 
 def gen_sentinel_clean() -> None:
     c = _make_console()
@@ -151,7 +151,7 @@ def gen_sentinel_clean() -> None:
     score_line = Text()
     score_line.append("    🏆  Quality Score:  ", style="bright_white")
     score_line.append("100 / 100", style="bold bright_cyan")
-    score_line.append("   ◆  Obsidian Seal", style="bright_cyan")
+    score_line.append("   ◆  Sentinel Seal", style="bright_cyan")
     c.print(score_line)
     c.rule(style="bright_cyan")
     c.print()

@@ -15,7 +15,7 @@ export default function NavbarContentWrapper(props: WrapperProps): React.JSX.Ele
     return null;
   }
 
-  // "Blog Sovereignty": The Obsidian Journal is English-only.
+  // "Blog Sovereignty": The Zenzic Journal is English-only.
   // Add data-blog-route attribute so CSS can suppress the locale switcher
   // on blog routes without misdirecting readers to the IT home page.
   if (pathname.startsWith('/blog')) {

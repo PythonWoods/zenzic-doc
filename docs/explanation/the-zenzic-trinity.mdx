@@ -1,0 +1,138 @@
+---
+sidebar_position: 6
+sidebar_label: "The Zenzic Trinity"
+title: "The Zenzic Trinity: Code, Doc, and Action"
+description: "How the three Zenzic repositories form a Trinity of Integrity — a sovereign knowledge system where logic, intent, and enforcement are permanently synchronized."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# The Zenzic Trinity: Code, Doc, and Action
+
+Zenzic v0.7.0 is more than a linter. It is a **Sovereign Knowledge System** — an ecosystem where
+logic, intent, and enforcement are permanently synchronized. To deliver a true
+[Safe Harbor](./safe-harbor.mdx), Zenzic is organized into a Trinity of Integrity: three
+repositories that form a closed feedback loop, each reinforcing the others.
+
+---
+
+## 1. The Core — The Body {#core-the-body}
+
+The [`zenzic`](https://github.com/PythonWoods/zenzic) repository is the **tactical execution
+layer**. It contains every line of analysis logic that enforces the Three Pillars.
+
+| Component | Role |
+|-----------|------|
+| **Virtual Site Map (VSM)** | Builds an in-memory projection of the final site from source files alone. No build required. |
+| **Shield** | Scans every line of raw source for credential patterns before any other pass. |
+| **Adapter Protocol** | Translates engine-specific configuration (Docusaurus, MkDocs, Zensical, Standalone) into a unified analysis model. |
+| **Layered Exclusion Manager** | Enforces a four-level hierarchy (VCS ignores → system rules → user config → CLI flags) to guarantee a clean perimeter. |
+
+The Core enforces the law. It does not decide the law.
+
+---
+
+## 2. The Documentation — The Soul {#documentation-the-soul}
+
+The [`zenzic-doc`](https://github.com/PythonWoods/zenzic-doc) repository is the project's
+**Constitutional Layer**. It is not merely a user manual — it is the source of truth that defines
+*why* the engine exists and *why* every rule is the way it is.
+
+### The Diátaxis Framework
+
+Content is organized into four strict quadrants: **Tutorials** (learning), **How-to Guides**
+(tasks), **Reference** (exhaustive data), and **Explanation** (understanding). This prevents
+content drift: every contributor always knows exactly where a new piece of knowledge belongs.
+
+### Architectural Decision Records (ADRs)
+
+Every major technical choice is codified in an ADR stored under
+`docs/community/developers/explanation/`. Each record states the problem, the decision, the
+rationale, and the permanent consequences. The ADRs are the project's institutional memory —
+the written proof that no decision was made carelessly.
+
+The ADR corpus ensures the Safe Harbor philosophy remains stable over time, regardless of who
+contributes to the project in the future.
+
+---
+
+## 3. The Action — The Arm {#action-the-arm}
+
+The [`zenzic-action`](https://github.com/PythonWoods/zenzic-action) repository is the
+**operational layer**. It translates the Core's logic into a defensive perimeter for real-world
+CI/CD pipelines.
+
+```yaml title=".github/workflows/zenzic.yml"
+- uses: PythonWoods/zenzic-action@v1
+  with:
+    version: "0.7.0"
+    format: sarif
+    upload-sarif: true
+    fail-on-error: true
+```
+
+The Action exposes the Core's [exit code contract](../reference/finding-codes.mdx) directly to
+GitHub Actions runners: quality findings (exit 1) are configurable; security incidents
+(exit 2/3) are **never suppressible**. The CI gate is mathematically identical to the local gate.
+
+---
+
+## The Feedback Loop {#feedback-loop}
+
+The Trinity is not a hierarchy — it is a **cycle**. Each repository informs and constrains the
+others:
+
+```
+  ┌─────────────────────────────────────────────┐
+  │                                             │
+  │   Core enforces rules defined by the Soul  │
+  │          ↓                                  │
+  │   Soul records decisions made during Core  │
+  │   implementation and community review      │
+  │          ↓                                  │
+  │   Action deploys the Core into the world,  │
+  │   feeding real-world failures back to the  │
+  │   Soul as new ADR candidates               │
+  │          ↓                                  │
+  │   The Soul updates the Core invariants     │
+  │          ↑_________________________________│
+  │                                             │
+  └─────────────────────────────────────────────┘
+```
+
+A change to the Core that is not reflected in the Soul is a **ghost commit**. An Action that
+exposes behaviour not documented in the Soul is a **silent contract**. The Trinity is only
+complete when all three are in synchronisation — which is enforced by the
+[Law of Contemporary Testimony](../community/governance/evolution_policy.mdx).
+
+---
+
+## Architectural Awareness {#architectural-awareness}
+
+Zenzic is engineered for **Institutional Memory**. Two properties make this possible:
+
+### AST Maps — The Structural Mirror
+
+Every module in `zenzic` is mapped by a static AST analyser (`scripts/map_project.py`). The map
+records each public class, public function, and docstring. It is deterministic and re-generated
+automatically via `just map-update`. This means the structural state of the Core is always
+readable in a single, machine-parseable document — never inferred.
+
+### ADR Corpus — The Decision Mirror
+
+Every architectural choice lives in a structured MDX file with a canonical format:
+`sidebar_label`, `**Status:**`, `## Context`, `## Decision`, `## Rationale`. This makes the
+decision history machine-readable by design.
+
+Together, the AST map and the ADR corpus form a **transparent context layer**:
+
+- **For humans:** a clear, predictable path from philosophy to implementation — no archaeology
+  required.
+- **For AI systems:** a structured, unambiguous context that prevents hallucinations and ensures
+  every suggestion respects the project's fundamental invariants.
+
+:::info The Safe Harbor is a Sovereign Knowledge System
+Zenzic is not just a tool you use. It is an ecosystem you can trust — because its rules,
+decisions, and structure are always legible, always synchronized, and always honest.
+:::

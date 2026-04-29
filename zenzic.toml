@@ -22,6 +22,7 @@ excluded_external_urls = [
     # at zenzic.dev. These exclusions are temporary — remove 5 minutes after v0.7.0 GA deploy.
     "https://zenzic.dev/blog/ai-driven-siege-shield-postmortem",
     "https://zenzic.dev/blog/beyond-the-siege-zenzic-v070",
+    "https://zenzic.dev/blog/governance-of-glass",
 ]
 
 # --- PROTEZIONE DOGFOODING ---

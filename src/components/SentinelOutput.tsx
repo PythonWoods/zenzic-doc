@@ -115,7 +115,7 @@ const CONTAINER_CLASSES: Record<Variant, string> = {
   findings: 'max-w-xl mx-auto my-6',
   inspect:  'max-w-2xl mx-auto my-6',};
 
-// ── Clean variant — 100/100 Obsidian Seal ───────────────────────────────────
+// ── Clean variant — 100/100 Sentinel Seal ───────────────────────────────────
 
 function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const rows = [
@@ -144,7 +144,7 @@ function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Elem
           <span className="select-none">🏆</span>
           <span className="dark:text-zinc-400 text-zinc-600">Quality Score:</span>
           <span className="text-emerald-400 font-bold">100 / 100</span>
-          <span className="dark:text-emerald-500 text-emerald-600">◆ Obsidian Seal</span>
+          <span className="dark:text-emerald-500 text-emerald-600">◆ Sentinel Seal</span>
         </div>
       </div>
 

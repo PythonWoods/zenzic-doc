@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 #
-# Obsidian Journal — Semantic Tag Registry
+# Zenzic Journal — Semantic Tag Registry
 # Colours are keyed to the Sentinel Palette and the CLI UIPalette.
 
 release:
@@ -50,9 +50,9 @@ markdown:
   description: "Markdown authoring, linting, and documentation pipelines."
 
 obsidian-chronicles:
-  label: "Obsidian Chronicles"
+  label: "The Zenzic Chronicles"
   permalink: /obsidian-chronicles
-  description: "The five-part engineering saga from v0.5 Sentinel to v0.7.0 Obsidian Maturity."
+  description: "The five-part engineering saga from v0.5 Sentinel to v0.7.0 Quartz Maturity."
 
 milestone:
   label: "Milestone Record"
@@ -72,7 +72,7 @@ quickstart:
 engineering-chronicles:
   label: "Engineering Chronicles"
   permalink: /chronicles
-  description: "The five-part engineering saga: from the Leaking Pipe to Obsidian Maturity."
+  description: "The five-part engineering saga: from the Leaking Pipe to Quartz Maturity."
 
 user-tutorials:
   label: "User Tutorials"
@@ -90,6 +90,6 @@ sovereignty:
   description: "Zero Residue, reversible design, and the Sovereignty Oath: why Zenzic is a sentinel, not a chain."
 
 obsidian-maturity:
-  label: "Obsidian Maturity"
+  label: "Quartz Maturity"
   permalink: /obsidian-maturity
   description: "🛡️ Codename for Zenzic v0.7.0 — the Safe Harbor reaches production maturity."

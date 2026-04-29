@@ -14,7 +14,7 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
 
-> **This documentation is strictly aligned to Zenzic v0.7.0 "Obsidian Maturity".**
+> **This documentation is strictly aligned to Zenzic v0.7.0 "Quartz Maturity".**
 > If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
 
 This repository contains the Docusaurus documentation website for Zenzic.
@@ -125,7 +125,7 @@ You can list all recipes with:
 just --list
 ```
 
-## 6) Pre-commit hooks (Obsidian Guard)
+## 6) Pre-commit hooks (Sentinel Guard)
 
 This repository enforces quality gates before every commit via [pre-commit](https://pre-commit.com/).
 
@@ -324,11 +324,11 @@ just verify
 
 ---
 
-## 📚 The Obsidian Chronicles
+## 📚 The Zenzic Chronicles
 
 Zenzic was born from a technical journey through the fragility of modern documentation
 ecosystems. Discover the philosophy, the security siege, and the engineering behind the
-Sentinel in the [**Obsidian Engineering Series**](https://dev.to/pythonwoods/series/38629) on Dev.to.
+Sentinel in the [**Zenzic Engineering Series**](https://dev.to/pythonwoods/series/38629) on Dev.to.
 
 ---
 

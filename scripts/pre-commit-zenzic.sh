@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# ── Obsidian Guard ─────────────────────────────────────────────────
+# ── Sentinel Guard ─────────────────────────────────────────────────
 # Zenzic Sentinel pre-commit bootstrap.
 #
 # Strategy (Dual-Stage Verification):

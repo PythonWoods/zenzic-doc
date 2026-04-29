@@ -89,7 +89,7 @@
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
   },
   "homepage.hero.badge": {
-    "message": "v0.7.0 \"Obsidian Maturity\" Stable",
+    "message": "v0.7.0 \"Quartz Maturity\" Stable",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
@@ -218,7 +218,7 @@
     "message": "Health Metrics"
   },
   "ledger.label": {
-    "message": "The Obsidian Engineering Ledger"
+    "message": "The Zenzic Engineering Ledger"
   },
   "ledger.heading": {
     "message": "Three invariants enforced on every commit."

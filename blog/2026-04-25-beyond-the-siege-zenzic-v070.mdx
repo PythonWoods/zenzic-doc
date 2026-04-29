@@ -13,9 +13,9 @@ image: https://zenzic.dev/assets/social/social-card.png
 ---
 
 
-:::info[🛡️ The Obsidian Chronicles — Complete]
+:::info[🛡️ The Zenzic Chronicles — Complete]
 
-The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Obsidian Maturity. The Chronicles are sealed.
+The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
 [Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | **Saga IV** | [Saga V](/blog/zenzic-v070-obsidian-maturity-stable) | [Saga VI](/blog/governance-of-glass)
 
@@ -55,7 +55,7 @@ Z105 `pathname:///` false-positive fix is protocol normalisation. Each one appli
 discipline that security engineers have practised for decades to a domain that has, until
 now, operated on optimism.
 
-That transfer of security thinking to documentation quality is what **Obsidian Maturity**
+That transfer of security thinking to documentation quality is what **Quartz Maturity**
 actually means.
 
 ## The Arc: From Sentinel to Maturity
@@ -97,9 +97,9 @@ back silently to English. The Italian documentation was invisible.
 These are not patch-level problems. They are foundational consistency failures in a
 tool built around the premise that documentation quality is measurable and enforceable.
 
-## The Obsidian Mirror Audit
+## The Quartz Mirror Audit
 
-The final pre-release audit — internally called the Obsidian Mirror Pass — was
+The final pre-release audit — internally called the Quartz Mirror Pass — was
 structured around a simple question: does every claim Zenzic makes about itself hold
 when verified against the actual state of the codebase, the documentation, and the
 published site?
@@ -136,7 +136,7 @@ caught its own documentation drift.
 declaration — it is an ongoing epistemic posture. Calling a release "True Stable"
 implies that previous releases were somehow dishonestly stable, and that future work
 won't find gaps. Both implications are false. The correct framing: v0.7.0 is
-**Obsidian Maturity** — a point of consolidation, not an arrival.
+**Quartz Maturity** — a point of consolidation, not an arrival.
 
 ## What v0.7.0 Actually Is
 
@@ -156,7 +156,7 @@ That command now works correctly against four engine types, with:
 | i18n locale discovery | `path` config enforced; silent fallback documented |
 | Lab (interactive showroom) | 17 Acts covering all engine types + Red/Blue Team Matrix |
 | Universal PATH argument | All 6 `check` sub-commands + `init` (sovereign root semantics) |
-| Sovereign root banner hint | Active scanning target printed after Obsidian header |
+| Sovereign root banner hint | Active scanning target printed after Sentinel header |
 | Z502/Z105 precision | MDX frontmatter leak + `pathname:///` false positive eliminated |
 | Core purity | `validator.py` — zero engine-name references (Purity Protocol) |
 | Test suite | 1,260 passing tests |
@@ -209,7 +209,7 @@ One command. One verdict.
 
 ## The Institutional Memory Protocol
 
-One pattern that emerged clearly during the Obsidian Mirror audit: the gap between
+One pattern that emerged clearly during the Quartz Mirror audit: the gap between
 what the tooling enforces and what the team remembers is where the worst bugs live.
 
 The i18n silent fallback had been present for months. The navbar badge drift had
@@ -308,7 +308,7 @@ Running `zenzic check links ../other-project` from your current working director
 `../other-project/zenzic.toml`, not your project's config. Context cannot be hijacked.
 
 D062 added visual confirmation — the resolved scanning target is printed immediately after
-the Obsidian header when `PATH` is provided:
+the Sentinel header when `PATH` is provided:
 
 ```text
   Scanning: ../other-project/docs
@@ -393,10 +393,10 @@ uvx zenzic lab
 | **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
 | **Changelog** | [v0.7.0 Release Notes](https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0) |
 
-:::note[The Obsidian Chronicles]
+:::note[The Zenzic Chronicles]
 This is **Part 4** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
 
-[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Obsidian Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Obsidian Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
 :::
 
-_Part 4 of the **Obsidian Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._
+_Part 4 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._

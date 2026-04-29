@@ -1,0 +1,140 @@
+---
+sidebar_position: 6
+sidebar_label: "La Trinità di Zenzic"
+title: "La Trinità di Zenzic: Codice, Documentazione e Action"
+description: "Come i tre repository di Zenzic formano una Trinità dell'Integrità — un sistema di conoscenza sovrano in cui logica, intenzione ed esecuzione sono permanentemente sincronizzati."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# La Trinità di Zenzic: Codice, Documentazione e Action
+
+Zenzic v0.7.0 è molto più di un linter. È un **Sistema di Conoscenza Sovrano** — un ecosistema
+in cui logica, intenzione ed esecuzione sono permanentemente sincronizzati. Per garantire un vero
+[Porto Sicuro](./safe-harbor.mdx), Zenzic è organizzato in una Trinità dell'Integrità: tre
+repository che formano un ciclo di feedback chiuso, dove ciascuno rafforza gli altri.
+
+---
+
+## 1. Il Core — Il Corpo {#core-the-body}
+
+Il repository [`zenzic`](https://github.com/PythonWoods/zenzic) è il **livello di esecuzione
+tattica**. Contiene ogni riga di logica di analisi che applica i Tre Pilastri.
+
+| Componente | Ruolo |
+|-----------|-------|
+| **Virtual Site Map (VSM)** | Costruisce una proiezione in memoria del sito finale dai soli file sorgente. Nessuna build richiesta. |
+| **Shield** | Scansiona ogni riga del sorgente grezzo alla ricerca di pattern di credenziali prima di qualsiasi altro passaggio. |
+| **Adapter Protocol** | Traduce la configurazione specifica del motore (Docusaurus, MkDocs, Zensical, Standalone) in un modello di analisi unificato. |
+| **Layered Exclusion Manager** | Applica una gerarchia a quattro livelli (ignore VCS → regole di sistema → configurazione utente → flag CLI) per garantire un perimetro pulito. |
+
+Il Core applica la legge. Non la decide.
+
+---
+
+## 2. La Documentazione — L'Anima {#documentation-the-soul}
+
+Il repository [`zenzic-doc`](https://github.com/PythonWoods/zenzic-doc) è il **Livello
+Costituzionale** del progetto. Non è semplicemente un manuale utente — è la fonte di verità che
+definisce *perché* il motore esiste e *perché* ogni regola è quella che è.
+
+### Il Framework Diátaxis
+
+Il contenuto è organizzato in quattro quadranti rigorosi: **Tutorial** (apprendimento), **Guide
+pratiche** (obiettivi specifici), **Reference** (dati esaustivi) ed **Explanation**
+(comprensione). Questo previene la deriva dei contenuti: ogni collaboratore sa sempre esattamente
+dove collocare una nuova informazione.
+
+### Architectural Decision Records (ADR)
+
+Ogni scelta tecnica importante è codificata in un ADR archiviato in
+`docs/community/developers/explanation/`. Ogni record descrive il problema, la decisione, la
+motivazione e le conseguenze permanenti. Gli ADR sono la memoria istituzionale del progetto —
+la prova scritta che nessuna decisione è stata presa con leggerezza.
+
+Il corpus degli ADR garantisce che la filosofia del Porto Sicuro rimanga stabile nel tempo,
+indipendentemente da chi contribuirà al progetto in futuro.
+
+---
+
+## 3. La Action — Il Braccio {#action-the-arm}
+
+Il repository [`zenzic-action`](https://github.com/PythonWoods/zenzic-action) è il **livello
+operativo**. Traduce la logica del Core in un perimetro difensivo per le pipeline CI/CD reali.
+
+```yaml title=".github/workflows/zenzic.yml"
+- uses: PythonWoods/zenzic-action@v1
+  with:
+    version: "0.7.0"
+    format: sarif
+    upload-sarif: true
+    fail-on-error: true
+```
+
+La Action espone il [contratto dei codici di uscita](../reference/finding-codes.mdx) del Core
+direttamente ai runner di GitHub Actions: i finding di qualità (uscita 1) sono configurabili;
+gli incidenti di sicurezza (uscita 2/3) **non sono mai sopprimibili**. Il gate CI è
+matematicamente identico al gate locale.
+
+---
+
+## Il Ciclo di Feedback {#feedback-loop}
+
+La Trinità non è una gerarchia — è un **ciclo**. Ogni repository informa e vincola gli altri:
+
+```
+  ┌────────────────────────────────────────────────┐
+  │                                                │
+  │   Il Core applica le regole definite dall'Anima│
+  │          ↓                                     │
+  │   L'Anima registra le decisioni prese durante  │
+  │   l'implementazione del Core e la revisione    │
+  │   della community                              │
+  │          ↓                                     │
+  │   Il Braccio porta il Core nel mondo reale,   │
+  │   restituendo i fallimenti all'Anima come      │
+  │   candidati a nuovi ADR                        │
+  │          ↓                                     │
+  │   L'Anima aggiorna gli invarianti del Core     │
+  │          ↑__________________________________ │
+  │                                                │
+  └────────────────────────────────────────────────┘
+```
+
+Una modifica al Core che non si riflette nell'Anima è un **ghost commit**. Una Action che espone
+comportamenti non documentati nell'Anima è un **contratto silenzioso**. La Trinità è completa
+solo quando tutti e tre sono sincronizzati — garantito dalla
+[Legge della Testimonianza Contemporanea](../community/governance/evolution_policy.mdx).
+
+---
+
+## Consapevolezza Architetturale {#architectural-awareness}
+
+Zenzic è progettato per la **Memoria Istituzionale**. Due proprietà rendono questo possibile:
+
+### Mappe AST — Lo Specchio Strutturale
+
+Ogni modulo in `zenzic` è mappato da un analizzatore AST statico (`scripts/map_project.py`). La
+mappa registra ogni classe pubblica, ogni funzione pubblica e la docstring. È deterministica e
+rigenerata automaticamente tramite `just map-update`. Ciò significa che lo stato strutturale del
+Core è sempre leggibile in un singolo documento, analizzabile da una macchina — mai inferito.
+
+### Corpus degli ADR — Lo Specchio delle Decisioni
+
+Ogni scelta architetturale vive in un file MDX strutturato con un formato canonico:
+`sidebar_label`, `**Status:**`, `## Context`, `## Decision`, `## Rationale`. Questo rende la
+storia delle decisioni leggibile per le macchine per design.
+
+Insieme, la mappa AST e il corpus degli ADR formano un **livello di contesto trasparente**:
+
+- **Per gli esseri umani:** un percorso chiaro e prevedibile dalla filosofia all'implementazione —
+  senza dover fare archeologia nel codice.
+- **Per i sistemi AI:** un contesto strutturato e non ambiguo che previene le allucinazioni e
+  garantisce che ogni suggerimento rispetti gli invarianti fondamentali del progetto.
+
+:::info Il Porto Sicuro è un Sistema di Conoscenza Sovrano
+Zenzic non è solo uno strumento che usi. È un ecosistema di cui puoi fidarti — perché le sue
+regole, le sue decisioni e la sua struttura sono sempre leggibili, sempre sincronizzate e sempre
+oneste.
+:::

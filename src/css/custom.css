@@ -50,7 +50,7 @@ body:has(.zz-homepage) .navbar {
   --obsidian-accent: #0891b2;             /* Cyan profondo — leggibile su sfondo chiaro */
   --obsidian-blood: #991b1b;              /* Rosso mattone tecnico */
 
-  /* ── ObsidianWebPalette — CLI semantic color bridge ──
+  /* ── SentinelWebPalette — CLI semantic color bridge ──
      Dark mode: optical match with CLI terminal.
      Light mode (these defaults): WCAG-calibrated for white backgrounds. */
   --zenzic-brand:   #4f46e5;   /* Indigo — exact CLI match, AA on white */
@@ -90,7 +90,7 @@ body:has(.zz-homepage) .navbar {
   --obsidian-accent: #06b6d4;             /* Cyan elettrico */
   --obsidian-blood: #8b0000;              /* Sangue profondo */
 
-  /* ── ObsidianWebPalette — exact CLI terminal match in dark mode ── */
+  /* ── SentinelWebPalette — exact CLI terminal match in dark mode ── */
   --zenzic-brand:   #4f46e5;
   --zenzic-success: #10b981;
   --zenzic-warning: #f59e0b;
@@ -477,7 +477,7 @@ table thead tr {
   box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.55), 0 0 14px rgba(79, 70, 229, 0.12);
 }
 
-/* ── Obsidian Journal — Semantic Tag Colours ── */
+/* ── Zenzic Journal — Semantic Tag Colours ── */
 /* Release → Indigo (brand primary) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
 a.tag_oVPq[href*="/blog/tags/release"] { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.35); }
@@ -508,7 +508,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: opacity 0.15s ease;
 }
 
-/* ── Obsidian Journal — Blog List Card Layout ── */
+/* ── Zenzic Journal — Blog List Card Layout ── */
 [data-theme='dark'] article.margin-bottom--xl {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   padding-bottom: 2.5rem;
@@ -595,7 +595,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   color: #3f3f46;
 }
 
-/* Blog header — very subtle separation, Obsidian Lead bg */
+/* Blog header — very subtle separation, Sentinel Lead bg */
 [data-theme='dark'] .blog-post-page header,
 [data-theme='dark'] article header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -603,13 +603,13 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   margin-bottom: 1.5rem;
 }
 
-/* Blog hero/banner background — Obsidian Lead */
+/* Blog hero/banner background — Sentinel Lead */
 [data-theme='dark'] .hero.hero--primary,
 [data-theme='dark'] .blogPostContainer header {
   background: #09090b;
 }
 
-/* ── Obsidian Journal — Monolith Enforcement (D103) ── */
+/* ── Zenzic Journal — Monolith Enforcement (D103) ── */
 
 /* Prose column — narrower than docs for readability */
 [data-theme='dark'] .blog-wrapper .container,
@@ -619,7 +619,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* D107.1: Gradient purged. Black is absolute. Typography is the only light. */
 
-/* ── D111: Transparent Monolith — reveal the Obsidian Lead body ── */
+/* ── D111: Transparent Monolith — reveal the Sentinel Lead body ── */
 /* All blog/doc containers become transparent so the single #09090b body surface shows through */
 [data-theme='dark'] .blog-wrapper,
 [data-theme='dark'] .blog-post-page,
@@ -655,9 +655,9 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   text-decoration: none;
 }
 
-/* ── D107: Obsidian Archive Reconstruction — Card Catalogue ── */
+/* ── D107: Sentinel Archive Reconstruction — Card Catalogue ── */
 
-/* Archive page hero — Obsidian Lead bg, no hero--primary noise */
+/* Archive page hero — Sentinel Lead bg, no hero--primary noise */
 [data-theme='dark'] .archive-hero {
   background: #09090b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);

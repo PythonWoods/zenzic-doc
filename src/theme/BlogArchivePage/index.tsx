@@ -1,5 +1,5 @@
 /**
- * Swizzled BlogArchivePage — D107: The Obsidian Archive Reconstruction
+ * Swizzled BlogArchivePage — D107: The Sentinel Archive Reconstruction
  *
  * Replaces the default bullet-list archive with a card-based catalogue.
  * Each card shows: post title (link), date chip, and description excerpt.
@@ -97,7 +97,7 @@ export default function BlogArchivePage({archive}: Props): React.JSX.Element {
         <header className="archive-hero">
           <div className="container">
             <Heading as="h1" className="archive-hero__title">
-              The Obsidian Journal
+              The Zenzic Journal
             </Heading>
             <p className="archive-hero__subtitle">
               Engineering insights, security chronicles, and the evolution of

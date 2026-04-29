@@ -203,15 +203,15 @@ Prima di sottomettere una PR, verificare:
 - [ ] Nessun code fence nudo esiste (§5).
 - [ ] L'header SPDX è presente (§6).
 - [ ] Il mirror italiano è strutturalmente identico all'inglese.
-- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ObsidianPalette._*` (§9).
-- [ ] Tutti i riferimenti ai colori usano `ObsidianPalette.*` — nessuna costante piatta rimossa (§9).
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `SentinelPalette._*` (§9).
+- [ ] Tutti i riferimenti ai colori usano `SentinelPalette.*` — nessuna costante piatta rimossa (§9).
 
 ---
 
-## 8. Gateway ObsidianUI {#obsidianui-gateway}
+## 8. Gateway SentinelUI {#obsidianui-gateway}
 
-Tutto l'output terminale brandizzato di Zenzic fluisce attraverso un unico oggetto: `ObsidianUI` in
-`src/zenzic/ui.py`. I moduli di comando non devono **mai** istanziare `Console` o `ObsidianUI`
+Tutto l'output terminale brandizzato di Zenzic fluisce attraverso un unico oggetto: `SentinelUI` in
+`src/zenzic/ui.py`. I moduli di comando non devono **mai** istanziare `Console` o `SentinelUI`
 direttamente — devono chiamare `get_ui()` e `get_console()` da `zenzic.cli._shared`.
 
 ### Metodi principali
@@ -244,7 +244,7 @@ _shared.get_console().print(panel)
 
 I flag CLI `--no-color` e `--force-color` chiamano `configure_console()`, che sostituisce
 atomicamente i singleton `console` e `_ui` a livello di modulo. Qualsiasi istanza di
-`Console` o `ObsidianUI` creata localmente sarà congelata prima che il flag abbia effetto,
+`Console` o `SentinelUI` creata localmente sarà congelata prima che il flag abbia effetto,
 ignorando silenziosamente la preferenza colore dell'utente.
 
 Il parametro `force_terminal` deve essere **sempre** `None` (auto-detect) nella `Console`
@@ -256,15 +256,15 @@ Questa è la fonte più comune di regressioni visive nel layer CLI di Zenzic.
 
 Aggiungere alla checklist della tua PR:
 
-- [ ] Nessuna istanziazione `Console(...)` o `ObsidianUI(...)` nei moduli di comando.
+- [ ] Nessuna istanziazione `Console(...)` o `SentinelUI(...)` nei moduli di comando.
 - [ ] Tutto l'output banner usa `get_ui().print_header()`, non un'istanza UI creata localmente.
 - [ ] `force_terminal` su qualsiasi nuova chiamata `Console` è `None` o condizionale (`True if ... else None`), mai `False`.
 
 ---
 
-## 9. ObsidianPalette — Legge Zero Hex {#obsidian-palette}
+## 9. SentinelPalette — Legge Zero Hex {#obsidian-palette}
 
-`ObsidianPalette` in `src/zenzic/ui.py` è la **sola fonte autorizzata di valori colore**
+`SentinelPalette` in `src/zenzic/ui.py` è la **sola fonte autorizzata di valori colore**
 nell'intera codebase Zenzic. Questa è la Legge Zero Hex.
 
 ### La Legge
@@ -272,7 +272,7 @@ nell'intera codebase Zenzic. Questa è la Legge Zero Hex.
 :::warning Vincolo di Design
 
 Nessuna stringa colore esadecimale (es. `#4f46e5`) e nessun nome colore Rich grezzo (es. `"red"`, `"cyan"`)
-possono comparire in `src/` **eccetto** all'interno degli attributi privati `ObsidianPalette._*`.
+possono comparire in `src/` **eccetto** all'interno degli attributi privati `SentinelPalette._*`.
 Ogni altro file deve indirizzare esclusivamente gli attributi pubblici semantici indicati di seguito.
 
 :::
@@ -281,12 +281,12 @@ Ogni altro file deve indirizzare esclusivamente gli attributi pubblici semantici
 
 | Attributo | Hex | Significato |
 | :--- | :---: | :--- |
-| `ObsidianPalette.BRAND` | `#4f46e5` | Colore primario / brand Zenzic (Indigo) |
-| `ObsidianPalette.SUCCESS` | `#10b981` | OK · pulito · passato (Emerald) |
-| `ObsidianPalette.WARNING` | `#f59e0b` | Attenzione · advisory (Amber) |
-| `ObsidianPalette.ERROR` | `#f43f5e` | Errore · link rotti (Rose) |
-| `ObsidianPalette.DIM` | `#64748b` | Testo muto · secondario (Slate) |
-| `ObsidianPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
+| `SentinelPalette.BRAND` | `#4f46e5` | Colore primario / brand Zenzic (Indigo) |
+| `SentinelPalette.SUCCESS` | `#10b981` | OK · pulito · passato (Emerald) |
+| `SentinelPalette.WARNING` | `#f59e0b` | Attenzione · advisory (Amber) |
+| `SentinelPalette.ERROR` | `#f43f5e` | Errore · link rotti (Rose) |
+| `SentinelPalette.DIM` | `#64748b` | Testo muto · secondario (Slate) |
+| `SentinelPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
 
 ### Stringhe stile pre-composte
 
@@ -295,38 +295,38 @@ Per le combinazioni più comuni, usare una costante `STYLE_*` invece di costruir
 
 | Costante | Espande in |
 | :--- | :--- |
-| `ObsidianPalette.STYLE_BRAND` | `"bold #4f46e5"` |
-| `ObsidianPalette.STYLE_OK` | `"bold #10b981"` |
-| `ObsidianPalette.STYLE_WARN` | `"bold #f59e0b"` |
-| `ObsidianPalette.STYLE_ERR` | `"bold #f43f5e"` |
-| `ObsidianPalette.STYLE_DIM` | `"#64748b"` |
+| `SentinelPalette.STYLE_BRAND` | `"bold #4f46e5"` |
+| `SentinelPalette.STYLE_OK` | `"bold #10b981"` |
+| `SentinelPalette.STYLE_WARN` | `"bold #f59e0b"` |
+| `SentinelPalette.STYLE_ERR` | `"bold #f43f5e"` |
+| `SentinelPalette.STYLE_DIM` | `"#64748b"` |
 
 ### Pattern di utilizzo
 
 ```python
-# CORRETTO — alias semantico tramite ObsidianPalette
-from zenzic.ui import ObsidianPalette
+# CORRETTO — alias semantico tramite SentinelPalette
+from zenzic.ui import SentinelPalette
 
-table = Table(border_style=ObsidianPalette.DIM, header_style=ObsidianPalette.STYLE_BRAND)
-text = Text.from_markup(f"[{ObsidianPalette.BRAND}]Zenzic[/]")
-panel = Panel("...", border_style=ObsidianPalette.STYLE_ERR)
+table = Table(border_style=SentinelPalette.DIM, header_style=SentinelPalette.STYLE_BRAND)
+text = Text.from_markup(f"[{SentinelPalette.BRAND}]Zenzic[/]")
+panel = Panel("...", border_style=SentinelPalette.STYLE_ERR)
 ```
 
 ```python
-# VIETATO — literal hex al di fuori di ObsidianPalette
+# VIETATO — literal hex al di fuori di SentinelPalette
 text = Text.from_markup("[#4f46e5]Zenzic[/]")   # ✗
 
 # VIETATO — import di costante piatta (rimossa in v0.7.0)
 from zenzic.ui import INDIGO, EMERALD            # ✗
 
 # VIETATO — alias locale
-P = ObsidianPalette                              # ✗  usare sempre il nome completo della classe
+P = SentinelPalette                              # ✗  usare sempre il nome completo della classe
 ```
 
 ### Aggiornare la palette
 
 Per cambiare un colore, modificare **solo** l'attributo esadecimale `_PRIVATO` corrispondente
-all'interno di `ObsidianPalette` in `src/zenzic/ui.py`. Tutti gli alias semantici e le
+all'interno di `SentinelPalette` in `src/zenzic/ui.py`. Tutti gli alias semantici e le
 stringhe stile pre-composte derivano da quegli attributi privati — l'intera codebase
 si aggiorna automaticamente.
 
@@ -334,7 +334,7 @@ si aggiorna automaticamente.
 
 Aggiungere alla checklist della tua PR:
 
-- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ObsidianPalette._*`.
-- [ ] Nessun nome colore Rich grezzo (`"red"`, `"cyan"`) per uso della palette brand — usare `ObsidianPalette.*`.
-- [ ] Nessun alias locale `P = ObsidianPalette` — usare sempre il nome completo della classe.
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `SentinelPalette._*`.
+- [ ] Nessun nome colore Rich grezzo (`"red"`, `"cyan"`) per uso della palette brand — usare `SentinelPalette.*`.
+- [ ] Nessun alias locale `P = SentinelPalette` — usare sempre il nome completo della classe.
 - [ ] Nessun `from zenzic.ui import INDIGO` (o qualsiasi costante piatta rimossa).

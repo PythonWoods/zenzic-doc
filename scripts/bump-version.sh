@@ -11,7 +11,7 @@
 #            Defaults to: v{NEW_VERSION} Stable
 #
 # Example (with codename):
-#   bash scripts/bump-version.sh 0.6.3 'v0.6.3 "Obsidian Flux" Stable'
+#   bash scripts/bump-version.sh 0.6.3 'v0.6.3 "Quartz Flux" Stable'
 #
 # Example (generic stable):
 #   bash scripts/bump-version.sh 0.6.3
@@ -100,13 +100,13 @@ if f'v{old}' in brand_content:
 
 # 7b. Codename: extract from badge strings (format: v1.2.3 "Codename" Stable)
 #     Replace in all three case variants used in the HTML:
-#       Title Case  →  Obsidian Maturity
+#       Title Case  →  Quartz Maturity
 #       ALL CAPS    →  OBSIDIAN MATURITY
 #       all lower   →  obsidian maturity
 m_old = _re.search(r'"([^"]+)"', old_badge)
 m_new = _re.search(r'"([^"]+)"', new_badge)
 if m_old and m_new:
-    old_code = m_old.group(1)   # e.g. "Obsidian Maturity"
+    old_code = m_old.group(1)   # e.g. "Quartz Maturity"
     new_code = m_new.group(1)   # e.g. "Quantum Glass"
     if old_code != new_code:
         for variant in (

@@ -56,7 +56,7 @@ function LedgerRow({
   );
 }
 
-// ── The Obsidian Engineering Ledger ───────────────────────────────────────
+// ── The Zenzic Engineering Ledger ───────────────────────────────────────
 export default function EngineeringLedger(): React.JSX.Element {
   return (
     <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
@@ -64,7 +64,7 @@ export default function EngineeringLedger(): React.JSX.Element {
         {/* Section header */}
         <div className="mb-4 max-w-3xl">
           <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
-            <Translate id="ledger.label">The Obsidian Engineering Ledger</Translate>
+            <Translate id="ledger.label">The Zenzic Engineering Ledger</Translate>
           </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="ledger.heading">Three invariants enforced on every commit.</Translate>{' '}

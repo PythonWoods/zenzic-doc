@@ -280,7 +280,7 @@ La Virtual Site Map è l'**unica fonte di verità per il routing** di Zenzic. È
 
 ### Versioning e Supporto Multi-Doc {#vsm-versioning}
 
-A partire dalla v0.6.1 "Obsidian Glass", la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
+A partire dalla v0.6.1 "Quartz Clarity", la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
 
 1. **Identifica i confini di versione** tramite la scoperta estesa della root dell'adapter.
 2. **Etichetta le route** con la rispettiva versione in `RouteMetadata`.
@@ -345,7 +345,7 @@ attivo:
 
 La directory `examples/matrix/` in questo repository contiene la prova vivente:
 vettori d'attacco red-team identici producono findings identici su engine `standalone`,
-`mkdocs` e `zensical`. I fixture blue-team producono un Obsidian Seal identico su tutti
+`mkdocs` e `zensical`. I fixture blue-team producono un Sentinel Seal identico su tutti
 e tre. Zero asimmetrie.
 
 ### Risoluzione Link e Mapping degli Slug {#link-resolution}
@@ -681,7 +681,7 @@ src/zenzic/cli/
 | Getter | Restituisce |
 | :--- | :--- |
 | `get_console()` | Il singleton `rich.console.Console` corrente |
-| `get_ui()` | Il singleton `ObsidianUI` corrente (avvolge la console) |
+| `get_ui()` | Il singleton `SentinelUI` corrente (avvolge la console) |
 
 `configure_console()` — chiamata dal callback Typer `--no-color` / `--force-color` in `main.py` — **sostituisce** entrambi i singleton atomicamente. Poiché ogni comando chiama `get_ui()` / `get_console()` al momento dell'invocazione anziché all'importazione, ricevono sempre l'istanza che riflette i flag colore dell'utente.
 
@@ -709,4 +709,4 @@ Il banner scrive sempre su **stdout** (il `_shared.console` condiviso), quindi u
 | :--- | :--- |
 | Aggiungere un comando a una sub-app esistente | Aggiungere `@check_app.command()` (o altra app) nel `_*.py` rilevante — nessuna modifica a `__init__.py` o `main.py` |
 | Aggiungere una nuova sub-app top-level | Creare `_miafeature.py`, esportare da `__init__.py`, registrare in `main.py`, aggiungere a `_SUBAPPS_WITH_MENU` se `no_args_is_help=True` |
-| Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `ObsidianUI` localmente |
+| Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `SentinelUI` localmente |
