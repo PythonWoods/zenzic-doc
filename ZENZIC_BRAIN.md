@@ -42,6 +42,7 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - [ ] The **Law of Contemporary Testimony (CEO-059)** applies unconditionally: code and documentation are a single indivisible unit. No task is complete until both are aligned.
 
 ### Step 1 — Update This File
+
 - [ ] New architectural facts? → Update **[ARCHITECTURE]**
 - [ ] New decisions made? → Add an **[ADR]** entry (tagged `[DECISION]`)
 - [ ] Bug found and fixed? → Promote the lesson to a **[POLICY]** rule or **[ADR]** (permanent invariants only). Update **[ACTIVE SPRINT]**.
@@ -49,11 +50,13 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - [ ] **Size Guardrail:** This file exceeds 400 lines? → Trigger a curation task (Law of Evolutionary Curation).
 
 ### Step 2 — Update Documentation Artifacts
+
 - [ ] Content-only changes: add prose section to core repo `RELEASE.md` if user-visible
 - [ ] Structural or tooling changes: add section to `RELEASE.md` + notify core repo for cross-repo CHANGELOG entry
 - [ ] **Executive Filter:** `RELEASE.md` must stay ≤ 200 lines (Law of Executive Brevity). Technical fluff belongs in `CHANGELOG.md`, not the release notes.
 
 ### Step 3 — Staleness & Testimony Audit
+
 - [ ] `README.md` — check: Node.js version, Zenzic version badge, `just` recipe list, prerequisite table
 - [ ] **Contemporary Check (CEO-059):**
   - New or changed CLI flag? → `reference/cli.mdx` (EN + IT)
@@ -67,6 +70,7 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - [ ] **Testimony check** — every page named above: EN and IT are in content-parity (no translation drift)
 
 ### Step 4 — Verification Gate
+
 - [ ] Full build: `just verify` (markdownlint → lint:ts → typecheck → build)
 - [ ] Pre-commit hooks: `just preflight`
 - [ ] Language switcher: Italian locale pages load correct content
@@ -100,11 +104,13 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 - **[INVARIANT] Slug Parity:** If a `slug:` value is changed in an English file, it must be changed identically in all Italian translations. A diverged slug causes the language switcher to produce a 404.
 - **[INVARIANT] `localeConfigs.path` must be explicit.** Always set `path: 'it'` in `docusaurus.config.ts` for the Italian locale. Without it, Docusaurus derives the path from `htmlLang`, causing silent fallback to English (see BUG-003 — i18n Lockdown).
 - **Validation command (run before any commit involving file moves):**
+
   ```bash
   diff <(find docs -name "*.mdx" | sed 's|^docs/||' | sort) \
        <(find i18n/it/docusaurus-plugin-content-docs/current -name "*.mdx" | \
          sed 's|^i18n/it/docusaurus-plugin-content-docs/current/||' | sort)
   ```
+
   Exit 0 = symmetric. Any output = structural asymmetry to fix before committing.
 
 ### UI Components & Styling
@@ -127,14 +133,21 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 ### BUG-004: Frontmatter Supremacy — Blog MDX Files (CEO-060)
 
 - **[INVARIANT] In Docusaurus blog MDX files, the `---` frontmatter block MUST start at absolute line 1.**
+
   No comments (SPDX, HTML, MDX), no blank lines, no content of any kind may precede the opening `---`.
+
 - **Root cause:** The blog plugin is anchored — if line 1 ≠ `---`, Docusaurus treats the file as
+
   frontmatter-less and derives the URL from `date + filename` instead of `slug:`. With
   `onBrokenLinks: 'throw'`, this generates ghost archive routes (e.g. `/blog/2026/04/28`) that
   break the build with no obvious error message.
+
 - **Fix pattern:** SPDX license headers in blog files must appear AFTER the closing `---` of the
+
   frontmatter block (or be omitted — blog posts are covered by `REUSE.toml` mapping).
+
 - **Note:** `docs/` MDX files may open with `{/* SPDX … */}` — the docs plugin handles this.
+
   This invariant applies to `blog/` only.
 
 ### Documentation Law — The Quartz Testimony [MANDATORY]
@@ -150,11 +163,19 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 ### Memory Law — The Custodian's Contract
 
 - **[INVARIANT] The [CLOSING PROTOCOL] is a non-negotiable Engineering Contract.**
+
   An agent that ends a session without completing it commits a Class 1 violation (Technical Debt). The successor inherits a ghost, not a project.
+
 - **[INVARIANT] This file is the agent's only persistent memory.** Update it before the final commit — not after.
 - **[INVARIANT] Definition of Done:** A sprint is not closed until RELEASE.md is current and the staleness audit (including symmetry diff) is complete.
 - **[INVARIANT] Proactivity:** Agents must notify the Tech Lead when a code change contradicts or expands the current guidelines.
 - **[INVARIANT] Sovereignty:** This file is the single source of truth for agent behavior in this repository.
+
+### Trinity Mesh Synchronization (CEO-235/236)
+
+- **[INVARIANT]** The three public repositories (`zenzic`, `zenzic-doc`, `zenzic-action`) form the **Trinity Mesh**. Cross-repo changes must be documented in each affected repo's `ZENZIC_BRAIN.md` [ACTIVE SPRINT] within the same sprint.
+- **[RULE]** `just map-update` in the core repo runs `scripts/map_project.py` which emits `[MESH STATUS]` — all three repos must show 🟢. A 🔴 signals a missing or deleted `ZENZIC_BRAIN.md`.
+- **[INVARIANT — Silent Mind Protocol]** `zenzic-brain` is the fourth repository and is **never** referenced in any public map, BRAIN section, or mesh detection script. It is the Silent Mind.
 
 ### The Law of Executive Brevity [MANDATORY] — D068
 
@@ -172,7 +193,7 @@ The Italian documentation is **not a secondary asset**. It is a first-class citi
 
 ### Content Hierarchy
 
-```
+```text
 docs/                                    # English source — ALL files are .mdx
   index.mdx                              # Unified Gateway landing page (see BUG-001)
   tutorials/                             # Learning-oriented (2 files)
@@ -223,8 +244,6 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 > Aggiornare con `just map-update` dopo ogni aggiunta/rimozione di pagine.
 
 <!-- MAP_START -->
-## [CODE MAP] — Struttura Documentazione (Diátaxis)
-
 > Auto-generato da `scripts/map_docs.py` via filesystem scan.
 > Aggiornare con `just map-update` dopo ogni aggiunta/rimozione di pagine.
 
@@ -241,12 +260,14 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 ### Mappa Completa
 
 #### `tutorials/` — Tutorials (2 files)
+
 > Learning-oriented. Step-by-step guides for beginners. New file → here.
 
 - `examples.mdx`
 - `first-audit.mdx`
 
 #### `how-to/` — How-to Guides (8 files)
+
 > Task-oriented. Goal-driven guides for practitioners. New recipe → here.
 
 - `add-badges.mdx`
@@ -258,7 +279,8 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 - `migrate-engines.mdx`
 - `workflow-integration.mdx`
 
-#### `reference/` — Reference (9 files)
+#### `reference/` — Reference (10 files)
+
 > Information-oriented. Exhaustive technical reference. New Zxxx code, CLI flag → here.
 
 - `advanced-features.mdx`
@@ -270,19 +292,25 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 - `finding-codes.mdx`
 - `glossary.mdx`
 - `index.mdx`
+- `suppression-policy.mdx`
 
-#### `explanation/` — Explanation (7 files)
+#### `explanation/` — Explanation (10 files)
+
 > Understanding-oriented. Conceptual deep-dives. New ADR narrative → here.
 
 - `architecture.mdx`
+- `audit-v070-quartz-siege.mdx`
 - `discovery.mdx`
 - `ecosystem.mdx`
 - `health-metrics.mdx`
 - `mineral-path.mdx`
 - `safe-harbor.mdx`
+- `structural-integrity.mdx`
 - `the-zenzic-trinity.mdx`
+- `why-zenzic.mdx`
 
 #### `community/` — Community (32 files)
+
 > Contributing, governance, brand, developer guides.
 
 - `brand-kit.mdx`
@@ -329,8 +357,8 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 
 | Locale | Files |
 |--------|-------|
-| `docs/` (EN) | 59 |
-| `i18n/it/` (IT) | 59 |
+| `docs/` (EN) | 63 |
+| `i18n/it/` (IT) | 63 |
 
 > ✅ EN/IT parity confirmed.
 <!-- MAP_END -->
@@ -340,33 +368,44 @@ Current: **v0.7.0**. Version string appears in 6+ places; always use `just bump 
 ## [ADR] — Architectural Decision Records
 
 ### ADR-001: Diátaxis Adoption (2026-04-20, Commit `7d8d513`)
+
 **[DECISION]** Documentation organized into four strict quadrants (Tutorials / How-to / Reference / Explanation). Previous structure (`guides/`, `usage/`, `examples/`, `internals/`) deprecated and moved.
+
 - **Why:** Diátaxis prevents content drift and makes the user's need explicit. Each quadrant has a clear purpose; contributors know exactly where to add new content.
 - **Impact:** 29 EN + 29 IT files renamed/moved with git history preserved. All internal cross-references healed in both languages.
 
 ### ADR-002: Autogenerated Sidebar (sidebars.ts)
+
 **[DECISION]** `type: 'autogenerated'` — the filesystem hierarchy IS the sidebar. No hardcoded sidebar entries.
+
 - **Why:** Manual sidebar entries cause drift when files move. Auto-generation guarantees structural consistency.
 - **Invariant:** Moving a file without updating i18n breaks navigation. The Slug Law (ADR-003) is required for this to work safely.
 - **Ordering:** `_category_.json` with `position` field controls display order within each quadrant.
 
 ### ADR-003: Physical Slug Law (The Slug Law)
+
 **[DECISION]** No `slug:` frontmatter that diverges from the physical file path. URLs mirror the filesystem.
+
 - **Why:** The autogenerated sidebar resolves URLs from file paths. A diverged `slug:` creates an orphan URL invisible to the sidebar, breaking navigation without a build-time error.
 - **Single exception:** `docs/internals/vision.mdx` (legacy URL stability).
 
 ### ADR-004: Bootstrap Paradox Resolution — ZRT-005 Genesis Fallback (2026-04-08)
+
 **[DECISION]** `find_repo_root()` gains `fallback_to_cwd: bool = False` parameter. When `fallback_to_cwd=True` and no `.git/` or `zenzic.toml` marker is found, returns `Path.cwd()` instead of raising an error.
+
 - **Why (The Bootstrap Paradox):** `zenzic init` must run in directories that have neither `.git/` nor `zenzic.toml` (its purpose is to *create* the config). Without the fallback, `find_repo_root()` raises, making `zenzic init` impossible in a fresh project — a Catch-22.
 - **Security invariant:** Only the `init` command passes `fallback_to_cwd=True`. All analysis commands (`check`, `scan`, `score`, `clean`) retain strict default (`False`). The Genesis Fallback does NOT weaken perimeter for analysis.
 - **Full ADR:** `docs/community/developers/explanation/adr-discovery.mdx`.
 
 ### ADR-005: i18n Lockdown — Explicit `path` in localeConfigs (D090)
+
 **[DECISION]** `path` must be explicitly set in every locale entry in `localeConfigs` in `docusaurus.config.ts`.
+
 - **Why:** Without explicit `path: 'it'`, Docusaurus derives the filesystem path from `htmlLang: 'it-IT'`. The derived path `it-IT` does not match the actual directory `i18n/it/`, causing the Italian locale to silently fall back to English content — no build error, no visible warning.
 - **Implementation:** `localeConfigs: { it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' } }`.
 
-### ADR-006: Unified Perimeter — Storage + Journal Locale Sovereignty (CEO 051, `3188387`)
+### ADR-006: Unified Perimeter — Storage + Blog Locale Sovereignty (CEO 051, `3188387`)
+
 **[DECISION]** Two locale-bleed bugs fixed via `docusaurus.config.ts`.
 
 **Theme Flip:** `future.v4` enables `siteStorageNamespacing` which hashes `url+baseUrl` per locale,
@@ -374,183 +413,38 @@ producing different localStorage keys (`theme-926` EN, `theme-3d7` IT). Dark mod
 siloed per locale — switching locale causes a theme reset. Fix: `storage: { namespace: false }` →
 unified key `'theme'` across all locales. Verified in anti-FOUC inline script in built HTML.
 
-**Journal locale bleed:** `to:'/blog'` and `href:'/blog'` are both rewritten to `/it/blog` in IT
+**Blog locale bleed:** `to:'/blog'` and `href:'/blog'` are both rewritten to `/it/blog` in IT
 locale by the Docusaurus static build pipeline. Fix: `type: 'html'` navbar item with a raw anchor
 `href=/blog` — Docusaurus does not process innerHTML of `html`-type items, so the href is
 preserved verbatim. Blog remains EN-only regardless of active locale.
 
 **[INVARIANT] CEO directive corrections:**
+
 - `themeConfig.siteStorage.themeKey` — does NOT exist in Docusaurus 3.x. Correct API is top-level `storage.namespace`.
 - `respectPrefersColorScheme: true` — NOT applied; would revert CEO 149 immutable invariant. `false` is maintained.
 
 ---
 
+<!-- ZONE_B_START -->
 ## [ACTIVE SPRINT] — Working Context
 
-### CEO 103-B — Sovereign Memory Move (Current)
+### D096 — Quartz Discovery, SARIF Sovereignty & Brain Curation (Cross-repo Note)
 
-**Version:** 0.7.0 · **Date:** 2026-04-29
+**Version:** 0.7.0 · **Sprint:** 2026-04-30
 
-**Master-Shadow Sync Protocol:**
-- `git mv .github/copilot-instructions.md ZENZIC_BRAIN.md` in tutti e 3 i repo (core, doc, action).
-- Header sovrano inserito in cima: `<!-- Sovereign Memory Master. Mirror: .github/copilot-instructions.md -->`.
-- `scripts/map_docs.py`, `map_project.py`, `map_action.py`: LEDGER → `ZENZIC_BRAIN.md`,
-  aggiunta funzione `shadow_sync()` che copia Master → `ZENZIC_BRAIN.md → .github/copilot-instructions.md`.
-- Shadow file committato nel VCS (verificabile e versionato, non in .gitignore).
-- `just map-update` attiva ora il battesimo automatico del Shadow ad ogni remap.
+**CEO-218/219 "Contemporary Testimony":** Z906 `NO_FILES_FOUND` added to `finding-codes.mdx` EN+IT. Engine `"auto"` documented in `configuration-reference.mdx` EN+IT. Blog updated: 20 Acts (0–19), Act 19 "The Base64 Shadow" row added.
 
-### Last Closed — CEO 102 — The Mineral Path
+**CEO-233/234 "Zone A/B Restructure":** `<!-- ZONE_B_START -->` / `<!-- ZONE_B_END -->` markers added to this file. Trinity Mesh policy added to [POLICIES].
 
-**Version:** 0.7.0 · **Date:** 2026-04-29
+No doc-only changes in this sprint. All code changes are in the core `zenzic` repo.
 
-**New Explanation page — `docs/explanation/mineral-path.mdx`:**
-- Title: "The Mineral Path: Release Philosophy" — `sidebar_position: 8`.
-- Sections: The Philosophy, The Roadmap (table v0.6–v1.0), The Obsidian Origin,
-  The Quartz Standard, Beyond Quartz.
-- IT mirror: `i18n/it/.../explanation/mineral-path.mdx` — full translation.
-- `just map-update` run → CODE MAP updated (60 EN pages now).
-- Symmetry diff EXIT:0.
-- CEO-099 Sovereign Overwrite: `release/v0.7.0` force-pushed to origin (zenzic-doc + zenzic-core).
-  Incidente intercettato: chiave Stripe demo reale `sk_live_*` in `blog/2026-04-27-obsidian-masterclass.mdx:91`
-  bloccata da GitHub Push Protection — rimossa dalla storia con `filter-branch --tree-filter`.
+### Last Closed — D093 — SMA Dual-Launch + Blog Chronos
 
-### Last Closed — CEO 088-098 — Quartz Purge + Sovereign Overwrite
+**Version:** 0.7.0 · **Sprint:** 2026-04-30
 
-**Version:** 0.7.0 · **Date:** 2026-04-29
+CEO-186 Blog Chronos: numeric prefixes to 8 sidebar_labels. CEO-185 Masterclass Act XI. CEO-187 SMA blog post. CEO-188 `why-zenzic.mdx` CI/CD veracity fix. `just verify` EXIT 0 · 62/62 EN/IT.
 
-**CEO 088 — The Trinity of Integrity:**
-- `docs/explanation/the-zenzic-trinity.mdx` + IT mirror. `sidebar_position: 6`.
-- `just map-update` run → CODE MAP updated (58 EN pages).
-- Symmetry diff EXIT:0. BUILD_EXIT:0 (EN + IT `[SUCCESS]`).
-
-**CEO 090-098 — Global Quartz Purge:**
-- All 3 repos (zenzic, zenzic-doc, zenzic-action): Obsidian brand → Quartz/Sentinel.
-- 58 EN + 58 IT source files audited (Python grep, 0 non-historical matches).
-- Commit log rewritten (filter-branch): zenzic-doc 94 commits, zenzic-core 65 commits.
-- INVARIANTS preserved: blog slugs (`obsidian-bastion`, `obsidian-masterclass`),
-  tag key `obsidian-maturity`, CHANGELOG pre-v0.7.0, historical table rows.
-- BUILD_EXIT:0 (EN + IT confirmed).
-
-### Last Closed — CEO 072-078 — Governance of Glass: Constitution + Saga VI
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-**CEO 072 — Governance Section Creation:**
-- `docs/community/governance/` created with 5 files: `_category_.json`, `index.mdx`,
-  `adversarial_ai.mdx`, `exit_strategy.mdx`, `evolution_policy.mdx`, `licensing.mdx`.
-- Adapted from Structum governance model; all Structum references removed.
-- `amendment_policy.mdx` renamed to `evolution_policy.mdx` ("Amendment" → "Evolution").
-- Directory initially at `docs/governance/`, then moved to `docs/community/governance/` (CEO 075).
-
-**CEO 074-076 — Full Rewrite + Badge + Read-Only:**
-- All 5 EN governance MDX files rewritten with Sentinel authority framing.
-- New label: "Governance & Sovereignty". Each file has SPDX header + Saga VI cross-link.
-- `exit_strategy.mdx`: read-only declaration added — audit core is strictly read-only;
-  future remediation via explicit `zenzic fix` utility, analysis remains 100% mutation-free.
-- `zenzic/README.md` + `README.it.md`: AI-Adversarial badge added (links to governance/adversarial-ai).
-- IT mirrors created for all 6 governance files (including `_category_.json` with "Governance & Sovranità").
-
-**CEO 077 — Saga VI Blog Post (initial stub):**
-- `blog/2026-04-27-governance-of-glass.mdx` created. Slug: `governance-of-glass`.
-- Date `T23:00:00` — positions after Saga V (T23:59:59 is Masterclass).
-- `tags.yml`: added `governance` and `sovereignty` tags (+ `engineering-chronicles` already existed).
-- Chronicles nav updated in all 5 Saga posts: ` | [Saga VI](/blog/governance-of-glass)` appended.
-
-**CEO 078 — Full Saga VI Rewrite (501 lines, "The Constitution of Glass"):**
-- Saga VI rewritten to 501 lines. Structure: 5 narrative parts + closing table + :::info box.
-  - Part I: The Ghost of Broken Promises (Software Mortality Table, Architecture of Trust)
-  - Part II: The Sovereignty Oath: Liberty as a Feature (Zero Residue table, read-only by constitution, `typing.Protocol` guarantee, Why we wrote the exit strategy first)
-  - Part III: The Adversarial Forge: AI as a Skeptic (Magistrate Model, 4 session types, Quartz Clarity metaphor, What AI Does Not Decide)
-  - Part IV: The Constitutional Invariants (Three Articles, Amendment Process 5 steps, Evolution Policy, Convenience Prohibition)
-  - Part V: The Safe Harbor is Permanent (First Cornerstone, Pact with Community, 6-chapter chronicle table, Glass Constitution metaphor)
-- All 6 :::info boxes updated: `"🛡️ The Obsidian Chronicles"` → `"🛡️ The Obsidian Chronicles — Complete"` with "The Chronicles are sealed." subtitle. Applied in all 5 existing Saga posts + Saga VI itself.
-- `docs/community/governance/index.mdx`: Italian Technical Abstract section added at end — 3-axis table (Libertà/Pressione/Durata), closing quote "Non fidatevi di noi. Fidatevi del sistema."
-- Symmetry diff EXIT:0. BUILD_EXIT:0 (EN + IT). UNCOMMITTED.
-
-### Last Closed — CEO 068-071 — Forensic Masterclass + Saga V + Blog Sovereignty
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-**CEO 056 — The Roman Standard (5 Saga posts):**
-- `sidebar_label`: `01.`–`05.` → `🛡️ Saga I/II/III/IV/V: <subtitle>` across all 5 chronicle posts.
-- `:::info` box header: `Part X of 5` → `🛡️ The Obsidian Chronicles` in all 5 posts.
-- Breadcrumb: `Part X` → `Saga X` (Roman numerals) in all 5 posts.
-
-**CEO 058 — The Roman Standard (title + dates):**
-- `title` (H1) cleaned: 5 posts updated to standalone Saga subtitle (e.g. "The Leaking Pipe").
-- Post 4 date: `2026-04-24` → `2026-04-27` (Quartz Maturity Release Day alignment).
-- Post 5 date: `2026-04-25` → `2026-04-27` (same Release Day alignment).
-
-**CEO 060 — Tutorial Launch + BUG-004 Fix:**
-- New file: `blog/2026-04-27-tutorial-stop-broken-links.mdx` — "Stop Broken Links in 60s".
-  sidebar_label: `🛡️ Tutorial: Get Started`. Date: 2026-04-27. Tags: tutorial, quickstart,
-  python, opensource, devtools. Registered in `tags.yml`.
-- **BUG-004 fix:** Frontmatter MUST occupy line 1. SPDX comments before `---` silently
-  disable Docusaurus slug parsing, generating date-based ghost routes. Lesson codified below.
-- `blog/tags.yml`: added `tutorial` and `quickstart` entries.
-
-**Invariant added (BUG-004 — Frontmatter Supremacy):**
-In any blog MDX file: the `---` frontmatter block must start at line 1 absolute.
-No comments, no blank lines, no SPDX headers before the opening `---`.
-Violation: Docusaurus ignores the frontmatter → uses date-based URL path → `onBrokenLinks: throw` fails.
-
-SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT confirmed after all blog changes).
-
-### Last Closed — CEO 052/054/055 — ADR Vault & Genesis Documentation
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-9 new ADR MDX files: `adr-lint-source.mdx` (ADR 001), `adr-zero-subprocesses.mdx` (ADR 002),
-`adr-vault.mdx` (index) + previously committed ADR 004/006/008. All EN+IT. Symmetry diff:
-EXIT:0. COMMITTED `4d07d4b`. justfile Sentinel Enterprise hardening: COMMITTED `2f560ab`.
-
-### Last Closed — D144–D154 — Full-Spectrum title= Audit + Sentinel Gate Manifesto
-
-**Version:** 0.7.0 · **Date:** 2026-04-27
-
-**CEO 144–145 "Full-Spectrum title= Audit" (`599d462`):**
-- `title=` added to all file-representative code blocks across all languages (yaml, toml, ts, python,
-  markdown, mdx) in docs/ + i18n/it/. 22 files, BUILD_EXIT:0.
-
-**CEO 147–148 "Sovereign Naming Law" (`982c2d9`):**
-- `docs.yml` → `zenzic.yml` (22× EN+IT), `zenzic-badge.yml` → `zenzic-score.yml` (4× EN+IT).
-  14 files, 26 substitutions. BUILD_EXIT:0.
-
-**CEO 149–151 "Event Isolation + Mirror of Truth + Sentinel Gate" (`b2c1ef5`):**
-- `docusaurus.config.ts`: `respectPrefersColorScheme: false` — root cause of language switcher
-  triggering theme change was OS preference overriding `defaultMode` on SPA navigation.
-  Swizzled components (LocaleDropdownNavbarItem, Navbar/Content) confirmed architecturally clean.
-- `health-metrics.mdx` + IT: 21× `/docs/reference/` → `../reference/finding-codes.mdx#zXXX` (R19 compliance).
-- `finding-codes.mdx` (EN + IT): 21× `/docs/explanation/health-metrics` → `../explanation/health-metrics.mdx`.
-- `architecture-gaps.mdx` (EN + IT): blog link → `https://zenzic.dev/blog/...` full URL.
-- `justfile`: `build` recipe now depends on `sentinel` (Sentinel Gate mandatory prerequisite).
-
-**CEO 152 "Purity of Events" (analysis only):**
-- `LocaleDropdownNavbarItem/index.tsx`: confirmed architecturally pure — zero colorMode references.
-- `Navbar/Content/index.tsx`: confirmed clean — null on `/` and `/it/`, data-blog-route on blog.
-- CEO 149 fix (`respectPrefersColorScheme: false`) is the complete and canonical fix.
-
-**CEO 152 "Sovereign Silence" (`9c4a715`):**
-- `src/theme/NavbarItem/LocaleDropdownNavbarItem/` deleted (Tabula Rasa).
-  CSS already suppresses locale dropdown on blog via `data-blog-route`; React wrapper was redundant.
-- `src/css/custom.css`: Blog Sovereignty rule `display: none` → `visibility: hidden + pointer-events: none`
-  (zero layout shift; pure declarative; upgrade-proof).
-- `Navbar/Content` swizzle retained: homepage `null` return cannot be CSS-only.
-
-**CEO 153–154 "Sentinel Gate Manifesto + Release Bridge + Z503" (`30d545c`):**
-- `docs/how-to/workflow-integration.mdx` (new): 'Local Sentinel Gate' how-to guide.
-  Recipes for Docusaurus (npm scripts), MkDocs (justfile/Makefile), Zensical (shell/justfile),
-  Standalone (any tool). Discovery cost table. Exit code reference. Related links (Z105-compliant).
-- `i18n/it/.../how-to/workflow-integration.mdx` (new): bilingual IT mirror — 'Sentinel Gate Locale'.
-- `zenzic.toml`: 2 specific blog URLs added to `excluded_external_urls` (Release Bridge, R19-surgical).
-  Remove after v0.7.0 GA deploy: `https://zenzic.dev/blog/ai-driven-siege-shield-postmortem`,
-  `https://zenzic.dev/blog/beyond-the-siege-zenzic-v070`.
-- `configure-ci-cd.mdx` (EN): restored complete `jobs:`/`steps:` structure in 'uvx (zero-setup)'
-  and 'astral-sh/setup-uv' tabs (truncated by prior title= audit, causing Z503 YAML parse failures).
-
-SENTINEL_EXIT:0 | BUILD_EXIT:0 (EN + IT, `just build` with Sentinel Gate passes).
-
----
+<!-- ZONE_B_END -->
 
 ## [ARCHIVE LINK]
 
