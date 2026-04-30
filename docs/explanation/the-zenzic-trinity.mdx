@@ -64,7 +64,9 @@ The [`zenzic-action`](https://github.com/PythonWoods/zenzic-action) repository i
 CI/CD pipelines.
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     version: "0.7.0"
     format: sarif
@@ -83,7 +85,7 @@ GitHub Actions runners: quality findings (exit 1) are configurable; security inc
 The Trinity is not a hierarchy — it is a **cycle**. Each repository informs and constrains the
 others:
 
-```
+```text
   ┌─────────────────────────────────────────────┐
   │                                             │
   │   Core enforces rules defined by the Soul  │
@@ -128,8 +130,11 @@ decision history machine-readable by design.
 Together, the AST map and the ADR corpus form a **transparent context layer**:
 
 - **For humans:** a clear, predictable path from philosophy to implementation — no archaeology
+
   required.
+
 - **For AI systems:** a structured, unambiguous context that prevents hallucinations and ensures
+
   every suggestion respects the project's fundamental invariants.
 
 :::info The Safe Harbor is a Sovereign Knowledge System

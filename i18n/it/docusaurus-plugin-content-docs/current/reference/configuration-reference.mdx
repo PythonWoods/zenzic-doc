@@ -261,7 +261,30 @@ fallback_to_default = true
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `engine` | `string` | `"mkdocs"` | Motore di build: `"mkdocs"`, `"zensical"`, `"docusaurus"` o `"standalone"` |
+
+### `engine` {#engine}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `str` |
+| **Default** | `"auto"` |
+
+Identificatore del motore di build. Usato dalla factory degli adapter per selezionare la strategia corretta di risoluzione dei percorsi. Adapter integrati: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
+
+Quando impostato su `"auto"` (il default), Zenzic analizza la root del progetto a runtime con la **Quartz Auto-Discovery**, cercando file di configurazione dell'engine nell'ordine di priorità:
+
+1. `zensical.toml` → `zensical`
+2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
+3. `mkdocs.yml` → `mkdocs`
+4. *(nessuna corrispondenza)* → `standalone`
+
+Per la CI di produzione, si consiglia di fissare l'engine esplicitamente per saltare il costo della discovery:
+
+```toml
+[build_context]
+engine = "docusaurus"
+```
+
 | `default_locale` | `string` | `"en"` | Codice ISO 639-1 della lingua predefinita |
 | `locales` | `list[string]` | `[]` | Nomi delle directory di localizzazione non predefinite (ad esempio `["it", "fr"]`) |
 | `base_url` | `string` | `""` | URL base del sito (ad esempio `"/"` o `"/docs/"`). Quando impostato, l'adapter lo usa al posto dell'estrazione statica dal file di configurazione del motore di build |
@@ -412,7 +435,7 @@ plugins = []
 
 ### L'Ordine dei Campi è Legge {#field-order}
 
-In TOML, ogni chiave scritta **dopo** un'intestazione `[sezione]` appartiene a quella sezione, non alla radice.  
+In TOML, ogni chiave scritta **dopo** un'intestazione `[sezione]` appartiene a quella sezione, non alla radice.
 Zenzic carica la radice con `_build_from_data`, che filtra in base ai campi di `ZenzicConfig` — qualsiasi chiave annidata in una sezione sconosciuta viene silenziosamente ignorata.
 
 **Sbagliato — tutti i campi root dopo `[project]` vengono inghiottiti:**
@@ -421,8 +444,8 @@ Zenzic carica la radice con `_build_from_data`, che filtra in base ai campi di `
 [project]
 name = "Il Mio Progetto"
 
-# ❌ Queste righe sembrano impostazioni root ma sono DENTRO [project].
-# Zenzic le ignora — la sezione è sconosciuta.
+# ❌ Queste righe sembrano impostazioni root ma sono DENTRO [project]
+# Zenzic le ignora — la sezione è sconosciuta
 placeholder_patterns = []
 docs_dir = "docs"
 ```
@@ -443,10 +466,10 @@ base_url = "/"
 
 ### Le Sezioni Sconosciute Emettono un Avviso {#unknown-sections}
 
-Da v0.6.1, Zenzic emette un `WARNING` quando incontra una sezione TOML che non riconosce (es. `[project]`), invece di scartarla silenziosamente.  
+Da v0.6.1, Zenzic emette un `WARNING` quando incontra una sezione TOML che non riconosce (es. `[project]`), invece di scartarla silenziosamente.
 Se vedi:
 
-```
+```text
 WARNING  zenzic.toml: unknown section [project] will be ignored …
 ```
 
@@ -454,7 +477,7 @@ sposta tutte le impostazioni che seguono quell'intestazione in cima al file, pri
 
 ### Pattern `dogfooding` con Docusaurus {#dogfooding}
 
-Documentare un linter con il suo stesso linter crea falsi positivi intenzionali: le pagine che *spiegano* i pattern placeholder attiveranno il checker dei placeholder.  
+Documentare un linter con il suo stesso linter crea falsi positivi intenzionali: le pagine che *spiegano* i pattern placeholder attiveranno il checker dei placeholder.
 Disabilita il checker nel `zenzic.toml` del repository della documentazione:
 
 ```toml

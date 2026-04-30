@@ -15,7 +15,7 @@ i18n del tuo motore di documentazione — senza modificare Zenzic stesso.
 
 ---
 
-## Cos'è un Adapter?
+## Cos'è un Adapter
 
 Un **adapter** è una classe Python che soddisfa il protocollo `BaseAdapter`
 (`src/zenzic/core/adapters/_base.py`).  Lo scanner, il rilevatore di orfani e il
@@ -68,7 +68,6 @@ from typing import Any
 
 from zenzic.core.adapters import RouteMetadata
 from zenzic.models.vsm import RouteStatus
-
 
 class MyEngineAdapter:
     """Adapter per i progetti di documentazione MyEngine."""
@@ -310,30 +309,47 @@ Il tuo adapter deve soddisfare queste invarianti, altrimenti lo scanner di
 Zenzic potrebbe produrre risultati errati:
 
 1. `get_route_info()` deve restituire un `RouteMetadata` con `canonical_url`
+
    che inizia e termina con `/`.
+
 2. `get_route_info()` deve impostare `status` a uno tra `REACHABLE`,
+
    `ORPHAN_BUT_EXISTING` o `IGNORED`.  Non restituire mai `CONFLICT` — quello
    stato viene assegnato successivamente da `_detect_collisions()`.
+
 3. `get_nav_paths()` restituisce percorsi **relativi a `docs_root`**, usando
+
    slash in avanti, senza `/` iniziale.
+
 4. `get_nav_paths()` restituisce solo file `.md` (altre estensioni sono ignorate
+
    dal controllore orfani).
+
 5. `is_locale_dir()` deve restituire `False` per la locale **default**.  Solo
+
    le directory di locale non-default devono restituire `True`.
+
 6. Tutti i metodi devono essere **puri**: stessi input producono sempre gli
+
    stessi output. Nessun I/O, nessuna mutazione di stato globale.
+
 7. `resolve_asset()` non deve mai sollevare eccezioni — restituisci `None` in caso di errore.
 8. `resolve_anchor()` non deve mai sollevare eccezioni — restituisci `False` in caso di errore.
+
    L'argomento `anchors_cache` è in sola lettura; non mutarlo.
+
 9. `has_engine_config()` non deve mai sollevare eccezioni — restituisci `False` in caso di errore.
 10. `provides_index(directory_path)` **è l'unico metodo che può eseguire I/O**.
+
     Viene chiamato una volta per directory durante la fase di discovery — mai
     all'interno dei loop critici per-link o per-file — quindi una singola chiamata
     `Path.exists()` è accettabile.  Restituisci `True` se il tuo engine genererà una
     landing page per la directory (es. tramite `index.md`, `README.md`, o una voce
     di configurazione dinamica come `_category_.json` con `"link": {"type": "generated-index"}`).  Non
     sollevare mai eccezioni — restituisci `False` in caso di errore I/O.
+
 11. `get_link_scheme_bypasses()` deve restituire un `frozenset[str]` di nomi di
+
     schema (senza i due punti finali) — mai `None`, mai sollevare eccezioni.
     Restituisci `frozenset()` se l'engine non ha requisiti di bypass per gli
     schemi link.
@@ -368,11 +384,17 @@ def test_nav_paths_relative() -> None:
 Collega il codice dell'adapter alla verità operativa del progetto:
 
 1. Registra l'identità engine nella configurazione del progetto tramite `[build_context] engine`
+
    (vedi [Adapter e Configurazione del Motore](../../../how-to/configure-adapter.mdx)).
+
 2. Valida il comportamento dell'adapter in policy Sentinel strict:
+
    `zenzic check all --engine myengine --strict`.
    Per i controlli di esecuzione, vedi [Comandi CLI: Flag globali](../../../reference/cli.mdx#global-flags).
+
 3. Se il tuo engine genera route locali sintetiche, mappa esplicitamente le aspettative
+
    Ghost Route rispetto al riferimento VSM:
    [Riferimento Controlli — VSM](../../../reference/checks#vsm-how-it-works).
+
 :::

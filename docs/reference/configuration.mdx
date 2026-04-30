@@ -286,8 +286,11 @@ extracted from the source file.
 Zenzic resolves anchor slugs in the following order:
 
 1. **Explicit MkDocs Material anchor** — if the heading contains `{/* { #custom-id } */}`, that ID is
+
    used directly.
+
 2. **Standard slug** — HTML tags are stripped, text is lowercased and non-word characters
+
    replaced with hyphens, matching Python-Markdown's `toc` extension.
 
 Disabled by default because anchor IDs can also be produced at build time by HTML attributes or

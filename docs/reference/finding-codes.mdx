@@ -19,24 +19,31 @@ Each code has a permanent anchor. You can link directly to a specific code using
 
 Zenzic organizes findings into **seven diagnostic categories**, each addressing a specific pillar of documentation integrity:
 
-| **Category** | **Range** | **Purpose** | **Default Severity** |
-|---|---|---|---|
-| **Z0xx** | Migration & Compatibility | Engine deprecation; migration guidance | `error` |
-| **Z1xx** | Link Integrity | Broken/circular links, orphaned pages, path issues | `error`/`warning` |
-| **Z2xx** | Security (Shield) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` |
-| **Z3xx** | Reference Integrity | Dangling/duplicate reference definitions | `error`/`warning` |
-| **Z4xx** | Structure | Directory indexes, orphan pages, missing alt text, config assets | `info`/`warning` |
-| **Z5xx** | Content Quality | Placeholder text, short content, snippet validation, regressions | `warning`/`error` |
-| **Z9xx** | Engine & System | Rule execution errors, timeouts, unused assets, nav violations | `error`/`warning` |
+| **Category** | **Range** | **Purpose** | **Default Severity** | **Suppressible?** |
+|---|---|---|---|---|
+| **Z0xx** | Migration & Compatibility | Engine deprecation; migration guidance | `error` | ❌ No (fatal abort) |
+| **Z1xx** | Link Integrity | Broken/circular links, orphaned pages, path issues | `error`/`warning` | ✅ Yes |
+| **Z2xx** | Security (Shield) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` | 🔒 **Never** |
+| **Z3xx** | Reference Integrity | Dangling/duplicate reference definitions | `error`/`warning` | ✅ Yes |
+| **Z4xx** | Structure | Directory indexes, orphan pages, missing alt text, config assets | `info`/`warning` | ✅ Yes |
+| **Z5xx** | Content Quality | Placeholder text, short content, snippet validation, regressions | `warning`/`error` | ✅ Yes |
+| **Z9xx** | Engine & System | Rule execution errors, timeouts, unused assets, nav violations | `error`/`warning` | ✅ Yes |
+
+:::info[Per-line suppression syntax]
+Suppress a finding on a specific line with a format-aware comment on that same line.\
+**Markdown (.md):** `<!-- zenzic:ignore Zxxx -->`\
+**MDX (.mdx):** `{/* zenzic:ignore Zxxx */}`\
+See [Suppression Policy](./suppression-policy.mdx) for the full reference including interaction with `--strict` mode.
+:::
 
 ### Exit Code Contract
 
 Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
-*   **Exit 0:** All checks passed (or suppressed via `--exit-zero`).
-*   **Exit 1:** Errors and warnings detected; use `--strict` to promote warnings.
-*   **Exit 2:** Security breaches detected (Z201 SHIELD_SECRET). **Never** suppressed.
-*   **Exit 3:** Security incidents detected (Z203 PATH_TRAVERSAL_FATAL). **Never** suppressed, even with `--exit-zero`.
+* **Exit 0:** All checks passed (or suppressed via `--exit-zero`).
+* **Exit 1:** Errors and warnings detected; use `--strict` to promote warnings.
+* **Exit 2:** Security breaches detected (Z201 SHIELD_SECRET). **Never** suppressed.
+* **Exit 3:** Security incidents detected (Z203 PATH_TRAVERSAL_FATAL). **Never** suppressed, even with `--exit-zero`.
 
 ---
 
@@ -44,9 +51,9 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
 ### Z000: UNSUPPORTED_ENGINE {#z000}
 
-*   **Severity:** `error` (Fatal — aborts execution immediately)
-*   **Technical Context:** Z000 is a **fatal configuration error**, not a collectable finding. It surfaces as a `ConfigurationError` exception when the adapter factory encounters a deprecated or removed `engine` identifier in `zenzic.toml` (e.g., `engine = "vanilla"`, removed in v0.6.1). Execution stops before any scan begins; Z000 will **not** appear in `--format json` output or the findings array.
-*   **Remediation Steps:**
+* **Severity:** `error` (Fatal — aborts execution immediately)
+* **Technical Context:** Z000 is a **fatal configuration error**, not a collectable finding. It surfaces as a `ConfigurationError` exception when the adapter factory encounters a deprecated or removed `engine` identifier in `zenzic.toml` (e.g., `engine = "vanilla"`, removed in v0.6.1). Execution stops before any scan begins; Z000 will **not** appear in `--format json` output or the findings array.
+* **Remediation Steps:**
     1. Open your `zenzic.toml` or `pyproject.toml`.
     2. Locate the `engine` field.
     3. Update `engine = "vanilla"` to `engine = "standalone"`.
@@ -58,13 +65,13 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
 ### Z101: LINK_BROKEN {#z101}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z101 counts toward the **Link Integrity** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each broken link applies a −20% decay to the 35%-weighted link category.
+:::info[Quality Score — Structural Integrity (40%)]
+Z101 counts toward the **Structural Integrity** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each broken link applies a −20% decay to the 40%-weighted structural category.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs perimeter or was excluded by an exclusion rule.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs perimeter or was excluded by an exclusion rule.
+* **Remediation Steps:**
     1. Verify the physical existence of the target file.
     2. Check the relative path calculation (e.g., `../folder/target.md`).
     3. Ensure the file is not matched by `ignored_patterns` in your config.
@@ -78,64 +85,90 @@ Z101 counts toward the **Link Integrity** category in the [Deterministic Quality
 
 ### Z102: ANCHOR_MISSING {#z102}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z102 counts toward the **Link Integrity** category. An unresolved anchor is penalised identically to a broken file link. See [Health Metrics](../explanation/health-metrics.mdx).
+:::info[Quality Score — Structural Integrity (40%)]
+Z102 counts toward the **Structural Integrity** category. An unresolved anchor is penalised identically to a broken file link. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** The file target is valid (Z101 pass), but the specific HTML anchor (e.g., `#setup`) cannot be found in the target's header registry. Zenzic parses all Markdown headers and explicit `<a id="...">` tags to build this registry during Phase 1.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** The file target is valid (Z101 pass), but the specific HTML anchor (e.g., `#setup`) cannot be found in the target's header registry. Zenzic parses all Markdown headers and explicit `<a id="...">` tags to build this registry during Phase 1.
+* **Remediation Steps:**
     1. Open the target file and verify the heading text.
     2. Ensure the anchor matches the engine-specific slugification (e.g., Docusaurus uses Kebab-case).
     3. If using custom IDs, ensure the syntax `{#id}` or `<a id="id"></a>` is correct.
 
 ### Z103: ORPHAN_LINK {#z103}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z103 counts toward the **Link Integrity** category. A link targeting a navigation-orphaned page is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
+:::info[Quality Score — Structural Integrity (40%)]
+Z103 counts toward the **Structural Integrity** category. A link targeting a navigation-orphaned page is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** This link points to a file that is present in the VSM but is not included in the site's navigation structure (sidebar/nav). Users may be able to link to it, but they cannot find it via the UI.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** This link points to a file that is present in the VSM but is not included in the site's navigation structure (sidebar/nav). Users may be able to link to it, but they cannot find it via the UI.
+* **Remediation Steps:**
     1. Add the file to your `mkdocs.yml` navigation or Docusaurus `sidebars.ts`.
     2. If the page is intentional (e.g., a hidden landing page), you can suppress this warning using a `<!-- zenzic-disable Z103 -->` comment.
 
 ### Z104: FILE_NOT_FOUND {#z104}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z104 counts toward the **Link Integrity** category. A missing target file is penalised identically to a broken VSM link. See [Health Metrics](../explanation/health-metrics.mdx).
+:::info[Quality Score — Structural Integrity (40%)]
+Z104 counts toward the **Structural Integrity** category. A missing target file is penalised identically to a broken VSM link. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** A low-level filesystem error. The engine attempted to open a file referenced by a link or asset but received a `FileNotFoundError`. This typically happens when a file is moved or deleted during a concurrent build process.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** A low-level filesystem error. The engine attempted to open a file referenced by a link or asset but received a `FileNotFoundError`. This typically happens when a file is moved or deleted during a concurrent build process.
+* **Remediation Steps:**
     1. Ensure no other process is modifying the `docs/` directory during the Zenzic scan.
     2. Verify that your `docs_dir` setting is correct and that the file path is absolute relative to the repository root.
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z105 counts toward the **Link Integrity** category. A non-portable absolute path is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
+:::info[Quality Score — Structural Integrity (40%)]
+Z105 counts toward the **Structural Integrity** category. A non-portable absolute path is treated as a link integrity violation. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** Absolute paths (e.g., `C:\Docs\page.md` or `/home/user/docs/page.md`) break documentation portability. Zenzic flags these to prevent "It works on my machine" syndrome in CI/CD pipelines.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Absolute paths (e.g., `C:\Docs\page.md` or `/home/user/docs/page.md`) break documentation portability. Zenzic flags these to prevent "It works on my machine" syndrome in CI/CD pipelines.
+* **Remediation Steps:**
     1. Convert the link to a relative path starting from the current file's directory.
     2. Use `@site/` or similar engine-specific aliases if supported (e.g., in Docusaurus).
 
 ### Z106: CIRCULAR_LINK {#z106}
 
-:::info[Quality Score — Link Integrity (35%)]
-Z106 counts toward the **Link Integrity** category at `info` severity. Circular reference cycles flagged by the Graph Integrity module contribute to the link issue count. See [Health Metrics](../explanation/health-metrics.mdx).
+:::info[Quality Score — Structural Integrity (40%)]
+Z106 counts toward the **Structural Integrity** category at `info` severity. Circular reference cycles flagged by the Graph Integrity module contribute to the structural issue count. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-*   **Severity:** `info`
-*   **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation.
-*   **Remediation Steps:**
+* **Severity:** `info`
+* **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation.
+* **Remediation Steps:**
     1. Review the content flow to see if one link can be replaced by a broader "See Also" section.
     2. Ensure that users aren't getting trapped between two pages with no clear exit path.
+
+---
+
+### Z107: CIRCULAR_ANCHOR {#z107}
+
+:::warning[Quality Score — Structural Integrity (40%)]
+Z107 counts toward the **Structural Integrity** category at `warning` severity. Self-referential anchor links provide no navigation value. See [Health Metrics](../explanation/health-metrics.mdx).
+:::
+
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{
+    code: "Z107",
+    file: "docs/guide.md",
+    line: 42,
+    message: "Self-referential anchor link: anchor #intro points to a heading on this very page."
+  }]}
+/>
+
+* **Severity:** `warning`
+* **Technical Context:** Detected by the `CircularAnchorRule` in the pluggable rule engine. A link of the form `[text](#anchor)` where the anchor resolves to a heading on the *same* page is logically circular — it navigates to exactly where the reader already is. The rule slugifies all headings in the file (lowercased, spaces to hyphens, special chars stripped) and matches them against every local anchor link.
+* **Remediation Steps:**
+    1. Replace `[text](#anchor)` with plain prose `text` if no navigation is intended.
+    2. Or link to the concept on a *different* page that expands it.
+    3. If the link is intentional (e.g., a ToC entry at the top of a long page), it is by definition not circular — review the anchor slug match.
 
 ---
 
@@ -143,9 +176,17 @@ Z106 counts toward the **Link Integrity** category at `info` severity. Circular 
 
 ### Z201: SHIELD_SECRET {#z201}
 
-*   **Severity:** `security_breach` (Exit 2)
-*   **Technical Context:** The **Hex Shield** identified a pattern matching a known credential format (AWS keys, GitHub tokens, Private Keys). This check is performed on the raw byte stream to prevent obfuscation.
-*   **Remediation Steps:**
+:::danger[Quality Score — Security Override]
+When a Z201, Z202, or Z203 finding is detected, the [Deterministic Quality Score](../explanation/health-metrics.mdx) collapses to **0/100** unconditionally. A documentation source that leaks credentials cannot receive a quality score.
+:::
+
+:::danger[🔒 INVIOLABLE — Cannot be suppressed]
+`zenzic:ignore Z201` is **silently rejected**. The Shield fires unconditionally on every line. Security findings are facts, not suggestions — a credential leak cannot be declared a false positive.
+:::
+
+* **Severity:** `security_breach` (Exit 2)
+* **Technical Context:** The Shield scans every line — raw and normalised — for known credential patterns. Speculative Base64 decoding is applied to candidate tokens: if decoding reveals a credential pattern, the original (encoded) line is flagged. This prevents obfuscation via Base64 encoding in frontmatter values or code blocks.
+* **Remediation Steps:**
     1. **IMMEDIATE:** Rotate the leaked credential. It must be considered compromised.
     2. Remove the secret from the file.
     3. Purge the git history using `git-filter-repo` or a similar tool to ensure the secret is not just hidden but gone.
@@ -161,17 +202,21 @@ Z106 counts toward the **Link Integrity** category at `info` severity. Circular 
 
 ### Z202: PATH_TRAVERSAL {#z202}
 
-*   **Severity:** `error`
-*   **Technical Context:** A relative path uses `..` segments to escape the `docs/` root boundary. This is a security guardrail to ensure the Zenzic engine does not accidentally disclose or scan sensitive repository files (like `.env` or `config.py`) that aren't part of the documentation.
-*   **Remediation Steps:**
+:::danger[🔒 INVIOLABLE — Cannot be suppressed]
+`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The Blood Sentinel enforces the perimeter boundary unconditionally.
+:::
+
+* **Severity:** `error`
+* **Technical Context:** A relative path uses `..` segments to escape the `docs/` root boundary. This is a security guardrail to ensure the Zenzic engine does not accidentally disclose or scan sensitive repository files (like `.env` or `config.py`) that aren't part of the documentation.
+* **Remediation Steps:**
     1. Move the target asset or file into the `docs/` or `static/` hierarchy.
     2. If you must reference an external file, use a symbolic link (if permitted) or a literal absolute URL.
 
 ### Z203: PATH_TRAVERSAL_FATAL {#z203}
 
-*   **Severity:** `security_incident` (Exit 3)
-*   **Technical Context:** The **Blood Sentinel** detected an attempt to access restricted OS directories (e.g., `/etc/`, `/root/`). This is treated as a high-authority security incident, triggering a non-zero exit code that cannot be suppressed.
-*   **Remediation Steps:**
+* **Severity:** `security_incident` (Exit 3)
+* **Technical Context:** The **Blood Sentinel** detected an attempt to access restricted OS directories (e.g., `/etc/`, `/root/`). This is treated as a high-authority security incident, triggering a non-zero exit code that cannot be suppressed.
+* **Remediation Steps:**
     1. Investigate the source file for malicious intent or supply-chain compromise.
     2. Remove any absolute paths that reference host-system locations.
     3. Ensure no AI-generated content is injecting malicious probes into your documentation.
@@ -186,9 +231,9 @@ Z106 counts toward the **Link Integrity** category at `info` severity. Circular 
 Z301 is a **reference integrity error**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). It causes exit 1 and appears in `zenzic check references` output.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** A reference-style link (e.g., `[my link][ref]`) is present, but the definition (e.g., `[ref]: http://...`) is missing from the file. This results in the link being rendered as plain text in most Markdown engines.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** A reference-style link (e.g., `[my link][ref]`) is present, but the definition (e.g., `[ref]: http://...`) is missing from the file. This results in the link being rendered as plain text in most Markdown engines.
+* **Remediation Steps:**
     1. Add the missing definition at the bottom of the Markdown file.
     2. Check for typos in the reference ID.
 
@@ -198,9 +243,9 @@ Z301 is a **reference integrity error**. It does not reduce the [Deterministic Q
 Z302 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it to eliminate maintenance debt, but it will not affect your score.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** A reference definition exists but no link in the file uses it. While harmless for the end user, it creates maintenance debt and bloats the source file.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** A reference definition exists but no link in the file uses it. While harmless for the end user, it creates maintenance debt and bloats the source file.
+* **Remediation Steps:**
     1. Remove the unused definition.
     2. Or, update a link to use this reference if it was intended to be used.
 
@@ -210,9 +255,9 @@ Z302 is a **reference integrity warning**. It does not reduce the [Deterministic
 Z303 is a **reference integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Resolve it to avoid CommonMark ambiguity, but it will not affect your score.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** Multiple definitions exist for the same reference ID. According to CommonMark specifications, the first definition typically "wins," but this ambiguity should be resolved.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Multiple definitions exist for the same reference ID. According to CommonMark specifications, the first definition typically "wins," but this ambiguity should be resolved.
+* **Remediation Steps:**
     1. Ensure each reference ID has exactly one definition in the file.
     2. Consolidate duplicates into a single canonical reference.
 
@@ -226,21 +271,21 @@ Z303 is a **reference integrity warning**. It does not reduce the [Deterministic
 Z401 is a **structural hint** emitted only in Standalone mode. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Create an `index.md` in the flagged directory to resolve it.
 :::
 
-*   **Severity:** `info`
-*   **Technical Context:** In hierarchical documentation, every directory should have a "landing" page (usually `index.md` or `README.md`). Without this, the directory URL may return a 404 or a raw directory listing in some build engines.
-*   **Remediation Steps:**
+* **Severity:** `info`
+* **Technical Context:** In hierarchical documentation, every directory should have a "landing" page (usually `index.md` or `README.md`). Without this, the directory URL may return a 404 or a raw directory listing in some build engines.
+* **Remediation Steps:**
     1. Create a file named `index.md` or `README.md` in the flagged directory.
     2. Provide a brief overview of the contents of that directory.
 
 ### Z402: ORPHAN_PAGE {#z402}
 
-:::info[Quality Score — Orphan Detection (20%)]
-Z402 counts toward the **Orphan Detection** category, which carries a 20% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each orphan page applies a −20% decay to this category.
+:::info[Quality Score — Navigation & SEO (20%)]
+Z402 counts toward the **Navigation & SEO** category, which carries a 20% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each orphan page applies a −20% decay to this category.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** The file exists in the docs folder but is not reachable through any navigation menu. This is the structural equivalent of "Dead Code."
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** The file exists in the docs folder but is not reachable through any navigation menu. This is the structural equivalent of "Dead Code."
+* **Remediation Steps:**
     1. Include the page in your `nav` (MkDocs) or `sidebar` (Docusaurus) config.
     2. Delete the file if it is a leftover artifact from a previous version.
 
@@ -250,9 +295,9 @@ Z402 counts toward the **Orphan Detection** category, which carries a 20% weight
 Z403 is an **accessibility warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it for SEO and accessibility compliance.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** Images without alt text are invisible to screen readers and degrade SEO. Zenzic enforces accessibility as a core pillar of "Quartz Maturity."
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Images without alt text are invisible to screen readers and degrade SEO. Zenzic enforces accessibility as a core pillar of "Quartz Maturity."
+* **Remediation Steps:**
     1. Add descriptive text within the square brackets: `![A description of the image](url)`.
     2. Avoid generic text like "image" or "screenshot".
 
@@ -262,9 +307,9 @@ Z403 is an **accessibility warning**. It does not reduce the [Deterministic Qual
 Z404 is a **configuration integrity warning**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Fix it to ensure site branding (logo, favicon) renders correctly.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** The build engine's main configuration (e.g., `docusaurus.config.ts`) references a logo or favicon that does not exist at the specified path. This prevents the "Face" of the project from rendering correctly.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** The build engine's main configuration (e.g., `docusaurus.config.ts`) references a logo or favicon that does not exist at the specified path. This prevents the "Face" of the project from rendering correctly.
+* **Remediation Steps:**
     1. Check the `favicon:` or `logo.src:` paths in your config file.
     2. Ensure the file is physically present in the `static/` directory (for Docusaurus) or `docs/` (for MkDocs).
 
@@ -280,25 +325,25 @@ Z404 is a **configuration integrity warning**. It does not reduce the [Determini
 
 ### Z501: PLACEHOLDER {#z501}
 
-:::info[Quality Score — Content Quality (15%)]
-Z501 counts toward the **Content Quality** category, which carries a 15% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each placeholder found applies a −20% decay to this category.
+:::info[Quality Score — Content Excellence (30%)]
+Z501 counts toward the **Content Excellence** category, which carries a 30% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each placeholder found applies a −20% decay to this category.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** Detects strings like `TODO`, `FIXME`, or `[INSERT IMAGE HERE]`. These are markers of incomplete work that should not be present in production documentation.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Detects strings like `TODO`, `FIXME`, or `[INSERT IMAGE HERE]`. These are markers of incomplete work that should not be present in production documentation.
+* **Remediation Steps:**
     1. Search for the placeholder in the source file.
     2. Replace it with actual content or remove it.
 
 ### Z502: SHORT_CONTENT {#z502}
 
-:::info[Quality Score — Content Quality (15%)]
-Z502 counts toward the **Content Quality** category alongside Z501, which carries a 15% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each short page applies a −20% decay to this category.
+:::info[Quality Score — Content Excellence (30%)]
+Z502 counts toward the **Content Excellence** category alongside Z501, which carries a 30% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each short page applies a −20% decay to this category.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** Pages with very little text (default < 50 words) provide poor user value and can hurt search engine rankings. The word count is purely **semantic**: YAML frontmatter, MDX comments (`{/* */}`), and HTML comments (`<!-- -->`) are excluded — only rendered prose is counted.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Pages with very little text (default < 50 words) provide poor user value and can hurt search engine rankings. The word count is purely **semantic**: YAML frontmatter, MDX comments (`{/* */}`), and HTML comments (`<!-- -->`) are excluded — only rendered prose is counted.
+* **Remediation Steps:**
     1. Expand the documentation with more detail.
     2. If the page is a placeholder, combine it with a related page.
 
@@ -310,25 +355,52 @@ Z502 counts toward the **Content Quality** category alongside Z501, which carrie
 
 ### Z503: SNIPPET_ERROR {#z503}
 
-:::info[Quality Score — Snippet Validation (20%)]
-Z503 counts toward the **Snippet Validation** category, which carries a 20% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each invalid snippet applies a −20% decay to this category.
+:::info[Quality Score — Content Excellence (30%)]
+Z503 counts toward the **Content Excellence** category, which carries a 30% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each invalid snippet applies a −20% decay to this category.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** The **Snippet Guard** identified a syntax error in a fenced code block marked with a language tag (e.g., `py`, `js`). This prevents users from copying and running broken code examples. The reported line number is **absolute** — relative to the source file, not to the start of the snippet — enabling immediate navigation to the error.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** The **Snippet Guard** identified a syntax error in a fenced code block marked with a language tag (e.g., `py`, `js`). This prevents users from copying and running broken code examples. The reported line number is **absolute** — relative to the source file, not to the start of the snippet — enabling immediate navigation to the error.
+* **Remediation Steps:**
     1. Correct the syntax within the code block.
     2. If the block contains intentionally broken code (e.g., to show what NOT to do), use the `text` language tag to bypass validation.
 
 ### Z504: QUALITY_REGRESSION {#z504}
 
-*   **Severity:** `warning`
-*   **Technical Context:** Emitted by `zenzic diff` when the current [Deterministic Quality Score](../explanation/health-metrics.mdx) is lower than the saved baseline (`.zenzic-score.json`). Z504 is the signal that bridges the scoring layer and the finding layer — it identifies *which commit introduced a regression*. It is not itself weighted into the score (that would be circular); it is the diagnostic consequence of score degradation.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** Emitted by `zenzic diff` when the current [Deterministic Quality Score](../explanation/health-metrics.mdx) is lower than the saved baseline (`.zenzic-score.json`). Z504 is the signal that bridges the scoring layer and the finding layer — it identifies *which commit introduced a regression*. It is not itself weighted into the score (that would be circular); it is the diagnostic consequence of score degradation.
+* **Remediation Steps:**
     1. Run `zenzic score` to see the current score breakdown by category.
     2. Compare with the baseline: identify which category's issue count increased.
     3. Fix the underlying findings (Z101–Z503) that caused the drop.
     4. Run `zenzic score --save` on `main` after the fix to update the baseline.
+
+---
+
+### Z505: UNTAGGED_CODE_BLOCK {#z505}
+
+:::warning[Quality Score — Content Excellence (30%)]
+Z505 counts toward the **Content Excellence** category at `warning` severity. Each untagged code block reduces syntax highlighting coverage and prevents snippet validation. See [Health Metrics](../explanation/health-metrics.mdx).
+:::
+
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{
+    code: "Z505",
+    file: "docs/reference/api.md",
+    line: 17,
+    message: "Fenced code block has no language specifier. Add a language tag (e.g. \`\`\`python, \`\`\`bash, \`\`\`toml) to enable syntax highlighting and snippet validation."
+  }]}
+/>
+
+* **Severity:** `warning`
+* **Technical Context:** Detected by `UntaggedCodeBlockRule`. A fenced code block opening delimiter (`` ``` `` or `~~~`) with no info string (or only whitespace). Zenzic implements the CommonMark fence invariant: a *closing* fence must have an empty info string — any non-whitespace character in the info string makes it an *opening* fence. This means Docusaurus metadata (e.g. `` ```python title="file.py" showLineNumbers ``) is fully supported and never flagged.
+* **Why Zenzic implements this:** Pure-Python structural check that eliminates the Node.js Tax from your CI pipeline. See [The Sentinel vs. Proofreader](../explanation/structural-integrity.mdx#dimension-accessibility) for the full rationale.
+* **Remediation Steps:**
+    1. Add a language tag immediately after the opening backticks: `` ```python ``, `` ```bash ``, `` ```toml ``.
+    2. For output or display-only blocks, use `` ```text `` or `` ```plaintext ``.
+    3. For tutorial blocks showing raw Markdown, use `` ```markdown ``.
 
 ---
 
@@ -340,9 +412,9 @@ Z503 counts toward the **Snippet Validation** category, which carries a 20% weig
 Z901 is a **system-level error**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Investigate the plugin or rule that raised the exception and report a bug if it is a core scanner.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** An unhandled exception occurred within a core rule or a plugin. This is a system-level failure that usually indicates a bug in Zenzic or an incompatible environment.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** An unhandled exception occurred within a core rule or a plugin. This is a system-level failure that usually indicates a bug in Zenzic or an incompatible environment.
+* **Remediation Steps:**
     1. Check the full CLI output for a Python traceback.
     2. Report the issue at `https://github.com/PythonWoods/zenzic/issues`.
 
@@ -352,52 +424,116 @@ Z901 is a **system-level error**. It does not reduce the [Deterministic Quality 
 Z902 is a **system-level timeout**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Simplify the offending custom rule's regex pattern to resolve it.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** A rule took too long to execute (default > 30s). This is almost always caused by a **Catastrophic Backtracking** issue in a custom regular expression provided in `[[custom_rules]]`.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** A rule took too long to execute (default > 30s). This is almost always caused by a **Catastrophic Backtracking** issue in a custom regular expression provided in `[[custom_rules]]`.
+* **Remediation Steps:**
     1. Review your custom regex patterns in `zenzic.toml`.
     2. Simplify the patterns to avoid nested quantifiers like `(a+)+`.
     3. Use non-backtracking alternatives if possible.
 
 ### Z903: UNUSED_ASSET {#z903}
 
-:::info[Quality Score — Asset Integrity (10%)]
-Z903 counts toward the **Asset Integrity** category, which carries a 10% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each unused asset applies a −20% decay to this category.
+:::info[Quality Score — Brand & Assets (10%)]
+Z903 counts toward the **Brand & Assets** category, which carries a 10% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each unused asset applies a −20% decay to this category.
 :::
 
-*   **Severity:** `warning`
-*   **Technical Context:** An image or asset file exists in the directory but is never referenced by any Markdown file. These "Dark Assets" bloat your repository and build artifacts.
-*   **Remediation Steps:**
+* **Severity:** `warning`
+* **Technical Context:** An image or asset file exists in the directory but is never referenced by any Markdown file. These "Dark Assets" bloat your repository and build artifacts.
+* **Remediation Steps:**
     1. Delete the unused file.
     2. Or, use it in a documentation page where appropriate.
 
 ### Z904: NAV_CONTRACT {#z904}
 
-:::warning[Not included in the Quality Score]
-Z904 is a **structural error**, not a quality metric. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). It causes exit 1 and appears in `zenzic check all` output. Fix the navigation config to resolve it.
+:::info[Quality Score — Brand & Assets (10%)]
+Z904 counts toward the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each nav contract violation applies a −20% decay to the 10%-weighted brand category. Fix the navigation config to eliminate the finding.
 :::
 
-*   **Severity:** `error`
-*   **Technical Context:** A conflict between the physical file structure and the engine's navigation config. For example, a `mkdocs.yml` nav entry pointing to `guide/setup.md` while the file is actually at `guides/setup.md`.
-*   **Remediation Steps:**
+* **Severity:** `error`
+* **Technical Context:** A conflict between the physical file structure and the engine's navigation config. For example, a `mkdocs.yml` nav entry pointing to `guide/setup.md` while the file is actually at `guides/setup.md`.
+* **Remediation Steps:**
     1. Align the navigation path in your config file with the physical file path.
     2. Run `zenzic check all` to verify the fix across the VSM.
 
 ---
 
-## Best Practices & Diagnostic Suppression
+### Z905: BRAND_OBSOLESCENCE {#z905}
+
+:::info[Quality Score — Brand & Assets (10%)]
+Brand obsolescence is a key metric of your documentation's maturity. Every Z905 finding contributes to the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). A 100/100 score requires brand consistency alongside structural and content integrity. Suppress intentional historical references with `<!-- zenzic:ignore Z905 -->` (Markdown) or `{/* zenzic:ignore Z905 */}` (MDX).
+:::
+
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{
+    code: "Z905",
+    file: "docs/explanation/architecture.mdx",
+    line: 12,
+    message: "Obsolete brand term 'Obsidian': use 'Quartz' instead. Add <!-- zenzic:ignore Z905 --> (Markdown) or {/* zenzic:ignore Z905 */} (MDX) to the line to suppress intentional references."
+  }]}
+/>
+
+* **Severity:** `warning`
+* **Technical Context:** Detected by `BrandObsolescenceRule`, configured via `[project_metadata]` in `zenzic.toml`. When `release_name` is set (e.g. `release_name = "Quartz"`) and `obsolete_names` lists previous release identifiers (e.g. `obsolete_names = ["Obsidian"]`), any occurrence of a listed term in a scanned file raises Z905. Lines carrying a `zenzic:ignore Z905` suppression comment are silently skipped — use `<!-- zenzic:ignore Z905 -->` in ``.md`` files and `{/* zenzic:ignore Z905 */}` in ``.mdx`` files. Files matching `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) are fully exempt.
+* **Remediation Steps:**
+    1. Update the text to reference the current release name.
+    2. For intentional historical references in ``.md`` files, append `<!-- zenzic:ignore Z905 -->` to the line.
+    3. For intentional historical references in ``.mdx`` files, append `{/* zenzic:ignore Z905 */}` to the line.
+    4. To exempt an entire file pattern, add it to `obsolete_names_exclude_patterns` in `zenzic.toml`.
+
+---
+
+### Z906: NO_FILES_FOUND {#z906}
+
+:::note[Informational — exit 0]
+Z906 is an informational diagnostic. It does not fail the workflow step and is suppressed in machine output formats (`json`, `sarif`) per Rule R20.
+:::
+
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{
+    code: "Z906",
+    file: "docs/",
+    line: 0,
+    message: "No Markdown sources found in the target directory — audit skipped.",
+    severity: "note"
+  }]}
+/>
+
+* **Severity:** `note`
+* **Technical Context:** Emitted by `check_all` when the resolved `docs_root` contains zero `.md` / `.mdx` files after applying all exclusion layers. The most common trigger is running `zenzic check all` against a repository root that has no documentation directory yet (`docs/` missing or empty). The finding is text-output only — machine formats (`json`, `sarif`) remain clean.
+* **Remediation Steps:**
+    1. Verify that `docs_dir` in `zenzic.toml` (or `--docs-dir` flag) points to the correct directory.
+    2. If the directory is intentionally empty (e.g. during initial project setup), Z906 can be safely ignored — it exits 0.
+    3. If scanning a non-documentation repository by mistake, adjust the target path.
+
+---
 
 ### Suppressing Diagnostics
 
-While Zenzic encourages fixing all findings, you can suppress specific codes using inline comments. This is useful for intentional violations (e.g., linking to external resources that may change, documenting legacy behavior):
+Zenzic supports **line-level, per-code suppression** via inline comments. Add a `zenzic:ignore` comment at the end of any line to silence a specific diagnostic for that line only.
+
+**Format-aware suppression (CEO-143 — Polymorphic Suppression Protocol):**
+
+For ``.md`` files use a standard HTML comment (invisible in rendered Markdown):
 
 ```markdown
-<!-- zenzic-disable Z103 ORPHAN_LINK -->
-This page is intentionally hidden from navigation.
-
-<!-- zenzic-disable Z501, Z502 -->
-This section documents legacy behavior and is intentionally brief.
+The Obsidian era defined our foundations. <!-- zenzic:ignore Z905 -->
 ```
+
+For ``.mdx`` files use a JSX comment (invisible in rendered MDX, safe for Docusaurus/React):
+
+```mdx
+The Obsidian era defined our foundations. {/* zenzic:ignore Z905 */}
+```
+
+Each suppression comment silences **only** the specified code on that line. To suppress multiple codes on one line, add multiple comments. To exempt an entire file, use `obsolete_names_exclude_patterns` in `zenzic.toml` (Z905) or the relevant `excluded_files` patterns.
+
+:::tip[Use suppression sparingly]
+Suppression is for intentional, documented decisions — not for silencing findings you haven't reviewed. Every suppressed line should have a corresponding comment or ADR entry explaining why.
+:::
 
 ### Recommended Workflow
 
@@ -409,9 +545,9 @@ This section documents legacy behavior and is intentionally brief.
 
 ### Engine-Specific Considerations
 
-*   **Docusaurus:** Z103 (ORPHAN_LINK) warnings may be intentional for pages outside the main sidebar. Consider using `sidebars.js` routes or suppressing these findings.
-*   **MkDocs:** Z401 (MISSING_DIRECTORY_INDEX) is especially relevant in hierarchical docs; ensure every directory has an `index.md`.
-*   **Standalone Mode:** Orphan detection (Z103, Z402) is disabled without a navigation contract. Use explicitly.
+* **Docusaurus:** Z103 (ORPHAN_LINK) warnings may be intentional for pages outside the main sidebar. Consider using `sidebars.js` routes or suppressing these findings.
+* **MkDocs:** Z401 (MISSING_DIRECTORY_INDEX) is especially relevant in hierarchical docs; ensure every directory has an `index.md`.
+* **Standalone Mode:** Orphan detection (Z103, Z402) is disabled without a navigation contract. Use explicitly.
 
 ---
 
@@ -443,13 +579,13 @@ to **v0.7.0 (Quartz Maturity) or later**. These legacy codes will be removed ent
 For maximum effectiveness, integrate Zenzic checks into your CI/CD pipeline:
 
 ```bash
-# Fail on any error (Z1xx, Z4xx, Z9xx):
+# Fail on any error (Z1xx, Z4xx, Z9xx)
 zenzic check all
 
-# Fail on errors OR warnings (promote with --strict):
+# Fail on errors OR warnings (promote with --strict)
 zenzic check all --strict
 
-# Always exit 0 for non-blocking audits:
+# Always exit 0 for non-blocking audits
 zenzic check all --exit-zero
 ```
 

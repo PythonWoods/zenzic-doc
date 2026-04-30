@@ -61,11 +61,10 @@ zenzic diff --format json
   "status": "success",
   "timestamp": "2026-03-24T12:00:00+00:00",
   "categories": [
-    {"name": "links",        "weight": 0.35, "issues": 0, "category_score": 1.0, "contribution": 0.35},
-    {"name": "orphans",      "weight": 0.20, "issues": 0, "category_score": 1.0, "contribution": 0.20},
-    {"name": "snippets",     "weight": 0.20, "issues": 0, "category_score": 1.0, "contribution": 0.20},
-    {"name": "placeholders", "weight": 0.15, "issues": 0, "category_score": 1.0, "contribution": 0.15},
-    {"name": "assets",       "weight": 0.10, "issues": 0, "category_score": 1.0, "contribution": 0.10}
+    {"name": "structural", "weight": 0.40, "issues": 0, "category_score": 40.0, "contribution": 40.0},
+    {"name": "content",    "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
+    {"name": "navigation", "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
+    {"name": "brand",      "weight": 0.10, "issues": 0, "category_score": 10.0, "contribution": 10.0}
   ]
 }
 ```
@@ -116,12 +115,15 @@ jobs:
   zenzic:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v6
 
       - name: Lint documentazione
+
         run: uvx zenzic check all --strict
 
       - name: Controllo riferimenti e Shield
+
         run: uvx zenzic check references
 ```
 
@@ -144,17 +146,21 @@ jobs:
   zenzic:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v6
 
       - name: Setup uv
+
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 
       - name: Lint documentazione
+
         run: uvx zenzic check all --strict
 
       - name: Controllo riferimenti e Shield
+
         run: uvx zenzic check references
 ```
 
@@ -189,9 +195,11 @@ jobs:
       contents: read
       security-events: write        # necessario per l'upload SARIF
     steps:
+
       - uses: actions/checkout@v6
 
       - name: Esegui Zenzic
+
         uses: PythonWoods/zenzic-action@v1
         with:
           version: "0.7.0"          # fissa a una release stabile
@@ -233,13 +241,16 @@ L'output `findings-count` può essere consumato dagli step successivi per aggior
 o notifiche Slack senza dover rileggere il file SARIF:
 
 ```yaml title=".github/workflows/zenzic.yml"
+
       - name: Esegui Zenzic
+
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
         with:
           version: "0.7.0"
 
       - name: Mostra conteggio finding
+
         run: echo "Zenzic ha trovato ${{ steps.zenzic.outputs.findings-count }} problemi"
 ```
 
@@ -270,9 +281,11 @@ jobs:
   score:
 runs-on: ubuntu-latest
 steps:
+
   - uses: actions/checkout@v6
 
   - name: 🛡️ Calcola Zenzic Score
+
     id: zenzic_step
     run: |
       uvx zenzic score --save   # soglia letta da fail_under in zenzic.toml
@@ -280,6 +293,7 @@ steps:
       echo "SCORE=$SCORE" >> "$GITHUB_OUTPUT"
 
   - name: 🔄 Aggiorna Gist per Badge
+
     uses: Schneegans/dynamic-badges-action@v1.7.0
     with:
       auth: ${{ secrets.GIST_SECRET }}
@@ -312,7 +326,9 @@ steps:
 `zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato:
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - name: Rileva regressione del punteggio
+
   run: |
     uvx zenzic score --save         # aggiorna snapshot
     uvx zenzic diff --threshold 5   # fallisce se il punteggio scende > 5 punti
@@ -407,9 +423,13 @@ Lo Shield in CI è la tua ultima linea di difesa. L'hook pre-commit è la prima:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
+
   - repo: local
+
     hooks:
+
       - id: zenzic-shield
+
         name: Zenzic Shield
         language: system
         entry: uvx zenzic check all

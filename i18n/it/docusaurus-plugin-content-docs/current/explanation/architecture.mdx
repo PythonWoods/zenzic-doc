@@ -136,7 +136,7 @@ Lo Zenzic Shield e un middleware di sicurezza che opera trasversalmente a tutta 
   />
 </div>
 
-```
+```text
 Riga sorgente
     |
     v
@@ -413,7 +413,7 @@ Quando un adapter viene istanziato ma non trova il file di configurazione del mo
 
 ## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
 
-Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in v0.6.1 "Obsidian Bastion". Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
+Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in v0.6.1. Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
 
 ### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
 
@@ -581,7 +581,7 @@ Zenzic usa quattro codici di uscita, ognuno con una semantica precisa:
 
 Quando piu condizioni si verificano nella stessa esecuzione, la priorità è:
 
-```
+```text
 Exit 3 (Blood Sentinel)  >  Exit 2 (Shield)  >  Exit 1 (Risultati)  >  Exit 0 (Pulito)
 ```
 
@@ -650,7 +650,9 @@ applicazione engine-agnostico.
 
 ```yaml title=".github/workflows/zenzic.yml"
 # GitHub Actions
+
 - run: zenzic check all --strict
+
 ```
 
 Questo produce un'applicazione identica con VSM completo, Shield (ZRT-006/007) e Blood Sentinel
@@ -664,7 +666,7 @@ La CLI è strutturata come un **package** (`src/zenzic/cli/`), non come un modul
 
 ### Struttura del package {#cli-package-layout}
 
-```
+```text
 src/zenzic/cli/
 ├── __init__.py       # Superficie di re-export pubblica per main.py — nessuna logica
 ├── _shared.py        # Custode dello Stato Visivo: singleton console, singleton _ui, utility

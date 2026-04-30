@@ -25,13 +25,16 @@ You will see a real security breach, a real shield, and a real clean report — 
 
 ## Step 1 — Run Zenzic without installing it {#step-1-uvx}
 
-Point Zenzic at any Markdown folder. No virtual environment, no `pip install`:
+Point Zenzic at your project root. No virtual environment, no `pip install`:
 
 ```bash
-uvx zenzic check all --docs path/to/your/docs
+uvx zenzic check all
 ```
 
 `uvx` fetches Zenzic in an isolated environment and discards it when the command finishes.
+Run this from the directory that contains your `zenzic.toml` (or from the repo root).
+Zenzic auto-discovers the configuration and activates the correct engine — including
+orphan detection (Z402) when a nav contract is present.
 This is the recommended workflow for CI and for trying Zenzic on an unfamiliar repo.
 
 ---
@@ -73,7 +76,7 @@ the same engine that caught the secret just confirmed that clean docs are genuin
 uvx zenzic lab
 ```
 
-Launches the interactive menu of all 11 scenarios: credential leaks, broken links, orphan pages,
+Launches the interactive menu of all 17 acts: credential leaks, broken links, orphan pages,
 path traversal, and the Sentinel Seal. Zero install. Zero config. Pure experience.
 
 → Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (The Siege), `uvx zenzic lab 0` (The Seal).
@@ -151,4 +154,5 @@ every page is reachable, and no credential is exposed. `100/100` is the only num
 - **Strict mode** — add `--strict` to also validate external URLs
 - **Custom rules** — add `[[custom_rules]]` entries to `zenzic.toml` to enforce your own patterns
 - **Finding codes** — see the [Finding Codes reference](../reference/finding-codes) for the full
+
   `Zxxx` diagnostic catalogue

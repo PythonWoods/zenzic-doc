@@ -65,7 +65,9 @@ class NoDraftRule(BaseRule):
 
 - **Never** open files, make network requests, or call subprocesses.
 - **Always** return the same output for the same input — no randomness, no
+
   dependency on mutable global state.
+
 - **Not** mutate their arguments (`file_path`, `text`, `vsm`, `anchors_cache`).
 
 :::warning[Avoid global mutable state]
@@ -85,7 +87,6 @@ completion.  All state must be returned as `RuleFinding` objects.
 import re
 from pathlib import Path
 from zenzic.rules import BaseRule, RuleFinding
-
 
 class NoInternalHostnameRule(BaseRule):
     """Flag occurrences of the internal hostname in public documentation."""
@@ -126,7 +127,7 @@ no-internal-hostname = "my_org_rules.rules:NoInternalHostnameRule"
 ```
 
 The entry-point name (`no-internal-hostname`) is the **plugin ID** that users
-reference in `zenzic.toml` (see [Enabling plugins](#enabling-plugins) below).
+reference in `zenzic.toml` (see [Enabling plugins](#enabling-plugins) below). {/* zenzic:ignore Z107 */}
 
 Install your package alongside Zenzic:
 
@@ -219,7 +220,6 @@ from collections.abc import Mapping
 from zenzic.core.rules import BaseRule, RuleFinding
 from zenzic.models.vsm import Route
 
-
 class NoOrphanLinkRule(BaseRule):
     @property
     def rule_id(self) -> str:
@@ -247,7 +247,6 @@ setup required:
 from zenzic.rules import run_rule
 from my_org_rules.rules import NoInternalHostnameRule
 
-
 def test_internal_hostname_detected():
     findings = run_rule(
         NoInternalHostnameRule(),
@@ -256,7 +255,6 @@ def test_internal_hostname_detected():
     assert len(findings) == 1
     assert findings[0].rule_id == "MYORG-001"
     assert findings[0].severity == "error"
-
 
 def test_clean_content_passes():
     findings = run_rule(NoInternalHostnameRule(), "All public content here.")
@@ -295,13 +293,19 @@ refuses to start.  Fix the rule before running Zenzic.
  Bridge your rule from implementation to production Sentinel flow:
 
  1. Register and enable the plugin ID in `zenzic.toml` under `plugins`
-     (see [Enabling plugins](#enabling-plugins)).
+
+     (see [Enabling plugins](#enabling-plugins)). {/* zenzic:ignore Z107 */}
+
  2. Validate the rule under strict pipeline semantics:
+
      `zenzic check all --strict`.
      For run-time policy controls, see
      [CLI Commands: Global flags](../../../reference/cli.mdx#global-flags).
+
  3. If your rule is nav-aware, map expected Ghost Route behavior against the VSM model:
+
      [Checks Reference — VSM](../../../reference/checks#vsm-how-it-works).
+
 :::
 
 [ep]: https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata

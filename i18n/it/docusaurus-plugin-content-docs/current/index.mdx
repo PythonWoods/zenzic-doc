@@ -45,7 +45,7 @@ Qualsiasi punteggio inferiore è un diagnostico preciso e azionabile — non un 
 
 ---
 
-## Smetti di decifrare i log. Inizia a risolvere i problemi.
+## Smetti di decifrare i log. Inizia a risolvere i problemi
 
 **Prima di Zenzic** — un fallimento CI standard:
 
@@ -84,6 +84,7 @@ una credenziale:
 - La pipeline **si blocca incondizionatamente** — l'exit code 2 non può essere soppresso da alcun flag
 - La credenziale è **mascherata** nel report (mai stampata per intero)
 - La correggi **prima che entri nella git history** — niente BFG Repo Cleaner, niente rotazioni
+
   d'emergenza a mezzanotte, nessun post-mortem di incidente
 
 Questo non è un controllo lint. È un **gate di sicurezza non negoziabile**.
@@ -106,7 +107,9 @@ Questo non è un controllo lint. È un **gate di sicurezza non negoziabile**.
 ## Enterprise Ready — Integrazione Nativa con GitHub
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     format: sarif
     upload-sarif: "true"

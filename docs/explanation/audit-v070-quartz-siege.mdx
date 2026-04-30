@@ -1,0 +1,161 @@
+---
+sidebar_position: 20
+sidebar_label: Quartz Tribunal Audit
+title: The Quartz Tribunal — AI-Driven Security Audit of Zenzic v0.7.0
+description: A military-grade security audit of Zenzic v0.7.0 conducted by three independent AI teams before the stable release. What was found, what was fixed, and what was sealed.
+---
+
+# The Quartz Tribunal — AI-Driven Security Audit of Zenzic v0.7.0
+
+*"Assediato. Riparato. Sigillato."*
+
+Before a tool that guarantees documentation integrity can call itself stable, it must first
+face an adversary that knows exactly where to look for cracks. This is the account of that
+encounter.
+
+---
+
+## The Objective {#the-objective}
+
+The **Safe Harbor Guarantee** is not a marketing claim. It is an engineering contract:
+if Zenzic exits 0 and emits the Sentinel Seal, the documentation source is structurally
+sound, link-complete, and secret-free. That contract can only be trusted if the engine
+itself has been tested by an adversary, not just by its authors.
+
+CEO Directive 189 — *"The Inquisitor's Mandate"* — commissioned a structured security audit
+of Zenzic v0.7.0 prior to the stable release. Three independent AI teams were assembled.
+The mandate: find every crack in the Safe Harbor, fix it, and certify the result.
+
+:::note Baseline
+**1,301 tests at audit time (D094). 1,307 after D095 sealed all remaining Known Limitations.**
+Zero failures before, zero after. The audit made Zenzic stronger than it entered.
+:::
+
+---
+
+## The Methodology — The Magistrate Model {#the-methodology}
+
+The audit used a three-team structure designed to eliminate confirmation bias:
+
+| Team | Role | Bias |
+|------|------|------|
+| 🔴 **Red Team** | Adversarial — find what the Shield misses | Maximum aggression |
+| ⚪ **Blue Team** | Defensive — verify that RULE invariants hold | Maximum rigor |
+| 🟣 **Purple Team** | Ethical Arbiter — separate real bugs from noise | Maximum objectivity |
+
+No team was permitted to declare a finding without Purple Team review. A finding that
+would not survive objectivity scrutiny was discarded as noise. Only findings that survived
+the Magistrate Model entered the Bug Registry.
+
+---
+
+## The Siege Chronicle {#the-siege-chronicle}
+
+### D1 — @site/ Path Traversal (Docusaurus)
+
+**Vector:** `[config](@site/../../zenzic/pyproject.toml)` — a link attempting to escape
+the documentation root via Docusaurus's `@site/` alias mechanism.
+
+**Result:** Z202 PATH_TRAVERSAL detected. The `InMemoryPathResolver` resolved the path
+outside the authorized perimeter and fired correctly.
+
+**However**, a severity bug was discovered: Z202 was mapped to `"error"` severity →
+exit 1 (suppressible by `--exit-zero`). Per [RULE R4](../reference/finding-codes.mdx#exit-code-contract),
+exit codes 2 and 3 are **never** suppressible. PATH_TRAVERSAL (Z202) must exit 3.
+
+**Fix applied:** `_check.py` `_to_findings()` — the severity condition was expanded to
+include `PATH_TRAVERSAL` alongside `PATH_TRAVERSAL_SUSPICIOUS`.
+
+🔴 Red Team blocked · ⚪ Blue Team severity bug sealed · Exit 3. Non-suppressible. ✅
+
+---
+
+### D3 — JSX Prop Shield Bypass
+
+**Vector:** `<MyComponent apiKey="ghp_<EXAMPLE_TOKEN>" />` —
+a GitHub PAT embedded in a JSX component attribute, not in raw Markdown prose.
+
+**Hypothesis:** Shield might skip JSX prop values since they are not prose.
+
+**Result:** Shield detected `ghp_` immediately. Exit 2. SECURITY BREACH DETECTED.
+
+Shield Pass 1A uses `enumerate(fh, start=1)` on the raw file bytes. It never skips lines
+based on content type. JSX props are plain text to the file scanner. RULE R9 holds
+unconditionally.
+
+🔴 Red Team blocked · RULE R9 confirmed. ✅
+
+---
+
+### S2 — Base64-Encoded Frontmatter Secret → **Sealed in v0.7.0**
+
+**Vector:** YAML frontmatter field `api_token: Z2hwXzEy[…base64…]` —
+— a base64-encoded GitHub PAT stored as a configuration value in frontmatter.
+
+**D094 result:** Shield exited 0. This was documented as Known Limitation KL-001.
+
+**D095 resolution:** Speculative Base64 decoding implemented in `shield.py` (CEO-194).
+The decoder extracts candidate tokens from every normalised line, decodes each as UTF-8,
+and re-scans the decoded text through the full `_SECRETS` pattern table. The canonical
+test vector (`Z2hwXzEy[…base64…]` → `ghp_[TOKEN]`)
+now triggers Z201 and exits 2.
+
+**False-positive guard:** A minimum token length of 20 characters (before decoding)
+prevents incidental short base64 strings from triggering spurious findings.
+
+🔴 Red Team attack vector **SEALED**. KL-001 closed. Exit 2 confirmed. ✅
+
+---
+
+## The Sealed Cracks {#the-sealed-cracks}
+
+| ID | Area | Finding | Fix | Status |
+|----|------|---------|-----|--------|
+| BUG-CEO189-01 | `cli/_check.py` | Z202 exits 1 instead of 3 (suppressible) | Severity condition expanded to `PATH_TRAVERSAL` | ✅ Sealed |
+| BUG-CEO189-02 | `suppression-policy.mdx` EN+IT | Z106 mislabeled `ALT_TEXT_MISSING` | Corrected to `CIRCULAR_LINK` | ✅ Sealed |
+| BUG-CEO189-03 | `structural-integrity.mdx` EN+IT | Z106 in Dimension 3 (should be Z403) | Code + name corrected | ✅ Sealed |
+| BUG-CEO189-04 | `health-metrics.mdx` EN+IT | Z106 penalty name wrong | Replaced with correct `CIRCULAR_LINK` / Z403 | ✅ Sealed |
+| BUG-CEO189-05 | `ZENZIC_BRAIN.md` RULE R23 | Z106 incorrectly described as Alt Text | RULE R23 corrected | ✅ Sealed |
+| BUG-CEO194-B64 | `shield.py` | S2 Red Team vector (Base64 bypass) | Speculative Base64 decoder added | ✅ Sealed |
+| KL-002 | `resolver.py` | False-positive PathTraversal on case-insensitive filesystems (APFS/NTFS) | `os.path.normcase` applied to boundary comparison | ✅ Fixed (portability) |
+
+**7 findings sealed across 2 sprints. 0 open security issues.**
+
+---
+
+## The Verdict {#the-verdict}
+
+### Certification Metrics
+
+| Metric | Value |
+|--------|-------|
+| Tests passing | **1,307** (Python 3.11 / 3.12 / 3.13) |
+| Code coverage | 80.28% (≥ 80% required) |
+| Interactive Acts in `zenzic lab` | **20** (Acts 0–19) |
+| Masterclass length | **1,525 lines** |
+| Red Team attacks launched | 3 (D1, D3, S2) |
+| Red Team attacks blocked (D094) | 2/3 |
+| Red Team attacks sealed (D095) | 3/3 (**S2 sealed**) |
+| Critical security fixes | 2 (Z202 exit code, Base64 decoder) |
+| Documentation bugs fixed | 5 (across 7 files) |
+| Open security issues | **0** |
+
+### Invariant Verification
+
+| Invariant | Test | Result |
+|-----------|------|--------|
+| RULE R4 — Exit 2/3 never suppressible | `--exit-zero` on Z202 | ✅ Exit 3, not suppressed |
+| RULE R9 — Shield scans raw content | JSX prop `ghp_` | ✅ Detected, exit 2 |
+| RULE R8 — Zero subprocesses | Full code audit | ✅ No `subprocess`, no `os.system` |
+| RULE R3 — Finding codes mandatory | All findings carry Zxxx | ✅ `codes.normalize()` confirmed |
+| ADR-013 — Z2xx inviolable | `_INVIOLABLE_CODES` guard | ✅ Present in `rules.py` |
+| RULE R20 — Machine silence | SARIF format, no Rich output | ✅ Gated at every call site |
+
+### The Quartz Certification
+
+:::note Quartz Tribunal Certification — Zenzic v0.7.0
+**CERTIFIED.** The Tribunal reviewed 3 attack vectors, sealed all open cracks, and
+verified all invariants. Exit 0. Sentinel Seal. ✨
+
+*"The Safe Harbor is not a promise. It is a proof."*
+:::

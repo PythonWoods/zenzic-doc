@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 #
-# Zenzic Journal — Semantic Tag Registry
+# Zenzic Blog — Semantic Tag Registry
 # Colours are keyed to the Sentinel Palette and the CLI UIPalette.
 
 release:
@@ -93,3 +93,13 @@ obsidian-maturity:
   label: "Quartz Maturity"
   permalink: /obsidian-maturity
   description: "🛡️ Codename for Zenzic v0.7.0 — the Safe Harbor reaches production maturity."
+
+engineering-culture:
+  label: "Engineering Culture"
+  permalink: /engineering-culture
+  description: "🧠 Engineering philosophy, team practices, and development methodology."
+
+ai-governance:
+  label: "AI Governance"
+  permalink: /ai-governance
+  description: "🤖 Sovereign Memory Architecture, AI agent policies, and human-AI collaboration."

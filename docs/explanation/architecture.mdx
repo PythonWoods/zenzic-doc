@@ -120,7 +120,7 @@ The Zenzic Shield is a credential detection engine integrated into Pass 1. It op
 
 ### Processing Flow {#shield-flow}
 
-```
+```text
 Raw line from file
     |
     v
@@ -187,7 +187,7 @@ line = safe_read_line(raw_line, file_path, line_no)
 
 ## Enterprise-Grade Security Foundations {#enterprise-security}
 
-This section documents the security hardening features introduced in v0.6.1 "Obsidian Bastion". These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
+This section documents the security hardening features introduced in v0.6.1. These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
 
 ### F2-1 — Anti-ReDoS Line Truncation {#f2-1-antiredos}
 
@@ -323,7 +323,8 @@ The `--offline` flag triggers a global architectural shift in how the VSM resolv
 3. **`map_url()`** produces flat `.html` paths (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
 
 This ensures that Zenzic remains a **Structural Custodian** for documentation distributed on filesystems where directory-index resolution (e.g., `/page/` → `/page/index.html`) is unavailable.
-```
+
+```text
 
 ### Built-in Adapters {#built-in-adapters}
 
@@ -400,6 +401,7 @@ When a link target uses `@site/static/img/logo.png`, the resolver strips the vir
 The `get_adapter()` factory uses entry-point discovery to find adapters:
 
 ```mermaid
+
 flowchart LR
     CLI["CLI: get_adapter(engine, docs_root, repo_root)"] --> CACHE{Cache hit?}
     CACHE -->|Yes| RETURN[Return cached adapter]
@@ -417,19 +419,24 @@ flowchart LR
     style CACHE fill:#3b82f6,color:#fff
     style STORE fill:#22c55e,color:#fff
     style VANILLA fill:#f59e0b,color:#fff
-```
 
 ```
+
+```text
+
 1. Query zenzic.adapters entry-point group for context.engine
 2. If found: instantiate via from_repo() classmethod (if available)
 3. If not found: return StandaloneAdapter (neutral no-op behaviour)
+
 ```
 
 Third-party adapters can be registered via `pyproject.toml`:
 
 ```toml
+
 [project.entry-points."zenzic.adapters"]
 myengine = "my_package.adapter:MyEngineAdapter"
+
 ```
 
 ### Adapter Cache {#adapter-cache}
@@ -449,6 +456,7 @@ The `LayeredExclusionManager` is constructed once per CLI invocation and passed 
 ### Construction {#exclusion-construction}
 
 ```python
+
 manager = LayeredExclusionManager(
     config,
     repo_root=repo_root,
@@ -456,6 +464,7 @@ manager = LayeredExclusionManager(
     cli_exclude=["drafts"],
     cli_include=["generated-api"],
 )
+
 ```
 
 At construction time:
@@ -500,6 +509,7 @@ Hijacking**: the caller's environment silently overrides the target's.
 ### The Solution: Three-Step Sovereignty
 
 ```text
+
 Step 1 — find_repo_root(search_from=target)
          Searches upward from the resolved target path, not from os.getcwd().
          Loads the target repository's zenzic.toml exclusively.
@@ -515,6 +525,7 @@ Step 3 — CEO-043 Sandbox Guard
          If docs_root falls outside repo_root (external target), adopt
          docs_root as the new repo_root so Blood Sentinel guards escapes
          from the target, not the location of the caller.
+
 ```
 
 ### The Genesis Nomad (`init`)
@@ -525,8 +536,10 @@ The given path becomes the `repo_root` directly, and the directory is created
 target directory. The caller's CWD is never written to.
 
 ```bash
+
 zenzic init ../new-project          # creates ../new-project/zenzic.toml
 zenzic init /workspace/fresh-docs   # creates the directory if needed
+
 ```
 
 ### Invariants
@@ -609,8 +622,11 @@ gating from build tooling and makes every enforcement point engine-agnostic.
 **Migration:** Replace the `plugins: - zenzic` entry in `mkdocs.yml` with a CI step:
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 # GitHub Actions
+
 - run: zenzic check all --strict
+
 ```
 
 This produces identical enforcement with the full VSM, Shield (ZRT-006/007), and Blood Sentinel
@@ -622,12 +638,14 @@ External tools that need to invoke Zenzic checks programmatically should use the
 API directly, never shell out:
 
 ```python
+
 from zenzic.core.scanner import find_repo_root
 from zenzic.models.config import ZenzicConfig
 
 repo_root = find_repo_root()
 config, _ = ZenzicConfig.load(repo_root)
 # ... invoke scanner / validator functions directly
+
 ```
 
 All intelligence lives in `zenzic.core`. The CLI is a thin dispatch layer over the same
@@ -641,7 +659,8 @@ The CLI is structured as a **package** (`src/zenzic/cli/`), not a monolithic mod
 
 ### Package layout {#cli-package-layout}
 
-```
+```text
+
 src/zenzic/cli/
 ├── __init__.py       # Public re-export surface for main.py — no logic
 ├── _shared.py        # Visual State Guardian: console singleton, _ui singleton, utilities
@@ -650,6 +669,7 @@ src/zenzic/cli/
 ├── _inspect.py       # inspect_app sub-app + capabilities command
 ├── _lab.py           # lab command — interactive example showcase
 └── _standalone.py    # score, diff, init commands
+
 ```
 
 ### Visual State Guardian {#visual-state-guardian}
@@ -668,6 +688,7 @@ src/zenzic/cli/
 ### Startup banner flow {#cli-banner-flow}
 
 ```mermaid
+
 flowchart LR
     ARGV["sys.argv"] --> COND{Banner condition?}
     COND -->|"len == 1\nor --help/-h in argv\nor bare sub-app"| BANNER["_print_banner()\n→ get_ui().print_header()"]
@@ -675,6 +696,7 @@ flowchart LR
     BANNER --> CMD
     CMD --> CB["@app.callback()\nconfigure_console()"]
     CB --> EXEC["Command executes\nwith correct console"]
+
 ```
 
 The banner always writes to **stdout** (the shared `_shared.console`) so it uses the same color-detection stream as the subsequent command output. The Typer callback runs *after* the banner, which is acceptable — the module-level console already uses `force_terminal=None` (auto-detect) at startup.

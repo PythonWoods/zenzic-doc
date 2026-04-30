@@ -1,10 +1,10 @@
 ---
-slug: governance-of-glass
+slug: governance-of-quartz
 title: "The Governance of Quartz: Why Integrity Requires a Constitution"
 authors: [pythonwoods]
-date: 2026-04-27T19:00:00
+date: 2026-04-29T19:15:00
 tags: [governance, sovereignty, engineering-chronicles, engineering]
-sidebar_label: "🛡️ Saga VI: The Zenzic Trinity"
+sidebar_label: "🛡️ 006 - Saga VI: The Trinity"
 ---
 
 > [![AI-Adversarial / Human-Governed](https://img.shields.io/badge/AI--Adversarial-Human--Governed-black?style=flat-square)](https://zenzic.dev/docs/community/governance/adversarial-ai)
@@ -102,7 +102,7 @@ The most unusual document in Zenzic's Governance section is the
 
 It is a formal document explaining how to remove Zenzic from your project.
 
-We wrote it before Zenzic was famous. We wrote it before v0.7.0 was stable. We wrote it
+We wrote it during the foundational design phase. We wrote it before v0.7.0 was stable. We wrote it
 because we believe that a tool that cannot prove its own reversibility is asking you to trust
 it on faith — and the Zenzic trust model is Zero-Trust, including toward Zenzic itself.
 
@@ -130,8 +130,8 @@ The audit core of Zenzic is strictly read-only. This is not a current implementa
 awaiting refactoring. It is a constitutional invariant of the Safe Harbor.
 
 ```python
-# The Zenzic analysis core: observation only.
-# Source files are opened in read mode. Always. Without exception.
+# The Zenzic analysis core: observation only
+# Source files are opened in read mode. Always. Without exception
 def analyze(file_path: Path, text: str) -> list[Finding]:
     ...  # Pure function. Same input → same output. No writes. No side effects.
 ```
@@ -299,23 +299,28 @@ engineering reason, even under deadline pressure — is not a bug fix or a featu
 **constitutional amendment**. And constitutional amendments in Zenzic require:
 
 1. **A Major version increment** — e.g., v0.7.0 → v1.0.0. Users who depend on the current
+
    Pillar semantics remain on the current major version. The change cannot sneak into a minor
    or patch release.
 
 2. **A 30-day public impact period** — announced in a public issue before any code is written.
+
    The period exists so that enterprise users can evaluate the impact on their pipelines, not
    to create bureaucratic delay.
 
 3. **A formal Architectural Decision Record (ADR)** — added to the Zenzic Ledger with: the
+
    text of the invariant being modified, the proposed replacement, the rationale, and a full
    cost analysis covering migration burden and trust model impact.
 
 4. **A Type A Adversarial AI session** — targeting the proposed replacement architecture. The
+
    AI must attempt to find Pillar violations in the new design before it is ratified. A
    replacement architecture that cannot survive a single adversarial session does not replace
    a constitutional article.
 
 5. **Consensus of 2/3 of Core Maintainers** — not a simple majority. Constitutional changes
+
    require supermajority ratification.
 
 ### The Evolution Policy: No Surprises at Scale
@@ -431,8 +436,8 @@ source without depending on its build system.
 | I | [The Leaking Pipe](/blog/hardening-the-documentation-pipeline) | The credential that exposed the integration flaw |
 | II | [Headless Architecture](/blog/docs-pipeline-security-risk-obsidian-bastion) | Building the headless, pre-build analysis model |
 | III | [The AI Siege](/blog/ai-driven-siege-shield-postmortem) | Exhaustive adversarial loops: thousands of bypass attempts, eight Shield stages forged |
-| IV | [The Sovereign Root](/blog/beyond-the-siege-zenzic-v070-new-standard) | Architectural sovereignty: source, not build |
-| V | [Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable) | v0.7.0 stable: 1,260 tests, 80% coverage |
+| IV | [The Sovereign Root](/blog/beyond-the-siege-zenzic-v070-quartz) | Architectural sovereignty: source, not build |
+| V | [Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable) | v0.7.0 stable: 1,301 tests, 80% coverage |
 | **VI** | **The Governance of Glass** | The constitutional layer. The pact that endures. |
 
 The Chronicles are a record, not a roadmap. The next chapters of Zenzic's story will be
@@ -496,6 +501,6 @@ The complete constitutional layer is documented at:
 
 The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
-[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-new-standard) | [Saga V](/blog/zenzic-v070-obsidian-maturity-stable) | **Saga VI**
+[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-quartz) | [Saga V](/blog/zenzic-v070-quartz-maturity-stable) | **Saga VI**
 
 :::

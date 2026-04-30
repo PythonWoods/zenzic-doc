@@ -9,8 +9,8 @@ description: "ADR 008: Atomic filesystem parity between the English source tree 
 
 # ADR 008: Bilingual Structural Invariant — The Symmetry Guardrail
 
-**Status:** Active  
-**Decider:** Architecture Lead  
+**Status:** Active
+**Decider:** Architecture Lead
 **Date:** 2026-04-20 (v0.7.0 sprint, D045 — Diátaxis Migration)
 
 ---
@@ -33,12 +33,17 @@ mirror had not.
 This class of bug is particularly insidious because:
 
 1. **No build-time error is produced.** `onBrokenLinks: 'throw'` only detects
+
    internal `[text](link)` references — it does not validate language switcher
    paths.
+
 2. **The bug is invisible in development mode.** `npm run start` serves a single
+
    locale. The switcher is inactive. The 404 only appears in `just build` output
    when both locales are built simultaneously.
+
 3. **The time-to-detection window is long.** A missing IT file discovered three
+
    commits after the EN rename requires a forensic git blame to trace — the
    coupling between the two moves is no longer visible in the history.
 
@@ -116,11 +121,16 @@ history noise and make bisect unreliable when investigating regressions.
 ## Invariants (Non-Negotiable)
 
 - The symmetry `diff` command must exit 0 before any commit that modifies the
+
   filesystem structure of `docs/` or `i18n/it/`.
+
 - New files added to `docs/` must have a corresponding stub added to `i18n/it/`
+
   **in the same commit** — even if the Italian content is a copy of the English
   until a translation is provided.
+
 - The pre-commit hook (`pre-commit-config.yaml`) enforces symmetry at the gate.
+
   Bypassing it with `--no-verify` on a structural commit is a Class 1 violation
   (Technical Debt).
 
@@ -129,10 +139,15 @@ history noise and make bisect unreliable when investigating regressions.
 ## Consequences
 
 - Every contributor who renames or moves a documentation file must be aware of
+
   the Italian mirror — this is a non-optional part of the contribution workflow
   documented in `CONTRIBUTING.md`.
+
 - The `just preflight` recipe (`uvx pre-commit run --all-files`) enforces this
+
   check in CI. A PR that breaks structural symmetry will fail at the gate.
+
 - The symmetry invariant applies to **directory structure** only. Italian
+
   *content* may lag behind English during active sprints, as long as the file
   is present (even as a stub). A 404 is worse than a stale translation.

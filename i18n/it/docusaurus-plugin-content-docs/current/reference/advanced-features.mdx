@@ -19,7 +19,7 @@ e utilizzo programmatico da Python.
 `zenzic check references` esegue la **Three-Pass Reference Pipeline** — il motore alla base di
 ogni controllo di qualità e sicurezza sui riferimenti.
 
-### Perché tre pass?
+### Perché tre pass
 
 I [reference-style link][syntax] Markdown separano *dove punta un link* (la definizione) da
 *dove appare* (l'utilizzo). Uno scanner single-pass non può risolvere un riferimento che
@@ -87,17 +87,28 @@ per intercettare segreti nella prosa normale.
 ### Comportamento dello Shield {#shield-behaviour}
 
 - **Ogni riga viene scansionata** — incluse le righe dentro i blocchi di codice delimitati (con o
+
   senza etichetta). Una credenziale committata in un esempio `bash` è comunque una credenziale
   committata.
+
 - Il rilevamento è **non sopprimibile** — `--exit-zero`, `exit_zero = true` in `zenzic.toml` e
+
   `--strict` non hanno effetto sui security finding dello Shield.
+
 - Il codice di uscita 2 è riservato **esclusivamente** agli eventi Shield. Non viene mai usato
+
   per i fallimenti ordinari dei controlli.
+
 - Il codice di uscita 3 è riservato agli eventi **Blood Sentinel** — link che risolvono a
+
   directory di sistema OS. Come l'exit code 2, non è mai sopprimibile.
+
 - I file con security finding sono **esclusi dalla validazione dei link** — Zenzic non fa ping
+
   a URL che potrebbero contenere credenziali esposte.
+
 - **Isolamento dei link nei blocchi di codice** — lo Shield scansiona l'interno dei blocchi
+
   delimitati, ma il validatore di link e riferimenti no. Gli URL di esempio nei blocchi di codice
   (es. `https://api.example.com`) non producono mai falsi positivi nei link.
 
@@ -277,8 +288,11 @@ L'harvester e il cross-checker saltano entrambi il contenuto che non dovrebbe ma
 finding:
 
 - **YAML frontmatter** — il blocco `---` iniziale (solo prima riga) viene saltato per intero,
+
   inclusa qualsiasi sintassi simile a reference che potrebbe contenere.
+
 - **Fenced code block** — le righe dentro i fence ` ``` ` o `~~~` vengono ignorate. Gli URL
+
   negli esempi di codice non producono mai falsi positivi.
 
 Questa esclusione viene applicata in modo coerente sia nel Pass 1 che nel Pass 2.
@@ -314,6 +328,7 @@ sorgente `.md` a:
 
 - il suo **URL canonico** (es. `docs/guide/installation.md` → `/guide/installation/`)
 - il suo **stato di routing** — uno tra `REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED` o
+
   `CONFLICT`
 
 Un file è `REACHABLE` se appare nella sezione `nav:` di `mkdocs.yml`. Un file è
@@ -398,18 +413,25 @@ Quando il tuo progetto usa i18n MkDocs o il sistema di locale di Zensical, Zenzi
 automaticamente:
 
 - **Directory locale soppresse dal rilevamento orfani** — i file sotto `docs/it/`, `docs/fr/`,
+
   ecc. non vengono segnalati come orfani. L'adapter rileva le directory locale dalla
   configurazione i18n dell'engine.
+
 - **Risoluzione dei link cross-locale** — gli adapter MkDocs e Zensical risolvono i link che
+
   attraversano i confini di locale senza falsi positivi.
+
 - **La modalità Standalone salta completamente il controllo orfani** — quando non è presente alcuna
+
   config del motore di build, ogni file sembrerebbe un orfano. Zenzic salta il controllo
   piuttosto che segnalare rumore.
 
 :::tip[Forza la modalità Standalone per sopprimere il controllo orfani]
+
 ```bash
 zenzic check all --engine standalone
 ```
+
 :::
 
 [syntax]: https://spec.commonmark.org/0.31.2/#link-reference-definitions

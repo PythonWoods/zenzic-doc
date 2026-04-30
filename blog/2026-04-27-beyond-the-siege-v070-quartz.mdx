@@ -1,23 +1,22 @@
 ---
-slug: beyond-the-siege-zenzic-v070-new-standard
+slug: beyond-the-siege-zenzic-v070-quartz
 title: "The Sovereign Root"
-sidebar_label: "🛡️ Saga IV: The Sovereign Root"
+sidebar_label: "🛡️ 004 - Saga IV: Sovereign Root"
 authors: [pythonwoods]
 tags: [release, engineering, python, opensource, security, obsidian-chronicles, engineering-chronicles]
-date: 2026-04-27T15:00:00
+date: 2026-04-29T19:05:00
 description: >
   After four AI agents tried to break Zenzic's Shield, we didn't patch bugs —
-  we rewrote the rules. The Sovereign Root Protocol, Purity Protocol, and 1,260 tests
+  we rewrote the rules. The Sovereign Root Protocol, Purity Protocol, and 1,301 tests
   later: this is the technical deep-dive.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
-
 
 :::info[🛡️ The Zenzic Chronicles — Complete]
 
 The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
-[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | **Saga IV** | [Saga V](/blog/zenzic-v070-obsidian-maturity-stable) | [Saga VI](/blog/governance-of-glass)
+[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | **Saga IV** | [Saga V](/blog/zenzic-v070-quartz-maturity-stable) | [Saga VI](/blog/governance-of-quartz)
 
 :::
 
@@ -33,7 +32,7 @@ hardening effort — you will. The question is whether your process catches them
 your users do, and whether you have the institutional discipline to close them without
 inflation.
 
-This is the story of what happened in the final weeks before v0.7.0, and why the
+This is the story of what happened in the final days of high-intensity consolidation leading to v0.7.0, and why the
 version number itself carries meaning.
 
 ## Treating Documentation as Untrusted Input
@@ -46,7 +45,7 @@ you have implicitly transferred control to whoever provides them.
 Documentation pipelines operate under the opposite assumption. Links are "probably fine."
 Asset paths are "probably correct." Placeholder values are "probably temporary." The result
 is exactly what you expect from systems that trust their inputs: slow, silent rot that
-surfaces as broken experiences for readers — weeks or months after the damage was done.
+surfaces as broken experiences for readers — days or even hours after the damage was done.
 
 Zenzic's thesis is that documentation is input, and should be treated with the same
 skepticism. The Zxxx diagnostic system is input validation. The Shield scanner is a
@@ -68,12 +67,12 @@ The Zenzic Engineering Series has documented a continuous thread:
 | [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | Ripping the foundation out: Headless Architecture | v0.6.1rc2 Bastion |
 | [Part 3](/blog/ai-driven-siege-shield-postmortem) | The siege: 4 bypass vectors found and closed | v0.6.1rc2 → v0.6.1 |
 | Part 4 (this post) | The consolidation: Sovereignty, Purity, precision | **v0.7.0** |
-| [Part 5](/blog/zenzic-v070-obsidian-maturity-stable) | The vision: UX-Discoverability and the new standard | **v0.7.0 Stable** |
+| [Part 5](/blog/zenzic-v070-quartz-maturity-stable) | The vision: UX-Discoverability and the new standard | **v0.7.0 Stable** |
 
 The version jump from v0.6.1 to v0.7.0 was not about features. It was about something
 more specific: the deliberate rejection of a framing.
 
-## Why Not v0.6.2?
+## Why Not v0.6.2
 
 After the siege postmortem closed all four bypass vectors, the natural next step was a
 v0.6.2 patch release. The Zensical and MkDocs adapters needed Z404 coverage. The i18n
@@ -126,7 +125,7 @@ was restructured following the [Diátaxis framework](https://diataxis.fr/) — f
 clear modes: Tutorials, How-To Guides, Reference, and Explanation. Every section
 URL changed: `/docs/usage/` → `/docs/how-to/`, `/docs/guides/` → `/docs/how-to/`,
 `/docs/internals/architecture-overview/` → `/docs/explanation/architecture/`.
-Three links in `README.md` had been silently pointing at the old paths for weeks
+Three links in `README.md` had been silently pointing at the old paths for several intensive sprints
 behind a blanket `zenzic.dev` exclusion bypass. When the exclusion was removed
 as part of the perimeter audit, Zenzic flagged all three immediately. The tool
 caught its own documentation drift.
@@ -140,8 +139,8 @@ won't find gaps. Both implications are false. The correct framing: v0.7.0 is
 
 ## What v0.7.0 Actually Is
 
-```
-zenzic check all ./docs
+```text
+zenzic check all
 ```
 
 That command now works correctly against four engine types, with:
@@ -159,7 +158,7 @@ That command now works correctly against four engine types, with:
 | Sovereign root banner hint | Active scanning target printed after Sentinel header |
 | Z502/Z105 precision | MDX frontmatter leak + `pathname:///` false positive eliminated |
 | Core purity | `validator.py` — zero engine-name references (Purity Protocol) |
-| Test suite | 1,260 passing tests |
+| Test suite | 1,301 passing tests |
 | Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
 | Runtime dependencies | 5 |
 | Subprocess calls | 0 |
@@ -219,9 +218,12 @@ because neither was tested — they were assumed.
 The fix was not just to close the bugs. It was to encode the knowledge:
 
 - The i18n trap is now in the README troubleshooting section, the PR checklist, and the
+
   FAQ (English and Italian).
+
 - The bump script gap is documented in the script itself and the checklist.
-- The copilot-instructions.md (agent guidelines) carries the full sprint history,
+- The ZENZIC_BRAIN.md ledger (our sovereign agent guidelines) carries the full sprint history,
+
   including the root cause, the fix, and the lesson.
 
 A process that catches bugs is valuable. A process that prevents the same bug from
@@ -330,10 +332,11 @@ Testimony**.
 > *Code and documentation are a single, indivisible unit of work. No sprint is closed if
 > the documentation still reflects the previous state of the code.*
 
-The enforcement mechanism is a mandatory Closing Protocol checklist that every sprint must
-complete before the commit lands. If a wrapper behavior changed, the architecture diagram
-must be updated. If a CLI flag was added, the reference must be updated. If an exit code
-semantic changed, the policy table and the user documentation must both be updated.
+The enforcement mechanism is the Zenzic Ledger (ZENZIC_BRAIN.md), a mandatory protocol that
+ensures no sprint is closed unless the documentation is as mature as the code. If a wrapper
+behavior changed, the architecture diagram must be updated. If a CLI flag was added, the
+reference must be updated. If an exit code semantic changed, the policy table and the user
+documentation must both be updated.
 
 This sounds like documentation discipline. It is actually a defect prevention system. The
 navbar badge drift, the i18n silent fallback, the README links pointing at URL paths that no
@@ -342,7 +345,7 @@ and documentation author. When those roles are collapsed (as they are in any suf
 small team), the failure mode is: *I know this in my head, I'll update the docs later.*
 Later compounds. The Law makes "later" unconstitutional.
 
-The test count at close of all v0.7.0 consolidation sprints: **1,260 passing tests.**
+The test count at close of all v0.7.0 consolidation sprints: **1,301 passing tests.**
 
 ## The Purity Protocol: Zero Engine Leaks in Core
 
@@ -377,7 +380,7 @@ The pipe is probably still leaking somewhere in your documentation — a broken 
 a credential fragment in a frontmatter field, a file invisible to every reader because
 no clickable navigation surface references it. Find out before your users do.
 
-[Part 5 →](/blog/zenzic-v070-obsidian-maturity-stable) covers what v0.7.0 unlocks
+[Part 5 →](/blog/zenzic-v070-quartz-maturity-stable) covers what v0.7.0 unlocks
 for UX-Discoverability and the full product vision.
 
 ```bash
@@ -396,7 +399,7 @@ uvx zenzic lab
 :::note[The Zenzic Chronicles]
 This is **Part 4** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
 
-[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable)
 :::
 
-_Part 4 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._
+*Part 4 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/).*

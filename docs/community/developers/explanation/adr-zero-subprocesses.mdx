@@ -9,8 +9,8 @@ description: "ADR 002: The Security & Portability Decision — why Zenzic is 100
 
 # ADR 002: Zero Subprocesses Policy
 
-**Status:** Active (Genesis Decision)  
-**Decider:** Architecture Lead  
+**Status:** Active (Genesis Decision)
+**Decider:** Architecture Lead
 **Date:** 2026-01-01 (founding principle, pre-v0.1.0)
 
 ---
@@ -27,27 +27,36 @@ In practice, subprocess delegation creates a cascade of problems that become
 acute in enterprise CI/CD environments:
 
 1. **Security surface.** A tool that executes arbitrary subprocesses in the
+
    context of a documentation repository becomes a **code execution vector**.
    Any `Makefile`, `justfile`, or `package.json` `scripts` entry near the
    documentation root is potentially reachable. In repositories with complex
    monorepo structures, the boundary between "running the doc validator" and
    "running project build scripts" becomes dangerously blurred.
+
 2. **Portability collapse.** A subprocess call to `node` requires Node.js to
+
    be installed at a specific path. A call to `mkdocs` requires the MkDocs
    virtual environment to be active. In Docker containers, GitHub Actions
    runners, and air-gapped CI systems, the presence of these binaries cannot
    be assumed. A tool that requires Node.js to validate a Markdown repository
    is not portable — it is fragile.
+
 3. **Version coupling.** When the subprocess's binary is upgraded independently
+
    of the validator, output format changes silently break the parser. The
    validator is now coupled to the binary's `--format json` contract, which
    may not be stable across minor versions.
+
 4. **Performance overhead.** Starting a Node.js process, loading `docusaurus`
+
    dependencies, and building a partial site map takes 5–30 seconds. Performing
    this for every CI run, for every file change, makes incremental development
    loops slow. For a tool that is supposed to be a fast pre-commit gate, this
    is unacceptable.
+
 5. **Zero-Trust violation.** In regulated or security-sensitive environments,
+
    a CI gate that executes code from the repository being validated is a
    trust-boundary violation. The validator must be a **passive reader**, not
    an **active executor**, to satisfy Zero-Trust CI requirements.
@@ -121,16 +130,23 @@ fast.
 ## Invariants (Non-Negotiable)
 
 - No file in `src/zenzic/` may contain `import subprocess`, `import os` used
+
   for `os.system`/`os.popen`, or any equivalent mechanism for spawning
   external processes.
+
 - No file in `src/zenzic/` may make HTTP requests (no `urllib`, no `requests`,
+
   no `httpx`) during analysis. External URL validation (Z103) uses only socket-
   level connectivity checks, which are isolated in the dedicated external link
   checker module and are explicitly opt-in.
+
 - TypeScript and JavaScript configuration files are parsed as text, not executed.
+
   Any "execution" of a config file — even via a sandboxed Node.js `eval` — is
   permanently forbidden.
+
 - The `test_cli_e2e.py` test suite must include at least one test that verifies
+
   `subprocess.run` is never called during a `check all` invocation.
 
 ---
@@ -138,15 +154,20 @@ fast.
 ## Consequences
 
 - Zenzic cannot validate documentation that is generated entirely at runtime
+
   (e.g., API docs generated from source code annotations via `mkdocstrings`).
   This is an intentional scope boundary — Zenzic validates the **authored**
   documentation, not the generated portions. Generated sections are outside
   the Safe Harbor perimeter by definition.
+
 - Configuration files written in languages that require execution to evaluate
+
   (e.g., Starlark `BUILD` files, Python-based `mkdocs_macros` plugins) are
   parsed conservatively. Zenzic extracts what static analysis can safely
   determine and treats the rest as opaque.
+
 - The subprocess prohibition means Zenzic cannot auto-detect the installed
+
   version of the documentation engine. Version-specific behavior differences
   are handled by adapter configuration (e.g., `engine: "docusaurus"` in
   `zenzic.toml`) rather than runtime version negotiation.

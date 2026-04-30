@@ -9,8 +9,8 @@ description: "ADR 001: La Decisione Genesi — perché Zenzic analizza i sorgent
 
 # ADR 001: Analizza il Sorgente, Non la Build
 
-**Stato:** Attivo (Decisione Genesi)  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo (Decisione Genesi)
+**Decisore:** Architecture Lead
 **Data:** 2026-01-01 (principio fondante, pre-v0.1.0)
 
 ---
@@ -32,16 +32,21 @@ validazione. La pipeline produce silenzio dove dovrebbe produrre una diagnostica
 In ambienti CI emergono tre problemi composti:
 
 1. **Accoppiamento alla build.** Un validatore di documentazione che richiede una
+
    build riuscita non può essere il primo gate della pipeline. Deve essere
    posizionato dopo `mkdocs build` o `npm run build`, aggiungendo 2–10 minuti di
    overhead prima che venga controllato un singolo link.
+
 2. **Fragilità al motore.** I motori di build cambiano il modo in cui generano ID
+
    delle ancore, slug degli URL e percorsi degli asset tra versioni minori. Un
    validatore calibrato sull'output di MkDocs 1.5 può perdere silenziosamente
    link rotti con MkDocs 1.6 perché lo schema di generazione degli ID è cambiato.
    Il validatore sta effettivamente testando l'output del motore piuttosto che
    l'intento dell'autore.
+
 3. **Lock-in al motore.** Un validatore che comprende l'HTML di un motore non può
+
    validare l'HTML di un altro senza adattamento specifico. Questo crea un
    ecosistema di validazione che si frammenta lungo le linee dei motori invece di
    convergere su standard universali di qualità documentale.
@@ -71,11 +76,16 @@ La VSM permette a Zenzic di rispondere a domande che prima richiedevano un sito
 live:
 
 - "Esiste questa ancora `#installation` nella pagina target?" — risposta
+
   analizzando la struttura dei titoli Markdown, non l'HTML renderizzato.
+
 - "Il percorso `/docs/reference/finding-codes` è una route valida?" — risposta
+
   dal grafo di route della VSM, che modella i fallback i18n e gli slug con
   versione senza eseguire la build.
+
 - "L'asset referenziato in `docusaurus.config.ts` esiste su disco?" — risposta
+
   analizzando staticamente il file di configurazione TypeScript, non avviando un
   processo Node.js.
 
@@ -123,12 +133,17 @@ errori strutturali in route che l'autore ha pianificato ma non ha ancora pubblic
 ## Invarianti (Non Negoziabili)
 
 - La logica di validazione di Zenzic (`core/validator.py`, `core/scanner.py`)
+
   non deve mai avviare una richiesta HTTP, caricare un browser o analizzare HTML.
   Tutta l'analisi opera su byte letti dal filesystem.
+
 - La VSM (`models/vsm.py`) è la fonte canonica di verità per le route. Nessun
+
   validatore può calcolare una route invocando il motore di build — nemmeno
   come subprocess.
+
 - Gli adapter possono leggere file di configurazione statici (`.ts`, `.yml`,
+
   `.toml`) usando parsing testuale puro-Python. Non devono eseguire quei file
   (vedi ADR 002).
 
@@ -136,16 +151,28 @@ errori strutturali in route che l'autore ha pianificato ma non ha ancora pubblic
 
 ## Conseguenze
 
-- Zenzic viene eseguito in millisecondi — l'analisi di un sito di documentazione
-  da 200 pagine si completa tipicamente in meno di 3 secondi con un'invocazione
-  `uvx` a freddo.
+- Le prestazioni di analisi di Zenzic sono **dipendenti dal contenuto**.
+
+  Misurato sul progetto reale `zenzic-doc` (59 pagine MDX con JSX,
+  frontmatter e tabelle): ~420 ms di analisi pura su processo Python già
+  avviato. Progetti Markdown semplici con frontmatter minimo e senza JSX
+  completano 200 file in ~100 ms. Il tempo totale a muro con un'invocazione
+  `uvx` a freddo aggiunge ~2–8 s di avvio dell'interprete Python al tempo
+  di analisi. Esegui `python scripts/benchmark.py --repo <percorso>` per
+  misurare il tuo progetto.
+
 - Zenzic può essere posizionato come **primo step** in qualsiasi pipeline CI,
+
   prima di `npm install`, prima di `pip install`, prima che il motore di build
   sia anche solo disponibile.
+
 - Le peculiarità specifiche del motore (generazione delle ancore di Docusaurus,
+
   contratti nav di MkDocs, convenzioni slug di Zensical) sono isolate nel layer
   adapter. Il motore core è permanentemente neutro al motore.
+
 - La VSM fornisce una struttura dati testabile e ispezionabile per l'architettura
+
   documentale — abilitando future capacità come il diff strutturale, le metriche
   di copertura e il rilevamento delle Ghost Route senza modificare il core di
   analisi.

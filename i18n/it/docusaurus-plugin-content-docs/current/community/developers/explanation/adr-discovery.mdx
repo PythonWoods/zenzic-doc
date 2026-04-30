@@ -27,10 +27,15 @@ Senza una radice nota, Zenzic non può:
 
 - Risolvere link interni in stile assoluto (`/docs/pagina.md`) in file fisici.
 - Localizzare `zenzic.toml` o la configurazione di fallback del motore
+
   (`mkdocs.yml`, `zensical.toml`).
+
 - Applicare il perimetro della Virtual Site Map (VSM) — l'oracolo che determina
+
   cos'è una pagina valida e cosa è una Ghost Route.
+
 - Evitare di indicizzare accidentalmente file appartenenti a un progetto padre,
+
   a un repository adiacente o alla radice di sistema.
 
 Il meccanismo di scoperta della radice deve quindi essere **deterministico**,
@@ -99,11 +104,16 @@ indipendente dal toolchain di build.
 ## Conseguenze
 
 - **Positivo:** Ogni percorso di codice che chiama `find_repo_root()` riceve
+
   garantitamente una directory valida e delimitata, o solleva un'eccezione prima
   che avvenga qualsiasi I/O.
+
 - **Positivo:** La logica delle Ghost Route e la costruzione della VSM hanno
+
   un'ancora stabile.
+
 - **Negativo (pre-modifica):** Il comando `zenzic init`, il cui scopo è
+
   *creare* il marcatore di radice `zenzic.toml`, non poteva essere eseguito in
   una directory priva sia di `.git` sia di `zenzic.toml`. Questo era il
   **Paradosso di Bootstrap** (ZRT-005).
@@ -161,6 +171,8 @@ perimetro da zero.
 - `src/zenzic/core/scanner.py` — implementazione di `find_repo_root()`
 - `src/zenzic/cli.py` — comando `init`, unico consumatore di `fallback_to_cwd=True`
 - `tests/test_scanner.py` — `test_find_repo_root_genesis_fallback`,
+
   `test_find_repo_root_genesis_fallback_still_raises_without_flag`
+
 - `tests/test_cli.py` — `test_init_in_fresh_directory_no_git`
 - `CONTRIBUTING.md` — Leggi del Core → Protocollo di Scoperta della Radice

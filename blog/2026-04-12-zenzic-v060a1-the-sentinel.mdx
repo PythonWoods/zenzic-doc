@@ -11,10 +11,9 @@ description: >
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-
 :::note[Alpha/RC Chronicle]
 
-This is a historical record of a development milestone. The first stable release is **[v0.7.0 — Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable)**.
+This is a historical record of a development milestone. The first stable release is **[v0.7.0 — Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable)**.
 
 :::
 
@@ -28,9 +27,13 @@ philosophy of Zenzic from a prototype into a disciplined engineering system.
 This alpha established three architectural pillars that remain non-negotiable to this day:
 
 1. **Lint the Source** — Zenzic never runs the build. It reads raw Markdown and configuration
+
    files directly. HTML output is never trusted.
+
 2. **No Subprocesses** — 100% pure Python. No `subprocess.run`, no Node.js execution,
+
    no external process calls in the hot path.
+
 3. **Pure Functions First** — Deterministic logic. No I/O inside link-validation loops.
 
 ### Core capabilities in v0.6.0a1

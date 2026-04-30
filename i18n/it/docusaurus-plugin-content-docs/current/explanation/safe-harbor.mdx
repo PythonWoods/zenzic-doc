@@ -69,12 +69,17 @@ l'impegno architetturale fondamentale.
 L'implementazione di questo impegno è l'**agnosticismo assoluto rispetto al motore**:
 
 - Zenzic legge file Markdown grezzi e configurazione come dati puri. Non importa né esegue mai
+
   un framework di documentazione.
+
 - La conoscenza engine-specifica (struttura nav, convenzioni i18n, regole di fallback locale) è
+
   incapsulata negli **adapter** — componenti sottili e sostituibili che traducono la semantica del
   motore in un protocollo neutro. Il Core non vede mai un `MkDocsAdapter` o `ZensicalAdapter` —
   vede solo un `BaseAdapter` che risponde a cinque domande.
+
 - Gli adapter di terze parti si installano come pacchetti Python e vengono scoperti a runtime
+
   tramite entry-point. Aggiungere supporto per un nuovo motore (Hugo, Docusaurus, Sphinx) non
   richiede alcun rilascio di Zenzic.
 
@@ -90,8 +95,11 @@ di Zenzic è intenzionalmente conservativa e protettiva verso l'utente:
 
 - Ogni motore supportato riceve lo stesso livello di fedeltà nella validazione.
 - I file di configurazione esistenti vengono validati come contratti sorgente, non come promesse
+
   di runtime.
+
 - Chiavi di configurazione sconosciute o future vengono trattate con parsing tollerante, non con
+
   errori fatali.
 
 In pratica, questo significa che un team può rimandare le decisioni di migrazione senza perdere i
@@ -109,12 +117,17 @@ L'architettura di Zenzic è progettata attorno a un singolo vincolo: **ogni find
 azionabile**. Questo plasma diverse decisioni:
 
 - **Algoritmi multi-pass in memoria.** La Pipeline di Riferimento a Due Passi separa la raccolta
+
   delle definizioni dal controllo degli usi, eliminando i falsi positivi causati dai forward
   reference che uno scanner naive single-pass produrrebbe.
+
 - **Consapevolezza del fallback i18n.** Un link da una pagina tradotta a un asset della locale
+
   default non è un link rotto — il motore di build servirà il fallback a runtime. Zenzic lo
   sopprime.
+
 - **Standalone Mode per progetti senza nav.** Quando Zenzic non ha dichiarazioni nav contro cui
+
   confrontare, salta interamente il controllo orfani piuttosto che segnalare ogni file come orfano.
 
 L'obiettivo è uno strumento **completamente silenzioso quando la tua documentazione è sana**, e
@@ -243,11 +256,16 @@ sito di documentazione (`zenzic-doc`) risiedono in repository separati.
 Questa separazione è intenzionale e permanente:
 
 - **Il motore non ha opinioni su come la propria documentazione viene renderizzata.** Il
+
   repository core contiene sorgenti Python, test e fixture di esempio. Non contiene un framework
   di documentazione, un tema o un file CSS.
+
 - **Il sito documentale è un progetto Docusaurus sovrano.** Ha il suo `package.json`, il
+
   suo sistema i18n, i suoi componenti React. Non è una sottodirectory del motore — è un peer.
+
 - **Zenzic valida la propria documentazione.** Il repo docs include un `zenzic.toml` che configura
+
   l'adapter Docusaurus. Ogni pull request documentale è verificata dallo strumento che documenta.
   Questa è la prova ricorsiva che l'agnosticismo di motore funziona.
 
@@ -282,11 +300,11 @@ minimo, senza richiedere mesi di reverse-engineering.
 
 ## Perché "Quartz Clarity" {#naming}
 
-L'ossidiana è vetro vulcanico — formata sotto pressione estrema, naturalmente trasparente e più
-dura dell'acciaio. È il materiale che le civiltà antiche usavano per gli strumenti chirurgici
-perché nient'altro poteva eguagliarne il taglio.
+Il quarzo è silice cristallina — formato sotto calore e pressione estremi, perfettamente trasparente
+e tra i minerali più duri della Terra. Le civiltà antiche lo usavano per intagliare lenti e
+superfici di misura — perché le sue facce erano geometricamente perfette.
 
-Zenzic aspira a essere ossidiana: trasparente (deterministico, riproducibile, solo-sorgente), duro
+Zenzic aspira a essere quarzo: trasparente (deterministico, riproducibile, solo-sorgente), duro
 (gate di sicurezza non sopprimibili, modalità strict di default in CI) e preciso (zero falsi
 positivi come obiettivo di design, non come claim di marketing).
 

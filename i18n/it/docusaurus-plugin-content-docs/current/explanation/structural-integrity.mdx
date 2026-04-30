@@ -1,0 +1,171 @@
+---
+sidebar_position: 9
+sidebar_label: Il Filtro della Sentinella
+title: La Sentinella vs. il Correttore
+description: Perché Zenzic si concentra sull'integrità strutturale e sulla sicurezza piuttosto che sullo stile della prosa — e perché questa distinzione definisce una categoria di strumento separata.
+---
+
+# La Sentinella vs. il Correttore
+
+Zenzic non si interessa al tuo stile di scrittura.
+
+Che tu usi trattini o asterischi per le liste, che le tue righe siano di 80 o 120 caratteri,
+che tu preferisca il sentence case o il title case nei titoli — nulla di tutto ciò rientra nel
+dominio di Zenzic. Queste sono questioni di preferenza personale o del team. Non minacciano
+la stabilità del tuo progetto, la sicurezza degli utenti, o l'affidabilità della tua pipeline CI.
+
+Strumenti eccellenti come `markdownlint`, `vale` e `prettier` governano l'**estetica della prosa**.
+Zenzic governa l'**Integrità Strutturale e la Sicurezza**. Non sono preoccupazioni in competizione —
+occupano categorie ortogonali.
+
+---
+
+## Il Filtro della Sentinella {#the-sentinels-filter}
+
+Ogni regola che entra nel Quartz Core deve superare un test di ammissione tridimensionale.
+Lo chiamiamo **Il Filtro della Sentinella**: una regola entra in Zenzic se e solo se difende
+una di queste tre dimensioni.
+
+### Dimensione 1 — Integrità Strutturale {#dimension-structural}
+
+> *"Questa regola previene un'esperienza utente degradata?"*
+
+Un progetto di documentazione è un grafo di risorse interconnesse. Quando un nodo in quel grafo
+scompare — un file viene rinominato, un heading cambia il suo anchor, una directory viene
+ristrutturata — ogni riferimento che punta a quel nodo diventa un fantasma. L'utente segue il
+link e atterra su un 404. La pipeline CI ha successo. Il danno è invisibile durante il build.
+
+Le regole di Integrità Strutturale catturano questi errori **prima che il build parta**:
+
+| Codice Finding | Nome | Cosa rileva |
+| :--- | :--- | :--- |
+| [`Z101`](../reference/finding-codes.mdx#z101) | `LINK_BROKEN` | Link interni morti — file non trovato |
+| [`Z102`](../reference/finding-codes.mdx#z102) | `ANCHOR_MISSING` | Link a heading che non esistono più |
+| [`Z107`](../reference/finding-codes.mdx#z107) | `CIRCULAR_ANCHOR` | Link anchor auto-referenziali |
+| [`Z401`](../reference/finding-codes.mdx#z401) | `MISSING_DIRECTORY_INDEX` | Directory senza `index.md` raggiungibile |
+| [`Z402`](../reference/finding-codes.mdx#z402) | `ORPHAN_PAGE` | File irraggiungibili da qualsiasi percorso di navigazione |
+| [`Z404`](../reference/finding-codes.mdx#z404) | `CONFIG_ASSET_MISSING` | Asset dichiarati nella config che non esistono su disco |
+
+---
+
+### Dimensione 2 — Sicurezza Rinforzata {#dimension-security}
+
+> *"Questa regola protegge la tua infrastruttura o i tuoi segreti?"*
+
+Il sorgente della documentazione è un input non fidato. Viene scritto da esseri umani, accettato
+da contributori esterni, ed elaborato da pipeline di build che possono avere accesso a credenziali
+di produzione. Una singola chiave API esposta in un file Markdown — committata di fretta, spinta
+in un repository pubblico — è un incidente nella supply chain, non un errore editoriale.
+
+Le regole di sicurezza sono **non sopprimibili per design**. I codici di uscita 2 e 3 bypassano
+`--exit-zero` e `fail-on-error: false` in modo incondizionato:
+
+| Codice Finding | Nome | Cosa rileva | Uscita |
+| :--- | :--- | :--- | :---: |
+| [`Z201`](../reference/finding-codes.mdx#z201) | `SHIELD_SECRET` | Credenziali, chiavi API, token in qualsiasi riga sorgente | 2 |
+| [`Z202`](../reference/finding-codes.mdx#z202) | `PATH_TRAVERSAL` | Escape di path di sistema in un link o valore di config | 3 |
+| [`Z203`](../reference/finding-codes.mdx#z203) | `PATH_TRAVERSAL_SUSPICIOUS` | Pattern di traversal relativo che esce dalla docs root | 3 |
+
+Vedi [Safe Harbor](./safe-harbor.mdx) e [La Trinità di Zenzic](./the-zenzic-trinity.mdx)
+per il contratto completo sui codici di uscita.
+
+---
+
+### Dimensione 3 — Accessibilità Tecnica {#dimension-accessibility}
+
+> *"Questa regola garantisce che gli strumenti di terze parti possano consumare il tuo sorgente?"*
+
+Il Markdown è un formato di input: viene consumato da motori di build, syntax highlighter,
+validatori di snippet e gate di qualità CI. Alcune proprietà strutturali che sembrano cosmetiche
+a prima vista portano conseguenze tecniche concrete per i tool downstream.
+
+L'esempio canonico è [`Z505: UNTAGGED_CODE_BLOCK`](../reference/finding-codes.mdx#z505):
+un blocco di codice delimitato senza specificatore di linguaggio viene renderizzato come testo
+semplice nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
+snippet e interrompe la misurazione della copertura del syntax highlighting. L'assenza del tag
+linguaggio non è una preferenza stilistica — è un contratto machine-readable mancante tra
+l'autore e ogni strumento nella pipeline.
+
+| Codice Finding | Nome | Cosa rileva |
+| :--- | :--- | :--- |
+| [`Z505`](../reference/finding-codes.mdx#z505) | `UNTAGGED_CODE_BLOCK` | Blocchi delimitati senza specificatore di linguaggio |
+| [`Z503`](../reference/finding-codes.mdx#z503) | `SNIPPET_ERROR` | Snippet di codice che non superano il parsing |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link che formano un ciclo di riferimento circolare |
+
+---
+
+## La "Node.js Tax" e l'Indipendenza Architetturale {#the-nodejs-tax}
+
+Potresti chiederti: perché Zenzic implementa `Z505 (Untagged Code Blocks)` quando linter
+come `markdownlint` già lo rilevano?
+
+La risposta è il **[Pilastro 2: Zero Subprocess](./the-zenzic-trinity.mdx)**.
+
+I tradizionali linter Markdown richiedono un runtime Node.js completo e centinaia di megabyte
+di `node_modules`. Per una pipeline DevOps basata su Python, un'azienda enterprise attenta alla
+sicurezza, o qualsiasi team che esegue CI in un container minimale, questa dipendenza crea
+attrito: configurazione aggiuntiva del toolchain, pinning della versione del runtime e
+esposizione transitiva nella supply chain. Chiamiamo questo la **Node.js Tax** — l'overhead
+nascosto del richiedere un secondo stack di runtime solo per validare la struttura della
+documentazione.
+
+```text
+Senza Zenzic           Con Zenzic
+─────────────────────  ─────────────────────────
+npm install            uvx zenzic check all
+node_modules/ ~300 MB  (zero install persistente)
+Node ≥ 18 richiesto    Python 3.11+ richiesto
+superficie npm audit   Zero rischio transitivo
+```
+
+Fornendo controlli strutturali core in puro Python, Zenzic consente una qualità della
+documentazione di livello professionale **senza uscire dal tuo stack tecnologico principale**.
+Zenzic non è progettato per sostituire ogni linter nella tua pipeline — ma per l'integrità
+strutturale, la sicurezza e l'accessibilità tecnica in CI, è l'unico di cui hai **bisogno**.
+
+---
+
+## Cosa Zenzic Esplicitamente Non Fa {#what-zenzic-does-not-do}
+
+Il confine di ciò che Zenzic rifiuta è importante quanto ciò che applica. Questa tabella è
+permanente. Se una regola proposta non supera Il Filtro della Sentinella, non viene inclusa.
+
+| Categoria | Esempio | Posizione |
+| :--- | :--- | :--- |
+| Lunghezza delle righe | Righe superiori a 80 o 120 caratteri | ✗ Non è una preoccupazione strutturale |
+| Stile dei marcatori lista | `*` vs `-` vs `1.` | ✗ Preferenza estetica |
+| Capitalizzazione dei titoli | Sentence case vs. Title Case | ✗ Scelta editoriale |
+| Controllo ortografico | Errori di battitura e grammatica | ✗ Delega a `vale` |
+| Formulazione del testo del link | "Clicca qui" vs. anchor descrittivo | ✗ Linea guida, non un gate |
+| Spazi finali di riga | Spazi extra alla fine della riga | ✗ Auto-corretti dai formatter |
+| Coerenza della prosa | Uso uniforme della terminologia | ✗ Specifico del dominio — usa `vale` |
+
+Queste categorie non sono al di sotto di Zenzic — sono **al di fuori del suo mandato**.
+La Sentinella applica la struttura. Tutto il resto è sovranità editoriale.
+
+---
+
+## Lo Stack Stratificato Consigliato {#the-recommended-stack}
+
+Zenzic funziona meglio come un livello in uno stack di qualità, non come sostituto dell'intero
+ecosistema di strumenti:
+
+| Livello | Strumento | Cosa applica |
+| :--- | :--- | :--- |
+| **Strutturale** | Zenzic | Link rotti, orfani, segreti, path traversal |
+| **Stile** | `markdownlint` | Marcatori lista, livelli heading, formato code fence |
+| **Prosa** | `vale` | Grammatica, terminologia, guide di stile |
+| **Formato** | `prettier` | Spazi e indentazione coerenti |
+
+Configura ciascuno come un passo CI indipendente. Il contratto sui codici di uscita di Zenzic
+è il gate non negoziabile; gli altri possono essere avvisi a seconda del modello di maturità
+del tuo team.
+
+---
+
+## Letture Correlate {#further-reading}
+
+- [La Trinità di Zenzic](./the-zenzic-trinity.mdx) — I tre pilastri non negoziabili: Zero Subprocess, Funzioni Pure, Analisi Strutturale
+- [Safe Harbor](./safe-harbor.mdx) — Il contratto sui codici di uscita e il gate di sicurezza inviolabile
+- [Riferimento Codici Finding](../reference/finding-codes.mdx) — Il registro completo Zxxx con i passaggi di rimedio
+- [Metriche di Salute](./health-metrics.mdx) — Come viene calcolato il Punteggio di Qualità Deterministico

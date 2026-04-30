@@ -1,8 +1,9 @@
-{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
-{/* SPDX-License-Identifier: Apache-2.0 */}
 ---
 sidebar_label: "Adversarial AI Model"
 ---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
 
 # AI as a Cognitive Stressor
 
@@ -17,8 +18,11 @@ sidebar_label: "Adversarial AI Model"
 Zenzic development operates as an **adversarial arena**. The rules are simple:
 
 - **Humans** decide the architecture. The Three Pillars, the VSM design, the Shield
+
   pipeline, the Blood Sentinel perimeter — these are strategic human choices.
+
 - **AI** is deployed as a controlled Red Team. Its mission is to find logical flaws,
+
   Pillar violations, and security weaknesses in what the human has already decided.
 
 | Role | Function |
@@ -86,6 +90,7 @@ soundness.
 ### Type B — Reg Ex Canary Attack (ZRT-002)
 
 The AI is tasked with constructing a regex pattern that:
+
 1. Would be accepted by `AdaptiveRuleEngine` construction (passes `_assert_regex_canary`)
 2. Exhibits catastrophic backtracking on input sizes > 1 KiB
 
@@ -95,6 +100,7 @@ This is a direct security stress-test on the ReDoS hardening.
 
 The AI is given the 8-stage normalization pipeline and tasked with constructing a
 Markdown fragment that:
+
 1. Contains a real credential (from a known family in `_SECRETS`)
 2. Passes through all 8 normalization stages undetected
 
@@ -106,6 +112,7 @@ immediate patch and a new normalization stage.
 
 The AI is given the `InMemoryPathResolver._build_target()` implementation and tasked
 with constructing a path string that:
+
 1. Is a valid relative Markdown link (parseable by the MDX renderer)
 2. After `os.path.normpath()` collapse, resolves to a path outside `docs_root`
 3. Does not contain obvious traversal sequences (literal `../`)
@@ -117,7 +124,7 @@ security finding requiring immediate perimeter hardening.
 
 ## 4. Governance Badge
 
-```
+```text
 AI-Tested / Human-Governed
 ```
 
@@ -174,4 +181,4 @@ survived a Type C adversarial session where an AI attempted to construct bypass
 payloads for each one. The rigor is deliberate. The transparency is part of the
 security model.
 
-> *Saga VI: The Governance of Glass — [read the chronicle](https://zenzic.dev/blog/governance-of-glass)*
+> *Saga VI: The Governance of Quartz — [read the chronicle](https://zenzic.dev/blog/governance-of-quartz)*

@@ -19,7 +19,7 @@ programmatic usage from Python.
 `zenzic check references` runs the **Three-Pass Reference Pipeline** — the core engine behind
 every reference-quality and security check Zenzic performs.
 
-### Why three passes?
+### Why three passes
 
 Markdown [reference-style links][syntax] separate *where a link points* (the definition) from
 *where it appears* (the usage). A single-pass scanner cannot resolve a reference that appears
@@ -85,16 +85,27 @@ applies a defence-in-depth pass to non-definition lines to catch secrets in plai
 ### Shield behaviour {#shield-behaviour}
 
 - **Every line is scanned** — including lines inside fenced code blocks (labelled or unlabelled).
+
   A credential committed in a `bash` example is still a committed credential.
+
 - Detection is **non-suppressible** — `--exit-zero`, `exit_zero = true` in `zenzic.toml`, and
+
   `--strict` have no effect on Shield findings.
+
 - Exit code 2 is reserved **exclusively** for Shield events. It is never used for ordinary check
+
   failures.
+
 - Exit code 3 is reserved for **Blood Sentinel** events — links that resolve to OS system
+
   directories. Like exit code 2, it is never suppressed.
+
 - Files with security findings are **excluded from link validation** — Zenzic does not ping URLs
+
   that may contain leaked credentials.
+
 - **Code block link isolation** — while the Shield scans inside fenced blocks, the link and
+
   reference validators do not. Example URLs inside code blocks (e.g. `https://api.example.com`)
   never produce false-positive link errors.
 
@@ -143,6 +154,7 @@ validates what it can validate purely in Python.
 
 - **Markdown inline images** — `![](url)` or `![   ](url)` (blank alt string)
 - **HTML `<img>` tags** — `<img src="...">` with no `alt` attribute, or `alt=""` with no
+
   content
 
 An explicitly empty `alt=""` is treated as intentionally decorative and is **not** flagged.
@@ -260,11 +272,16 @@ Rules are validated for pickle-serializability at engine construction time
 immediately — before any file is scanned.
 
 - **Rules must be defined at module level.**  A class defined inside a function
+
   or lambda cannot be pickled and will be rejected at load time.
+
 - **All instance attributes must be pickleable.**  Pre-compiled `re.compile()`
+
   patterns, strings, and numbers are always safe.  File handles, database
   connections, and lambda closures are not.
+
 - **No mutable global state.**  Workers receive independent copies of the rule
+
   engine (via pickle).  A global counter mutated inside `check()` will be
   local to each worker process and discarded on completion — results will differ
   from sequential mode silently.  Return all state as `RuleFinding` objects.
@@ -279,8 +296,11 @@ examples, and packaging instructions.
 The harvester and cross-checker both skip content that should never trigger findings:
 
 - **YAML frontmatter** — the leading `---` block (first line only) is skipped in its entirety,
+
   including any reference-like syntax it might contain.
+
 - **Fenced code blocks** — lines inside ` ``` ` or `~~~` fences are ignored. URLs in code
+
   examples never produce false positives.
 
 This exclusion is applied consistently in both Pass 1 and Pass 2.
@@ -315,6 +335,7 @@ Map (VSM)** before running link validation.  The VSM maps every `.md` source fil
 
 - its **canonical URL** (e.g. `docs/guide/installation.md` → `/guide/installation/`)
 - its **routing status** — one of `REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`, or
+
   `CONFLICT`
 
 A file is `REACHABLE` if it appears in the `nav:` section of `mkdocs.yml`.  A file is
@@ -400,18 +421,25 @@ When your project uses [MkDocs i18n](https://github.com/ultrabug/mkdocs-static-i
 Zensical's locale system, Zenzic adapts automatically:
 
 - **Locale directories suppressed from orphan detection** — files under `docs/it/`, `docs/fr/`,
+
   etc. are not reported as orphans. The adapter detects locale directories from the engine's
   i18n configuration.
+
 - **Cross-locale link resolution** — the engine adapters resolve links that cross
+
   locale boundaries (e.g. a link from `docs/it/page.md` to `docs/en/page.md`) without false
   positives.
+
 - **Standalone mode skips orphan check entirely** — when no build-engine config is present, every
+
   file would appear as an orphan. Zenzic skips the check rather than report noise.
 
 :::tip[Force Standalone mode to suppress orphan check]
+
 ```bash
 zenzic check all --engine standalone
 ```
+
 :::
 
 [syntax]: https://spec.commonmark.org/0.31.2/#link-reference-definitions

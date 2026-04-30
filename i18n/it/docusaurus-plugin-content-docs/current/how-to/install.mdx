@@ -21,7 +21,9 @@ Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tant
 Il repository include fixture mantenuti e allineati ai contratti documentati:
 
 - `examples/mkdocs-basic/` — baseline MkDocs 1.6 (nav annidata, link nav esterno,
+
   tag YAML tolleranti come `!ENV` e `!relative`).
+
 - `examples/i18n-standard/` — gold standard bilingue in strict mode.
 - `examples/zensical-basic/` — baseline Zensical v0.0.31+ (`[project].nav`).
 - `examples/broken-docs/` — errori intenzionali (exit 1).
@@ -228,10 +230,15 @@ Quando `mkdocs.yml` (MkDocs/Zensical) o `zensical.toml` (Zensical) è presente n
 repository, Zenzic carica l'**adapter** corrispondente che fornisce:
 
 - **Consapevolezza della nav** — il controllo orfani sa la differenza tra "non nella nav" e "non
+
   dovrebbe essere nella nav" (ad esempio i file di locale i18n).
+
 - **Fallback i18n** — i link cross-locale vengono risolti correttamente invece di essere
+
   segnalati come non validi.
+
 - **Soppressione directory locale** — i file sotto `docs/it/`, `docs/fr/`, ecc. non vengono
+
   segnalati come orfani.
 
 ### Modalità Standalone {#standalone-mode}
@@ -240,8 +247,11 @@ Quando non viene trovata alcuna configurazione del motore di build, Zenzic ricad
 `StandaloneAdapter`. In questa modalità:
 
 - **Il controllo orfani viene saltato.** Senza una dichiarazione di nav, ogni file sembrerebbe
+
   un orfano.
+
 - **Tutti gli altri controlli vengono eseguiti normalmente** — link, snippet, placeholder, asset
+
   e riferimenti.
 
 La modalità Standalone è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
@@ -254,6 +264,7 @@ Usa `--engine` per sovrascrivere l'adapter rilevato per una singola esecuzione:
 zenzic check all --engine standalone    # salta il controllo orfani
 zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 ```
+
 :::
 
 ---

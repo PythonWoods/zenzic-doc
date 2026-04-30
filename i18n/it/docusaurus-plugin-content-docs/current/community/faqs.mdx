@@ -101,7 +101,9 @@ link di definizione e anchor interni (se `validate_same_page_anchors: true`).
 **Come integro Zenzic in GitHub Actions?**
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - name: Lint documentation
+
   run: uvx zenzic check all --strict
 ```
 
@@ -113,8 +115,11 @@ guida [CI/CD](../how-to/configure-ci-cd.mdx).
 Il flag `--strict` ha due effetti a seconda del comando:
 
 - `zenzic check links --strict` / `zenzic check all --strict`: abilita anche la verifica
+
   dei link HTTP/HTTPS esterni tramite richieste di rete (disabilitata per default per velocità).
+
 - `zenzic check references --strict`: tratta le Dead Definitions (link di riferimento definiti
+
   ma mai usati) come errori bloccanti anziché warning.
 
 Consigliato nelle pipeline CI per intercettare tutte le categorie di problemi.

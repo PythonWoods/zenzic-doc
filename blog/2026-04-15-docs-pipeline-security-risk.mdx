@@ -1,7 +1,7 @@
 ---
 slug: docs-pipeline-security-risk-obsidian-bastion
 title: "Headless Architecture"
-sidebar_label: "🛡️ Saga II: Headless Architecture"
+sidebar_label: "🛡️ 002 - Saga II: Headless Architecture"
 authors: [pythonwoods]
 tags: [engineering, security, python, devtools, obsidian-chronicles, engineering-chronicles]
 date: 2026-04-15
@@ -11,12 +11,11 @@ description: >
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-
 :::info[🛡️ The Zenzic Chronicles — Complete]
 
 The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
-[Saga I](/blog/hardening-the-documentation-pipeline) | **Saga II** | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-new-standard) | [Saga V](/blog/zenzic-v070-obsidian-maturity-stable) | [Saga VI](/blog/governance-of-glass)
+[Saga I](/blog/hardening-the-documentation-pipeline) | **Saga II** | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-quartz) | [Saga V](/blog/zenzic-v070-quartz-maturity-stable) | [Saga VI](/blog/governance-of-quartz)
 
 :::
 
@@ -41,6 +40,7 @@ properties.
 ## 🎯 Where Zenzic Fits
 
 Zenzic is designed for:
+
 - CI pipelines that handle untrusted docs
 - Open-source projects with external contributors
 - Teams running multiple doc engines side by side
@@ -188,12 +188,17 @@ A refactor of this scope does not leave the API surface intact. Three breaking c
 were deliberate, not accidental:
 
 - **`zenzic serve` removed entirely** — use your engine's native command (`mkdocs serve`,
+
   `npx docusaurus start`). It was the last place where a subprocess could theoretically
   be spawned.
+
 - **MkDocs plugin relocated** from `zenzic.plugin` to `zenzic.integrations.mkdocs`,
+
   installs separately via `pip install "zenzic[mkdocs]"`, keeping the core free of
   engine-specific imports.
+
 - **`ExclusionManager` parameter is now mandatory** — no `Optional`, no `None` default.
+
   If your code was silently skipping exclusion filtering, it will now fail at the type
   level. That's the point.
 
@@ -226,13 +231,14 @@ zenzic check all
 | **Documentation** | [zenzic.dev](https://zenzic.dev/) |
 
 **Cross-posted on:**
+
 - [Dev.to](https://dev.to/pythonwoods/your-docs-pipeline-is-a-security-risk-zenzic-v061rc1-fixes-that-3ag3) — *Your Docs Pipeline Is a Security Risk*
 - [Medium](https://medium.com/zenzic-engineering/what-happens-when-you-rip-the-foundation-out-of-a-security-tool-173b57d496b2) — *What Happens When You Rip the Foundation Out of a Security Tool*
 
 :::note[The Zenzic Chronicles]
 This is **Part 2** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
 
-[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · **Part 2 — Sentinel Bastion** · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-new-standard) · [Part 5 — Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · **Part 2 — Sentinel Bastion** · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-quartz) · [Part 5 — Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable)
 :::
 
-_Part 2 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._
+*Part 2 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/).*

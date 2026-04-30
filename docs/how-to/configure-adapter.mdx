@@ -61,9 +61,12 @@ ISO 639-1 code identifying the default locale directory. Used for i18n fallback 
 Non-default locale directory names. Zenzic uses this list to answer two questions at lint time:
 
 1. **Asset fallback** — a link from `docs/it/index.md` to `assets/logo.svg` resolves literally to
+
    `docs/it/assets/logo.svg` (which does not exist). Knowing `"it"` is a locale dir, Zenzic
    strips the prefix and checks `docs/assets/logo.svg` instead.
+
 2. **Orphan suppression** — files under `docs/it/` are never listed in the nav (the i18n plugin
+
    injects them). Knowing which directories are locale trees prevents every translated file from
    being reported as an orphan.
 
@@ -104,7 +107,9 @@ When `StandaloneAdapter` is selected, Zenzic has no knowledge of the project's n
 this mode:
 
 - **Orphan check** is skipped — without a nav declaration, every Markdown file would appear
+
   to be an orphan, making the check meaningless.
+
 - All other checks (links, snippets, placeholders, assets, references) run normally.
 
 Standalone mode is the correct behaviour for plain Markdown repositories, wikis, and projects that

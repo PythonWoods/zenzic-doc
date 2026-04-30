@@ -9,8 +9,8 @@ description: "ADR 005: Z404 CONFIG_ASSET_MISSING extended to all supported engin
 
 # ADR 005: Agnostic Universalism — Z404 for All Engines
 
-**Status:** Active  
-**Decider:** Architecture Lead  
+**Status:** Active
+**Decider:** Architecture Lead
 **Date:** 2026-04-20 (v0.7.0 sprint)
 
 ---
@@ -87,7 +87,10 @@ exit-code accounting as all other findings.
 
 - MkDocs and Zensical users gain asset integrity validation without any config change.
 - Adding a new engine adapter requires implementing `check_config_assets()` — the
+
   protocol now enforces this explicitly (a `NotImplementedError` is raised for
   adapters that skip it).
+
 - Z404 is now classified as a **universal quality check**, not an engine-specific
+
   feature, in `reference/finding-codes.mdx`.

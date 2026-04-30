@@ -96,17 +96,12 @@ ad ignorarlo. Il determinismo è il fondamento della fiducia.
 **Implementazione:**
 
 ```python
-# core/scorer.py — l'esempio canonico di funzione pura
-def compute_score(
-    links: int,
-    orphans: int,
-    snippets: int,
-    placeholders: int,
-    assets: int,
-) -> ScoreReport:
+# core/scorer.py — D092 Quartz Penalty Scorer
+def compute_score(findings_counts: dict[str, int]) -> ScoreReport:
     """
     Nessun I/O. Nessun effetto collaterale. Stessi input → stesso output,
     su ogni OS, in ogni versione Python, a qualsiasi ora del giorno.
+    findings_counts: dizionario di codici Zxxx (es. "Z101", "Z402").
     """
     ...
 ```

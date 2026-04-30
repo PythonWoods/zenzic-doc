@@ -35,6 +35,7 @@ Every card in a `<div class="grid cards" markdown>` block must have exactly:
 ### Canonical example
 
 ```markdown
+
 - <Icon name="play" /> &nbsp; **User Guide**
 
     Everything you need to install, configure, and integrate Zenzic into
@@ -110,10 +111,15 @@ convention (lowercase, hyphen-separated).
 ### Rules
 
 - **Semantic consistency:** if an icon represents "Contribute" on one page, it
+
   must be the same icon on every page.
+
 - **Uniform syntax:** every icon in a card grid uses `<Icon name="..." />`.
+
   No mixing of syntaxes or icon sets.
+
 - **Tree-shaking contract:** before using a new icon name, add it to the
+
   explicit `iconsMap` in `src/components/Icon.tsx`. Unregistered names render
   a red placeholder and emit a `console.warn`.
 
@@ -207,7 +213,7 @@ Before submitting a PR, verify:
 
 ---
 
-## 8. SentinelUI Gateway {#obsidianui-gateway}
+## 8. SentinelUI Gateway {#sentinelui-gateway}
 
 All branded terminal output in Zenzic flows through a single object: `SentinelUI` in
 `src/zenzic/ui.py`. Command modules must **never** instantiate `Console` or `SentinelUI`
@@ -261,7 +267,7 @@ Add to your PR checklist:
 
 ---
 
-## 9. SentinelPalette — Zero Hex Law {#obsidian-palette}
+## 9. SentinelPalette — Zero Hex Law {#sentinel-palette}
 
 `SentinelPalette` in `src/zenzic/ui.py` is the **sole authorised source of colour values**
 in the entire Zenzic codebase. This is the Zero Hex Law.

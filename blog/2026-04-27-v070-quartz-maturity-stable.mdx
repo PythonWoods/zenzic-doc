@@ -1,14 +1,14 @@
 ---
-slug: zenzic-v070-obsidian-maturity-stable
+slug: zenzic-v070-quartz-maturity-stable
 title: "Quartz Maturity"
-sidebar_label: "🛡️ Saga V: Quartz Maturity"
+sidebar_label: "🛡️ 005 - Saga V: Quartz Maturity"
 authors: [pythonwoods]
 tags: [release, engineering, python, opensource, obsidian-chronicles, engineering-chronicles]
-date: 2026-04-27T16:00:00
+date: 2026-04-29T19:10:00
 description: >
   Zenzic v0.7.0 is stable. The paradigm shift: a file is an orphan not when it's
   missing from disk, but when it's invisible to the human eye. UX-Discoverability,
-  17 Lab Acts, SARIF, and the Safe Harbor — all in one release.
+  20 Lab Acts, SARIF, and the Safe Harbor — all in one release.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
@@ -16,7 +16,7 @@ image: https://zenzic.dev/assets/social/social-card.png
 
 The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
-[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-new-standard) | **Saga V** | [Saga VI](/blog/governance-of-glass)
+[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | [Saga IV](/blog/beyond-the-siege-zenzic-v070-quartz) | **Saga V** | [Saga VI](/blog/governance-of-quartz)
 
 :::
 
@@ -155,7 +155,7 @@ means in v0.7.0:
 | **Sovereign root** | `zenzic.toml` follows the target, not the caller — monorepo-safe |
 | **SARIF integration** | All findings in GitHub Code Scanning format (`--format sarif`) |
 | **Diagnostic traceability** | Every finding carries a Zxxx code with severity, message, and fix |
-| **Verified test surface** | 1,260 passing tests, mutant-tested boundaries, cross-platform CI |
+| **Verified test surface** | 1,301 passing tests, mutant-tested boundaries, cross-platform CI |
 | **UX-Discoverability** | Navbar + footer harvesting — orphan detection sees what readers see |
 
 This is not a list of aspirational features. Each row has a test class, a CHANGELOG
@@ -174,10 +174,13 @@ The output is valid
 consumable directly by GitHub Code Scanning. Add this to your CI workflow:
 
 ```yaml
+
 - name: Run Zenzic
+
   run: uvx zenzic check all ./docs --format sarif > zenzic.sarif
 
 - name: Upload SARIF
+
   uses: github/codeql-action/upload-sarif@v3
   with:
     sarif_file: zenzic.sarif
@@ -213,7 +216,7 @@ One interface. Four adapters. Zero engine leaks in Core.
 Adding a new adapter that modifies `validator.py` is a protocol violation. The
 adapter contract is the boundary — everything engine-specific must live behind it.
 
-## The Zenzic Lab: 17 Acts
+## The Zenzic Lab: 20 Acts
 
 The Lab is the fastest way to understand what Zenzic does. Run it now:
 
@@ -221,8 +224,8 @@ The Lab is the fastest way to understand what Zenzic does. Run it now:
 uvx zenzic lab
 ```
 
-Seventeen interactive Acts, each demonstrating a distinct capability against
-pre-configured fixture projects:
+Twenty interactive Acts, each demonstrating a distinct capability against
+bundled fixture projects:
 
 | Acts | Coverage |
 | :--- | :--- |
@@ -236,10 +239,12 @@ pre-configured fixture projects:
 | Acts 11–12 | OS security — Unix path traversal, Windows path integrity |
 | Acts 13–14 | Rules deep-dive — link graph stress, Shield obfuscation |
 | Acts 15–16 | Quality rules — SEO coverage (Z401/Z402), quality gate (Z501/Z503) |
+| Acts 17–18 | Quality scoring — penalty scorer, score regression scenarios |
+| Act 19 | The Base64 Shadow — encoded credential detection |
 
-No configuration required. No project to set up. The Lab scaffolds everything in a
-temporary directory and tears it down after. The entire experience runs in under
-90 seconds on a cold start.
+No configuration required. No project to set up. The Lab runs against bundled
+fixture projects — no temporary files, no teardown required. The entire experience
+runs in under 90 seconds on a cold start.
 
 ## The Documentation of the Documentation Tool
 
@@ -293,7 +298,9 @@ zenzic check all ./docs
 :::note[The Zenzic Chronicles]
 This is **Part 5** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
 
-[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-new-standard) · **Part 5 — Quartz Maturity**
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-quartz) · **Part 5 — Quartz Maturity**
 :::
 
-_Part 5 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._
+*Part 5 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/).*
+
+*The 1,525-line [Obsidian Masterclass](/blog/obsidian-masterclass) covers every component in depth — verified by 1,301 tests across Python 3.11, 3.12, and 3.13.*

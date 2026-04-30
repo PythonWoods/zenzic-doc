@@ -48,7 +48,7 @@ Anything less is a precise, actionable diagnostic — not a vague warning.
 
 ---
 
-## Stop Deciphering Logs. Start Solving Problems.
+## Stop Deciphering Logs. Start Solving Problems
 
 **Before Zenzic** — a standard CI failure:
 
@@ -85,6 +85,7 @@ blocks — before any other check runs. If a credential is detected:
 - The pipeline **halts unconditionally** — exit code 2 cannot be suppressed by any flag
 - The credential is **masked** in the report (never printed in full)
 - You fix it **before it reaches git history** — no BFG Repo Cleaner, no emergency rotations
+
   at midnight, no incident post-mortem
 
 This is not a lint check. It is a **non-negotiable security gate**.
@@ -107,7 +108,9 @@ This is not a lint check. It is a **non-negotiable security gate**.
 ## Enterprise Ready — Native GitHub Integration
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     format: sarif
     upload-sarif: "true"

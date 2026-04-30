@@ -25,62 +25,94 @@ nessuna sorpresa.
 
 ## Cosa Misura il Punteggio
 
-Il Punteggio di Qualità è un **composito pesato** di cinque categorie di controllo.
+Il Punteggio di Qualità è un **composito pesato** di quattro categorie di controllo.
 Ogni categoria corrisponde direttamente a un sotto-comando `zenzic check` e ai
 codici di finding `Zxxx` che emette.
 
 | Categoria | Comando | Codici Finding | Peso |
-|-----------|---------|----------------|------|
-| **Integrità dei Link** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105] | **35 %** |
-| **Rilevamento Orfani** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
-| **Validazione Snippet** | `zenzic check snippets [PATH]` | [Z503] | **20 %** |
-| **Qualità del Contenuto** | `zenzic check all [PATH]` | [Z501] | **15 %** |
-| **Integrità degli Asset** | `zenzic check assets [PATH]` | [Z903] | **10 %** |
+|-----------|---------|----------------|---------|
+| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z107] | **40 %** |
+| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **30 %** |
+| **Navigazione & SEO** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
+| **Brand & Asset** | `zenzic check assets [PATH]` | [Z903], [Z904], [Z905] | **10 %** |
 
 [Z101]: ../reference/finding-codes.mdx#z101
 [Z102]: ../reference/finding-codes.mdx#z102
 [Z103]: ../reference/finding-codes.mdx#z103
 [Z104]: ../reference/finding-codes.mdx#z104
 [Z105]: ../reference/finding-codes.mdx#z105
+[Z107]: ../reference/finding-codes.mdx#z107
 [Z402]: ../reference/finding-codes.mdx#z402
 [Z501]: ../reference/finding-codes.mdx#z501
+[Z502]: ../reference/finding-codes.mdx#z502
 [Z503]: ../reference/finding-codes.mdx#z503
+[Z505]: ../reference/finding-codes.mdx#z505
 [Z903]: ../reference/finding-codes.mdx#z903
+[Z904]: ../reference/finding-codes.mdx#z904
+[Z905]: ../reference/finding-codes.mdx#z905
 
-Lo **Shield** (finding di sicurezza Z2xx) e il **Nav Contract** (Z904) non vengono
-valutati nel punteggio — causano un'uscita non sopprimibile 2 o 3 prima che il
-punteggio possa essere calcolato. Non è possibile calcolare il punteggio di un
-repository che sta attivamente divulgando una credenziale.
+:::danger[Override di Sicurezza]
+Se viene rilevato un finding di sicurezza — Z201 (Shield), Z202 o Z203 (Blood Sentinel) —
+il Punteggio di Qualità **crolla a 0/100 incondizionatamente**. Una sorgente documentale
+che perde attivamente una credenziale non può ricevere un Punteggio di Qualità.
+:::
 
 ---
 
-## La Formula di Decadimento
+## La Tabella di Penalità Quartz
 
-Il punteggio grezzo di ogni categoria decade linearmente con il numero di problemi:
+Ogni codice di finding porta una **deduzione fissa in punti** all'interno della sua categoria.
+Le deduzioni si accumulano; una volta che il contributo di una categoria raggiunge zero,
+ulteriori violazioni in quella categoria non hanno ulteriori effetti sul punteggio totale —
+questo è il **Category Cap** (Tetto di Categoria).
+
+| Codice | Descrizione | Penalità (pts) | Categoria |
+|--------|-------------|:---:|-----------|
+| Z2xx | Violazione di Sicurezza | Override → **0/100** | — |
+| Z503 | Errore Sintassi Snippet | 10.0 | Content |
+| Z101 | Link Interrotto | 8.0 | Structural |
+| Z104 | File Non Trovato | 8.0 | Structural |
+| Z102 | Ancora Mancante | 5.0 | Structural |
+| Z402 | Pagina Orfana | 4.0 | Navigation |
+| Z905 | Brand Obsoleto | 3.0 | Brand |
+| Z903 | Asset Non Utilizzato | 3.0 | Brand |
+| Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
+| Z904 | Errore Nav Contract | 2.0 | Brand |
+| Z105 | Percorso Assoluto | 2.0 | Structural |
+| Z502 | Contenuto Breve | 1.0 | Content |
+| Z505 | Blocco di Codice Non Etichettato | 1.0 | Content |
+| Z107 | Ancora Circolare | 1.0 | Structural |
+| Z106 | Link Circolare | 1.0 | Structural |
+
+### Invariante del Category Cap
+
+Le deduzioni di categoria sono limitate dal peso della categoria:
+
+- Tetto Structural: **40 pts** (40% × 100)
+- Tetto Content: **30 pts** (30% × 100)
+- Tetto Navigation: **20 pts** (20% × 100)
+- Tetto Brand: **10 pts** (10% × 100)
+
+**Esempio:** 100 × Z505 (1,0 pt ciascuno) genera 100 pts di deduzione potenziale
+contro la categoria Content — ma il tetto limita la perdita effettiva a 30 pts.
+Le altre tre categorie rimangono inalterate: **70/100 totale**.
+
+### Separazione Score vs. Gate
+
+Lo Score e la soglia `fail_under` sono **indipendenti**:
+
+- **Score (la Metrica):** Misurazione oggettiva della qualità, limitata dai Category Cap.
+- **`fail_under` (il Gate):** La tua policy di enforcement in `zenzic.toml`.
+
+Uno score di 70/100 con `fail_under = 80` **esce comunque con codice 1**. Il Category Cap
+impedisce che un tipo di violazione rumoroso mascheri la salute strutturale —
+non indebolisce il tuo gate.
+
+Il punteggio finale 0–100 è la somma dei contributi di categoria pesati:
 
 $$
-\text{category\_score}(n) = \max\bigl(0.0,\ 1.0 - n \times 0.20\bigr)
+\text{score} = \left\lfloor \sum_i \max\bigl(0,\ w_i \times 100 - \text{deduzioni}_i\bigr) \right\rceil
 $$
-
-Dove `n` è il numero di problemi in quella categoria.
-
-Questo significa:
-- **0 problemi → 1.0** (perfetto)
-- **1 problema → 0.80**
-- **2 problemi → 0.60**
-- **5 problemi → 0.00** (pavimento)
-
-Il punteggio finale 0–100 è la somma dei contributi pesati:
-
-$$
-\text{score} = \left\lfloor \sum_i \text{category\_score}(n_i) \times w_i \times 100 \right\rceil
-$$
-
-Un singolo problema in una categoria ad alto peso (link, 35%) causa una perdita di
-punteggio maggiore rispetto a un singolo problema in una categoria a basso peso
-(asset, 10%). Questo riflette l'impatto dei link rotti sull'esperienza utente rispetto
-ai file asset inutilizzati.
-
 ---
 
 ## Esecuzione del Punteggio
@@ -107,10 +139,13 @@ abbia un baseline con cui confrontarsi.
 
 ```yaml title=".github/workflows/zenzic.yml"
 # Sui push al branch main: salva il nuovo baseline
+
 - run: zenzic score --save --fail-under 80
 
 # Sulle pull request: fallisce se il punteggio è sceso
+
 - run: zenzic diff --threshold 0
+
 ```
 
 `zenzic diff` esce con 1 se il punteggio attuale è **inferiore** al baseline salvato
@@ -139,14 +174,15 @@ di Zenzic:
 
 **1. Analizza la Sorgente, Non il Build.**
 Il punteggio è calcolato dall'analisi del sorgente Markdown grezzo — mai dall'output
-HTML o da un server web in esecuzione. Il peso del 35% per i link premia una sorgente
+HTML o da un server web in esecuzione. Il peso del 40% per la categoria strutturale premia una sorgente
 che è internamente coerente prima che qualsiasi passo di build venga eseguito.
 
 **2. Zero Sottoprocessi.**
 `compute_score()` in `core/scorer.py` è una funzione Python pura — nessuna chiamata
-shell, nessun `subprocess.run`, nessuna richiesta di rete. Riceve cinque interi e
-restituisce uno `ScoreReport`. Questo garantisce risultati identici su ogni OS e
-versione Python nella matrice CI (ubuntu / windows / macos × Python 3.11–3.13).
+shell, nessun `subprocess.run`, nessuna richiesta di rete. Riceve una mappa
+`findings_counts: dict[str, int]` e restituisce uno `ScoreReport`. Questo garantisce
+risultati identici su ogni OS e versione Python nella matrice CI
+(ubuntu / windows / macos × Python 3.11–3.13).
 
 **3. Funzioni Pure Prima di Tutto.**
 `compute_score()` non ha effetti collaterali. `save_snapshot()` è l'unica funzione
@@ -156,18 +192,15 @@ per garantire gli invarianti matematici.
 
 ---
 
-## Integrità del Nav Contract — Non Valutata, Ma Fatale
+## Integrità del Nav Contract — Valutata come Brand & Asset
 
-L'audit del CEO ha segnalato una correzione terminologica: quello che gli utenti
-chiamano a volte "Nav Isolation" è formalmente **Integrità del Nav Contract ([Z904])**.
-
-[Z904]: ../reference/finding-codes.mdx#z904
+L’audit del CEO ha segnalato una correzione terminologica: quello che gli utenti
+chiamano a volte “Nav Isolation” è formalmente **Integrità del Nav Contract ([Z904])**.
 
 Z904 si attiva quando un file dichiarato nella configurazione di navigazione del motore
 (es. una voce `nav:` di `mkdocs.yml` o una voce esplicita di `sidebars.ts` in
-Docusaurus) non esiste su disco. Questo **non è un problema di qualità** — è un
-**errore strutturale**. Non riduce il Punteggio di Qualità. Appare nell'output di
-`zenzic check all` e causa l'uscita con 1.
+Docusaurus) non esiste su disco. Ogni violazione Z904 contribuisce alla categoria **Brand & Asset** (10%) usando
+la stessa penaltà per codice degli altri finding valutati (Z904: 2,0 pts per violazione).
 
 ---
 
@@ -176,15 +209,19 @@ Docusaurus) non esiste su disco. Questo **non è un problema di qualità** — �
 Quando `zenzic score` restituisce 100/100, è una garanzia formale che:
 
 - Ogni link interno si risolve (zero Z101/Z102/Z103/Z104/Z105)
+- Ogni riferimento ad ancora si risolve (zero Z107)
 - Ogni pagina è raggiungibile da almeno un punto di accesso di navigazione (zero Z402)
 - Ogni snippet di codice è sintatticamente valido (zero Z503)
 - Non esistono contenuti placeholder (zero Z501)
+- Non esistono blocchi di codice non etichettati (zero Z505)
 - Non esistono asset inutilizzati (zero Z903)
-- Lo Shield non ha trovato credenziali in nessun file (zero Z201 — implicito, blocca il scoring)
+- Non esistono violazioni del nav contract (zero Z904)
+- Non esistono riferimenti di brand obsoleti (zero Z905)
+- Lo Shield non ha trovato credenziali in nessun file (zero Z201 — implicito, fa crollare il punteggio a 0)
 
 <SentinelOutput variant="clean" />
 
-Questo è il **Sigillo Ossidiana**: lo stato in cui la documentazione è strutturalmente
+Questo è il **Sigillo della Sentinella**: lo stato in cui la documentazione è strutturalmente
 completa, pulita nel contenuto e verificata per la sicurezza.
 
 > **Porta il Sigillo nel tuo README:** una volta raggiunto il 100/100, esegui `zenzic score --save`

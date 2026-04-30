@@ -64,7 +64,9 @@ Il repository [`zenzic-action`](https://github.com/PythonWoods/zenzic-action) è
 operativo**. Traduce la logica del Core in un perimetro difensivo per le pipeline CI/CD reali.
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     version: "0.7.0"
     format: sarif
@@ -83,7 +85,7 @@ matematicamente identico al gate locale.
 
 La Trinità non è una gerarchia — è un **ciclo**. Ogni repository informa e vincola gli altri:
 
-```
+```text
   ┌────────────────────────────────────────────────┐
   │                                                │
   │   Il Core applica le regole definite dall'Anima│
@@ -129,8 +131,11 @@ storia delle decisioni leggibile per le macchine per design.
 Insieme, la mappa AST e il corpus degli ADR formano un **livello di contesto trasparente**:
 
 - **Per gli esseri umani:** un percorso chiaro e prevedibile dalla filosofia all'implementazione —
+
   senza dover fare archeologia nel codice.
+
 - **Per i sistemi AI:** un contesto strutturato e non ambiguo che previene le allucinazioni e
+
   garantisce che ogni suggerimento rispetti gli invarianti fondamentali del progetto.
 
 :::info Il Porto Sicuro è un Sistema di Conoscenza Sovrano

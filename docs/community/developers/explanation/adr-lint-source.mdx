@@ -9,8 +9,8 @@ description: "ADR 001: The Genesis Decision — why Zenzic analyzes raw Markdown
 
 # ADR 001: Lint the Source, Not the Build
 
-**Status:** Active (Genesis Decision)  
-**Decider:** Architecture Lead  
+**Status:** Active (Genesis Decision)
+**Decider:** Architecture Lead
 **Date:** 2026-01-01 (founding principle, pre-v0.1.0)
 
 ---
@@ -31,15 +31,20 @@ a diagnostic.
 Three compounding problems emerge in CI environments:
 
 1. **Build coupling.** A documentation validator that requires a successful build
+
    cannot be the first gate in the pipeline. It must be placed after `mkdocs build`
    or `npm run build`, adding 2–10 minutes of build overhead before a single link
    is checked.
+
 2. **Engine fragility.** Build engines change how they generate anchor IDs, URL
+
    slugs, and asset paths between minor versions. A validator calibrated to the
    output of MkDocs 1.5 may silently miss broken links under MkDocs 1.6 because
    the ID generation scheme changed. The validator is, in effect, testing the
    engine's output rather than the author's intent.
+
 3. **Engine lock-in.** A validator that understands HTML from one engine cannot
+
    validate HTML from another without engine-specific adaptation. This creates a
    validation ecosystem that fragments along engine lines rather than converging
    on universal documentation quality standards.
@@ -66,11 +71,16 @@ ADR 007).
 The VSM allows Zenzic to answer questions that previously required a live site:
 
 - "Does this anchor `#installation` exist in the target page?" — answered by
+
   parsing the Markdown heading structure, not the rendered HTML.
+
 - "Is this path `/docs/reference/finding-codes` a valid route?" — answered by
+
   the VSM's route graph, which models i18n fallbacks and versioned slugs without
   executing the build.
+
 - "Is this asset referenced in `docusaurus.config.ts` present on disk?" — answered
+
   by static parsing of the TypeScript config file, not by starting a Node.js
   process.
 
@@ -116,24 +126,41 @@ structural errors in routes that the author planned but hasn't yet published.
 ## Invariants (Non-Negotiable)
 
 - Zenzic's validation logic (`core/validator.py`, `core/scanner.py`) must never
+
   start an HTTP request, load a browser, or parse HTML. All analysis operates
   on bytes read from the filesystem.
+
 - The VSM (`models/vsm.py`) is the canonical source of route truth. No validator
+
   may compute a route by invoking the build engine — even as a subprocess.
+
 - Adapters may read static configuration files (`.ts`, `.yml`, `.toml`) using
+
   pure-Python text parsing. They must not execute those files (see ADR 002).
 
 ---
 
 ## Consequences
 
-- Zenzic runs in milliseconds — the analysis of a 200-page documentation site
-  typically completes in under 3 seconds on a cold `uvx` invocation.
+- Zenzic's analysis performance is **content-dependent**. Measured against
+
+  the real `zenzic-doc` project (59 MDX pages with JSX, frontmatter, and
+  tables): ~420 ms of pure analysis time on a warm Python process.
+  Simple Markdown projects with minimal frontmatter and no JSX can scan
+  200 files in ~100 ms. End-to-end wall time on a cold `uvx` invocation
+  adds ~2–8 s of Python interpreter startup on top of analysis time.
+  Run `python scripts/benchmark.py --repo <path>` to measure your own project.
+
 - Zenzic can be placed as the **first step** in any CI pipeline, before
+
   `npm install`, before `pip install`, before the build engine is even available.
+
 - Engine-specific quirks (Docusaurus anchor generation, MkDocs nav contracts,
+
   Zensical slug conventions) are isolated in the adapter layer. The core engine
   is permanently engine-neutral.
+
 - The VSM provides a testable, inspectable data structure for documentation
+
   architecture — enabling future capabilities like structural diffing, coverage
   metrics, and ghost route detection without modifying the analysis core.

@@ -89,17 +89,12 @@ Determinism is the foundation of trust.
 **Implementation:**
 
 ```python
-# core/scorer.py — the canonical example of a pure function
-def compute_score(
-    links: int,
-    orphans: int,
-    snippets: int,
-    placeholders: int,
-    assets: int,
-) -> ScoreReport:
+# core/scorer.py — D092 Quartz Penalty Scorer
+def compute_score(findings_counts: dict[str, int]) -> ScoreReport:
     """
     No I/O. No side effects. Same inputs → same output, on every OS,
     in every Python version, at any time of day.
+    findings_counts keys are Zxxx codes (e.g. "Z101", "Z402").
     """
     ...
 ```

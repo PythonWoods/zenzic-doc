@@ -1,8 +1,9 @@
-{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
-{/* SPDX-License-Identifier: Apache-2.0 */}
 ---
 sidebar_label: "The Sovereignty Oath"
 ---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
 
 # The Sovereignty Oath: Zero Residue
 
@@ -63,6 +64,7 @@ class AdapterProtocol(Protocol):
 - You do **not** need to subclass a Zenzic base class.
 - Your code does **not** carry a Zenzic inheritance chain.
 - If you remove Zenzic, your Python classes remain unchanged — no base class to strip
+
   out, no method overrides to remove, no MRO to audit.
 
 The adapter is a structural contract. If your object has the right methods, Zenzic
@@ -105,8 +107,10 @@ any other tool configuration. No cascading effects. No shared state.
 ### Step 1 — Remove from CI (15 seconds)
 
 ```yaml title=".github/workflows/docs.yml"
-# Delete this block:
+# Delete this block
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     version: "0.7.0"
     format: sarif
@@ -116,8 +120,10 @@ any other tool configuration. No cascading effects. No shared state.
 Or, if running directly:
 
 ```yaml title=".github/workflows/docs.yml"
-# Delete this block:
+# Delete this block
+
 - name: Zenzic Sentinel
+
   run: uvx zenzic check all
 ```
 
@@ -142,4 +148,4 @@ its own presence. The Zenzic trust model is Zero-Trust: including toward Zenzic 
 
 The sentinel exists to protect your documentation. Not to protect itself.
 
-> *Saga VI: The Governance of Glass — [read the chronicle](https://zenzic.dev/blog/governance-of-glass)*
+> *Saga VI: The Governance of Quartz — [read the chronicle](https://zenzic.dev/blog/governance-of-quartz)*

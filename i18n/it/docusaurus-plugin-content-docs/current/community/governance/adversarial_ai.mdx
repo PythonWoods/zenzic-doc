@@ -1,8 +1,8 @@
-{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
-{/* SPDX-License-Identifier: Apache-2.0 */}
 ---
 sidebar_label: "Modello AI Avversariale"
 ---
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
 
 # L'AI come Stressor Cognitivo
 
@@ -17,8 +17,11 @@ sidebar_label: "Modello AI Avversariale"
 Lo sviluppo di Zenzic opera come un'**arena avversariale**. Le regole sono semplici:
 
 - **Gli Umani** decidono l'architettura. I Tre Pilastri, il design del VSM, la pipeline
+
   dello Shield, il perimetro del Blood Sentinel — queste sono scelte strategiche umane.
+
 - **L'AI** viene impiegata come Red Team controllato. La sua missione è trovare falle
+
   logiche, violazioni dei Pilastri e debolezze di sicurezza in ciò che l'umano ha già deciso.
 
 | Ruolo | Funzione |
@@ -84,6 +87,7 @@ stesso sprint. Se non vengono trovate violazioni, la sessione conferma la solidi
 ### Tipo B — Attacco Canary Regex (ZRT-002)
 
 L'AI ha il compito di costruire un pattern regex che:
+
 1. Verrebbe accettato dalla costruzione di `AdaptiveRuleEngine`
 2. Esibisce backtracking catastrofico su input di dimensione > 1 KiB
 
@@ -93,6 +97,7 @@ Questo è un test di sicurezza diretto sull'hardening ReDoS.
 
 L'AI riceve la pipeline di normalizzazione a 8 stadi e ha il compito di costruire un
 frammento Markdown che:
+
 1. Contiene una vera credenziale (da una famiglia nota in `_SECRETS`)
 2. Supera tutti gli 8 stadi di normalizzazione non rilevata
 
@@ -110,7 +115,7 @@ ovvie (letterali `../`).
 
 ## 4. Il Badge di Governance
 
-```
+```text
 AI-Tested / Human-Governed
 ```
 
@@ -154,4 +159,4 @@ Per evitare l'**Asimmetria Informativa**. Quando leggi un ADR di Zenzic che dice
 una sessione avversariale di Tipo C in cui un'AI ha tentato di costruire payload di bypass
 per ciascuno. Il rigore è deliberato. La trasparenza è parte del modello di sicurezza.
 
-> *Saga VI: The Governance of Glass — [leggi la cronaca](https://zenzic.dev/blog/governance-of-glass)*
+> *Saga VI: The Governance of Quartz — [leggi la cronaca](https://zenzic.dev/blog/governance-of-quartz)*

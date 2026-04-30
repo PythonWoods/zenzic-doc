@@ -1,7 +1,7 @@
 ---
 sidebar_label: "Lacune Architetturali"
 sidebar_position: 5
-description: "Gap chiusi in v0.7.0 dall'Operazione Obsidian Stress, e elementi aperti pianificati per v0.8.0."
+description: "Gap architetturali identificati e chiusi in v0.7.0, con elementi aperti pianificati per v0.8.0."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -20,7 +20,7 @@ description: "Gap chiusi in v0.7.0 dall'Operazione Obsidian Stress, e elementi a
 
 ### GAP-001 — Auto-Fix Engine
 
-**Componente:** `cli/_check.py`, nuovo `core/fixer.py`  
+**Componente:** `cli/_check.py`, nuovo `core/fixer.py`
 **Descrizione:** Zenzic rileva ma non ripara. Un contributore che riceve un finding Z501
 (placeholder) o Z502 (contenuto troppo breve) deve individuare e modificare il file
 manualmente. Un Auto-Fix engine applicherebbe patch sicure e reversibili direttamente
@@ -36,10 +36,15 @@ zenzic fix links          # corregge solo Z101/Z104 (link rotti) — rinomina o 
 ```
 
 **Vincoli di design:**
+
 - L'Auto-Fix non deve mai toccare i file che hanno attivato Z201 (Shield secret) —
+
   quelli richiedono giudizio umano.
+
 - La semantica dei codici di uscita rimane invariata: `--apply` esce comunque con 1
+
   se rimangono finding non corretti.
+
 - Python puro, nessun subprocess (Pillar 2).
 
 **Stato:** Fase di design. Nessun codice integrato.
@@ -48,7 +53,7 @@ zenzic fix links          # corregge solo Z101/Z104 (link rotti) — rinomina o 
 
 ### GAP-002 — Supporto Plugin Navbar/Footer Dinamici
 
-**Componente:** `core/adapters/_docusaurus.py`, `_parse_config_navigation()`  
+**Componente:** `core/adapters/_docusaurus.py`, `_parse_config_navigation()`
 **Descrizione:** Docusaurus supporta voci navbar dichiarate tramite plugin
 `@docusaurus/plugin-*` (es. `plugin-content-docs` multi-istanza, componenti navbar
 personalizzati). Quando la navbar è popolata dinamicamente al build time, il parser
@@ -67,7 +72,7 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 
 ---
 
-## Chiusi in v0.7.0 — Operazione Obsidian Stress
+## Chiusi in v0.7.0 — Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
 
 :::info[Cos'era l'Operazione?]
 
@@ -82,8 +87,8 @@ Vedi il post-mortem tecnico completo: [AI Red Team Attacks Code Linter](https://
 
 ### ZRT-001 — Bypass per Normalizzazione Unicode (Shield)
 
-**Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress  
-**Componente:** `core/shield.py`, `scan_lines_with_lookback()`  
+**Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Componente:** `core/shield.py`, `scan_lines_with_lookback()`
 **Descrizione:** I pattern regex dello Shield corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
 Unicode simile (es. `ｇhp_…` usando lettere latine a larghezza intera) in quello che
@@ -105,8 +110,8 @@ La superficie di attacco non è il pattern — è la codifica.
 
 ### ZRT-002 — Fuga dal Buffer di Lookback (Shield)
 
-**Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress  
-**Componente:** `core/shield.py`, `scan_lines_with_lookback()`  
+**Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Componente:** `core/shield.py`, `scan_lines_with_lookback()`
 **Descrizione:** Il buffer di lookback dello Shield era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
 L'agente Bravo ha inserito un blocco "filler" sufficientemente lungo (> dimensione buffer)
@@ -128,8 +133,8 @@ di sicurezza.
 
 ### ZRT-003 — Offuscamento con Entità HTML (Shield)
 
-**Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress  
-**Componente:** `core/shield.py`  
+**Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Componente:** `core/shield.py`
 **Descrizione:** Lo Shield scansionava i byte Markdown grezzi. L'agente Charlie ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
 di codice delimitati. I pattern dello Shield non corrispondevano alla forma codificata
@@ -151,8 +156,8 @@ fa parte della pipeline dei contenuti.
 
 ### ZRT-004 — Confusione Scope Blocco Delimitato (Shield)
 
-**Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress  
-**Componente:** `core/shield.py`, macchina a stati dei blocchi delimitati  
+**Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Componente:** `core/shield.py`, macchina a stati dei blocchi delimitati
 **Descrizione:** Lo Shield saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti
 attivi. L'agente Delta ha incorporato un pattern `ghp_` all'interno di un blocco
@@ -181,11 +186,11 @@ devono per default **scansionare tutto, autorizzare le eccezioni esplicitamente*
 
 ### ZRT-005 — Bootstrap Paradox
 
-**Componente:** `core/scanner.py`  
+**Componente:** `core/scanner.py`
 **Descrizione:** `zenzic init` andava in crash con un errore di configurazione quando
 invocato in una directory vuota. La funzione `find_repo_root()` non aveva fallback,
 rendendo impossibile inizializzare un progetto che non aveva ancora un marker `.git`
-o `zenzic.toml`.  
+o `zenzic.toml`.
 **Risoluzione:** Parametro `fallback_to_cwd=True` aggiunto a `find_repo_root()`, usato
-esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).  
+esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).
 **Chiuso in:** v0.6.0a4.

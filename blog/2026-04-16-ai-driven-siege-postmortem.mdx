@@ -1,7 +1,7 @@
 ---
 slug: ai-driven-siege-shield-postmortem
 title: "The AI Siege"
-sidebar_label: "🛡️ Saga III: The AI Siege"
+sidebar_label: "🛡️ 003 - Saga III: The AI Siege"
 authors: [pythonwoods]
 tags: [security, engineering, post-mortem, python, devtools, obsidian-chronicles, engineering-chronicles]
 date: 2026-04-16
@@ -11,12 +11,11 @@ description: >
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-
 :::info[🛡️ The Zenzic Chronicles — Complete]
 
 The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
 
-[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | **Saga III** | [Saga IV](/blog/beyond-the-siege-zenzic-v070-new-standard) | [Saga V](/blog/zenzic-v070-obsidian-maturity-stable) | [Saga VI](/blog/governance-of-glass)
+[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | **Saga III** | [Saga IV](/blog/beyond-the-siege-zenzic-v070-quartz) | [Saga V](/blog/zenzic-v070-quartz-maturity-stable) | [Saga VI](/blog/governance-of-quartz)
 
 :::
 
@@ -73,8 +72,8 @@ but did not account for deliberate obfuscation.
 
 ## ZRT-006: Unicode Format Character Injection
 
-**Category:** Input normalization bypass  
-**Severity:** High — complete bypass of all regex patterns  
+**Category:** Input normalization bypass
+**Severity:** High — complete bypass of all regex patterns
 **CVSS analogy:** 8.1 (High)
 
 ### The Technique
@@ -112,7 +111,7 @@ import unicodedata
 
 def _strip_unicode_format_chars(text: str) -> str:
     """Remove all Unicode Format (Cf) characters.
-    
+
     Invisible to human readers but interrupt regex pattern matching.
     Examples: U+200B (ZWS), U+200C (ZWNJ), U+200D (ZWJ), U+00AD (soft hyphen).
     """
@@ -123,8 +122,8 @@ def _strip_unicode_format_chars(text: str) -> str:
 
 ## ZRT-006b: HTML Entity Obfuscation
 
-**Category:** Input normalization bypass  
-**Severity:** High — bypasses patterns that depend on punctuation characters  
+**Category:** Input normalization bypass
+**Severity:** High — bypasses patterns that depend on punctuation characters
 **Affected families:** OpenAI (hyphen), Stripe (hyphen, underscore), GitHub (underscore)
 
 ### The Technique
@@ -149,7 +148,7 @@ import html
 
 def _decode_html_entities(text: str) -> str:
     """Decode HTML entities before pattern matching.
-    
+
     A credential containing &#45; (hyphen) or &#95; (underscore) renders
     correctly in a browser but bypasses regex patterns that match on the
     literal character.
@@ -163,8 +162,8 @@ def _decode_html_entities(text: str) -> str:
 
 ## ZRT-007: Comment Interleaving
 
-**Category:** Token fragmentation via markup  
-**Severity:** High — renders the token non-contiguous in raw source  
+**Category:** Token fragmentation via markup
+**Severity:** High — renders the token non-contiguous in raw source
 **Technique:** Inject HTML or MDX comment blocks between credential characters
 
 ### The Technique
@@ -176,7 +175,7 @@ valid Markdown syntax that any Markdown renderer will process and discard.
 sk-abc123<!-- This is a comment, nothing to see here -->def456ghi789jkl012mno345pqr678stu
 ```
 
-In rendered output: `sk-abc123def456ghi789jkl012mno345pqr678stu` (correct, readable).  
+In rendered output: `sk-abc123def456ghi789jkl012mno345pqr678stu` (correct, readable).
 In raw source the scanner reads: the regex fails because the comment block interrupts
 the character class `[a-zA-Z0-9]`.
 
@@ -201,8 +200,8 @@ def _strip_markup_comments(text: str) -> str:
 
 ## ZRT-007b: Cross-Line Token Splitting
 
-**Category:** Architectural bypass — stateless scanner assumption  
-**Severity:** Critical — bypasses all pattern matching with zero obfuscation  
+**Category:** Architectural bypass — stateless scanner assumption
+**Severity:** Critical — bypasses all pattern matching with zero obfuscation
 **Technique:** Line break
 
 This is the most architecturally significant finding. It requires no Unicode tricks,
@@ -215,8 +214,8 @@ Here is my staging key for the integration tests: sk-abc123def456
 ghi789jkl012mno345pqr678stu901vwx234yz
 ```
 
-The scanner processes line 1 — no match (only 12 chars after `sk-`).  
-The scanner processes line 2 — no match (no `sk-` prefix).  
+The scanner processes line 1 — no match (only 12 chars after `sk-`).
+The scanner processes line 2 — no match (no `sk-` prefix).
 The credential leaks. The split is invisible in rendered output — the two lines render
 as a single paragraph.
 
@@ -383,13 +382,14 @@ appearance of coverage without the substance.
 | **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
 
 **Cross-posted on:**
+
 - [Dev.to](https://dev.to/pythonwoods/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-2edj) — *AI Red Team Attacks Code Linter: Full Post-Mortem Report*
 - [Medium](https://medium.com/zenzic-engineering/we-put-our-documentation-linter-under-an-ai-driven-siege-heres-the-post-mortem-c09b8a86a396) — *We Put Our Documentation Linter Under an AI-Driven Siege*
 
 :::note[The Zenzic Chronicles]
 This is **Part 3** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
 
-[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · **Part 3 — The AI Siege** · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-new-standard) · [Part 5 — Quartz Maturity](/blog/zenzic-v070-obsidian-maturity-stable)
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · **Part 3 — The AI Siege** · [Part 4 — Beyond the Siege](/blog/beyond-the-siege-zenzic-v070-quartz) · [Part 5 — Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable)
 :::
 
-_Part 3 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/)._
+*Part 3 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/).*

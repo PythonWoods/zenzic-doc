@@ -15,7 +15,7 @@ i18n conventions — without modifying Zenzic itself.
 
 ---
 
-## What Is an Adapter?
+## What Is an Adapter
 
 An **adapter** is a Python class that satisfies the `BaseAdapter` protocol
 (`src/zenzic/core/adapters/_base.py`).  Zenzic's
@@ -68,7 +68,6 @@ from typing import Any
 
 from zenzic.core.adapters import RouteMetadata
 from zenzic.models.vsm import RouteStatus
-
 
 class MyEngineAdapter:
     """Adapter for MyEngine documentation projects."""
@@ -308,30 +307,47 @@ Your adapter must satisfy these invariants, or Zenzic's scanner may produce
 incorrect results:
 
 1. `get_route_info()` must return a `RouteMetadata` with a `canonical_url`
+
    that starts and ends with `/`.
+
 2. `get_route_info()` must set `status` to one of `REACHABLE`,
+
    `ORPHAN_BUT_EXISTING`, or `IGNORED`.  Never return `CONFLICT` — that
    status is assigned later by `_detect_collisions()`.
+
 3. `get_nav_paths()` returns paths **relative to `docs_root`**, using forward
+
    slashes, with no leading `/`.
+
 4. `get_nav_paths()` returns only `.md` files (other extensions are ignored by
+
    the orphan checker).
+
 5. `is_locale_dir()` must return `False` for the **default** locale.  Only
+
    non-default locale directories should return `True`.
+
 6. All methods must be **pure**: same inputs always produce the same outputs.
+
    No I/O, no global-state mutation.
+
 7. `resolve_asset()` must never raise — return `None` on any failure.
 8. `resolve_anchor()` must never raise — return `False` on any failure.
+
    The `anchors_cache` argument is read-only; do not mutate it.
+
 9. `has_engine_config()` must never raise — return `False` on any failure.
 10. `provides_index(directory_path)` **is the only method permitted to do I/O**.
+
     It is called once per directory during the discovery phase — never inside
     per-link or per-file hot loops — so a single `Path.exists()` call is
     acceptable.  Return `True` if your engine will generate a landing page for
     the directory (e.g. via `index.md`, `README.md`, or a dynamic config entry
     like `_category_.json` with `"link": {"type": "generated-index"}`).  Never
     raise — return `False` on any I/O failure.
+
 11. `get_link_scheme_bypasses()` must return a `frozenset[str]` of scheme names
+
     (without the trailing colon) — never `None`, never raise.  Return
     `frozenset()` if your engine has no special link-scheme bypass requirement.
 
@@ -365,11 +381,17 @@ def test_nav_paths_relative() -> None:
 Connect adapter code to deployment truth:
 
 1. Register engine identity in project configuration via `[build_context] engine`
+
    (see [Adapters & Engine Configuration](../../../how-to/configure-adapter.mdx)).
+
 2. Validate adapter behavior under strict Sentinel policy:
+
    `zenzic check all --engine myengine --strict`.
    For run controls, see [CLI Commands: Global flags](../../../reference/cli.mdx#global-flags).
+
 3. If your engine generates synthetic locale routes, explicitly map Ghost Route
+
    expectations against the VSM reference:
    [Checks Reference — VSM](../../../reference/checks#vsm-how-it-works).
+
 :::

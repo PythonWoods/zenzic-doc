@@ -9,8 +9,8 @@ description: "ADR 004: Suddivisione del modulo CLI monolitico in un package stru
 
 # ADR 004: Package CLI Decentralizzata
 
-**Stato:** Attivo  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo
+**Decisore:** Architecture Lead
 **Data:** 2026-04-15 (sprint v0.7.0, D062-B / D063 / D064)
 
 ---
@@ -34,16 +34,23 @@ un unico namespace:
 Questo monolite creava problemi composti:
 
 1. **Rischio di importazione circolare.** Con la crescita dei moduli `core/`, i
+
    contributori erano tentati di importare direttamente le utility di `cli.py`
    dal core, invertendo la direzione delle dipendenze.
+
 2. **Stato UI disperso.** L'oggetto Rich `console` veniva istanziato più volte in
+
    scope di funzioni diverse, causando formattazione dell'output incoerente e
    race condition negli ambienti di test.
+
 3. **Fallimento dell'isolamento dei test.** Ogni test che toccava un comando CLI
+
    doveva importare l'intero `cli.py` — incluso il lab showcase, il display live
    di Rich e tutti i sub-app Typer. Questo aumentava il tempo di avvio dei test
    e rendeva il mocking inaffidabile.
+
 4. **Attrito per i contributori.** Un nuovo contributore che aggiungeva un comando
+
    check non aveva un chiaro segnale "dove va questo?" dalla struttura dei file.
 
 ---
@@ -53,7 +60,7 @@ Questo monolite creava problemi composti:
 `src/zenzic/cli.py` è stato sciolto in un package `src/zenzic/cli/` con la
 seguente struttura modulare:
 
-```
+```text
 src/zenzic/cli/
   __init__.py       — re-export pubblici
   _check.py         — sub-app check: links, orphans, snippets, references, assets, all
@@ -72,12 +79,17 @@ Non contiene alcuna logica di analisi.
 Tre decisioni complementari sono state applicate nello stesso sprint:
 
 - **D062-B:** `src/zenzic/ui.py` → `src/zenzic/core/ui.py`. Le primitive UI sono
+
   usate sia dalla CLI che dal Core; collocarle in `core/` garantisce che il Core
   possa usarle senza importare da `cli/`, il che violerebbe la Layer Law.
+
 - **D063:** `src/zenzic/lab.py` → `src/zenzic/cli/_lab.py`. Il lab showcase è
+
   pura orchestrazione CLI — display Rich interattivi, sequenziamento degli atti,
   prompt utente. Appartiene al layer CLI, non adiacente al core.
+
 - **D064 (SDK Cleansing):** `run_rule()` è stata estratta da `cli.py` e spostata
+
   in `core/rules.py`. Il modulo pubblico `zenzic.rules` è diventato una
   **façade di 6 righe** — retrocompatibile con qualsiasi codice di terze parti
   che lo importasse direttamente, assicurando che l'implementazione viva in
@@ -95,7 +107,7 @@ denominata:
 
 La direzione imposta è:
 
-```
+```text
 cli/ → core/ → models/
 ```
 
@@ -134,12 +146,19 @@ la riorganizzazione interna.
 ## Invarianti (Non Negoziabili)
 
 - `src/zenzic/core/` non importa mai da `src/zenzic/cli/` — qualsiasi PR che
+
   introduce tale importazione è un candidato automatico al revert.
+
 - `_shared.py` è l'**unico** posto in `cli/` in cui l'oggetto Rich `console`
+
   viene istanziato. Tutti gli altri moduli `cli/` chiamano `_ui()` da `_shared.py`.
+
 - `src/zenzic/main.py` non contiene **alcuna logica di analisi** — solo cablaggio
+
   dell'app Typer.
+
 - `zenzic.rules` rimane una façade di re-export. L'implementazione vive in
+
   `core/rules.py`.
 
 ---
@@ -147,9 +166,14 @@ la riorganizzazione interna.
 ## Conseguenze
 
 - I nuovi comandi CLI vengono aggiunti al modulo `cli/_*.py` appropriato, non a
+
   un monolite generico.
+
 - La funzione `run_rule()` è importabile sia come `zenzic.rules.run_rule` (façade
+
   pubblica) che come `zenzic.core.rules.run_rule` (diretta). Entrambi i percorsi
   sono stabili.
+
 - Il lab showcase (`cli/_lab.py`) può essere esteso con nuovi atti senza influire
+
   sulla superficie di test della pipeline di analisi.

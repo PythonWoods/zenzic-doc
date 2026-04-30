@@ -17,13 +17,16 @@ Ti serve [uv](https://docs.astral.sh/uv/) nel `PATH`. Il resto è gestito automa
 
 ## Step 1 — Esegui Zenzic senza installarlo {#step-1-uvx}
 
-Punta Zenzic su qualsiasi cartella Markdown. Nessun ambiente virtuale, nessun `pip install`:
+Punta Zenzic sulla root del tuo progetto. Nessun ambiente virtuale, nessun `pip install`:
 
 ```bash
-uvx zenzic check all --docs percorso/alla/tua/docs
+uvx zenzic check all
 ```
 
 `uvx` scarica Zenzic in un ambiente isolato e lo elimina al termine del comando.
+Esegui questo comando dalla directory che contiene il tuo `zenzic.toml` (o dalla root del repository).
+Zenzic individua automaticamente la configurazione e attiva l'engine corretto — incluso
+il controllo orfani (Z402) quando è presente un contratto di navigazione.
 Questo è il workflow consigliato per la CI e per provare Zenzic su repository sconosciuti.
 
 ---
@@ -49,13 +52,13 @@ il banner Security Breach — l'allerta non sopprimibile per una credenziale esp
 
 La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
 
-**Lo Scudo (Sentinel Seal)** — ora esegui l'atto 0:
+**Lo Scudo (Sigillo della Sentinella)** — ora esegui l'atto 0:
 
 ```bash
 uvx zenzic lab 0
 ```
 
-Vedrai l'Sentinel Seal: ogni controllo verde, exit 0. Il contrasto è la lezione —
+Vedrai il Sigillo della Sentinella: ogni controllo verde, exit 0. Il contrasto è la lezione —
 lo stesso motore che ha rilevato il segreto ha appena confermato che la documentazione
 pulita è genuinamente pulita.
 
@@ -66,8 +69,8 @@ pulita è genuinamente pulita.
 uvx zenzic lab
 ```
 
-Lancia il menu interattivo di tutti gli 11 scenari: credenziali esposte, link rotti, pagine orfane,
-path traversal e il Sigillo Ossidiana. Zero installazione. Zero configurazione. Esperienza pura.
+Lancia il menu interattivo di tutti i 17 atti: credenziali esposte, link rotti, pagine orfane,
+path traversal e il Sigillo della Sentinella. Zero installazione. Zero configurazione. Esperienza pura.
 
 → Scegli qualsiasi atto dal menu, oppure eseguine uno specifico: `uvx zenzic lab 2` (L'Assedio), `uvx zenzic lab 0` (Il Sigillo).
 :::
@@ -125,7 +128,7 @@ strutturato ed esce con un codice leggibile dalla macchina:
 | **2** | Shield — credenziale esposta rilevata (mai sopprimibile) |
 | **3** | Blood Sentinel — tentativo di path traversal rilevato (mai sopprimibile) |
 
-Un'esecuzione pulita si presenta così — il **Sigillo Ossidiana**:
+Un'esecuzione pulita si presenta così — il **Sigillo della Sentinella**:
 
 <SentinelOutput variant="clean" showFrame />
 
@@ -144,4 +147,5 @@ ogni pagina è raggiungibile e nessuna credenziale è esposta. `100/100` è l'un
 - **Strict mode** — aggiungi `--strict` per validare anche gli URL esterni
 - **Regole personalizzate** — aggiungi voci `[[custom_rules]]` a `zenzic.toml` per i tuoi pattern
 - **Codici di finding** — consulta il [riferimento ai Finding Codes](../reference/finding-codes) per il
+
   catalogo diagnostico completo `Zxxx`

@@ -9,8 +9,8 @@ description: "ADR 007: The Blood Sentinel guards escapes FROM the target, not th
 
 # ADR 007: Sovereign Sandbox
 
-**Status:** Active  
-**Decider:** Architecture Lead  
+**Status:** Active
+**Decider:** Architecture Lead
 **Date:** 2026-04-08 (v0.7.0 sprint, D043)
 
 ---
@@ -92,9 +92,13 @@ Without this fix, such a setup was impossible.
 ## Invariants (Non-Negotiable)
 
 - The Sovereign Sandbox override fires **only** when an explicit `PATH` argument
+
   is provided and that path falls outside the CWD repo root.
+
 - Blood Sentinel (`Z202`/`Z203`) remains unconditionally active within the
+
   sovereign sandbox. No path traversal is permitted inside the declared target.
+
 - The change does not affect `fail-on-error` semantics or exit codes.
 
 ---
@@ -103,5 +107,6 @@ Without this fix, such a setup was impossible.
 
 - Remote CI patterns (cross-repo scanning) now work correctly.
 - `_validate_docs_root` (the F4-1 guard) continues to protect against config-file
+
   injection attacks (`docs_dir = "../../etc"`). The Sovereign Sandbox override
   only fires for **user-supplied** paths, not config-file-derived paths.

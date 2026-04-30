@@ -9,8 +9,8 @@ description: "ADR 007: Il Blood Sentinel sorveglia le fughe DAL target, non la p
 
 # ADR 007: Sandbox Sovrano
 
-**Stato:** Attivo  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo
+**Decisore:** Architecture Lead
 **Data:** 2026-04-08 (sprint v0.7.0, D043)
 
 ---
@@ -96,12 +96,17 @@ Senza questa correzione, tale configurazione era impossibile.
 ## Invarianti (Non Negoziabili)
 
 - La sovrascrittura del Sandbox Sovrano si attiva **solo** quando viene fornito
+
   un argomento `PATH` esplicito e quel percorso ricade fuori dalla radice del
   repo della CWD.
+
 - Il Blood Sentinel (`Z202`/`Z203`) rimane attivo incondizionatamente all'interno
+
   del sandbox sovrano. Nessun path traversal è permesso all'interno del target
   dichiarato.
+
 - La modifica non influisce sulla semantica di `fail-on-error` o sui codici di
+
   uscita.
 
 ---
@@ -110,6 +115,7 @@ Senza questa correzione, tale configurazione era impossibile.
 
 - I pattern CI remoti (scansione cross-repo) ora funzionano correttamente.
 - `_validate_docs_root` (la guardia F4-1) continua a proteggere contro gli
+
   attacchi di iniezione via file di configurazione (`docs_dir = "../../etc"`).
   La sovrascrittura del Sandbox Sovrano si attiva solo per percorsi **forniti
   dall'utente**, non per percorsi derivati da file di configurazione.

@@ -64,7 +64,7 @@ a different adapter, analyse a Docusaurus or Zensical project using an identical
 | `MkDocsAdapter` | `mkdocs` | `mkdocs.yml` |
 | `ZensicalAdapter` | `zensical` | `zensical.toml` |
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js` / `.ts` |
-| `StandaloneAdapter` | `standalone` | _(none — every file is reachable)_ |
+| `StandaloneAdapter` | `standalone` | *(none — every file is reachable)* |
 
 Adapters are discovered via the `zenzic.adapters` entry-point group. Ship a third-party
 adapter for any engine without touching the Zenzic core:
@@ -82,7 +82,7 @@ myengine = "my_package.adapter:MyEngineAdapter"
 Zenzic v0.7.0 does not provide build-engine plugins or internal integrations.
 This is a deliberate architectural decision, not a missing feature.
 
-### Why no engine plugins?
+### Why no engine plugins
 
 | Concern | Engine plugin | Sovereign CLI |
 | :--- | :--- | :--- |
@@ -114,6 +114,7 @@ zenzic check all --strict
 ```
 
 Zenzic runs **before or after** the build — never inside it. This gives you:
+
 - Exit 2 on any leaked credential (Shell stops immediately)
 - Exit 3 on any path-traversal link (cannot be suppressed)
 - Engine-agnostic results: the same `zenzic check all` command works for every engine
@@ -128,6 +129,23 @@ Zenzic runs **before or after** the build — never inside it. This gives you:
 | Pre-commit credential gate | `zenzic check references` — registers as a pre-commit hook |
 | Custom engine not yet supported | **Write an Adapter** — ship as a separate package, register via `zenzic.adapters` entry-point |
 | Migrate from MkDocs to Docusaurus | Use `zenzic check all` with `engine = "mkdocs"` on the source, `engine = "docusaurus"` on the target |
+
+---
+
+## Brand Integrity — Quartz Clarity {#brand-integrity}
+
+The Safe Harbor model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers (release codenames no longer in use) carries a different kind of debt: **narrative debt**. A v0.7.0 page that still refers to a v0.6.x codename contradicts the version history it is trying to document.
+
+Zenzic addresses this through the [`[project_metadata]`](../reference/configuration.mdx) configuration block and the [Z905 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z905) finding:
+
+```toml title="zenzic.toml"
+[project_metadata]
+release_name = "Quartz"
+obsolete_names = ["Obsidian"]
+obsolete_names_exclude_patterns = ["CHANGELOG*.md", "adr-*.mdx"]
+```
+
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore Z905 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore Z905 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
 
 ---
 

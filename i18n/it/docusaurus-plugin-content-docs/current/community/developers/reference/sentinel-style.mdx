@@ -35,6 +35,7 @@ Ogni card in un blocco `<div class="grid cards" markdown>` deve avere esattament
 ### Esempio canonico
 
 ```markdown
+
 - <Icon name="play" /> &nbsp; **Guida Utente**
 
     Tutto ciò che serve per installare, configurare e integrare Zenzic
@@ -111,10 +112,15 @@ Tutti i nomi delle icone seguono la convenzione del [set Lucide](https://lucide.
 ### Regole
 
 - **Coerenza semantica:** se un'icona rappresenta "Contribuisci" in una pagina,
+
   deve essere la stessa icona in ogni pagina.
+
 - **Sintassi uniforme:** ogni icona in una griglia di card usa `<Icon name="..." />`.
+
   Nessun mix di sintassi o set di icone.
+
 - **Contratto di tree-shaking:** prima di usare un nuovo nome di icona, aggiungerlo
+
   alla mappa esplicita `iconsMap` in `src/components/Icon.tsx`. I nomi non registrati
   renderizzano un placeholder rosso e emettono un `console.warn`.
 
@@ -208,7 +214,7 @@ Prima di sottomettere una PR, verificare:
 
 ---
 
-## 8. Gateway SentinelUI {#obsidianui-gateway}
+## 8. Gateway SentinelUI {#sentinelui-gateway}
 
 Tutto l'output terminale brandizzato di Zenzic fluisce attraverso un unico oggetto: `SentinelUI` in
 `src/zenzic/ui.py`. I moduli di comando non devono **mai** istanziare `Console` o `SentinelUI`
@@ -262,7 +268,7 @@ Aggiungere alla checklist della tua PR:
 
 ---
 
-## 9. SentinelPalette — Legge Zero Hex {#obsidian-palette}
+## 9. SentinelPalette — Legge Zero Hex {#sentinel-palette}
 
 `SentinelPalette` in `src/zenzic/ui.py` è la **sola fonte autorizzata di valori colore**
 nell'intera codebase Zenzic. Questa è la Legge Zero Hex.

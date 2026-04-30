@@ -206,9 +206,12 @@ singola voce copre un intero dominio o sotto-albero.
 Scenari comuni:
 
 - **Librerie pre-release** — link al proprio repo GitHub o alla pagina PyPI prima che siano
+
   pubblici
+
 - **Repository privati** — repo GitHub interni non raggiungibili dai runner CI
 - **Ambienti di staging** — URL di staging o preview che esistono solo durante una finestra di
+
   deploy
 
 ```toml
@@ -292,8 +295,11 @@ rispetto ai titoli estratti dal file sorgente.
 Zenzic risolve gli slug delle ancore nel seguente ordine:
 
 1. **Ancora esplicita MkDocs Material** — se il titolo contiene `{/* { #custom-id } */}`,
+
    quell'ID viene usato direttamente.
+
 2. **Slug standard** — i tag HTML vengono rimossi, il testo viene convertito in minuscolo e i
+
    caratteri non-word sostituiti con trattini, in accordo con l'estensione `toc` di
    Python-Markdown.
 

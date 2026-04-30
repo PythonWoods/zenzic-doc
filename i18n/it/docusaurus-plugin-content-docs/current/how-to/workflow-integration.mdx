@@ -28,7 +28,7 @@ cancello — nessun ciclo sprecato.
 
 Il Sentinel Gate applica un invariante semplice:
 
-```
+```text
 zenzic check all [PATH] --strict  →  successo  →  il tuo strumento di build
                                   →  fallimento →  build bloccata
 ```
@@ -146,7 +146,7 @@ L'operatore `&&` fa cortocircuito: se Zenzic esce con codice non-zero,
 
 ---
 
-## Perché il Gate in Locale e Non Solo in CI?
+## Perché il Gate in Locale e Non Solo in CI
 
 | Punto di scoperta | Costo per correggere |
 | :--- | :--- |
@@ -177,8 +177,13 @@ sopprimere un incidente di sicurezza.
 ## Correlati
 
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — workflow GitHub Actions che applicano lo
+
   stesso cancello nella tua pipeline
+
 - [Metriche di Salute](../explanation/health-metrics.mdx) — come Zenzic calcola il
+
   punteggio di qualità che il Sentinel Gate difende
+
 - [Riferimento Codici di Uscita](../reference/cli.mdx#exit-codes) — semantica completa
+
   dei codici di uscita

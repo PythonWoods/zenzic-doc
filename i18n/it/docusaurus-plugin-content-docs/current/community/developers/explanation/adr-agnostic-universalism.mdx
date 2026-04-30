@@ -9,8 +9,8 @@ description: "ADR 005: Z404 CONFIG_ASSET_MISSING esteso a tutti i motori support
 
 # ADR 005: Universalismo Agnostico — Z404 per Tutti i Motori
 
-**Stato:** Attivo  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo
+**Decisore:** Architecture Lead
 **Data:** 2026-04-20 (sprint v0.7.0)
 
 ---
@@ -91,9 +91,14 @@ report SARIF e nel conteggio dei codici di uscita di tutti gli altri finding.
 ## Conseguenze
 
 - Gli utenti MkDocs e Zensical ottengono la validazione dell'integrità degli asset
+
   senza alcuna modifica alla configurazione.
+
 - L'aggiunta di un nuovo adapter richiede l'implementazione di `check_config_assets()`
+
   — il protocollo ora lo impone esplicitamente (viene sollevato un `NotImplementedError`
   per gli adapter che lo omettono).
+
 - Z404 è ora classificato come **controllo di qualità universale**, non come
+
   funzionalità specifica di un motore, in `reference/finding-codes.mdx`.

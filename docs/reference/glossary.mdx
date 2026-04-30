@@ -10,6 +10,8 @@ This glossary provides precise definitions for all domain-specific terms used in
 
 ---
 
+## Terms
+
 ### Adapter {#adapter}
 
 A build-engine-specific module that implements the `BaseAdapter` protocol. Adapters translate between a documentation engine's file conventions (nav structure, locale directories, URL mapping) and Zenzic's engine-agnostic core. Built-in adapters: `MkDocsAdapter`, `ZensicalAdapter`, `DocusaurusAdapter`, `StandaloneAdapter`. Third-party adapters can be registered via the `zenzic.adapters` entry-point group.
@@ -89,7 +91,7 @@ A per-file data structure populated during Pass 1 of the Two-Pass Pipeline. The 
 
 ### Sentinel Score {#sentinel-score}
 
-A 0--100 quality score computed across all six check categories (links, orphans, snippets, placeholders, assets, references). Each category has a weight and a contribution to the total score. The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `zenzic.toml` or `--fail-under` on the CLI.
+A 0--100 quality score computed across four weighted categories: Structural (40%), Content (30%), Navigation (20%), and Brand & Assets (10%). Each category accumulates per-code penalty deductions (D092 — Quartz Penalty Scorer). The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `zenzic.toml` or `--fail-under` on the CLI.
 
 Use `zenzic score --save` to snapshot the current score and `zenzic diff` to compare against the baseline.
 
@@ -107,7 +109,7 @@ Distinct from a Shield *finding* (a `SecurityFinding` dataclass yielded during P
 
 The immutable set of directories that Zenzic always excludes, regardless of any configuration or CLI flag. They are defined in `SYSTEM_EXCLUDED_DIRS` as a `frozenset`:
 
-```
+```text
 .git          .github       .venv         node_modules
 .nox          .tox          .pytest_cache .mypy_cache
 .ruff_cache   __pycache__   .docusaurus   .cache

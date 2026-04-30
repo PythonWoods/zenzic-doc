@@ -1,16 +1,16 @@
 ---
 sidebar_label: "ADR 006: Perimetro Unificato"
 sidebar_position: 8
-description: "ADR 006: Correzione del theme flip e del locale bleed del Journal su zenzic.dev — unificazione del namespace di storage e link navbar locale-sovrani."
+description: "ADR 006: Correzione del theme flip e del locale bleed del Blog su zenzic.dev — unificazione del namespace di storage e link navbar locale-sovrani."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# ADR 006: Perimetro Unificato — Storage Namespace e Sovranità Locale del Journal
+# ADR 006: Perimetro Unificato — Storage Namespace e Sovranità Locale del Blog
 
-**Stato:** Attivo  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo
+**Decisore:** Architecture Lead
 **Data:** 2026-04-27 (sprint v0.7.0, CEO 051, commit `3188387`)
 
 ---
@@ -143,12 +143,17 @@ preferenze OS. Non è stato applicato.
 ## Invarianti (Non Negoziabili)
 
 - `storage: { namespace: false }` deve rimanere in `docusaurus.config.ts` finché
+
   `future.v4: true` è attivo e il locale italiano è supportato. Rimuoverlo
   reintroduce silenziosamente la frammentazione della chiave di storage per locale.
+
 - `colorMode.respectPrefersColorScheme` deve rimanere `false`. Questo è un
+
   invariante immutabile (CEO 149). Qualsiasi PR che lo imposta a `true` è un
   candidato automatico al revert.
+
 - L'elemento navbar Journal deve rimanere `type: 'html'`. Riconvertirlo a un
+
   elemento `to:` o `href:` standard reintrodurrà il locale bleed nella prossima
   build. Questo **non è visibile in modalità sviluppo** (`npm run start`) perché
   serve un solo locale senza la pipeline di riscrittura. **I bug di questa classe
@@ -159,11 +164,16 @@ preferenze OS. Non è stato applicato.
 ## Conseguenze
 
 - La preferenza della modalità scura è ora completamente indipendente dal locale.
+
   Un utente che imposta la modalità scura nella documentazione inglese mantiene la
   modalità scura quando passa all'italiano.
+
 - Il Journal (blog) si carica sempre su `/blog` indipendentemente dal locale da
+
   cui l'utente ha navigato.
+
 - L'elemento navbar `type: 'html'` non partecipa alla pipeline di traduzione
+
   `i18n` di Docusaurus (non appare nelle chiavi di traduzione `code.json`).
   L'etichetta "Journal" è quindi codificata nel valore HTML — questo è intenzionale,
   poiché il blog è solo in inglese e l'etichetta non richiede traduzione.

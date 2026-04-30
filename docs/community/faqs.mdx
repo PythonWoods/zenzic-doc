@@ -105,7 +105,9 @@ and same-page anchors (if `validate_same_page_anchors: true` is set).
 **How do I integrate Zenzic in GitHub Actions?**
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - name: Lint documentation
+
   run: uvx zenzic check all --strict
 ```
 
@@ -116,8 +118,11 @@ For the full setup with dynamic badges and regression detection, see the [CI/CD 
 The `--strict` flag has two effects depending on the command:
 
 - `zenzic check links --strict` / `zenzic check all --strict`: also validates external HTTP/HTTPS
+
   links via network requests (disabled by default for speed).
+
 - `zenzic check references --strict`: treats Dead Definitions (reference links defined but never
+
   used) as hard errors instead of warnings.
 
 Recommended in CI pipelines to catch all classes of issues.

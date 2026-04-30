@@ -74,6 +74,7 @@ Selezione engine e verbosità Sentinel sono aspetti separati. Usa
 2. `--exit-zero` per run osservativi non bloccanti.
 3. `--show-info` per ispezionare finding informativi di topologia.
 4. `--quiet` per output CI/pre-commit a riga singola.
+
 :::
 
 ---
@@ -91,13 +92,18 @@ configurazioni con molte variabili d'ambiente funzionano senza alcuna pre-elabor
 build di MkDocs. Questo significa:
 
 - **Tag `!ENV`** — trattati silenziosamente come `null`. Se la nav dipende da
+
   interpolazione di variabili d'ambiente a runtime, le voci nav che dipendono da quei
   valori saranno assenti dalla visione di Zenzic.
+
 - **Nav generata dai plugin** — plugin che mutano la nav a runtime (es.
+
   `mkdocs-awesome-pages`, `mkdocs-literate-nav`) producono un albero di navigazione
   che Zenzic non vede mai. Le pagine incluse solo da questi plugin vengono segnalate
   come orfane.
+
 - **Macro** — `mkdocs-macros-plugin` (template Jinja2 in Markdown) non viene
+
   valutato. I link all'interno di espressioni macro non vengono validati.
 
 Per progetti che dipendono fortemente dalla generazione dinamica della nav, aggiungi i
@@ -146,14 +152,20 @@ motore di build.
 ```yaml title="mkdocs.yml"
 # mkdocs.yml
 plugins:
+
   - i18n:
+
       docs_structure: folder
       fallback_to_default: true
       languages:
+
         - locale: en
+
           default: true
           build: true
+
         - locale: it
+
           build: true
 ```
 
@@ -273,11 +285,16 @@ Il risultato:
 ### Limitazioni
 
 - **Nav generata da plugin** — I plugin Zensical che modificano la nav a runtime non vengono
+
   valutati. Le pagine incluse solo da tali plugin potrebbero essere segnalate come orphan. Aggiungi
   i loro percorsi a `excluded_dirs` in `zenzic.toml` per sopprimere i report falsi.
+
 - **Contenuto dinamico** — `zensical.toml` viene analizzato come TOML statico. Le espressioni
+
   template o i campi calcolati non vengono valutati.
+
 - **Scope di rilevamento** — `ZensicalAdapter` cerca `zensical.toml` (o il ponte MkDocs) solo
+
   nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `zenzic.toml`.
 
 ---
@@ -295,10 +312,15 @@ Docusaurus è un framework Node.js costruito su React. Zenzic non importa né es
 codice Node.js. Il `DocusaurusAdapter` invece:
 
 1. **Legge `docusaurus.config.ts`** come testo ed estrae dati strutturali — `i18n.locales`,
+
    `i18n.defaultLocale`, `routeBasePath` e `path` del plugin docs, e configurazione sidebar.
+
 2. **Risolve le directory locale** secondo il layout i18n standard di Docusaurus
+
    (`i18n/{locale}/docusaurus-plugin-content-docs/current/`).
+
 3. **Mappa le sidebar** da `sidebars.ts` o `sidebars.js` usando pattern matching a livello
+
    testuale per determinare quali file sono dichiarati nella navigazione.
 
 ### Configurazione minima
@@ -435,12 +457,17 @@ Docusaurus a un altro motore, Zenzic segnalerà ogni link `pathname:///` come er
 ### Limiti dell'analisi statica
 
 - **Plugin sidebar dinamici** — le sidebar generate dinamicamente tramite JavaScript a
+
   build-time producono una navigazione che Zenzic non può osservare staticamente. Le pagine
   incluse solo da plugin sidebar personalizzati verranno segnalate come orfane.
+
 - **`docusaurus.config.ts` con TypeScript complesso** — l'adapter usa pattern matching, non
+
   valutazione TypeScript completa. Le configurazioni che calcolano valori a livello di
   modulo o importano da moduli esterni potrebbero non essere analizzate completamente.
+
 - **Plugin blog e pagine** — `DocusaurusAdapter` si concentra attualmente sul plugin docs.
+
   Il contenuto sotto `/blog/` o le pagine personalizzate non viene validato.
 
 Per i casi di sidebar dinamiche, aggiungi i percorsi generati a `excluded_dirs` in
@@ -484,10 +511,15 @@ qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
 ### Quando usare Standalone
 
 - **Repository Markdown statici** — wiki, ADR log, documentazione in testo semplice senza
+
   pipeline di build.
+
 - **Validazione pre-migrazione** — esegui Zenzic su un progetto prima di scegliere un SSG per
+
   rilevare link rotti e credenziali prima dell'introduzione di un framework.
+
 - **Progetti SSG personalizzati** — qualsiasi generatore non ancora coperto da un adapter nativo.
+
   Usa `excluded_dirs` per sopprimere i falsi positivi delle directory di output generate.
 
 ### Configurazione minimale

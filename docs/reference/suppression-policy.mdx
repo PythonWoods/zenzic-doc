@@ -1,0 +1,151 @@
+---
+sidebar_position: 5
+sidebar_label: "Suppression Policy"
+description: "The Zenzic Suppression Manifesto — per-line ignore syntax, inviolable security codes, and interaction with --strict mode."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Suppression Policy
+
+> *"Security findings are facts, not suggestions. You can ignore style, but you cannot ignore a breach."*
+
+Zenzic's suppression system lets authors declare **validated exceptions** — intentional deviations that are not defects. It is a precision instrument, not an escape hatch.
+
+---
+
+## Per-Line Suppression Syntax {#syntax}
+
+Suppression is **format-aware** and operates at the line level. Add a comment at the end of the offending line:
+
+**Markdown (`.md`) files:**
+
+```markdown
+Quartz was previously known as Obsidian. <!-- zenzic:ignore Z905 -->
+```
+
+**MDX (`.mdx`) files:**
+
+```mdx
+Quartz was previously known as Obsidian. {/* zenzic:ignore Z905 */}
+```
+
+Both comment forms are invisible in rendered output — Markdown processors treat HTML comments as non-rendered, and Docusaurus/React treats `{/* */}` as JSX whitespace. The distinction matters: using the wrong comment type in the wrong file format will cause the suppression to be silently ignored.
+
+To suppress **multiple codes on the same line**, add one comment per code:
+
+```mdx
+Some line. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z905 */}
+```
+
+### Recommended: Trailing Position
+
+The comment should always appear at the **end of the line** (or end of the cell in Markdown tables), after all content. This follows the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
+
+**Prose / lists:** Comment at absolute end of line.
+
+```mdx
+- **Historical reference** — Quartz was previously known as Obsidian. <!-- zenzic:ignore Z905 -->
+```
+
+**Markdown tables:** Comment at the end of the **last cell**, before the closing pipe.
+
+```md
+| [Section](#section) | Description of this section. <!-- zenzic:ignore Z107 --> |
+```
+
+:::tip[Why trailing?]
+Placing the `zenzic:ignore` at the end of the line:
+
+1. **Separates content from instruction** — the human message is uninterrupted.
+2. **Enables visual scanning** — scan the right edge of a file to see all active suppressions.
+3. **Avoids prose disruption** — comments embedded in mid-sentence break reading flow.
+
+:::
+
+---
+
+## Suppressible vs Inviolable Codes {#codes}
+
+Zenzic divides finding codes into two classes: **Suppressible** (the author's intent is sovereign) and **Inviolable** (security facts cannot be declared false positives).
+
+| Code | Name | Suppressible? |
+| :--- | :--- | :---: |
+| Z101 | LINK_BROKEN | ✅ Yes |
+| Z102 | ANCHOR_MISSING | ✅ Yes |
+| Z103 | ORPHAN_LINK | ✅ Yes |
+| Z104 | FILE_NOT_FOUND | ✅ Yes |
+| Z105 | ABSOLUTE_PATH | ✅ Yes |
+| Z106 | CIRCULAR_LINK | ✅ Yes |
+| Z107 | CIRCULAR_ANCHOR | ✅ Yes |
+| **Z201** | **SHIELD_SECRET** | 🔒 **Never** |
+| **Z202** | **PATH_TRAVERSAL** | 🔒 **Never** |
+| **Z203** | **PATH_TRAVERSAL_FATAL** | 🔒 **Never** |
+| Z301 | DANGLING_REF | ✅ Yes |
+| Z302 | DEAD_DEF | ✅ Yes |
+| Z303 | DUPLICATE_DEF | ✅ Yes |
+| Z401 | MISSING_DIRECTORY_INDEX | ✅ Yes |
+| Z402 | ORPHAN_PAGE | ✅ Yes |
+| Z403 | MISSING_ALT | ✅ Yes |
+| Z404 | CONFIG_ASSET_MISSING | ✅ Yes |
+| Z501 | PLACEHOLDER | ✅ Yes |
+| Z502 | SHORT_CONTENT | ✅ Yes |
+| Z503 | SNIPPET_ERROR | ✅ Yes |
+| Z504 | QUALITY_REGRESSION | ✅ Yes |
+| Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
+| Z901 | RULE_ENGINE_ERROR | ✅ Yes |
+| Z902 | RULE_TIMEOUT | ✅ Yes |
+| Z903 | UNUSED_ASSET | ✅ Yes |
+| Z904 | NAV_CONTRACT | ✅ Yes |
+| Z905 | BRAND_OBSOLESCENCE | ✅ Yes |
+
+:::danger[The Inviolability Law — CEO-152]
+`zenzic:ignore Z201`, `zenzic:ignore Z202`, and `zenzic:ignore Z203` are **silently rejected**. The Shield and Blood Sentinel scanners operate independently of the suppression engine. Even if a `zenzic:ignore` comment is present on the same line as a credential, Zenzic will still emit the finding and exit with code 2 or 3.
+
+You cannot ignore a breach.
+:::
+
+---
+
+## Interaction with `--strict` Mode {#strict}
+
+`--strict` and `zenzic:ignore` operate at **different layers** of the analysis pipeline:
+
+1. **Detection phase:** Zenzic finds a violation (e.g. Z402 Orphan Page, severity `warning`).
+2. **Suppression filter (ignore):** If the line carries `zenzic:ignore Z402`, the violation is destroyed. For Zenzic, it never existed.
+3. **Severity evaluation (strict):** `--strict` promotes surviving warnings to errors. It only acts on violations that passed through step 2.
+
+**The consequence:** Inhibiting a finding via `zenzic:ignore` effectively removes it from the audit stream. Even when running in `--strict` mode, ignored findings will not trigger a non-zero exit code — they are considered *validated exceptions* declared by the author.
+
+| Finding state | `--strict`? | Exit code | Reason |
+| :--- | :---: | :---: | :--- |
+| Warning present | No | `0` | Warning is tolerated by default |
+| Warning present | **Yes** | `1` | `--strict` promotes warning to error |
+| Warning + `ignore` | No | `0` | Author declared a validated exception |
+| Warning + `ignore` | **Yes** | `0` | **Intent wins over rigour** |
+| Z201/Z202/Z203 | Any | `2` or `3` | Inviolable — suppression is rejected |
+
+---
+
+## When to Suppress vs When to Fix {#guidance}
+
+Suppression is an act of **documented intent**, not evasion. In a `git` repository, a `zenzic:ignore` comment is a signed declaration that the author reviewed the finding and considered it a legitimate exception. Suppression should be used for:
+
+- **ToC navigation links** — `[Section Name](#section-name)` is a common in-page ToC pattern that triggers Z107. These are intentional and suppressible. {/* zenzic:ignore Z107 */}
+- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames (Z905).
+- **Intentionally short pages** — A `glossary.md` with terse definitions may be below the Z502 word-count threshold by design.
+
+Suppression should **not** be used to:
+
+- Hide a real broken link rather than fix the target.
+- Silence a Z402 orphan page rather than add it to the navigation.
+- Bypass Z201 to "document" a real credential.
+
+---
+
+## See Also {#see-also}
+
+- [Finding Codes Reference](./finding-codes.mdx) — Full catalog of all Zxxx codes with remediation steps.
+- [Configuration Reference](./configuration-reference.mdx) — `excluded_codes` for repo-wide suppression.
+- [Health Metrics](../explanation/health-metrics.mdx) — How suppressed findings affect the Quality Score.

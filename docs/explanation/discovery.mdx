@@ -73,7 +73,7 @@ flowchart TD
 
 System Guardrails are **immutable**. They are always excluded regardless of any configuration, CLI flag, or forced inclusion. They protect Zenzic from scanning directories that should never contain documentation source files:
 
-```
+```text
 .git          .github       .venv         node_modules
 .nox          .tox          .pytest_cache .mypy_cache
 .ruff_cache   __pycache__   .docusaurus   .cache
@@ -135,7 +135,8 @@ CLI `--include-dir` cannot override System Guardrails -- attempting to include `
 
 For each directory encountered during the walk:
 
-```
+```text
+
 1. Is it in SYSTEM_EXCLUDED_DIRS?      --> EXCLUDED (L1, immutable)
 2. Is it in config included_dirs?       --> INCLUDED (L2 forced)
 3. Is it in CLI --exclude-dir?          --> EXCLUDED (L4)
@@ -143,13 +144,15 @@ For each directory encountered during the walk:
 5. Is it matched by VCS .gitignore?     --> EXCLUDED (L2-VCS, if enabled)
 6. Is it in config excluded_dirs?       --> EXCLUDED (L3)
 7. Default                              --> INCLUDED
+
 ```
 
 ### File Exclusion (`should_exclude_file`)
 
 For each file that passes directory filtering:
 
-```
+```text
+
 1. Is any parent dir in SYSTEM_EXCLUDED_DIRS?  --> EXCLUDED (L1)
 2. Does filename match included_file_patterns? --> INCLUDED (L2 forced)
 3. Is any parent dir in config included_dirs?  --> INCLUDED (L2 forced)
@@ -159,6 +162,7 @@ For each file that passes directory filtering:
 7. Does filename match excluded_file_patterns? --> EXCLUDED (L3)
 8. Is any parent dir in config excluded_dirs?  --> EXCLUDED (L3)
 9. Default                                     --> INCLUDED
+
 ```
 
 ---

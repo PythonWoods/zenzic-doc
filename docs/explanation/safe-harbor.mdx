@@ -65,12 +65,17 @@ architectural commitment.
 The implementation of this commitment is **absolute engine-agnosticism**:
 
 - Zenzic reads raw Markdown files and configuration as plain data. It never imports or executes a
+
   documentation framework.
+
 - Engine-specific knowledge (nav structure, i18n conventions, locale fallback rules) is
+
   encapsulated in **adapters** — thin, replaceable components that translate engine semantics into
   a neutral protocol. The Core never sees a `MkDocsAdapter` or `ZensicalAdapter` — it sees only
   a `BaseAdapter` that answers five questions.
+
 - Third-party adapters install as Python packages and are discovered at runtime via entry-points.
+
   Adding support for a new engine (Hugo, Docusaurus, Sphinx) requires no Zenzic release.
 
 The practical consequence: a project migrating from MkDocs to Zensical — or to Hugo, Docusaurus,
@@ -100,11 +105,16 @@ Zenzic's architecture is designed around a single constraint: **every finding mu
 actionable**. This shapes several decisions:
 
 - **In-memory multi-pass algorithms.** The Two-Pass Reference Pipeline separates definition
+
   harvesting from usage checking, eliminating the false positives caused by forward references
   that a naive single-pass scanner would produce.
+
 - **i18n fallback awareness.** A link from a translated page to a default-locale asset is not a
+
   broken link — the build engine will serve the fallback at runtime. Zenzic suppresses it.
+
 - **Standalone Mode for nav-agnostic projects.** When Zenzic has no nav declaration to compare
+
   against, it skips the orphan check entirely rather than flagging every file as an orphan.
 
 The goal is a tool that is **utterly silent when your documentation is sound**, and surgically
@@ -229,12 +239,17 @@ the documentation site (`zenzic-doc`) live in separate repositories.
 This separation is deliberate and permanent:
 
 - **The engine has no opinion on how its own documentation is rendered.** The core repository
+
   contains Python source, tests, and example fixtures. It does not contain a documentation
   framework, a theme, or a CSS file.
+
 - **The documentation site is a sovereign Docusaurus project.** It has its own `package.json`,
+
   its own i18n system, its own React components. It is not a subdirectory of the engine — it is
   a peer.
+
 - **Zenzic validates its own documentation.** The docs repo carries a `zenzic.toml` that
+
   configures the Docusaurus adapter. Every documentation pull request is linted by the tool it
   documents. This is the recursive proof that engine agnosticism works.
 

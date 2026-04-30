@@ -21,7 +21,9 @@ in local development, as a pre-commit hook, in CI pipelines, or for one-off audi
 The repository ships maintained fixtures that mirror the documented contracts:
 
 - `examples/mkdocs-basic/` — MkDocs 1.6 baseline (nested nav, external nav link,
+
   tolerant YAML tags like `!ENV` and `!relative`).
+
 - `examples/i18n-standard/` — strict bilingual gold standard.
 - `examples/zensical-basic/` — Zensical v0.0.31+ baseline (`[project].nav`).
 - `examples/broken-docs/` — intentional failures (exit 1).
@@ -232,11 +234,16 @@ When `mkdocs.yml` (MkDocs/Zensical) or `zensical.toml` (Zensical) is present at 
 root, Zenzic loads the corresponding **adapter** which provides:
 
 - **Nav awareness** — orphan detection knows the difference between "not in the nav" and "not
+
   supposed to be in the nav" (e.g. i18n locale files).
+
 - **i18n fallback** — cross-locale links are resolved correctly instead of being flagged as broken.
 - **Locale directory suppression** — files under `docs/it/`, `docs/fr/`, etc. are not reported
+
   as orphans.
+
 - **Ghost Routes** — when `mkdocs-material` with `reconfigure_material: true` generates locale
+
   entry points (e.g. `/it/`) at build time, those pages never appear in `nav:`. Zenzic
   marks them `REACHABLE` automatically in the [Virtual Site Map](../reference/checks#vsm-how-it-works)
   so they are never reported as false orphans — with no manual exclusion list required.
@@ -258,6 +265,7 @@ Use `--engine` to override the detected adapter for a single run:
 zenzic check all --engine standalone    # skip orphan check regardless of config files
 zenzic check all --engine mkdocs        # force MkDocs adapter
 ```
+
 :::
 
 ---

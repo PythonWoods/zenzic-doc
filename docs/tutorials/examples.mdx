@@ -64,8 +64,11 @@ Run Zenzic as a CI step instead — it provides the same enforcement with full V
 Shield, and Blood Sentinel coverage:
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - run: zenzic check all --strict
+
 ```
+
 :::
 
 ---
@@ -119,7 +122,7 @@ A bilingual documentation project structured to score **100/100** under `zenzic 
 **Engine:** `standalone`
 **Expected exit:** 0
 
-Demonstrates the **Layered Exclusion Model** introduced in v0.6.1 "Obsidian Bastion":
+Demonstrates the **Layered Exclusion Model** introduced in v0.6.1:
 
 - `respect_vcs_ignore = true` — Zenzic reads `.gitignore` patterns at L2-VCS.
 - `included_dirs = ["generated-api"]` — forces a VCS-ignored directory back into scope at L2 Forced Inclusion.
@@ -189,17 +192,17 @@ Intentionally triggers the Zenzic Shield (credential detection) and the link che
 
 | Feature | Example |
 | :--- | :--- |
-| Zero-config plain Markdown | [standalone](#standalone) |
-| MkDocs static analysis | [mkdocs-basic](#mkdocs-basic) |
-| MkDocs build-time gate | [mkdocs-basic](#mkdocs-basic) |
-| Docusaurus adapter + slug routing | [docusaurus-v3](#docusaurus-v3) |
-| Zensical engine | [zensical-basic](#zensical-basic) |
-| Bilingual / i18n 100/100 | [i18n-standard](#i18n-standard) |
-| VCS-aware exclusion (L1–L4) | [vcs-aware-project](#vcs-aware) |
+| Zero-config plain Markdown | [standalone](#standalone) {/* zenzic:ignore Z107 */} |
+| MkDocs static analysis | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
+| MkDocs build-time gate | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
+| Docusaurus adapter + slug routing | [docusaurus-v3](#docusaurus-v3) {/* zenzic:ignore Z107 */} |
+| Zensical engine | [zensical-basic](#zensical-basic) {/* zenzic:ignore Z107 */} |
+| Bilingual / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
+| VCS-aware exclusion (L1–4) | [vcs-aware-project](#vcs-aware) |
 | Custom `docs_dir` | [custom-dir-target](#custom-dir) |
 | Single-file `--target` | [single-file-target](#single-file) |
 | Custom rule plugin | [plugin-scaffold-demo](#plugin-scaffold) |
-| What failures look like | [broken-docs](#broken-docs) |
+| What failures look like | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
 | Shield credential detection | [security_lab](#security-lab) |
 
 ---

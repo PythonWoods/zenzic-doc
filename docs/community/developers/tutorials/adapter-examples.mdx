@@ -58,11 +58,17 @@ Use this as the reference template when starting a new multilingual docs project
 Key patterns this example demonstrates:
 
 - **Suffix-mode i18n** — translations live as `page.it.md` siblings, never in a
+
   `docs/it/` subtree
+
 - **Path symmetry** — `../../assets/brand/brand-kit.zip` resolves identically from
+
   both `page.md` and `page.it.md`
+
 - **Build artifact exclusion** — `excluded_build_artifacts` lets Zenzic validate
+
   links to generated files without requiring them on disk
+
 - **`fail_under = 100`** — any regression breaks the gate
 
 ```bash
@@ -170,7 +176,7 @@ This section walks through two concrete adapter methods side-by-side.
 The contrast between `DocusaurusAdapter` and `StandaloneAdapter` shows how the
 adapter protocol enables engine-agnostic Core logic.
 
-### `provides_index()` — Does this directory have a landing page?
+### `provides_index()` — Does this directory have a landing page
 
 The Core calls `provides_index(directory_path)` once per directory during orphan
 detection. It answers: *"Will the engine generate a browsable index for this
@@ -213,7 +219,7 @@ makes no assumptions — it recognises only the universal `index.md` convention.
 
 ---
 
-### `get_nav_paths()` — What files are discoverable?
+### `get_nav_paths()` — What files are discoverable
 
 `get_nav_paths()` returns the set of file paths reachable via the site's
 navigation UI. A file absent from this set is a candidate for Z402
@@ -252,7 +258,7 @@ navigation contract, so orphan detection (Z402) is disabled.
 
 ---
 
-### `classify_route()` — Is this file reachable?
+### `classify_route()` — Is this file reachable
 
 `classify_route(rel, nav_paths)` maps a source file path to its route status.
 

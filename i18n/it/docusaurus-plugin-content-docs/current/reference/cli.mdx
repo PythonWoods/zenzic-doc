@@ -53,6 +53,17 @@ gate CI e risposta agli incidenti.
 
 ### `--strict`
 
+**`--strict` controlla il gate della pipeline, non la visualizzazione dei finding.** La Sentinella
+mostra sempre tutti i finding rilevati — errori e warning — indipendentemente da questo flag.
+Ciò che cambia è il modo in cui i warning influenzano l'**exit code**:
+
+- **Senza `--strict`:** i warning → Exit 0 (la pipeline passa). Gli errori bloccanti causano comunque Exit 1.
+- **Con `--strict`:** i warning vengono promossi a errori bloccanti → Exit 1 (la pipeline si ferma).
+
+Quando la modalità strict è attiva, la Sentinella stampa la riga
+`STRICT MODE: Warnings have been promoted to errors.` nel footer del report, in modo che il
+log CI sia inequivocabile anche quando gli stessi finding sarebbero altrimenti non bloccanti.
+
 | Comando | Effetto |
 | :--- | :--- |
 | `check links --strict` | Valida gli URL HTTP/HTTPS esterni via richieste di rete concorrenti |
@@ -166,7 +177,7 @@ dal rilevamento automatico del terminale.
 | `NO_COLOR` (qualsiasi valore) | `--no-color` |
 | `FORCE_COLOR` (qualsiasi valore) | `--force-color` |
 
-`NO_COLOR` è conforme alla convenzione standard [no-color.org](https://no-color.org/).
+`NO_COLOR` è conforme alla convenzione standard `NO_COLOR` (no-color.org).
 Quando sono impostate sia `NO_COLOR` che `FORCE_COLOR`, `--no-color` / `NO_COLOR` ha sempre
 la precedenza.
 
@@ -260,7 +271,7 @@ altri codici di uscita. Non viene mai soppresso da `--exit-zero`. Consultare
 
 Ogni codice di uscita ha una firma visiva distinta nel Sentinel Report:
 
-**Uscita 0 — Sigillo Ossidiana**
+**Uscita 0 — Sigillo della Sentinella**
 
 <SentinelOutput variant="clean" compact />
 
@@ -597,7 +608,7 @@ Gli atti sono raggruppati in quattro sezioni tematiche:
 
 ### Etichette di esito
 
-Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, l'Sentinel Seal riporta
+Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Sigillo della Sentinella riporta
 se l'aspettativa è stata soddisfatta:
 
 | Etichetta | Significato |

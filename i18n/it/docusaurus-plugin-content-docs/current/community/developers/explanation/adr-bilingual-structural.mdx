@@ -9,8 +9,8 @@ description: "ADR 008: Parità atomica del filesystem tra l'albero sorgente ingl
 
 # ADR 008: Invariante Strutturale Bilingue — Il Symmetry Guardrail
 
-**Stato:** Attivo  
-**Decisore:** Architecture Lead  
+**Stato:** Attivo
+**Decisore:** Architecture Lead
 **Data:** 2026-04-20 (sprint v0.7.0, D045 — Migrazione Diátaxis)
 
 ---
@@ -33,12 +33,17 @@ spostato ma lo specchio italiano no.
 Questa classe di bug è particolarmente insidiosa perché:
 
 1. **Non viene prodotto alcun errore in fase di build.** `onBrokenLinks: 'throw'`
+
    rileva solo i riferimenti `[testo](link)` interni — non valida i percorsi del
    language switcher.
+
 2. **Il bug è invisibile in modalità sviluppo.** `npm run start` serve un solo
+
    locale. Il switcher è inattivo. Il 404 appare solo nell'output di `just build`
    quando entrambi i locale vengono compilati simultaneamente.
+
 3. **La finestra di rilevamento è lunga.** Un file IT mancante scoperto tre commit
+
    dopo il rename EN richiede un `git blame` forense per risalire — l'accoppiamento
    tra i due spostamenti non è più visibile nella storia.
 
@@ -117,11 +122,16 @@ regressioni.
 ## Invarianti (Non Negoziabili)
 
 - Il comando `diff` di simmetria deve uscire con 0 prima di qualsiasi commit che
+
   modifica la struttura del filesystem di `docs/` o `i18n/it/`.
+
 - I nuovi file aggiunti a `docs/` devono avere un corrispondente stub aggiunto a
+
   `i18n/it/` **nello stesso commit** — anche se il contenuto italiano è una copia
   dell'inglese fino a quando non viene fornita una traduzione.
+
 - L'hook pre-commit (`pre-commit-config.yaml`) impone la simmetria al gate.
+
   Aggirarlo con `--no-verify` su un commit strutturale è una violazione di Classe 1
   (Technical Debt).
 
@@ -130,11 +140,16 @@ regressioni.
 ## Conseguenze
 
 - Ogni contributore che rinomina o sposta un file di documentazione deve essere
+
   consapevole dello specchio italiano — questa è una parte non opzionale del
   workflow di contribuzione documentato in `CONTRIBUTING.md`.
+
 - La recipe `just preflight` (`uvx pre-commit run --all-files`) applica questo
+
   controllo in CI. Una PR che rompe la simmetria strutturale fallirà al gate.
+
 - L'invariante di simmetria si applica solo alla **struttura delle directory**. Il
+
   *contenuto* italiano può essere in ritardo rispetto all'inglese durante sprint
   attivi, purché il file sia presente (anche come stub). Un 404 è peggio di una
   traduzione obsoleta.

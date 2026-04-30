@@ -70,6 +70,7 @@ Engine selection and Sentinel verbosity are independent concerns. Use
 2. `--exit-zero` for non-blocking observation runs.
 3. `--show-info` to inspect informational topology findings.
 4. `--quiet` for one-line CI/pre-commit output.
+
 :::
 
 ---
@@ -87,12 +88,17 @@ any preprocessing.
 build pipeline. This means:
 
 - **`!ENV` tags** — silently treated as `null`. If your nav relies on environment variable
+
   interpolation at build time, the nav entries that depend on those values will be absent
   from Zenzic's view.
+
 - **Plugin-generated nav** — plugins that mutate the nav at runtime (e.g. `mkdocs-awesome-pages`,
+
   `mkdocs-literate-nav`) produce a navigation tree that Zenzic never sees. Pages included
   only by these plugins will be reported as orphans.
+
 - **Macros** — `mkdocs-macros-plugin` (Jinja2 templates in Markdown) is not evaluated.
+
   Links inside macro expressions are not validated.
 
 For projects that rely heavily on dynamic nav generation, add the plugin-generated paths to
@@ -140,14 +146,20 @@ mirroring the build engine's actual fallback behaviour.
 ```yaml title="mkdocs.yml"
 # mkdocs.yml
 plugins:
+
   - i18n:
+
       docs_structure: folder
       fallback_to_default: true
       languages:
+
         - locale: en
+
           default: true
           build: true
+
         - locale: it
+
           build: true
 ```
 
@@ -265,11 +277,16 @@ read it directly. Until then, locale topology is sourced from `[build_context]` 
 ### Limitations
 
 - **Plugin-generated nav** — Zensical plugins that mutate the nav at runtime are not evaluated.
+
   Pages included only by such plugins may be reported as orphans. Add their paths to
   `excluded_dirs` in `zenzic.toml` to suppress false reports.
+
 - **Dynamic content** — `zensical.toml` is parsed as static TOML. Template expressions or
+
   computed fields are not evaluated.
+
 - **Discovery scope** — `ZensicalAdapter` searches for `zensical.toml` (or the MkDocs bridge)
+
   in the project root only. Nested workspace layouts require an explicit `docs_dir` in `zenzic.toml`.
 
 ---
@@ -287,10 +304,15 @@ Docusaurus is a Node.js framework built on React. Zenzic does not import or exec
 Node.js code. Instead, the `DocusaurusAdapter`:
 
 1. **Reads `docusaurus.config.ts`** as text and extracts structural data — `i18n.locales`,
+
    `i18n.defaultLocale`, docs plugin `routeBasePath` and `path`, and sidebar configuration.
+
 2. **Resolves locale directories** under the standard Docusaurus i18n layout
+
    (`i18n/{locale}/docusaurus-plugin-content-docs/current/`).
+
 3. **Discovers all navigation surfaces** from `sidebars.ts` / `sidebars.js` and from
+
    `docusaurus.config.ts` (navbar items and footer links) to build a complete reachability set.
 
 ### Minimal configuration
@@ -462,13 +484,18 @@ from Docusaurus to another engine, Zenzic will surface every `pathname:///` link
 ### Static analysis limits
 
 - **Dynamic nav plugins** — sidebar or nav trees generated dynamically via JavaScript at
+
   build-time produce navigation that Zenzic cannot observe statically. Pages included only
   by custom plugins will be reported as orphans. Add their paths to `excluded_dirs` in
   `zenzic.toml` to suppress false reports.
+
 - **`docusaurus.config.ts` with complex TypeScript** — the adapter uses pattern matching,
+
   not full TypeScript evaluation. Configurations that compute values at module scope or
   import from external modules may not be fully parsed.
+
 - **Blog and pages plugins** — `DocusaurusAdapter` currently focuses on the docs plugin.
+
   Content under `/blog/` or custom pages is not validated.
 
 ---
@@ -508,10 +535,15 @@ does not use a supported SSG.
 ### When to use Standalone
 
 - **Static Markdown repositories** — wikis, ADR logs, plain-text documentation with no
+
   build pipeline.
+
 - **Pre-migration validation** — run Zenzic on a project before choosing an SSG to catch
+
   broken links and credentials before a framework is introduced.
+
 - **Custom SSG projects** — any generator not yet covered by a native adapter. Use
+
   `excluded_dirs` to suppress false positives for generated output directories.
 
 ### Minimal configuration

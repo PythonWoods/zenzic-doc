@@ -26,7 +26,7 @@ the build command if the source is not clean. No findings — no gate — no was
 
 The Sentinel Gate enforces a simple invariant:
 
-```
+```text
 zenzic check all [PATH] --strict  →  success  →  your build tool
                                   →  failure  →  build blocked
 ```
@@ -142,7 +142,7 @@ or shell script entry point.
 
 ---
 
-## Why Gate Locally, Not Only in CI?
+## Why Gate Locally, Not Only in CI
 
 | Discovery point | Cost to fix |
 | :--- | :--- |
@@ -173,7 +173,11 @@ security incident.
 ## Related
 
 - [CI/CD Integration](./configure-ci-cd.mdx) — GitHub Actions workflows that enforce the
+
   same gate in your pipeline
+
 - [Health Metrics](../explanation/health-metrics.mdx) — how Zenzic calculates the quality
+
   score that the Sentinel Gate defends
+
 - [Exit Codes Reference](../reference/cli.mdx#exit-codes) — full exit code semantics

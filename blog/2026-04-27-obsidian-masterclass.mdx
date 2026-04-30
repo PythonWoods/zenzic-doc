@@ -1,10 +1,10 @@
 ---
 slug: obsidian-masterclass
 title: "Sentinel Guard: The Engineering of Documentation Integrity and Security"
-sidebar_label: "⚡ Masterclass: Protect Your Docs"
+sidebar_label: "⚡ 001 - Masterclass: Quartz Guard"
 authors: [pythonwoods]
 tags: [engineering, security, tutorial, obsidian-maturity]
-date: 2026-04-27T19:20:00
+date: 2026-04-29T19:20:00
 description: >
   A forensic deep-dive into Zenzic's architecture: the VSM, the Shield's 8
   normalization stages, the Blood Sentinel, and how to build a Zero-Trust
@@ -27,7 +27,7 @@ That promise is architecturally broken. And your documentation is paying the pri
 
 Your documentation pipeline looks something like this:
 
-```
+```text
 Author → Markdown file → Build Engine → HTML → CDN → Reader
                               ↑
                     "Trust me, I'll build it."
@@ -63,7 +63,7 @@ from it.
 
 ### The Zero-Trust Documentation Pipeline
 
-```
+```text
 Author → Markdown file → Zenzic (Sentinel) → Build Engine → HTML → CDN → Reader
                               ↑
                     "I trust nothing. I verify everything."
@@ -88,9 +88,12 @@ third-party-contributed guides. One contributor submits a tutorial that includes
 Configure your environment with your API key:
 
 ```yaml
+
 api_key: "sk_live_<YOUR_STRIPE_KEY_HERE>"
+
 ```
-```
+
+```text
 
 The Stripe live key — `sk_live_*` — is a real credential format. Zenzic's Shield
 catches it before the commit merges. The build engine builds it without comment.
@@ -174,7 +177,7 @@ the build engine.
 
 ### Building the VSM: The Architecture
 
-```
+```text
                         ┌─────────────────────────────┐
                         │        build_vsm()           │
                         │   (I/O boundary — called     │
@@ -235,6 +238,7 @@ anchors_cache: dict[Path, set[str]] = {
 ```
 
 When a link contains a fragment (`/docs/guide/install/#next-steps`), Zenzic:
+
 1. Resolves the URL to a file path via the VSM (O(1))
 2. Checks the fragment against `anchors_cache[file_path]` (O(1) set lookup)
 
@@ -450,8 +454,11 @@ reconstruct any secret split across a line boundary, while keeping memory bounde
 Even after normalization, Zenzic scans each line in **two forms**:
 
 1. **Raw form** — the line exactly as it appears in the source, ensuring that normally
+
    formatted secrets are always caught with correct column positions for reporting.
+
 2. **Normalized form** — after all 8 stages, ensuring that obfuscated secrets are
+
    reconstructed and matched.
 
 Duplicate findings (same secret type on the same line in both forms) are suppressed
@@ -515,7 +522,7 @@ The rationale: a CI system that can be configured to ignore credential exposure 
 a security gate. It is theater. Exit code 2 is the guarantee that the security contract
 cannot be bypassed by configuration drift or operator error.
 
-```
+```text
 Exit 0 — All checks passed
 Exit 1 — Quality findings (broken links, orphans, placeholders) — suppressible
 Exit 2 — Security breach (Shield: credential detected) — NEVER suppressible
@@ -577,7 +584,7 @@ def _build_target(self, source_file: Path, path_part: str) -> str:
 
 The result:
 
-```
+```text
 source: /repo/docs/guide/install.mdx
 link:   ../../../../etc/passwd
 
@@ -644,7 +651,8 @@ elif path_part.startswith("@site/"):
 ```
 
 A path like `@site/../etc/passwd` becomes:
-```
+
+```text
 raw = /repo/../etc/passwd
 normpath → /etc/passwd
 ```
@@ -659,7 +667,7 @@ Path traversal findings (Z202/Z203) cause exit 3. Like exit 2, this is
 non-suppressible. A path traversal in a documentation source is not a quality
 finding. It is an attempted perimeter breach. The Sentinel terminates.
 
-```
+```text
 Z202 PATH_TRAVERSAL — confirmed: resolved path escapes docs_root
 Z203 PATH_TRAVERSAL_SUSPICIOUS — unresolvable path with traversal segments
 ```
@@ -701,19 +709,22 @@ if parts:
 ```
 
 **Case 1 — Index collapse:**
-```
+
+```text
 docs/guide/index.mdx    →  /docs/guide/
 docs/index.mdx          →  /docs/
 ```
 
 **Case 2 — README collapse:**
-```
+
+```text
 docs/guide/README.md    →  /docs/guide/
 docs/README.md          →  /docs/
 ```
 
 **Case 3 — Folder-match collapse (isCategoryIndex):**
-```
+
+```text
 docs/guide/guide.mdx    →  /docs/guide/   (filename == parent dirname)
 docs/api/api.md         →  /docs/api/
 ```
@@ -741,6 +752,7 @@ if slug is not None:
 ```
 
 The full URL resolution priority:
+
 1. **Frontmatter `slug:`** — absolute or relative override
 2. **isCategoryIndex** — index/README/folder-match collapse
 3. **Extension stripping** — `.md` / `.mdx` removed
@@ -765,8 +777,10 @@ def provides_index(self, directory_path: Path) -> bool:
 ```
 
 A directory provides an index when:
+
 1. An `index.md`, `index.mdx`, `README.md`, or `README.mdx` exists inside it, **or**
 2. A `_category_.json` declares `"link": { "type": "generated-index" }` — causing
+
    Docusaurus to auto-generate a category index page.
 
 I/O is permitted in `provides_index()` because it is called once per directory during
@@ -930,6 +944,7 @@ zenzic check all ./docs --format sarif > zenzic.sarif
 ```
 
 The SARIF output includes:
+
 - **Tool descriptor** with Zenzic version and URI
 - **Rules array** with one entry per Zxxx code found (ID, name, helpUri, severity)
 - **Results array** with location (file + line + column), message, and level
@@ -963,12 +978,15 @@ jobs:
   sentinel:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v4
 
       - name: Run Zenzic Sentinel
+
         run: uvx zenzic check all ./docs --format sarif > zenzic.sarif
 
       - name: Upload to GitHub Security
+
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: zenzic.sarif
@@ -983,7 +1001,9 @@ uploading, producing silence instead of visibility.
 For teams using `zenzic-action`:
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - uses: PythonWoods/zenzic-action@v1
+
   with:
     version: "0.7.0"
     format: sarif
@@ -1084,7 +1104,7 @@ to pay the spawn cost without benefit.
 
 The scan time breakdown for a 1,000-file project:
 
-```
+```text
 Discovery (walk + read):   ~450 ms   (I/O bound — disk sequential)
 VSM construction:          ~120 ms   (CPU bound — adapter URL mapping)
 Anchor cache build:         ~80 ms   (CPU bound — heading slug extraction)
@@ -1096,6 +1116,14 @@ Report rendering:           ~40 ms   (CPU bound — Rich formatting)
 Total:                    ~1,030 ms
 ```
 
+:::note Benchmark conditions
+These figures are for **synthetic Markdown files** (minimal frontmatter, no JSX, ~10
+lines of prose). Real-world MDX files with frontmatter, JSX components, tables, and
+dense link graphs cost significantly more per file. Measured against the real
+`zenzic-doc` project (59 MDX pages): ~7 ms/file vs ~0.5 ms/file for synthetic files.
+Run `python scripts/benchmark.py --repo <path>` to measure your own project.
+:::
+
 Link validation at 50,000 links takes 95 ms — less than the report rendering phase.
 This is the O(1) hash map in practice: 50,000 `dict.get()` calls at ~1.9 µs each.
 
@@ -1103,7 +1131,7 @@ This is the O(1) hash map in practice: 50,000 `dict.get()` calls at ~1.9 µs eac
 
 The VSM for a 10,000-file project:
 
-```
+```text
 Route objects:    10,000 × ~280 bytes  =   ~2.8 MB
 Anchor cache:     10,000 × ~1,200 bytes = ~12.0 MB
 md_contents:      10,000 × ~8,000 bytes = ~80.0 MB
@@ -1120,12 +1148,12 @@ mode is planned for a future release.
 
 Zenzic's test suite runs a 3×3 platform matrix on every commit:
 
-```
+```text
 OS:     [ubuntu-latest, windows-latest, macos-latest]
 Python: [3.11,          3.12,          3.13         ]
 ```
 
-9 parallel CI jobs. All 1,260 tests must pass on all 9 combinations. This is the
+9 parallel CI jobs. All 1,301 tests must pass on all 9 combinations. This is the
 **portability guarantee**: Zenzic's output is identical across all platforms. A
 scan that passes on Ubuntu passes on macOS and Windows — critical for teams using
 heterogeneous development environments.
@@ -1240,6 +1268,7 @@ uvx zenzic check all ./docs
 ```
 
 Zenzic will:
+
 1. Discover your documentation engine (Docusaurus, MkDocs, Zensical, or Standalone)
 2. Build the VSM from your source files
 3. Run the Shield across every line of every file
@@ -1265,11 +1294,13 @@ jobs:
     permissions:
       security-events: write  # required for SARIF upload
     steps:
+
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v5
 
       - uses: PythonWoods/zenzic-action@v1
+
         with:
           version: "0.7.0"   # pinned — deterministic CI gate
           format: sarif
@@ -1319,6 +1350,7 @@ engine = "standalone"
 ```
 
 In Standalone mode:
+
 - Orphan detection (Z402) is **disabled** — there is no navigation contract
 - Link validation still runs — broken links are broken regardless of engine
 - The Shield still runs — credentials are credentials regardless of engine
@@ -1328,12 +1360,136 @@ The security guarantees are engine-independent. Only the navigation contract is 
 
 ---
 
+### Brand Integrity: Z905 BRAND_OBSOLESCENCE
+
+The fourth dimension of the Safe Harbor — beyond structural, security, and content
+correctness — is **narrative integrity**. A documentation suite that refers to a
+deprecated release codename has a different class of bug: it tells the wrong story.
+
+Configure `[project_metadata]` in `zenzic.toml` to activate the Brand Integrity layer:
+
+```toml title="zenzic.toml"
+[project_metadata]
+release_name = "Quartz"
+obsolete_names = ["Obsidian"]
+obsolete_names_exclude_patterns = ["CHANGELOG*.md", "adr-*.mdx"]
+```
+
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{
+    code: "Z905",
+    file: "docs/explanation/architecture.mdx",
+    line: 12,
+    message: "Obsolete brand term 'Obsidian': use 'Quartz' instead. Add <!-- zenzic:ignore Z905 --> (Markdown) or {/* zenzic:ignore Z905 */} (MDX) to the line to suppress intentional references."
+  }]}
+/>
+
+The `zenzic:ignore Z905` escape hatch is precise by design: it applies to a single line,
+not a whole file. A CHANGELOG entry that says "Released under the Obsidian codename"
+is historical fact. An architecture page that describes the current system as
+"Obsidian-based" is a lie that the source code has already corrected.
+
+---
+
+:::tip[The Sentinel's Filter — Why Every Quartz Rule Exists]
+Every rule in the Quartz Core must pass a three-dimensional admission test before it ships:
+**Structural Integrity** (broken links, orphans, missing indices), **Hardened Security**
+(credentials, path traversal), or **Technical Accessibility** (machine-readable contracts
+for downstream tooling — Z505 is the canonical example). Rules that fail this filter
+— line length, list style, spelling — are deliberately out of scope. Zenzic is a Sentinel,
+not a Proofreader.
+
+[Read the full rationale →](https://zenzic.dev/docs/explanation/structural-integrity)
+:::
+
+---
+
+## Act XI — The Sovereign Memory: When the AI Said No
+
+> *"An AI agent with a perfect reasoning engine but no persistent memory is a genius who wakes up with amnesia every morning."*
+
+### The Paradox of Volatile Context
+
+Every conversation with an AI agent ends with a clean slate. The context window closes.
+The decisions made, the invariants defined, the bugs fixed — all gone. The next session
+starts with a fresh agent who has no knowledge of ADR-002, no memory of why `"vanilla"`
+was permanently removed, no context for why exit code 2 must never be suppressed.
+
+This is not a limitation of current AI. It is a design constraint of stateless
+architectures. And it is the single greatest risk in AI-assisted software development.
+
+The standard response to this constraint is to "re-explain the project" at the start of
+each session. This is not governance. It is improvisation.
+
+### The External Cortex
+
+The Zenzic project solved this with a single file: `ZENZIC_BRAIN.md`.
+
+This file is not a README. It is not a changelog. It is the **project's external cortex**
+— a persistent memory that survives between AI sessions. Every architectural decision,
+every invariant, every closed sprint is recorded here before the session ends.
+
+When a new AI agent is invoked, it reads this file first. It does not "catch up" — it
+inherits the full governance context of the project, as if it had been present from the
+beginning.
+
+The incident that proved the architecture happened during sprint D091. The CEO issued a
+directive to reuse the adapter name `"vanilla"` for a new engine variant. The directive
+was logical, well-reasoned, and completely clear. The agent consulted `ZENZIC_BRAIN.md`
+before proceeding. ADR-002 was unambiguous:
+
+> *"engine name `'vanilla'` raises `ConfigurationError [Z000]` permanently."*
+
+The agent declined the directive. Not because it disagreed with the CEO's reasoning, but
+because it was bound by a law written by the same CEO in a previous session — a law that
+had survived precisely for this scenario.
+
+**The CEO had been corrected by his own earlier self.** The ledger had worked.
+
+### The Three Laws of Sovereign Memory
+
+Three principles make this architecture work in practice:
+
+**1. Statelessness vs. Ledger.** AI context windows expire. The ledger does not. Every
+invariant established in a session must be written to the ledger before the session ends.
+The Closing Protocol (documented in `ZENZIC_BRAIN.md`) enforces this as a non-negotiable
+engineering contract. An agent that ends a session without updating the ledger commits a
+Class 1 violation — Technical Debt.
+
+**2. AI as Constitutional Clerk.** The AI's role is not authorship — it is constitutional
+compliance. Before executing any directive that touches established architecture, the agent
+checks the ledger. If the directive violates an invariant, the agent surfaces the conflict.
+The human makes the final decision. The ledger records the outcome. This is governance,
+not censorship.
+
+**3. Truth in Root.** The ledger lives at the project root (`ZENZIC_BRAIN.md`), mirrored
+to `.github/copilot-instructions.md`. It must be the first file a new agent reads — not
+buried in a `docs/` subdirectory that requires discovery. The file that governs the project
+must be impossible to miss.
+
+---
+
+:::note[The Sovereign Memory Architecture in Practice]
+The Zenzic project uses `ZENZIC_BRAIN.md` as its ledger. The file contains: the project
+manifesto, immutable policies, architectural decisions (ADRs), and the active sprint context.
+It is updated before every commit. It is read at the start of every agent session. The
+shadow copy in `.github/copilot-instructions.md` is auto-synced via `just map-update`.
+This architecture is not Zenzic-specific. Any project that uses AI agents for development
+can adopt it. The only requirement is discipline: the ledger must be updated before the
+session ends, or the governance is fiction.
+
+[Read the full methodology → The Sovereign Memory Architecture](/blog/sovereign-memory-architecture)
+:::
+
 ## Epilogue: The Documentation is the Source
 
 The engineering tradition treats documentation as secondary — a description of the
 system, not the system itself. This tradition is breaking down.
 
 In 2026, documentation is:
+
 - **The primary interface** for internal APIs in large organizations
 - **The trust signal** that developers use to evaluate whether a library is maintained
 - **The compliance artifact** that auditors examine in regulated industries

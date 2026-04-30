@@ -66,7 +66,7 @@ di codice identico.
 | `MkDocsAdapter` | `mkdocs` | `mkdocs.yml` |
 | `ZensicalAdapter` | `zensical` | `zensical.toml` |
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js` / `.ts` |
-| `StandaloneAdapter` | `standalone` | _(nessuno — ogni file è REACHABLE)_ |
+| `StandaloneAdapter` | `standalone` | *(nessuno — ogni file è REACHABLE)* |
 
 Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters`. Puoi pubblicare un
 adapter di terze parti per qualsiasi motore senza toccare il core di Zenzic:
@@ -84,7 +84,7 @@ mio_motore = "mio_pacchetto.adapter:MioAdapter"
 Zenzic v0.7.0 non fornisce plugin per motori di build né integrazioni interne.
 Questa è una decisione architetturale deliberata, non una funzionalità mancante.
 
-### Perché nessun plugin per motori?
+### Perché nessun plugin per motori
 
 | Aspetto | Plugin nel motore | CLI Sovrana |
 | :--- | :--- | :--- |
@@ -116,6 +116,7 @@ zenzic check all --strict
 ```
 
 Zenzic viene eseguito **prima o dopo** la build — mai al suo interno. Questo garantisce:
+
 - Exit 2 per qualsiasi credenziale esposta (la shell si ferma immediatamente)
 - Exit 3 per qualsiasi link path-traversal (non sopprimibile)
 - Risultati engine-agnostici: lo stesso comando `zenzic check all` funziona per ogni motore
@@ -130,6 +131,23 @@ Zenzic viene eseguito **prima o dopo** la build — mai al suo interno. Questo g
 | Gate pre-commit per le credenziali | `zenzic check references` — si registra come hook pre-commit |
 | Motore custom non ancora supportato | **Scrivi un Adapter** — pubblica come pacchetto separato, registra via entry-point `zenzic.adapters` |
 | Migrazione da MkDocs a Docusaurus | Usa `zenzic check all` con `engine = "mkdocs"` sulla sorgente, `engine = "docusaurus"` sulla destinazione |
+
+---
+
+## Integrità del Brand — Quartz Clarity {#brand-integrity}
+
+Il modello Safe Harbor va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti (codename di release non più in uso) porta un tipo di debito diverso: **debito narrativo**. Una pagina v0.7.0 che fa ancora riferimento a un codename v0.6.x contraddice la cronologia delle versioni che cerca di documentare.
+
+Zenzic affronta questo problema attraverso il blocco di configurazione [`[project_metadata]`](../reference/configuration.mdx) e il finding [Z905 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z905):
+
+```toml title="zenzic.toml"
+[project_metadata]
+release_name = "Quartz"
+obsolete_names = ["Obsidian"]
+obsolete_names_exclude_patterns = ["CHANGELOG*.md", "adr-*.mdx"]
+```
+
+Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore Z905 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore Z905 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
 
 ---
 

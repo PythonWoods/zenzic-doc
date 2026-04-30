@@ -68,7 +68,9 @@ class NoDraftRule(BaseRule):
 
 - **Mai** aprire file, fare richieste di rete, o chiamare sottoprocessi.
 - **Sempre** restituire lo stesso output per lo stesso input — nessuna casualità,
+
   nessuna dipendenza da stato globale mutabile.
+
 - **Non** mutare i propri argomenti (`file_path`, `text`, `vsm`, `anchors_cache`).
 
 :::warning[Evitare lo stato globale mutabile]
@@ -89,7 +91,6 @@ stato deve essere restituito come oggetti `RuleFinding`.
 import re
 from pathlib import Path
 from zenzic.rules import BaseRule, RuleFinding
-
 
 class NoInternalHostnameRule(BaseRule):
     """Segnala le occorrenze dell'hostname interno nella documentazione pubblica."""
@@ -225,7 +226,6 @@ from collections.abc import Mapping
 from zenzic.core.rules import BaseRule, RuleFinding
 from zenzic.models.vsm import Route
 
-
 class NoOrphanLinkRule(BaseRule):
     @property
     def rule_id(self) -> str:
@@ -253,7 +253,6 @@ nessuna configurazione dell'engine richiesta:
 from zenzic.rules import run_rule
 from my_org_rules.rules import NoInternalHostnameRule
 
-
 def test_hostname_interno_rilevato():
     findings = run_rule(
         NoInternalHostnameRule(),
@@ -262,7 +261,6 @@ def test_hostname_interno_rilevato():
     assert len(findings) == 1
     assert findings[0].rule_id == "MYORG-001"
     assert findings[0].severity == "error"
-
 
 def test_contenuto_pulito_passa():
     findings = run_rule(NoInternalHostnameRule(), "Tutto contenuto pubblico.")
@@ -302,13 +300,19 @@ Zenzic.
  Collega la regola dal codice al flusso Sentinel in produzione:
 
  1. Registra e abilita il plugin ID nel `zenzic.toml` sotto `plugins`
+
      (vedi [Abilitare i plugin](#enabling-plugins)).
+
  2. Valida la regola in semantica pipeline strict:
+
      `zenzic check all --strict`.
      Per i controlli di run, vedi [Comandi CLI: Flag globali](../../../reference/cli.mdx#global-flags).
+
  3. Se la regola è nav-aware, mappa il comportamento atteso delle Ghost Route rispetto
+
      al modello VSM:
      [Riferimento Controlli — VSM](../../../reference/checks#vsm-how-it-works).
+
 :::
 
 [api-baserule]: ../reference/adapter-api.mdx

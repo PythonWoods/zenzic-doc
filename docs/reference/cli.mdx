@@ -53,6 +53,17 @@ and incident response workflows.
 
 ### `--strict`
 
+**`--strict` controls the pipeline gate, not the display of findings.** The Sentinel always
+shows every finding it detects — errors and warnings alike — regardless of this flag.
+What changes is how warnings affect the **exit code**:
+
+- **Without `--strict`:** warnings → Exit 0 (pipeline passes). Hard errors still cause Exit 1.
+- **With `--strict`:** warnings are promoted to blocking errors → Exit 1 (pipeline fails).
+
+When strict mode is active the Sentinel prints a `STRICT MODE: Warnings have been promoted to errors.`
+line in the report footer, so the CI log is unambiguous even when the same findings would
+otherwise be non-blocking.
+
 | Command | Effect |
 | :--- | :--- |
 | `check links --strict` | Validates external HTTP/HTTPS URLs via concurrent network requests |
@@ -162,7 +173,7 @@ These global flags (accepted by all commands) control ANSI output independently 
 | `NO_COLOR` (any value) | `--no-color` |
 | `FORCE_COLOR` (any value) | `--force-color` |
 
-`NO_COLOR` conforms to the [no-color.org](https://no-color.org/) standard convention.
+`NO_COLOR` conforms to the `NO_COLOR` standard convention (no-color.org).
 When both `NO_COLOR` and `FORCE_COLOR` are set, `--no-color` / `NO_COLOR` always wins.
 
 **Default behaviour:** Zenzic uses Rich's TTY auto-detection. Colors are active when

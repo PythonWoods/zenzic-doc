@@ -57,8 +57,10 @@ fallback i18n.
 Nomi delle directory locale non-default. Zenzic usa questa lista per:
 
 1. **Fallback asset** — un link da `docs/it/index.md` a `assets/logo.svg` risolve letteralmente
+
    in `docs/it/assets/logo.svg` (che non esiste). Sapendo che `"it"` è una directory locale,
    Zenzic rimuove il prefisso e controlla `docs/assets/logo.svg`.
+
 2. **Soppressione orfani** — i file sotto `docs/it/` non vengono segnalati come orfani.
 
 ### `fallback_to_default`
@@ -97,8 +99,11 @@ Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della
 In questa modalità:
 
 - **Il controllo orfani viene saltato** — senza una dichiarazione di nav, ogni file Markdown
+
   sembrerebbe un orfano, rendendo il controllo privo di significato.
+
 - **Tutti gli altri controlli** (link, snippet, placeholder, asset, riferimenti) **vengono
+
   eseguiti normalmente.**
 
 La modalità Standalone è il comportamento corretto per repository Markdown semplici, wiki e

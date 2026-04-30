@@ -42,10 +42,15 @@ non il build**. Legge `mkdocs.yml`, `zensical.toml` e i tuoi file Markdown come 
 Non importa né esegue mai un framework di build. Questo significa:
 
 - Zenzic comprende la struttura della tua documentazione anche se il binario di build che la
+
   interpretava non funziona più.
+
 - Eseguire `zenzic check all` su un progetto nel mezzo di una migrazione produce la stessa
+
   analisi di un progetto pienamente operativo — perché i file sorgente non sono cambiati.
+
 - Cambiare `engine` in `zenzic.toml` (una sola riga) è tutto ciò che serve per validare se
+
   il contenuto è strutturalmente compatibile con un nuovo motore, senza toccare un singolo
   file Markdown.
 
@@ -106,12 +111,17 @@ setup i18n sono ben definite, ma la *capacità di rendering* del motore potrebbe
 ancora completa. Zenzic opera interamente nel dominio strutturale:
 
 - **Risoluzione dei link cross-locale** — un link da una pagina italiana a un asset
+
   disponibile solo in inglese viene risolto rispetto alla catena di fallback definita in
   `mkdocs.yml`, non rispetto all'output del build.
+
 - **Rilevamento Ghost Routes** — i punti di ingresso locale generati al momento del build
+
   (es. `/it/`) vengono marcati `REACHABLE` nella VSM in modo da non essere mai segnalati
   come orfani, anche se non sono mai stati renderizzati.
+
 - **Soppressione delle directory locale** — i file in `docs/it/`, `docs/fr/`, ecc. vengono
+
   classificati come shadow locale, non come orfani.
 
 Puoi quindi validare una struttura i18n complessa con Zenzic e avere la certezza della sua
@@ -127,9 +137,12 @@ senza toccare un singolo file di documentazione. Dal punto di vista di Zenzic:
 
 - La struttura della directory `docs/` rimane invariata.
 - `mkdocs.yml` rimane valido come sorgente principale di navigazione e configurazione;
+
   Zensical lo legge direttamente.
+
 - Le convenzioni i18n in folder-mode e suffix-mode sono strutturalmente identiche.
 - `[build_context]` in `zenzic.toml` può rimanere `engine = "mkdocs"` fino a quando non sei
+
   pronto a creare `zensical.toml`.
 
 ---
@@ -148,17 +161,23 @@ rompono silenziosamente l'esperienza utente in fase di build.
 ```yaml title="mkdocs.yml"
 # mkdocs.yml
 plugins:
+
   - i18n:
+
       docs_structure: folder
       fallback_to_default: true
       reconfigure_material: true   # ← delega lo switcher al plugin i18n
       reconfigure_search: true
       languages:
+
         - locale: en
+
           default: true
           build: true
           link: /
+
         - locale: it
+
           build: true
           link: /it/
 ```
@@ -172,10 +191,14 @@ nessuno switcher:
 # ✗ — rimuovere questo blocco quando reconfigure_material: true è impostato
 extra:
   alternate:
+
     - name: English
+
       link: /
       lang: en
+
     - name: Italiano
+
       link: /it/
       lang: it
 ```
@@ -199,6 +222,7 @@ di esecuzione allineato a [Comandi CLI: Flag globali](../reference/cli.mdx#globa
 2. `--exit-zero` per finestre di osservazione senza interrompere la pipeline.
 3. `--show-info` per ispezionare segnali del grafo link (esempio `CIRCULAR_LINK`).
 4. `--quiet` per Silent Builders negli hook CI.
+
 :::
 
 ### Fase 1 — Stabilisci un baseline
@@ -278,7 +302,7 @@ nav = [
 ```
 
 :::tip[Identità Flessibile & Custode Strutturale]
-Se `engine = "zensical"` è dichiarato ma `zensical.toml` non esiste ancora, Zenzic eseguirà nativamente un fallback leggendo il tuo `mkdocs.yml` esistente (il Proxy Trasparente). 
+Se `engine = "zensical"` è dichiarato ma `zensical.toml` non esiste ancora, Zenzic eseguirà nativamente un fallback leggendo il tuo `mkdocs.yml` esistente (il Proxy Trasparente).
 Questo ti permette di cambiare engine e mantenere il file di configurazione legacy durante la transizione, senza interrompere la pipeline di validazione. Zenzic agisce come un custode strutturale: non ti costringerà a cambiare formato di configurazione prematuramente.
 
 Nota: Mentre opera tramite il bridge di compatibilità, Zenzic emetterà dei warning se il tuo `mkdocs.yml` contiene impostazioni specifiche di MkDocs che Zensical ignora, come:

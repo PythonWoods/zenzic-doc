@@ -58,11 +58,17 @@ Usa questo come template di riferimento per un nuovo progetto multilingua.
 Pattern chiave dimostrati:
 
 - **Suffix-mode i18n** — le traduzioni vivono come file `pagina.it.md` nella stessa
+
   cartella, mai in un sottoalbero `docs/it/`
+
 - **Simmetria dei percorsi** — `../../assets/brand/brand-kit.zip` si risolve identicamente
+
   da `pagina.md` e `pagina.it.md`
+
 - **Esclusione build artifact** — `excluded_build_artifacts` permette a Zenzic di
+
   validare i link a file generati senza che siano presenti su disco
+
 - **`fail_under = 100`** — qualsiasi regressione rompe il gate
 
 ```bash
@@ -172,7 +178,7 @@ Questa sezione illustra due metodi concreti degli adapter fianco a fianco.
 Il contrasto tra `DocusaurusAdapter` e `StandaloneAdapter` mostra come il
 protocollo adapter abiliti la logica Core engine-agnostica.
 
-### `provides_index()` — Questa directory ha una landing page?
+### `provides_index()` — Questa directory ha una landing page
 
 Il Core chiama `provides_index(directory_path)` una volta per directory durante
 il rilevamento degli orfani. Risponde alla domanda: *"Il motore genererà un indice
@@ -216,7 +222,7 @@ solo la convenzione universale `index.md`.
 
 ---
 
-### `get_nav_paths()` — Quali file sono raggiungibili?
+### `get_nav_paths()` — Quali file sono raggiungibili
 
 `get_nav_paths()` restituisce l'insieme dei percorsi file raggiungibili tramite
 l'interfaccia di navigazione del sito. Un file assente da questo insieme è
@@ -255,7 +261,7 @@ un contratto di navigazione, quindi il rilevamento degli orfani (Z402) è disabi
 
 ---
 
-### `classify_route()` — Questo file è raggiungibile?
+### `classify_route()` — Questo file è raggiungibile
 
 `classify_route(rel, nav_paths)` mappa il percorso di un file sorgente al suo stato
 di route.

@@ -20,6 +20,7 @@ Filesystem scanning utilities: repo root discovery, orphan page detection, asset
 ::: zenzic.core.scanner
     options:
       members:
+
         - find_repo_root
         - find_config_file
         - find_orphans
@@ -40,6 +41,7 @@ Documentation quality scoring engine: weighted 0–100 score computation, snapsh
 ::: zenzic.core.scorer
     options:
       members:
+
         - compute_score
         - save_snapshot
         - load_snapshot
@@ -55,6 +57,7 @@ Validation logic: broken link detection via MkDocs and Python snippet syntax che
 ::: zenzic.core.validator
     options:
       members:
+
         - validate_links
         - validate_snippets
         - check_snippet_content
@@ -69,6 +72,7 @@ Configuration model.
 ::: zenzic.models.config
     options:
       members:
+
         - ZenzicConfig
 
 ---

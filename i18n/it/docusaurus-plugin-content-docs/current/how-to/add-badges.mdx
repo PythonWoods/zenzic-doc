@@ -36,7 +36,9 @@ Usa questo badge per le pipeline strict in cui qualsiasi link non funzionante, a
 ### Step CI raccomandato
 
 ```yaml title=".github/workflows/zenzic.yml"
+
 - name: Lint documentazione (Zenzic Shield)
+
   run: uvx zenzic check all --strict
 ```
 
@@ -85,13 +87,16 @@ Questo file è il ponte machine-readable verso i badge dinamici di Shields.io.
 I seguenti due step calcolano il punteggio e lo pubblicano su un [GitHub Gist](https://gist.github.com) che Shields.io legge ad ogni richiesta:
 
 ```yaml title=".github/workflows/zenzic-score.yml"
+
 - name: Calcola Zenzic Score
+
   run: |
     uvx zenzic score --save
     echo "SCORE=$(uvx zenzic score --format json | python3 -c \
       'import sys,json; print(json.load(sys.stdin)["score"])')" >> "$GITHUB_ENV"
 
 - name: Aggiorna Badge Score
+
   uses: Schneegans/dynamic-badges-action@v1.7.0
   with:
     auth: ${{ secrets.GIST_SECRET }}
