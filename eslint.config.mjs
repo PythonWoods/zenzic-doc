@@ -13,6 +13,8 @@ export default [
       'build/**',
       '.docusaurus/**',
       'node_modules/**',
+      // Node.js CJS prebuild scripts — not part of the app bundle.
+      'scripts/**',
       // Intentional monolith landing page kept outside lint policy.
       'src/pages/index.tsx',
     ],

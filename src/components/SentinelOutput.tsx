@@ -86,6 +86,11 @@ interface SentinelOutputProps {
   rows?: FindingRow[];
   /** Override scanner rows for the `inspect` variant. Omit to use built-in default (EN) list. */
   scanners?: InspectRow[];
+  /**
+   * Activate strict mode footer on the `findings` variant.
+   * Renders: "STRICT MODE: Warnings have been promoted to errors."
+   */
+  isStrict?: boolean;
 }
 
 // ── Static class maps — NEVER interpolate these strings ─────────────────────
@@ -104,7 +109,7 @@ const WRAPPER_CLASSES: Record<Variant, string> = {
 // Conditional perimeter — present only when no macOS frame wraps the output
 const BORDER_CLASSES: Record<Variant, string> = {
   clean:    'border dark:border-emerald-900/20 border-emerald-200/50',
-  breach:   'border dark:border-rose-900/20 border-rose-200/50',
+  breach:   '',
   findings: 'border dark:border-zinc-700/20 border-zinc-200',
   inspect:  'border dark:border-indigo-500/10 border-indigo-200/50',
 };
@@ -119,11 +124,10 @@ const CONTAINER_CLASSES: Record<Variant, string> = {
 
 function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const rows = [
-    { label: 'Link Integrity',     pts: '35 pts', detail: '0 broken links' },
-    { label: 'Orphan Detection',   pts: '20 pts', detail: '0 orphaned pages' },
-    { label: 'Snippet Validation', pts: '20 pts', detail: '0 broken snippets' },
-    { label: 'Content Quality',    pts: '15 pts', detail: '0 placeholders' },
-    { label: 'Asset Integrity',    pts: '10 pts', detail: '0 missing assets' },
+    { label: 'Structural Integrity', pts: '40 pts', detail: '0 broken links' },
+    { label: 'Content Excellence',   pts: '30 pts', detail: '0 placeholders' },
+    { label: 'Navigation',           pts: '20 pts', detail: '0 orphan pages' },
+    { label: 'Brand & Assets',       pts: '10 pts', detail: '0 brand violations' },
   ];
 
   return (
@@ -176,8 +180,8 @@ function BreachOutput({
 }: Pick<SentinelOutputProps, 'location' | 'masked' | 'credentialType'>): React.JSX.Element {
   return (
     <>
-      <div className="text-rose-500/90 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b dark:border-rose-900/20 border-rose-200 pb-3">
-        SECURITY BREACH DETECTED
+      <div className="-mx-6 -mt-5 mb-4 bg-[#8b0000] text-white font-bold px-6 py-2 text-center tracking-[0.2em]">
+        ✘ SECURITY BREACH DETECTED
       </div>
 
       <div className="space-y-2 mb-4">
@@ -235,9 +239,11 @@ function SEVERITY_ICON(sev: FindingRow['severity']): React.JSX.Element {
 function FindingsOutput({
   rows: customRows,
   compact = false,
+  isStrict = false,
 }: {
   rows?: FindingRow[];
   compact?: boolean;
+  isStrict?: boolean;
 }): React.JSX.Element {
   const hasCustomRows = customRows !== undefined;
   const rows = hasCustomRows ? customRows! : DEFAULT_ROWS;
@@ -251,8 +257,8 @@ function FindingsOutput({
         {rows.map((r, i) => (
           <div key={i} className="flex items-start gap-2">
             {SEVERITY_ICON(r.severity)}
+            <span className="text-cyan-500 dark:text-cyan-400 w-44 flex-shrink-0 truncate">{r.file}</span>
             <span className="dark:text-zinc-500 text-zinc-400 w-14 flex-shrink-0">{r.code}</span>
-            <span className="dark:text-zinc-400 text-zinc-500 w-44 flex-shrink-0 truncate">{r.file}</span>
             <span className="dark:text-zinc-300 text-zinc-700">{r.message}</span>
           </div>
         ))}
@@ -275,6 +281,11 @@ function FindingsOutput({
           <span className="dark:text-zinc-600 text-zinc-400">Files: 42 · Elapsed: 0.31 s</span>
         )}
       </div>
+      {isStrict && (
+        <div className="mt-2 text-amber-500 font-medium">
+          STRICT MODE: Warnings have been promoted to errors.
+        </div>
+      )}
     </>
   );
 }
@@ -293,7 +304,7 @@ function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }
   return (
     <>
       <div className="text-indigo-700 dark:text-indigo-300 font-bold text-xs tracking-widest mb-3 select-none">
-        CORE SCANNERS  (built-in)
+        CORE SCANNERS  (built-in)
       </div>
 
       <div className="grid grid-cols-[6rem_9rem_1fr_3.5rem] gap-x-3 border-b border-indigo-200 dark:border-indigo-500/20 pb-2 mb-2">
@@ -349,6 +360,7 @@ export default function SentinelOutput({
   location,
   masked,
   credentialType,
+  isStrict = false,
 }: SentinelOutputProps): React.JSX.Element {
   const borderClass = showFrame ? '' : BORDER_CLASSES[variant];
   const inner = (
@@ -361,7 +373,7 @@ export default function SentinelOutput({
           credentialType={credentialType}
         />
       )}
-      {variant === 'findings' && <FindingsOutput rows={rows} compact={compact} />}
+      {variant === 'findings' && <FindingsOutput rows={rows} compact={compact} isStrict={isStrict} />}
       {variant === 'inspect' && <InspectOutput scanners={scanners} />}
     </div>
   );

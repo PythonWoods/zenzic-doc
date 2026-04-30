@@ -15,14 +15,15 @@ excluded_dirs = ["drafts", "Draft", "node_modules"]
 # --- EXTERNAL VALIDATION ---
 excluded_external_urls = [
     "https://docs.github.com/en/authentication/managing-commit-signature-verification/",
-    # zenzic-action is a private GitHub repository — not yet publicly visible.
-    # Links are editorially correct; the repo will be made public at v0.7.0 GA.
+    # zenzic-action is being made public with the v0.7.0 GA release.
+    # Remove this exclusion immediately after the repo is set to public.
     "https://github.com/PythonWoods/zenzic-action",
     # Release Bridge (CEO 154): blog posts are live on the repo but not yet deployed
     # at zenzic.dev. These exclusions are temporary — remove 5 minutes after v0.7.0 GA deploy.
     "https://zenzic.dev/blog/ai-driven-siege-shield-postmortem",
-    "https://zenzic.dev/blog/beyond-the-siege-zenzic-v070",
-    "https://zenzic.dev/blog/governance-of-glass",
+    "https://zenzic.dev/blog/beyond-the-siege-v070-quartz",
+    "https://zenzic.dev/blog/governance-of-quartz",
+    "https://zenzic.dev/docs/explanation/structural-integrity",
 ]
 
 # --- PROTEZIONE DOGFOODING ---
@@ -47,3 +48,16 @@ engine         = "docusaurus"
 base_url       = "/"
 default_locale = "en"
 locales        = ["it"]
+
+# --- BRAND INTEGRITY ---
+# Detect deprecated brand terms in documentation source (Z905).
+# ADR files contain intentional historical references — excluded by pattern.
+# Use [HISTORICAL] inline to suppress intentional references in other files.
+[project_metadata]
+release_name = "Quartz"
+obsolete_names = ["Obsidian", "Ossidiana"]
+obsolete_names_exclude_patterns = [
+    "CHANGELOG*.md",
+    "CHANGELOG*.archive.md",
+    "adr-*.mdx",
+]

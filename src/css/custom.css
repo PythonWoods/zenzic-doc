@@ -477,7 +477,7 @@ table thead tr {
   box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.55), 0 0 14px rgba(79, 70, 229, 0.12);
 }
 
-/* ── Zenzic Journal — Semantic Tag Colours ── */
+/* ── Zenzic Blog — Semantic Tag Colours ── */
 /* Release → Indigo (brand primary) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
 a.tag_oVPq[href*="/blog/tags/release"] { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.35); }
@@ -508,7 +508,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: opacity 0.15s ease;
 }
 
-/* ── Zenzic Journal — Blog List Card Layout ── */
+/* ── Zenzic Blog — Blog List Card Layout ── */
 [data-theme='dark'] article.margin-bottom--xl {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   padding-bottom: 2.5rem;
@@ -609,7 +609,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   background: #09090b;
 }
 
-/* ── Zenzic Journal — Monolith Enforcement (D103) ── */
+/* ── Zenzic Blog — Monolith Enforcement (D103) ── */
 
 /* Prose column — narrower than docs for readability */
 [data-theme='dark'] .blog-wrapper .container,

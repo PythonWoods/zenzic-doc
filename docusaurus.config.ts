@@ -79,7 +79,7 @@ const config: Config = {
           },
         },
         blog: {
-          blogTitle: 'The Zenzic Journal',
+          blogTitle: 'The Zenzic Blog',
           blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
           blogSidebarTitle: 'Recent Posts',
           blogSidebarCount: 'ALL',
@@ -89,7 +89,7 @@ const config: Config = {
           onInlineTags: 'throw',
           feedOptions: {
             type: ['rss', 'atom'],
-            title: 'The Zenzic Journal — Zenzic Engineering Blog',
+            title: 'The Zenzic Blog — Zenzic Engineering Blog',
             description: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
             copyright: `© ${new Date().getFullYear()} PythonWoods`,
           },
@@ -107,6 +107,7 @@ const config: Config = {
       return {
         name: 'tailwindcss-docusaurus',
         configurePostCss(postcssOptions: {plugins: unknown[]}) {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           postcssOptions.plugins.push(require('@tailwindcss/postcss'));
           return postcssOptions;
         },
@@ -163,7 +164,7 @@ const config: Config = {
           // href:'/blog' or to:'/blog' both get rewritten to '/it/blog' in IT locale static HTML.
           // This anchor always navigates to the EN blog regardless of active locale.
           type: 'html',
-          value: '<a class="navbar__item navbar__link" href="/blog">Journal</a>',
+          value: '<a class="navbar__item navbar__link" href="/blog">Blog</a>',
           position: 'left',
         },
         {

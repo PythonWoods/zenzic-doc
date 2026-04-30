@@ -97,7 +97,7 @@ export default function BlogArchivePage({archive}: Props): React.JSX.Element {
         <header className="archive-hero">
           <div className="container">
             <Heading as="h1" className="archive-hero__title">
-              The Zenzic Journal
+              The Zenzic Blog
             </Heading>
             <p className="archive-hero__subtitle">
               Engineering insights, security chronicles, and the evolution of

@@ -78,8 +78,6 @@ def _scan_quadrant(quadrant_dir: Path, indent: str = "") -> list[str]:
 def build_doc_map() -> str:
     """Builds the Markdown [CODE MAP] block for the documentation structure."""
     lines = [
-        "## [CODE MAP] — Struttura Documentazione (Diátaxis)",
-        "",
         "> Auto-generato da `scripts/map_docs.py` via filesystem scan.",
         "> Aggiornare con `just map-update` dopo ogni aggiunta/rimozione di pagine.",
         "",
@@ -110,6 +108,7 @@ def build_doc_map() -> str:
         purpose = QUADRANT_PURPOSE.get(quadrant_name, "")
 
         lines.append(f"#### `{quadrant_name}/` — {meta['label']} ({total} files)")
+        lines.append("")  # blank line after heading (MD022)
         if purpose:
             lines.append(f"> {purpose}")
         lines.append("")
