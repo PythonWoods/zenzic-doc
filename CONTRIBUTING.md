@@ -64,7 +64,7 @@ The language switcher is **inactive in dev mode** — use `just serve` after
 
 ## File Structure
 
-```
+```text
 docs/                 ← English source content (all .mdx)
   tutorials/          ← Learning-oriented guides
   how-to/             ← Task-oriented recipes
@@ -73,7 +73,7 @@ docs/                 ← English source content (all .mdx)
   community/          ← Contributing, FAQ, license, brand-kit
 i18n/
   it/                 ← Italian translations — mirrors docs/ exactly
-blog/                 ← Obsidian Journal engineering posts
+blog/                 ← Zenzic Blog engineering posts
 src/
   components/         ← React components (Icon, Homepage sections)
   css/custom.css      ← Obsidian visual system (do not edit without CEO approval)
@@ -171,7 +171,7 @@ If a hook fails, fix the reported issue and retry the commit.
 
 ---
 
-## Adding a Blog Post (Obsidian Journal)
+## Adding a Blog Post
 
 Blog posts live in `blog/` and use the filename format `YYYY-MM-DD-slug.mdx`.
 

@@ -68,11 +68,16 @@ The documentation portal is a **static site** — no server-side code executes a
 The attack surface is limited to:
 
 - **Build pipeline** — `npm run build` executes Node.js. Crafted MDX could theoretically
+
   exploit a Docusaurus or remark plugin vulnerability. Keep dependencies up to date.
+
 - **Pre-commit hooks** — the Zenzic Sentinel scans all source files for credential patterns
+
   before every commit. The Shield (exit code 2 on Z201) is the last line of defence before
   content reaches the public site.
+
 - **Static assets** — binary files committed to `static/` bypass text-based scanning.
+
   The `check-added-large-files` hook limits accidental binary commits.
 
 ---
