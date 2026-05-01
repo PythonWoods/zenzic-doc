@@ -26,7 +26,7 @@ proibite** che hai dichiarato localmente.
 | Fase | Cosa viene scansionato | Effetto sull'export |
 |------|----------------------|---------------------|
 | **Fase A — Sovereign Redactor** | Output Markdown / JSON generato | Le stringhe proibite vengono silenziosamente sostituite con `[REDACTED_BY_SENTINEL]` — l'export continua |
-| **Fase B — Source Audit** | Testo grezzo di ogni file `.py` sotto `src/` | Qualsiasi corrispondenza **blocca** l'export con `D002 PERIMETER_LEAK` |
+| **Fase B — Source Audit VCS-Aware** | Testo grezzo di ogni file `.py`, `.md`, `.mdx`, `.toml`, `.yml` visibile a Git | Qualsiasi corrispondenza **blocca** l'export con `D002 PERIMETER_LEAK` |
 
 La modalità `--check` (audit D001) salta completamente il gate — è un'operazione di sola lettura
 senza rischio di output.
@@ -103,10 +103,32 @@ zenzic brain map .
       Azione: rimuovi l'identificatore sensibile dal file sorgente.
 ```
 
-La Fase B è il gate duro. Se una stringa proibita finisce nel tuo sorgente Python
-(in un commento, docstring o stringa letterale), il gate blocca l'export finché
-non la rimuovi. Questo impedisce agli identificatori privati di entrare nella
-finestra di contesto dell'IA tramite la [CODE MAP].
+**La Fase B è il gate duro — Scoperta VCS-Aware + Scansione Raw Totale.**
+
+La Fase B usa `walk_files` + `LayeredExclusionManager` — la stessa infrastruttura
+di scoperta che `zenzic check all` usa per il linting. Questo significa che il
+Cartografo e la Sentinella condividono esattamente la stessa vista del repository:
+gli stessi file sono visibili, le stesse directory vengono potate.
+
+`walk_files` pota interi rami di directory prima di aprire qualsiasi file:
+`.git/`, `.venv/`, `node_modules/`, `__pycache__`, `.pytest_cache/`, e tutte
+le altre `SYSTEM_EXCLUDED_DIRS` non vengono mai aperte. Anche i file elencati
+in `.gitignore` sono esclusi automaticamente.
+
+Per ogni file che supera il filtro di scoperta, la Fase B ne legge il **testo grezzo**
+e cerca pattern vietati — nessun parsing, nessun AST, nessuna assunzione strutturale.
+Tipi di file scansionati: `.py`, `.md`, `.mdx`, `.toml`, `.yml`.
+
+Se una stringa proibita appare solo in un file ignorato (`.venv/`, `build/`,
+`.pytest_cache/`), la Fase B non lo vede mai — quei file non possono raggiungere
+GitHub in ogni caso. Se appare in un file tracciato, la Fase B lo trova e blocca
+l'export finché non lo rimuovi.
+
+**Immunità Sovrana:** `.zenzic.dev.toml` è sempre escluso dalla scansione della
+Fase B — il file di configurazione del gate contiene per design i pattern vietati.
+Senza immunità, scatenerebbe D002 ogni volta (*il Paradosso della Sentinella*).
+Il percorso escluso viene confrontato per percorso assoluto risolto, quindi i
+symlink non possono aggirare l'immunità.
 
 ---
 

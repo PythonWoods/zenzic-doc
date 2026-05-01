@@ -136,7 +136,38 @@ The `--offline` flag has **identical behaviour** on MkDocs, Zensical, and Docusa
 This ensures Zenzic remains a consistent Structural Custodian regardless of your build engine.
 :::
 
-### `--exclude-dir` / `--include-dir`
+### `--no-external`
+
+`--no-external` is available on `check all` and `check links`. It skips **Pass 3** — the
+concurrent HTTP HEAD validation of external URLs — while leaving Pass 1 (Shield, Z201) and
+Pass 2 (internal link resolution) fully active.
+
+Use this flag in air-gapped or offline development environments where external URL reachability
+cannot be verified, or as a speed optimisation when external link health is confirmed by other means.
+
+```bash
+zenzic check all --strict --no-external   # enforce structural/quality checks; skip external HTTP
+zenzic check links --no-external          # internal links only; Shield (Z201) always active
+```
+
+When active, the report appends a transparency notice:
+
+```text
+💡 External link validation skipped (--no-external). Shield (Z201) remains active.
+```
+
+:::warning[Never use in CI]
+`--no-external` is a **developer scope control**, not a CI flag. Omit it in unattended
+CI pipelines — external link failures are legitimate gate failures. The permanent mechanism
+for excluding known-unstable URLs is `excluded_external_urls` in `zenzic.toml`.
+:::
+
+| Concern | Affected by `--no-external`? |
+| :--- | :--- |
+| Pass 1 — Shield / credential detection (Z201) | ❌ Never skipped |
+| Pass 1 — Blood Sentinel / path traversal (Z202/Z203) | ❌ Never skipped |
+| Pass 2 — Internal link resolution | ❌ Never skipped |
+| Pass 3 — External HTTP HEAD requests | ✅ Skipped |
 
 Available on `zenzic check all` (and individual sub-commands). These flags provide
 one-shot directory scope overrides **per invocation** without touching `zenzic.toml`:

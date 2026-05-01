@@ -27,7 +27,7 @@ strings** you have declared locally.
 | Phase | What is scanned | Effect on export |
 |-------|----------------|-----------------|
 | **Phase A — Sovereign Redactor** | Generated Markdown / JSON output | Forbidden strings are silently replaced with `[REDACTED_BY_SENTINEL]` — the export continues |
-| **Phase B — Source Audit** | Raw text of every `.py` file under `src/` | Any match **blocks** the export with `D002 PERIMETER_LEAK` |
+| **Phase B — VCS-Aware Source Audit** | Raw text of every `.py`, `.md`, `.mdx`, `.toml`, `.yml` file visible to Git | Any match **blocks** the export with `D002 PERIMETER_LEAK` |
 
 `--check` mode (D001 audit) skips the gate entirely — it is a read-only operation
 with no output risk.
@@ -104,10 +104,31 @@ zenzic brain map .
       Action: remove the sensitive identifier from the source file.
 ```
 
-Phase B is the hard gate. If a forbidden string ends up in your Python source
-(in a comment, docstring, or string literal), the gate blocks the export until
-you remove it. This prevents private identifiers from entering the AI context
-window via the [CODE MAP].
+**Phase B is the hard gate — VCS-Aware Discovery + Raw Total Scan.**
+
+Phase B uses `walk_files` + `LayeredExclusionManager` — the same discovery
+infrastructure that `zenzic check all` uses for linting. This means the
+Cartographer and the Sentinel share exactly the same view of your repository:
+the same files are visible, the same directories are pruned.
+
+`walk_files` prunes entire directory branches before opening any file:
+`.git/`, `.venv/`, `node_modules/`, `__pycache__`, `.pytest_cache/`, and
+all other `SYSTEM_EXCLUDED_DIRS` are never entered. Files listed in `.gitignore`
+are also excluded automatically.
+
+For every file that passes the discovery filter, Phase B reads its **raw text**
+and searches for forbidden patterns — no parsing, no AST, no structure
+assumptions. File types scanned: `.py`, `.md`, `.mdx`, `.toml`, `.yml`.
+
+If a forbidden string appears only in an ignored file (`.venv/`, `build/`,
+`.pytest_cache/`), Phase B never sees it — those files cannot reach GitHub
+regardless. If it appears in a tracked file, Phase B finds it and blocks the
+export until you remove it.
+
+**Sovereign Immunity:** `.zenzic.dev.toml` itself is always excluded from
+the Phase B scan — the gate config contains the forbidden patterns by design.
+Without immunity it would trigger D002 every time (the *Paradox of the Sentinel*).
+The excluded path is matched by resolved absolute path, so symlinks cannot bypass it.
 
 ---
 

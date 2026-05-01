@@ -186,16 +186,20 @@ listed in `.gitignore` across the Trinity and is **never committed**.
 ```toml
 # .zenzic.dev.toml — Local Development Gate (GIT-IGNORED)
 # Use this file to define patterns that must NEVER leak into public commits.
+# Literal strings only — no regular expressions (CEO-276 Lean Perimeter Standard).
 
 [development_gate]
-# Case-insensitive patterns matched against all generated AST maps and exports.
 forbidden_patterns = [
-    "zenzic-brain",        # Internal orchestrator name
-    "pythonwoods",         # Local system username/paths
-    "Draft/Articles",      # Unreleased marketing material
-    "127.0.0.1",           # Internal test IPs
+    "FORBIDDEN-WORD",   # Add your actual private literal here
 ]
 ```
+
+:::tip Lean Perimeter Standard (CEO-280)
+Keep `forbidden_patterns` minimal. Each entry must be a **literal string** — no regex.
+Only add identifiers whose presence in a public export would constitute a real leak.
+False positives (e.g. SPDX author names that appear in every header) belong in
+`.gitignore`, not in the perimeter config.
+:::
 
 **Behaviour:**
 
@@ -203,15 +207,83 @@ forbidden_patterns = [
 - If a forbidden pattern is found, exits 1 with `D002 PERIMETER_LEAK` and lists the violated
   patterns with their phase and file location.
 - The gate is **dual-spectrum** (CEO-267):
-  - **Phase A — Output Audit:** The generated Markdown or JSON string is scanned before any file
-    is written or any output is printed. Catches identifiers that surface through module docstrings
-    or class/function names.
-  - **Phase B — Source Audit:** The raw text of every `.py` file under `src/` is scanned, making
-    `#` comments, SPDX headers, inline annotations, and any other raw content visible to the gate.
-    Phase B runs even when the identifier does not appear in the generated output.
-- Both phases run before any write — a perimeter violation is **never silently discarded**.
-- The check is **case-insensitive** (CEO-265): `Zenzic-Brain` and `zenzic-brain` hit with equal
+  - **Phase A — Sovereign Redactor:** The generated Markdown or JSON string is scanned *before*
+    any file is written or output is printed. Forbidden tokens are silently replaced with
+    `[REDACTED_BY_SENTINEL]` — the export continues rather than blocking. Catches identifiers
+    that surface through module docstrings or class/function names.
+  - **Phase B — Source Audit (VCS-Aware + Raw Total Scan):** Every file visible to the project
+    is scanned for forbidden tokens in its raw bytes — no parsing, no AST, no exceptions.
+    See [VCS-Aware Discovery + Raw Total Scan](#vcs-aware-discovery) below.
+- Both phases execute before any write — a perimeter violation is **never silently discarded**.
+- The check is **case-insensitive** (CEO-265): `FORBIDDEN-WORD` and `forbidden-word` hit with equal
   force in both phases.
+
+### VCS-Aware Discovery + Raw Total Scan {#vcs-aware-discovery}
+
+Phase B is the most comprehensive layer of the Environmental Privacy Gate. Its design answers
+a precise question: *which files could realistically leak into the public repository?*
+
+**Discovery layer — `walk_files` + `LayeredExclusionManager` (CEO-281/283):**
+
+`check_sources_perimeter` uses the same `walk_files` + `LayeredExclusionManager` infrastructure
+that `zenzic check all` uses for linting. This means the Cartographer and the Sentinel share
+**exactly the same view of the filesystem** — the same eyes, the same blind spots, by design.
+
+```python
+walk_files(scan_root, frozenset(), LayeredExclusionManager(ZenzicConfig(), repo_root=scan_root))
+```
+
+`walk_files` prunes entire directory branches at the `os.walk` level before any file is opened:
+
+| Excluded automatically | Why |
+|------------------------|-----|
+| `.git/`, `.venv/`, `node_modules/` | SYSTEM_EXCLUDED_DIRS — VCS and build artefacts |
+| `__pycache__/`, `.pytest_cache/`, `.mypy_cache/` | Runtime caches — never published |
+| `.docusaurus/`, `.nox/`, `.tox/` | Tool caches — never published |
+| Entries in `.gitignore` | VCS-ignored — cannot reach GitHub |
+
+This is the **VCS-Aware** principle: a file that Git ignores cannot leak into the public
+repository. Scanning it would generate noise without improving security.
+
+**Scan layer — raw text, every byte (CEO-269):**
+
+For every file discovered by `walk_files`, Phase B reads the **raw text** and searches for
+forbidden patterns via `check_perimeter`. No parsing, no AST, no structure assumptions.
+Every byte is inspected — Python `#` comments, SPDX headers, YAML frontmatter, TOML values,
+Markdown prose, MDX JSX attributes.
+
+File types scanned (CEO-269):
+
+| Extension | Typical content inspected |
+|-----------|---------------------------|
+| `.py` | Source code, comments, docstrings, SPDX headers |
+| `.md` | Documentation, changelogs, release notes |
+| `.mdx` | Documentation with JSX components |
+| `.toml` | Configuration files (`pyproject.toml`, `zenzic.toml`) |
+| `.yml` | CI workflows, configuration |
+
+**Sovereign Immunity — `.zenzic.dev.toml` (CEO-278):**
+
+The gate config file contains the forbidden patterns themselves. Without immunity it would
+trigger D002 and block every export — the *Paradox of the Sentinel*. The `exclude` parameter
+resolves this:
+
+```python
+dev_toml = repo_root / ".zenzic.dev.toml"
+immune = frozenset({dev_toml.resolve()}) if dev_toml.exists() else frozenset()
+check_sources_perimeter(repo_root, forbidden, exclude=immune)
+```
+
+The resolved path is compared exactly — symlink traversal cannot bypass immunity.
+
+**Invariant — Zero False Negatives on Tracked Files:**
+
+> If a forbidden literal appears in any file that `git add` would accept, Phase B finds it.
+> If a forbidden literal appears only in files that `.gitignore` excludes, Phase B ignores it —
+> the leak cannot reach GitHub regardless.
+
+This is stronger than a naive `rglob("*")` scan: it eliminates false positives from build
+artefacts while guaranteeing total coverage of the publishable surface.
 
 ---
 

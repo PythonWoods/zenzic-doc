@@ -139,6 +139,41 @@ Questo garantisce che Zenzic resti un Custode Strutturale coerente indipendentem
 motore di build.
 :::
 
+### `--no-external`
+
+`--no-external` è disponibile su `check all` e `check links`. Salta il **Passaggio 3** —
+la validazione HTTP HEAD concorrente degli URL esterni — lasciando il Passaggio 1 (Shield, Z201)
+e il Passaggio 2 (risoluzione link interni) completamente attivi.
+
+Usalo in ambienti di sviluppo air-gapped o offline dove la raggiungibilità degli URL esterni
+non può essere verificata, o come ottimizzazione quando la salute dei link esterni è confermata
+da altri strumenti.
+
+```bash
+zenzic check all --strict --no-external   # verifica struttura/qualità; salta HTTP esterno
+zenzic check links --no-external          # solo link interni; Shield (Z201) sempre attivo
+```
+
+Quando attivo, il report aggiunge un messaggio di trasparenza:
+
+```text
+💡 External link validation skipped (--no-external). Shield (Z201) remains active.
+```
+
+:::warning[Mai usare in CI]
+`--no-external` è un **controllo di ambito per sviluppatori**, non un flag CI. Omettilo nelle
+pipeline CI non presidiate — i fallimenti dei link esterni sono fallimenti di gate legittimi.
+Il meccanismo permanente per escludere URL noti-instabili è `excluded_external_urls` in
+`zenzic.toml`.
+:::
+
+| Preoccupazione | Influenzato da `--no-external`? |
+| :--- | :--- |
+| Passaggio 1 — Shield / rilevamento credenziali (Z201) | ❌ Mai saltato |
+| Passaggio 1 — Blood Sentinel / path traversal (Z202/Z203) | ❌ Mai saltato |
+| Passaggio 2 — Risoluzione link interni | ❌ Mai saltato |
+| Passaggio 3 — Richieste HTTP HEAD esterne | ✅ Saltato |
+
 ### `--exclude-dir` / `--include-dir`
 
 Disponibili su `zenzic check all` (e sui sotto-comandi individuali). Questi flag forniscono

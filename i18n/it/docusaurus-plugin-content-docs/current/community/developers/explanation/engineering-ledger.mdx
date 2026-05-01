@@ -198,16 +198,20 @@ elencato in `.gitignore` in tutta la Trinity e **non viene mai committato**.
 ```toml
 # .zenzic.dev.toml — Local Development Gate (GIT-IGNORED)
 # Usa questo file per definire pattern che non devono MAI fuoriuscire nei commit pubblici.
+# Solo stringhe letterali — niente espressioni regolari (CEO-276 Lean Perimeter Standard).
 
 [development_gate]
-# Pattern case-insensitive confrontati con tutte le mappe AST generate e gli export.
 forbidden_patterns = [
-    "zenzic-brain",        # Nome orchestratore interno
-    "pythonwoods",         # Username/percorsi di sistema locali
-    "Draft/Articles",      # Materiale marketing non rilasciato
-    "127.0.0.1",           # IP di test interni
+    "FORBIDDEN-WORD",   # Aggiungere qui il proprio letterale privato
 ]
 ```
+
+:::tip Standard del Perimetro Snello (CEO-280)
+Mantenete `forbidden_patterns` al minimo. Ogni voce deve essere una **stringa letterale** — niente regex.
+Aggiungete solo identificatori la cui presenza in un export pubblico costituirebbe una vera perdita.
+I falsi positivi (es. nomi d'autore SPDX presenti in ogni intestazione) appartengono a `.gitignore`,
+non alla configurazione del perimetro.
+:::
 
 **Comportamento:**
 
@@ -215,16 +219,87 @@ forbidden_patterns = [
 - Se un pattern vietato viene trovato, esce con 1 e `D002 PERIMETER_LEAK` elencando i pattern
   violati con la rispettiva fase e posizione nel file.
 - Il gate è **dual-spectrum** (CEO-267):
-  - **Fase A — Output Audit:** La stringa Markdown o JSON generata viene scansionata prima che
-    qualsiasi file venga scritto o che qualsiasi output venga stampato. Cattura identificatori
-    che emergono attraverso docstring di moduli o nomi di classi/funzioni.
-  - **Fase B — Source Audit:** Il testo grezzo di ogni file `.py` sotto `src/` viene scansionato,
-    rendendo visibili al gate i commenti `#`, le intestazioni SPDX, le annotazioni inline e qualsiasi
-    altro contenuto raw. La Fase B si esegue anche quando l'identificatore non appare nell'output generato.
+  - **Fase A — Redattore Sovrano:** La stringa Markdown o JSON generata viene scansionata *prima*
+    che qualsiasi file venga scritto o che qualsiasi output venga stampato. I token vietati vengono
+    sostituiti silenziosamente con `[REDACTED_BY_SENTINEL]` — l'export continua invece di bloccarsi.
+    Cattura identificatori che emergono attraverso docstring di moduli o nomi di classi/funzioni.
+  - **Fase B — Source Audit (Scoperta VCS-Aware + Scansione Raw Totale):** Ogni file visibile
+    al progetto viene scansionato per token vietati nel suo testo grezzo — nessun parsing, nessun
+    AST, nessuna eccezione. Vedi [Scoperta VCS-Aware + Scansione Raw Totale](#vcs-aware-discovery)
+    qui sotto.
 - Entrambe le fasi si eseguono prima di qualsiasi scrittura — una violazione del perimetro non viene
   **mai scartata silenziosamente**.
-- Il controllo è **case-insensitive** (CEO-265): `Zenzic-Brain` e `zenzic-brain` vengono rilevati con
-  uguale forza in entrambe le fasi.
+- Il controllo è **case-insensitive** (CEO-265): `FORBIDDEN-WORD` e
+  `forbidden-word` vengono rilevati con uguale forza in entrambe le fasi.
+
+### Scoperta VCS-Aware + Scansione Raw Totale {#vcs-aware-discovery}
+
+La Fase B è il livello più completo del Gate di Privacy Ambientale. Il suo design risponde
+a una domanda precisa: *quali file potrebbero realisticamente fuoriuscire nel repository pubblico?*
+
+**Layer di Scoperta — `walk_files` + `LayeredExclusionManager` (CEO-281/283):**
+
+`check_sources_perimeter` utilizza la stessa infrastruttura `walk_files` + `LayeredExclusionManager`
+che `zenzic check all` utilizza per il linting. Questo significa che il Cartografo e la Sentinella
+condividono **esattamente la stessa vista del filesystem** — gli stessi occhi, gli stessi punti
+ciechi, per progetto.
+
+```python
+walk_files(scan_root, frozenset(), LayeredExclusionManager(ZenzicConfig(), repo_root=scan_root))
+```
+
+`walk_files` pota interi rami di directory al livello `os.walk` prima che qualsiasi file venga aperto:
+
+| Escluso automaticamente | Perché |
+|-------------------------|--------|
+| `.git/`, `.venv/`, `node_modules/` | SYSTEM_EXCLUDED_DIRS — VCS e artefatti di build |
+| `__pycache__/`, `.pytest_cache/`, `.mypy_cache/` | Cache di runtime — mai pubblicati |
+| `.docusaurus/`, `.nox/`, `.tox/` | Cache degli strumenti — mai pubblicati |
+| Voci in `.gitignore` | Ignorati da VCS — non possono raggiungere GitHub |
+
+Questo è il principio **VCS-Aware**: un file ignorato da Git non può fuoriuscire nel repository
+pubblico. Scansionarlo genererebbe rumore senza migliorare la sicurezza.
+
+**Layer di Scansione — testo grezzo, ogni byte (CEO-269):**
+
+Per ogni file scoperto da `walk_files`, la Fase B legge il **testo grezzo** e cerca pattern
+vietati tramite `check_perimeter`. Nessun parsing, nessun AST, nessuna assunzione strutturale.
+Ogni byte viene ispezionato — commenti `#` Python, intestazioni SPDX, frontmatter YAML,
+valori TOML, prosa Markdown, attributi JSX MDX.
+
+Tipi di file scansionati (CEO-269):
+
+| Estensione | Contenuto tipico ispezionato |
+|------------|------------------------------|
+| `.py` | Codice sorgente, commenti, docstring, intestazioni SPDX |
+| `.md` | Documentazione, changelog, note di rilascio |
+| `.mdx` | Documentazione con componenti JSX |
+| `.toml` | File di configurazione (`pyproject.toml`, `zenzic.toml`) |
+| `.yml` | Workflow CI, configurazione |
+
+**Immunità Sovrana — `.zenzic.dev.toml` (CEO-278):**
+
+Il file di configurazione del gate contiene i pattern vietati stessi. Senza immunità,
+scatenerebbe D002 e bloccherebbe ogni export — il *Paradosso della Sentinella*. Il
+parametro `exclude` risolve questo:
+
+```python
+dev_toml = repo_root / ".zenzic.dev.toml"
+immune = frozenset({dev_toml.resolve()}) if dev_toml.exists() else frozenset()
+check_sources_perimeter(repo_root, forbidden, exclude=immune)
+```
+
+Il percorso risolto viene confrontato esattamente — l'attraversamento di symlink non può
+aggirare l'immunità.
+
+**Invariante — Zero Falsi Negativi sui File Tracciati:**
+
+> Se un letterale vietato appare in qualsiasi file che `git add` accetterebbe, la Fase B lo trova.
+> Se un letterale vietato appare solo in file esclusi da `.gitignore`, la Fase B li ignora —
+> la perdita non può raggiungere GitHub indipendentemente.
+
+Questo è più robusto di una semplice scansione `rglob("*")`: elimina i falsi positivi dagli
+artefatti di build garantendo al contempo una copertura totale della superficie pubblicabile.
 
 ---
 
