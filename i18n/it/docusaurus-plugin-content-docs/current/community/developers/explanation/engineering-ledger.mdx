@@ -140,6 +140,149 @@ casella da spuntare.
 
 ---
 
+## Codici Invarianti per Sviluppatori {#developer-invariant-codes}
+
+Zenzic mantiene la propria memoria. Questi codici la proteggono.
+
+A differenza dei codici di finding pubblici `Zxxx` (che riguardano qualità e sicurezza
+della documentazione), i codici `Dxxx` sono **invarianti per sviluppatori** — governano
+l'integrità dell'ambiente di sviluppo stesso. Non sono registrati in `codes.py`, non vengono
+emessi da `check all`, e non appaiono mai in un report SARIF. Sono contratti interni tra lo
+strumento e i suoi contributor.
+
+| Codice | Nome | Protegge |
+|--------|------|----------|
+| `D001` | `MEMORY_STALE` | Sincronizzazione AST↔Ledger — il contesto dell'IA è sempre aggiornato |
+| `D002` | `PERIMETER_LEAK` | Privacy ambientale — gli identificatori locali non raggiungono mai l'output esportato |
+
+### D001 — Memoria Non Aggiornata {#d001-memory-stale}
+
+`D001 MEMORY_STALE` scatta quando la sezione `[CODE MAP]` di `ZENZIC_BRAIN.md` non rispecchia
+perfettamente l'AST corrente di `src/`.
+
+Il Cartografo Sovrano (`core/cartography.py`) analizza i sorgenti Python tramite AST puro
+e confronta il risultato con la mappa memorizzata. Se una singola funzione pubblica, classe
+o docstring è cambiata senza un aggiornamento corrispondente al Ledger, D001 scatta.
+
+**Meccanismi di enforcement:**
+
+- **`zenzic brain map --check`** — modalità audit read-only; esce con 1 e `D001` se stale.
+- **Hook pre-commit `brain-map-check`** — si esegue automaticamente su ogni modifica a `src/`;
+  usa l'Identity Gate wrapper (`_is_dev_mode()`) per essere un no-op su installazioni
+  non-editable, rendendolo sicuro per la CI.
+- **`just brain-map`** — la correzione canonica: ri-analizza i sorgenti e aggiorna la mappa
+  in `ZENZIC_BRAIN.md`, poi sincronizza su `.github/copilot-instructions.md` (Master-Shadow Sync).
+
+**Perché questo è importante per lo sviluppo assistito dall'IA:** Il `[CODE MAP]` è il contesto
+primario iniettato negli assistenti di coding AI tramite `.github/copilot-instructions.md`.
+Una mappa non aggiornata significa che l'IA ragiona su una proiezione del codebase che non
+esiste più. D001 rende la staleness visibile e applicabile nel pre-commit.
+
+### D002 — Gate di Privacy Ambientale {#d002-perimeter-leak}
+
+`D002 PERIMETER_LEAK` è un gate di igiene per sviluppatori opt-in che previene la fuga
+accidentale di identificatori locali privati nell'output esportato.
+
+**Il problema che risolve:** Uno sviluppatore che lavora su un deployment interno potrebbe
+avere frammenti di hostname interni, pattern di percorsi locali, o abbreviazioni interne
+incorporati nelle docstring di moduli o nei nomi di classe. Quando `brain map` esporta la
+mappa AST come Markdown o JSON, questi identificatori possono fuoriuscire in un file che
+potrebbe essere committato, condiviso, o ingerito da un assistente AI con contesto più ampio.
+D002 intercetta questo prima di qualsiasi scrittura.
+
+#### Configurare il Gate Ambientale {#configuring-the-environmental-gate}
+
+Crea un file `.zenzic.dev.toml` nella root del repository. Questo file è sempre locale — è
+elencato in `.gitignore` in tutta la Trinity e **non viene mai committato**.
+
+```toml
+# .zenzic.dev.toml — Local Development Gate (GIT-IGNORED)
+# Usa questo file per definire pattern che non devono MAI fuoriuscire nei commit pubblici.
+
+[development_gate]
+# Pattern case-insensitive confrontati con tutte le mappe AST generate e gli export.
+forbidden_patterns = [
+    "zenzic-brain",        # Nome orchestratore interno
+    "pythonwoods",         # Username/percorsi di sistema locali
+    "Draft/Articles",      # Materiale marketing non rilasciato
+    "127.0.0.1",           # IP di test interni
+]
+```
+
+**Comportamento:**
+
+- Se `.zenzic.dev.toml` è assente: il gate è silenziosamente disabilitato — nessun avviso, nessun rumore.
+- Se un pattern vietato viene trovato, esce con 1 e `D002 PERIMETER_LEAK` elencando i pattern
+  violati con la rispettiva fase e posizione nel file.
+- Il gate è **dual-spectrum** (CEO-267):
+  - **Fase A — Output Audit:** La stringa Markdown o JSON generata viene scansionata prima che
+    qualsiasi file venga scritto o che qualsiasi output venga stampato. Cattura identificatori
+    che emergono attraverso docstring di moduli o nomi di classi/funzioni.
+  - **Fase B — Source Audit:** Il testo grezzo di ogni file `.py` sotto `src/` viene scansionato,
+    rendendo visibili al gate i commenti `#`, le intestazioni SPDX, le annotazioni inline e qualsiasi
+    altro contenuto raw. La Fase B si esegue anche quando l'identificatore non appare nell'output generato.
+- Entrambe le fasi si eseguono prima di qualsiasi scrittura — una violazione del perimetro non viene
+  **mai scartata silenziosamente**.
+- Il controllo è **case-insensitive** (CEO-265): `Zenzic-Brain` e `zenzic-brain` vengono rilevati con
+  uguale forza in entrambe le fasi.
+
+---
+
+## Esportare il Cortex {#exporting-the-cortex}
+
+`brain map` e `check all` sono strumenti complementari con domini completamente separati.
+Mescolare le loro responsabilità violerebbe il principio della CLI Sovrana (ADR-003).
+
+| Dimensione | `zenzic brain map` | `zenzic check all` |
+|------------|-------------------|--------------------|
+| **Dominio** | Struttura del codebase (per il contesto AI) | Violazioni della documentazione (per gate CI) |
+| **Formati output** | `markdown` (default), `json` | `text`, `json`, `sarif` |
+| **SARIF** | ✗ Mai — strutturalmente assente | ✅ Nativo |
+| **Gate D002** | ✅ Applicato a tutti i path di output | ✗ Non applicabile |
+| **Destinazione** | Ledger / file / stdout | Report / SARIF / GitHub Code Scanning |
+| **Solo per dev** | ✅ Identity Gate (CEO-246) | ✗ Disponibile a tutti gli utenti |
+
+**Modalità di esportazione per `brain map`:**
+
+```bash
+# Default: aggiorna ZENZIC_BRAIN.md in-place (markdown)
+zenzic brain map .
+
+# JSON su stdout — machine-readable, un oggetto per modulo
+zenzic brain map . --format json
+
+# Markdown su file (senza toccare il Ledger)
+zenzic brain map . --output cortex.md
+
+# JSON su file
+zenzic brain map . --format json --output cortex.json
+
+# Audit read-only (--format viene ignorato con un avviso)
+zenzic brain map . --check
+```
+
+**Lo schema JSON** è una serializzazione diretta del dataclass `ModuleInfo`:
+
+```json
+[
+  {
+    "rel_path": "core/shield.py",
+    "classes": ["SecurityFinding", "ShieldViolation"],
+    "public_functions": ["scan_url_for_secrets", "scan_line_for_secrets"],
+    "docstring": "Zenzic Shield: secret-detection engine."
+  }
+]
+```
+
+Questo schema è stabile tra le patch release. È adatto per costruire grafi di dipendenze,
+generare documentazione architetturale, o alimentare pipeline AI con contesto strutturato.
+
+**D002 si applica a tutti i formati di esportazione.** Che l'output sia Markdown o JSON,
+un pattern vietato in una docstring di modulo scatenerà `D002 PERIMETER_LEAK` prima che
+qualsiasi file venga scritto o qualsiasi output venga stampato su stdout.
+
+---
+
 ## Ulteriori Risorse
 
 - [ADR — Architectural Decision Records](./adr-discovery) — il log completo delle decisioni

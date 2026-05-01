@@ -130,6 +130,146 @@ silenced on a credential leak is not a security gate. It is a checkbox.
 
 ---
 
+## Developer Invariant Codes {#developer-invariant-codes}
+
+Zenzic maintains its own memory. These codes protect it.
+
+Unlike the public `Zxxx` finding codes (which target documentation quality and security),
+the `Dxxx` codes are **developer invariants** — they govern the integrity of the development
+environment itself. They are not registered in `codes.py`, never emitted by `check all`, and
+never appear in a SARIF report. They are internal contracts between the tool and its contributors.
+
+| Code | Name | Protects |
+|------|------|----------|
+| `D001` | `MEMORY_STALE` | AST↔Ledger synchronisation — the AI's context is always current |
+| `D002` | `PERIMETER_LEAK` | Environmental privacy — local identifiers never reach exported output |
+
+### D001 — Memory Stale {#d001-memory-stale}
+
+`D001 MEMORY_STALE` fires when the `[CODE MAP]` section of `ZENZIC_BRAIN.md` does not
+perfectly mirror the current AST of `src/`.
+
+The Sovereign Cartographer (`core/cartography.py`) scans Python sources via pure AST analysis
+and compares the result against the stored map. If a single public function, class, or docstring
+has changed without a corresponding update to the Ledger, D001 fires.
+
+**Enforcement mechanisms:**
+
+- **`zenzic brain map --check`** — read-only audit mode; exits 1 with `D001` if stale.
+- **`brain-map-check` pre-commit hook** — runs automatically on any change to `src/`;
+  uses the Identity Gate wrapper (`_is_dev_mode()`) to be a no-op on non-editable installs,
+  making it CI-safe.
+- **`just brain-map`** — the canonical fix: re-scans sources and writes the updated map to
+  `ZENZIC_BRAIN.md`, then syncs to `.github/copilot-instructions.md` (Master-Shadow Sync).
+
+**Why this matters for AI-assisted development:** The `[CODE MAP]` is the primary context
+injected into AI coding assistants via `.github/copilot-instructions.md`. A stale map means
+the AI reasons about a projection of the codebase that no longer exists. D001 makes staleness
+visible and pre-commit-enforceable.
+
+### D002 — Environmental Privacy Gate {#d002-perimeter-leak}
+
+`D002 PERIMETER_LEAK` is an opt-in developer hygiene gate that prevents accidental leaks
+of private local identifiers into exported output.
+
+**The problem it solves:** A developer working on an internal deployment may have internal
+hostname fragments, local path patterns, or project-internal abbreviations embedded in module
+docstrings or class names. When `brain map` exports the AST map as Markdown or JSON, these
+identifiers leak into a file that could be committed, shared, or ingested by an AI assistant
+with broader context. D002 intercepts this before any write occurs.
+
+#### Configuring the Environmental Gate {#configuring-the-environmental-gate}
+
+Create a `.zenzic.dev.toml` file in the repository root. This file is always local — it is
+listed in `.gitignore` across the Trinity and is **never committed**.
+
+```toml
+# .zenzic.dev.toml — Local Development Gate (GIT-IGNORED)
+# Use this file to define patterns that must NEVER leak into public commits.
+
+[development_gate]
+# Case-insensitive patterns matched against all generated AST maps and exports.
+forbidden_patterns = [
+    "zenzic-brain",        # Internal orchestrator name
+    "pythonwoods",         # Local system username/paths
+    "Draft/Articles",      # Unreleased marketing material
+    "127.0.0.1",           # Internal test IPs
+]
+```
+
+**Behaviour:**
+
+- If `.zenzic.dev.toml` is absent: the gate is silently disabled — no warning, no noise.
+- If a forbidden pattern is found, exits 1 with `D002 PERIMETER_LEAK` and lists the violated
+  patterns with their phase and file location.
+- The gate is **dual-spectrum** (CEO-267):
+  - **Phase A — Output Audit:** The generated Markdown or JSON string is scanned before any file
+    is written or any output is printed. Catches identifiers that surface through module docstrings
+    or class/function names.
+  - **Phase B — Source Audit:** The raw text of every `.py` file under `src/` is scanned, making
+    `#` comments, SPDX headers, inline annotations, and any other raw content visible to the gate.
+    Phase B runs even when the identifier does not appear in the generated output.
+- Both phases run before any write — a perimeter violation is **never silently discarded**.
+- The check is **case-insensitive** (CEO-265): `Zenzic-Brain` and `zenzic-brain` hit with equal
+  force in both phases.
+
+---
+
+## Exporting the Cortex {#exporting-the-cortex}
+
+`brain map` and `check all` are complementary tools with entirely separate domains.
+Mixing their responsibilities would violate the Sovereign CLI principle (ADR-003).
+
+| Dimension | `zenzic brain map` | `zenzic check all` |
+|-----------|-------------------|--------------------|
+| **Domain** | Codebase structure (for AI context) | Documentation violations (for CI gates) |
+| **Output formats** | `markdown` (default), `json` | `text`, `json`, `sarif` |
+| **SARIF** | ✗ Never — structurally absent | ✅ Native |
+| **D002 gate** | ✅ Applied to all output paths | ✗ Not applicable |
+| **Destination** | Ledger / file / stdout | Report / SARIF / GitHub Code Scanning |
+| **Dev-only** | ✅ Identity Gate (CEO-246) | ✗ Available to all users |
+
+**Export modes for `brain map`:**
+
+```bash
+# Default: update ZENZIC_BRAIN.md in-place (markdown)
+zenzic brain map .
+
+# JSON to stdout — machine-readable, one object per module
+zenzic brain map . --format json
+
+# Markdown to file (without touching the Ledger)
+zenzic brain map . --output cortex.md
+
+# JSON to file
+zenzic brain map . --format json --output cortex.json
+
+# Read-only audit (--format is ignored with a warning)
+zenzic brain map . --check
+```
+
+**The JSON schema** is a direct serialisation of the `ModuleInfo` dataclass:
+
+```json
+[
+  {
+    "rel_path": "core/shield.py",
+    "classes": ["SecurityFinding", "ShieldViolation"],
+    "public_functions": ["scan_url_for_secrets", "scan_line_for_secrets"],
+    "docstring": "Zenzic Shield: secret-detection engine."
+  }
+]
+```
+
+This schema is stable across patch releases. It is suitable for building dependency graphs,
+generating architecture documentation, or feeding structured context to AI pipelines.
+
+**D002 applies to all export formats.** Whether the output is Markdown or JSON, a forbidden
+pattern in a module docstring will trigger `D002 PERIMETER_LEAK` before any file is written
+or any output is printed to stdout.
+
+---
+
 ## Further Reading
 
 - [ADR — Architectural Decision Records](./adr-discovery) — the full decision log
