@@ -166,7 +166,7 @@ External bookmarks, blog posts, and search index entries must be updated.
 
 The Quartz Promise (one Sentinel, two instances) is now visible from the
 README of every Zenzic repository (zenzic, zenzic-doc, zenzic-action,
-zenzic-brain) — EN and IT mirrors in lockstep.
+mnemonic) — EN and IT mirrors in lockstep.
 
 ---
 
