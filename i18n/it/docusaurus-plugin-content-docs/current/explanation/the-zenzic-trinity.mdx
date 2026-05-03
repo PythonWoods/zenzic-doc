@@ -117,10 +117,9 @@ Zenzic è progettato per la **Memoria Istituzionale**. Due proprietà rendono qu
 
 ### Mappe AST — Lo Specchio Strutturale
 
-Ogni modulo in `zenzic` è mappato da un analizzatore AST statico (`scripts/map_project.py`). La
-mappa registra ogni classe pubblica, ogni funzione pubblica e la docstring. È deterministica e
-rigenerata automaticamente tramite `just map-update`. Ciò significa che lo stato strutturale del
-Core è sempre leggibile in un singolo documento, analizzabile da una macchina — mai inferito.
+Ogni modulo in `zenzic` è mappato da un analizzatore AST deterministico. La
+mappa registra ogni classe pubblica, ogni funzione pubblica e la docstring. Lo stato strutturale
+del Core è sempre leggibile in un singolo documento, analizzabile da una macchina — mai inferito.
 
 ### Corpus degli ADR — Lo Specchio delle Decisioni
 

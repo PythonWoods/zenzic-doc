@@ -116,10 +116,9 @@ Zenzic is engineered for **Institutional Memory**. Two properties make this poss
 
 ### AST Maps — The Structural Mirror
 
-Every module in `zenzic` is mapped by a static AST analyser (`scripts/map_project.py`). The map
-records each public class, public function, and docstring. It is deterministic and re-generated
-automatically via `just map-update`. This means the structural state of the Core is always
-readable in a single, machine-parseable document — never inferred.
+Every module in `zenzic` is mapped by a deterministic AST analyser. The map
+records each public class, public function, and docstring. The structural state of
+the Core is always readable in a single, machine-parseable document — never inferred.
 
 ### ADR Corpus — The Decision Mirror
 

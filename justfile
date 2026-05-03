@@ -83,11 +83,6 @@ test:
 # Enterprise local gate (4-Gates Standard)
 verify: check preflight test
 
-# Update the [CODE MAP] in copilot-instructions.md from the docs/ filesystem.
-# Run after adding, removing, or moving any .mdx file.
-map-update:
-    uv run scripts/map_docs.py
-
 # --- PROJECT ADMIN ---
 
 # Check REUSE/SPDX licence compliance
