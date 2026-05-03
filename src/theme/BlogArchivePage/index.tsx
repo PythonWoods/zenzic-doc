@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Swizzled BlogArchivePage — D107: The Sentinel Archive Reconstruction
  *

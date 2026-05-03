@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 /* Tailwind v4 — theme + utilities only.
    Preflight excluded: @layer base (preflight) appears after @layer docusaurus.infima
    in the final bundle, meaning it would override Infima and break Docusaurus layout. */

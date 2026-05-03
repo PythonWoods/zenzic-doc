@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import React from 'react';
 import {useLocation} from '@docusaurus/router';
 import NavbarContentNative from '@theme-original/Navbar/Content';

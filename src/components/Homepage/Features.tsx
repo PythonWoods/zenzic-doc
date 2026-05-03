@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import React, { ReactNode } from 'react';
 import Translate from '@docusaurus/Translate';
 import { Iso } from './Shared';

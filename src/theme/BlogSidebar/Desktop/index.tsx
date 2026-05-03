@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Swizzled BlogSidebar/Desktop
  * D106: The Active Archive — "All posts" title links to the blog root (locale-aware).
