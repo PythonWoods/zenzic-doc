@@ -17,7 +17,7 @@
   --color-zinc-950: #09090b;
 }
 
-/* 
+/*
  * Blog Sovereignty: Hide locale dropdown on blog routes.
  * Uses the Docusaurus native 'plugin-blog' class on the <html> element
  * (added by PluginHtmlClassNameProvider for @docusaurus/plugin-content-blog).

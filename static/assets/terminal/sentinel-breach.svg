@@ -81,7 +81,7 @@
     <rect x="0" y="245.5" width="927.2" height="24.65"/>
             </clipPath>
     </defs>
-        
+
     <g transform="translate(9, 8)" clip-path="url(#terminal-1807852060-clip-terminal)">
     <rect fill="#ff3b30" x="12.2" y="50.3" width="317.2" height="24.65" shape-rendering="crispEdges"/><rect fill="#0f0f13" x="207.4" y="172.3" width="268.4" height="24.65" shape-rendering="crispEdges"/>
     <g class="terminal-1807852060-matrix">

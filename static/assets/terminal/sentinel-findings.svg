@@ -77,9 +77,9 @@
     <rect x="0" y="221.1" width="927.2" height="24.65"/>
             </clipPath>
     </defs>
-        
+
     <g transform="translate(9, 8)" clip-path="url(#terminal-225586927-clip-terminal)">
-    
+
     <g class="terminal-225586927-matrix">
     <text class="terminal-225586927-r1" x="927.2" y="20" textLength="12.2" clip-path="url(#terminal-225586927-line-0)">
 </text><text class="terminal-225586927-r2" x="24.4" y="44.4" textLength="12.2" clip-path="url(#terminal-225586927-line-1)">✘</text><text class="terminal-225586927-r3" x="61" y="44.4" textLength="48.8" clip-path="url(#terminal-225586927-line-1)">Z101</text><text class="terminal-225586927-r4" x="134.2" y="44.4" textLength="280.6" clip-path="url(#terminal-225586927-line-1)">docs/guides/setup.md:14</text><text class="terminal-225586927-r1" x="488" y="44.4" textLength="427" clip-path="url(#terminal-225586927-line-1)">Broken&#160;link&#160;→&#160;&#x27;install.md&#x27;&#160;(target&#160;</text><text class="terminal-225586927-r1" x="927.2" y="44.4" textLength="12.2" clip-path="url(#terminal-225586927-line-1)">
