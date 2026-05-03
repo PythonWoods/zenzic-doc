@@ -116,6 +116,18 @@ const config: Config = {
         },
       };
     },
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'developers',
+        path: 'developers',
+        routeBasePath: 'developers',
+        sidebarPath: './sidebarsDevelopers.ts',
+        editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
   ],
 
   themeConfig: {
@@ -161,6 +173,13 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'developersSidebar',
+          docsPluginId: 'developers',
+          position: 'left',
+          label: 'Developers',
         },
         {
           // type:html renders raw HTML — Docusaurus does NOT locale-prefix raw href values.

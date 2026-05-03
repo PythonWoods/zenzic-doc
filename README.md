@@ -13,6 +13,8 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
+[![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
+[![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
 > **This documentation is strictly aligned to Zenzic v0.7.0 "Quartz Maturity".**
 > If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
@@ -21,6 +23,34 @@ This repository contains the Docusaurus documentation website for Zenzic.
 
 This guide is written for both experienced maintainers and first-time contributors.
 If you are new, follow the sections in order.
+
+---
+
+## 📖 Documentation Map — Quartz Promise
+
+The Zenzic documentation ships as **two separate Docusaurus instances** under one
+domain. Each has its own sidebar, search index, and audience — never mixed.
+
+```text
+zenzic.dev/
+├── docs/           → User Area    — install, configure, CI/CD, finding codes
+├── developers/     → Dev Area     — plugins, adapters, ADRs, tech debt ledger
+├── blog/           → Release notes & engineering post-mortems
+└── community/      → Brand kit, FAQs, governance
+```
+
+**The Quartz Promise.** Two instances, one Sentinel. The split is enforced by
+[ADR 011: Cross-Instance Allowlist](https://zenzic.dev/developers/explanation/adr-cross-instance-allowlist) — every
+cross-boundary link is a documented contract, never a silent suppression.
+See the [Technical Debt Ledger](https://zenzic.dev/developers/governance/technical-debt) for what we deferred and why.
+
+| You are a... | Start here |
+| :--- | :--- |
+| 👤 User reading the docs | [User Guide](https://zenzic.dev/docs/) |
+| 🔧 Contributor / docs author | [Developer Portal](https://zenzic.dev/developers/) · [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) |
+| 🛡️ Security reviewer | [Engineering Ledger](https://zenzic.dev/developers/explanation/engineering-ledger) · [SECURITY.md](SECURITY.md) |
+
+---
 
 ## 1) Prerequisites
 

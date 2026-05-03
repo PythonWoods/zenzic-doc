@@ -3,6 +3,7 @@
 
 # just - Obsidian Enterprise workflow for zenzic-doc
 set shell := ["bash", "-c"]
+zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "../zenzic")
 
 # Use `just --list` to see available commands
 
@@ -59,6 +60,10 @@ sentinel:
 preflight:
     uvx pre-commit run --all-files
 
+# Explicit Zenzic audit gate (uses local unreleased core)
+check:
+    uv run --project {{zenzic_project}} zenzic check all --engine docusaurus --strict
+
 # Static type check
 typecheck:
     npm run typecheck
@@ -71,8 +76,12 @@ lint:
 markdownlint:
     npm run lint:md
 
-# Enterprise local gate: type safety + production build
-verify: markdownlint lint typecheck build
+# Test suite (docs integration checks via nox)
+test:
+    uvx nox -s tests
+
+# Enterprise local gate (4-Gates Standard)
+verify: check preflight test
 
 # Update the [CODE MAP] in copilot-instructions.md from the docs/ filesystem.
 # Run after adding, removing, or moving any .mdx file.

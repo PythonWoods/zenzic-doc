@@ -376,3 +376,55 @@ Impostare `exit_zero = true` in `zenzic.toml` disabilita il quality gate globalm
 Preferisci usare `--exit-zero` come flag CLI temporaneo durante gli sprint di cleanup,
 rimuovendolo una volta che il baseline è pulito.
 :::
+
+---
+
+## `[link_validation]` {#link-validation}
+
+**Tipo:** sezione TOML — **Aggiunto:** v0.7.0 "Quartz Maturity"
+
+Controlla come il validator dei link di Zenzic tratta i path URL assoluti.
+Il comportamento predefinito — rifiutare tutti i path assoluti via
+`Z105 ABSOLUTE_PATH` — assume un sito a istanza singola montato sulla
+root. I deployment Docusaurus multi-istanza e i progetti con domini
+satellite devono dichiarare quali prefissi assoluti sono interni al
+progetto.
+
+### `absolute_path_allowlist`
+
+**Tipo:** lista di stringhe — **Default:** `[]`
+
+Prefissi di path URL (devono iniziare con `/`) che il validator tratta
+come link assoluti validi. Z105 viene soppresso per qualsiasi link il
+cui path inizi con uno di questi prefissi. Il match è solo `startswith`
+— niente regex, niente glob.
+
+```toml
+[link_validation]
+absolute_path_allowlist = [
+    "/developers/",
+    "/api/",
+]
+```
+
+**Semantica:**
+
+- Il check viene eseguito **prima** dell'emissione di Z105, non dopo —
+  i link in allowlist non appaiono mai nello stream dei findings.
+- Le query string (`?foo=bar`) e i frammenti (`#anchor`) vengono
+  rimossi prima del match.
+- L'allowlist è un **contratto di fiducia**, non un resolver. Zenzic
+  non verifica che il target esista nell'istanza sorella.
+
+**Quando usarlo:** link cross-istanza in Docusaurus multi-istanza,
+micro-siti su dominio condiviso, link a documentazione satellite
+ospitata su un sub-path noto.
+
+**Quando NON usarlo:** eccezioni singole in un singolo file. Usa
+invece la soppressione inline (`<!-- zenzic:ignore Z105 -->`) — vedi
+la [Politica di Soppressione](./suppression-policy.mdx).
+
+Per la guida operativa completa e le regole decisionali, vedi
+[Gestire Link Cross-Sito](../how-to/manage-cross-site-links.mdx). Per
+il razionale di design, vedi
+[ADR 011: Allowlist Cross-Istanza](/developers/explanation/adr-cross-instance-allowlist).

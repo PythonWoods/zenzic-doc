@@ -5,12 +5,15 @@
 # ── Sentinel Guard ─────────────────────────────────────────────────
 # Zenzic Sentinel pre-commit bootstrap.
 #
-# Strategy (Dual-Stage Verification):
-#   A. If ../zenzic exists → use the local core (developer workflow)
-#   B. Otherwise           → download via uvx --pre  (contributor workflow)
+# Strategy:
+#   Use a local zenzic checkout only (never uvx).
+#   Path resolution order:
+#     1) $ZENZIC_PROJECT_PATH (if set)
+#     2) ../zenzic
+#     3) ./zenzic
 #
 # Virtualenv-safe: UV_NO_SYNC prevents uv from auto-syncing into
-# an active .venv.  uvx always creates an ephemeral sandbox.
+# an active .venv.
 # ───────────────────────────────────────────────────────────────────
 
 set -euo pipefail
@@ -18,13 +21,20 @@ set -euo pipefail
 # Prevent uv from syncing into an active .venv
 export UV_NO_SYNC=1
 
-# Scenario A: Core developer (repos side-by-side)
-if [ -d "../zenzic" ] && [ -f "../zenzic/pyproject.toml" ]; then
-    echo "Mode: Local Development (../zenzic found)"
-    uv run --project ../zenzic zenzic check all --engine docusaurus --strict
+ZENZIC_PATH="${ZENZIC_PROJECT_PATH:-}"
 
-# Scenario B: External contributor or isolated environment
-else
-    echo "Mode: External Contributor (uvx ephemeral sandbox)"
-    uvx --pre zenzic check all --engine docusaurus --strict
+if [ -z "${ZENZIC_PATH}" ] && [ -d "../zenzic" ] && [ -f "../zenzic/pyproject.toml" ]; then
+    ZENZIC_PATH="../zenzic"
 fi
+
+if [ -z "${ZENZIC_PATH}" ] && [ -d "./zenzic" ] && [ -f "./zenzic/pyproject.toml" ]; then
+    ZENZIC_PATH="./zenzic"
+fi
+
+if [ -z "${ZENZIC_PATH}" ]; then
+    echo "ERROR: local zenzic checkout not found. Set ZENZIC_PROJECT_PATH to a local repo path." >&2
+    exit 1
+fi
+
+echo "Mode: Local Zenzic (${ZENZIC_PATH})"
+uv run --project "${ZENZIC_PATH}" zenzic check all --engine docusaurus --strict

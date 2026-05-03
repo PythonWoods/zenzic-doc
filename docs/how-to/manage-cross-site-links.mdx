@@ -1,0 +1,121 @@
+---
+sidebar_label: "Manage Cross-Site Links"
+sidebar_position: 50
+description: "How to keep Z105 ABSOLUTE_PATH happy when your documentation spans multiple Docusaurus instances or satellite sites — and when to reach for inline ignores instead."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Manage Cross-Site Links
+
+When your project hosts more than one Docusaurus instance under the same
+domain (for example a User area at `/docs/` and a Developer area at
+`/developers/`), links that cross instance boundaries **must** be absolute.
+Docusaurus does not resolve relative paths across plugin boundaries — and
+neither does Zenzic's link validator.
+
+By default, Zenzic's `Z105 ABSOLUTE_PATH` rule rejects any absolute link
+(`/foo/bar`) because absolute paths break when a site is hosted in a
+subdirectory. This guide shows you how to declare the cross-instance
+prefixes your project legitimately owns, so the validator stops flagging
+them — without weakening Z105 elsewhere.
+
+---
+
+## TL;DR — Which tool, when?
+
+| Situation | Use this | Don't use |
+|---|---|---|
+| Many cross-plugin links share a prefix (`/developers/`, `/api/`) | `[link_validation] absolute_path_allowlist` in `zenzic.toml` | inline ignores |
+| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore Zxxx -->` (or `{/* zenzic:ignore Zxxx */}` for MDX) | allowlist |
+| Two or more files would need the same inline ignore | Promote to allowlist / config | inline ignore in each file |
+
+The decision rule: **if it is a property of your project, it belongs in
+config; if it is a property of one line, it belongs inline.**
+
+---
+
+## Allowlist a cross-instance prefix
+
+Add the prefixes you trust to `zenzic.toml`:
+
+```toml
+# zenzic.toml
+[link_validation]
+absolute_path_allowlist = [
+    "/developers/",
+    "/api/",
+]
+```
+
+Now any link starting with `/developers/` or `/api/` is accepted by Z105.
+Everything else still fails — a typo like `/developres/foo` will be
+caught.
+
+**Rules to remember:**
+
+1. Entries **must** start with `/`. The check uses simple `startswith`
+   matching — no regex, no globs.
+2. The match is on the URL path only — `?query` and `#anchor` are
+   stripped before comparison.
+3. The validator does not check that the target actually exists in the
+   sibling instance. The allowlist is a **trust contract**, not a
+   resolver.
+
+---
+
+## When to use an inline ignore instead
+
+Inline ignores are surgical. Reach for them when:
+
+- A single line in a single file legitimately triggers a rule (e.g. a
+  documentation example that *looks* like a credential but is fake).
+- The exception is local context, not a project-wide truth.
+
+```markdown
+<!-- zenzic:ignore Z201 -->
+api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
+```
+
+```mdx
+{/* zenzic:ignore Z105 */}
+[Hard link example](/legacy/path)
+```
+
+The inline form leaves an audit trail at the exact line — visible in PR
+diffs, traceable in `git blame`.
+
+---
+
+## Anti-pattern: inline-ignoring cross-plugin links
+
+Do **not** sprinkle `<!-- zenzic:ignore Z105 -->` over every cross-plugin
+link. This:
+
+- Hides the cross-instance dependency from anyone reading `zenzic.toml`.
+- Forces every contributor to rediscover the same rule.
+- Implies the link is "broken and accepted" when in reality it is
+  correct by design.
+
+If two or more files need the same Z105 ignore for the same prefix, that
+prefix is a **systemic truth** of your project — promote it to
+`absolute_path_allowlist`.
+
+---
+
+## Reverting
+
+Remove an entry from `absolute_path_allowlist` and Z105 enforcement
+returns immediately on that prefix. The protection is cheap to enable
+and cheap to remove — there is no migration cost either way.
+
+---
+
+## Related
+
+- [Configuration Reference — `[link_validation]`](../reference/configuration.mdx#link-validation)
+- [Suppression Policy](../reference/suppression-policy.mdx) — full inline-
+  ignore syntax and scope rules.
+- For the full design rationale, see
+  [ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

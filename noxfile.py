@@ -22,6 +22,13 @@ nox.options.sessions = ["typecheck", "reuse"]
 
 
 @nox.session(venv_backend="none")
+def tests(session: nox.Session) -> None:
+    """Run the docs test suite (typecheck + production build)."""
+    session.run("npm", "run", "typecheck", external=True)
+    session.run("npm", "run", "build", external=True)
+
+
+@nox.session(venv_backend="none")
 def typecheck(session: nox.Session) -> None:
     """Run static type checking with tsc."""
     session.run("npm", "run", "typecheck", external=True)

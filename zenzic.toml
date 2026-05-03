@@ -61,3 +61,32 @@ obsolete_names_exclude_patterns = [
     "CHANGELOG*.archive.md",
     "adr-*.mdx",
 ]
+
+# --- Z907 I18N PARITY (EPOCH 5) ---
+# Language-agnostic translation parity gate. Adding ES/FR/JA = edit YAML, no code change.
+# Multi-instance: /docs/* (User) + /developers/* (Dev) declared via extra_sources.
+[i18n]
+enabled = true
+base_lang = "en"
+base_source = "docs"
+strict_parity = true
+require_frontmatter_parity = ["title", "description"]
+
+[i18n.targets]
+it = "i18n/it/docusaurus-plugin-content-docs/current"
+
+[[i18n.extra_sources]]
+base_source = "developers"
+
+[i18n.extra_sources.targets]
+it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
+
+# --- LINK VALIDATION (EPOCH 5) ---
+# Multi-instance Docusaurus: cross-plugin links to /developers/* are absolute by
+# design (Docusaurus does not resolve relative paths across plugin boundaries).
+# Allowlist tells Z105 these are project-internal targets, not policy violations.
+[link_validation]
+absolute_path_allowlist = [
+    "/docs/",
+    "/developers/",
+]

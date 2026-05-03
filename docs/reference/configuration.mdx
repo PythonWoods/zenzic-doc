@@ -365,3 +365,54 @@ Setting `exit_zero = true` in `zenzic.toml` disables the quality gate globally. 
 using `--exit-zero` as a temporary CLI flag during cleanup sprints, and removing it once
 the baseline is clean.
 :::
+
+---
+
+## `[link_validation]` {#link-validation}
+
+**Type:** TOML section — **Added:** v0.7.0 "Quartz Maturity"
+
+Controls how Zenzic's link validator treats absolute URL paths. The default
+behavior — rejecting all absolute paths via `Z105 ABSOLUTE_PATH` — assumes
+a single-instance site mounted at the root. Multi-instance Docusaurus
+deployments and satellite-domain projects need to declare which absolute
+prefixes are project-internal.
+
+### `absolute_path_allowlist`
+
+**Type:** list of strings — **Default:** `[]`
+
+URL path prefixes (must start with `/`) that the validator treats as
+valid absolute links. Z105 is suppressed for any link whose path
+starts with one of these prefixes. The match is `startswith` only — no
+regex, no globs.
+
+```toml
+[link_validation]
+absolute_path_allowlist = [
+    "/developers/",
+    "/api/",
+]
+```
+
+**Semantics:**
+
+- The check runs **before** Z105 emission, not after — allowlisted
+  links never appear in the findings stream.
+- Query strings (`?foo=bar`) and fragments (`#anchor`) are stripped
+  before matching.
+- The allowlist is a **trust contract**, not a resolver. Zenzic does
+  not verify that the target exists in the sibling instance.
+
+**When to use:** cross-instance links in multi-instance Docusaurus,
+shared-domain micro-sites, links to satellite documentation hosted at a
+known sub-path.
+
+**When NOT to use:** one-off exceptions in a single file. Use inline
+suppression (`<!-- zenzic:ignore Z105 -->`) instead — see the
+[Suppression Policy](./suppression-policy.mdx).
+
+For the full operational guide and decision rules, see
+[Manage Cross-Site Links](../how-to/manage-cross-site-links.mdx). For the
+design rationale, see
+[ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

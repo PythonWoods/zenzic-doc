@@ -382,16 +382,16 @@ Connect adapter code to deployment truth:
 
 1. Register engine identity in project configuration via `[build_context] engine`
 
-   (see [Adapters & Engine Configuration](../../../how-to/configure-adapter.mdx)).
+   (see [Adapters & Engine Configuration](/docs/how-to/configure-adapter)).
 
 2. Validate adapter behavior under strict Sentinel policy:
 
    `zenzic check all --engine myengine --strict`.
-   For run controls, see [CLI Commands: Global flags](../../../reference/cli.mdx#global-flags).
+   For run controls, see [CLI Commands: Global flags](/docs/reference/cli#global-flags).
 
 3. If your engine generates synthetic locale routes, explicitly map Ghost Route
 
    expectations against the VSM reference:
-   [Checks Reference — VSM](../../../reference/checks#vsm-how-it-works).
+   [Checks Reference — VSM](/docs/reference/checks#vsm-how-it-works).
 
 :::

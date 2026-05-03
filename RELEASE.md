@@ -137,6 +137,37 @@ Changes:
 
   mirror-copy pattern; \`assets/brand/\` is now the sole source and destination.
 
+### 10. Cross-Instance Routing — Breaking URL Migration
+
+The Developer Area has been promoted from \`/docs/community/developers/*\` to its own
+top-level Docusaurus instance at \`/developers/*\`. The User Area remains at \`/docs/*\`.
+
+| Before (v0.6.x) | After (v0.7.0) |
+| :--- | :--- |
+| \`/docs/community/developers/*\` | \`/developers/*\` |
+| \`/docs/community/governance/*\` | \`/developers/governance/*\` |
+| \`/docs/community/contribute/*\` | \`/developers/contribute/*\` |
+
+This is a **breaking URL change** with no compatibility shim — old links will 404.
+External bookmarks, blog posts, and search index entries must be updated.
+
+**New artefacts shipped with the migration:**
+
+- **ADR-0011 "Cross-Instance Allowlist"** (EN+IT) — formalises the
+  \`absolute_path_allowlist\` configuration as a *trust contract* between
+  Docusaurus instances, with a mandatory *Suppression vs Configuration*
+  section explicitly banning \`<zenzic:ignore Z105>\` for cross-plugin links.
+- **\`/docs/how-to/manage-cross-site-links.mdx\`** (EN+IT) — user-facing
+  Diátaxis how-to guide.
+- **\`/docs/reference/configuration.mdx#link-validation\`** (EN+IT) — full
+  schema reference for \`[link_validation]\`.
+- **\`/developers/governance/technical-debt.mdx\`** (EN+IT) — first entry
+  records **Z108 STALE_ALLOWLIST_ENTRY** as deferred to v0.8.0 with rationale.
+
+The Quartz Promise (one Sentinel, two instances) is now visible from the
+README of every Zenzic repository (zenzic, zenzic-doc, zenzic-action,
+zenzic-brain) — EN and IT mirrors in lockstep.
+
 ---
 
 **v0.7.0 is the canonical stable portal for the Quartz Maturity sprint.**
