@@ -364,7 +364,7 @@ just verify
 Zenzic è nato da un viaggio tecnico attraverso la fragilità degli ecosistemi
 moderni di documentazione. Scopri la filosofia, l'assedio alla sicurezza e
 l'ingegneria dietro la Sentinella nella
-[**Zenzic Engineering Series**](https://dev.to/pythonwoods/series/38629) su Dev.to.
+[**Engineering Chronicles**](https://zenzic.dev/blog/tags/engineering-chronicles) sul blog ufficiale.
 
 ---
 

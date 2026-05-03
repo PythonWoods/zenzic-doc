@@ -358,7 +358,7 @@ just verify
 
 Zenzic was born from a technical journey through the fragility of modern documentation
 ecosystems. Discover the philosophy, the security siege, and the engineering behind the
-Sentinel in the [**Zenzic Engineering Series**](https://dev.to/pythonwoods/series/38629) on Dev.to.
+Sentinel in the [**Engineering Chronicles**](https://zenzic.dev/blog/tags/engineering-chronicles) on the official blog.
 
 ---
 

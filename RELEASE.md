@@ -183,6 +183,29 @@ zenzic-brain) — EN and IT mirrors in lockstep.
 
 ---
 
+### 11. Saga Sealed + Log Convention
+
+The narrative arc *Beyond the Siege* is sealed (Saga I–VI on
+`/blog/tags/engineering-chronicles`). The blog now follows a two-track
+convention:
+
+- **🛡️ Saga** — long-form narrative, philosophy, post-mortem.
+- **📜 Log** — terse patch-notes mirror of `RELEASE.md`, readable in
+  ~30 seconds.
+
+`📜 Log: v0.7.0 — Quartz Maturity` (`/blog/log-v070-quartz-maturity`)
+fills the missing intermediate ring between Saga V and the raw release
+notes.
+
+In parallel, **brand purity** was enforced: all probabilistic /
+AI-architecture content has been removed from the Zenzic blog. The blog
+ships only deterministic engineering content. The `Adversarial
+Stress-Testing Protocol` page in `developers/governance/` is the single
+exception — and frames AI explicitly as "punching bag", never as
+co-author.
+
+---
+
 ### 🇮🇹 Engineered with Precision
 
 zenzic-doc is the documentation portal for Zenzic, developed by **PythonWoods**,

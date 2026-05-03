@@ -98,8 +98,3 @@ engineering-culture:
   label: "Engineering Culture"
   permalink: /engineering-culture
   description: "🧠 Engineering philosophy, team practices, and development methodology."
-
-ai-governance:
-  label: "AI Governance"
-  permalink: /ai-governance
-  description: "🤖 Sovereign Memory Architecture, AI agent policies, and human-AI collaboration."
