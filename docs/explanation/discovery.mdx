@@ -225,3 +225,51 @@ The name references the concept of a safe harbor in admiralty law: a defined bou
 - File patterns are **pre-compiled** to `re.Pattern` at `LayeredExclusionManager` construction time using `fnmatch.translate()`.
 - VCS patterns with no negation rules use a **combined regex** fast path -- all positive rules are merged into a single compiled regex for O(1) matching per path.
 - The `LayeredExclusionManager` is constructed **once** per CLI invocation and passed by reference through the entire pipeline.
+
+---
+
+## Multi-Root Discovery (EPOCH 7a) {#multi-root}
+
+`docs_dir` is the canonical source root, but modern static-site generators routinely manage **content trees that live outside `docs/`**. The textbook case is the Docusaurus `blog/` directory: it is materialised as live URLs at build time, yet a pre-EPOCH-7a Zenzic scan would never see the files inside it. The Virtual Site Map ingested only files under `docs_root`, so broken links inside (or pointing to) blog posts slipped past `zenzic check all` and only surfaced when `docusaurus build` failed downstream. We call this failure mode **VSM Blindness**.
+
+Multi-Root Discovery cures the blindness by letting the active adapter declare additional content roots:
+
+```python
+# zenzic.core.adapters._base
+@dataclass(frozen=True, slots=True)
+class ContentRoot:
+    path: Path        # absolute, e.g. <repo>/blog
+    url_prefix: str   # e.g. 'blog' (or '' for root-served content)
+    label: str        # diagnostic, e.g. 'docusaurus-blog'
+```
+
+Adapters opt in by implementing the optional `get_extra_content_roots(repo_root) -> list[ContentRoot]` method. The Core discovers it via `hasattr()` (mirroring the pre-existing `get_locale_source_roots` convention) so adapters that have nothing to declare need no stub -- the addition is **non-breaking** for third-party adapters built against the v0.7.0 Protocol.
+
+When an adapter does return content roots, four pipeline stages cooperate to admit the files as first-class content:
+
+1. **Discovery** -- `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` walks each root with `walk_files` (same `os.walk` engine, same exclusion manager) and yields `(abs_path, logical_rel)` pairs where `logical_rel` carries the URL prefix as its first segment (e.g. `Path('blog/2026-04-12-foo.mdx')`).
+2. **VSM** -- `build_vsm` resolves every file's logical `rel` from `docs_root` *or* a matched extra root, then dispatches to the adapter's `get_route_info(rel)`. The prefix injection lets a single adapter call disambiguate without a second dispatch.
+3. **Validator** -- the link checker loads extra-root files into `md_contents`, extends `_allowed_roots` so cross-tree relative links resolve under the Shield, and feeds the prefixed `rel` into "Did you mean?" suggestions.
+4. **Scanner** -- `find_unused_assets` and `find_placeholders` iterate extra roots when collecting reference sets, so an asset cited only from a blog post is not reported as Z903 (Unused Asset).
+
+### Auto-discovery without `subprocess` {#auto-discovery}
+
+Adapter implementations honour the **Zero Subprocess** invariant. The Docusaurus adapter detects the blog plugin in two passes, both pure parsing:
+
+1. Static regex parse of `docusaurus.config.{ts,js,mjs,cjs}` for a `blog: { path, routeBasePath }` block (or a sentinel `blog: false` to opt out).
+2. Convention fallback: when the config does not pin the blog plugin and `<repo>/blog` exists on disk, assume the default plugin layout (`path = 'blog'`, `routeBasePath = 'blog'`).
+
+No Node.js process is ever spawned -- the config is read as **data**, not executed as code. Pillar 2 (Engine Sovereignty) is preserved.
+
+### Traceability invariant {#traceability}
+
+Every entry in the VSM, including those produced by an extra content root, carries a `Route.source` that resolves back to a real file on disk. The regression suite (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserts `(repo_root / route.source).is_file()` for every blog route, locking the contract that EPOCH 7b virtual routes (tags, pagination, authors) will inherit: a route with no physical origin would be a validator screaming `error` without ever saying `where`.
+
+### Engine support matrix {#engine-support}
+
+| Engine          | Implements `get_extra_content_roots` | Status                                                                |
+|-----------------|--------------------------------------|------------------------------------------------------------------------|
+| Docusaurus      | Yes                                  | Auto-discovers `blog/` from config or convention.                      |
+| MkDocs (Material) | No                                  | Opt-in deferred until `material/blog` plugin enters the v0.7 scope.   |
+| Zensical        | No                                   | Architecture is identical -- enabled when an out-of-tree plugin ships. |
+| Standalone      | No                                   | No plugins; `docs_root` is the entire content surface.                 |

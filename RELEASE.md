@@ -217,6 +217,32 @@ co-author.
 
 ---
 
+### 12. EPOCH 7a — Multi-Root Discovery (Foundation for Quartz Maturity)
+
+The documentation portal now ships the user-facing and developer-facing
+pages for the **Multi-Root Discovery** foundation that lifts the
+historical `docs_dir` boundary in the Zenzic VSM.
+
+User-facing track (`/docs/reference/engines/#docusaurus-blog`, EN+IT):
+celebrates the practical outcome — *"Zenzic now automatically detects the
+Docusaurus blog. No additional configuration is required."* — and
+documents the three detection rules (config block / convention fallback /
+`blog: false` opt-out) without leaking implementation details.
+
+Developer-facing track (`/docs/explanation/discovery#multi-root`, EN+IT):
+documents the architecture — `ContentRoot` dataclass, `hasattr()`-gated
+`get_extra_content_roots()` adapter hook, four-stage pipeline cooperation
+(Discovery → VSM → Validator → Scanner), the Zero Subprocess
+auto-discovery pass, the Reverse-Mapping invariant that locks the
+contract for EPOCH 7b virtual routes, and the engine support matrix.
+
+The dual-track separation is strict: no `ContentRoot`, `hasattr`, or
+`walk_files` reference appears in the User track; no celebratory
+language appears in the Developer track. Linguistic parity is enforced
+across EN and IT in both tracks (`Z907 I18N_PARITY` clean).
+
+---
+
 ### 🇮🇹 Engineered with Precision
 
 zenzic-doc is the documentation portal for Zenzic, developed by **PythonWoods**,
