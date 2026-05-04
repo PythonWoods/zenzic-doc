@@ -61,7 +61,7 @@ excluded_dirs = ["includes", "stylesheets", "overrides", "hooks"]
 | :--- | :--- | :--- | :--- |
 | `excluded_dirs` | `list[string]` | `["includes", "stylesheets", "overrides", "hooks"]` | Directory dentro `docs/` da escludere dai controlli orfani e snippet |
 
-Le voci dell'utente vengono **unite** ai Guardrail di Sistema (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I Guardrail di Sistema includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
+Le voci dell'utente vengono **unite** ai System Guardrails (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I System Guardrails includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
 
 ### Pattern di file esclusi {#excluded-file-patterns}
 
@@ -173,7 +173,7 @@ respect_vcs_ignore = true
 | :--- | :--- | :--- | :--- |
 | `respect_vcs_ignore` | `bool` | `false` | Quando `true`, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs ed esclude i file corrispondenti da tutti i controlli |
 
-Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la motivazione. Quando attivato, le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i Guardrail di Sistema restano sempre applicati.
+Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la motivazione. Quando attivato, le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
 
 ---
 
@@ -190,7 +190,7 @@ included_file_patterns = ["api.generated.md"]
 | `included_dirs` | `list[string]` | `[]` | Directory dentro `docs/` forzatamente incluse anche se escluse da pattern VCS o `excluded_dirs` |
 | `included_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) forzatamente inclusi anche se esclusi da pattern VCS o `excluded_file_patterns` |
 
-Le inclusioni forzate non possono mai sovrastare i Guardrail di Sistema (`.git`, `.venv`, ecc.). La regola e semplice: i Guardrail di Sistema sono immutabili.
+Le inclusioni forzate non possono mai sovrastare i System Guardrails (`.git`, `.venv`, ecc.). La regola e semplice: i System Guardrails sono immutabili.
 
 ---
 
@@ -370,7 +370,7 @@ I flag CLI sovrascrivono la configurazione del file per la singola esecuzione:
 | `--exit-zero` | `exit_zero = true` | Esci sempre con codice 0 |
 | `--fail-under N` | `fail_under = N` | Soglia minima di punteggio |
 | `--exclude-dir DIR` | `excluded_dirs` | Esclude una directory aggiuntiva (ripetibile) |
-| `--include-dir DIR` | `included_dirs` | Forza l'inclusione di una directory (ripetibile, non sovrasta i Guardrail di Sistema) |
+| `--include-dir DIR` | `included_dirs` | Forza l'inclusione di una directory (ripetibile, non sovrasta i System Guardrails) |
 | `--engine ENGINE` | `build_context.engine` | Sovrascrive l'adapter del motore di build |
 | `--show-info` | — | Mostra i risultati a livello info (ad esempio link circolari) |
 | `--format json` | — | Output in formato JSON |

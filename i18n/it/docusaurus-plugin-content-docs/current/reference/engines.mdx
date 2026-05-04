@@ -359,6 +359,23 @@ Questo rispecchia esattamente il comportamento di Docusaurus, prevenendo falsi p
 Le rotte versionate sono trattate come **Ghost Routes**: sono sempre considerate raggiungibili perché Docusaurus genera automaticamente la navigazione per gli alberi di documentazione versionati.
 :::
 
+### Auto-discovery del blog {#docusaurus-blog}
+
+I post del blog Docusaurus vivono **fuori** da `docs/`, ma restano URL reali che la build serve agli utenti. Zenzic li scopre automaticamente — nessuna configurazione aggiuntiva richiesta:
+
+- Se `docusaurus.config.ts` dichiara un blocco `blog: { path, routeBasePath }`, Zenzic usa quei valori.
+- Altrimenti, se `<repo>/blog/` esiste su disco, Zenzic assume il layout di default del plugin (`path: 'blog'`, `routeBasePath: 'blog'`).
+- Se nessuna delle due condizioni è vera, il plugin blog è considerato assente e nulla di extra viene scansionato.
+
+Una volta scoperto, l'albero del blog è trattato da `zenzic check all` come contenuto di prima classe:
+
+- I link rotti **all'interno** di un post del blog vengono catturati (prima il file era silenziosamente ignorato).
+- I link rotti **da `docs/` verso un post** (o viceversa) vengono catturati.
+- Gli asset referenziati **solo** da un post non producono più Z903 (Asset Inutilizzato).
+- I prefissi data nei nomi file (`YYYY-MM-DD-slug.md`) e gli override `slug:` nel frontmatter sono onorati esattamente come fa `docusaurus build`.
+
+Per disattivare, imposta `blog: false` in `docusaurus.config.ts`. Per usare un layout custom, dichiaralo esplicitamente nello stesso file — Zenzic lo rileverà.
+
 ### Layout i18n
 
 Docusaurus memorizza le traduzioni in una struttura di directory profonda:

@@ -184,7 +184,7 @@ override di ambito per singola directory **per invocazione** senza toccare `zenz
 | `--exclude-dir DIR` | Salta questa directory durante la scansione (ripetibile) |
 | `--include-dir DIR` | Forza l'inclusione di una directory anche se esclusa dalla config (ripetibile) |
 
-`--include-dir` non può sovrascrivere le **guardrail di sistema** (esclusioni di Livello 1a/1b
+`--include-dir` non può sovrascrivere i **System Guardrails** (esclusioni di Livello 1a/1b
 come `node_modules/` o file di metadati degli adapter).
 
 ```bash
@@ -306,7 +306,7 @@ altri codici di uscita. Non viene mai soppresso da `--exit-zero`. Consultare
 
 Ogni codice di uscita ha una firma visiva distinta nel Sentinel Report:
 
-**Uscita 0 — Sigillo della Sentinella**
+**Uscita 0 — Sentinel Seal**
 
 <SentinelOutput variant="clean" compact />
 
@@ -643,7 +643,7 @@ Gli atti sono raggruppati in quattro sezioni tematiche:
 
 ### Etichette di esito
 
-Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Sigillo della Sentinella riporta
+Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Sentinel Seal riporta
 se l'aspettativa è stata soddisfatta:
 
 | Etichetta | Significato |

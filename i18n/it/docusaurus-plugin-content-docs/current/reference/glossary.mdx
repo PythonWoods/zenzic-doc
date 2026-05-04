@@ -30,8 +30,8 @@ Il sistema a quattro livelli che determina quali file e directory vengono inclus
 
 | Livello | Nome | Descrizione |
 | :---: | :--- | :--- |
-| L1 | Guardrail di Sistema | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
-| L2 | Inclusioni Forzate + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
+| L1 | System Guardrails | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
+| L2 | Forced Inclusions + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
 | L3 | Configurazione | `excluded_dirs`, `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
 | L4 | CLI | `--exclude-dir`, `--include-dir` per override temporanei |
 
@@ -45,7 +45,7 @@ Una pagina che non esiste fisicamente su disco ma che appare nella navigazione d
 
 ---
 
-### Guardrail di Sistema (L1) {#system-guardrails}
+### System Guardrails (L1) {#system-guardrails}
 
 L'insieme immutabile di directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Includono `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`. Le voci dell'utente in `excluded_dirs` si aggiungono ai Guardrail, non li sostituiscono. Nessuna inclusione forzata o flag CLI puo sovrascriverli.
 
@@ -81,9 +81,9 @@ L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti,
 
 ---
 
-### Porto Sicuro {#safe-harbor}
+### Safe Harbor {#safe-harbor}
 
-La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Porto Sicuro si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
+La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Safe Harbor si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
 
 ---
 

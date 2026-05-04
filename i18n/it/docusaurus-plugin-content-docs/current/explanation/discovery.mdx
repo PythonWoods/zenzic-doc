@@ -64,11 +64,11 @@ flowchart TD
     style INCLUDED fill:#22c55e,color:#fff
 ```
 
-### L1 — Guardrail di Sistema {#level-1-system}
+### L1 — System Guardrails {#level-1-system}
 
 **Priorità assoluta. Immutabili. Non negoziabili.**
 
-I Guardrail di Sistema sono directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Non possono essere rimossi, ne sovrascritti da inclusioni forzate, ne superati da flag CLI.
+I System Guardrails sono directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Non possono essere rimossi, ne sovrascritti da inclusioni forzate, ne superati da flag CLI.
 
 | Directory | Motivazione |
 | :--- | :--- |
@@ -82,11 +82,11 @@ I Guardrail di Sistema sono directory che Zenzic ignora **sempre**, indipendente
 
 Queste directory vengono unite a `excluded_dirs` in modo additivo durante `model_post_init` del modello di configurazione. La logica è: le voci dell'utente si **aggiungono** ai Guardrail, non li **sostituiscono**.
 
-### L2 — Inclusioni Forzate + VCS {#level-2-forced-and-vcs}
+### L2 — Forced Inclusions + VCS {#level-2-forced-and-vcs}
 
 Il livello 2 gestisce due forze opposte:
 
-**Inclusioni forzate** (`included_dirs`, `included_file_patterns`) — sovrascrivono le esclusioni VCS e le esclusioni di configurazione, ma **mai** i Guardrail di Sistema. Questo permette di forzare la scansione di directory o file che sarebbero altrimenti ignorati dal `.gitignore`.
+**Inclusioni forzate** (`included_dirs`, `included_file_patterns`) — sovrascrivono le esclusioni VCS e le esclusioni di configurazione, ma **mai** i System Guardrails. Questo permette di forzare la scansione di directory o file che sarebbero altrimenti ignorati dal `.gitignore`.
 
 **VCS ignore** (`respect_vcs_ignore = true`) — quando attivato, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs. I file corrispondenti vengono esclusi da tutti i controlli. Disabilitato per default (principio Zero-Config).
 
@@ -115,7 +115,7 @@ Queste esclusioni vengono valutate dopo le inclusioni forzate e il VCS. Se un fi
 Flag a riga di comando per override temporanei:
 
 - `--exclude-dir DIR` — esclude una directory aggiuntiva (ripetibile)
-- `--include-dir DIR` — forza l'inclusione di una directory (ripetibile, non sovrasta i Guardrail di Sistema)
+- `--include-dir DIR` — forza l'inclusione di una directory (ripetibile, non sovrasta i System Guardrails)
 
 I flag CLI vengono valutati con la stessa logica degli altri livelli: `--include-dir` vince su `--exclude-dir` per la stessa directory, ma nessuno dei due puo sovrastare L1.
 
@@ -125,7 +125,7 @@ I flag CLI vengono valutati con la stessa logica degli altri livelli: `--include
 
 Quando `LayeredExclusionManager.should_exclude_dir` viene chiamato per una directory, il flusso e il seguente:
 
-1. **L1 — Guardrail di Sistema:** la directory e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi (immutabile)
+1. **L1 — System Guardrails:** la directory e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi (immutabile)
 2. **L2 — Inclusioni forzate (config):** la directory e in `included_dirs`? Se si, includi
 3. **L4 — CLI `--exclude-dir`:** la directory e stata esclusa via CLI? Se si, escludi
 4. **L4 — CLI `--include-dir`:** la directory e stata inclusa via CLI? Se si, includi
@@ -137,7 +137,7 @@ Quando `LayeredExclusionManager.should_exclude_dir` viene chiamato per una direc
 
 Il flusso per `should_exclude_file` e analogo ma piu granulare:
 
-1. **L1 — Guardrail di Sistema:** un componente del percorso del file e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi
+1. **L1 — System Guardrails:** un componente del percorso del file e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi
 2. **L2 — `included_file_patterns`:** il nome del file corrisponde a un pattern di inclusione forzata? Se si, includi
 3. **L2 — `included_dirs`:** un componente del percorso e in `included_dirs`? Se si, includi
 4. **L4 — CLI `--exclude-dir`:** un componente del percorso e nelle esclusioni CLI? Se si, escludi
@@ -171,12 +171,12 @@ I percorsi contenenti `..` vengono sempre trattati come non corrispondenti (prot
 
 ---
 
-## Filosofia Porto Sicuro {#safe-harbor}
+## Safe Harbor Philosophy {#safe-harbor}
 
-Il sistema di esclusione e progettato seguendo la filosofia del Porto Sicuro:
+Il sistema di esclusione e progettato seguendo la Safe Harbor Philosophy:
 
 - **Nessuna sorpresa:** senza configurazione, Zenzic funziona con valori predefiniti ragionevoli
-- **Nessun file critico esposto:** i Guardrail di Sistema proteggono directory che non contengono mai documentazione utile (`.git`, `.venv`, ecc.)
+- **Nessun file critico esposto:** i System Guardrails proteggono directory che non contengono mai documentazione utile (`.git`, `.venv`, ecc.)
 - **Inclusione esplicita:** l'utente deve dichiarare esplicitamente cosa vuole includere di non standard
 - **Trasparenza:** il flusso di esclusione e deterministico e documentato — nessuna magia nascosta
 
@@ -191,3 +191,51 @@ Per i file non-Markdown (asset, immagini, configurazione), Zenzic fornisce `walk
 A differenza di `Path.rglob("*")`, `walk_files` pota gli alberi esclusi (ad esempio `.nox/`, `node_modules/`) senza mai entrare in essi. Questo e cruciale per le performance in repository con migliaia di dipendenze.
 
 Il pruning viene pilotato sia dal `LayeredExclusionManager` (via `should_exclude_dir`) sia da un set aggiuntivo di directory hard-prune (usato da `find_unused_assets` per `excluded_asset_dirs`).
+
+---
+
+## Multi-Root Discovery (EPOCH 7a) {#multi-root}
+
+`docs_dir` è la radice canonica dei sorgenti, ma gli static-site generator moderni gestiscono regolarmente **alberi di contenuto che vivono fuori da `docs/`**. Il caso di scuola è la directory `blog/` di Docusaurus: viene materializzata in URL reali dalla build, ma una scansione Zenzic pre-EPOCH-7a non avrebbe mai visto i file al suo interno. Il Virtual Site Map ingeriva solo i file sotto `docs_root`, perciò i link rotti dentro (o verso) i post del blog sfuggivano a `zenzic check all` e affioravano solo a valle, quando `docusaurus build` falliva. Chiamiamo questa modalità di fallimento **VSM Blindness**.
+
+Multi-Root Discovery cura la cecità permettendo all'adapter attivo di dichiarare ulteriori radici di contenuto in modo deterministico — senza `rglob`, senza `subprocess`, senza euristiche ambientali:
+
+```python
+# zenzic.core.adapters._base
+@dataclass(frozen=True, slots=True)
+class ContentRoot:
+    path: Path        # assoluto, es. <repo>/blog
+    url_prefix: str   # es. 'blog' (o '' per contenuti serviti alla radice)
+    label: str        # diagnostico, es. 'docusaurus-blog'
+```
+
+Gli adapter aderiscono implementando il metodo opzionale `get_extra_content_roots(repo_root) -> list[ContentRoot]`. Il Core lo individua via `hasattr()` (rispecchiando la convenzione preesistente di `get_locale_source_roots`), così gli adapter che non hanno nulla da dichiarare non hanno bisogno di stub — l'aggiunta è **non-breaking** per gli adapter di terze parti costruiti contro il Protocollo v0.7.0.
+
+Quando un adapter restituisce content root, quattro stadi della pipeline cooperano per ammettere i file come contenuto di prima classe:
+
+1. **Discovery** — `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` percorre ogni radice con `walk_files` (stesso motore `os.walk`, stesso exclusion manager) e produce coppie `(abs_path, logical_rel)` dove `logical_rel` porta il prefisso URL come primo segmento (es. `Path('blog/2026-04-12-foo.mdx')`). L'uso di `os.walk` invece di `Path.rglob()` non è una preferenza stilistica: `rglob` non offre la **potatura in-place delle sottodirectory escluse** (il walker entrerebbe in `node_modules/`, `.venv/` e `.git/` per poi scartare i risultati), e l'ordine di yield dipende dall'implementazione del filesystem. `os.walk` con potatura `dirs[:]` garantisce determinismo bit-per-bit indipendentemente dal filesystem sottostante — invariante necessario perché il VSM resti riproducibile.
+2. **VSM** — `build_vsm` risolve il `rel` logico di ogni file da `docs_root` *o* da una radice extra abbinata, poi dispatcha al `get_route_info(rel)` dell'adapter. L'iniezione del prefisso permette a una sola chiamata dell'adapter di disambiguare senza un secondo dispatch.
+3. **Validator** — il link checker carica i file delle radici extra in `md_contents`, estende `_allowed_roots` così i link relativi cross-tree risolvono sotto lo Shield, e usa il `rel` con prefisso nei suggerimenti "Did you mean?".
+4. **Scanner** — `find_unused_assets` e `find_placeholders` iterano le radici extra quando raccolgono i set di riferimento, così un asset citato solo da un post del blog non viene segnalato come Z903 (Asset Inutilizzato).
+
+### Auto-discovery senza `subprocess` {#auto-discovery}
+
+Le implementazioni dell'adapter onorano l'invariante **Zero Subprocess**. L'adapter Docusaurus rileva il plugin blog in due passaggi, entrambi puro parsing:
+
+1. Parse statico via regex di `docusaurus.config.{ts,js,mjs,cjs}` per un blocco `blog: { path, routeBasePath }` (o un sentinella `blog: false` per disattivare).
+2. Convenzione di fallback: quando il config non fissa il plugin blog e `<repo>/blog` esiste su disco, si assume il layout di default (`path = 'blog'`, `routeBasePath = 'blog'`).
+
+Nessun processo Node.js viene mai avviato — il config viene letto come **dato**, non eseguito come codice. Pillar 2 (Engine Sovereignty) preservato.
+
+### Invariante di tracciabilità {#traceability}
+
+Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. La suite di regression (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserisce `(repo_root / route.source).is_file()` per ogni rotta del blog, fissando il contratto che le rotte virtuali della EPOCH 7b (tag, paginazione, autori) erediteranno: una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
+
+### Matrice di supporto motori {#engine-support}
+
+| Motore           | Implementa `get_extra_content_roots` | Stato                                                                       |
+|------------------|--------------------------------------|------------------------------------------------------------------------------|
+| Docusaurus       | Sì                                   | Auto-rileva `blog/` da config o convenzione.                                 |
+| MkDocs (Material) | No                                  | Adesione rinviata fino all'ingresso del plugin `material/blog` nello scope v0.7. |
+| Zensical         | No                                   | Architettura identica — abilitato quando arriva un plugin out-of-tree.       |
+| Standalone       | No                                   | Nessun plugin; `docs_root` è l'intera superficie di contenuto.               |
