@@ -17,6 +17,23 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 #### Aggiunto
 
+- **EPOCH 7b — Sovranità Zero-Config (`absolute_path_allowlist` ritirato)**:
+  Dopo l'epurazione EPOCH 7b nel Core, il blocco TOML
+  `[link_validation].absolute_path_allowlist` è **rimosso** da
+  `zenzic-doc/zenzic.toml`. I prefissi URL multi-instance di Docusaurus
+  (`/docs/`, `/developers/`, ogni ulteriore istanza content-docs) vengono ora
+  auto-rilevati da `DocusaurusAdapter.get_absolute_url_prefixes()` tramite
+  parsing statico di `docusaurus.config.ts` più un'euristica filesystem su
+  `i18n/<locale>/docusaurus-plugin-content-docs-<id>/`. Nessuna duplicazione
+  TOML del routing Docusaurus richiesta. **Supersessione documentale** —
+  ADR-0011 ("Cross-Instance Allowlist"),
+  `how-to/manage-cross-site-links.mdx` e la sezione `[link_validation]` di
+  `reference/configuration.mdx` descrivono una superficie di configurazione
+  obsoleta e sono in attesa di refactor in uno sprint documentale successivo.
+  La voce Z108 STALE_ALLOWLIST_ENTRY in
+  `developers/governance/technical-debt.mdx` è ora chiusa-per-rimozione: non
+  esiste più alcuna allowlist che possa diventare stantia.
+
 - **EPOCH 7a — Documentazione Multi-Root Discovery (dual-track)**: Due nuove
   superfici documentali consegnano la narrativa user-facing e developer-facing
   della Multi-Root Discovery del Core, che rimuove la storica frontiera di

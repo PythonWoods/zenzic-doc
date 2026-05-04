@@ -176,6 +176,14 @@ External bookmarks, blog posts, and search index entries must be updated.
 - **\`/developers/governance/technical-debt.mdx\`** (EN+IT) — first entry
   records **Z108 STALE_ALLOWLIST_ENTRY** as deferred to v0.8.0 with rationale.
 
+> **EPOCH 7b supersession (v0.7.1):** the `[link_validation].absolute_path_allowlist`
+> mechanism above is **retired**. DocusaurusAdapter now auto-detects
+> multi-instance plugin URL prefixes Zero-Config — the `[link_validation]` block
+> has been deleted from `zenzic-doc/zenzic.toml`, the Z108 entry is closed by
+> removal (no allowlist left to go stale), and ADR-0011 / the cross-site-links
+> how-to / the `[link_validation]` configuration reference are pending refactor
+> in a follow-up documentation sprint.
+
 The Quartz Promise (one Sentinel, two instances) is now visible from the
 README of every Zenzic repository (zenzic, zenzic-doc, zenzic-action)
 
