@@ -7,7 +7,7 @@ fail_under = 100
 strict     = true
 
 # --- PERIMETER GUARD (CEO 066 — The Ghost Purge) ---
-# Editorial drafts (QXDA / Dev.to / Medium copy) live in drafts/ and Draft/
+# Editorial drafts live in drafts/ and Draft/
 # at repo root. They must never be walked by the Sentinel during `just verify`,
 # even if the docs_dir scope expands in the future.
 excluded_dirs = ["drafts", "Draft", "node_modules"]

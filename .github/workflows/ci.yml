@@ -54,11 +54,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Determine Zenzic Core Branch (Parity or Fallback)
+        id: resolve-branch
+        run: |
+          TARGET_BRANCH="${{ github.base_ref || github.ref_name }}"
+          echo "Target branch is: $TARGET_BRANCH"
+
+          if git ls-remote --exit-code --heads https://github.com/PythonWoods/zenzic.git "$TARGET_BRANCH" > /dev/null 2>&1; then
+            echo "Branch $TARGET_BRANCH exists in core. Using it."
+            echo "CORE_REF=$TARGET_BRANCH" >> $GITHUB_ENV
+          else
+            echo "Branch $TARGET_BRANCH not found in core. Falling back to main."
+            echo "CORE_REF=main" >> $GITHUB_ENV
+          fi
+
       - name: Checkout local zenzic (unreleased)
         uses: actions/checkout@v6
         with:
           repository: PythonWoods/zenzic
-          ref: release/v0.7.0
+          ref: ${{ env.CORE_REF }}
           path: _zenzic_core
 
       - name: Install just

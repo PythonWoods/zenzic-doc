@@ -6,8 +6,8 @@ message: "If you use or reference this documentation corpus, please cite it as b
 type: software
 authors:
   - name: "PythonWoods"
-    address: "https://pythonwoods.dev"
     email: "dev@pythonwoods.dev"
+    website: "https://pythonwoods.dev"
 title: "Zenzic Documentation Portal: Engine-Agnostic Safe Harbor — Diátaxis Corpus"
 abstract: >-
   The official documentation portal for Zenzic, the high-performance engine-agnostic
@@ -16,7 +16,7 @@ abstract: >-
   English and Italian. Inaugurates the Obsidian Journal engineering blog and the
   formal Zenzic Brand System.
 version: 0.7.0
-date-released: 2026-04-22
+date-released: 2026-05-XX
 url: "https://zenzic.dev"
 repository-code: "https://github.com/PythonWoods/zenzic-doc"
 license: Apache-2.0

@@ -13,6 +13,7 @@
 .cache-loader
 *.tsbuildinfo
 .eslintcache
+_zenzic_core/
 __pycache__/
 
 # Misc
@@ -28,7 +29,7 @@ __pycache__/
 .zenzic.dev.toml
 *.log
 
-# Drafts (dev.to articles, internal notes)
+# Drafts (editorial, internal notes)
 /drafts
 
 npm-debug.log*
@@ -37,3 +38,14 @@ yarn-error.log*
 
 # EPOCH 4 — draft vault (git-ignored, local reference only)
 .draft/
+
+# --- Ephemeral Artifacts (Machine Silence) ---
+zenzic-results.sarif
+coverage.json
+coverage.xml
+.coverage
+.coverage.*
+mutmut*
+.mutmut-cache/
+.pytest_cache/
+.nox/

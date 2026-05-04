@@ -62,7 +62,7 @@ preflight:
 
 # Explicit Zenzic audit gate (uses local unreleased core)
 check:
-    uv run --project {{zenzic_project}} zenzic check all --engine docusaurus --strict
+    uv run --project {{zenzic_project}} zenzic check all --strict
 
 # Static type check
 typecheck:
