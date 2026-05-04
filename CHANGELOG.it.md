@@ -17,8 +17,8 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 #### Aggiunto
 
-- **EPOCH 7b — Sovranità Zero-Config (`absolute_path_allowlist` ritirato)**:
-  Dopo l'epurazione EPOCH 7b nel Core, il blocco TOML
+- **EPOCH 7a.1 — Sovranità Zero-Config (`absolute_path_allowlist` ritirato)**:
+  Dopo l'epurazione EPOCH 7a.1 nel Core, il blocco TOML
   `[link_validation].absolute_path_allowlist` è **rimosso** da
   `zenzic-doc/zenzic.toml`. I prefissi URL multi-instance di Docusaurus
   (`/docs/`, `/developers/`, ogni ulteriore istanza content-docs) vengono ora

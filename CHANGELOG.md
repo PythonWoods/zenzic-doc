@@ -17,8 +17,8 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 #### Added
 
-- **EPOCH 7b — Zero-Config Sovereignty (`absolute_path_allowlist` retired)**:
-  Following the Core's EPOCH 7b purge, the `[link_validation].absolute_path_allowlist`
+- **EPOCH 7a.1 — Zero-Config Sovereignty (`absolute_path_allowlist` retired)**:
+  Following the Core's EPOCH 7a.1 purge, the `[link_validation].absolute_path_allowlist`
   TOML block is **gone** from `zenzic-doc/zenzic.toml`. Multi-instance Docusaurus
   plugin URL prefixes (`/docs/`, `/developers/`, every additional content-docs
   instance) are now auto-detected by `DocusaurusAdapter.get_absolute_url_prefixes()`
