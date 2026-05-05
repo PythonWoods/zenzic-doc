@@ -1,0 +1,134 @@
+---
+slug: log-v070-quartz-maturity
+title: "Log: v0.7.0 — Quartz Maturity"
+sidebar_label: "📜 Log: v0.7.0"
+authors: [pythonwoods]
+tags: [release, milestone, engineering-chronicles]
+date: 2026-05-05T10:00:00
+description: >-
+  Patch-notes leggibili in 30 secondi: 4-Gates Standard, Z907 I18N_PARITY,
+  Multi-Root Discovery, Zero-Config Sovereignty, Virtual Routes, breaking changes, migration path.
+image: /img/social-card.png
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+> *Log convention — the terse mirror of `RELEASE.md`. For the narrative
+> deep-dive, see [Saga V — Beyond the
+> Siege](/blog/beyond-the-siege-v070-quartz).*
+
+**TL;DR.** Zenzic v0.7.0 "Quartz Maturity" closes the post-Obsidian arc with
+seven epochs: the **4-Gates Standard** (EPOCH 4), the language-agnostic
+**Z907 I18N_PARITY** check (EPOCH 5), **Cross-Instance Sovereignty** now
+Zero-Config (EPOCH 6), **Multi-Root Discovery** (EPOCH 7a), **Zero-Config
+Sovereignty** with `[link_validation]` removed (EPOCH 7a.1), and **Virtual
+Routes** with the `zenzic inspect routes` JSON API (EPOCH 7b).
+1,342+ tests. Some breaking changes; clean migration path.
+
+{/* truncate */}
+
+## Breaking changes
+
+| From (≤ v0.6.x) | To (v0.7.0) | Migration |
+|-----------------|-------------|-----------|
+| `engine = "vanilla"` | `engine = "standalone"` | rename in `zenzic.toml` |
+| MkDocs plugin (in-tree) | external adapter | drop dependency, use Sentinel CLI |
+| `just preflight` | `just verify` | recipe rename — same 4-Gates content |
+| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.7.0` |
+| `[link_validation]` TOML schema | *(removed)* | delete the block — URL prefixes auto-detected |
+
+No silent deprecation shims. Industry-grade only.
+
+## EPOCH 4 — The Safe Port (4-Gates Standard)
+
+A single command runs every quality gate locally:
+
+```bash
+just verify
+```
+
+Sequence: `pre-commit` → `pytest` (with coverage) → `zenzic check all
+--strict` → exit-code parity self-test. The same four gates run in CI; what
+passes locally passes in the cloud.
+
+## EPOCH 5 — Z907 I18N_PARITY
+
+Language-agnostic translation parity check. Configure in `zenzic.toml`:
+
+```toml
+[i18n]
+enabled = true
+default_locale = "en"
+locales = ["en", "it"]
+parity_strict = true
+```
+
+When `parity_strict = true`, every page in `default_locale` must have a
+mirror in every other locale. Missing translations surface as `Z907
+I18N_PARITY` findings.
+
+## EPOCH 6 — Cross-Instance Sovereignty (Zero-Config)
+
+Multi-instance Docusaurus setups (`docs/`, `developers/`, every additional
+`@docusaurus/plugin-content-docs` instance) are now fully supported without
+manual TOML configuration. `DocusaurusAdapter.get_absolute_url_prefixes(repo_root)`
+discovers every plugin's `routeBasePath` via static parsing of
+`docusaurus.config.{ts,js,mjs,cjs}` — zero subprocess, zero allowlist, zero
+duplication.
+
+:::note Historical note
+An earlier draft of EPOCH 6 shipped a manual `[link_validation].absolute_path_allowlist`
+field. That approach was abandoned. The Zero-Config implementation superseded it
+entirely in EPOCH 7a.1.
+:::
+
+## EPOCH 7a — Multi-Root Discovery
+
+The VSM is no longer bounded by `docs_dir`. The Docusaurus adapter auto-detects
+the `blog/` plugin via two pure-parsing passes (static regex over config, then
+convention fallback). Blog posts are first-class content: broken links inside
+`blog/` and cross-tree links from `docs/` to `blog/` are caught by
+`zenzic check all --strict`. A Reverse-Mapping invariant test asserts every
+blog `Route.source` traces back to a real file on disk.
+
+## EPOCH 7a.1 — Zero-Config Sovereignty
+
+The `[link_validation]` TOML schema is **removed**. `LinkValidationConfig` and
+`absolute_path_allowlist` are gone from the codebase. Configs that still declare
+`[link_validation]` raise a TOML validation error. **Migration:** delete the
+block — `DocusaurusAdapter` discovers plugin URL prefixes automatically.
+
+## EPOCH 7b — Virtual Routes & `zenzic inspect routes`
+
+Engine-generated pages — tag indexes, paginated blog lists, author profiles —
+are now first-class VSM citizens with the Reverse-Mapping Invariant enforced at
+construction time. Three new finding codes:
+
+| Code | Level | Trigger |
+|------|-------|---------|
+| **Z111 VIRTUAL_ROUTE_BROKEN** | Error | docs link targets a tag URL no blog post activates |
+| **Z113 AUTHOR_KEY_COLLISION** | Error | duplicate author keys in `authors.yml` |
+| **Z114 LARGE_PAGINATION_SET** | Info | pagination set exceeds 200 pages |
+
+New CLI command:
+
+```bash
+zenzic inspect routes [--kind physical|virtual|all] [--json]
+```
+
+Exports the complete site map as deterministic JSON with per-route `url`, `kind`,
+`source_files` (repo-relative POSIX), and `digest`. When `--json` is active,
+`stdout` is exclusively valid JSON — no ANSI codes, no banners.
+
+## Migration path
+
+The full migration matrix lives in
+[`RELEASE.md`](https://github.com/PythonWoods/zenzic/blob/main/RELEASE.md#breaking-changes)
+under "Breaking changes". One pass through the table is usually enough.
+
+## Saga deep-dive
+
+For the philosophy, the post-mortem of the AI-driven siege, and the
+engineering choices behind Quartz Maturity, see [**Saga V — Beyond the
+Siege**](/blog/beyond-the-siege-v070-quartz).
