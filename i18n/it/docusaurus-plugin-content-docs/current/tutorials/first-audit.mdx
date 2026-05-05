@@ -27,6 +27,9 @@ uvx zenzic check all
 Esegui questo comando dalla directory che contiene il tuo `zenzic.toml` (o dalla root del repository).
 Zenzic individua automaticamente la configurazione e attiva l'engine corretto — incluso
 il controllo orfani (Z402) quando è presente un contratto di navigazione.
+Se una directory `blog/` esiste su disco, o `docusaurus.config.ts` dichiara un blocco del
+plugin blog, `zenzic check all` include i post del blog nel perimetro di scansione
+automaticamente. Nessuna impostazione aggiuntiva. Nessun `blog_dir` da configurare.
 Questo è il workflow consigliato per la CI e per provare Zenzic su repository sconosciuti.
 
 ---
@@ -134,6 +137,23 @@ Un'esecuzione pulita si presenta così — il **Sentinel Seal**:
 
 Non è solo un segno di spunta verde in CI. È una **prova matematica** che ogni link si risolve,
 ogni pagina è raggiungibile e nessuna credenziale è esposta. `100/100` è l'unico numero che conta.
+
+:::note[Rottura Deliberata — La Prova della Tracciabilità]
+Inserisci un link rotto in qualsiasi file:
+
+```markdown title="docs/intro.mdx"
+[Vedi la guida](./pagina-inesistente.mdx)
+```
+
+Esegui `zenzic check all`. Il finding è esatto:
+
+```
+docs/intro.mdx:3  Z101  Internal link resolves to no page in the VSM  → ./pagina-inesistente.mdx
+```
+
+File. Riga. Codice. Nessun finding senza un'origine fisica.
+Questa è tracciabilità deterministica — la stessa garanzia in CI come in locale.
+:::
 
 > **Pronto ad arrivarci?** Esegui `uvx zenzic score` sul tuo repository — adesso, senza installare nulla.
 

@@ -35,6 +35,9 @@ uvx zenzic check all
 Run this from the directory that contains your `zenzic.toml` (or from the repo root).
 Zenzic auto-discovers the configuration and activates the correct engine — including
 orphan detection (Z402) when a nav contract is present.
+If a `blog/` directory exists on disk, or `docusaurus.config.ts` declares a blog plugin
+block, `zenzic check all` includes blog posts in the scan scope automatically. No extra
+setting required. No `blog_dir` to configure.
 This is the recommended workflow for CI and for trying Zenzic on an unfamiliar repo.
 
 ---
@@ -141,6 +144,23 @@ A clean run looks like this — the **Sentinel Seal**:
 
 This is not a green CI tick. It is a **mathematical proof** that every link resolves,
 every page is reachable, and no credential is exposed. `100/100` is the only number that counts.
+
+:::note[Deliberate Failure — The Traceability Proof]
+Insert a broken link in any file:
+
+```markdown title="docs/intro.mdx"
+[See the guide](./nonexistent-page.mdx)
+```
+
+Run `zenzic check all`. The finding is exact:
+
+```
+docs/intro.mdx:3  Z101  Internal link resolves to no page in the VSM  → ./nonexistent-page.mdx
+```
+
+File path. Line number. Finding code. No finding without a physical origin.
+This is deterministic traceability — the same guarantee in CI as in local development.
+:::
 
 > **Ready to get there?** Run `uvx zenzic score` on your own repo — right now, without installing anything.
 
