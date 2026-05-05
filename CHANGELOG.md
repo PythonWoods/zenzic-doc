@@ -17,7 +17,82 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 #### Added
 
-- **EPOCH 7a.1 — Zero-Config Sovereignty (`absolute_path_allowlist` retired)**:
+- **Editorial Sprint A — Zero-Config Sovereignty**: Tutorial `docs/tutorials/first-audit.mdx`
+  (EN+IT) updated to document blog auto-discovery without manual configuration.
+  `uvx zenzic check all` now covers blog posts in scope by default; the tutorial
+  demonstrates this explicitly with a blog `ContentRoot` note: `blog/` detected via
+  `docusaurus.config.ts` or filesystem convention — no `blog_dir` to configure.
+
+- **Editorial Sprint B — Aerospace Manifesto**: Constraint language replaces marketing
+  adjectives across all four ecosystem READMEs (`zenzic`, `zenzic-doc`, `zenzic-action`,
+  `structum`). Taglines rewritten as deterministic invariants:
+  - `zenzic` — "Deterministic audit of documentation structures with bidirectional
+    traceability. Every finding maps to a source file and a line number. Every URL has
+    a physical origin. Zero global state."
+  - `zenzic-doc` — Compliance evidence statement: `zenzic check all --strict` exits 0
+    with zero findings on every push.
+  - `zenzic-action` — Exit code contract paragraph (exits 2 and 3 are never
+    suppressible at the enforcement boundary).
+  - `structum` — "Reads, never executes. AST-only. No `eval()`, no dynamic import,
+    no subprocess."
+  Engineering Ledger preamble re-framed on NASA Power of 10 Rules 1/4 (deterministic
+  control flow, zero global state) and Rule 2 (subprocess ban enforced by ruff).
+
+- **Editorial Sprint C — Show, Don't Tell**: Surgical eradication of non-quantifiable
+  adjectives across `docs/how-to/`, `docs/explanation/`, and `docs/tutorials/` (EN+IT).
+  Six EN replacements + six IT mirrors in `docs/explanation/` and `docs/how-to/`;
+  four tutorial replacements (EN+IT) in `docs/tutorials/`:
+  - `why-zenzic.mdx` — marketing bullet labels replaced with factual tool invocations
+    (exact `bash ≥5`, `python3 ≥3.11` requirements, `astral-sh/setup-uv` invocation).
+  - `safe-harbor.mdx` — "trivially testable" replaced with deterministic behaviour
+    contract (identical inputs, identical outputs, no shared state).
+  - `install.mdx` — section title "Lean & Agnostic by Design" → "Static analysis only
+    — no build runtime required"; "making it ideal for" prose removed.
+  - `configure-ci-cd.mdx` — "powerful but irreversible" → "irreversible".
+  - `migrate-engines.mdx` — "custodian" metaphor replaced with contract language;
+    tip block rewritten in imperative voice.
+  - `tutorials/first-audit.mdx` — Sprint B traceability proof addedinline: broken
+    link → exact `Z101` finding with file, line, and code. Sprint A: blog
+    auto-discovery noted in Step 1. Sprint C: `:::note[Deliberate Failure — The
+    Traceability Proof]` illustrates deterministic output.
+  - `tutorials/examples.mdx` — opening paragraph rewritten: "Clone it. Run
+    `uvx zenzic check all`. Each example isolates one feature."
+
+- **Technical Phase 1 — SentinelOutput API v2**: `src/components/SentinelOutput.tsx`
+  extended with a domain-specific `Status` discriminant that supersedes `variant`:
+
+  | `status`    | Internal `variant` | Exit | Meaning                        |
+  |-------------|-------------------|------|--------------------------------|
+  | `success`   | `clean`           |  0   | Integrity verified             |
+  | `error`     | `findings`        |  1   | Structural/link violation      |
+  | `warning`   | `findings`        | 0–1  | Non-blocking anomaly           |
+  | `inspect`   | `inspect`         |  0   | Audit/debug mode               |
+  | `breach`    | `breach`          |  2   | Security perimeter compromised |
+
+  New props: `status`, `code` (Zxxx string), `exitCode` (0|1|2|3), `traceability`
+  (boolean). `variant` preserved for backward compatibility with a `console.warn`
+  deprecation notice in development mode. Traceability guard: `status="error"|"warning"`
+  without `code` emits a warning — a finding without a Zxxx code violates Absolute
+  Traceability. `tsc --noEmit` clean.
+
+- **Technical Phase 2 — VSMVisualizer**: New component `src/components/VSMVisualizer.tsx`
+  registered globally in `src/theme/MDXComponents.js`. Renders a hierarchical
+  in-place-expandable tree of the Virtual Site Map distinguishing:
+  - **Physical Nodes** (📄) — real `.md`/`.mdx` files on disk
+  - **Virtual Routes** (🏷 tag, 📑 pagination, 👤 author) — routes inferred from
+    frontmatter metadata, with in-place Reverse-Mapping disclosure of `source_files`.
+  - **Reverse-Mapping violation** — virtual node with `source_files = ∅` rendered with
+    ⚠ marker (should never appear in a passing audit).
+  Props: `roots: string[]` (required), `virtual?: boolean`, `nodes?: VSMNode[]`
+  (override for custom trees). `tsc --noEmit` clean.
+
+- **Technical Phase 3 — finding-codes.mdx Migration**: All 8 `<SentinelOutput>`
+  usages in `docs/reference/finding-codes.mdx` (EN+IT) migrated from legacy `variant=`
+  to the Phase 1 contract (`status`, `code`, `exitCode`). Every finding code in the
+  reference encyclopedia is now linked to its Zxxx identifier via `code=` — Absolute
+  Traceability from prose to component to finding code.
+
+
   Following the Core's EPOCH 7a.1 purge, the `[link_validation].absolute_path_allowlist`
   TOML block is **gone** from `zenzic-doc/zenzic.toml`. Multi-instance Docusaurus
   plugin URL prefixes (`/docs/`, `/developers/`, every additional content-docs
