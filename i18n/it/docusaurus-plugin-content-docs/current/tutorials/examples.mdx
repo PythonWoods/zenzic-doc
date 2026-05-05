@@ -168,7 +168,7 @@ L'implementazione di riferimento per scrivere un plugin di regole Zenzic persona
 
 **Directory:** `examples/broken-docs/`
 **Motore:** `mkdocs`
-**Uscita attesa:** 1
+<SentinelOutput status="error" exitCode={1} compact />
 
 Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimento completo. Questa è la baseline di regressione per il motore dei controlli. Studia questo esempio per capire esattamente come appare ogni tipo di risultato nell'output.
 
@@ -178,7 +178,7 @@ Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimen
 
 **Directory:** `examples/security_lab/`
 **Motore:** `mkdocs`
-**Uscita attesa:** 2 (Shield)
+<SentinelOutput status="breach" exitCode={2} compact />
 
 Attiva intenzionalmente lo Zenzic Shield (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema Shield.
 

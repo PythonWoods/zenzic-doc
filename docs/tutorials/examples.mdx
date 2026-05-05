@@ -168,7 +168,7 @@ The reference implementation for writing a custom Zenzic rule plugin. Generated 
 
 **Directory:** `examples/broken-docs/`
 **Engine:** `mkdocs`
-**Expected exit:** 1
+<SentinelOutput status="error" exitCode={1} compact />
 
 Intentionally triggers every Zenzic check to produce a complete failure report. This is the regression baseline for the check engine. Study this example to understand exactly what each finding type looks like in the output.
 
@@ -178,7 +178,7 @@ Intentionally triggers every Zenzic check to produce a complete failure report. 
 
 **Directory:** `examples/security_lab/`
 **Engine:** `mkdocs`
-**Expected exit:** 2 (Shield)
+<SentinelOutput status="breach" exitCode={2} compact />
 
 Intentionally triggers the Zenzic Shield (credential detection) and the link checker (path traversal, absolute host probes). Exit code 2 is expected and correct — the credential must be rotated. This fixture is the regression baseline for the Shield subsystem.
 

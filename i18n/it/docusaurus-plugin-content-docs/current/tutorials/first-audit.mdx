@@ -47,7 +47,7 @@ uvx zenzic lab 2
 Zenzic scansiona il fixture `security_lab` incluso e attiva l'**exit code 2** con
 il banner Security Breach — l'allerta non sopprimibile per una credenziale esposta:
 
-<SentinelOutput variant="breach" showFrame
+<SentinelOutput status="breach" exitCode={2} showFrame
   location="docs/how-to/configure.md:4"
   masked="AKIA************MPLE"
   credentialType="aws-access-key"
@@ -61,8 +61,8 @@ La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
 uvx zenzic lab 0
 ```
 
-Vedrai il Sentinel Seal: ogni controllo verde, exit 0. Il contrasto è la lezione —
-lo stesso motore che ha rilevato il segreto ha appena confermato che la documentazione
+Il Sentinel Seal: ogni controllo verde, exit 0. Il contrasto è la prova —
+lo stesso motore che ha rilevato il segreto conferma che la documentazione
 pulita è genuinamente pulita.
 
 :::tip[Demo Interattiva — Nessuna installazione richiesta]
@@ -133,7 +133,7 @@ strutturato ed esce con un codice leggibile dalla macchina:
 
 Un'esecuzione pulita si presenta così — il **Sentinel Seal**:
 
-<SentinelOutput variant="clean" showFrame />
+<SentinelOutput status="success" exitCode={0} showFrame />
 
 Non è solo un segno di spunta verde in CI. È una **prova matematica** che ogni link si risolve,
 ogni pagina è raggiungibile e nessuna credenziale è esposta. `100/100` è l'unico numero che conta.
