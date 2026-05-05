@@ -430,7 +430,7 @@ export default function SentinelOutput({
     variant = STATUS_TO_VARIANT[status];
   } else if (variantProp !== undefined) {
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
+
       console.warn(
         '[SentinelOutput] ‘variant’ is deprecated. Use ‘status’ instead. ' +
         `Received variant="${variantProp}".`
@@ -440,7 +440,7 @@ export default function SentinelOutput({
   } else {
     // Neither status nor variant provided: fall back to a safe default.
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
+
       console.error('[SentinelOutput] Neither ‘status’ nor ‘variant’ was provided. Rendering ‘clean’ as fallback.');
     }
     variant = 'clean';
@@ -453,7 +453,7 @@ export default function SentinelOutput({
     (status === 'error' || status === 'warning') &&
     code === undefined
   ) {
-    // eslint-disable-next-line no-console
+
     console.warn(
       '[SentinelOutput] ‘code’ is strongly recommended when status="error" or status="warning". ' +
       'A finding without a Zxxx code violates the Absolute Traceability principle.'
