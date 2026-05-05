@@ -93,9 +93,10 @@ jobs:
       - name: Run unified verification
         env:
           ZENZIC_PROJECT_PATH: ./_zenzic_core
-          # Release Bridge (v0.7.0): blog posts and GitHub tag page are not yet
-          # publicly reachable at CI time. Injected at runtime so the permanent
-          # zenzic.toml config stays clean. Remove after GA deploy.
+          # Pre-Launch Guard Pattern: runtime exclusion for pre-launch assets.
+          # Blog posts and the v0.7.0 GitHub release tag are not yet publicly
+          # reachable at CI time. Injected at runtime — zenzic.toml stays clean.
+          # Remove after GA deploy when all URLs resolve.
           ZENZIC_EXTRA_ARGS: >-
             --exclude-url https://zenzic.dev/blog/
             --exclude-url https://zenzic.dev/docs/explanation/structural-integrity
