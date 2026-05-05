@@ -64,8 +64,9 @@ preflight:
 # ZENZIC_EXTRA_ARGS (env, optional): injects extra flags at CI time — e.g.
 #   ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just check
 # Local runs leave ZENZIC_EXTRA_ARGS unset; the ${:-} default expands to empty.
-check:
-    uv run --project {{zenzic_project}} zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-}
+# Pass extra flags directly: just check --no-external
+check *args:
+    uv run --project {{zenzic_project}} zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
 
 # Static type check
 typecheck:
