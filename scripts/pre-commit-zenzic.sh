@@ -37,6 +37,4 @@ if [ -z "${ZENZIC_PATH}" ]; then
 fi
 
 echo "Mode: Local Zenzic (${ZENZIC_PATH})"
-# --no-external: deployment-paradox URLs (release tag, blog index) do not exist
-# until v0.7.0 is published. Remove this flag after GA.
-uv run --project "${ZENZIC_PATH}" zenzic check all --engine docusaurus --strict --no-external ${ZENZIC_EXTRA_ARGS:-} "$@"
+uv run --project "${ZENZIC_PATH}" zenzic check all --engine docusaurus --strict ${ZENZIC_EXTRA_ARGS:-} "$@"
