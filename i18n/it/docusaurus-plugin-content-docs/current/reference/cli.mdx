@@ -174,6 +174,46 @@ Il meccanismo permanente per escludere URL noti-instabili è `excluded_external_
 | Passaggio 2 — Risoluzione link interni | ❌ Mai saltato |
 | Passaggio 3 — Richieste HTTP HEAD esterne | ✅ Saltato |
 
+### `--exclude-url` {#exclude-url}
+
+`--exclude-url <PREFISSO>` è disponibile su `check all` e `check links`. Bypassa la
+validazione esterna degli URL per qualsiasi URL che inizia con il prefisso indicato —
+**a runtime**, senza toccare `zenzic.toml`. Il flag è ripetibile.
+
+```bash
+# Sopprime un dominio il cui DNS non è ancora attivo
+zenzic check all --strict --exclude-url https://staging.esempio.com/
+
+# Sopprime più URL di paradosso CI/CD in una singola invocazione
+zenzic check all --strict \
+  --exclude-url https://mio-sito.esempio.com/blog/ \
+  --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+```
+
+I prefissi runtime vengono **uniti** con le voci `excluded_external_urls` già presenti
+in `zenzic.toml` — i due meccanismi coesistono e si accumulano.
+
+:::tip[Paradosso di deployment CI/CD]
+Usa `--exclude-url` nel tuo workflow CI per URL che referenziano artefatti pubblicati
+non ancora raggiungibili al momento della build (es. una pagina GitHub Release, un
+deployment di staging, o un post del blog schedulato per una data futura). Inietta il
+flag tramite una variabile d'ambiente:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: >-
+    --exclude-url https://mio-sito.esempio.com/blog/
+    --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
+```
+:::
+
+:::info[Le esclusioni permanenti appartengono a `zenzic.toml`]
+Per gli URL **sempre** irraggiungibili (es. pagine di autenticazione GitHub, API private
+con rate-limiting), usa `excluded_external_urls` in `zenzic.toml` — quella lista è
+versionata e verificabile. Riserva `--exclude-url` ai **paradossi di deployment transitori**.
+:::
+
 ### `--exclude-dir` / `--include-dir`
 
 Disponibili su `zenzic check all` (e sui sotto-comandi individuali). Questi flag forniscono

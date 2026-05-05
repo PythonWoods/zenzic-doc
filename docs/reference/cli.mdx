@@ -169,6 +169,47 @@ for excluding known-unstable URLs is `excluded_external_urls` in `zenzic.toml`.
 | Pass 2 — Internal link resolution | ❌ Never skipped |
 | Pass 3 — External HTTP HEAD requests | ✅ Skipped |
 
+### `--exclude-url` {#exclude-url}
+
+`--exclude-url <PREFIX>` is available on `check all` and `check links`. It bypasses
+external URL validation for any URL that starts with the given prefix — **at runtime**,
+without touching `zenzic.toml`. The flag is repeatable.
+
+```bash
+# Suppress a domain whose DNS is not yet live
+zenzic check all --strict --exclude-url https://staging.example.com/
+
+# Suppress multiple CI/CD paradox URLs in a single invocation
+zenzic check all --strict \
+  --exclude-url https://my-site.example.com/blog/ \
+  --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+```
+
+Runtime prefixes are **merged** with any `excluded_external_urls` entries already present
+in `zenzic.toml` — the two mechanisms co-exist and accumulate.
+
+:::tip[CI/CD deployment paradox]
+Use `--exclude-url` in your CI workflow for URLs referencing published artefacts not yet
+reachable at build time (e.g. a GitHub Release page, a staging deployment, or a blog post
+scheduled for future publication). Inject the flag via an environment variable:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: >-
+    --exclude-url https://my-site.example.com/blog/
+    --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
+```
+:::
+
+:::info[Permanent exclusions belong in `zenzic.toml`]
+For URLs that are **always** unreachable (e.g. GitHub auth pages, rate-limited private APIs),
+use `excluded_external_urls` in `zenzic.toml` — that list is version-controlled and auditable.
+Reserve `--exclude-url` for **transient** deployment-time paradoxes.
+:::
+
+### `--exclude-dir` / `--include-dir`
+
 Available on `zenzic check all` (and individual sub-commands). These flags provide
 one-shot directory scope overrides **per invocation** without touching `zenzic.toml`:
 
