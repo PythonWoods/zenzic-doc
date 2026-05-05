@@ -45,8 +45,9 @@ self-contained and testable without installing any documentation generator.
 **3. Pure functions first.**
 All validation logic lives in pure functions: no file I/O, no network access,
 no terminal output. I/O happens only at the edges — in CLI wrappers that read
-files from disk. Pure functions are trivially testable and can be composed
-freely. This is why Zenzic supports parallelism without race conditions.
+files from disk. Pure functions carry deterministic behaviour: identical inputs produce identical
+outputs with no shared state. They compose without interference and parallelize without
+race conditions. This is why Zenzic’s parallel discovery mode requires no locks.
 
 ---
 

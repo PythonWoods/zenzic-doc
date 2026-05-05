@@ -48,9 +48,9 @@ generatore di documentazione.
 **3. Funzioni pure prima di tutto.**
 Tutta la logica di validazione vive in funzioni pure: nessun I/O su file,
 nessun accesso di rete, nessun output su terminale. L'I/O avviene solo ai
-bordi — nei wrapper CLI che leggono file da disco. Le funzioni pure sono
-trivialmente testabili e componibili liberamente. Per questo Zenzic supporta
-il parallelismo senza race condition.
+bordi — nei wrapper CLI che leggono file da disco. Le funzioni pure portano comportamento deterministico: input identici producono output
+identici senza stato condiviso. Si compongono senza interferenze e si parallelizzano senza
+race condition. Per questo la modalità di discovery parallela di Zenzic non richiede lock.
 
 ---
 

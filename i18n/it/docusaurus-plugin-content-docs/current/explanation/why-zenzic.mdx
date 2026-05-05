@@ -53,10 +53,11 @@ Python da 3.11 a 3.13.
 Questa non è una coincidenza. È la **RULE R08** — la Legge Zero Subprocess — sancita
 come invariante architetturale. Significa:
 
-- **Integrazione CI Moderna:** Gira in GitHub Actions sfruttando `astral-sh/setup-uv` per
-  un'esecuzione ultra-rapida e senza installazione tramite `uvx`.
-- **Pronto per i Pre-commit:** Si integra negli hook locali senza effetti collaterali.
-- **Universalmente Portabile:** Gira su qualsiasi sistema CI in grado di eseguire un binario Python.
+- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — nessun passaggio di
+  pre-installazione Python, nessuna wheel da gestire. Una riga aggiunta a qualsiasi workflow.
+- **Pre-commit:** Aggiungi `zenzic-verify` a `.pre-commit-config.yaml`. L'hook gira sui file
+  in stage; zero effetti collaterali sull'albero di lavoro.
+- **Qualsiasi runner CI:** Richiede `bash` ≥5 e `python3` ≥3.11 nel `PATH`. Nessun altro runtime. Zero Node.js.
 
 La Tassa Node.js è un debito che si accumula. Zenzic si rifiuta di pagarla.
 

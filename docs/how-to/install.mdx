@@ -132,11 +132,13 @@ Standard dev-dependency pattern with a project-local virtual environment.
   </TabItem>
 </Tabs>
 
-### Lean & Agnostic by Design {#lean-agnostic}
+### Static analysis only — no build runtime required {#lean-agnostic}
 
-Zenzic performs a **static analysis** of your configuration files (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`). It does **not** execute the build engine or its plugins.
+Zenzic reads configuration files (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`) as plain
+text. It does **not** execute the build engine or its plugins.
 
-This means you **do not need to install** MkDocs, Material for MkDocs, or any other build-related plugins in your linting environment. Zenzic remains lightweight and dependency-free, making it ideal for fast, isolated CI/CD pipelines.
+Do **not** install MkDocs, Material for MkDocs, or any build plugin in your linting
+environment. They are not needed. The linting environment has one dependency: `zenzic`.
 
 ```bash
 # Lint any MkDocs project — no extras needed

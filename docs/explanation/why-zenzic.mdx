@@ -51,10 +51,11 @@ through 3.13.
 This is not a coincidence. It is **RULE R08** — the Zero Subprocess Law — enshrined as an
 architectural invariant. It means:
 
-- **Modern CI Integration:** Runs in GitHub Actions using `astral-sh/setup-uv` for ultra-fast,
-  zero-install execution via `uvx`.
-- **Pre-commit Ready:** Integrates into local hooks with zero side effects.
-- **Universally Portable:** Runs on any CI system capable of executing a Python binary.
+- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — no Python pre-install step, no
+  cached wheel to manage. One line added to any workflow.
+- **Pre-commit:** Add `zenzic-verify` to `.pre-commit-config.yaml`. The hook runs on staged files;
+  zero side effects to the working tree.
+- **Any CI runner:** Requires `bash` ≥5 and `python3` ≥3.11 in `PATH`. No other runtime. No Node.js.
 
 The Node.js Tax is a debt that compounds. Zenzic refuses to pay it.
 

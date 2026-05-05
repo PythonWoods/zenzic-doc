@@ -67,12 +67,11 @@ configurazione i18n, flag di plugin come `reconfigure_material`) e passa il risu
 Engine come oggetti Python tipizzati. Non chiama mai `mkdocs build`, non importa mai `mkdocs`,
 e non dipende mai dall'installazione o dal funzionamento di alcun plugin.
 
-La conseguenza pratica è che `MkDocsAdapter` è il **custode dello standard dell'ecosistema
-classico pluggable**. Finché il tuo `mkdocs.yml` descrive una struttura MkDocs 1.x valida,
-Zenzic la comprenderà e la validerà — indipendentemente da ciò che qualsiasi binario di build
-supporti o meno. Se esegui `zenzic check all` con `engine = "mkdocs"`, stai testando il tuo
-contenuto rispetto al contratto strutturale documentato di MkDocs 1.x, non rispetto a nessuna
-versione binaria specifica.
+La conseguenza pratica è che `MkDocsAdapter` preserva il contratto strutturale MkDocs 1.x come
+una specifica statica con versione. Finché il tuo `mkdocs.yml` descrive una struttura MkDocs 1.x
+valida, Zenzic la comprende e la valida — indipendentemente da ciò che qualsiasi binario di
+build supporti o meno. Eseguendo `zenzic check all` con `engine = "mkdocs"` si testa il
+contenuto rispetto a quel contratto documentato, non rispetto a nessuna versione binaria specifica.
 
 Questo rende l'output di Zenzic un **certificato di qualità portabile**: se Zenzic dice che la
 tua documentazione è strutturalmente corretta, questa affermazione è vera indipendentemente da
@@ -301,12 +300,16 @@ nav = [
 ]
 ```
 
-:::tip[Identità Flessibile & Custode Strutturale]
-Se `engine = "zensical"` è dichiarato ma `zensical.toml` non esiste ancora, Zenzic eseguirà nativamente un fallback leggendo il tuo `mkdocs.yml` esistente (il Proxy Trasparente).
-Questo ti permette di cambiare engine e mantenere il file di configurazione legacy durante la transizione, senza interrompere la pipeline di validazione. Zenzic agisce come un custode strutturale: non ti costringerà a cambiare formato di configurazione prematuramente.
+:::tip[Identità Flessibile — Proxy Trasparente]
+Dichiara `engine = "zensical"` in `zenzic.toml` prima che `zensical.toml` esista. Zenzic
+legge il tuo `mkdocs.yml` esistente tramite il Proxy Trasparente e lo valida rispetto al
+contratto strutturale Zensical. Cambia la dichiarazione dell'engine, esegui
+`zenzic check all`, leggi il risultato — nessun file Markdown toccato, nessuna pipeline
+interrotta.
 
-Nota: Mentre opera tramite il bridge di compatibilità, Zenzic emetterà dei warning se il tuo `mkdocs.yml` contiene impostazioni specifiche di MkDocs che Zensical ignora, come:
-`remote_branch`, `remote_name`, `exclude_docs`, `draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
+Mentre il bridge di compatibilità è attivo, Zenzic emette warning per le chiavi specifiche
+di MkDocs che Zensical ignora: `remote_branch`, `remote_name`, `exclude_docs`,
+`draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
 :::
 
 ### Fase 4 — Verifica l'integrità dei link
