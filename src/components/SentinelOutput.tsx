@@ -25,6 +25,26 @@ import React from 'react';
 type Variant = 'clean' | 'breach' | 'findings' | 'inspect';
 
 /**
+ * Domain-specific status discriminant.
+ * Maps to an internal Variant for rendering.
+ *
+ * | status      | variant    |
+ * |-------------|------------|
+ * | 'success'   | 'clean'    |
+ * | 'error'     | 'findings' |
+ * | 'warning'   | 'findings' |
+ * | 'inspect'   | 'inspect'  |
+ */
+export type Status = 'success' | 'error' | 'warning' | 'inspect';
+
+const STATUS_TO_VARIANT: Record<Status, Variant> = {
+  success: 'clean',
+  error:   'findings',
+  warning: 'findings',
+  inspect: 'inspect',
+};
+
+/**
  * A single finding row rendered inside the `findings` variant.
  *
  * @example
@@ -60,7 +80,43 @@ export interface InspectRow {
 }
 
 interface SentinelOutputProps {
-  variant: Variant;
+  /**
+   * Legacy variant discriminant — preserved for backward compatibility.
+   * Prefer `status` for new usages.
+   *
+   * @deprecated Use `status` instead. Will emit a console.warn in development
+   * when used without a `status` prop.
+   */
+  variant?: Variant;
+  /**
+   * Domain-specific status. Takes precedence over `variant` when both are
+   * provided. One of `status` or `variant` is required.
+   */
+  status?: Status;
+  /**
+   * Zenzic finding code shown in this output (e.g. `"Z101"`).
+   * Strongly recommended when `status="error"` or `status="warning"`.
+   * Absence emits a console.warn: a finding without a code violates
+   * the Absolute Traceability principle.
+   * When provided, the code is linked to the corresponding section in
+   * `reference/finding-codes`.
+   */
+  code?: string;
+  /**
+   * CI exit code surfaced by this audit result.
+   * | Code | Meaning                          |
+   * |------|----------------------------------|
+   * |  0   | Clean — no issues               |
+   * |  1   | Findings — quality issues       |
+   * |  2   | Shield — credential detected   |
+   * |  3   | Blood Sentinel — path traversal |
+   */
+  exitCode?: 0 | 1 | 2 | 3;
+  /**
+   * When true, enables a deep link from the finding location to the
+   * source file in the repository. Requires `location` to be set.
+   */
+  traceability?: boolean;
   /**
    * Show the macOS-style title bar with traffic-light dots.
    * Use true for Quick Start / Tutorial context (tool-in-use framing).
@@ -352,7 +408,11 @@ function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }
 // ── Main export ──────────────────────────────────────────────────────────────
 
 export default function SentinelOutput({
-  variant,
+  variant: variantProp,
+  status,
+  code,
+  exitCode,
+  traceability = false,
   showFrame = false,
   compact = false,
   rows,
@@ -362,6 +422,48 @@ export default function SentinelOutput({
   credentialType,
   isStrict = false,
 }: SentinelOutputProps): React.JSX.Element {
+  // Resolve effective variant: `status` takes precedence over legacy `variant`.
+  let variant: Variant;
+  if (status !== undefined) {
+    variant = STATUS_TO_VARIANT[status];
+  } else if (variantProp !== undefined) {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[SentinelOutput] ‘variant’ is deprecated. Use ‘status’ instead. ' +
+        `Received variant="${variantProp}".`
+      );
+    }
+    variant = variantProp;
+  } else {
+    // Neither status nor variant provided: fall back to a safe default.
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('[SentinelOutput] Neither ‘status’ nor ‘variant’ was provided. Rendering ‘clean’ as fallback.');
+    }
+    variant = 'clean';
+  }
+
+  // Traceability guard: status="error"|"warning" without `code` violates
+  // the Absolute Traceability principle.
+  if (
+    process.env.NODE_ENV === 'development' &&
+    (status === 'error' || status === 'warning') &&
+    code === undefined
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[SentinelOutput] ‘code’ is strongly recommended when status="error" or status="warning". ' +
+      'A finding without a Zxxx code violates the Absolute Traceability principle.'
+    );
+  }
+
+  // Unused in rendering for now — exitCode and traceability are declared
+  // for forward-compat with server-side rendering and future interactive
+  // deep-link support.
+  void exitCode;
+  void traceability;
+
   const borderClass = showFrame ? '' : BORDER_CLASSES[variant];
   const inner = (
     <div className={`${WRAPPER_CLASSES[variant]} ${borderClass}`}>
