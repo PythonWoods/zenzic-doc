@@ -21,8 +21,10 @@
 
 This repository contains the Docusaurus documentation website for Zenzic.
 
-This guide is written for both experienced maintainers and first-time contributors.
-If you are new, follow the sections in order.
+> **Compliance gate.** This repository is the live evidence of the auditor's own
+> discipline: `zenzic check all --strict` exits 0 with zero findings on every push.
+> The documentation of the tool that enforces traceability is itself traceable.
+> A broken link in these docs would falsify the entire correctness claim.
 
 ---
 

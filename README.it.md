@@ -22,6 +22,11 @@
 
 Questo repository contiene il sito di documentazione Docusaurus per Zenzic.
 
+> **Gate di conformità.** Questo repository è la prova vivente della disciplina dell'auditor:
+> `zenzic check all --strict` esce con 0 e zero finding ad ogni push.
+> La documentazione dello strumento che applica la tracciabilità è essa stessa tracciabile.
+> Un link rotto in questi docs invaliderebbe l'intera affermazione di correttezza.
+
 Questa guida è scritta sia per i maintainer esperti sia per chi contribuisce per
 la prima volta. Se sei nuovo, segui le sezioni in ordine.
 
