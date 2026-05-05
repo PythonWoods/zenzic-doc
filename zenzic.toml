@@ -17,13 +17,6 @@ excluded_external_urls = [
     # zenzic-action is being made public with the v0.7.0 GA release.
     # Remove this exclusion immediately after the repo is set to public.
     "https://github.com/PythonWoods/zenzic-action",
-    # Release Bridge (CEO 154): blog posts and the v0.7.0 GitHub tag are live on
-    # the repo but not yet deployed at zenzic.dev. Prefix matching covers all
-    # blog sub-paths (posts, tags, authors, pagination).
-    # Remove these exclusions 5 minutes after v0.7.0 GA deploy completes.
-    "https://zenzic.dev/blog/",
-    "https://zenzic.dev/docs/explanation/structural-integrity",
-    "https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0",
 ]
 
 # --- PROTEZIONE DOGFOODING ---
@@ -34,7 +27,7 @@ placeholder_patterns  = []
 placeholder_max_words = 0
 
 # --- ENGINE CONTEXT (Quartz) ---
-# Zero-Config (v0.7.1+):
+# Zero-Config (v0.7.0+):
 #   * `_category_.json` is auto-shielded by DocusaurusAdapter.get_metadata_files()
 #     — no need to declare it under [excluded_assets].
 #   * Multi-instance plugin URL prefixes (`/docs/`, `/developers/`) are

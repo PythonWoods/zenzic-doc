@@ -93,4 +93,13 @@ jobs:
       - name: Run unified verification
         env:
           ZENZIC_PROJECT_PATH: ./_zenzic_core
+          # Release Bridge (v0.7.0): blog posts and GitHub tag page are not yet
+          # publicly reachable at CI time. Injected at runtime so the permanent
+          # zenzic.toml config stays clean. Remove after GA deploy.
+          ZENZIC_EXTRA_ARGS: >-
+            --exclude-url https://zenzic.dev/blog/
+            --exclude-url https://zenzic.dev/docs/explanation/structural-integrity
+            --exclude-url https://zenzic.dev/developers/
+            --exclude-url https://zenzic.dev/it/developers/
+            --exclude-url https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0
         run: just verify

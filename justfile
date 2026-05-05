@@ -60,9 +60,12 @@ sentinel:
 preflight:
     uvx pre-commit run --all-files
 
-# Explicit Zenzic audit gate (uses local unreleased core)
+# Explicit Zenzic audit gate (uses local unreleased core).
+# ZENZIC_EXTRA_ARGS (env, optional): injects extra flags at CI time — e.g.
+#   ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just check
+# Local runs leave ZENZIC_EXTRA_ARGS unset; the ${:-} default expands to empty.
 check:
-    uv run --project {{zenzic_project}} zenzic check all --strict
+    uv run --project {{zenzic_project}} zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-}
 
 # Static type check
 typecheck:
