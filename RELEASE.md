@@ -176,7 +176,7 @@ External bookmarks, blog posts, and search index entries must be updated.
 - **\`/developers/governance/technical-debt.mdx\`** (EN+IT) — first entry
   records **Z108 STALE_ALLOWLIST_ENTRY** as deferred to v0.8.0 with rationale.
 
-> **EPOCH 7a.1 supersession (v0.7.1):** the `[link_validation].absolute_path_allowlist`
+> **EPOCH 7a.1 supersession (v0.7.0):** the `[link_validation].absolute_path_allowlist`
 > mechanism above is **retired**. DocusaurusAdapter now auto-detects
 > multi-instance plugin URL prefixes Zero-Config — the `[link_validation]` block
 > has been deleted from `zenzic-doc/zenzic.toml`, the Z108 entry is closed by

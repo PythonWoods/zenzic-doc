@@ -42,7 +42,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
 * **Exit 0:** All checks passed (or suppressed via `--exit-zero`).
 * **Exit 1:** Errors and warnings detected; use `--strict` to promote warnings.
-* **Exit 2:** Security breaches detected (Z201 SHIELD_SECRET). **Never** suppressed.
+* **Exit 2:** Security breaches (Z201 SHIELD_SECRET) or forbidden-term violations (Z204 FORBIDDEN_TERM). **Never** suppressed.
 * **Exit 3:** Security incidents detected (Z203 PATH_TRAVERSAL_FATAL). **Never** suppressed, even with `--exit-zero`.
 
 ---
@@ -118,9 +118,31 @@ Z104 counts toward the **Structural Integrity** category. A missing target file 
 
 * **Severity:** `error`
 * **Technical Context:** A low-level filesystem error. The engine attempted to open a file referenced by a link or asset but received a `FileNotFoundError`. This typically happens when a file is moved or deleted during a concurrent build process.
+
+  **Slug-mismatch variant (Docusaurus):** Z104 also fires when an absolute link targets a project-owned route prefix (e.g. `/blog/`) that is scanned by Zenzic, but the exact slug does not exist in the Virtual Site Map. The most common cause is a `slug:` field in frontmatter that differs from the URL used in a link:
+
+  ```mdx title="blog/2026-05-05-release-log.mdx"
+  {/* This link is wrong — the real slug is beyond-the-siege-zenzic-v070 */}
+  [Read the previous post](/blog/beyond-the-siege-v070)
+  ```
+
+  ```yaml title="blog/2026-04-29-beyond-the-siege.mdx (frontmatter)"
+  slug: beyond-the-siege-zenzic-v070
+  ```
+
+  Zenzic output:
+
+  ```
+  blog/2026-05-05-release-log.mdx:12: '/blog/beyond-the-siege-v070' not found in the site map
+  💡 Did you mean: '/blog/beyond-the-siege-zenzic-v070/'?
+  ```
+
+  The Virtual Site Map is built from frontmatter slugs (not physical filenames), so the physical file `2026-04-29-beyond-the-siege.mdx` does not create the route `/blog/beyond-the-siege-v070/` — only `/blog/beyond-the-siege-zenzic-v070/`.
+
 * **Remediation Steps:**
     1. Ensure no other process is modifying the `docs/` directory during the Zenzic scan.
     2. Verify that your `docs_dir` setting is correct and that the file path is absolute relative to the repository root.
+    3. *(Slug-mismatch variant)* Run `zenzic inspect routes --kind physical` to see all canonical URLs in the VSM, and update the link to match the exact slug declared in the target file's frontmatter.
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
@@ -130,9 +152,22 @@ Z105 counts toward the **Structural Integrity** category. A non-portable absolut
 
 * **Severity:** `warning`
 * **Technical Context:** Absolute paths (e.g., `C:\Docs\page.md` or `/home/user/docs/page.md`) break documentation portability. Zenzic flags these to prevent "It works on my machine" syndrome in CI/CD pipelines.
+
+  **Project-owned prefixes are exempt from Z105 but not from Z104.** Docusaurus sites often use absolute links starting with `/blog/`, `/docs/`, or other `routeBasePath` values to cross plugin boundaries. Zenzic auto-detects these prefixes from the engine configuration (Zero-Config — no `zenzic.toml` entry required) and suppresses Z105 for them.
+
+  However, suppressing Z105 does not mean the link goes unchecked. For prefixes that are fully scanned (e.g. `blog/` is in scope), Zenzic performs a VSM lookup and raises a [Z104 — FILE_NOT_FOUND](#z104) finding if the exact route is absent. This catches slug mismatches and renamed posts that break absolute links. The lookup cost is $O(1)$ — a single hash-map `get()` — with no measurable impact on scan time.
+
+  | Link | Z105 | VSM check | Outcome |
+  | :--- | :---: | :---: | :--- |
+  | `/blog/correct-slug` (slug exists in VSM) | ✅ exempt | ✅ passes | No finding |
+  | `/blog/wrong-slug` (slug absent from VSM) | ✅ exempt | ❌ fails | **Z104** |
+  | `/developers/intro` (sibling plugin, not scanned) | ✅ exempt | ⏭️ skipped | No finding |
+  | `/api/v1/users` (unknown prefix) | ❌ **Z105** | — | Z105 |
+
 * **Remediation Steps:**
     1. Convert the link to a relative path starting from the current file's directory.
     2. Use `@site/` or similar engine-specific aliases if supported (e.g., in Docusaurus).
+    3. If you received a **Z104** (not Z105) on an absolute `/blog/` or `/docs/` link, the route prefix is recognised but the slug does not exist — see [Z104 remediation](#z104) above.
 
 ### Z106: CIRCULAR_LINK {#z106}
 
@@ -242,7 +277,7 @@ Z107 counts toward the **Structural Integrity** category at `warning` severity. 
 ### Z201: SHIELD_SECRET {#z201}
 
 :::danger[Quality Score — Security Override]
-When a Z201, Z202, or Z203 finding is detected, the [Deterministic Quality Score](../explanation/health-metrics.mdx) collapses to **0/100** unconditionally. A documentation source that leaks credentials cannot receive a quality score.
+When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality Score](../explanation/health-metrics.mdx) collapses to **0/100** unconditionally. A documentation source that leaks credentials or forbidden terms cannot receive a quality score.
 :::
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
@@ -287,6 +322,45 @@ When a Z201, Z202, or Z203 finding is detected, the [Deterministic Quality Score
     1. Investigate the source file for malicious intent or supply-chain compromise.
     2. Remove any absolute paths that reference host-system locations.
     3. Ensure no AI-generated content is injecting malicious probes into your documentation.
+
+### Z204: FORBIDDEN_TERM {#z204}
+
+:::danger[🔒 INVIOLABLE — Cannot be suppressed]
+`zenzic:ignore Z204` is **silently rejected**. The Privacy Gate fires unconditionally on every line — a forbidden-term exposure is a security fact, not a suggestion.
+:::
+
+:::info[Brand Integrity Shield — Two-Layer Architecture]
+Zenzic enforces brand and privacy integrity through two complementary layers:
+
+| Layer | Source | Scope | Severity |
+|---|---|---|---|
+| **Z204 Privacy Gate** | `forbidden_patterns` in `.zenzic.local.toml` *(git-ignored)* | Private terms — code-names, staging hosts, team aliases | **Exit 2 (Critical)** |
+| **Z905 Brand Guard** | `obsolete_names` in `zenzic.toml` | Deprecated brand terms (e.g. an old product name) | Exit 1 (Quality) |
+
+Use Z204 for secrets you must never commit. Use Z905 for brand hygiene where intentional historical references (e.g. CHANGELOG entries) should be suppressible.
+:::
+
+* **Severity:** `security_breach` (Exit 2)
+* **Source:** `forbidden_patterns` declared in `.zenzic.local.toml` — the machine-local, git-ignored Enterprise Privacy Gate.
+* **Technical Context:** The Privacy Gate performs a case-insensitive verbatim substring scan against every line of every documentation file. Patterns are matched literally — no regex, no wildcards. This makes the guarantee deterministic: if the term is in the file, it will always be found. Run `zenzic init` to scaffold `.zenzic.local.toml` automatically (the file is added to `.gitignore` on creation).
+* **Common Causes:**
+    * An internal code-name or project alias appears in a public doc (`Project Titan`, `Mercury`).
+    * A staging hostname or internal API endpoint is referenced in prose (`staging.acme.io`).
+    * A developer name, team alias, or cost-center identifier leaks into a user-facing guide.
+* **Remediation Steps:**
+    1. Remove or generalise the forbidden term (replace with a public identifier or a placeholder).
+    2. If the term is legitimately public, remove it from `forbidden_patterns` in `.zenzic.local.toml`.
+    3. Verify that `.zenzic.local.toml` is listed in `.gitignore` — terms in this file must never be committed.
+
+<SentinelOutput
+  status="breach"
+  code="Z204"
+  exitCode={2}
+  compact
+  masked="Project Tit***"
+  credentialType="FORBIDDEN_TERM"
+  location="docs/roadmap/planning.md:14"
+/>
 
 ---
 

@@ -112,6 +112,68 @@ and cheap to remove — there is no migration cost either way.
 
 ---
 
+## Managing Virtual Identity: Slug-Based Routes
+
+Docusaurus lets any page declare a custom `slug:` in its frontmatter that
+completely overrides the filename-derived URL. Once a slug is declared,
+**only** the slug URL exists in Docusaurus's routing table — the original
+filename path is gone.
+
+Zenzic enforces this identity at validation time. When the Docusaurus adapter
+is active, `set_slug_map()` reads frontmatter slugs before building the
+Virtual Site Map (VSM). The VSM then contains only the canonical slug URL —
+not the filename URL.
+
+### Identifying the correct route
+
+Given a post with the following frontmatter:
+
+```mdx
+---
+slug: amazing-post
+title: An Amazing Post
+---
+```
+
+| Link | Result |
+|---|---|
+| `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — filename-derived path absent from the VSM |
+| `[Post](/blog/amazing-post)` | ✅ Validated — slug matches the VSM entry |
+
+The validator raises `Z104 FILE_NOT_FOUND` (not Z105) because `/blog/` is a
+project-owned prefix. The prefix is trusted; the exact route must still exist.
+
+### Finding the canonical slug
+
+Run `zenzic inspect routes --kind physical` to list every route in the VSM
+alongside its source file and frontmatter slug:
+
+```console
+$ zenzic inspect routes --kind physical
+/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+```
+
+Update any link that points to the old filename-derived path to use the slug
+URL shown in the output.
+
+### Engine agnosticism: the `hasattr` guard
+
+This feature is adapter-selective. The validator calls `set_slug_map()` only
+when the active adapter exposes that method — detected at runtime via
+`hasattr`. Simpler adapters (Standalone, MkDocs) never receive a slug-map
+call and their validation path is unchanged.
+
+```text
+Discovery  →  set_slug_map (Docusaurus only)  →  build_vsm  →  Validate
+                      ↕
+          hasattr guard — no-op for MkDocs / Standalone
+```
+
+This follows the *Quartz Maturity* principle: evolve the complex adapter
+without burdening the simpler ones.
+
+---
+
 ## Related
 
 - [Configuration Reference — `[link_validation]`](../reference/configuration.mdx#link-validation)

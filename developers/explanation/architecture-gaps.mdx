@@ -178,3 +178,96 @@ to initialize a project that did not yet have a `.git` or `zenzic.toml` marker.
 **Resolution:** `fallback_to_cwd=True` parameter added to `find_repo_root()`, used
 exclusively by `zenzic init`. See [ADR 003](adr-discovery.mdx).
 **Closed in:** v0.6.0a4.
+
+---
+
+### ZRT-006 — VSM Bypass: Absolute Slug Links Skipped Silently
+
+**Component:** `core/validator.py` — Phase 2 link validation loop
+
+**Description:** When a Docusaurus project declares `routeBasePath`-owned prefixes
+(e.g. `/blog/`) via `get_absolute_url_prefixes()`, the validator suppresses Z105
+(ABSOLUTE_PATH) for links starting with those prefixes. The suppression was
+implemented as a bare `continue`, which exited the per-link iteration before the
+VSM lookup — making Z001 impossible to fire on absolute prefix-owned links.
+
+A second compounding issue: `DocusaurusAdapter.set_slug_map()` was never called
+during `validate_links_async()`, so the slug map was empty at VSM construction time.
+Blog posts declaring `slug: my-post` in frontmatter were routed via filename
+derivation instead (e.g. `2026-04-29-my-post` → `/blog/my-post/`), producing a VSM
+that diverged from the URLs Docusaurus actually served.
+
+**Combined effect:** A link `/blog/wrong-slug` where the real slug was
+`/blog/correct-slug` produced no finding from Zenzic, while `docusaurus build` failed
+with a broken-link error. The sentinel was blind to the most common post-rename failure
+mode.
+
+**Resolution:** Two coordinated fixes in `core/validator.py`:
+
+1. **Lifecycle ordering** — `adapter.set_slug_map(md_contents)` is now called (via
+   `hasattr` guard for cross-engine safety) immediately before `build_vsm()`. The VSM
+   is built on the correct virtual identity, not the physical filename.
+
+2. **Scoped VSM lookup** — After Z105 suppression, the validator checks whether the
+   matched prefix has at least one route in the VSM (`_scanned_vsm_prefixes`). If so,
+   it performs a `dict.get()` lookup and reports `FILE_NOT_FOUND` when the route is
+   absent. Prefixes with no VSM entries (sibling plugins whose markdown is outside the
+   scan scope) retain the unconditional bypass — Zero-Config invariant preserved.
+
+**Cross-engine impact:** MkDocs, Zensical, and Standalone adapters do not implement
+`set_slug_map()`. The `hasattr` guard makes the call a no-op for those engines — no
+behaviour change.
+
+**Regression lock:** `tests/test_docusaurus_blog_vsm.py` — class
+`TestAbsoluteSlugMismatch` — two new tests:
+- `test_absolute_broken_blog_link_is_detected` — wrong slug raises `FILE_NOT_FOUND`
+- `test_correct_absolute_slug_link_is_clean` — correct slug produces no error
+
+**Closed in:** v0.7.0.
+
+### D100 — Privacy Gate Migration: `.zenzic.dev.toml` → `.zenzic.local.toml`
+
+**Component:** `cli/_standalone.py`, `models/config.py`, `core/shield.py`, `core/codes.py`
+
+**Description:** The original D002 Environmental Privacy Gate (`_scaffold_dev_toml`) created
+`.zenzic.dev.toml` with a `[development_gate]` table that held `forbidden_patterns` for
+export redaction. This file was not integrated into the Shield scanning pipeline —
+it served only as a local redaction hint for export tooling. The patterns were never
+checked against documentation content, so a developer could inadvertently publish a
+document containing a forbidden code-name without any Zenzic warning.
+
+This gap created a false sense of security: users configured `forbidden_patterns`
+expecting Zenzic to block those terms from documentation, but the scan never happened.
+
+**Resolution (Sprint D100 — v0.7.0):**
+
+1. **New canonical file:** `.zenzic.local.toml` replaces `.zenzic.dev.toml` as the
+   machine-local, git-ignored privacy configuration. It is a flat TOML file with a
+   top-level `forbidden_patterns = [...]` key.
+
+2. **Automatic `.gitignore` management:** `zenzic init` now always scaffolds
+   `.zenzic.local.toml` and appends the filename to `.gitignore` if the file exists
+   and the entry is absent. No manual step required.
+
+3. **Config deep-merge:** `ZenzicConfig.load()` performs an additive merge of
+   `forbidden_patterns` from `.zenzic.local.toml` after loading the primary config
+   (`zenzic.toml` or `[tool.zenzic]`). Duplicates are removed; insertion order is preserved.
+
+4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/shield.py`
+   performs a case-insensitive verbatim substring scan against the merged `forbidden_patterns`
+   list. Any match on any line of any documentation file is emitted as a `SecurityFinding`
+   with `secret_type="FORBIDDEN_TERM"`. The scanner bridges this to Z204 (not Z201),
+   preserving clear separation between credential leaks and forbidden-term violations.
+
+5. **Backward compatibility:** `_scaffold_dev_toml()` is retained as a shim that
+   delegates to `_scaffold_local_toml()`. No external callers need updating.
+
+**Brand Integrity Shield — Two-Layer Design:**
+The Z204 Privacy Gate and the Z905 Brand Obsolescence Guard form a two-layer architecture:
+- **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non-suppressible.
+  Designed for private terms that must never appear in any published doc.
+- **Z905** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore Z905`.
+  Designed for deprecated brand terms where historical references in CHANGELOG files
+  are acceptable.
+
+**Closed in:** v0.7.0 sprint D100.

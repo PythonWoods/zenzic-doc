@@ -116,6 +116,70 @@ nessuna direzione.
 
 ---
 
+## Gestire l'Identità Virtuale: Route basate sullo Slug
+
+Docusaurus permette a qualsiasi pagina di dichiarare uno `slug:` personalizzato
+nel frontmatter che sovrascrive completamente l'URL derivato dal nome del file.
+Una volta dichiarato, **solo** l'URL dello slug esiste nella tabella di routing
+di Docusaurus — il percorso del filename originale non esiste più.
+
+Zenzic applica questa identità al momento della validazione. Quando l'adapter
+Docusaurus è attivo, `set_slug_map()` legge gli slug dal frontmatter prima di
+costruire la Virtual Site Map (VSM). La VSM contiene quindi solo l'URL canonico
+dello slug — non l'URL derivato dal nome del file.
+
+### Identificare la route corretta
+
+Data una pagina con il seguente frontmatter:
+
+```mdx
+---
+slug: amazing-post
+title: Un Post Straordinario
+---
+```
+
+| Link | Risultato |
+|---|---|
+| `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — path derivato dal filename assente dalla VSM |
+| `[Post](/blog/amazing-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
+
+Il validator solleva `Z104 FILE_NOT_FOUND` (non Z105) perché `/blog/` è un
+prefisso di proprietà del progetto. Il prefisso è fidato; la route esatta
+deve comunque esistere.
+
+### Trovare lo slug canonico
+
+Esegui `zenzic inspect routes --kind physical` per elencare ogni route nella
+VSM insieme al file sorgente e allo slug nel frontmatter:
+
+```console
+$ zenzic inspect routes --kind physical
+/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+```
+
+Aggiorna qualsiasi link che punta al percorso derivato dal filename con l'URL
+dello slug mostrato nell'output.
+
+### Agnosticismo verso il motore: il guardiano `hasattr`
+
+Questa funzionalità è selettiva per adapter. Il validator chiama
+`set_slug_map()` solo quando l'adapter attivo espone quel metodo — rilevato
+a runtime via `hasattr`. Gli adapter più semplici (Standalone, MkDocs) non
+ricevono mai una chiamata slug-map e il loro percorso di validazione rimane
+invariato.
+
+```text
+Discovery  →  set_slug_map (solo Docusaurus)  →  build_vsm  →  Validate
+                      ↕
+          guardiano hasattr — no-op per MkDocs / Standalone
+```
+
+Questo segue il principio della *Maturità del Quarzo*: evolvere l'adapter
+complesso senza appesantire quelli più semplici.
+
+---
+
 ## Correlati
 
 - [Riferimento Configurazione — `[link_validation]`](../reference/configuration.mdx#link-validation)

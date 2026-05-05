@@ -9,7 +9,7 @@ strict     = true
 # --- PERIMETER GUARD ---
 # System directories (node_modules, .git, .venv, build, dist, …) and VCS
 # ignore patterns are handled natively by L1/L4 of the exclusion hierarchy.
-# No explicit excluded_dirs needed — Zero-Config (v0.7.1+).
+# No explicit excluded_dirs needed — Zero-Config (v0.7.0+).
 
 # --- EXTERNAL VALIDATION ---
 excluded_external_urls = [
