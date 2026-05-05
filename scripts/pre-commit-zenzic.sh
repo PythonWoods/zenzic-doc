@@ -37,4 +37,4 @@ if [ -z "${ZENZIC_PATH}" ]; then
 fi
 
 echo "Mode: Local Zenzic (${ZENZIC_PATH})"
-uv run --project "${ZENZIC_PATH}" zenzic check all --engine docusaurus --strict
+uv run --project "${ZENZIC_PATH}" zenzic check all --engine docusaurus --strict ${ZENZIC_EXTRA_ARGS:-} "$@"

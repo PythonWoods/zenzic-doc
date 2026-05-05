@@ -174,6 +174,58 @@ sopprimere un incidente di sicurezza.
 
 ---
 
+## Ambienti Pre-Lancio e di Staging {#pre-launch}
+
+I link esterni a siti non ancora pubblici — domini di documentazione, tag di release
+GitHub, URL di staging — restituiscono HTTP 404 finché il deploy non è completato.
+Il Sentinel Gate blocca la build su questi, e il comportamento è corretto: un link
+esterno rotto è un finding reale.
+
+Quando stai **deliberatamente compilando la documentazione prima che il sito di destinazione
+vada live**, istruisci il gate a saltare i controlli esterni per quella esecuzione
+usando `ZENZIC_EXTRA_ARGS`:
+
+```bash
+# Salta tutti i controlli sui link esterni — ambienti pre-lancio o senza rete
+ZENZIC_EXTRA_ARGS="--no-external" just build
+
+# Escludi solo un dominio pre-lancio specifico, mantieni tutti gli altri controlli esterni
+ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just build
+```
+
+`ZENZIC_EXTRA_ARGS` è una variabile d'ambiente letta sia da `just sentinel` che da
+`just build`. Inietta flag nell'invocazione di Zenzic senza modificare `zenzic.toml`
+o il justfile — la fonte di verità per la configurazione rimane invariata. Non
+impostata, si espande a vuota e il gate si comporta con piena severità.
+
+:::warning[Eccezione esplicita, non un nuovo default]
+`ZENZIC_EXTRA_ARGS` deve essere impostata esplicitamente ad ogni invocazione. Non
+viene persistita in nessun file di configurazione. Esegui `just build` senza la
+variabile per confermare che il gate blocchi ancora sui link rotti:
+
+```bash
+just build
+# ✘ [EXTERNAL_LINK] blog/example.mdx:12: 'https://zenzic.dev/blog/' returned HTTP 404
+# FAILED: Hard errors detected. Exit code 1 is mandatory.
+```
+
+La protezione è attiva per default. La variabile è un'eccezione dell'operatore,
+non una modifica alla configurazione.
+:::
+
+<SentinelOutput
+  status="error"
+  code="Z301"
+  exitCode={1}
+  compact
+/>
+
+Il finding sopra è ciò che appare con un link esterno pre-lancio. È accurato — l'URL
+non si risolve. `ZENZIC_EXTRA_ARGS="--no-external"` lo sopprime per una singola
+invocazione di build.
+
+---
+
 ## Correlati
 
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — workflow GitHub Actions che applicano lo

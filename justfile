@@ -52,9 +52,13 @@ preview: build
 build: sentinel
     npm run build
 
-# Run the Zenzic Sentinel quality check only (faster than full preflight)
-sentinel:
-    bash scripts/pre-commit-zenzic.sh
+# Run the Zenzic Sentinel quality check only (faster than full preflight).
+# ZENZIC_EXTRA_ARGS (env, optional): injects extra flags — e.g.
+#   ZENZIC_EXTRA_ARGS="--no-external" just sentinel
+#   ZENZIC_EXTRA_ARGS="--no-external" just build
+# Pass extra flags directly: just sentinel --no-external
+sentinel *args:
+    bash scripts/pre-commit-zenzic.sh {{args}}
 
 # Run all pre-commit hooks against every tracked file (mirrors CI gate exactly)
 preflight:
