@@ -6,11 +6,10 @@ docs_dir   = "docs"
 fail_under = 100
 strict     = true
 
-# --- PERIMETER GUARD (CEO 066 — The Ghost Purge) ---
-# Editorial drafts live in drafts/ and Draft/
-# at repo root. They must never be walked by the Sentinel during `just verify`,
-# even if the docs_dir scope expands in the future.
-excluded_dirs = ["drafts", "Draft", "node_modules"]
+# --- PERIMETER GUARD ---
+# System directories (node_modules, .git, .venv, build, dist, …) and VCS
+# ignore patterns are handled natively by L1/L4 of the exclusion hierarchy.
+# No explicit excluded_dirs needed — Zero-Config (v0.7.1+).
 
 # --- EXTERNAL VALIDATION ---
 excluded_external_urls = [
@@ -18,12 +17,13 @@ excluded_external_urls = [
     # zenzic-action is being made public with the v0.7.0 GA release.
     # Remove this exclusion immediately after the repo is set to public.
     "https://github.com/PythonWoods/zenzic-action",
-    # Release Bridge (CEO 154): blog posts are live on the repo but not yet deployed
-    # at zenzic.dev. These exclusions are temporary — remove 5 minutes after v0.7.0 GA deploy.
-    "https://zenzic.dev/blog/ai-driven-siege-shield-postmortem",
-    "https://zenzic.dev/blog/beyond-the-siege-v070-quartz",
-    "https://zenzic.dev/blog/governance-of-quartz",
+    # Release Bridge (CEO 154): blog posts and the v0.7.0 GitHub tag are live on
+    # the repo but not yet deployed at zenzic.dev. Prefix matching covers all
+    # blog sub-paths (posts, tags, authors, pagination).
+    # Remove these exclusions 5 minutes after v0.7.0 GA deploy completes.
+    "https://zenzic.dev/blog/",
     "https://zenzic.dev/docs/explanation/structural-integrity",
+    "https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0",
 ]
 
 # --- PROTEZIONE DOGFOODING ---
