@@ -376,6 +376,57 @@ Una volta scoperto, l'albero del blog è trattato da `zenzic check all` come con
 
 Per disattivare, imposta `blog: false` in `docusaurus.config.ts`. Per usare un layout custom, dichiaralo esplicitamente nello stesso file — Zenzic lo rileverà.
 
+### Virtual Routes (Tag, Paginazione, Autori) {#docusaurus-virtual-routes}
+
+Docusaurus genera rotte prive di file Markdown sorgente fisico: ogni tag univoco
+nel frontmatter produce una pagina `/blog/tags/{slug}/`, gli indici paginati producono
+pagine `/blog/page/{n}/`, e i profili autore producono pagine `/blog/authors/{id}/`.
+
+`DocusaurusAdapter` inferisce queste virtual routes in modo statico — **nessun build step,
+nessuna esecuzione Node.js** — leggendo i metadati frontmatter dai post del blog già
+caricati in memoria.
+
+Ogni `VirtualRoute` emessa dall'adapter porta:
+
+| Campo | Tipo | Esempio |
+| :--- | :--- | :--- |
+| `url` | `str` | `/blog/tags/python/` |
+| `kind` | `Literal["tag","tag_index","pagination","author","author_index"]` | `"tag"` |
+| `label` | `str` | `"tag:python"` |
+| `source_files` | `frozenset[str]` | `{"blog/2026-04-12-post.md"}` |
+
+Il set `source_files` è l'implementazione dell'**Invariante di Reverse-Mapping**: ogni
+URL ammessa nella VSM — fisica o virtuale — deve risalire in modo non ambiguo a uno o
+più file sorgente reali. Una `VirtualRoute` con `source_files` vuoto solleva `ValueError`
+al momento della costruzione; non può raggiungere la VSM.
+
+**Route tag generate per post:**
+
+Dato un post con `tags: [python, tutorial]`, Zenzic emette tre virtual routes:
+
+```text
+/blog/tags/python/    kind=tag        source_files={"blog/2026-04-12-post.md"}
+/blog/tags/tutorial/  kind=tag        source_files={"blog/2026-04-12-post.md"}
+/blog/tags/           kind=tag_index  source_files={"blog/2026-04-12-post.md", ...}
+```
+
+La tag index (`/blog/tags/`) elenca sempre l'**unione** di tutti i file blog che portano
+almeno un tag, fornendo la tracciabilità cross-file necessaria per la diagnostica.
+
+:::note[Paginazione e Autori — Fase 2]
+Le route di paginazione (`/blog/page/{n}/`) e le route autore saranno aggiunte nelle
+fasi successive. Il campo `VirtualRoute.kind` riserva già i letterali `"pagination"`,
+`"author"` e `"author_index"` così i consumer downstream possono gestire tutti i tipi
+di rotta senza un cambiamento di schema breaking.
+:::
+
+:::tip[Connessione a tool esterni]
+Il comando `zenzic inspect routes` è ora disponibile. Questa funzionalità esporta la
+mappa completa del sito in formato JSON deterministico. È progettata per essere
+consumata da tool esterni: script Bash custom, dashboard di CI/CD, o agenti di
+Intelligenza Artificiale che necessitano di contesto architetturale.
+:::
+
 ### Layout i18n
 
 Docusaurus memorizza le traduzioni in una struttura di directory profonda:
@@ -482,10 +533,6 @@ Docusaurus a un altro motore, Zenzic segnalerà ogni link `pathname:///` come er
 
   valutazione TypeScript completa. Le configurazioni che calcolano valori a livello di
   modulo o importano da moduli esterni potrebbero non essere analizzate completamente.
-
-- **Plugin blog e pagine** — `DocusaurusAdapter` si concentra attualmente sul plugin docs.
-
-  Il contenuto sotto `/blog/` o le pagine personalizzate non viene validato.
 
 Per i casi di sidebar dinamiche, aggiungi i percorsi generati a `excluded_dirs` in
 `zenzic.toml`.

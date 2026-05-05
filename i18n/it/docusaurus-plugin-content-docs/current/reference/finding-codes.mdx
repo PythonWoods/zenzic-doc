@@ -172,6 +172,69 @@ Z107 conta verso la categoria **Integrità Strutturale** a severità `warning`. 
 
 ---
 
+### Z111: VIRTUAL_ROUTE_BROKEN {#z111}
+
+* **Severità:** `error`
+* **Contesto tecnico:** Un link nella documentazione punta a un URL di virtual route
+  (es. `/blog/tags/react/`) che **non è mai stata generata** perché nessun post del blog
+  porta quel valore di tag nel frontmatter `tags:`. La rotta non esiste nella VSM.
+
+  Questo è distinto da `Z101 LINK_BROKEN` (file fisico mancante): l'URL è strutturalmente
+  valida per Docusaurus, ma nessuna sorgente di contenuto la attiva. Zenzic costruisce la
+  mappa delle Virtual Route da `md_contents` (file già confermati come esistenti su disco),
+  quindi Z111 è strettamente un disallineamento frontmatter/link — non un problema di
+  eliminazione di file.
+
+  Esempio: un file `docs/index.md` contiene `[Post React](/blog/tags/react/)`, ma nessun
+  post in `blog/` ha `tags: [react]`. Docusaurus non renderizzerà mai quella pagina; il
+  link produce un 404.
+
+* **Passi per la remediation:**
+    1. Identifica lo slug di tag nell'URL della rotta rotta (es. `react` da `/blog/tags/react/`).
+    2. Cerca nella directory `blog/` i post il cui frontmatter `tags:` dovrebbe includere
+       quel tag — potrebbero usare una variante in maiuscolo (`React`) o un sinonimo.
+    3. Aggiungi il tag ai post pertinenti, oppure aggiorna il link per puntare a un tag
+       effettivamente generato (es. `/blog/tags/reactjs/`).
+    4. Se il link è proiettato al futuro (un tag che intendi introdurre), sopprimi
+       temporaneamente con `{/* zenzic:ignore Z111 */}` sul link in questione.
+
+---
+
+### Z113: AUTHOR_KEY_COLLISION {#z113}
+
+* **Severità:** `error`
+* **Contesto tecnico:** Due o più file `authors.yml` di Docusaurus (o `blog/authors/*.yml`)
+  dichiarano la stessa chiave autore. Docusaurus unisce queste definizioni in modo
+  deterministico per priorità, ma il risultato dell'unione è silenzioso e fragile — una
+  collisione di chiave crea una dipendenza di configurazione nascosta tra file che vengono
+  tipicamente mantenuti in modo indipendente.
+* **Passi per la remediation:**
+    1. Cerca la chiave autore in conflitto in tutti i file `authors.yml` sotto `blog/`.
+    2. Decidi quale definizione è canonica e rinomina la chiave duplicata.
+    3. Aggiorna ogni post del blog che usa la chiave rinominata nel proprio `authors:`.
+
+---
+
+### Z114: LARGE_PAGINATION_SET {#z114}
+
+* **Severità:** `info`
+* **Contesto tecnico:** Il plugin blog genererebbe più di 200 pagine di indice paginato
+  (`/blog/page/N/`). Zenzic segnala questo come finding informativo — non un errore
+  bloccante — per sollecitare una revisione della strategia di paginazione prima che
+  diventi un problema di UX nella navigazione.
+
+  Cause comuni: un numero molto elevato di post brevi; un'impostazione `postsPerPage`
+  molto bassa; un arco temporale che abbraccia molti anni senza `archiveBasePath` abilitato.
+
+* **Passi per la remediation:**
+    1. Rivedi `postsPerPage` nel blocco blog di `docusaurus.config.ts`.
+    2. Considera di abilitare l'archivio del blog (`archiveBasePath: 'archive'`) per
+       spostare i post storici dall'indice paginato.
+    3. Sopprimi con `{/* zenzic:ignore Z114 */}` sul link oppure imposta una soglia
+       più alta in una futura impostazione `zenzic.toml` (non ancora implementata).
+
+---
+
 ## Z2xx — Sicurezza (Shield)
 
 ### Z201: SHIELD_SECRET {#z201}

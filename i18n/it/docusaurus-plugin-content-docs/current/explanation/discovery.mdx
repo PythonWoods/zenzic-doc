@@ -231,6 +231,44 @@ Nessun processo Node.js viene mai avviato — il config viene letto come **dato*
 
 Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. La suite di regression (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserisce `(repo_root / route.source).is_file()` per ogni rotta del blog, fissando il contratto che le rotte virtuali della EPOCH 7b (tag, paginazione, autori) erediteranno: una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
 
+### Invariante di Reverse-Mapping e Virtual Routes {#reverse-mapping}
+
+Il Multi-Root Discovery (EPOCH 7a) ha risolto il **VSM Blindness** per i file fisici
+fuori da `docs/`. La EPOCH 7b estende la garanzia alle **pagine generate dal motore**:
+Docusaurus produce URL — pagine di tag, indici paginati, profili autore — che non hanno
+un corrispondente fisico in Markdown. Queste rotte esistono solo nell'output del build,
+mai su disco.
+
+L'invariante è formalizzata nel dataclass `VirtualRoute`:
+
+```python
+from zenzic.core.adapters import VirtualRoute
+
+route = VirtualRoute(
+    url="/blog/tags/python/",
+    kind="tag",
+    label="tag:python",
+    source_files=frozenset({"blog/2026-04-12-post.md"}),
+)
+# Tentare di creare una VirtualRoute con source_files=frozenset() solleva ValueError:
+# "VirtualRoute '/blog/tags/ghost/': source_files is empty —
+#  Reverse-Mapping Invariant violated"
+```
+
+L'invariante è applicata a **tre livelli**:
+
+| Livello | Dove | Guardia |
+| :---    | :--- | :------ |
+| **1 — Costruttore** | `VirtualRoute.__post_init__` | Solleva `ValueError` immediatamente |
+| **2 — Builder**     | `build_vsm()` | `_log.error` difensivo + salto `continue` |
+| **3 — Test**        | `TestReverseMappingInvariant` | Asserisce il contratto `ValueError` |
+
+Gli adapter aderiscono implementando il metodo opzionale
+`get_virtual_routes(md_contents) -> list[VirtualRoute]` (stesso pattern di scoperta
+`hasattr` di `get_extra_content_roots`). `build_vsm()` lo chiama immediatamente dopo
+il ciclo delle rotte fisiche, prima di `_detect_collisions()`, così le virtual routes
+partecipano alla collision detection alla pari delle rotte fisiche.
+
 ### Matrice di supporto motori {#engine-support}
 
 | Motore           | Implementa `get_extra_content_roots` | Stato                                                                       |
@@ -239,3 +277,22 @@ Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.
 | MkDocs (Material) | No                                  | Adesione rinviata fino all'ingresso del plugin `material/blog` nello scope v0.7. |
 | Zensical         | No                                   | Architettura identica — abilitato quando arriva un plugin out-of-tree.       |
 | Standalone       | No                                   | Nessun plugin; `docs_root` è l'intera superficie di contenuto.               |
+
+### Esportare la mappa del sito: `inspect routes` {#inspect-routes}
+
+EPOCH 7b include un comando CLI di prima classe che espone il VSM a consumer esterni:
+
+```shell
+zenzic inspect routes --json
+```
+
+Questa funzionalità esporta la mappa completa del sito in formato JSON deterministico.
+È progettata per essere consumata da tool esterni: script Bash custom, dashboard di
+CI/CD, o agenti di Intelligenza Artificiale che necessitano di contesto architetturale.
+
+Ogni record nel JSON contiene quattro campi: `url`, `kind` (`physical` o `virtual`),
+`source_files` (un array ordinato di percorsi relativi al repository che *causano*
+l'esistenza dell'URL) e un `digest` — un’impronta SHA-256 derivata dall'URL e dai
+suoi file sorgente. Il flag `--kind` restringe l'output a `physical`, `virtual` o
+`all` (default). Il JSON viene scritto esclusivamente su `stdout`; i diagnostici
+vanno su `stderr`.

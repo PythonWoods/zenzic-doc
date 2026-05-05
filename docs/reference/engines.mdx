@@ -368,6 +368,56 @@ Once a blog tree is discovered, `zenzic check all` validates it as first-class c
 
 To opt out, set `blog: false` in `docusaurus.config.ts`. To use a custom layout, declare it explicitly in the same config — Zenzic will pick it up.
 
+### Virtual Routes (Tags, Pagination, Authors) {#docusaurus-virtual-routes}
+
+Docusaurus generates routes that have no physical Markdown source file: each unique
+frontmatter tag produces a `/blog/tags/{slug}/` page, paginated indexes produce
+`/blog/page/{n}/` pages, and author profiles produce `/blog/authors/{id}/` pages.
+
+`DocusaurusAdapter` infers these virtual routes statically — **no build step, no Node.js
+execution** — by reading frontmatter metadata from blog posts already loaded into memory.
+
+Each `VirtualRoute` emitted by the adapter carries:
+
+| Field | Type | Example |
+| :--- | :--- | :--- |
+| `url` | `str` | `/blog/tags/python/` |
+| `kind` | `Literal["tag","tag_index","pagination","author","author_index"]` | `"tag"` |
+| `label` | `str` | `"tag:python"` |
+| `source_files` | `frozenset[str]` | `{"blog/2026-04-12-post.md"}` |
+
+The `source_files` set is the implementation of the **Reverse-Mapping Invariant**: every
+URL admitted to the VSM — physical or virtual — must trace back unambiguously to one or
+more real source files. A `VirtualRoute` with an empty `source_files` raises `ValueError`
+at construction time; it cannot reach the VSM.
+
+**Tag routes generated per post:**
+
+Given a blog post with `tags: [python, tutorial]`, Zenzic emits three virtual routes:
+
+```text
+/blog/tags/python/    kind=tag        source_files={"blog/2026-04-12-post.md"}
+/blog/tags/tutorial/  kind=tag        source_files={"blog/2026-04-12-post.md"}
+/blog/tags/           kind=tag_index  source_files={"blog/2026-04-12-post.md", ...}
+```
+
+The tag index (`/blog/tags/`) always lists the **union** of all blog files that carry at
+least one tag, giving the cross-file traceability needed for diagnostics.
+
+:::note[Pagination and Authors — Phase 2]
+Pagination routes (`/blog/page/{n}/`) and author routes will be added in subsequent
+phases. The `VirtualRoute.kind` field already reserves the literals `"pagination"`,
+`"author"`, and `"author_index"` so downstream consumers can handle all route kinds
+without a breaking schema change.
+:::
+
+:::tip[Connecting external tools]
+The `zenzic inspect routes` command is now available. This feature exports the complete
+site map in a deterministic JSON format. It is designed to be consumed by external
+tools: custom Bash scripts, CI/CD dashboards, or Artificial Intelligence agents that
+require architectural context.
+:::
+
 ### i18n layout
 
 Docusaurus stores translations in a deep directory structure:
@@ -510,10 +560,6 @@ from Docusaurus to another engine, Zenzic will surface every `pathname:///` link
 
   not full TypeScript evaluation. Configurations that compute values at module scope or
   import from external modules may not be fully parsed.
-
-- **Blog and pages plugins** — `DocusaurusAdapter` currently focuses on the docs plugin.
-
-  Content under `/blog/` or custom pages is not validated.
 
 ---
 
