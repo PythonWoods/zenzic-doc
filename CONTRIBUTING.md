@@ -44,7 +44,8 @@ npm ci
 Install the pre-commit hooks (run once after cloning):
 
 ```bash
-uvx pre-commit install
+uvx pre-commit install               # commit-stage: hygiene + typecheck + zenzic sentinel
+uvx pre-commit install -t pre-push   # pre-push: 🛡️ Final Guard runs `just verify`
 ```
 
 ---
