@@ -78,7 +78,9 @@ Z101 counts toward the **Structural Integrity** category in the [Deterministic Q
     4. If referencing a file outside `docs/`, use a global path or symlink (though relative is preferred).
 
 <SentinelOutput
-  variant="findings"
+  status="error"
+  code="Z101"
+  exitCode={1}
   compact
   rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Broken link → 'install.md' (target not found)", severity: 'error' }]}
 />
@@ -153,7 +155,9 @@ Z107 counts toward the **Structural Integrity** category at `warning` severity. 
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z107"
+  exitCode={1}
   compact
   rows={[{
     code: "Z107",
@@ -254,7 +258,9 @@ When a Z201, Z202, or Z203 finding is detected, the [Deterministic Quality Score
     4. Use placeholders like `YOUR_API_KEY` for documentation examples.
 
 <SentinelOutput
-  variant="breach"
+  status="breach"
+  code="Z201"
+  exitCode={2}
   compact
   masked="ghp_****Kx9mR2"
   credentialType="github-personal-token"
@@ -375,7 +381,9 @@ Z404 is a **configuration integrity warning**. It does not reduce the [Determini
     2. Ensure the file is physically present in the `static/` directory (for Docusaurus) or `docs/` (for MkDocs).
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z404"
+  exitCode={1}
   compact
   rows={[{ code: 'Z404', file: 'mkdocs.yml:12', message: "Config asset not found: theme.favicon → 'assets/favicon.png'", severity: 'warning' }]}
 />
@@ -409,7 +417,9 @@ Z502 counts toward the **Content Excellence** category alongside Z501, which car
     2. If the page is a placeholder, combine it with a related page.
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z502"
+  exitCode={1}
   compact
   rows={[{ code: 'Z502', file: 'docs/reference/api.md', message: 'Short content: 47 words (minimum: 100)', severity: 'warning' }]}
 />
@@ -445,7 +455,9 @@ Z505 counts toward the **Content Excellence** category at `warning` severity. Ea
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z505"
+  exitCode={1}
   compact
   rows={[{
     code: "Z505",
@@ -525,7 +537,9 @@ Brand obsolescence is a key metric of your documentation's maturity. Every Z905 
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z905"
+  exitCode={1}
   compact
   rows={[{
     code: "Z905",
@@ -552,14 +566,16 @@ Z906 is an informational diagnostic. It does not fail the workflow step and is s
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z906"
+  exitCode={0}
   compact
   rows={[{
     code: "Z906",
     file: "docs/",
     line: 0,
     message: "No Markdown sources found in the target directory — audit skipped.",
-    severity: "note"
+    severity: "info"
   }]}
 />
 

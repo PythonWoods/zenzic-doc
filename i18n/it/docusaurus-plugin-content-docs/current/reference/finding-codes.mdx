@@ -78,7 +78,9 @@ Z101 conta verso la categoria **Integrità Strutturale** nel [Punteggio di Quali
     4. Se stai referenziando un file fuori da `docs/`, usa un percorso globale o un symlink (sebbene il relativo sia preferito).
 
 <SentinelOutput
-  variant="findings"
+  status="error"
+  code="Z101"
+  exitCode={1}
   compact
   rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Link rotto → 'install.md' (destinazione non trovata)", severity: 'error' }]}
 />
@@ -153,7 +155,9 @@ Z107 conta verso la categoria **Integrità Strutturale** a severità `warning`. 
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z107"
+  exitCode={1}
   compact
   rows={[{
     code: "Z107",
@@ -256,7 +260,9 @@ Quando viene rilevato un finding Z201, Z202 o Z203, il [Punteggio di Qualità De
     4. Usa segnaposto come `TUA_CHIAVE_API` per gli esempi di documentazione.
 
 <SentinelOutput
-  variant="breach"
+  status="breach"
+  code="Z201"
+  exitCode={2}
   compact
   masked="ghp_****Kx9mR2"
   credentialType="github-personal-token"
@@ -377,7 +383,9 @@ Z404 è un **avviso di integrità della configurazione**. Non riduce il [Puntegg
     2. Assicurati che il file sia fisicamente presente nella directory `static/` (per Docusaurus) o `docs/` (per MkDocs).
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z404"
+  exitCode={1}
   compact
   rows={[{ code: 'Z404', file: 'mkdocs.yml:12', message: "Asset di configurazione non trovato: theme.favicon → 'assets/favicon.png'", severity: 'warning' }]}
 />
@@ -411,7 +419,9 @@ Z502 conta verso la categoria **Eccellenza dei Contenuti** insieme a Z501, che h
     2. Se la pagina è un segnaposto, combinala con una pagina correlata.
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z502"
+  exitCode={1}
   compact
   rows={[{ code: 'Z502', file: 'docs/reference/api.md', message: 'Contenuto breve: 47 parole (minimo: 100)', severity: 'warning' }]}
 />
@@ -447,7 +457,9 @@ Z505 conta verso la categoria **Eccellenza dei Contenuti** a severità `warning`
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z505"
+  exitCode={1}
   compact
   rows={[{
     code: "Z505",
@@ -527,7 +539,9 @@ L’obsolescenza del brand è una metrica chiave della maturità della documenta
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z905"
+  exitCode={1}
   compact
   rows={[{
     code: "Z905",
@@ -554,14 +568,16 @@ Z906 è un diagnostic informativo. Non fa fallire lo step del workflow ed è sop
 :::
 
 <SentinelOutput
-  variant="findings"
+  status="warning"
+  code="Z906"
+  exitCode={0}
   compact
   rows={[{
     code: "Z906",
     file: "docs/",
     line: 0,
     message: "Nessuna sorgente Markdown trovata nella directory target — audit saltato.",
-    severity: "note"
+    severity: "info"
   }]}
 />
 

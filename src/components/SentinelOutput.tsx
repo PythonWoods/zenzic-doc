@@ -28,20 +28,22 @@ type Variant = 'clean' | 'breach' | 'findings' | 'inspect';
  * Domain-specific status discriminant.
  * Maps to an internal Variant for rendering.
  *
- * | status      | variant    |
- * |-------------|------------|
- * | 'success'   | 'clean'    |
- * | 'error'     | 'findings' |
- * | 'warning'   | 'findings' |
- * | 'inspect'   | 'inspect'  |
+ * | status      | variant    | Exit | Meaning                          |
+ * |-------------|------------|------|----------------------------------|
+ * | 'success'   | 'clean'    |  0   | Integrity verified               |
+ * | 'error'     | 'findings' |  1   | Structural/link violation        |
+ * | 'warning'   | 'findings' |  0–1 | Non-blocking anomaly             |
+ * | 'inspect'   | 'inspect'  |  0   | Audit/debug mode                 |
+ * | 'breach'    | 'breach'   |  2   | Security perimeter compromised   |
  */
-export type Status = 'success' | 'error' | 'warning' | 'inspect';
+export type Status = 'success' | 'error' | 'warning' | 'inspect' | 'breach';
 
 const STATUS_TO_VARIANT: Record<Status, Variant> = {
   success: 'clean',
   error:   'findings',
   warning: 'findings',
   inspect: 'inspect',
+  breach:  'breach',
 };
 
 /**
