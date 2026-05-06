@@ -51,7 +51,7 @@ repos:
     hooks:
       - id: zenzic-check
         name: "Zenzic Sentinel"
-        entry: bash -c 'uv run --project "${ZENZIC_PROJECT_PATH:-../zenzic}" zenzic check all --engine docusaurus --strict'
+        entry: bash scripts/pre-commit-zenzic.sh
         language: system
         pass_filenames: false
         always_run: true
