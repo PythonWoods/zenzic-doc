@@ -137,6 +137,15 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   templates, brand HTML reference page.
 - **Bilingual Parity (EN + IT)**: `i18n/it/` mirrors `docs/` exactly.
   `npm run build` produces both locales with zero broken links.
+- **Sovereign Override 404 Shield KB** (`developers/how-to/sovereign-override-404-shield.mdx`,
+  EN + IT mirror): Complete lifecycle guide for the `ZENZIC_EXTRA_ARGS` shield pattern —
+  when to apply, how to propagate through `justfile` / `pre-commit` / CI env blocks,
+  and when to retire the exclusion after a URL becomes reachable.
+  Italian mirror at `i18n/it/docusaurus-plugin-content-docs-developers/current/how-to/`
+  for Z907 parity.
+- **CONTRIBUTING.md — Sovereign Override section**: Emergency protocol and rationale
+  for the 404 shield added under "Sovereign Override (404 Shield)", linking contributors
+  to the MDX guide for full architecture context.
 - **D117 — `pathname:` protocol support**: Engine-agnostic escape hatch for
   Docusaurus `pathname:///` links documented in `reference/engines.mdx` (EN+IT).
 - **Pre-commit Gate & REUSE 3.3 Compliance**: Full pipeline operational with
@@ -174,8 +183,22 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 - Navbar logo path updated in `docusaurus.config.ts`.
 - `scripts/build-assets.js` and `scripts/bump-version.sh` updated — no more
   mirror-copy pattern.
-- **ESLint workspace hygiene**: root `.eslintignore` now excludes CI checkout
-  artifacts (`_zenzic_core/`) and local virtual environments (`.venv/`, `venv/`).
+- **ESLint workspace hygiene**: `.eslintignore` (ESLint v8 format) removed;
+  CI checkout artifacts (`_zenzic_core/`) and local virtual environments
+  (`.venv/`, `venv/`) migrated to the `ignores` array in `eslint.config.mjs`
+  (ESLint v9 flat config). Eliminates false-positive lint errors on vendored
+  and generated files.
+- **Pre-commit 404 shield parity**: `zenzic-check` hook entry in
+  `.pre-commit-config.yaml` replaced inline `bash -c` invocation with
+  `bash scripts/pre-commit-zenzic.sh`, propagating `ZENZIC_EXTRA_ARGS`
+  correctly during local pre-commit runs. Closes the silent bypass where the
+  Sovereign Override shield was active in CI but not locally.
+- **ZENZIC_EXTRA_ARGS CI propagation**: `.github/workflows/ci.yml` injects
+  five `--exclude-url` entries for known pre-launch transient URLs
+  (`zenzic.dev/blog/`, `zenzic.dev/docs/explanation/structural-integrity`,
+  `zenzic.dev/developers/`, `zenzic.dev/it/developers/`, and the
+  `v0.7.0` GitHub release tag). `PYTHONUTF8: '1'` added for Windows encoding
+  determinism.
 
 #### Removed
 
