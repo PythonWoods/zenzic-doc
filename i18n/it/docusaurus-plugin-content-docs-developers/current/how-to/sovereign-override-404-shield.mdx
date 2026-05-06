@@ -1,0 +1,81 @@
+---
+icon: lucide/shield-alert
+sidebar_label: "Sovereign Override (Scudo 404)"
+description: "Usa ZENZIC_EXTRA_ARGS per esclusioni temporanee di URL pre-lancio senza indebolire la validazione globale dei link esterni."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Sovereign Override (Scudo 404)
+
+Usa questo protocollo quando Sentinel segnala `EXTERNAL_LINK` per URL non ancora
+pubblici (pagine pre-lancio, tag release non ancora online, route docs in staging).
+
+L'obiettivo è mantenere integrità rigorosa con eccezioni temporanee e chirurgiche.
+
+---
+
+## Perché Esiste
+
+`zenzic check all --strict` deve continuare a verificare i link esterni.
+Usare `--no-external` nasconde regressioni reali e non è accettabile in
+un processo Quartz-grade.
+
+`ZENZIC_EXTRA_ARGS` fornisce un override solo a runtime, così la CI resta severa
+ma può escludere specifici URL pre-lancio noti.
+
+---
+
+## Risposta Rapida (Runbook Contributor)
+
+Se la CI fallisce con un 404 su un URL pre-lancio noto:
+
+```bash
+ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
+```
+
+Per più URL:
+
+```bash
+ZENZIC_EXTRA_ARGS="--exclude-url https://a.example --exclude-url https://b.example" just verify
+```
+
+---
+
+## Catena di Propagazione (Nessun Compartimento Cieco)
+
+L'override deve attraversare ogni layer di esecuzione:
+
+1. `just verify` -> `check *args` nel `justfile`
+2. hook `preflight` -> `scripts/pre-commit-zenzic.sh`
+3. script shared -> `zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} "$@"`
+4. step CI definisce `ZENZIC_EXTRA_ARGS` in `.github/workflows/ci.yml`
+
+Se un layer perde la variabile, lo scudo si rompe.
+
+---
+
+## Policy Ciclo di Vita (Obbligatoria)
+
+1. Inserire esclusioni solo per URL realmente pre-lancio.
+2. Tenere le esclusioni nell'env runtime CI, non nella config statica del progetto.
+3. Rimuovere ogni esclusione appena l'URL risponde `200 OK`.
+4. Trattare esclusioni stale come debito tecnico e rimuoverle nella PR di manutenzione successiva.
+
+---
+
+## Anti-Pattern (Vietati)
+
+- `--no-external` come workaround permanente.
+- Esclusioni dell'intero dominio quando è instabile un solo URL.
+- Commit di override privati dentro config tracciate.
+
+---
+
+## Checklist di Verifica
+
+- `just verify` passa in locale con le esclusioni previste.
+- `just preflight` passa (conferma che anche il percorso pre-commit rispetta la variabile).
+- L'env CI contiene solo le voci `--exclude-url` strettamente necessarie.
+- Esiste issue/PR di follow-up per rimuovere le esclusioni temporanee dopo il lancio.

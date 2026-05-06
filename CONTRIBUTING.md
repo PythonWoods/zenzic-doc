@@ -192,6 +192,26 @@ This allows you to perform global searches across all repositories simultaneousl
 
 ---
 
+## 404 Emergency Protocol (Sovereign Override)
+
+If Sentinel fails on a pre-launch external URL (HTTP 404), do not disable external checks globally.
+Apply a surgical runtime exclusion with `ZENZIC_EXTRA_ARGS`:
+
+```bash
+ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
+```
+
+Rules:
+
+1. Exclude only the exact pre-launch URL(s), never broad domains unless explicitly approved.
+2. Keep exclusions in CI runtime env only; do not hardcode them in `zenzic.toml`.
+3. Remove each exclusion as soon as the URL is publicly reachable.
+
+For full architecture and lifecycle policy, see
+[Sovereign Override Guide](developers/how-to/sovereign-override-404-shield.mdx).
+
+---
+
 ## Before Opening a Pull Request
 
 Run the full local gate:
