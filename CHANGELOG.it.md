@@ -176,6 +176,14 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 - Tutti i percorsi precedenti sotto `docs/usage/` e `docs/guides/` riorganizzati
   nei quadranti Diátaxis. Gli slug della sidebar sono ora filesystem-driven —
   nessuna divergenza di slug ammessa.
+- **Hardening del rendering metadata autore**: uno swizzle mirato in
+  `src/theme/BlogPostItem/Header/Authors` ora restituisce `null` quando non
+  sono dichiarati autori, rimuovendo rumore da placeholder/fallback e
+  omettendo il blocco in modo strutturale dal DOM.
+- **Verifica CI docs cross-platform**: `.github/workflows/ci.yml` ora esegue
+  su matrice Ubuntu/Windows (`fail-fast: false`) preservando il checkout di
+  parità branch del Core (`_zenzic_core`) e l'esecuzione unificata di
+  `just verify`.
 - `static/brand/` (duplicato legacy) eliminato; il percorso canonico è
   `static/assets/brand/`.
 - `static/assets/stylesheets/` rinominato in `static/css/`.
@@ -183,6 +191,9 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 - Percorso del logo navbar aggiornato in `docusaurus.config.ts`.
 - `scripts/build-assets.js` e `scripts/bump-version.sh` aggiornati — niente
   più pattern mirror-copy.
+- **Igiene workspace ESLint**: `.eslintignore` in root ora esclude artefatti
+  di checkout CI (`_zenzic_core/`) e virtual environment locali (`.venv/`,
+  `venv/`).
 
 #### Rimosso
 

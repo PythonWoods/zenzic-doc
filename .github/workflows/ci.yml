@@ -48,14 +48,24 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify
-    runs-on: ubuntu-latest
+    name: Verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Determine Zenzic Core Branch (Parity or Fallback)
         id: resolve-branch
+        shell: bash
         run: |
           TARGET_BRANCH="${{ github.base_ref || github.ref_name }}"
           echo "Target branch is: $TARGET_BRANCH"
@@ -91,8 +101,10 @@ jobs:
         run: npm ci
 
       - name: Run unified verification
+        shell: bash
         env:
           ZENZIC_PROJECT_PATH: ./_zenzic_core
+          PYTHONUTF8: '1'
           # Pre-Launch Guard Pattern: runtime exclusion for pre-launch assets.
           # Blog posts and the v0.7.0 GitHub release tag are not yet publicly
           # reachable at CI time. Injected at runtime — zenzic.toml stays clean.
