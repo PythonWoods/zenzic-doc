@@ -13,6 +13,9 @@ export default [
       'build/**',
       '.docusaurus/**',
       'node_modules/**',
+      '.venv/**',
+      'venv/**',
+      '_zenzic_core/**',
       // Node.js CJS prebuild scripts — not part of the app bundle.
       'scripts/**',
       // Intentional monolith landing page kept outside lint policy.
