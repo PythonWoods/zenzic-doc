@@ -20,7 +20,7 @@ Per l'utilizzo quotidiano (YAML da copiare, reference degli input), consulta la 
 
 `zenzic-action` è una **GitHub Action composita** costruita su un'architettura rigorosa a due livelli:
 
-```
+```text
 action.yml            ← contratto pubblico (input, output, iniezione env)
     │
     └─▶  zenzic-action-wrapper.sh   ← livello di enforcement (sicurezza, exit code, SARIF)
@@ -124,7 +124,7 @@ Questo garantisce che gli step downstream che leggono `findings-count` non vedan
 
 Il wrapper implementa un'**auto-discovery gerarchica** per il file di configurazione Zenzic. L'ordine di ricerca riflette il posizionamento convenzionale nei repository reali:
 
-```
+```text
 Priorità 1  →  Override esplicito    (l'input config-file è impostato)
 Priorità 2  →  zenzic.toml          (root del repository)
 Priorità 3  →  .github/zenzic.toml  (directory config nascosta)
