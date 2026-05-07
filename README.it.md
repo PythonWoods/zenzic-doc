@@ -1,8 +1,8 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="static/brand/svg/zenzic-nav-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="static/brand/svg/zenzic-nav-light.svg">
-    <img src="static/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
+    <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-nav-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="static/assets/brand/svg/zenzic-nav-light.svg">
+    <img src="static/assets/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
   </picture>
 </div>
 
