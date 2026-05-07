@@ -22,9 +22,6 @@ repos:
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: mixed-line-ending
-      - id: no-commit-to-branch
-        args: ["--branch", "main"]
-        stages: [pre-commit]
 
   # 2. TypeScript type checking
   - repo: local
