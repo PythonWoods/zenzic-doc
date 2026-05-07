@@ -203,7 +203,6 @@ line = safe_read_line(raw_line, file_path, line_no)
 ### Hardening {#shield-hardening}
 
 - **Limite lunghezza riga** (F2-1): Le righe che superano 1 MiB vengono troncate silenziosamente prima della corrispondenza regex per prevenire il ReDoS.
-- **Timeout worker** (ZRT-002): In modalità parallela, ogni worker ha un timeout di 30 secondi. I worker che superano questo limite producono un risultato `Z009` di timeout invece di bloccare la pipeline.
 - **Buffer di lookback** (ZRT-007): Lo scanner mantiene uno stato di lookback di 1 riga. Per ogni riga, la coda della riga precedente normalizzata (`[-80:]`) viene concatenata con la testa della riga corrente (`[:80]`) e scansionata come passata aggiuntiva. Questo rileva i segreti divisi su scalari YAML folded o interruzioni di riga Markdown.
 
 ---
@@ -433,8 +432,6 @@ if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
 
 La riga troncata viene comunque scansionata — una credenziale che inizia nel primo 1 MiB di una riga verrà comunque rilevata. Solo il contenuto oltre il limite è invisibile allo Shield.
 
-**Interazione con il timeout del worker:** F2-1 è la prima linea di difesa. Il timeout del worker `ProcessPoolExecutor` di 30 secondi (ZRT-002, Obbligazione 1) è la seconda. Insieme garantiscono che nessun singolo file possa tenere in ostaggio la pipeline indipendentemente dal contenuto.
-
 ### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
 
 La funzione `_validate_docs_root()` in `cli.py` eleva il **Blood Sentinel** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
@@ -615,6 +612,87 @@ Il Blood Sentinel scatta anche quando `docs_dir` stesso risolve fuori dalla radi
 
 ---
 
+## Garanzia DFA — Il Motore RE2 {#dfa-guarantee}
+
+Zenzic v0.7.0 utilizza esclusivamente un motore **DFA (Deterministic Finite Automaton)** per tutti
+i pattern regex forniti dall'utente. Questa è un vincolo architetturale rigido, non un'opzione di
+configurazione.
+
+### Cosa significa
+
+Ogni pattern dichiarato in `[[custom_rules]]` all'interno di `zenzic.toml` viene compilato al
+momento del caricamento dalla libreria [RE2](https://github.com/google/re2) (tramite `google-re2`).
+RE2 implementa un vero DFA: elabora la stringa di input in un'unica passata da sinistra a destra,
+senza backtracking.
+
+Questo garantisce che ogni validazione regex avvenga in tempo lineare rispetto alla lunghezza
+dell'input:
+
+$$O(n)$$
+
+dove $n$ è la lunghezza della riga scansionata. La complessità temporale è limitata indipendentemente
+dalla struttura del pattern. Il ReDoS (Regular Expression Denial of Service) è **matematicamente
+impossibile** con questo motore.
+
+### Cosa RE2 rifiuta
+
+RE2 rifiuta i pattern che richiedono backtracking NFA. Se un pattern in `[[custom_rules]]` usa uno
+di questi costrutti, Zenzic genera un `PluginContractError` all'avvio — prima che venga scansionato
+qualsiasi file:
+
+| Costrutto | Esempio | Motivo |
+| :--- | :--- | :--- |
+| Backreference | `(\w+)\1` | Richiede memoria di una cattura precedente — non regolare |
+| Lookahead positivo | `foo(?=bar)` | Richiede scansione speculativa in avanti |
+| Lookahead negativo | `foo(?!bar)` | Richiede scansione speculativa in avanti |
+| Lookbehind | `(?<=foo)bar` | Richiede scansione all'indietro |
+
+### Cosa RE2 accetta
+
+RE2 è un superset della sintassi POSIX ERE standard. Pattern come questi si compilano e vengono
+eseguiti correttamente:
+
+| Funzionalità | Esempio |
+| :--- | :--- |
+| Testo letterale | `internal\.corp\.example\.com` |
+| Alternazione | `DRAFT\|WIP\|TODO` |
+| Ripetizione | `[0-9]{3}-[0-9]{4}` |
+| Flag inline | `(?i)\bDRAFT\b` (case-insensitive), `(?m)^todo` (multiline) |
+| Gruppi nominati | `(?P<code>Z\d{3})` |
+| Quantificatori classici "pericolosi" | `(a+)+` — sicuro in RE2, gira in O(n) |
+
+### Il Contratto di Purezza DFA
+
+```python
+# rules.py — CustomRule.__post_init__
+try:
+    self._compiled = re2.compile(self.pattern)
+except re2.error as exc:
+    raise PluginContractError(
+        f"CustomRule '{self.id}': il pattern {self.pattern!r} non è supportato "
+        f"dal motore RE2 (ZRT-007 — Contratto di Purezza DFA)."
+    ) from exc
+```
+
+`re2.compile` è l'unico step di validazione. Non esiste un canary a runtime, nessun timer
+SIGALRM e nessuna divergenza Windows/Linux. Un pattern si compila con RE2 al caricamento —
+ed è quindi O(n)-safe — oppure non si compila, e l'avvio fallisce con un messaggio di errore
+azionabile.
+
+### Perché non un canary basato su timeout?
+
+L'architettura precedente (v0.6.x) usava un "canary" basato su SIGALRM: il motore NFA di Python
+veniva eseguito su stringhe di stress all'interno di un timer da 50 ms. Questo forniva una
+protezione *probabilistica*: una macchina veloce poteva valutare `(a+)+` su 50 caratteri prima
+che il timer scattasse. Richiedeva anche codice platform-specific (SIGALRM è solo POSIX) e un
+modulo `timeout.py` separato.
+
+ZRT-007 elimina completamente il canary. La compilazione RE2 è un gate *deterministico* — i
+pattern incompatibili con il DFA vengono rifiutati incondizionatamente, su qualsiasi OS, a
+costo costante.
+
+---
+
 ## Motore Adattivo Ibrido {#adaptive-engine}
 
 La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e parallela in base al numero di file:
@@ -630,8 +708,7 @@ La soglia di 50 file (`ADAPTIVE_PARALLEL_THRESHOLD`) e un'euristica conservativa
 
 - **Determinismo:** i risultati sono sempre ordinati per `file_path` indipendentemente dalla modalita di esecuzione
 - **Shield per-worker:** ogni worker applica lo Shield indipendentemente. I file con risultati di sicurezza vengono esclusi dalla validazione link
-- **Timeout per worker:** un worker che eccede 30 secondi (`_WORKER_TIMEOUT_S`) viene abbandonato e produce un risultato `Z009` anziché bloccare l'intera scansione (protezione anti-ReDoS)
-- **Contratto di immutabilita:** `config` e `rule_engine` vengono serializzati via `pickle`. Ogni worker riceve una copia indipendente — nessuno stato condiviso tra processi
+- **Contratto di immutabilità:** `config` e `rule_engine` vengono serializzati via `pickle`. Ogni worker riceve una copia indipendente — nessuno stato condiviso tra processi. I pattern `CustomRule` compilati dal motore RE2 sono DFA-safe e non possono bloccare un processo worker
 
 ---
 

@@ -194,6 +194,13 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 - **Igiene workspace ESLint**: `.eslintignore` in root ora esclude artefatti
   di checkout CI (`_zenzic_core/`) e virtual environment locali (`.venv/`,
   `venv/`).
+- **Manutenzione dipendenze (ZRT-008)**: consolidati 8 Dependabot PR — Docusaurus
+  3.10.0 → 3.10.1 (`@docusaurus/core`, `faster`, `preset-classic`,
+  `module-type-aliases`, `tsconfig`, `types`; patch: bugfix bundler webpackbar),
+  `lucide-react` 1.8.0 → 1.14.0 (nuove icone), `postcss` → 8.5.14
+  (sicurezza: XSS tramite `</style>` non escaped in scenari non-bundler; fix
+  regressione sintassi custom). `npm run build` (EN + IT) pulito dopo
+  l'aggiornamento.
 
 #### Rimosso
 

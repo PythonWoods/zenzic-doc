@@ -180,7 +180,6 @@ line = safe_read_line(raw_line, file_path, line_no)
 ### Hardening {#shield-hardening}
 
 - **Line length limit** (F2-1): Lines exceeding 1 MiB are silently truncated before regex matching to prevent ReDoS.
-- **Worker timeout** (ZRT-002): In parallel mode, each worker has a 30-second timeout. Workers that exceed this limit produce a `Z009` timeout finding instead of blocking the pipeline.
 - **Lookback buffer** (ZRT-007): The scanner maintains a 1-line lookback state. For each line, the tail of the previous normalised line (`[-80:]`) is concatenated with the head of the current line (`[:80]`) and scanned as an additional pass. This catches secrets split across YAML folded scalars or Markdown line breaks.
 
 ---
@@ -206,8 +205,6 @@ if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
 ```
 
 The truncated line is still scanned — a credential that begins in the first 1 MiB of a line will still be detected. Only content beyond the cap is invisible to the Shield.
-
-**Interaction with the worker timeout:** F2-1 is the first line of defence. The 30-second `ProcessPoolExecutor` worker timeout (ZRT-002, Obligation 1) is the second. Together they ensure no single file can hold the pipeline hostage regardless of content.
 
 ### F4-1 — Anti-Jailbreak Path Validation {#f4-1-antijailbreak}
 
@@ -588,6 +585,81 @@ Blood Sentinel also fires when `docs_dir` itself resolves outside the repository
 
 ---
 
+## DFA Guarantee — The RE2 Engine {#dfa-guarantee}
+
+Zenzic v0.7.0 uses exclusively a **DFA (Deterministic Finite Automaton)** engine for all
+user-supplied regex patterns. This is a hard architectural constraint, not a configuration
+option.
+
+### What this means
+
+Every pattern declared in `[[custom_rules]]` inside `zenzic.toml` is compiled at load time
+by the [RE2 library](https://github.com/google/re2) (via `google-re2`). RE2 implements a
+true DFA: it processes the input string in a single left-to-right pass, with no backtracking.
+
+This guarantees that every regex validation runs in time linear in the length of the input:
+
+$$O(n)$$
+
+where $n$ is the length of the line being scanned. The time complexity is bounded regardless
+of the pattern structure. ReDoS (Regular Expression Denial of Service) is **mathematically
+impossible** under this engine.
+
+### What RE2 rejects
+
+RE2 rejects patterns that require NFA backtracking. If a `[[custom_rules]]` pattern uses any
+of these constructs, Zenzic raises a `PluginContractError` at startup — before any file is
+scanned:
+
+| Construct | Example | Reason |
+| :--- | :--- | :--- |
+| Backreferences | `(\w+)\1` | Requires memory of a previous capture — non-regular |
+| Positive lookahead | `foo(?=bar)` | Requires speculative forward scanning |
+| Negative lookahead | `foo(?!bar)` | Requires speculative forward scanning |
+| Lookbehind | `(?<=foo)bar` | Requires backward scanning |
+
+### What RE2 accepts
+
+RE2 is a superset of standard POSIX ERE syntax. Patterns like these compile and run correctly:
+
+| Feature | Example |
+| :--- | :--- |
+| Literal text | `internal\.corp\.example\.com` |
+| Alternation | `DRAFT\|WIP\|TODO` |
+| Repetition | `[0-9]{3}-[0-9]{4}` |
+| Inline flags | `(?i)\bDRAFT\b` (case-insensitive), `(?m)^todo` (multiline) |
+| Named groups | `(?P<code>Z\d{3})` |
+| Classic "dangerous" quantifiers | `(a+)+` — safe under RE2, runs in O(n) |
+
+### The DFA Purity Contract
+
+```python
+# rules.py — CustomRule.__post_init__
+try:
+    self._compiled = re2.compile(self.pattern)
+except re2.error as exc:
+    raise PluginContractError(
+        f"CustomRule '{self.id}': pattern {self.pattern!r} is not supported "
+        f"by the RE2 engine (ZRT-007 — DFA Purity Contract)."
+    ) from exc
+```
+
+`re2.compile` is the only gating step. There is no runtime canary, no SIGALRM timer, and no
+Windows/Linux divergence. A pattern either compiles with RE2 at load time — and is therefore
+O(n) safe — or it does not compile, and the startup fails with an actionable error message.
+
+### Why not a timeout-based canary?
+
+The previous architecture (v0.6.x) used a SIGALRM-based "canary": Python's NFA regex engine
+was run against stress strings inside a 50 ms timer. This provided *probabilistic* protection:
+a fast machine could evaluate `(a+)+` on 50 characters before the timer fired. It also required
+platform-specific code (SIGALRM is POSIX-only) and a separate `timeout.py` module.
+
+ZRT-007 eliminates the canary entirely. RE2 compilation is a *deterministic* gate — patterns
+that are incompatible with DFA are rejected unconditionally, on every OS, at constant cost.
+
+---
+
 ## Hybrid Adaptive Engine {#adaptive-engine}
 
 The scan engine automatically selects sequential or parallel execution based on the number of files:
@@ -602,8 +674,7 @@ The threshold (50 files) is a conservative heuristic: below it, `ProcessPoolExec
 In parallel mode:
 
 - Each file is processed by an independent worker process.
-- Workers receive serialised copies of `config` and `rule_engine` via `pickle` -- no shared state.
-- A 30-second timeout per worker prevents ReDoS patterns in custom rules from deadlocking the pipeline.
+- Workers receive serialised copies of `config` and `rule_engine` via `pickle` — no shared state. `CustomRule` patterns compiled by the RE2 engine are DFA-safe and cannot deadlock a worker process.
 - External URL validation is performed in the main process after all workers complete.
 - Results are always sorted by `file_path` regardless of execution mode (determinism guarantee).
 

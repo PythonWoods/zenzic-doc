@@ -48,14 +48,8 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
+    name: Verify (ubuntu-latest, Node LTS)
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash

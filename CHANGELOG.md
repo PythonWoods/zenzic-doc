@@ -199,6 +199,12 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   `zenzic.dev/developers/`, `zenzic.dev/it/developers/`, and the
   `v0.7.0` GitHub release tag). `PYTHONUTF8: '1'` added for Windows encoding
   determinism.
+- **Dependency maintenance (ZRT-008)**: consolidated 8 Dependabot PRs — Docusaurus
+  3.10.0 → 3.10.1 (`@docusaurus/core`, `faster`, `preset-classic`,
+  `module-type-aliases`, `tsconfig`, `types`; patch: webpackbar bundler fix),
+  `lucide-react` 1.8.0 → 1.14.0 (new icons), `postcss` → 8.5.14
+  (security: XSS via unescaped `</style>` in non-bundler cases; custom syntax
+  regression fix). `npm run build` (EN + IT) clean after update.
 
 #### Removed
 
