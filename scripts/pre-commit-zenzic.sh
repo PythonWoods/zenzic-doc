@@ -49,13 +49,9 @@ fi
 
 echo "Mode: Local Zenzic (${ZENZIC_PATH})"
 
-# Pre-Launch Guard — remove after GA deploy when all URLs resolve
+# Permanent exclusion: contributor-covenant.org is a flaky third-party URL.
 GUARD=(
-  --exclude-url "https://zenzic.dev/blog/"
-  --exclude-url "https://zenzic.dev/docs/explanation/structural-integrity"
-  --exclude-url "https://zenzic.dev/developers/"
-  --exclude-url "https://zenzic.dev/it/developers/"
-  --exclude-url "https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0"
+  --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
 )
 
 uv run --project "${ZENZIC_PATH}" zenzic check all --strict "${GUARD[@]}" "$@"
