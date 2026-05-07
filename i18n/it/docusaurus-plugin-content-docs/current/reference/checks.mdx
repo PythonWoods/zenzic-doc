@@ -137,19 +137,21 @@ Lo Zenzic Shield utilizza un'**architettura a doppio flusso** per garantire che 
 
 Quando il Reference Scanner elabora un file, crea due flussi indipendenti:
 
-```text
-                ┌─────────────────────────────────┐
-                │  Reference Scanner               │
-                │                                  │
-File su disco ──►│  Flusso SHIELD                  │
-                │    vede TUTTE le righe (incluso   │
-                │    il frontmatter YAML)           │
-                │                                  │
-                │  Flusso CONTENUTI                │
-                │    salta frontmatter + blocchi    │
-                │    di codice (analizza            │
-                │    riferimenti e immagini)        │
-                └─────────────────────────────────┘
+```mermaid
+flowchart LR
+    classDef file    fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
+    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef content fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
+
+    disk["📄 File su disco"]:::file
+
+    subgraph RS ["Reference Scanner"]
+        SH["🛡️ Flusso SHIELD\nVede TUTTE le righe\n(incl. frontmatter YAML)"]:::shield
+        CT["📝 Flusso CONTENUTI\nSalta frontmatter + blocchi codice\n(analizza riferimenti e immagini)"]:::content
+    end
+
+    disk --> SH
+    disk --> CT
 ```
 
 I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti deve saltare il frontmatter YAML per evitare di interpretare metadati come `author: Jane Doe` come una definizione reference rotta. Il flusso Shield deve vedere il frontmatter perché una chiave come `aws_key: AKIA...` nascosta nei metadati YAML è un segreto reale che deve essere intercettato. I flussi non condividono mai una sorgente dati — unirli creerebbe un punto cieco.

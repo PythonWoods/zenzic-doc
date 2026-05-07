@@ -10,13 +10,16 @@ Zenzic si configura tramite un singolo file TOML. La configurazione e facoltativ
 
 ## Priorita di caricamento {#loading-priority}
 
-La catena di priorita segue il modello **Agnostic Citizen** (il primo file trovato vince):
+Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sorgente più specifica vince:
 
-| Priorita | Sorgente | Note |
+| Priorita | Sorgente | Descrizione |
 | :---: | :--- | :--- |
-| 1 | `zenzic.toml` nella radice del repository | File sovrano — la fonte autorevole |
-| 2 | `[tool.zenzic]` in `pyproject.toml` | Alternativa per progetti che preferiscono un unico file di configurazione |
-| 3 | Valori predefiniti integrati | Nessun file trovato — Zenzic funziona comunque |
+| **1 (massima)** | **Flag CLI** | `--engine`, `--exclude-dir`, `--strict`, ecc. Sovrascrivono ogni altra sorgente per la singola esecuzione. |
+| 2 | `zenzic.toml` | File standalone alla radice del repository — la configurazione sovrana autorevole |
+| 3 | `pyproject.toml` | Tabella `[tool.zenzic]` dentro `pyproject.toml` |
+| 4 (minima) | Valori predefiniti integrati | Default hardcoded quando nessun file di configurazione viene trovato |
+
+**I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `zenzic.toml` per quella singola esecuzione senza modificare alcun file.
 
 Quando il file vincente esiste ma contiene un errore di sintassi TOML, Zenzic solleva un errore con messaggio Rich-formattato. Non c'e fallback silenzioso: nascondere errori dell'utente sarebbe un rischio.
 
@@ -58,7 +61,7 @@ excluded_dirs = ["includes", "stylesheets", "overrides", "hooks"]
 | :--- | :--- | :--- | :--- |
 | `excluded_dirs` | `list[string]` | `["includes", "stylesheets", "overrides", "hooks"]` | Directory dentro `docs/` da escludere dai controlli orfani e snippet |
 
-Le voci dell'utente vengono **unite** ai Guardrail di Sistema (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I Guardrail di Sistema includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
+Le voci dell'utente vengono **unite** ai System Guardrails (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I System Guardrails includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
 
 ### Pattern di file esclusi {#excluded-file-patterns}
 
@@ -147,8 +150,7 @@ I campi `excluded_dirs` e `excluded_file_patterns` nel file di configurazione de
 - **Verificabili** — un nuovo collaboratore che esegue `git diff` vede esattamente cosa esclude Zenzic e perché
 - **Stabili** — le esclusioni non cambiano quando uno sviluppatore aggiorna `.gitignore` per ragioni di tooling non correlate
 
-```toml
-# zenzic.toml (o [tool.zenzic] in pyproject.toml)
+```toml title="zenzic.toml"
 # Le esclusioni esplicite sono manutenibili e verificabili
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
@@ -171,7 +173,7 @@ respect_vcs_ignore = true
 | :--- | :--- | :--- | :--- |
 | `respect_vcs_ignore` | `bool` | `false` | Quando `true`, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs ed esclude i file corrispondenti da tutti i controlli |
 
-Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la motivazione. Quando attivato, le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i Guardrail di Sistema restano sempre applicati.
+Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la motivazione. Quando attivato, le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
 
 ---
 
@@ -188,7 +190,7 @@ included_file_patterns = ["api.generated.md"]
 | `included_dirs` | `list[string]` | `[]` | Directory dentro `docs/` forzatamente incluse anche se escluse da pattern VCS o `excluded_dirs` |
 | `included_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) forzatamente inclusi anche se esclusi da pattern VCS o `excluded_file_patterns` |
 
-Le inclusioni forzate non possono mai sovrastare i Guardrail di Sistema (`.git`, `.venv`, ecc.). La regola e semplice: i Guardrail di Sistema sono immutabili.
+Le inclusioni forzate non possono mai sovrastare i System Guardrails (`.git`, `.venv`, ecc.). La regola e semplice: i System Guardrails sono immutabili.
 
 ---
 
@@ -239,6 +241,10 @@ excluded_external_urls = ["https://github.com/PythonWoods/zenzic"]
 
 La validazione delle ancore stessa pagina è disabilitata per default perché gli ID ancora possono essere generati da attributi HTML, plugin personalizzati o macro a tempo di build che sono invisibili durante la scansione del sorgente.
 
+:::warning[Regola R19 — Nessuna esclusione a livello di dominio]
+Non aggiungere mai un intero dominio come esclusione (es. `"https://zenzic.dev/"`). Un'esclusione di dominio generico crea un angolo buio permanente che sopravvive alle ristrutturazioni dei contenuti e nasconde silenziosamente i link rotti. Le voci devono puntare a **URL specifici o prefissi**, non a domini radice. Usa `--exclude-url <url>` dalla CLI per esclusioni temporanee e puntuali.
+:::
+
 ---
 
 ## Contesto di build {#build-context}
@@ -255,7 +261,30 @@ fallback_to_default = true
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `engine` | `string` | `"mkdocs"` | Motore di build: `"mkdocs"`, `"zensical"`, `"docusaurus"` o `"vanilla"` |
+
+### `engine` {#engine}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `str` |
+| **Default** | `"auto"` |
+
+Identificatore del motore di build. Usato dalla factory degli adapter per selezionare la strategia corretta di risoluzione dei percorsi. Adapter integrati: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
+
+Quando impostato su `"auto"` (il default), Zenzic analizza la root del progetto a runtime con la **Quartz Auto-Discovery**, cercando file di configurazione dell'engine nell'ordine di priorità:
+
+1. `zensical.toml` → `zensical`
+2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
+3. `mkdocs.yml` → `mkdocs`
+4. *(nessuna corrispondenza)* → `standalone`
+
+Per la CI di produzione, si consiglia di fissare l'engine esplicitamente per saltare il costo della discovery:
+
+```toml
+[build_context]
+engine = "docusaurus"
+```
+
 | `default_locale` | `string` | `"en"` | Codice ISO 639-1 della lingua predefinita |
 | `locales` | `list[string]` | `[]` | Nomi delle directory di localizzazione non predefinite (ad esempio `["it", "fr"]`) |
 | `base_url` | `string` | `""` | URL base del sito (ad esempio `"/"` o `"/docs/"`). Quando impostato, l'adapter lo usa al posto dell'estrazione statica dal file di configurazione del motore di build |
@@ -327,6 +356,8 @@ plugins = ["zenzic-no-draft", "custom-link-checker"]
 
 Le regole core fornite con Zenzic sono sempre abilitate. I plugin devono essere installati come pacchetti Python che registrano entry-point nel gruppo `zenzic.rules`.
 
+Usa `zenzic inspect capabilities` per vedere tutte le regole scoperte e la loro origine.
+
 ---
 
 ## Flag CLI {#cli-flags}
@@ -339,7 +370,7 @@ I flag CLI sovrascrivono la configurazione del file per la singola esecuzione:
 | `--exit-zero` | `exit_zero = true` | Esci sempre con codice 0 |
 | `--fail-under N` | `fail_under = N` | Soglia minima di punteggio |
 | `--exclude-dir DIR` | `excluded_dirs` | Esclude una directory aggiuntiva (ripetibile) |
-| `--include-dir DIR` | `included_dirs` | Forza l'inclusione di una directory (ripetibile, non sovrasta i Guardrail di Sistema) |
+| `--include-dir DIR` | `included_dirs` | Forza l'inclusione di una directory (ripetibile, non sovrasta i System Guardrails) |
 | `--engine ENGINE` | `build_context.engine` | Sovrascrive l'adapter del motore di build |
 | `--show-info` | — | Mostra i risultati a livello info (ad esempio link circolari) |
 | `--format json` | — | Output in formato JSON |
@@ -349,8 +380,7 @@ I flag CLI sovrascrivono la configurazione del file per la singola esecuzione:
 
 ## Esempio completo {#full-example}
 
-```toml
-# zenzic.toml — configurazione completa di esempio
+```toml title="zenzic.toml"
 
 docs_dir = "docs"
 
@@ -405,7 +435,7 @@ plugins = []
 
 ### L'Ordine dei Campi è Legge {#field-order}
 
-In TOML, ogni chiave scritta **dopo** un'intestazione `[sezione]` appartiene a quella sezione, non alla radice.  
+In TOML, ogni chiave scritta **dopo** un'intestazione `[sezione]` appartiene a quella sezione, non alla radice.
 Zenzic carica la radice con `_build_from_data`, che filtra in base ai campi di `ZenzicConfig` — qualsiasi chiave annidata in una sezione sconosciuta viene silenziosamente ignorata.
 
 **Sbagliato — tutti i campi root dopo `[project]` vengono inghiottiti:**
@@ -414,8 +444,8 @@ Zenzic carica la radice con `_build_from_data`, che filtra in base ai campi di `
 [project]
 name = "Il Mio Progetto"
 
-# ❌ Queste righe sembrano impostazioni root ma sono DENTRO [project].
-# Zenzic le ignora — la sezione è sconosciuta.
+# ❌ Queste righe sembrano impostazioni root ma sono DENTRO [project]
+# Zenzic le ignora — la sezione è sconosciuta
 placeholder_patterns = []
 docs_dir = "docs"
 ```
@@ -436,10 +466,10 @@ base_url = "/"
 
 ### Le Sezioni Sconosciute Emettono un Avviso {#unknown-sections}
 
-Da v0.6.1, Zenzic emette un `WARNING` quando incontra una sezione TOML che non riconosce (es. `[project]`), invece di scartarla silenziosamente.  
+Da v0.6.1, Zenzic emette un `WARNING` quando incontra una sezione TOML che non riconosce (es. `[project]`), invece di scartarla silenziosamente.
 Se vedi:
 
-```
+```text
 WARNING  zenzic.toml: unknown section [project] will be ignored …
 ```
 
@@ -447,7 +477,7 @@ sposta tutte le impostazioni che seguono quell'intestazione in cima al file, pri
 
 ### Pattern `dogfooding` con Docusaurus {#dogfooding}
 
-Documentare un linter con il suo stesso linter crea falsi positivi intenzionali: le pagine che *spiegano* i pattern placeholder attiveranno il checker dei placeholder.  
+Documentare un linter con il suo stesso linter crea falsi positivi intenzionali: le pagine che *spiegano* i pattern placeholder attiveranno il checker dei placeholder.
 Disabilita il checker nel `zenzic.toml` del repository della documentazione:
 
 ```toml

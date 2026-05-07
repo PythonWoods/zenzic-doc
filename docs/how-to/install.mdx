@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 sidebar_label: Overview
 icon: lucide/play
 description: "Install, configure, and run Zenzic on your documentation project."
@@ -20,7 +21,9 @@ in local development, as a pre-commit hook, in CI pipelines, or for one-off audi
 The repository ships maintained fixtures that mirror the documented contracts:
 
 - `examples/mkdocs-basic/` — MkDocs 1.6 baseline (nested nav, external nav link,
+
   tolerant YAML tags like `!ENV` and `!relative`).
+
 - `examples/i18n-standard/` — strict bilingual gold standard.
 - `examples/zensical-basic/` — Zensical v0.0.31+ baseline (`[project].nav`).
 - `examples/broken-docs/` — intentional failures (exit 1).
@@ -29,9 +32,8 @@ The repository ships maintained fixtures that mirror the documented contracts:
 :::tip[Just want to run it now?]
 
 ```bash
-pip install zenzic
-zenzic lab          # explore all 9 built-in examples — zero setup
-zenzic check all    # protect your own documentation
+uvx zenzic lab      # explore all 9 built-in examples — zero setup
+uvx zenzic check all  # protect your own documentation
 ```
 
 Curious how Zenzic handles Docusaurus v3 versioning or the Zensical transparent proxy?
@@ -129,11 +131,13 @@ Standard dev-dependency pattern with a project-local virtual environment.
   </TabItem>
 </Tabs>
 
-### Lean & Agnostic by Design {#lean-agnostic}
+### Static analysis only — no build runtime required {#lean-agnostic}
 
-Zenzic performs a **static analysis** of your configuration files (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`). It does **not** execute the build engine or its plugins.
+Zenzic reads configuration files (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`) as plain
+text. It does **not** execute the build engine or its plugins.
 
-This means you **do not need to install** MkDocs, Material for MkDocs, or any other build-related plugins in your linting environment. Zenzic remains lightweight and dependency-free, making it ideal for fast, isolated CI/CD pipelines.
+Do **not** install MkDocs, Material for MkDocs, or any build plugin in your linting
+environment. They are not needed. The linting environment has one dependency: `zenzic`.
 
 ```bash
 # Lint any MkDocs project — no extras needed
@@ -143,7 +147,7 @@ uvx zenzic check all
 :::note[Third-party engine adapters]
 Third-party adapters (e.g. a hypothetical `zenzic-hugo-adapter`) are separate
 installable packages — not extras of `zenzic` itself. No extra is required for
-`VanillaAdapter` (plain Markdown folders).
+`StandaloneAdapter` (plain Markdown folders).
 :::
 
 ---
@@ -171,7 +175,7 @@ Edit the file to enable rules, adjust directories, or set a quality threshold.
 Run zenzic check all to validate your documentation.
 ```
 
-If no engine config file is found, `zenzic init` produces an engine-agnostic scaffold (Vanilla
+If no engine config file is found, `zenzic init` produces an engine-agnostic scaffold (Standalone
 mode). In either case, all settings are commented out by default — uncomment and adjust only the
 fields you need.
 
@@ -231,32 +235,38 @@ When `mkdocs.yml` (MkDocs/Zensical) or `zensical.toml` (Zensical) is present at 
 root, Zenzic loads the corresponding **adapter** which provides:
 
 - **Nav awareness** — orphan detection knows the difference between "not in the nav" and "not
+
   supposed to be in the nav" (e.g. i18n locale files).
+
 - **i18n fallback** — cross-locale links are resolved correctly instead of being flagged as broken.
 - **Locale directory suppression** — files under `docs/it/`, `docs/fr/`, etc. are not reported
+
   as orphans.
+
 - **Ghost Routes** — when `mkdocs-material` with `reconfigure_material: true` generates locale
+
   entry points (e.g. `/it/`) at build time, those pages never appear in `nav:`. Zenzic
   marks them `REACHABLE` automatically in the [Virtual Site Map](../reference/checks#vsm-how-it-works)
   so they are never reported as false orphans — with no manual exclusion list required.
 
-### Vanilla mode {#vanilla-mode}
+### Standalone mode {#standalone-mode}
 
-When no build-engine configuration is found, Zenzic falls back to `VanillaAdapter`. In this mode:
+When no build-engine configuration is found, Zenzic falls back to `StandaloneAdapter`. In this mode:
 
 - **Orphan check is skipped.** Without a nav declaration, every file would appear to be an orphan.
 - **All other checks run normally** — links, snippets, placeholders, assets, and references.
 
-Vanilla mode is the right choice for plain Markdown wikis, GitHub-wiki repos, or any project
+Standalone mode is the right choice for plain Markdown wikis, GitHub-wiki repos, or any project
 where navigation is implicit rather than declared.
 
 :::tip[Force a specific mode]
 Use `--engine` to override the detected adapter for a single run:
 
 ```bash
-zenzic check all --engine vanilla    # skip orphan check regardless of config files
-zenzic check all --engine mkdocs     # force MkDocs adapter
+zenzic check all --engine standalone    # skip orphan check regardless of config files
+zenzic check all --engine mkdocs        # force MkDocs adapter
 ```
+
 :::
 
 ---
@@ -264,5 +274,5 @@ zenzic check all --engine mkdocs     # force MkDocs adapter
 **Next steps:**
 
 - [CLI Commands reference](../reference/cli.mdx) — every command, flag, and exit code
-- [Advanced features](./advanced-options.mdx) — Reference integrity, Shield, programmatic usage
+- [Advanced features](../reference/advanced-features.mdx) — Reference integrity, Shield, programmatic usage
 - [CI/CD Integration](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hooks, baseline management

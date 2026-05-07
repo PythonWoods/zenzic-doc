@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+
 # Dependencies
 /node_modules
 
@@ -10,6 +13,8 @@
 .cache-loader
 *.tsbuildinfo
 .eslintcache
+_zenzic_core/
+__pycache__/
 
 # Misc
 .DS_Store
@@ -21,11 +26,27 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.zenzic.local.toml
 *.log
 
-# Drafts (dev.to articles, internal notes)
+# Drafts (editorial, internal notes)
 /drafts
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# EPOCH 4 — draft vault (git-ignored, local reference only)
+.draft/
+
+# --- Ephemeral Artifacts (Machine Silence) ---
+zenzic-results.sarif
+coverage.json
+coverage.xml
+.coverage
+.coverage.*
+mutmut*
+.mutmut-cache/
+.pytest_cache/
+.nox/
+.hypothesis/

@@ -42,14 +42,19 @@ non il build**. Legge `mkdocs.yml`, `zensical.toml` e i tuoi file Markdown come 
 Non importa né esegue mai un framework di build. Questo significa:
 
 - Zenzic comprende la struttura della tua documentazione anche se il binario di build che la
+
   interpretava non funziona più.
+
 - Eseguire `zenzic check all` su un progetto nel mezzo di una migrazione produce la stessa
+
   analisi di un progetto pienamente operativo — perché i file sorgente non sono cambiati.
+
 - Cambiare `engine` in `zenzic.toml` (una sola riga) è tutto ciò che serve per validare se
+
   il contenuto è strutturalmente compatibile con un nuovo motore, senza toccare un singolo
   file Markdown.
 
-Questo è il Porto Sicuro (Safe Harbor): **uno strato di validazione fisso che rimane valido
+Questo è il Safe Harbor: **uno strato di validazione fisso che rimane valido
 prima, durante e dopo qualsiasi cambio di motore di build**.
 
 ---
@@ -62,12 +67,11 @@ configurazione i18n, flag di plugin come `reconfigure_material`) e passa il risu
 Engine come oggetti Python tipizzati. Non chiama mai `mkdocs build`, non importa mai `mkdocs`,
 e non dipende mai dall'installazione o dal funzionamento di alcun plugin.
 
-La conseguenza pratica è che `MkDocsAdapter` è il **custode dello standard dell'ecosistema
-classico pluggable**. Finché il tuo `mkdocs.yml` descrive una struttura MkDocs 1.x valida,
-Zenzic la comprenderà e la validerà — indipendentemente da ciò che qualsiasi binario di build
-supporti o meno. Se esegui `zenzic check all` con `engine = "mkdocs"`, stai testando il tuo
-contenuto rispetto al contratto strutturale documentato di MkDocs 1.x, non rispetto a nessuna
-versione binaria specifica.
+La conseguenza pratica è che `MkDocsAdapter` preserva il contratto strutturale MkDocs 1.x come
+una specifica statica con versione. Finché il tuo `mkdocs.yml` descrive una struttura MkDocs 1.x
+valida, Zenzic la comprende e la valida — indipendentemente da ciò che qualsiasi binario di
+build supporti o meno. Eseguendo `zenzic check all` con `engine = "mkdocs"` si testa il
+contenuto rispetto a quel contratto documentato, non rispetto a nessuna versione binaria specifica.
 
 Questo rende l'output di Zenzic un **certificato di qualità portabile**: se Zenzic dice che la
 tua documentazione è strutturalmente corretta, questa affermazione è vera indipendentemente da
@@ -106,12 +110,17 @@ setup i18n sono ben definite, ma la *capacità di rendering* del motore potrebbe
 ancora completa. Zenzic opera interamente nel dominio strutturale:
 
 - **Risoluzione dei link cross-locale** — un link da una pagina italiana a un asset
+
   disponibile solo in inglese viene risolto rispetto alla catena di fallback definita in
   `mkdocs.yml`, non rispetto all'output del build.
+
 - **Rilevamento Ghost Routes** — i punti di ingresso locale generati al momento del build
+
   (es. `/it/`) vengono marcati `REACHABLE` nella VSM in modo da non essere mai segnalati
   come orfani, anche se non sono mai stati renderizzati.
+
 - **Soppressione delle directory locale** — i file in `docs/it/`, `docs/fr/`, ecc. vengono
+
   classificati come shadow locale, non come orfani.
 
 Puoi quindi validare una struttura i18n complessa con Zenzic e avere la certezza della sua
@@ -127,9 +136,12 @@ senza toccare un singolo file di documentazione. Dal punto di vista di Zenzic:
 
 - La struttura della directory `docs/` rimane invariata.
 - `mkdocs.yml` rimane valido come sorgente principale di navigazione e configurazione;
+
   Zensical lo legge direttamente.
+
 - Le convenzioni i18n in folder-mode e suffix-mode sono strutturalmente identiche.
 - `[build_context]` in `zenzic.toml` può rimanere `engine = "mkdocs"` fino a quando non sei
+
   pronto a creare `zensical.toml`.
 
 ---
@@ -145,20 +157,26 @@ rompono silenziosamente l'esperienza utente in fase di build.
 
 **Configurazione raccomandata:**
 
-```yaml
+```yaml title="mkdocs.yml"
 # mkdocs.yml
 plugins:
+
   - i18n:
+
       docs_structure: folder
       fallback_to_default: true
       reconfigure_material: true   # ← delega lo switcher al plugin i18n
       reconfigure_search: true
       languages:
+
         - locale: en
+
           default: true
           build: true
           link: /
+
         - locale: it
+
           build: true
           link: /it/
 ```
@@ -168,14 +186,18 @@ Quando entrambi sono presenti, il tema Material riceve due definizioni di switch
 conflitto; a seconda della versione del plugin il risultato è uno switcher duplicato oppure
 nessuno switcher:
 
-```yaml
+```yaml title="mkdocs.yml"
 # ✗ — rimuovere questo blocco quando reconfigure_material: true è impostato
 extra:
   alternate:
+
     - name: English
+
       link: /
       lang: en
+
     - name: Italiano
+
       link: /it/
       lang: it
 ```
@@ -199,6 +221,7 @@ di esecuzione allineato a [Comandi CLI: Flag globali](../reference/cli.mdx#globa
 2. `--exit-zero` per finestre di osservazione senza interrompere la pipeline.
 3. `--show-info` per ispezionare segnali del grafo link (esempio `CIRCULAR_LINK`).
 4. `--quiet` per Silent Builders negli hook CI.
+
 :::
 
 ### Fase 1 — Stabilisci un baseline
@@ -277,12 +300,16 @@ nav = [
 ]
 ```
 
-:::tip[Identità Flessibile & Custode Strutturale]
-Se `engine = "zensical"` è dichiarato ma `zensical.toml` non esiste ancora, Zenzic eseguirà nativamente un fallback leggendo il tuo `mkdocs.yml` esistente (il Proxy Trasparente). 
-Questo ti permette di cambiare engine e mantenere il file di configurazione legacy durante la transizione, senza interrompere la pipeline di validazione. Zenzic agisce come un custode strutturale: non ti costringerà a cambiare formato di configurazione prematuramente.
+:::tip[Identità Flessibile — Proxy Trasparente]
+Dichiara `engine = "zensical"` in `zenzic.toml` prima che `zensical.toml` esista. Zenzic
+legge il tuo `mkdocs.yml` esistente tramite il Proxy Trasparente e lo valida rispetto al
+contratto strutturale Zensical. Cambia la dichiarazione dell'engine, esegui
+`zenzic check all`, leggi il risultato — nessun file Markdown toccato, nessuna pipeline
+interrotta.
 
-Nota: Mentre opera tramite il bridge di compatibilità, Zenzic emetterà dei warning se il tuo `mkdocs.yml` contiene impostazioni specifiche di MkDocs che Zensical ignora, come:
-`remote_branch`, `remote_name`, `exclude_docs`, `draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
+Mentre il bridge di compatibilità è attivo, Zenzic emette warning per le chiavi specifiche
+di MkDocs che Zensical ignora: `remote_branch`, `remote_name`, `exclude_docs`,
+`draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
 :::
 
 ### Fase 4 — Verifica l'integrità dei link

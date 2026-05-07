@@ -8,6 +8,8 @@
     "start:en": "docusaurus start --locale en",
     "start:it": "docusaurus start --locale it",
     "build": "docusaurus build",
+    "lint:md": "markdownlint-cli2 \"**/*.{md,mdx}\" \"#build\" \"#node_modules\"",
+    "lint:ts": "eslint .",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -17,27 +19,35 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "3.10.0",
-    "@docusaurus/faster": "3.10.0",
-    "@docusaurus/preset-classic": "3.10.0",
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/faster": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
     "@mdx-js/react": "^3.0.0",
+    "@tailwindcss/postcss": "^4.2.4",
     "clsx": "^2.0.0",
-    "lucide-react": "^1.8.0",
+    "lucide-react": "^1.14.0",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@tailwindcss/postcss": "^4.2.2",
-    "tailwindcss": "^4.2.2"
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.10.0",
-    "@docusaurus/tsconfig": "3.10.0",
-    "@docusaurus/types": "3.10.0",
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/tsconfig": "3.10.1",
+    "@docusaurus/types": "3.10.1",
+    "@eslint/js": "^9.39.1",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",
-    "autoprefixer": "^10.4.27",
-    "postcss": "^8.5.9",
-    "typescript": "~6.0.2"
+    "autoprefixer": "^10.5.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "markdownlint-cli2": "^0.22.1",
+    "postcss": "^8.5.14",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.46.1"
   },
   "browserslist": {
     "production": [
@@ -50,6 +60,9 @@
       "last 3 firefox version",
       "last 5 safari version"
     ]
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
   },
   "engines": {
     "node": ">=20.0"

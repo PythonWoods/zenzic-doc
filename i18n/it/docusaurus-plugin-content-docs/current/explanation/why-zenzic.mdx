@@ -1,0 +1,154 @@
+---
+sidebar_position: 10
+sidebar_label: "Perché Zenzic"
+title: "Perché Zenzic — La Safe Harbor Philosophy"
+description: "Una dichiarazione di principi. Zenzic non spiega la documentazione; la difende. Ecco perché questa distinzione è fondamentale."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Perché Zenzic — La Safe Harbor Philosophy
+
+> *"Una documentazione che non viene difesa è una documentazione che prima o poi mentirà."*
+
+Questa pagina non è un documento di marketing. È una dichiarazione di principi — una
+spiegazione delle scelte progettuali dietro Zenzic che possono sembrare controverse,
+conservatrici, o persino estreme, ma che sono deliberate e non negoziabili.
+
+---
+
+## La Documentazione come Input Non Fidato
+
+Ogni sistema di documentazione che ha mai fallito — link rotti dopo un refactoring,
+credenziali trapelate in un repository pubblico, pagine orfane abbandonate dopo una
+rinomina — ha fallito perché qualcuno ha assunto che la documentazione fosse corretta.
+
+Zenzic non fa questa assunzione.
+
+**Zenzic tratta il sorgente della documentazione come input non fidato.** La stessa
+disciplina che la tua applicazione applica a un confine di rete — valida prima di fidarsi
+— viene applicata qui al confine della documentazione. Un file Markdown è codice. Un file
+di configurazione è codice. Una destinazione di link è un'affermazione che deve essere
+verificata, non creduta.
+
+Questa è la garanzia del **Safe Harbor**: esegui Zenzic, ottieni un certificato. Se il
+tool termina con exit 0, la documentazione è strutturalmente integra. Non perfetta — ma
+strutturalmente verificabile. Nessun link interno rotto. Nessuna credenziale trapelata.
+Nessuna pagina scomparsa silenziosamente dalla navigazione. Il sorgente è sicuro da
+consegnare a qualsiasi motore di build.
+
+---
+
+## La Tassa Node.js
+
+Ogni strumento di documentazione nell'ecosistema JavaScript richiede Node.js. Un gate
+di qualità per la documentazione non dovrebbe dover provisionare un runtime da diversi
+gigabyte solo per verificare se la destinazione di un link esiste.
+
+Zenzic è **100% Python puro**. Zero chiamate a subprocess. Zero Node.js. Zero npm. Un
+singolo `uvx zenzic check all` e il lavoro è fatto — su Linux, macOS e Windows, con
+Python da 3.10 a 3.14.
+
+Questa non è una coincidenza. È la **RULE R08** — la Legge Zero Subprocess — sancita
+come invariante architetturale. Significa:
+
+- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — nessun passaggio di
+  pre-installazione Python, nessuna wheel da gestire. Una riga aggiunta a qualsiasi workflow.
+- **Pre-commit:** Aggiungi `zenzic-verify` a `.pre-commit-config.yaml`. L'hook gira sui file
+  in stage; zero effetti collaterali sull'albero di lavoro.
+- **Qualsiasi runner CI:** Richiede `bash` ≥5 e `python3` ≥3.10 nel `PATH`. Nessun altro runtime. Zero Node.js.
+
+La Tassa Node.js è un debito che si accumula. Zenzic si rifiuta di pagarla.
+
+---
+
+## La Trinità della Difesa
+
+Zenzic applica tre linee di difesa non negoziabili:
+
+### 1. Integrità dei Link (Z1xx)
+
+La rete di riferimenti che connette un sito di documentazione è il suo scheletro
+strutturale. Un link rotto non è un bug cosmetico — è un contratto rotto con il lettore.
+Zenzic valida ogni link interno, ogni riferimento di ancora, ogni percorso cross-locale.
+Costruisce una **Virtual Site Map** (VSM) in memoria — una proiezione del sito
+finale — e verifica le rotte fantasma che si romperebbero solo a runtime.
+
+### 2. Lo Shield (Z201)
+
+Le credenziali nella documentazione affossano le aziende. Una chiave di accesso AWS,
+un token GitHub, una chiave API privata — qualsiasi di questi, committata in un repository
+pubblico, innesca una violazione che nessun `git history --rewrite` può mai annullare
+completamente. Lo Shield scansiona ogni byte di ogni file, incluso il frontmatter YAML
+(dove i segreti si nascondono frequentemente), prima che qualsiasi altro controllo venga
+eseguito.
+
+**Il codice di uscita 2 non è mai sopprimibile.** Non da `--exit-zero`. Non da
+`fail-on-error: false`. Non da `zenzic:ignore`. Una credenziale trapelata è un arresto
+definitivo.
+
+### 3. Blood Sentinel (Z202/Z203)
+
+Il path traversal nelle configurazioni di documentazione è una classe di attacchi che
+la maggior parte dei team non immagina mai possa esistere. Un `docs_dir: "../../etc"` in
+un file di configurazione non è un errore — è un jailbreak. Blood Sentinel chiude questo
+vettore in modo incondizionato.
+
+**Il codice di uscita 3 non è mai sopprimibile.** Punto.
+
+---
+
+## Radice Sovrana
+
+La documentazione non vive in isolamento. Un monorepo può contenere tre servizi, ognuno
+con la propria radice di documentazione, ognuno con il proprio `zenzic.toml`. Zenzic
+rispetta questa struttura.
+
+**La configurazione segue il target, non il chiamante.** Quando esegui
+`zenzic check all /percorso/al/progetto-B`, Zenzic carica la configurazione del
+progetto-B — non la configurazione della directory in cui ti trovi. Questo è
+**ADR-009 — Sovranità del Percorso**: `find_repo_root(search_from=target)` garantisce
+che l'analisi sia sempre ancorata al repository proprietario del target.
+
+Questo invariante rende Zenzic sicuro da eseguire da uno script di orchestrazione CI
+che analizza più repository in sequenza. Non esiste "context hijacking" — ogni analisi
+è completamente sovrana.
+
+---
+
+## La Rottura Quartz
+
+Zenzic v0.7.0 ha introdotto un modello di scoring che **non è retrocompatibile** con le
+baseline di v0.6.x.
+
+Il modello v0.6.x utilizzava un tasso di decadimento uniforme: cinque problemi in qualsiasi
+categoria azzeravano quella categoria indipendentemente dalla severità. Puniva il volume,
+non la gravità. Un singolo link rotto e cinquanta link rotti producevano punteggi
+proporzionalmente diversi — ma non significativamente diversi.
+
+Il **Quartz Penalty Scorer** (D092) sostituisce questo modello con una tabella di penalità
+per codice:
+
+| Categoria | Peso | Codici di esempio |
+|---|---|---|
+| Integrità Strutturale | 40 pts | Z101, Z102, Z104, Z105, Z107 |
+| Eccellenza del Contenuto | 30 pts | Z501, Z502, Z503, Z505 |
+| Navigazione | 20 pts | Z402 |
+| Brand & Asset | 10 pts | Z903, Z904, Z905 |
+
+Un punteggio di 70/100 con 1000 blocchi di codice senza tag (Z505) significa: l'integrità
+strutturale è perfetta, la navigazione è pulita, e solo la categoria del contenuto è
+degradata — non l'intero progetto. I cap per categoria impediscono al rumore di mascherare
+il segnale.
+
+Se hai un file snapshot v0.6.x (`.zenzic-score.json`), Zenzic v0.7.0 si rifiuterà di
+caricarlo e ti chiederà di creare una nuova baseline. Questo è intenzionale. Confrontare
+mele con arance è peggio che non avere alcun confronto.
+
+Esegui `zenzic score --save` una volta per stabilire una baseline di Quartz Maturity.
+
+---
+
+*Zenzic è sviluppato e mantenuto in Italia 🇮🇹 — con la convinzione che la qualità della
+documentazione non sia opzionale.*

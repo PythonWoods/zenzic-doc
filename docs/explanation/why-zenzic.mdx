@@ -1,0 +1,143 @@
+---
+sidebar_position: 10
+sidebar_label: "Why Zenzic"
+title: "Why Zenzic — The Safe Harbour Philosophy"
+description: "A declaration of principles. Zenzic does not explain documentation; it defends it. Here is why that distinction matters."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Why Zenzic — The Safe Harbour Philosophy
+
+> *"Documentation that is not defended is documentation that will eventually lie."*
+
+This page is not a product pitch. It is a declaration of principles — an explanation of the
+design choices behind Zenzic that may feel controversial, conservative, or even extreme, but
+are deliberate and non-negotiable.
+
+---
+
+## Documentation as Untrusted Input
+
+Every documentation system that has ever failed — broken links after a refactor, leaked
+credentials in a public repository, orphaned pages left behind after a rename — failed because
+someone assumed that the documentation was correct.
+
+Zenzic does not make that assumption.
+
+**Zenzic treats documentation source as untrusted input.** The same discipline that your
+application applies at a network boundary — validate before trusting — is applied here at the
+documentation boundary. A Markdown file is code. A configuration file is code. A link target
+is a claim that must be verified, not believed.
+
+This is the **Safe Harbour** guarantee: run Zenzic, get a certificate. If the tool exits 0,
+the documentation is structurally sound. Not perfect — but structurally verifiable. There are
+no broken internal links. No leaked credentials. No pages that silently disappeared from the
+navigation. The source is safe to hand to any build engine.
+
+---
+
+## The Node.js Tax
+
+Every documentation tool in the JavaScript ecosystem requires Node.js. A documentation
+quality gate should not need to provision a multi-gigabyte runtime just to check whether a
+link target exists.
+
+Zenzic is **100% pure Python**. Zero subprocess calls. Zero Node.js. Zero npm. One
+`uvx zenzic check all` and you are done — on Linux, macOS, and Windows, with Python 3.10
+through 3.14.
+
+This is not a coincidence. It is **RULE R08** — the Zero Subprocess Law — enshrined as an
+architectural invariant. It means:
+
+- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — no Python pre-install step, no
+  cached wheel to manage. One line added to any workflow.
+- **Pre-commit:** Add `zenzic-verify` to `.pre-commit-config.yaml`. The hook runs on staged files;
+  zero side effects to the working tree.
+- **Any CI runner:** Requires `bash` ≥5 and `python3` ≥3.10 in `PATH`. No other runtime. No Node.js.
+
+The Node.js Tax is a debt that compounds. Zenzic refuses to pay it.
+
+---
+
+## The Defence Trinity
+
+Zenzic enforces three non-negotiable lines of defence:
+
+### 1. Link Integrity (Z1xx)
+
+The web of references that connects a documentation site is its structural skeleton. A broken
+link is not a cosmetic bug — it is a broken contract with the reader. Zenzic validates every
+internal link, every anchor reference, every cross-locale path. It builds a **Virtual Site
+Map** (VSM) in memory — a projection of the final site — and verifies ghost routes that would
+only break at runtime.
+
+### 2. The Shield (Z201)
+
+Credentials in documentation kill companies. An AWS access key, a GitHub token, a private
+API key — any of these committed to a public repository triggers a breach that no `git history
+--rewrite` can fully undo. The Shield scans every byte of every file, including YAML
+frontmatter (where secrets frequently hide), before any other check runs.
+
+**Exit code 2 is never suppressible.** Not by `--exit-zero`. Not by `fail-on-error: false`.
+Not by `zenzic:ignore`. A leaking credential is a hard stop.
+
+### 3. Blood Sentinel (Z202/Z203)
+
+Path traversal in documentation configurations is a class of attack that most teams never
+imagine exists. A `docs_dir: "../../etc"` in a configuration file is not an accident — it is
+a jailbreak. Blood Sentinel closes this vector unconditionally.
+
+**Exit code 3 is never suppressible.** Full stop.
+
+---
+
+## Sovereign Root
+
+Documentation does not live in isolation. A monorepo may contain three services, each with
+its own documentation root, each with its own `zenzic.toml`. Zenzic respects this.
+
+**The configuration follows the target, not the caller.** When you run
+`zenzic check all /path/to/project-B`, Zenzic loads project-B's configuration — not the
+configuration of the directory you are standing in. This is **ADR-009 — Path Sovereignty**:
+`find_repo_root(search_from=target)` ensures that the analysis is always anchored to the
+repository that owns the target.
+
+This invariant makes Zenzic safe to run from a CI orchestration script that analyses multiple
+repositories in sequence. There is no "context hijacking" — each analysis is fully sovereign.
+
+---
+
+## The Quartz Break
+
+Zenzic v0.7.0 introduced a scoring model that is **not backward-compatible** with v0.6.x
+baselines.
+
+The v0.6.x model used a uniform decay rate: five issues in any category zeroed that
+category regardless of severity. It punished volume, not severity. A single broken link and
+fifty broken links produced proportionally different — but not meaningfully different — scores.
+
+The **Quartz Penalty Scorer** (D092) replaces this with a per-code penalty table:
+
+| Category | Weight | Example codes |
+|---|---|---|
+| Structural Integrity | 40 pts | Z101, Z102, Z104, Z105, Z107 |
+| Content Excellence | 30 pts | Z501, Z502, Z503, Z505 |
+| Navigation | 20 pts | Z402 |
+| Brand & Assets | 10 pts | Z903, Z904, Z905 |
+
+A score of 70/100 with 1000 untagged code blocks (Z505) means: structural integrity is
+perfect, navigation is clean, and only the content category is degraded — not the whole
+project. Category caps prevent noise from masking signal.
+
+If you have a v0.6.x snapshot file (`.zenzic-score.json`), Zenzic v0.7.0 will refuse to
+load it and ask you to create a new baseline. This is intentional. Comparing apples to
+oranges is worse than having no comparison at all.
+
+Run `zenzic score --save` once to establish a Quartz Maturity baseline.
+
+---
+
+*Zenzic is built and maintained in Italy 🇮🇹 — with the conviction that documentation
+quality is not optional.*

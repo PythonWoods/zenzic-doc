@@ -1,0 +1,81 @@
+---
+icon: lucide/shield-alert
+sidebar_label: "Sovereign Override (404 Shield)"
+description: "Use ZENZIC_EXTRA_ARGS for temporary pre-launch URL exclusions without weakening global external-link validation."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Sovereign Override (404 Shield)
+
+Use this protocol when Sentinel reports `EXTERNAL_LINK` for URLs that are not
+public yet (pre-launch pages, release tags not published, staged docs routes).
+
+The goal is strict integrity with temporary surgical exceptions.
+
+---
+
+## Why This Exists
+
+`zenzic check all --strict` should keep checking external links.
+Using `--no-external` hides real regressions and is not acceptable for
+Quartz-grade governance.
+
+`ZENZIC_EXTRA_ARGS` provides a runtime-only override so CI can remain strict while
+excluding specific known pre-launch URLs.
+
+---
+
+## Fast Response (Contributor Runbook)
+
+If CI fails with a 404 on a known pre-launch URL:
+
+```bash
+ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
+```
+
+For multiple URLs:
+
+```bash
+ZENZIC_EXTRA_ARGS="--exclude-url https://a.example --exclude-url https://b.example" just verify
+```
+
+---
+
+## Propagation Chain (No Blind Compartments)
+
+The override must flow through every execution layer:
+
+1. `just verify` -> `check *args` in `justfile`
+2. `preflight` hook -> `scripts/pre-commit-zenzic.sh`
+3. shared script -> `zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} "$@"`
+4. CI step sets `ZENZIC_EXTRA_ARGS` in `.github/workflows/ci.yml`
+
+If one layer drops the variable, the shield breaks.
+
+---
+
+## Lifecycle Policy (Mandatory)
+
+1. Introduce exclusions only for URLs that are known pre-launch artifacts.
+2. Keep exclusions in CI runtime env, not static project config.
+3. Remove each exclusion immediately after the URL returns `200 OK`.
+4. Treat stale exclusions as technical debt and remove in the next maintenance PR.
+
+---
+
+## Anti-Patterns (Forbidden)
+
+- `--no-external` as a permanent workaround.
+- Domain-wide exclusions when only a single URL is unstable.
+- Committing private overrides into tracked config.
+
+---
+
+## Verification Checklist
+
+- `just verify` passes locally with the intended exclusions.
+- `just preflight` passes (ensures pre-commit path also honors the variable).
+- CI env includes only the minimum `--exclude-url` entries required.
+- Follow-up issue/PR exists to remove temporary exclusions post-launch.

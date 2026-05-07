@@ -1,0 +1,103 @@
+---
+sidebar_label: "Politica di Evoluzione"
+---
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Politica di Evoluzione: I Pilastri Immutabili
+
+> *"I Tre Pilastri non evolvono. Proteggono le cose che evolvono."*
+
+---
+
+La Politica di Evoluzione di Zenzic governa come il progetto cambia. Il suo primo
+principio è che **non tutto può cambiare** — e i Tre Pilastri sono le cose che non possono.
+
+---
+
+## 1. Il Contratto di Immutabilità
+
+I Tre Pilastri non sono preferenze. Sono i requisiti strutturali del Safe Harbor.
+Un Zenzic senza il Pilastro II (Zero Sottoprocessi) non è un Zenzic più veloce —
+è uno strumento diverso che ha abbandonato il suo modello di fiducia.
+
+### Cosa Significa "Immutabile"
+
+| Pilastro | Può essere allentato? | Conseguenza della violazione |
+| :--- | :---: | :--- |
+| **I — Analizza la Sorgente, Non il Build** | ❌ No | Rompe la garanzia di analisi pre-build |
+| **II — Zero Sottoprocessi** | ❌ No | Rompe il modello di esecuzione Zero-Trust |
+| **III — Pure Functions First** | ❌ No | Rompe la riproducibilità e l'auditabilità |
+
+Una modifica che viola il Pilastro II o il Pilastro III — anche temporaneamente, anche
+per un motivo valido — richiede:
+
+1. **Un incremento della versione Major** (es. v0.7.0 → v1.0.0)
+2. **Un periodo pubblico di analisi d'impatto di 30 giorni**
+3. **Un [ADR](https://github.com/PythonWoods/zenzic/blob/main/.github/copilot-instructions.md)** formale aggiunto all'Zenzic Ledger
+4. **Una [sessione AI Avversariale](./adversarial_ai) (Tipo A)** contro l'architettura sostitutiva proposta
+5. **Consenso di 2/3 dei Core Maintainer**
+
+Questo non è una barriera burocratica. È il costo del modello di fiducia.
+
+---
+
+## 2. Cosa Può Evolvere (Procedura Semplificata)
+
+**Standard Operativi** — soglie dei gate di qualità, floor di copertura, target di benchmark,
+messaggi dei codici di trovato (non la semantica) — evolvono su un percorso semplificato:
+
+| Fase | Attività | Timeline |
+| :--- | :--- | :--- |
+| Proposta | GitHub issue con motivazione | Giorno 0 |
+| Dibattito | Finestra di 72 ore per obiezioni dei Core Maintainer | 72 ore |
+| Merge | Qualsiasi Core Maintainer può fare merge se nessuna obiezione bloccante | Giorno 4+ |
+| Aggiornamento Ledger | Sezione `[POLICIES]` o `[ARCHITECTURE]` aggiornata nello stesso commit | — |
+
+---
+
+## 3. Template RFC (per Proposte a Livello di Pilastro)
+
+Qualsiasi proposta di modifica di un invariante dei Tre Pilastri deve includere:
+
+1. **Testo Attuale:** Il testo esatto dell'`[INVARIANT]` contestato.
+2. **Testo Proposto:** La formulazione sostitutiva, se presente.
+3. **Motivazione:** Perché il testo attuale è architetturalmente insufficiente o dannoso.
+4. **Costo:** Cosa si rompe? Quali utenti devono migrare? Quali ADR vengono invalidati?
+5. **Analisi delle Alternative:** Quali alternative sono state considerate?
+
+Una proposta senza una sezione Costo e Analisi delle Alternative non entrerà in dibattito.
+
+---
+
+## 4. Il Divieto di "Comodità"
+
+> *"Non accettiamo scorciatoie per comodità."*
+
+I seguenti non sono motivazioni valide per una modifica ai Pilastri:
+
+- "È fastidioso scrivere pure functions per questa regola."
+- "Dobbiamo spedire questa chiamata a subprocess ora."
+- "L'AI ha proposto un'architettura più semplice che bypassa il Pilastro II."
+- "Questa è un'eccezione temporanea."
+
+---
+
+## 5. Eccezione di Emergenza per Sicurezza
+
+In caso di **Vulnerabilità di Sicurezza Critica** che richieda una deviazione di
+emergenza da un Pilastro, i Core Maintainer possono invocare l'Eccezione di Emergenza:
+
+- Sospende **un singolo invariante specifico** per **massimo 30 giorni**
+- Richiede un ADR di emergenza registrato nell'Zenzic Ledger con: invariante sospeso,
+
+  motivazione di sicurezza, scadenza di ripristino
+
+- Se il ripristino è impossibile in 30 giorni → il processo completo di Modifica al Pilastro
+
+  inizia prima della scadenza
+
+L'Eccezione di Emergenza **non può** essere invocata per comodità, pressione di deadline
+o debito tecnico. Richiede un CVE documentato o un incidente di sicurezza equivalente.
+
+> *Saga VI: The Governance of Quartz — [leggi la cronaca](https://zenzic.dev/blog/governance-of-quartz)*

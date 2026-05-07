@@ -35,7 +35,7 @@ anche in contesti commerciali.
 
 **Quali versioni di Python sono supportate?**
 
-Zenzic richiede Python 3.11 o superiore.
+Zenzic richiede Python 3.10 o superiore.
 
 ## Installazione e utilizzo
 
@@ -58,7 +58,7 @@ per personalizzare il comportamento, ad esempio per escludere directory, asset o
 **Posso usare Zenzic con un progetto non-MkDocs?**
 
 Sì. Zenzic funziona su qualsiasi cartella di file Markdown senza richiedere alcun motore di
-build (modalità Vanilla). Gli adapter nativi per MkDocs e Zensical aggiungono la consapevolezza
+build (modalità Standalone). Gli adapter nativi per MkDocs e Zensical aggiungono la consapevolezza
 della nav e il supporto i18n. Adapter di terze parti possono estendere questa funzionalità a
 qualsiasi altro motore. Consulta la guida [Motori](../reference/engines.mdx) per i dettagli.
 
@@ -84,7 +84,7 @@ omettere il flag disabilita completamente tutte le richieste di rete. Per esclud
 permanentemente URL specifici senza rinunciare alla modalità strict, aggiungi i loro prefissi
 a `excluded_external_urls` in `zenzic.toml`:
 
-```toml
+```toml title="zenzic.toml"
 excluded_external_urls = [
     "https://internal.company.com",
     "https://github.com/MyOrg/private-repo",
@@ -100,8 +100,10 @@ link di definizione e anchor interni (se `validate_same_page_anchors: true`).
 
 **Come integro Zenzic in GitHub Actions?**
 
-```yaml
+```yaml title=".github/workflows/zenzic.yml"
+
 - name: Lint documentation
+
   run: uvx zenzic check all --strict
 ```
 
@@ -113,8 +115,11 @@ guida [CI/CD](../how-to/configure-ci-cd.mdx).
 Il flag `--strict` ha due effetti a seconda del comando:
 
 - `zenzic check links --strict` / `zenzic check all --strict`: abilita anche la verifica
+
   dei link HTTP/HTTPS esterni tramite richieste di rete (disabilitata per default per velocità).
+
 - `zenzic check references --strict`: tratta le Dead Definitions (link di riferimento definiti
+
   ma mai usati) come errori bloccanti anziché warning.
 
 Consigliato nelle pipeline CI per intercettare tutte le categorie di problemi.
@@ -153,3 +158,23 @@ linting aggressive.
 Questo accade tipicamente quando gli override `slug` nel frontmatter spostano l'URL di una pagina lontano dalla sua posizione nel filesystem. Zenzic risolve i link relativi dal **percorso del file**; build engine come Docusaurus li risolvono dal **percorso dell'URL** (dopo il mapping degli slug). Quando un file in `docs/guides/checks.mdx` ha `slug: /checks`, i due sistemi non concordano su dove porta `../`.
 
 **Soluzione:** rimuovi l'override `slug` e lascia che l'URL segua il filesystem. Se hai spostato un file in `docs/guides/checks.mdx`, il suo URL diventa `/docs/guides/checks` — sia Zenzic che il build engine risolveranno `../` in modo identico. Se hai bisogno del vecchio URL per link esterni, configura un redirect lato server invece di un override slug.
+
+**Le pagine italiane (o in qualsiasi altra lingua) mostrano contenuto inglese anche se l'URL è `/it/`.**
+
+Questa è la **Trappola del Fallback Silenzioso i18n**. Docusaurus deriva il `path` della cartella
+da `htmlLang` quando `path` non è dichiarato esplicitamente. Con `htmlLang: 'it-IT'`, cerca i
+file di traduzione in `i18n/it-IT/` invece di `i18n/it/`. La build si completa senza errori e
+il chrome dell'interfaccia (navbar, breadcrumb) appare tradotto — perché quelle stringhe
+sono integrate nel pacchetto Docusaurus — ma ogni pagina di contenuto ricade silenziosamente
+sulla sorgente inglese.
+
+**Diagnosi:** dopo `npm run build`, apri `.docusaurus/i18n.json` e verifica se la voce della
+localizzazione ha `"translate": false`. In tal caso, il disallineamento del percorso è la causa.
+
+**Soluzione:** aggiungi `path` esplicitamente a ogni localizzazione che usa un tag `htmlLang` regionale:
+
+```ts title="docusaurus.config.ts"
+localeConfigs: {
+  it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
+}
+```

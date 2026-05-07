@@ -24,6 +24,7 @@ repos:
       - id: mixed-line-ending
       - id: no-commit-to-branch
         args: ["--branch", "main"]
+        stages: [pre-commit]
 
   # 2. TypeScript type checking
   - repo: local
@@ -35,22 +36,43 @@ repos:
         pass_filenames: false
         types_or: [ts, tsx]
 
-  # 3. Zenzic Sentinel — The Dogfooding Hook
-  #    Bootstrap script: tries local core (../zenzic) first,
-  #    falls back to uvx --pre for external contributors.
-  #    always_run: true — config/nav changes can break docs
-  #                        even without .md edits
+  # 3. ESLint — catches unused disable directives, React/hooks violations
+  - repo: local
+    hooks:
+      - id: eslint
+        name: "ESLint"
+        entry: npm run lint:ts
+        language: system
+        pass_filenames: false
+        types_or: [ts, tsx]
+
+  # 4. Zenzic Sentinel — ZRT-010 Sovereign Parity: entry-point is 'just check'
+  #    so local and CI always run the same guard-aware invocation.
+  #    always_run: true — config/nav changes can break docs even without .md edits
   - repo: local
     hooks:
       - id: zenzic-check
         name: "Zenzic Sentinel"
-        entry: bash scripts/pre-commit-zenzic.sh
+        entry: just check
         language: system
         pass_filenames: false
         always_run: true
 
-  # 4. REUSE/SPDX license compliance
+  # 5. REUSE/SPDX license compliance
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v5.0.2
+    rev: v6.2.0
     hooks:
       - id: reuse
+
+  # 6. Pre-push Final Guard (4-Gates Standard, EPOCH 4 / v0.7.0)
+  # Single entry-point: locale ≡ remote. Same `just verify` runs in GHA.
+  # Install with: uvx pre-commit install -t pre-push
+  - repo: local
+    hooks:
+      - id: just-verify
+        name: 🛡️ Doc Final Guard (just verify)
+        entry: just verify
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true

@@ -1,0 +1,346 @@
+---
+icon: lucide/folder-open
+sidebar_label: "Progetti di Esempio"
+description: "Fixture auto-contenute eseguibili che dimostrano configurazioni Zenzic corrette e incorrette."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Progetti di Esempio
+
+La directory `examples/` alla root del repository contiene cinque progetti
+auto-contenuti. Ognuno è un fixture eseguibile: naviga nella directory e lancia
+`zenzic check all` per vederne l'output.
+
+```bash
+git clone https://github.com/PythonWoods/zenzic
+cd zenzic/examples/<nome>
+zenzic check all
+```
+
+---
+
+## broken-docs — Fixture di Fallimenti Intenzionali
+
+**Scopo:** Attivare ogni controllo Zenzic almeno una volta. Utile per testare un
+nuovo controllo o verificare che un messaggio di errore sia formattato correttamente.
+
+**Risultato atteso:** `FAILED` — molteplici fallimenti, codice di uscita 1.
+
+| Controllo | Cosa lo attiva |
+| --- | --- |
+| Link | File mancante, ancora morta, path traversal, percorso assoluto, i18n rotto |
+| Orfani | `api.md` esiste su disco ma è assente dalla `nav` |
+| Snippet | Blocco Python con `SyntaxError` (due punti mancanti) |
+| Placeholder | `api.md` ha solo 18 parole e un marcatore di task |
+| Asset | `assets/unused.png` è su disco ma mai referenziato |
+| Regole custom | Pattern `ZZ-NOFIXME` in `zenzic.toml` |
+
+```bash
+cd examples/broken-docs
+zenzic check all              # uscita 1
+zenzic check all --exit-zero  # uscita 0 (modalità soft-gate)
+```
+
+Motore: `mkdocs`. Contiene anche un `zensical.toml` per dimostrare lo stesso
+fixture con il motore Zensical.
+
+---
+
+## i18n-standard — Progetto Bilingue Gold Standard
+
+**Scopo:** Dimostrare un progetto bilingue perfettamente pulito con punteggio 100/100.
+Usa questo come template di riferimento per un nuovo progetto multilingua.
+
+**Risultato atteso:** `SUCCESS` — tutti i controlli passano, punteggio 100/100.
+
+Pattern chiave dimostrati:
+
+- **Suffix-mode i18n** — le traduzioni vivono come file `pagina.it.md` nella stessa
+
+  cartella, mai in un sottoalbero `docs/it/`
+
+- **Simmetria dei percorsi** — `../../assets/brand/brand-kit.zip` si risolve identicamente
+
+  da `pagina.md` e `pagina.it.md`
+
+- **Esclusione build artifact** — `excluded_build_artifacts` permette a Zenzic di
+
+  validare i link a file generati senza che siano presenti su disco
+
+- **`fail_under = 100`** — qualsiasi regressione rompe il gate
+
+```bash
+cd examples/i18n-standard
+zenzic check all --strict   # uscita 0, punteggio 100/100
+```
+
+Motore: `mkdocs` con plugin `i18n` in modalità `docs_structure: suffix`.
+
+---
+
+## security_lab — Fixture di Test per lo Shield
+
+**Scopo:** Verificare il sottosistema Shield — rilevamento credenziali e
+classificazione del path traversal — prima dei rilasci.
+
+**Risultato atteso:** `FAILED` — codice di uscita 2 (evento Shield; non sopprimibile).
+
+| File | Cosa attiva |
+| --- | --- |
+| `traversal.md` | `PathTraversal`: `../../etc/passwd` sfugge a `docs/` |
+| `attack.md` | `PathTraversal` + sette pattern fake di credenziali (tutte le famiglie Shield) |
+| `absolute.md` | Percorsi assoluti (`/assets/logo.png`, `/etc/passwd`) |
+| `fenced.md` | Credenziali fake dentro blocchi delimitati senza etichetta e con etichetta `bash` |
+
+```bash
+cd examples/security_lab
+zenzic check links --strict   # uscita 1 (path traversal)
+zenzic check references       # uscita 2 (Shield: credenziali fake)
+zenzic check all              # uscita 2 (Shield ha la priorità)
+```
+
+> Le credenziali in `attack.md` e `fenced.md` sono completamente sintetiche —
+> corrispondono alla forma regex ma non sono token validi per nessun servizio.
+
+Motore: `mkdocs`.
+
+---
+
+## standalone — Gate di Qualità Agnostico rispetto all'Engine
+
+**Scopo:** Mostrare Zenzic in esecuzione senza nessun motore di build. Nessun
+`mkdocs.yml`, nessun `zensical.toml`, nessuna config Hugo. Solo
+`engine = "standalone"` in `zenzic.toml`.
+
+**Risultato atteso:** `SUCCESS` — tutti i controlli applicabili passano.
+
+Cosa funziona in modalità Standalone:
+
+- Link, snippet, placeholder e asset sono verificati completamente
+- Le `[[custom_rules]]` si attivano identicamente a qualsiasi altra modalità
+- `fail_under` impone un punteggio di qualità minimo
+- Il **controllo orfani è saltato** — senza nav dichiarata non esiste un insieme di riferimento
+
+```bash
+cd examples/standalone
+zenzic check all   # uscita 0
+```
+
+Usa la modalità Standalone per Hugo, Docusaurus, Sphinx, Astro, Jekyll, wiki GitHub
+o qualsiasi progetto che non usa MkDocs o Zensical.
+
+---
+
+## plugin-scaffold-demo — Living Scaffold dello SDK Plugin
+
+**Scopo:** Fornire l'output esatto generato da
+`zenzic init --plugin plugin-scaffold-demo` come fixture di integrazione versionato.
+
+**Risultato atteso:** `SUCCESS` — lo scaffold generato è lint-clean.
+
+```bash
+cd examples/plugin-scaffold-demo
+zenzic check all   # uscita 0
+```
+
+Usa questo fixture per validare regressioni dello scaffold: se questo esempio
+inizia a fallire, il template SDK è andato in drift.
+
+---
+
+## Eseguire la suite completa degli esempi
+
+Dalla root del repository, verifica che tutti gli esempi producano i codici di
+uscita attesi:
+
+```bash
+# Gold standard e standalone: devono essere puliti
+(cd examples/i18n-standard && zenzic check all --strict)
+(cd examples/standalone        && zenzic check all)
+
+# Broken: deve fallire con uscita 1
+(cd examples/broken-docs    && zenzic check all); [ $? -eq 1 ]
+
+# Security lab: deve uscire con codice 2 (Shield)
+(cd examples/security_lab   && zenzic check all); [ $? -eq 2 ]
+
+# Plugin scaffold demo: il template generato deve essere pulito
+(cd examples/plugin-scaffold-demo && zenzic check all)
+```
+
+---
+
+## Adapter Internals — Confronto Pedagogico
+
+Questa sezione illustra due metodi concreti degli adapter fianco a fianco.
+Il contrasto tra `DocusaurusAdapter` e `StandaloneAdapter` mostra come il
+protocollo adapter abiliti la logica Core engine-agnostica.
+
+### `provides_index()` — Questa directory ha una landing page
+
+Il Core chiama `provides_index(directory_path)` una volta per directory durante
+il rilevamento degli orfani. Risponde alla domanda: *"Il motore genererà un indice
+navigabile per questa directory, così che i file al suo interno non siano
+strutturalmente orfani?"*
+
+**`DocusaurusAdapter.provides_index()`** — piena consapevolezza del motore:
+
+```python
+def provides_index(self, directory_path: Path) -> bool:
+    # File di indice fisici — Docusaurus li serve direttamente.
+    index_files = ("index.md", "index.mdx", "README.md", "README.mdx")
+    if any((directory_path / f).exists() for f in index_files):
+        return True
+
+    # _category_.json con link "generated-index" — Docusaurus auto-genera
+    # una landing page di categoria anche senza un file di indice fisico.
+    category_json = directory_path / "_category_.json"
+    if category_json.exists():
+        try:
+            import json as _json
+            data = _json.loads(category_json.read_text(encoding="utf-8"))
+            link = data.get("link", {})
+            return isinstance(link, dict) and link.get("type") == "generated-index"
+        except Exception:
+            return True  # conservativo: si assume che fornisca un indice
+    return False
+```
+
+**`StandaloneAdapter.provides_index()`** — zero assunzioni sul motore:
+
+```python
+def provides_index(self, directory_path: Path) -> bool:
+    # Nessun config motore — solo un index.md semplice segnala una landing page.
+    return (directory_path / "index.md").exists()
+```
+
+**Differenza chiave:** `DocusaurusAdapter` conosce `_category_.json` e `README.mdx`
+perché sono convenzioni Docusaurus. `StandaloneAdapter` non fa assunzioni — riconosce
+solo la convenzione universale `index.md`.
+
+---
+
+### `get_nav_paths()` — Quali file sono raggiungibili
+
+`get_nav_paths()` restituisce l'insieme dei percorsi file raggiungibili tramite
+l'interfaccia di navigazione del sito. Un file assente da questo insieme è
+candidato per Z402 (`ORPHAN_BUT_EXISTING`).
+
+**`DocusaurusAdapter.get_nav_paths()`** — aggregazione da tre sorgenti:
+
+```python
+def get_nav_paths(self) -> frozenset[str]:
+    if self._sidebar_path is not None:
+        sidebar_paths = _parse_sidebars(self._sidebar_path, self._docs_root)
+        if sidebar_paths is not None:
+            # Sidebar esplicita: unisci con i percorsi navbar.
+            # Un file è REACHABLE se appare nella sidebar O nella navbar.
+            return sidebar_paths | self._navbar_paths
+    # Autogenerata o nessuna sidebar: tutti i file sono già REACHABLE.
+    return frozenset()
+```
+
+`self._navbar_paths` è popolato da `_parse_config_navigation()` da
+`docusaurus.config.*` — estrae percorsi URL `to:` e attributi `docId:` da voci
+**navbar** e **footer**. Un file linkato solo nel footer è comunque considerato
+raggiungibile (Legge UX-Discoverability, Regola R21).
+
+**`StandaloneAdapter.get_nav_paths()`** — intenzionalmente vuoto:
+
+```python
+def get_nav_paths(self) -> frozenset[str]:
+    """Frozenset vuoto — nessun config motore significa nessuna nav dichiarata."""
+    return frozenset()
+```
+
+Quando `get_nav_paths()` restituisce un frozenset vuoto, `classify_route()` tratta
+**tutti** i file come `REACHABLE`. È intenzionale: in modalità Standalone non esiste
+un contratto di navigazione, quindi il rilevamento degli orfani (Z402) è disabilitato.
+
+---
+
+### `classify_route()` — Questo file è raggiungibile
+
+`classify_route(rel, nav_paths)` mappa il percorso di un file sorgente al suo stato
+di route.
+
+**`DocusaurusAdapter.classify_route()`** — quattro regole di classificazione:
+
+```python
+def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+    # Regola 1: File privati/meta (es. _category_.json) → IGNORED
+    non_sentinel_parts = [p for p in rel.parts if p != "_version_"]
+    if any(part.startswith("_") for part in non_sentinel_parts):
+        return "IGNORED"
+
+    # Version Ghost Routes: file sotto _version_/<label>/ sono sempre REACHABLE.
+    if len(rel.parts) >= 2 and rel.parts[0] == "_version_":
+        return "REACHABLE"
+
+    # Regola 2: Nessuna nav esplicita → sidebar autogenerata → tutti REACHABLE
+    if not nav_paths:
+        return "REACHABLE"
+
+    # Regola 3: Corrispondenza nav esplicita (sidebar o navbar)
+    if rel.as_posix() in nav_paths:
+        return "REACHABLE"
+
+    # Le shadow locale ereditano l'appartenenza alla nav
+    if self.is_shadow_of_nav_page(rel, nav_paths):
+        return "REACHABLE"
+
+    # Ghost Routes: entry point di locale (es. it/index.mdx)
+    if rel.name in ("index.md", "index.mdx") and len(rel.parts) == 2:
+        if rel.parts[0] in self._locale_dirs:
+            return "REACHABLE"
+
+    # Regola 4: Il file esiste ma non è raggiungibile tramite alcun punto di accesso UI
+    return "ORPHAN_BUT_EXISTING"
+```
+
+**`StandaloneAdapter.classify_route()`** — sempre raggiungibile:
+
+```python
+def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+    """Sempre REACHABLE — nessuna nav con cui confrontare."""
+    return "REACHABLE"
+```
+
+Il contrasto è netto. `DocusaurusAdapter` implementa una cascata di quattro regole
+perché Docusaurus ha contratti di navigazione espliciti (`sidebars.ts`,
+`docusaurus.config.*`). `StandaloneAdapter` restituisce una costante perché senza
+motore non esiste un contratto di navigazione — ogni file che esiste è raggiungibile.
+
+---
+
+### `get_link_scheme_bypasses()` — Schemi URI specifici del motore
+
+La Regola R21 (Protocol Sovereignty) impone che il Core non hardcodi mai i nomi dei
+motori nella logica di validazione. Gli schemi URI specifici del motore sono dichiarati
+dall'adapter e interrogati dal Core.
+
+**`DocusaurusAdapter.get_link_scheme_bypasses()`:**
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    # Docusaurus usa link pathname:/// per referenziare file in static/
+    # che bypassano il router React. Il / iniziale è un artefatto
+    # convenzionale URI, non un percorso server-assoluto.
+    return frozenset({"pathname"})
+```
+
+**`StandaloneAdapter.get_link_scheme_bypasses()`:**
+
+```python
+def get_link_scheme_bypasses(self) -> frozenset[str]:
+    """I progetti Standalone non hanno bypass di schema link specifici del motore."""
+    return frozenset()
+```
+
+Quando un link come `pathname:///assets/brand.html` viene incontrato in un progetto
+Docusaurus, il Core controlla `adapter.get_link_scheme_bypasses()`. Trova `"pathname"`
+nell'insieme restituito e salta il controllo Z105 (percorso assoluto). In un progetto
+Standalone, lo stesso link attiva Z105 — correttamente, perché `pathname:///` è un
+escape hatch specifico di Docusaurus senza significato in un progetto Markdown generico.

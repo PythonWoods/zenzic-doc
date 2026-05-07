@@ -13,6 +13,21 @@ All top-level fields in `zenzic.toml` that control paths, thresholds, and scorin
 
 ---
 
+## Configuration Priority {#config-priority}
+
+Zenzic resolves configuration using a **4-level hierarchy** — the most specific source wins:
+
+| Priority | Source | Description |
+| :---: | :--- | :--- |
+| **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
+| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
+| 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
+
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+
+---
+
 ## `docs_dir`
 
 **Type:** string (path) — **Default:** `"docs"`
@@ -27,7 +42,7 @@ docs_dir = "documentation"
 
 ## `excluded_dirs`
 
-**Type:** list of strings — **Default:** `["includes", "assets", "stylesheets", "overrides", "hooks"]`
+**Type:** list of strings — **Default:** `["includes", "stylesheets", "overrides", "hooks"]`
 
 Directory names (not full paths) inside `docs_dir` that are excluded from all checks. Any
 directory whose **name** matches an entry in this list is skipped, regardless of its depth in
@@ -37,9 +52,52 @@ the tree. This means `excluded_dirs = ["assets"]` excludes both `docs/assets/` a
 The default list covers the standard MkDocs and Material for MkDocs special directories, which
 contain theme overrides, CSS, and snippet includes rather than documentation content.
 
+:::tip[Asset directories are not excluded by default]
+`assets/` is intentionally **absent** from the default. Directories named `assets/` typically
+contain images and files that are *referenced* by documentation pages — excluding them would
+prevent Zenzic from building the asset index, causing valid links to be flagged as Z104. Add
+`"assets"` to `excluded_dirs` only if your `assets/` directory holds files that are *never*
+linked from Markdown (e.g. build-time resources consumed by the engine, not by readers).
+:::
+
 ```toml
 excluded_dirs = ["includes", "assets", "partials", "_templates"]
 ```
+
+---
+
+## System Guardrails (Level 1 Exclusions) {#system-guardrails}
+
+Zenzic automatically excludes certain files from all quality checks — including the unused-assets check (Z903). These **Level 1 Guardrails** are immutable and require no user configuration.
+
+### Level 1a — Universal Infrastructure
+
+Common toolchain files that are never documentation content:
+
+| Category | Files excluded automatically |
+|----------|------------------------------|
+| JavaScript / Node.js | `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `tsconfig.json`, `tsconfig.base.json` |
+| Python | `pyproject.toml`, `poetry.lock`, `uv.lock`, `setup.cfg`, `setup.py` |
+| Generic toolchain | `Makefile`, `justfile` |
+| Lock files | Any file matching `*.lock` |
+| Linter configs | Files matching `eslint.config.*`, `.prettierrc*`, `.editorconfig` |
+
+### Level 1b — Adapter-Declared Engine Configs
+
+Each adapter automatically excludes the engine configuration files it consumes:
+
+| Engine | Files excluded automatically |
+|--------|------------------------------|
+| Docusaurus | `docusaurus.config.ts`, `docusaurus.config.js`, `docusaurus.config.mjs`, `sidebars.ts`, `sidebars.js`, `versions.json`, `_category_.json` |
+| MkDocs | `mkdocs.yml` |
+| Zensical | `zensical.toml` |
+| Standalone | *(none — no engine config)* |
+
+:::tip
+You do **not** need to add these files to `excluded_assets`. Zenzic guards them at the engine level.
+Running `zenzic check all .` from the project root will never produce Z903 warnings on your
+`docusaurus.config.ts`, `package.json`, or any other engine configuration file.
+:::
 
 ---
 
@@ -75,9 +133,10 @@ excluded_assets = [
 ]
 ```
 
-The `**/_category_.json` pattern is recommended for Docusaurus projects, where every
-subdirectory may contain a `_category_.json` file consumed by the sidebar plugin rather
-than referenced from any page.
+The `**/_category_.json` pattern was previously recommended for Docusaurus projects.
+Since v0.7.0, `_category_.json` is automatically shielded as a [Level 1b guardrail](#system-guardrails)
+by the Docusaurus adapter — the manual entry is no longer required. Existing entries in
+`excluded_assets` remain valid and are silently deduplicated.
 
 ---
 
@@ -227,8 +286,11 @@ extracted from the source file.
 Zenzic resolves anchor slugs in the following order:
 
 1. **Explicit MkDocs Material anchor** — if the heading contains `{/* { #custom-id } */}`, that ID is
+
    used directly.
+
 2. **Standard slug** — HTML tags are stripped, text is lowercased and non-word characters
+
    replaced with hyphens, matching Python-Markdown's `toc` extension.
 
 Disabled by default because anchor IDs can also be produced at build time by HTML attributes or
@@ -303,3 +365,54 @@ Setting `exit_zero = true` in `zenzic.toml` disables the quality gate globally. 
 using `--exit-zero` as a temporary CLI flag during cleanup sprints, and removing it once
 the baseline is clean.
 :::
+
+---
+
+## `[link_validation]` {#link-validation}
+
+**Type:** TOML section — **Added:** v0.7.0 "Quartz Maturity"
+
+Controls how Zenzic's link validator treats absolute URL paths. The default
+behavior — rejecting all absolute paths via `Z105 ABSOLUTE_PATH` — assumes
+a single-instance site mounted at the root. Multi-instance Docusaurus
+deployments and satellite-domain projects need to declare which absolute
+prefixes are project-internal.
+
+### `absolute_path_allowlist`
+
+**Type:** list of strings — **Default:** `[]`
+
+URL path prefixes (must start with `/`) that the validator treats as
+valid absolute links. Z105 is suppressed for any link whose path
+starts with one of these prefixes. The match is `startswith` only — no
+regex, no globs.
+
+```toml
+[link_validation]
+absolute_path_allowlist = [
+    "/developers/",
+    "/api/",
+]
+```
+
+**Semantics:**
+
+- The check runs **before** Z105 emission, not after — allowlisted
+  links never appear in the findings stream.
+- Query strings (`?foo=bar`) and fragments (`#anchor`) are stripped
+  before matching.
+- The allowlist is a **trust contract**, not a resolver. Zenzic does
+  not verify that the target exists in the sibling instance.
+
+**When to use:** cross-instance links in multi-instance Docusaurus,
+shared-domain micro-sites, links to satellite documentation hosted at a
+known sub-path.
+
+**When NOT to use:** one-off exceptions in a single file. Use inline
+suppression (`<!-- zenzic:ignore Z105 -->`) instead — see the
+[Suppression Policy](./suppression-policy.mdx).
+
+For the full operational guide and decision rules, see
+[Manage Cross-Site Links](../how-to/manage-cross-site-links.mdx). For the
+design rationale, see
+[ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

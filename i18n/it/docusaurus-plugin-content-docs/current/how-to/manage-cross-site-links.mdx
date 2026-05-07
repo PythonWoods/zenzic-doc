@@ -1,0 +1,189 @@
+---
+sidebar_label: "Gestire Link Cross-Sito"
+sidebar_position: 50
+description: "Come tenere felice Z105 ABSOLUTE_PATH quando la documentazione attraversa più istanze Docusaurus o siti satellite — e quando invece ricorrere agli ignore inline."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Gestire Link Cross-Sito
+
+Quando il tuo progetto ospita più di un'istanza Docusaurus sotto lo stesso
+dominio (per esempio un'area Utente in `/docs/` e un'area Developer in
+`/developers/`), i link che attraversano i confini delle istanze
+**devono** essere assoluti. Docusaurus non risolve i path relativi
+attraverso i confini dei plugin — e nemmeno il validator dei link di
+Zenzic.
+
+Per impostazione predefinita, la regola `Z105 ABSOLUTE_PATH` di Zenzic
+rifiuta qualsiasi link assoluto (`/foo/bar`) perché i path assoluti si
+rompono quando il sito è ospitato in una sottocartella. Questa guida
+mostra come dichiarare i prefissi cross-istanza che il tuo progetto
+possiede legittimamente, in modo che il validator smetta di segnalarli
+— senza indebolire Z105 altrove.
+
+---
+
+## TL;DR — Quale strumento, quando?
+
+| Situazione | Usa questo | Non usare |
+|---|---|---|
+| Molti link cross-plugin condividono un prefisso (`/developers/`, `/api/`) | `[link_validation] absolute_path_allowlist` in `zenzic.toml` | ignore inline |
+| Una singola riga isolata in un file matcha legittimamente una regola | `<!-- zenzic:ignore Zxxx -->` (oppure `{/* zenzic:ignore Zxxx */}` per MDX) | allowlist |
+| Due o più file avrebbero bisogno dello stesso ignore inline | Promuovi a allowlist / config | ignore inline in ogni file |
+
+La regola decisionale: **se è una proprietà del progetto, va in config;
+se è una proprietà di una riga, va inline.**
+
+---
+
+## Allowlist di un prefisso cross-istanza
+
+Aggiungi i prefissi di cui ti fidi a `zenzic.toml`:
+
+```toml
+# zenzic.toml
+[link_validation]
+absolute_path_allowlist = [
+    "/developers/",
+    "/api/",
+]
+```
+
+Ora qualsiasi link che inizia con `/developers/` o `/api/` è accettato
+da Z105. Tutto il resto continua a fallire — un typo come
+`/developres/foo` verrà catturato.
+
+**Regole da ricordare:**
+
+1. Le voci **devono** iniziare con `/`. Il check usa un semplice
+   `startswith` matching — niente regex, niente glob.
+2. Il match è solo sul path URL — `?query` e `#anchor` vengono
+   rimossi prima del confronto.
+3. Il validator non verifica che il target esista realmente
+   nell'istanza sorella. L'allowlist è un **contratto di fiducia**,
+   non un resolver.
+
+---
+
+## Quando usare un ignore inline
+
+Gli ignore inline sono chirurgici. Usali quando:
+
+- Una singola riga in un singolo file innesca legittimamente una regola
+  (es. un esempio di documentazione che *sembra* una credenziale ma è
+  fittizio).
+- L'eccezione è contesto locale, non una verità di progetto.
+
+```markdown
+<!-- zenzic:ignore Z201 -->
+api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
+```
+
+```mdx
+{/* zenzic:ignore Z105 */}
+[Esempio di link hard](/legacy/path)
+```
+
+La forma inline lascia un audit trail nella riga esatta — visibile nei
+diff delle PR, tracciabile con `git blame`.
+
+---
+
+## Anti-pattern: ignorare inline i link cross-plugin
+
+**Non** spargere `<!-- zenzic:ignore Z105 -->` su ogni link cross-plugin.
+Questo:
+
+- Nasconde la dipendenza cross-istanza a chiunque legga `zenzic.toml`.
+- Costringe ogni contributor a riscoprire la stessa regola.
+- Implica che il link sia "rotto e accettato" mentre in realtà è
+  corretto per design.
+
+Se due o più file necessitano dello stesso ignore Z105 per lo stesso
+prefisso, quel prefisso è una **verità sistemica** del tuo progetto —
+promuovilo a `absolute_path_allowlist`.
+
+---
+
+## Tornare indietro
+
+Rimuovi una voce da `absolute_path_allowlist` e l'enforcement di Z105
+ritorna immediatamente su quel prefisso. La protezione è economica da
+attivare ed economica da rimuovere — non c'è costo di migrazione in
+nessuna direzione.
+
+---
+
+## Gestire l'Identità Virtuale: Route basate sullo Slug
+
+Docusaurus permette a qualsiasi pagina di dichiarare uno `slug:` personalizzato
+nel frontmatter che sovrascrive completamente l'URL derivato dal nome del file.
+Una volta dichiarato, **solo** l'URL dello slug esiste nella tabella di routing
+di Docusaurus — il percorso del filename originale non esiste più.
+
+Zenzic applica questa identità al momento della validazione. Quando l'adapter
+Docusaurus è attivo, `set_slug_map()` legge gli slug dal frontmatter prima di
+costruire la Virtual Site Map (VSM). La VSM contiene quindi solo l'URL canonico
+dello slug — non l'URL derivato dal nome del file.
+
+### Identificare la route corretta
+
+Data una pagina con il seguente frontmatter:
+
+```mdx
+---
+slug: amazing-post
+title: Un Post Straordinario
+---
+```
+
+| Link | Risultato |
+|---|---|
+| `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — path derivato dal filename assente dalla VSM |
+| `[Post](/blog/amazing-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
+
+Il validator solleva `Z104 FILE_NOT_FOUND` (non Z105) perché `/blog/` è un
+prefisso di proprietà del progetto. Il prefisso è fidato; la route esatta
+deve comunque esistere.
+
+### Trovare lo slug canonico
+
+Esegui `zenzic inspect routes --kind physical` per elencare ogni route nella
+VSM insieme al file sorgente e allo slug nel frontmatter:
+
+```console
+$ zenzic inspect routes --kind physical
+/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+```
+
+Aggiorna qualsiasi link che punta al percorso derivato dal filename con l'URL
+dello slug mostrato nell'output.
+
+### Agnosticismo verso il motore: il guardiano `hasattr`
+
+Questa funzionalità è selettiva per adapter. Il validator chiama
+`set_slug_map()` solo quando l'adapter attivo espone quel metodo — rilevato
+a runtime via `hasattr`. Gli adapter più semplici (Standalone, MkDocs) non
+ricevono mai una chiamata slug-map e il loro percorso di validazione rimane
+invariato.
+
+```text
+Discovery  →  set_slug_map (solo Docusaurus)  →  build_vsm  →  Validate
+                      ↕
+          guardiano hasattr — no-op per MkDocs / Standalone
+```
+
+Questo segue il principio della *Maturità del Quarzo*: evolvere l'adapter
+complesso senza appesantire quelli più semplici.
+
+---
+
+## Correlati
+
+- [Riferimento Configurazione — `[link_validation]`](../reference/configuration.mdx#link-validation)
+- [Politica di Soppressione](../reference/suppression-policy.mdx) — sintassi
+  completa degli ignore inline e regole di ambito.
+- Per il razionale completo di design, vedi
+  [ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

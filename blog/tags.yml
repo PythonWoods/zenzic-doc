@@ -1,0 +1,100 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+#
+# Zenzic Blog — Semantic Tag Registry
+# Colours are keyed to the Sentinel Palette and the CLI UIPalette.
+
+release:
+  label: "Release"
+  permalink: /release
+  description: "🚀 Stable version announcements and release notes."
+
+security:
+  label: "Security"
+  permalink: /security
+  description: "🛡️ Shield updates, Blood Sentinel findings, and security advisories."
+
+engineering:
+  label: "Engineering"
+  permalink: /engineering
+  description: "⚙️ Technical deep dives into Zenzic architecture and design."
+
+community:
+  label: "Community"
+  permalink: /community
+  description: "🤝 Brand, Diátaxis, and contribution milestones."
+
+post-mortem:
+  label: "Post-Mortem"
+  permalink: /post-mortem
+  description: "💀 Failure reports, siege recaps, and lessons learned."
+
+python:
+  label: Python
+  permalink: /python
+  description: "Posts about Python internals, patterns, and ecosystem."
+
+opensource:
+  label: Open Source
+  permalink: /opensource
+  description: "Open source practices, licensing, and community building."
+
+devtools:
+  label: DevTools
+  permalink: /devtools
+  description: "Developer tooling, CI/CD, and automation."
+
+markdown:
+  label: Markdown
+  permalink: /markdown
+  description: "Markdown authoring, linting, and documentation pipelines."
+
+obsidian-chronicles:
+  label: "The Zenzic Chronicles"
+  permalink: /obsidian-chronicles
+  description: "The five-part engineering saga from v0.5 Sentinel to v0.7.0 Quartz Maturity."
+
+milestone:
+  label: "Milestone Record"
+  permalink: /milestone
+  description: "Historical records of alpha and release candidate milestones on the path to v0.7.0."
+
+tutorial:
+  label: "Tutorial"
+  permalink: /tutorial
+  description: "Step-by-step guides for getting started with Zenzic."
+
+quickstart:
+  label: "Quickstart"
+  permalink: /quickstart
+  description: "Fast-path getting-started content for new users."
+
+engineering-chronicles:
+  label: "Engineering Chronicles"
+  permalink: /chronicles
+  description: "The five-part engineering saga: from the Leaking Pipe to Quartz Maturity."
+
+user-tutorials:
+  label: "User Tutorials"
+  permalink: /tutorials
+  description: "Practical guides for getting started with Zenzic — zero configuration required."
+
+governance:
+  label: "Governance"
+  permalink: /governance
+  description: "Architectural constitution, Evolution Policy, and Sovereignty Oath — the laws that protect the Safe Harbor."
+
+sovereignty:
+  label: "Sovereignty"
+  permalink: /sovereignty
+  description: "Zero Residue, reversible design, and the Sovereignty Oath: why Zenzic is a sentinel, not a chain."
+
+obsidian-maturity:
+  label: "Quartz Maturity"
+  permalink: /obsidian-maturity
+  description: "🛡️ Codename for Zenzic v0.7.0 — the Safe Harbor reaches production maturity."
+
+engineering-culture:
+  label: "Engineering Culture"
+  permalink: /engineering-culture
+  description: "🧠 Engineering philosophy, team practices, and development methodology."

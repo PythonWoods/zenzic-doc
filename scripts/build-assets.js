@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Prebuild asset packager.
-// Zips static/brand/ and static/assets/social/ into static/assets/brand-kit.zip.
+// Zips static/assets/brand/ and static/assets/social/ into static/assets/brand/brand-kit.zip.
 // Overwrites on every run so users always download the latest assets.
 // Silent on success; writes to stderr on error.
 
@@ -14,12 +14,12 @@ const path = require('path');
 const fs = require('fs');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUTPUT = path.join(ROOT, 'static', 'assets', 'brand-kit.zip');
+const OUTPUT = path.join(ROOT, 'static', 'assets', 'brand', 'brand-kit.zip');
 
 /** Folders to include. Each entry maps a real directory to a zip prefix. */
 const SOURCES = [
-  { dir: path.join(ROOT, 'static', 'brand'),         prefix: 'brand'  },
-  { dir: path.join(ROOT, 'static', 'assets', 'social'), prefix: 'social' },
+  { dir: path.join(ROOT, 'static', 'assets', 'brand'),    prefix: 'brand'  },
+  { dir: path.join(ROOT, 'static', 'assets', 'social'),   prefix: 'social' },
 ];
 
 try {

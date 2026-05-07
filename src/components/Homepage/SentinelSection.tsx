@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import React from 'react';
 import Translate from '@docusaurus/Translate';
 
@@ -39,7 +42,7 @@ export default function SentinelSection(): React.JSX.Element {
                   <span className="text-rose-500">✘</span>
                   <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm">[FILE_NOT_FOUND]</span>
                   <span className="dark:text-zinc-300 text-zinc-700">
-                    <Translate id="sentinel.gutter.msg">'intro.md' not reachable from nav</Translate>
+                    <Translate id="sentinel.gutter.msg">&apos;intro.md&apos; not reachable from nav</Translate>
                   </span>
                 </div>
                 <div className="dark:text-zinc-600 text-zinc-400 flex"><span className="w-6 text-right mr-3">15</span>│ <Translate id="sentinel.gutter.ctx1">before continuing.</Translate></div>

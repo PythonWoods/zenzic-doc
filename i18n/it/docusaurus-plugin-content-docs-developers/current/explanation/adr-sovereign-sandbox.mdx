@@ -1,0 +1,121 @@
+---
+sidebar_label: "ADR 007: Sandbox Sovrano"
+sidebar_position: 3
+description: "ADR 007: Il Blood Sentinel sorveglia le fughe DAL target, non la posizione DEL target."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 007: Sandbox Sovrano
+
+**Stato:** Attivo
+**Decisore:** Architecture Lead
+**Data:** 2026-04-08 (sprint v0.7.0, D043)
+
+---
+
+## Contesto
+
+Quando un utente esegue `zenzic check all /path/to/target`, Zenzic deve stabilire
+due confini: la **radice di analisi** (cosa scansionare) e il **perimetro** (dove
+i link possono risolvere). Il Blood Sentinel (`Z202`, `Z203`) impone il perimetro
+— rileva i link che fuoriescono dal sandbox di documentazione.
+
+L'implementazione iniziale aveva un bug geometrico: ancorava il perimetro alla
+**radice del repository della shell invocante** invece che al **target**. Questo
+causava un falso positivo quando un utente eseguiva Zenzic dal repo A puntando al
+repo B:
+
+```bash
+cd /home/user/repo-a
+zenzic check all /home/user/repo-b/docs
+```
+
+Zenzic calcolava `repo_root = /home/user/repo-a`, poi classificava qualsiasi
+link in `repo-b/docs` che risolvesse fuori da `/home/user/repo-a` come un
+tentativo di path traversal — anche se l'utente aveva esplicitamente specificato
+`repo-b/docs` come target di analisi. Il Blood Sentinel sparava su invocazioni
+cross-progetto legittime.
+
+---
+
+## Decisione
+
+**L'argomento `PATH` esplicito fornito dall'utente è la radice del sandbox
+sovrano.** Il Blood Sentinel sorveglia le fughe **dal** target, non la posizione
+**del** target.
+
+Implementazione: dopo aver calcolato `docs_root` dal percorso fornito dall'utente,
+se `docs_root.relative_to(repo_root)` solleva `ValueError` (ovvero `docs_root`
+è fuori dalla radice del repo della CWD), `repo_root` viene riassegnato
+dinamicamente:
+
+```python
+# cli/_check.py — guardia radice sovrana
+try:
+    docs_root.relative_to(repo_root)
+except ValueError:
+    # docs_root è fuori dal repo corrente — rispetta il target esplicito.
+    repo_root = docs_root
+```
+
+Questa modifica è **additiva**: si attiva solo quando l'utente fornisce un `PATH`
+esplicito che ricade fuori dal repo della CWD. Quando `zenzic check all` viene
+invocato senza `PATH`, il comportamento originale rimane invariato.
+
+---
+
+## Motivazione
+
+### 1. Sovranità dell'Intenzione
+
+Un utente che digita `zenzic check all /home/user/repo-b/docs` ha dichiarato la
+propria intenzione in modo inequivocabile. Lo strumento deve rispettare quella
+intenzione. Sovrascrivere un argomento esplicito con un confine derivato dal
+contesto implicito è una **violazione del Principio del Minimo Stupore**.
+
+### 2. Il Dominio Corretto del Blood Sentinel
+
+Z202 (`PATH_TRAVERSAL`) è stato progettato per rilevare autori Markdown che
+scrivono link come `[config](../../../etc/passwd)` nel tentativo di fuoriuscire
+dal sandbox di documentazione. Il suo dominio è il **rilevamento di fughe via
+link relativi all'interno di un albero sorgente noto**. Non è mai stato
+progettato per penalizzare la scelta legittima dell'utente su quale albero
+sorgente analizzare.
+
+### 3. Caso d'Uso CI/CD Remoto
+
+Il cambiamento Sandbox Sovrano abilita direttamente un pattern DevOps valido: un
+repository centralizzato `zenzic-runner` che esegue `zenzic check all` su più
+repository di documentazione downstream come parte di un CI gate cross-repo.
+Senza questa correzione, tale configurazione era impossibile.
+
+---
+
+## Invarianti (Non Negoziabili)
+
+- La sovrascrittura del Sandbox Sovrano si attiva **solo** quando viene fornito
+
+  un argomento `PATH` esplicito e quel percorso ricade fuori dalla radice del
+  repo della CWD.
+
+- Il Blood Sentinel (`Z202`/`Z203`) rimane attivo incondizionatamente all'interno
+
+  del sandbox sovrano. Nessun path traversal è permesso all'interno del target
+  dichiarato.
+
+- La modifica non influisce sulla semantica di `fail-on-error` o sui codici di
+
+  uscita.
+
+---
+
+## Conseguenze
+
+- I pattern CI remoti (scansione cross-repo) ora funzionano correttamente.
+- `_validate_docs_root` (la guardia F4-1) continua a proteggere contro gli
+
+  attacchi di iniezione via file di configurazione (`docs_dir = "../../etc"`).
+  La sovrascrittura del Sandbox Sovrano si attiva solo per percorsi **forniti
+  dall'utente**, non per percorsi derivati da file di configurazione.

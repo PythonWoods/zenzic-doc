@@ -4,6 +4,9 @@ title: Architecture
 description: Technical deep dive into Zenzic's Two-Pass Pipeline, Shield middleware, Adapter Protocol, Layered Exclusion Manager, and exit code contract.
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import ThemedImage from '@theme/ThemedImage';
+
 # Architecture
 
 This page describes the internal design of Zenzic for contributors and advanced users who need to understand how the tool works under the hood. For configuration and usage, see the [Configuration Reference](../reference/configuration-reference) and [Checks Reference](../reference/checks).
@@ -13,6 +16,17 @@ This page describes the internal design of Zenzic for contributors and advanced 
 ## Two-Pass Pipeline {#two-pass-pipeline}
 
 The core analysis engine operates as a **Two-Pass Pipeline** over the documentation file set. Each pass has a distinct responsibility; Pass 2 only begins after Pass 1 completes.
+
+<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+  <ThemedImage
+    alt="Zenzic Two-Pass Analysis Pipeline: File Set → Pass 1 (Shield + Content streams) → Pass 2 (Cross-Check) → Pass 3 (Integrity Report) → Quality Report"
+    sources={{
+      light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
+      dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
+    }}
+    style={{width:'100%'}}
+  />
+</div>
 
 ### Pass 1 -- Harvest and Shield Scan {#pass-1}
 
@@ -93,9 +107,20 @@ The link validator (`validate_links_async`) operates independently with its own 
 
 The Zenzic Shield is a credential detection engine integrated into Pass 1. It operates as middleware: every line passes through the Shield before any other parser sees it.
 
+<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+  <ThemedImage
+    alt="Zenzic Shield normalization algorithm: 8-step pipeline from Raw Line through ZRT-006/007/003 normalization passes to dual raw/normalized scan, deduplication, and SecurityFinding output"
+    sources={{
+      light: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization-light.svg'),
+      dark: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization.svg'),
+    }}
+    style={{width:'100%',maxWidth:'560px',margin:'1.5rem auto'}}
+  />
+</div>
+
 ### Processing Flow {#shield-flow}
 
-```
+```text
 Raw line from file
     |
     v
@@ -116,13 +141,16 @@ SecurityFinding (or pass-through)
 
 ### Pre-scan Normalizer {#normalizer}
 
-The normalizer (ZRT-003 fix) reconstructs secrets that authors split across Markdown formatting:
+The normalizer applies six passes before regex matching:
 
-| Transformation | Example | Result |
-| :--- | :--- | :--- |
-| Unwrap backtick spans | `` `AKIA` `` | `AKIA` |
-| Remove concat operators | `` `AKIA` + `KEY` `` | `AKIAKEY` |
-| Replace table pipes | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
+| Transformation | ZRT | Example | Result |
+| :--- | :--- | :--- | :--- |
+| Strip Unicode format characters (Cf category) | ZRT-006 | `AKIA​KEY` (zero-width joiner) | `AKIAKEY` |
+| Decode HTML character references | ZRT-006 | `sk&#45;abc` | `sk-abc` |
+| Strip HTML/MDX comment interleaving | ZRT-007 | `AKIA<!-- -->KEY` | `AKIAKEY` |
+| Unwrap backtick spans | ZRT-003 | `` `AKIA` `` | `AKIA` |
+| Remove concat operators | ZRT-003 | `` `AKIA` + `KEY` `` | `AKIAKEY` |
+| Replace table pipes | ZRT-003 | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
 
 Both the raw and normalized forms are scanned. If the same secret type is detected in both forms, only one finding is emitted.
 
@@ -138,6 +166,7 @@ Both the raw and normalized forms are scanned. If the same secret type is detect
 | `google-api-key` | `AIza[0-9A-Za-z\-_]{35}` | `AIzaSyC...` |
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | PEM header |
 | `hex-encoded-payload` | `(?:\x[0-9a-fA-F]{2}){3,}` | `\x41\x42` (2× below threshold) |
+| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | `glpat-abc...` |
 
 ### IO Middleware: `safe_read_line` {#safe-read-line}
 
@@ -151,13 +180,13 @@ line = safe_read_line(raw_line, file_path, line_no)
 ### Hardening {#shield-hardening}
 
 - **Line length limit** (F2-1): Lines exceeding 1 MiB are silently truncated before regex matching to prevent ReDoS.
-- **Worker timeout** (ZRT-002): In parallel mode, each worker has a 30-second timeout. Workers that exceed this limit produce a `Z009` timeout finding instead of blocking the pipeline.
+- **Lookback buffer** (ZRT-007): The scanner maintains a 1-line lookback state. For each line, the tail of the previous normalised line (`[-80:]`) is concatenated with the head of the current line (`[:80]`) and scanned as an additional pass. This catches secrets split across YAML folded scalars or Markdown line breaks.
 
 ---
 
 ## Enterprise-Grade Security Foundations {#enterprise-security}
 
-This section documents the security hardening features introduced in v0.6.1 "Obsidian Bastion". These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
+This section documents the security hardening features introduced in v0.6.1. These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
 
 ### F2-1 — Anti-ReDoS Line Truncation {#f2-1-antiredos}
 
@@ -177,11 +206,9 @@ if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
 
 The truncated line is still scanned — a credential that begins in the first 1 MiB of a line will still be detected. Only content beyond the cap is invisible to the Shield.
 
-**Interaction with the worker timeout:** F2-1 is the first line of defence. The 30-second `ProcessPoolExecutor` worker timeout (ZRT-002, Obligation 1) is the second. Together they ensure no single file can hold the pipeline hostage regardless of content.
-
 ### F4-1 — Anti-Jailbreak Path Validation {#f4-1-antijailbreak}
 
-The `_validate_docs_root()` function in `cli.py` elevates the **Blood Sentinel** (Exit Code 3) from a link-time check to a **pre-scan filesystem barrier**.
+The `_validate_docs_root()` function in `cli/_shared.py` elevates the **Blood Sentinel** (Exit Code 3) from a link-time check to a **pre-scan filesystem barrier**.
 
 **Threat model:** A malicious or misconfigured `zenzic.toml` containing `docs_dir = "../../etc"` would cause Zenzic to scan OS system directories, potentially leaking sensitive file contents through credential detection findings or exposing the directory structure in error messages.
 
@@ -237,7 +264,7 @@ class BaseAdapter(Protocol):
 
 Key methods:
 
-- **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `VanillaAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
+- **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `StandaloneAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
 - **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
 - **`provides_index(directory_path)`** -- **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for the given directory. Called once per directory by `find_missing_directory_indices()` — never inside per-link or per-file hot loops. This is the only `BaseAdapter` method that may perform disk I/O (`Path.exists()`).
 - **`map_url()` / `classify_route()`** -- Legacy File-to-URL API, preserved for backward compatibility. Default implementations delegate to `get_route_info()`.
@@ -263,9 +290,20 @@ class RouteMetadata:
 
 The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a pure-data structure (a mapping of `canonical_url` string to `Route` objects) constructed by the `VSMBuilder` by combining adapter knowledge with filesystem discovery.
 
+<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+  <ThemedImage
+    alt="Zenzic Virtual Site Map: projection from physical filesystem files through VSMBuilder and Adapter Protocol to a route catalog with REACHABLE, ORPHAN, and GHOST route statuses"
+    sources={{
+      light: useBaseUrl('/assets/brand/svg/zenzic-vsm-projection-light.svg'),
+      dark: useBaseUrl('/assets/brand/svg/zenzic-vsm-projection.svg'),
+    }}
+    style={{width:'100%'}}
+  />
+</div>
+
 ### Versioning & Multi-Doc Support {#vsm-versioning}
 
-Starting with v0.6.1 "Obsidian Glass", the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
+Starting with v0.6.1 "Quartz Clarity", the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
 
 1. **Identifies version boundaries** via the adapter's extended root discovery.
 2. **Tags routes** with their respective version label in `RouteMetadata`.
@@ -282,7 +320,8 @@ The `--offline` flag triggers a global architectural shift in how the VSM resolv
 3. **`map_url()`** produces flat `.html` paths (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
 
 This ensures that Zenzic remains a **Structural Custodian** for documentation distributed on filesystems where directory-index resolution (e.g., `/page/` → `/page/index.html`) is unavailable.
-```
+
+```text
 
 ### Built-in Adapters {#built-in-adapters}
 
@@ -291,7 +330,46 @@ This ensures that Zenzic remains a **Structural Custodian** for documentation di
 | `MkDocsAdapter` | `mkdocs` | `mkdocs.yml` | Full nav resolution, i18n folder/suffix mode, locale fallback |
 | `ZensicalAdapter` | `zensical` | `zensical.toml` | Native TOML-based config, reads `mkdocs.yml` natively |
 | `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js/ts` | Static JS config parsing, frontmatter slug support, route base path |
-| `VanillaAdapter` | `vanilla` | (none) | No-op adapter for plain Markdown projects |
+| `StandaloneAdapter` | `standalone` | (none) | Engine-agnostic adapter for plain Markdown projects; orphan check skipped |
+
+### Protocol Sovereignty {#protocol-sovereignty}
+
+**Rule R21 (D080):** the Core (`validator.py`, `scanner.py`) must never hardcode engine
+names as conditions for validation logic. Engine-specific behaviour is declared in the
+adapter and queried by the Core via protocol methods.
+
+The canonical pattern is `get_link_scheme_bypasses() -> frozenset[str]`. If an engine
+uses a non-standard URI scheme for internal links, its adapter returns that scheme name
+and the validator exempts matching URLs from the Z105 absolute-path check:
+
+| Adapter | `get_link_scheme_bypasses()` | Reason |
+| :--- | :--- | :--- |
+| `DocusaurusAdapter` | `frozenset({"pathname"})` | `pathname:///` links reference `static/` assets via the React router escape hatch |
+| `MkDocsAdapter` | `frozenset()` | No engine-specific bypass required |
+| `ZensicalAdapter` | `frozenset()` | No engine-specific bypass required |
+| `StandaloneAdapter` | `frozenset()` | No engine-specific bypass required |
+
+**Architectural invariant:** adding a new engine adapter that needs a link-scheme bypass
+requires zero changes to `validator.py`. Implement `get_link_scheme_bypasses()` in the
+adapter alone — the Core queries it at runtime.
+
+### Cross-Engine Validation Parity {#cross-engine-parity}
+
+Zenzic's Core is a pure algorithm — it has no knowledge of which engine produced the
+docs it is inspecting. The four primary check categories fire identically for the same
+content regardless of the active adapter:
+
+| Category | Rule | Engine dependency |
+| :--- | :--- | :--- |
+| Secret detection | Z201 | None — raw frontmatter scan |
+| Absolute path links | Z105 | Adapter-declared bypass schemes only |
+| Short content | Z502 | None — word count after frontmatter strip |
+| Missing directory index | Z401 | `adapter.provides_index()` — uniform across engines |
+
+The `examples/matrix/` directory in this repository contains the living proof: identical
+red-team attack vectors produce identical findings across `standalone`, `mkdocs`, and
+`zensical` engines. The blue-team fixtures produce an identical Sentinel Seal on all
+three. Zero asymmetries.
 
 ### Link Resolution and Slug Mapping {#link-resolution}
 
@@ -320,6 +398,7 @@ When a link target uses `@site/static/img/logo.png`, the resolver strips the vir
 The `get_adapter()` factory uses entry-point discovery to find adapters:
 
 ```mermaid
+
 flowchart LR
     CLI["CLI: get_adapter(engine, docs_root, repo_root)"] --> CACHE{Cache hit?}
     CACHE -->|Yes| RETURN[Return cached adapter]
@@ -330,26 +409,31 @@ flowchart LR
     CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
     CONSTRUCT_STD --> HAS_CONFIG
     HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| VANILLA["Fallback: VanillaAdapter()"]
+    HAS_CONFIG -->|No| VANILLA["Fallback: StandaloneAdapter()"]
     EP -->|Not found| VANILLA
     VANILLA --> STORE
 
     style CACHE fill:#3b82f6,color:#fff
     style STORE fill:#22c55e,color:#fff
     style VANILLA fill:#f59e0b,color:#fff
-```
 
 ```
+
+```text
+
 1. Query zenzic.adapters entry-point group for context.engine
 2. If found: instantiate via from_repo() classmethod (if available)
-3. If not found: return VanillaAdapter (neutral no-op behaviour)
+3. If not found: return StandaloneAdapter (neutral no-op behaviour)
+
 ```
 
 Third-party adapters can be registered via `pyproject.toml`:
 
 ```toml
+
 [project.entry-points."zenzic.adapters"]
 myengine = "my_package.adapter:MyEngineAdapter"
+
 ```
 
 ### Adapter Cache {#adapter-cache}
@@ -358,7 +442,7 @@ Adapter instances are cached by `(engine, docs_root, repo_root)` key. This preve
 
 ### `has_engine_config` Guard {#has-engine-config-guard}
 
-When an adapter is instantiated but finds no engine config file (e.g. `MkDocsAdapter` with no `mkdocs.yml`), the factory falls back to `VanillaAdapter`. This ensures nav-dependent checks are skipped cleanly rather than producing false positives.
+When an adapter is instantiated but finds no engine config file (e.g. `MkDocsAdapter` with no `mkdocs.yml`), the factory falls back to `StandaloneAdapter`. This ensures nav-dependent checks are skipped cleanly rather than producing false positives.
 
 ---
 
@@ -369,6 +453,7 @@ The `LayeredExclusionManager` is constructed once per CLI invocation and passed 
 ### Construction {#exclusion-construction}
 
 ```python
+
 manager = LayeredExclusionManager(
     config,
     repo_root=repo_root,
@@ -376,6 +461,7 @@ manager = LayeredExclusionManager(
     cli_exclude=["drafts"],
     cli_include=["generated-api"],
 )
+
 ```
 
 At construction time:
@@ -401,6 +487,66 @@ Called by `walk_files()` for each directory during `os.walk()`. Returns `True` t
 ### `should_exclude_file` {#should-exclude-file}
 
 Called by `iter_markdown_sources()` for each file that passes directory filtering. Performs full 5-layer evaluation including path-component checks against all exclusion layers.
+
+---
+
+## Sovereign Root Protocol {#sovereign-root}
+
+Every CLI command that interacts with the filesystem accepts an optional `PATH` argument.
+When provided, Zenzic applies the **Sovereign Root Protocol**: configuration and scanning
+follow the target, not the caller's current working directory.
+
+### The Problem: Context Hijacking
+
+Without this protocol, running `zenzic check links ../other-project` from inside `project-A`
+would load `project-A`'s `zenzic.toml`, use `project-A`'s engine adapter, and apply
+`project-A`'s exclusion rules — to `other-project`'s documentation. This is **Context
+Hijacking**: the caller's environment silently overrides the target's.
+
+### The Solution: Three-Step Sovereignty
+
+```text
+
+Step 1 — find_repo_root(search_from=target)
+         Searches upward from the resolved target path, not from os.getcwd().
+         Loads the target repository's zenzic.toml exclusively.
+
+Step 2 — _apply_target(repo_root, config, raw_path)
+         Recalibrates docs_root: if the path is a directory, docs_dir is
+         patched to that directory. If it is a file, the parent directory
+         becomes docs_root and the file is the single audit target.
+         Sovereign root guard: when target == repo_root, the configured
+         docs_dir is preserved (not overridden to ".").
+
+Step 3 — CEO-043 Sandbox Guard
+         If docs_root falls outside repo_root (external target), adopt
+         docs_root as the new repo_root so Blood Sentinel guards escapes
+         from the target, not the location of the caller.
+
+```
+
+### The Genesis Nomad (`init`)
+
+`zenzic init <path>` is a special case: it **creates** a project rather than auditing one.
+The given path becomes the `repo_root` directly, and the directory is created
+(`mkdir -p`) if it does not exist. Engine auto-detection runs on the (possibly empty)
+target directory. The caller's CWD is never written to.
+
+```bash
+
+zenzic init ../new-project          # creates ../new-project/zenzic.toml
+zenzic init /workspace/fresh-docs   # creates the directory if needed
+
+```
+
+### Invariants
+
+| Invariant | Guarantee |
+| :--- | :--- |
+| Config isolation | Target's `zenzic.toml` is loaded; caller's config is never consulted |
+| Sandbox guard | Blood Sentinel perimeter is anchored at `docs_root`, not `cwd` |
+| No CWD mutation | `init` writes to the target; caller's working directory is untouched |
+| Hint display | Banner shows the resolved target path for operator confidence |
 
 ---
 
@@ -439,6 +585,81 @@ Blood Sentinel also fires when `docs_dir` itself resolves outside the repository
 
 ---
 
+## DFA Guarantee — The RE2 Engine {#dfa-guarantee}
+
+Zenzic v0.7.0 uses exclusively a **DFA (Deterministic Finite Automaton)** engine for all
+user-supplied regex patterns. This is a hard architectural constraint, not a configuration
+option.
+
+### What this means
+
+Every pattern declared in `[[custom_rules]]` inside `zenzic.toml` is compiled at load time
+by the [RE2 library](https://github.com/google/re2) (via `google-re2`). RE2 implements a
+true DFA: it processes the input string in a single left-to-right pass, with no backtracking.
+
+This guarantees that every regex validation runs in time linear in the length of the input:
+
+$$O(n)$$
+
+where $n$ is the length of the line being scanned. The time complexity is bounded regardless
+of the pattern structure. ReDoS (Regular Expression Denial of Service) is **mathematically
+impossible** under this engine.
+
+### What RE2 rejects
+
+RE2 rejects patterns that require NFA backtracking. If a `[[custom_rules]]` pattern uses any
+of these constructs, Zenzic raises a `PluginContractError` at startup — before any file is
+scanned:
+
+| Construct | Example | Reason |
+| :--- | :--- | :--- |
+| Backreferences | `(\w+)\1` | Requires memory of a previous capture — non-regular |
+| Positive lookahead | `foo(?=bar)` | Requires speculative forward scanning |
+| Negative lookahead | `foo(?!bar)` | Requires speculative forward scanning |
+| Lookbehind | `(?<=foo)bar` | Requires backward scanning |
+
+### What RE2 accepts
+
+RE2 is a superset of standard POSIX ERE syntax. Patterns like these compile and run correctly:
+
+| Feature | Example |
+| :--- | :--- |
+| Literal text | `internal\.corp\.example\.com` |
+| Alternation | `DRAFT\|WIP\|TODO` |
+| Repetition | `[0-9]{3}-[0-9]{4}` |
+| Inline flags | `(?i)\bDRAFT\b` (case-insensitive), `(?m)^todo` (multiline) |
+| Named groups | `(?P<code>Z\d{3})` |
+| Classic "dangerous" quantifiers | `(a+)+` — safe under RE2, runs in O(n) |
+
+### The DFA Purity Contract
+
+```python
+# rules.py — CustomRule.__post_init__
+try:
+    self._compiled = re2.compile(self.pattern)
+except re2.error as exc:
+    raise PluginContractError(
+        f"CustomRule '{self.id}': pattern {self.pattern!r} is not supported "
+        f"by the RE2 engine (ZRT-007 — DFA Purity Contract)."
+    ) from exc
+```
+
+`re2.compile` is the only gating step. There is no runtime canary, no SIGALRM timer, and no
+Windows/Linux divergence. A pattern either compiles with RE2 at load time — and is therefore
+O(n) safe — or it does not compile, and the startup fails with an actionable error message.
+
+### Why not a timeout-based canary?
+
+The previous architecture (v0.6.x) used a SIGALRM-based "canary": Python's NFA regex engine
+was run against stress strings inside a 50 ms timer. This provided *probabilistic* protection:
+a fast machine could evaluate `(a+)+` on 50 characters before the timer fired. It also required
+platform-specific code (SIGALRM is POSIX-only) and a separate `timeout.py` module.
+
+ZRT-007 eliminates the canary entirely. RE2 compilation is a *deterministic* gate — patterns
+that are incompatible with DFA are rejected unconditionally, on every OS, at constant cost.
+
+---
+
 ## Hybrid Adaptive Engine {#adaptive-engine}
 
 The scan engine automatically selects sequential or parallel execution based on the number of files:
@@ -453,75 +674,118 @@ The threshold (50 files) is a conservative heuristic: below it, `ProcessPoolExec
 In parallel mode:
 
 - Each file is processed by an independent worker process.
-- Workers receive serialised copies of `config` and `rule_engine` via `pickle` -- no shared state.
-- A 30-second timeout per worker prevents ReDoS patterns in custom rules from deadlocking the pipeline.
+- Workers receive serialised copies of `config` and `rule_engine` via `pickle` — no shared state. `CustomRule` patterns compiled by the RE2 engine are DFA-safe and cannot deadlock a worker process.
 - External URL validation is performed in the main process after all workers complete.
 - Results are always sorted by `file_path` regardless of execution mode (determinism guarantee).
 
 ---
 
-## Integrations Layer {#integrations-layer}
+## Sovereign CLI — No Integrations Layer {#sovereign-cli}
 
-The `zenzic.integrations` namespace contains **opt-in plugins** that hook into an external build engine's lifecycle and invoke Zenzic checks as a quality gate. Integrations are the **Arm** of the [Mind and Arm model](./ecosystem) — they act, whereas Adapters interpret.
+Zenzic v0.7.0 removes the `zenzic.integrations` namespace entirely. The former MkDocs plugin
+(`zenzic.integrations.mkdocs`) and its `pip install "zenzic[mkdocs]"` extra are gone.
 
-### Design Contract {#integrations-contract}
+**Why:** An embedded engine hook couples Zenzic's release cycle to an external build tool's
+plugin API. It also prevented users of other engines from accessing the full Shield and Blood
+Sentinel hardening that only the CLI pipeline provides. A Sovereign CLI decouples quality
+gating from build tooling and makes every enforcement point engine-agnostic.
 
-Integrations follow two invariants:
+**Migration:** Replace the `plugins: - zenzic` entry in `mkdocs.yml` with a CI step:
 
-1. **Dependency isolation.** An integration may import its host engine (`mkdocs`, etc.). Zenzic core never imports any integration; the dependency is strictly one-directional. This is why integration extras are opt-in: `pip install "zenzic[mkdocs]"`.
-2. **Subprocess-free core.** Integrations trigger Zenzic's Python API directly — no `subprocess.run("zenzic ...")`. Pillar 2 (No Subprocess) is preserved end-to-end.
+```yaml title=".github/workflows/zenzic.yml"
 
-### `zenzic.integrations.mkdocs` — `ZenzicPlugin` {#zenzic-plugin}
+# GitHub Actions
 
-`ZenzicPlugin` is a native MkDocs plugin that injects a full `zenzic check all` gate into every `mkdocs build` invocation.
+- run: zenzic check all --strict
 
-**Registration** (automatic via entry point):
-
-```toml
-[project.entry-points."mkdocs.plugins"]
-zenzic = "zenzic.integrations.mkdocs:ZenzicPlugin"
 ```
 
-**Activation** (user-side, in `mkdocs.yml`):
+This produces identical enforcement with the full VSM, Shield (ZRT-006/007), and Blood Sentinel
+active — capabilities that the plugin layer never fully exposed.
 
-```yaml
-plugins:
-  - search
-  - zenzic
+### Extension pattern {#extension-pattern}
+
+External tools that need to invoke Zenzic checks programmatically should use the public Python
+API directly, never shell out:
+
+```python
+
+from zenzic.core.scanner import find_repo_root
+from zenzic.models.config import ZenzicConfig
+
+repo_root = find_repo_root()
+config, _ = ZenzicConfig.load(repo_root)
+# ... invoke scanner / validator functions directly
+
 ```
 
-**Execution flow:**
+All intelligence lives in `zenzic.core`. The CLI is a thin dispatch layer over the same
+functions — there is no hidden logic that requires the subprocess path.
+
+---
+
+## CLI Layer {#cli-layer}
+
+The CLI is structured as a **package** (`src/zenzic/cli/`), not a monolithic module. This separation enforces single-responsibility at the module level and makes the visual output pipeline auditable as a first-class concern.
+
+### Package layout {#cli-package-layout}
+
+```text
+
+src/zenzic/cli/
+├── __init__.py       # Public re-export surface for main.py — no logic
+├── _shared.py        # Visual State Guardian: console singleton, _ui singleton, utilities
+├── _check.py         # check_app sub-app + 7 check commands
+├── _clean.py         # clean_app sub-app + clean assets
+├── _inspect.py       # inspect_app sub-app + capabilities command
+├── _lab.py           # lab command — interactive example showcase
+└── _standalone.py    # score, diff, init commands
+
+```
+
+### Visual State Guardian {#visual-state-guardian}
+
+`_shared.py` is the **sole owner of all console and UI state**. It exposes two dynamic getters:
+
+| Getter | Returns |
+| :--- | :--- |
+| `get_console()` | The current `rich.console.Console` singleton |
+| `get_ui()` | The current `SentinelUI` singleton (wraps the console) |
+
+`configure_console()` — called by the `--no-color` / `--force-color` Typer callback in `main.py` — **replaces** both singletons atomically. Because every command calls `get_ui()` / `get_console()` at invocation time rather than import time, they always receive the instance that reflects the user's color flags.
+
+**Invariant:** `force_terminal` on the module-level `Console` is always `None` (auto-detect via `sys.stdout.isatty()`). Passing `force_terminal=False` silently disables color even in interactive terminals — this is a latent bug pattern the architecture explicitly guards against.
+
+### Startup banner flow {#cli-banner-flow}
 
 ```mermaid
-sequenceDiagram
-    participant MKD as mkdocs build
-    participant PLG as ZenzicPlugin
-    participant CFG as ZenzicConfig.load()
-    participant CLI as check_all()
 
-    MKD->>PLG: on_config(mkdocs_config)
-    PLG->>CFG: load(repo_root)
-    CFG-->>PLG: ZenzicConfig
-    PLG->>CLI: check_all(config, docs_root, repo_root)
-    CLI-->>PLG: exit_code
-    alt exit_code == 0
-        PLG-->>MKD: build continues
-    else exit_code >= 1
-        PLG-->>MKD: PluginError raised — build aborted
-    end
+flowchart LR
+    ARGV["sys.argv"] --> COND{Banner condition?}
+    COND -->|"len == 1\nor --help/-h in argv\nor bare sub-app"| BANNER["_print_banner()\n→ get_ui().print_header()"]
+    COND -->|"No"| CMD["Typer dispatch"]
+    BANNER --> CMD
+    CMD --> CB["@app.callback()\nconfigure_console()"]
+    CB --> EXEC["Command executes\nwith correct console"]
+
 ```
 
-Shield findings (exit code 2) and Blood Sentinel findings (exit code 3) abort the build unconditionally, regardless of any `--exit-zero` setting. Standard quality findings (exit code 1) abort the build unless `exit_zero = true` is set in `zenzic.toml`.
+The banner always writes to **stdout** (the shared `_shared.console`) so it uses the same color-detection stream as the subsequent command output. The Typer callback runs *after* the banner, which is acceptable — the module-level console already uses `force_terminal=None` (auto-detect) at startup.
 
-**Logger:** The plugin logs under the `zenzic.integrations.mkdocs` logger (not `mkdocs.plugins.zenzic`), consistent with the standard Zenzic logging hierarchy.
+`_SUBAPPS_WITH_MENU` in `cli_main()` covers sub-apps that use `no_args_is_help=True`: invoking `zenzic check`, `zenzic clean`, or `zenzic inspect` with no further arguments shows the Typer help page; the banner is prepended by the explicit bare-invocation check.
 
-### Extending the Integrations Namespace {#extending-integrations}
+### Extension points {#cli-extension-points}
 
-New integrations follow the same pattern:
+| Goal | Action |
+| :--- | :--- |
+| Add a command to an existing sub-app | Add `@check_app.command()` (or other app) in the relevant `_*.py` — no changes to `__init__.py` or `main.py` |
+| Add a new top-level sub-app | Create `_myfeature.py`, export from `__init__.py`, register in `main.py`, add to `_SUBAPPS_WITH_MENU` if `no_args_is_help=True` |
+| Add a shared utility | Add to `_shared.py` and import via `from . import _shared` — never instantiate `Console` or `SentinelUI` locally |
 
-1. Create `src/zenzic/integrations/<engine>.py`.
-2. Add `<engine> = ["<engine-pkg>>=<version>"]` to `[project.optional-dependencies]` in `pyproject.toml`.
-3. Register any required entry points (e.g. `<engine>.plugins`).
-4. Use `ZenzicConfig.load()` + the core check functions — never shell out.
+### Visual identity — `zenzic.core.ui` {#core-ui}
 
-The `zenzic.integrations` package is intentionally thin: it contains no shared logic, only per-engine hooks. All intelligence lives in `zenzic.core`.
+`SentinelPalette`, `SentinelUI`, `make_banner`, `emoji`, and `SUPPORTS_COLOR` live in
+`src/zenzic/core/ui.py`. The core layer owns the visual identity so `SentinelReporter` (which
+is also in `core/`) can import them without looking upward. The CLI layer imports from
+`zenzic.core.ui` directly. The compatibility stub at `src/zenzic/ui.py` re-exports everything
+for any third-party code that was already importing from the old path.

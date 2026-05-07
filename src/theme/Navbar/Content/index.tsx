@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import React from 'react';
 import {useLocation} from '@docusaurus/router';
 import NavbarContentNative from '@theme-original/Navbar/Content';
@@ -13,6 +16,17 @@ export default function NavbarContentWrapper(props: WrapperProps): React.JSX.Ele
   // parent layout container intact, avoiding `clientHeight` crashes!
   if (pathname === '/' || pathname === '/it/') {
     return null;
+  }
+
+  // "Blog Sovereignty": The Zenzic Blog is English-only.
+  // Add data-blog-route attribute so CSS can suppress the locale switcher
+  // on blog routes without misdirecting readers to the IT home page.
+  if (pathname.startsWith('/blog')) {
+    return (
+      <div data-blog-route>
+        <NavbarContentNative {...(props as object)} />
+      </div>
+    );
   }
 
   // "Native Bastion": For all other pages, use pure Docusaurus native navbar.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import React from 'react';
 import Head from '@docusaurus/Head';
 import Layout from '@theme/Layout';
@@ -33,7 +36,7 @@ export default function Home(): React.JSX.Element {
             "name": "Zenzic",
             "operatingSystem": "Linux, macOS, Windows",
             "applicationCategory": "DeveloperApplication",
-            "softwareVersion": "0.6.1",
+            "softwareVersion": "0.7.0",
             "description": "High-performance, engine-agnostic, and security-hardened static analysis for Markdown documentation.",
             "url": "https://zenzic.dev",
             "offers": {

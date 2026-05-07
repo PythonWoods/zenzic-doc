@@ -1,21 +1,45 @@
+// SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+// SPDX-License-Identifier: Apache-2.0
+
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
   title: 'Zenzic',
   tagline: 'Documentation security layer',
-  favicon: 'img/favicon.ico',
+  favicon: 'assets/favicon/png/zenzic-icon-32.png',
 
   // Future flags for v4 compatibility
   future: {
     v4: true,
   },
 
+  // Unified storage key across all locales.
+  // future.v4 enables siteStorageNamespacing (auto hash from url+baseUrl per locale),
+  // which produces different localStorage keys per locale (EN: 'theme-926', IT: 'theme-3d7').
+  // This breaks dark-mode persistence when switching locales (theme flip FOUC).
+  // namespace:false → key is always 'theme', consistent across EN and IT.
+  storage: {
+    namespace: false,
+  },
+
   url: 'https://zenzic.dev',
   baseUrl: '/',
   organizationName: 'PythonWoods',
   projectName: 'zenzic-doc',
+
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib',
+      crossorigin: 'anonymous',
+    },
+  ],
 
   onBrokenLinks: 'throw',
 
@@ -35,7 +59,7 @@ const config: Config = {
     locales: ['en', 'it'],
     localeConfigs: {
       en: { label: 'English' },
-      it: { label: 'Italiano', htmlLang: 'it-IT' },
+      it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' },
     },
   },
 
@@ -46,8 +70,34 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '0.7.0',
+              badge: false,
+              banner: 'none',
+            },
+          },
         },
-        blog: false,
+        blog: {
+          blogTitle: 'The Zenzic Blog',
+          blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
+          blogSidebarTitle: 'Recent Posts',
+          blogSidebarCount: 'ALL',
+          postsPerPage: 5,
+          showReadingTime: true,
+          admonitions: true,
+          onInlineTags: 'throw',
+          feedOptions: {
+            type: ['rss', 'atom'],
+            title: 'The Zenzic Blog — Zenzic Engineering Blog',
+            description: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
+            copyright: `© ${new Date().getFullYear()} PythonWoods`,
+          },
+          editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -60,11 +110,24 @@ const config: Config = {
       return {
         name: 'tailwindcss-docusaurus',
         configurePostCss(postcssOptions: {plugins: unknown[]}) {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           postcssOptions.plugins.push(require('@tailwindcss/postcss'));
           return postcssOptions;
         },
       };
     },
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'developers',
+        path: 'developers',
+        routeBasePath: 'developers',
+        sidebarPath: './sidebarsDevelopers.ts',
+        editUrl: 'https://github.com/PythonWoods/zenzic-doc/edit/main/',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
   ],
 
   themeConfig: {
@@ -75,7 +138,13 @@ const config: Config = {
       {name: 'twitter:card', content: 'summary_large_image'},
       {name: 'twitter:site', content: '@PythonWoods'},
       {name: 'twitter:creator', content: '@PythonWoods'},
+      {name: 'twitter:image:alt', content: 'Zenzic — The Safe Harbor for Markdown Documentation'},
       {name: 'theme-color', content: '#4f46e5'},
+      {property: 'og:image', content: 'https://zenzic.dev/assets/social/social-card.png'},
+      {property: 'og:image:width', content: '1200'},
+      {property: 'og:image:height', content: '630'},
+      {property: 'og:type', content: 'website'},
+      {property: 'og:url', content: 'https://zenzic.dev/'},
     ],
     headTags: [
       {
@@ -88,13 +157,15 @@ const config: Config = {
     ],
     colorMode: {
       defaultMode: 'dark',
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Zenzic',
       logo: {
         alt: 'Zenzic Logo',
-        src: '/brand/svg/zenzic-icon.svg',
+        src: '/assets/brand/svg/zenzic-icon.svg',
+        width: 32,
+        height: 32,
       },
       items: [
         {
@@ -104,13 +175,28 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          type: 'html',
+          type: 'docSidebar',
+          sidebarId: 'developersSidebar',
+          docsPluginId: 'developers',
           position: 'left',
-          value: '<span class="badge badge--secondary" style="margin-left: -0.5rem; font-size: 0.75rem;">v0.6.1</span>',
+          label: 'Developers',
+        },
+        {
+          // type:html renders raw HTML — Docusaurus does NOT locale-prefix raw href values.
+          // href:'/blog' or to:'/blog' both get rewritten to '/it/blog' in IT locale static HTML.
+          // This anchor always navigates to the EN blog regardless of active locale.
+          type: 'html',
+          value: '<a class="navbar__item navbar__link" href="/blog">Blog</a>',
+          position: 'left',
         },
         {
           type: 'localeDropdown',
           position: 'right',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
         },
         {
           href: 'https://github.com/PythonWoods/zenzic',
@@ -122,13 +208,43 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.6.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.0. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
       // Language support for Zenzic-scanned file types
       additionalLanguages: ['toml', 'bash', 'yaml', 'json'],
+    },
+    // ── SentinelPalette Mermaid Integration ────────────────────────────────────────────
+    // Hex values only — Mermaid's renderer cannot consume CSS var().
+    // Dark mode: exact CLI SentinelPalette matches.
+    // Light mode uses Docusaurus 'neutral' base; themeVariables below are
+    // applied to both — optimised for the default dark surface.
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
+      options: {
+        themeVariables: {
+          // Primary nodes → BRAND Indigo
+          primaryColor:        '#4f46e5',
+          primaryTextColor:    '#e4e4e7',
+          primaryBorderColor:  '#3730a3',
+          // Edges / connectors → DIM Slate
+          lineColor:           '#64748b',
+          // Secondary / tertiary surfaces → Sentinel depth
+          secondaryColor:      '#1e1e27',
+          tertiaryColor:       '#111118',
+          edgeLabelBackground: '#0f0f13',
+          // Cluster boxes
+          clusterBkg:          '#0c0c10',
+          clusterBorder:       '#3730a3',
+          // Error nodes → ERROR Rose (exit codes 1–3)
+          errorBkgColor:       '#1a0005',
+          errorTextColor:      '#f43f5e',
+          // Title and general text
+          titleColor:          '#fafafa',
+        },
+      },
     },
   } satisfies Preset.ThemeConfig,
 };

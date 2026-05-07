@@ -1,0 +1,187 @@
+---
+sidebar_label: "ADR 011: Cross-Instance Allowlist"
+sidebar_position: -1
+description: "ADR 011: Perché Zenzic v0.7.0 preferisce una absolute_path_allowlist dichiarativa alla soppressione silenziosa nei deployment Docusaurus multi-istanza."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# ADR 011: Allowlist dei Percorsi Assoluti Cross-Istanza
+
+**Stato:** Accettato (Maggio 2026)
+**Decisore:** Tech Lead
+**Data:** 2026-05-03 (v0.7.0 "Quartz Maturity" / "Quarzo")
+
+---
+
+## Contesto
+
+La ristrutturazione documentale di v0.7.0 ha introdotto un'architettura
+**Docusaurus multi-istanza**: `/docs/*` (area Utente) e `/developers/*`
+(area Developer) sono serviti da due istanze separate di
+`@docusaurus/plugin-content-docs`. Lo split è una vittoria di
+discoverability — search, sidebar e breadcrumb non mescolano più contenuto
+user-level e ingegneristico — ma crea un attrito strutturale con il core
+validator di Zenzic.
+
+Ogni passata di analisi di un adapter Zenzic opera su **una** Virtual Site
+Map (VSM) per volta. I link cross-plugin (es. una how-to Utente che linka un
+reference Developer) non possono essere relativi — Docusaurus rifiuta di
+risolvere percorsi relativi attraverso i confini di plugin. Devono essere
+assoluti (`/developers/how-to/...`). Ma i percorsi assoluti sono esattamente
+ciò che `Z105 ABSOLUTE_PATH` è stato progettato per vietare: rompono la
+portabilità quando il sito è ospitato in una sotto-directory, e sono
+environment-dependent. Il validator, che non conosce la VSM dell'istanza
+sorella, vede un legittimo link cross-plugin come un riferimento assoluto
+rotto.
+
+Le opzioni esaminate erano:
+
+- **Opzione A** — Implementare una allowlist manuale nel core configuration.
+- **Opzione B** — Forzare l'uso di componenti JSX (es. `<Link>`), legando la
+  sorgente all'engine di build (viola **Pillar 1: Lint the Source**).
+- **Opzione C** — Auto-rilevare le route cross-istanza tramite scansioni
+  multiple (computazionalmente costoso, rischia **Pillar 2: Zero
+  Subprocesses**).
+
+## Decisione
+
+Adottiamo l'**Opzione A**: una chiave `[link_validation]
+absolute_path_allowlist` in `zenzic.toml`. Il validator onora i prefissi
+elencati come **Trusted Ghost Routes** — percorsi assoluti i cui target sono
+project-internal ma vivono fuori dalla VSM corrente.
+
+```toml
+# zenzic.toml — contratto cross-plugin dichiarativo
+[link_validation]
+absolute_path_allowlist = ["/developers/", "/api/"]
+```
+
+Il check viene eseguito immediatamente prima dell'emissione di Z105 in
+`validator.py`: se il path parsato inizia con un prefisso dell'allowlist,
+il link viene trattato come valido e saltato — nessun'altra risoluzione
+viene tentata, nessun errore registrato.
+
+## Razionale
+
+Questa decisione è governata dall'**Invariante di Trasparenza**:
+
+- **Dichiarazione Esplicita.** Invece di silenziare gli errori con commenti
+  inline `noqa` sparsi nel Markdown, l'architetto dichiara — una sola volta,
+  in config — quali prefissi assoluti il progetto possiede. La
+  configurazione *è* la mappa cross-istanza.
+- **Integrità del Linter.** Zenzic continua a fare il suo lavoro: un link
+  assoluto che non è né su disco né nell'allowlist fa comunque fallire il
+  push. L'allowlist restringe lo scope della fiducia; non indebolisce Z105.
+- **Engine Agnosticism.** La sorgente Markdown rimane agnostica rispetto a
+  Docusaurus, MkDocs o qualsiasi futuro engine multi-istanza. Nessun import
+  `<Link>`, nessun preludio JSX — lo stesso `.mdx` funzionerebbe in una
+  migrazione single-instance.
+
+L'Opzione B è stata respinta perché gli import JSX contaminano la sorgente
+con sintassi engine-specific (violazione Pillar 1). L'Opzione C è stata
+respinta perché richiederebbe la delega a subprocess al build tool
+(violazione Pillar 2) o la duplicazione della logica di plugin-resolution di
+Docusaurus in Python (manutenzione, parity drift).
+
+## Invarianti
+
+Questi vincoli sono conseguenze permanenti di ADR-0011:
+
+1. **Le voci dell'allowlist devono iniziare con `/`.** Voci relative sono
+   senza senso (i path relativi non triggerano mai Z105) e amplierebbero
+   silenziosamente il bypass.
+2. **La semantica di match è solo `startswith`.** Niente glob, niente regex,
+   niente wildcard. La semantica deve restare ispezionabile a colpo d'occhio.
+3. **Il check viene eseguito prima dell'emissione di Z105, non dopo.** I
+   link in allowlist non devono mai apparire nel flusso dei findings — nemmeno
+   come `info` soppresso — perché rappresentano contratti architetturali
+   intenzionali, non problemi silenziati.
+4. **Le voci dell'allowlist non vengono validate per esistenza.** Z108
+   `STALE_ALLOWLIST_ENTRY` (igiene config) è intenzionalmente posticipato a
+   v0.8.0 per preservare il **Pillar 3: Pure Functions** (nessuno stato
+   aggregato cross-worker). Vedi
+   [Technical Debt Ledger](../governance/technical-debt.mdx).
+
+## Conseguenze
+
+### Pro
+
+- **Pillar 1 preservato.** La sorgente Markdown resta engine-agnostica.
+- **Pillar 2 preservato.** La validazione resta deterministica, niente
+  processi extra o scansioni di rete.
+- **Audit Trail.** Il `zenzic.toml` diventa una mappa documentata delle
+  interdipendenze inter-istanza — leggibile dagli umani, parseable dagli
+  strumenti, versionata in git.
+- **Reversibile.** Rimuovere una voce ripristina l'enforcement Z105 su quel
+  prefisso; l'architetto può sempre ri-stringere il perimetro.
+
+### Contro
+
+- **Manutenzione Manuale.** Se una rotta satellite cambia (es. `/developers/`
+  → `/dev/`), l'allowlist nel repo core va aggiornata manualmente. Il
+  validator non può rilevare una rotta rinominata tramite la sola allowlist.
+- **Disciplina di Scope Richiesta.** Un'allowlist sconsiderata (`["/"]`)
+  disabiliterebbe silenziosamente Z105. La code review delle modifiche al
+  `zenzic.toml` è la protezione.
+
+## Analisi della Trasparenza
+
+L'allowlist trasforma un potenziale **punto cieco** in una **scelta
+consapevole**. La posizione di Zenzic è inequivocabile: preferiamo che il
+developer scriva
+
+> "Zenzic, so che `/developers/` non è in questa VSM — fidati di me."
+
+piuttosto che nascondere lo stesso fatto dietro un commento di soppressione
+inline che degraderebbe il Quality Score globale senza spiegare la topologia
+del sistema. La prima forma è documentazione; la seconda è debito tecnico
+travestito da silenzio.
+
+Questo ADR stabilisce il precedente per come Zenzic gestirà l'espansione
+verso architetture micro-site: ogni fiducia cross-confine va dichiarata,
+nominata e rivedibile.
+
+## Soppressione vs Configurazione
+
+Zenzic offre due primitive distinte per dire al linter "questo è
+intenzionale". Sono **ortogonali** e non vanno confuse:
+
+| Primitiva | Ambito | Quando usarla |
+|---|---|---|
+| `[link_validation] absolute_path_allowlist` | Contratto strutturale di progetto | Il fatto è una **verità sistemica** dell'architettura (es. routing multi-istanza, prefisso di dominio satellite). |
+| `<!-- zenzic:ignore Zxxx -->` / `{/* zenzic:ignore Zxxx */}` | Una singola riga sorgente | La regola è corretta in generale; questa **specifica occorrenza** è un'eccezione locale documentata (es. un esempio di codice che *sembra* una credenziale). |
+
+L'allowlist è un **contratto**: cambia il dominio di validità di Z105
+dichiarando premesse sullo spazio URL del progetto. Il validator
+*valuta* comunque il link — la valutazione ha semplicemente input
+diversi.
+
+Il commento di ignore è **chirurgia**: sopprime un finding emesso su
+una singola riga, lascia un commento di audit nella sorgente, e viene
+rivisto a livello di diff.
+
+**Anti-pattern (vietato dalla v0.7.0).** I link cross-plugin non
+devono mai essere gestiti con `<!-- zenzic:ignore Z105 -->`. Farlo
+ammetterebbe tacitamente che il routing è "rotto e accettato"; in
+realtà il routing è **corretto per design**, e quella correttezza
+merita la promozione alla configurazione strutturale del progetto. La
+soppressione inline dei link cross-plugin frammenta anche la verità:
+un futuro contributor che leggesse `zenzic.toml` non troverebbe alcuna
+traccia della dipendenza cross-confine.
+
+**Regola decisionale.** Se la stessa soppressione servirebbe in due o
+più file, non è più un'eccezione locale — è una verità sistemica e
+appartiene a `zenzic.toml`. Promuovila.
+
+---
+
+## Correlati
+
+- [ADR 002: Zero Subprocesses Policy](./adr-zero-subprocesses.mdx) —
+  proibisce l'alternativa di auto-rilevamento (Opzione C).
+- [ADR 001: Lint the Source](./adr-lint-source.mdx) — proibisce
+  l'alternativa JSX (Opzione B).
+- [Technical Debt Ledger](../governance/technical-debt.mdx) — registra il
+  rinvio di Z108 (preservazione Pillar 3).

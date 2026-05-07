@@ -1,0 +1,110 @@
+---
+sidebar_label: "Technical Debt Ledger"
+sidebar_position: 50
+description: "The deliberate, declared list of capabilities Zenzic chose NOT to ship in v0.7.0 — and the engineering reasoning that makes each deferral a feature, not an oversight."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Technical Debt Ledger
+
+> *"Hidden debt corrupts trust. Declared debt is engineering."*
+
+This page is the **public, deliberate list** of capabilities Zenzic chose
+**not** to ship in v0.7.0 "Quartz Maturity" — and the engineering reasoning
+that makes each deferral a conscious design choice, not an oversight.
+
+Zenzic's stance: a project that lints other people's documentation must hold
+itself to a higher standard of honesty about its own evolution. Every entry
+below names what is missing, why it was deferred, and which sprint owns the
+follow-through.
+
+---
+
+## Open Entries (v0.7.0 → v0.8.0)
+
+### Z108 STALE_ALLOWLIST_ENTRY
+
+**Category:** Configuration hygiene
+**Status:** Deferred to v0.8.0 "Basalt"
+**Tracked:** GitHub issue (milestone `v0.8.0`)
+**Related:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
+
+#### What was deferred
+
+A check that warns when a prefix declared in
+`[link_validation] absolute_path_allowlist` is never actually referenced by
+any link in the project — i.e. the allowlist entry has become **stale** and
+can be safely removed.
+
+#### Why we deferred it
+
+The check is conceptually simple but architecturally expensive:
+
+1. **Pillar 3 violation.** Z907 and Z105 are pure per-link / per-file
+   functions — they decide independently in each `pytest-xdist` worker with
+   no shared state. A "used / unused" determination requires aggregating
+   results across **every** scanned file in **every** worker, then
+   reconciling at the end of the run. Introducing aggregate state into the
+   validator pass would force a Pillar 3 redesign in a release whose stated
+   goal is *consolidation*, not refactor.
+2. **Wrong category.** Linting the *content* of documentation and linting
+   the *configuration* of the linter itself are different problem spaces.
+   Mixing them inflates the validator's scope and obscures which findings
+   are about user-authored content vs. project setup.
+3. **YAGNI signal absent.** No real-world reports of stale allowlist
+   entries exist yet. v0.7.0 is the first release that has the feature at
+   all. Adding a hygiene check for a problem that has never been observed
+   would be premature.
+
+#### What we will do in v0.8.0
+
+The natural home for this check is a separate command — proposed name
+`zenzic inspect config` — which audits configuration files end-to-end:
+unreferenced allowlist entries, contradictory `excluded_dirs` patterns,
+deprecated keys, etc. This separates **content lint** (the validator pass)
+from **config audit** (the inspector pass) and keeps both passes pure.
+
+#### Mitigation in v0.7.0
+
+`zenzic.toml` is small, version-controlled, and code-reviewed at every PR.
+A stale allowlist entry is a code-review concern in v0.7.0, promoted to a
+tooling concern in v0.8.0. The risk window is bounded: a stale entry can at
+worst silence a legitimate Z105 finding for a prefix that no longer needs
+silencing — it cannot create false positives, leak data, or weaken any
+security check.
+
+---
+
+## Closed Entries
+
+This section will accrue entries as deferred items ship. Each closed entry
+will name the version that resolved it and link to the merged PR.
+
+*(none yet — v0.7.0 is the first release with a public Technical Debt
+Ledger.)*
+
+---
+
+## Why this page exists
+
+Zenzic's first invariant is **Transparency**. A linter that hides its own
+shortcomings is not trustworthy: every project that adopts Zenzic should be
+able to read this ledger and judge for themselves whether the deferred work
+matters to their use case.
+
+Three commitments govern this page:
+
+1. **Every deferral is named.** No silent backlog. If we chose not to ship
+   a capability that was meaningfully discussed during a sprint, it lands
+   here.
+2. **Every deferral has a reason.** "We ran out of time" is acceptable
+   when true; vague hand-waving is not. The reason must be specific enough
+   that a future contributor can decide whether the constraint still holds.
+3. **Every deferral has an owner.** Either a target sprint, a target
+   release, or an explicit "indefinitely deferred" with the rationale.
+   Ledger entries without owners decay into folklore.
+
+When you contribute a deferral here, you are not admitting weakness — you
+are protecting the next contributor from rediscovering the same trade-off.

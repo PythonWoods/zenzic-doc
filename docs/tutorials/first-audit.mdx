@@ -1,79 +1,135 @@
 ---
 sidebar_position: 1
-sidebar_label: "Introduction"
+sidebar_label: "Your First Audit"
 ---
 
-# Introduction
+# Your First Audit
 
-Zenzic is an **engineering-grade static analyzer** for Markdown-based documentation. 
+**What you'll achieve:** go from zero to a passing Sentinel report in under three minutes —
+and along the way, watch Zenzic catch a leaked credential, flag an orphan page, and hand you
+a 100/100 score. No configuration file required to start.
 
-Unlike traditional linters that check prose or generic link checkers that crawl generated HTML, Zenzic operates in the **Build-Aware Gap**: the critical moment between writing source files and their transformation into a website.
+:::tip[Prerequisites]
 
-## Why Zenzic exists {#why-zenzic}
+You need [uv](https://docs.astral.sh/uv/) on your `PATH`. Everything else is handled automatically.
+:::
 
-The project was born from a structural observation: documentation tooling ecosystems are inherently unstable. Build engines introduce breaking changes, configuration formats shift, and teams migrate between generators. Relying on the "build output" for quality assurance is a strategic risk.
+:::info[Why start with the Lab?]
 
-Zenzic provides a **Safe Harbor** for your content by building a **Virtual Site Map (VSM)** directly from the raw Markdown source. This ensures that your documentation remains valid and secure, regardless of which build engine (Docusaurus, MkDocs, or Zensical) you use.
-
-## Core Pillars {#pillars}
-
-1. **Lint the Source, not the Build:** Agnostic to your static site generator.
-2. **Pure Python (No Subprocesses):** Zero external dependencies, 100% portable and secure.
-3. **The Sentinel Shield:** Built-in scanning for credentials and host-path probes.
-4. **Graph Intelligence:** $O(V+E)$ complexity for link cycle detection.
-
-*"The Code is Law. The Documentation is Truth. The Sentinel is vigilant."*
+The fastest path to understanding Zenzic is **watching it work**.
+`zenzic lab` runs every scanner against pre-built fixtures: a real security breach, a real
+shield, and a real clean report — in 60 seconds.
+:::
 
 ---
 
-## Installation {#installation}
+## Step 1 — Run Zenzic without installing it {#step-1-uvx}
 
-### Zero-install (recommended for CI) {#uvx}
-
-Run Zenzic on any project without installation using `uvx`:
+Point Zenzic at your project root. No virtual environment, no `pip install`:
 
 ```bash
 uvx zenzic check all
 ```
 
-`uvx` resolves and runs Zenzic in an isolated environment. No virtual environment setup required.
-
-### Persistent install {#pip-install}
-
-```bash
-pip install zenzic
-```
-
-### With MkDocs native plugin {#pip-mkdocs}
-
-To use the `ZenzicPlugin` inside `mkdocs build`, install the optional `[mkdocs]` extra:
-
-```bash
-pip install "zenzic[mkdocs]"
-```
-
-This adds `mkdocs>=1.6.1` as a dependency and enables the `zenzic.integrations.mkdocs` entry point. See the [Ecosystem overview](../explanation/ecosystem) for the full Adapter vs. Integration model.
+`uvx` fetches Zenzic in an isolated environment and discards it when the command finishes.
+Run this from the directory that contains your `zenzic.toml` (or from the repo root).
+Zenzic auto-discovers the configuration and activates the correct engine — including
+orphan detection (Z402) when a nav contract is present.
+If a `blog/` directory exists on disk, or `docusaurus.config.ts` declares a blog plugin
+block, `zenzic check all` includes blog posts in the scan scope automatically. No extra
+setting required. No `blog_dir` to configure.
+This is the recommended workflow for CI and for trying Zenzic on an unfamiliar repo.
 
 ---
 
-## Quick Start {#quick-start}
+## Step 2 — The Siege & The Shield {#step-2-siege}
 
-1. Create a `zenzic.toml` at your repository root:
+Before configuring anything, watch Zenzic protect a deliberately broken repo:
 
-```toml
-docs_dir = "docs"
+**The Siege** — run act 2 (leaked credential demo):
 
-[build_context]
-engine = "docusaurus"   # or: mkdocs | zensical | vanilla
+```bash
+uvx zenzic lab 2
 ```
 
-2. Run all checks:
+Zenzic scans the bundled `security_lab` fixture and fires **exit code 2** with the
+Security Breach banner — the non-suppressible alert for a leaked credential:
+
+<SentinelOutput status="breach" exitCode={2} showFrame
+  location="docs/how-to/configure.md:4"
+  masked="AKIA************MPLE"
+  credentialType="aws-access-key"
+/>
+
+The masked credential, the non-zero exit: this is how Zenzic teaches.
+
+**The Shield (Sentinel Seal)** — now run act 0:
+
+```bash
+uvx zenzic lab 0
+```
+
+The Sentinel Seal: every check green, exit 0. The contrast is the proof —
+the same engine that caught the secret confirms that clean documentation is genuinely clean.
+
+:::tip[Interactive Demo — No installation required]
+**Want to see the AI siege live?**
+
+```bash
+uvx zenzic lab
+```
+
+Launches the interactive menu of all 17 acts: credential leaks, broken links, orphan pages,
+path traversal, and the Sentinel Seal. Zero install. Zero config. Pure experience.
+
+→ Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (The Siege), `uvx zenzic lab 0` (The Seal).
+:::
+
+---
+
+## Step 3 — Initialize your Safe Harbor {#step-3-init}
+
+When you're ready to commit Zenzic to your project, generate a `zenzic.toml` in one command:
+
+```bash
+cd your-project/
+zenzic init
+```
+
+Zenzic inspects the directory and pre-configures the engine for you:
+
+```text
+Created zenzic.toml
+  Engine pre-set to docusaurus (detected from docusaurus.config.ts).
+
+Edit the file to enable rules, adjust directories, or set a quality threshold.
+Run zenzic check all to validate your documentation.
+```
+
+The generated file is annotated — every option is commented out with a short explanation.
+Open it, uncomment what you need, leave the rest.
+
+:::note[Using pyproject.toml?]
+
+```bash
+zenzic init --pyproject
+```
+
+This appends a `[tool.zenzic]` section to your existing `pyproject.toml` instead of
+creating a separate file.
+:::
+
+---
+
+## Step 4 — Run your first real audit {#step-4-audit}
 
 ```bash
 zenzic check all
 ```
 
-3. Interpret the exit code:
+The Sentinel scans every Markdown file, validates internal links against the Virtual Site Map,
+checks anchors, scans for credentials, and runs your custom rules — then prints a structured
+report and exits with a machine-readable code:
 
 | Code | Meaning |
 | :---: | :--- |
@@ -81,3 +137,42 @@ zenzic check all
 | **1** | Findings — documentation quality issues detected |
 | **2** | Shield — leaked credential detected (never suppressed) |
 | **3** | Blood Sentinel — path traversal attempt detected (never suppressed) |
+
+A clean run looks like this — the **Sentinel Seal**:
+
+<SentinelOutput status="success" exitCode={0} showFrame />
+
+This is not a green CI tick. It is a **mathematical proof** that every link resolves,
+every page is reachable, and no credential is exposed. `100/100` is the only number that counts.
+
+:::note[Deliberate Failure — The Traceability Proof]
+Insert a broken link in any file:
+
+```markdown title="docs/intro.mdx"
+[See the guide](./nonexistent-page.mdx)
+```
+
+Run `zenzic check all`. The finding is exact:
+
+```text
+docs/intro.mdx:3  Z101  Internal link resolves to no page in the VSM  → ./nonexistent-page.mdx
+```
+
+File path. Line number. Finding code. No finding without a physical origin.
+This is deterministic traceability — the same guarantee in CI as in local development.
+:::
+
+> **Ready to get there?** Run `uvx zenzic score` on your own repo — right now, without installing anything.
+
+---
+
+## What's next? {#next}
+
+- **Measure your score** — run `uvx zenzic score` to get a precise 0–100 baseline for your repo
+- **Add a CI gate** — see [CI/CD Integration](../how-to/configure-ci-cd) to ship with confidence
+- **SARIF export** — `zenzic check all --format sarif` for GitHub Code Scanning inline annotations
+- **Strict mode** — add `--strict` to also validate external URLs
+- **Custom rules** — add `[[custom_rules]]` entries to `zenzic.toml` to enforce your own patterns
+- **Finding codes** — see the [Finding Codes reference](../reference/finding-codes) for the full
+
+  `Zxxx` diagnostic catalogue

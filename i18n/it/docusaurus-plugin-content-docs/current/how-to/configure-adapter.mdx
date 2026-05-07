@@ -57,8 +57,10 @@ fallback i18n.
 Nomi delle directory locale non-default. Zenzic usa questa lista per:
 
 1. **Fallback asset** — un link da `docs/it/index.md` a `assets/logo.svg` risolve letteralmente
+
    in `docs/it/assets/logo.svg` (che non esiste). Sapendo che `"it"` è una directory locale,
    Zenzic rimuove il prefisso e controlla `docs/assets/logo.svg`.
+
 2. **Soppressione orfani** — i file sotto `docs/it/` non vengono segnalati come orfani.
 
 ### `fallback_to_default`
@@ -75,25 +77,36 @@ una pagina tradotta a una pagina che esiste solo nel locale di default viene sop
 | `build_context.engine` | File di configurazione presente | Adapter selezionato |
 | :--- | :--- | :--- |
 | `"mkdocs"` (default) | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
-| `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `VanillaAdapter` — nessuna consapevolezza nav |
+| `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `StandaloneAdapter` — nessuna consapevolezza nav |
 | `"zensical"` | `zensical.toml` trovato | `ZensicalAdapter` — legge nav da `zensical.toml` |
 | `"zensical"` | `zensical.toml` assente, `mkdocs.yml` trovato | `ZensicalAdapter` — **Proxy Trasparente** usando `mkdocs.yml` |
 | `"docusaurus"` | `docusaurus.config.ts` trovato | `DocusaurusAdapter` — legge la configurazione staticamente |
-| qualsiasi stringa sconosciuta | — | `VanillaAdapter` — nessun adapter registrato per questo motore |
+| qualsiasi stringa sconosciuta | — | `StandaloneAdapter` — nessun adapter registrato per questo motore |
 
-### Modalità Vanilla
+:::tip[I file di configurazione del motore vengono esclusi automaticamente]
+Ogni adapter protegge il proprio file di configurazione del motore dal controllo asset non
+utilizzati (Z903). **Non è necessario** aggiungere `docusaurus.config.ts`, `mkdocs.yml` o
+`zensical.toml` a `excluded_assets` in `zenzic.toml`. Consulta le
+[Protezioni di Sistema](../reference/configuration.mdx#system-guardrails) per l'elenco completo
+dei file esclusi automaticamente.
+:::
 
-Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
+### Modalità Standalone
 
-Quando `VanillaAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
+Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
+
+Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
 In questa modalità:
 
 - **Il controllo orfani viene saltato** — senza una dichiarazione di nav, ogni file Markdown
+
   sembrerebbe un orfano, rendendo il controllo privo di significato.
+
 - **Tutti gli altri controlli** (link, snippet, placeholder, asset, riferimenti) **vengono
+
   eseguiti normalmente.**
 
-La modalità Vanilla è il comportamento corretto per repository Markdown semplici, wiki e
+La modalità Standalone è il comportamento corretto per repository Markdown semplici, wiki e
 progetti che dichiarano la navigazione dinamicamente al momento del build.
 
 ---
@@ -113,7 +126,7 @@ con codice 1:
 
 ```text
 ERROR: Unknown engine adapter 'hugo'.
-Installed adapters: mkdocs, vanilla, zensical
+Installed adapters: mkdocs, standalone, zensical
 Install a third-party adapter or choose from the list above.
 ```
 
@@ -195,4 +208,4 @@ registrano sotto il gruppo di entry-point `zenzic.adapters` nel loro `pyproject.
 hugo = "zenzic_hugo.adapter:HugoAdapter"
 ```
 
-Consulta [Scrivere un Adapter](../community/developers/how-to/implement-adapter.mdx) per il protocollo completo.
+Consulta [Scrivere un Adapter](/developers/how-to/implement-adapter) per il protocollo completo.

@@ -1,0 +1,405 @@
+---
+slug: beyond-the-siege-zenzic-v070-quartz
+title: "The Sovereign Root"
+sidebar_label: "🛡️ 004 - Saga IV: Sovereign Root"
+authors: [pythonwoods]
+tags: [release, engineering, python, opensource, security, obsidian-chronicles, engineering-chronicles]
+date: 2026-04-29T19:05:00
+description: >
+  After four AI agents tried to break Zenzic's Shield, we didn't patch bugs —
+  we rewrote the rules. The Sovereign Root Protocol, Purity Protocol, and 1,301 tests
+  later: this is the technical deep-dive.
+image: https://zenzic.dev/assets/social/social-card.png
+---
+
+:::info[🛡️ The Zenzic Chronicles — Complete]
+
+The complete six-part engineering saga of Zenzic's journey from v0.5 Sentinel to v0.7.0 Quartz Maturity. The Chronicles are sealed.
+
+[Saga I](/blog/hardening-the-documentation-pipeline) | [Saga II](/blog/docs-pipeline-security-risk-obsidian-bastion) | [Saga III](/blog/ai-driven-siege-shield-postmortem) | **Saga IV** | [Saga V](/blog/zenzic-v070-quartz-maturity-stable) | [Saga VI](/blog/governance-of-quartz)
+
+:::
+
+The [siege is over](/blog/ai-driven-siege-shield-postmortem). All four bypass vectors
+are closed. 1,195 tests pass. The Bastion holds.
+
+{/* truncate */}
+
+And then we found another bug.
+
+That is how software works. The question is not whether you'll find gaps after a major
+hardening effort — you will. The question is whether your process catches them before
+your users do, and whether you have the institutional discipline to close them without
+inflation.
+
+This is the story of what happened in the final days of high-intensity consolidation leading to v0.7.0, and why the
+version number itself carries meaning.
+
+## Treating Documentation as Untrusted Input
+
+In application security, the foundational discipline is: never trust input. Passwords are
+hashed, not stored. Filenames are validated before they touch the filesystem. URLs are
+parsed and normalised — never concatenated from fragments. The moment you trust your inputs,
+you have implicitly transferred control to whoever provides them.
+
+Documentation pipelines operate under the opposite assumption. Links are "probably fine."
+Asset paths are "probably correct." Placeholder values are "probably temporary." The result
+is exactly what you expect from systems that trust their inputs: slow, silent rot that
+surfaces as broken experiences for readers — days or even hours after the damage was done.
+
+Zenzic's thesis is that documentation is input, and should be treated with the same
+skepticism. The Zxxx diagnostic system is input validation. The Shield scanner is a
+credential sanitiser. The Z502 frontmatter leak fix is a parser boundary constraint. The
+Z105 `pathname:///` false-positive fix is protocol normalisation. Each one applies a
+discipline that security engineers have practised for decades to a domain that has, until
+now, operated on optimism.
+
+That transfer of security thinking to documentation quality is what **Quartz Maturity**
+actually means.
+
+## The Arc: From Sentinel to Maturity
+
+The Zenzic Engineering Series has documented a continuous thread:
+
+| Part | Topic | Version |
+| :--- | :--- | :--- |
+| [Part 1](/blog/hardening-the-documentation-pipeline) | Why Zenzic exists: the leaking pipe problem | v0.5.x Sentinel |
+| [Part 2](/blog/docs-pipeline-security-risk-obsidian-bastion) | Ripping the foundation out: Headless Architecture | v0.6.1rc2 Bastion |
+| [Part 3](/blog/ai-driven-siege-shield-postmortem) | The siege: 4 bypass vectors found and closed | v0.6.1rc2 → v0.6.1 |
+| Part 4 (this post) | The consolidation: Sovereignty, Purity, precision | **v0.7.0** |
+| [Part 5](/blog/zenzic-v070-quartz-maturity-stable) | The vision: UX-Discoverability and the new standard | **v0.7.0 Stable** |
+
+The version jump from v0.6.1 to v0.7.0 was not about features. It was about something
+more specific: the deliberate rejection of a framing.
+
+## Why Not v0.6.2
+
+After the siege postmortem closed all four bypass vectors, the natural next step was a
+v0.6.2 patch release. The Zensical and MkDocs adapters needed Z404 coverage. The i18n
+configuration had a silent fallback bug. The navigation badge hadn't been updated in
+the bump script. These felt like small fixes.
+
+They weren't small. They were the difference between a system that claims to be a
+multi-engine Safe Harbor and a system that actually is one.
+
+Z404 (`CONFIG_ASSET_MISSING`) was originally implemented as Docusaurus-only — a direct
+contradiction of the engine-agnostic architecture Zenzic was built around. A tool that
+detects broken favicon references only in Docusaurus projects is not an agnostic tool.
+It is a Docusaurus tool with MkDocs support bolted on.
+
+The i18n silent fallback was worse. For months, the Italian locale of zenzic.dev was
+silently serving English content. The URL changed. The content didn't. The bug was in
+`docusaurus.config.ts` — `htmlLang: 'it-IT'` without an explicit `path: 'it'` caused
+Docusaurus to look for translations in `i18n/it-IT/` (which doesn't exist) and fall
+back silently to English. The Italian documentation was invisible.
+
+These are not patch-level problems. They are foundational consistency failures in a
+tool built around the premise that documentation quality is measurable and enforceable.
+
+## The Quartz Mirror Audit
+
+The final pre-release audit — internally called the Quartz Mirror Pass — was
+structured around a simple question: does every claim Zenzic makes about itself hold
+when verified against the actual state of the codebase, the documentation, and the
+published site?
+
+The audit found:
+
+**Z404 engine gap.** The finding code existed. The implementation was Docusaurus-only.
+MkDocs `theme.favicon` and `theme.logo` were not checked. Zensical `[project].favicon`
+and `[project].logo` were not checked. The fix added `check_config_assets()` to both
+`_mkdocs.py` and `_zensical.py`, and unified the CLI dispatch to cover all three
+engines. Lab Acts 9 and 10 were added to demonstrate the fix.
+
+**i18n silent fallback.** Diagnosed via `.docusaurus/i18n.json` — the `translate: false`
+flag confirmed the Italian locale was not being discovered. Fix: add `path: 'it'`
+explicitly to `localeConfigs`. Documented as institutional memory in the README and
+the FAQ (EN + IT). Added to the PR checklist.
+
+**Navbar badge drift.** The version bump script correctly updated the footer and package
+metadata but missed the `>v{version}<` HTML badge in the navbar. `v0.6.2` persisted in
+the navbar after the v0.7.0 bump. Fixed in the bump script.
+
+**Documentation structure drift (Diátaxis restructure).** The documentation portal
+was restructured following the [Diátaxis framework](https://diataxis.fr/) — four
+clear modes: Tutorials, How-To Guides, Reference, and Explanation. Every section
+URL changed: `/docs/usage/` → `/docs/how-to/`, `/docs/guides/` → `/docs/how-to/`,
+`/docs/internals/architecture-overview/` → `/docs/explanation/architecture/`.
+Three links in `README.md` had been silently pointing at the old paths for several intensive sprints
+behind a blanket `zenzic.dev` exclusion bypass. When the exclusion was removed
+as part of the perimeter audit, Zenzic flagged all three immediately. The tool
+caught its own documentation drift.
+
+**"True Stable" framing rejected.** Early drafts of the release notes used the phrase
+"True Stable" to describe v0.7.0. The phrase was removed. Stability is not a
+declaration — it is an ongoing epistemic posture. Calling a release "True Stable"
+implies that previous releases were somehow dishonestly stable, and that future work
+won't find gaps. Both implications are false. The correct framing: v0.7.0 is
+**Quartz Maturity** — a point of consolidation, not an arrival.
+
+## What v0.7.0 Actually Is
+
+```text
+zenzic check all
+```
+
+That command now works correctly against four engine types, with:
+
+| Capability | Status |
+| :--- | :--- |
+| MkDocs adapter | Z404 asset checking added |
+| Docusaurus v3 adapter | Z404 (existing), versioning, @site/ alias, slug logic |
+| Zensical adapter | Z404 asset checking added |
+| Standalone Mode | Orphan detection disabled (no nav contract) |
+| Shield bypass hardening | 4 vectors closed, 8-step normalization pipeline |
+| i18n locale discovery | `path` config enforced; silent fallback documented |
+| Lab (interactive showroom) | 17 Acts covering all engine types + Red/Blue Team Matrix |
+| Universal PATH argument | All 6 `check` sub-commands + `init` (sovereign root semantics) |
+| Sovereign root banner hint | Active scanning target printed after Sentinel header |
+| Z502/Z105 precision | MDX frontmatter leak + `pathname:///` false positive eliminated |
+| Core purity | `validator.py` — zero engine-name references (Purity Protocol) |
+| Test suite | 1,301 passing tests |
+| Enterprise reporting | SARIF 2.1.0 output for GitHub Code Scanning |
+| Runtime dependencies | 5 |
+| Subprocess calls | 0 |
+
+The engine-agnostic claim is now verifiable, not aspirational.
+
+## The Diagnostic Standard: Zxxx Codes
+
+The `Zxxx` code scheme was introduced as a breaking change in v0.6.1 and is the
+established standard in v0.7.0: every diagnostic emitted by Zenzic carries a
+machine-readable identifier. No raw string codes. No silent findings. Every problem
+is named, categorised, and traceable.
+
+| Range | Category | Examples |
+| :--- | :--- | :--- |
+| Z1xx | Link integrity | Z101 LINK_BROKEN, Z102 ANCHOR_MISSING, Z104 FILE_NOT_FOUND |
+| Z2xx | Security | Z201 SHIELD_SECRET, Z202 PATH_TRAVERSAL |
+| Z3xx | Reference integrity | Z301 DANGLING_REF, Z302 DEAD_DEF |
+| Z4xx | Structure | Z401 MISSING_DIRECTORY_INDEX, Z402 ORPHAN_PAGE, Z404 CONFIG_ASSET_MISSING |
+| Z5xx | Content quality | Z501 PLACEHOLDER, Z503 SNIPPET_ERROR |
+| Z9xx | Engine / system | Z902 RULE_TIMEOUT |
+
+The registry lives in `src/zenzic/core/codes.py` — the single source of truth.
+Adding a diagnostic without registering its code is a protocol violation.
+This is what enterprise-grade means in practice: every finding is traceable,
+filterable, and auditable across releases.
+
+## The Vanilla-to-Standalone Sunset
+
+This release also completes the `engine = "vanilla"` → `engine = "standalone"` migration.
+The migration guard in `_factory.py` that raises `ConfigurationError [Z000]` with a
+clear remediation message was originally annotated `# TODO: Remove this migration guard in v0.7.0`,
+implying it was temporary scaffolding. That annotation was wrong. The guard is intentionally
+permanent: `engine = "vanilla"` is removed and will never return, so the error message
+that tells users exactly how to migrate is load-bearing, not transitional.
+The TODO was removed. The guard stays.
+
+"Standalone Mode" is the canonical identity for documentation projects without a
+declared build system. It is not a fallback. It is not a default. It is a first-class
+engine mode with its own adapter, its own Lab Act, and its own documentation.
+
+This release also closes the chapter on the MkDocs plugin dependency that preceded the
+Headless Architecture. The CLI is now the **Sovereign authority**: `zenzic check all`
+is the single, non-negotiable entry point regardless of what build system the
+documentation uses. There is no plugin shim. There is no parallel execution path.
+One command. One verdict.
+
+## The Institutional Memory Protocol
+
+One pattern that emerged clearly during the Quartz Mirror audit: the gap between
+what the tooling enforces and what the team remembers is where the worst bugs live.
+
+The i18n silent fallback had been present for months. The navbar badge drift had
+been present since the v0.7.0 bump. Neither was caught by the existing test suite
+because neither was tested — they were assumed.
+
+The fix was not just to close the bugs. It was to encode the knowledge:
+
+- The i18n trap is now in the README troubleshooting section, the PR checklist, and the
+
+  FAQ (English and Italian).
+
+- The bump script gap is documented in the script itself and the checklist.
+- The Structural Map (our deterministic engineering ledger) carries the full sprint history,
+
+  including the root cause, the fix, and the lesson.
+
+A process that catches bugs is valuable. A process that prevents the same bug from
+recurring is more valuable. The institutional memory protocol is how you get from the
+first to the second.
+
+## The Parity Sprint: When Coverage IS the Audit
+
+Two days after the initial v0.7.0 write-up, a second forensic sprint surfaced failures
+that the test suite had not seen — not because the tests were wrong, but because entire
+modules were untested.
+
+**`cache.py` — zero coverage.** The content-addressable finding cache (284 lines) had no
+test file. Pure hash functions, `CacheManager` roundtrips, atomic save, parent-directory
+creation, corrupt-JSON fallback — all running in production, none exercised.
+Twenty-nine tests were written. One boundary required a non-obvious fix: atomic write
+failure is validated by patching `zenzic.core.cache.json.dump`, not `builtins.open`,
+because `save()` uses `Path.open()`. The distinction is silent and the kind of thing
+that lets a bad mutant survive indefinitely.
+
+**Mutation testing.** `mutmut` was run across `rules.py`, `shield.py`, and `reporter.py`.
+The survivors diagnosed precisely what was missing. `_to_canonical_url` had no test
+targeting its `rstrip("/")` normalisation, its backslash conversion, or the boolean
+logic guarding context-aware `..`-resolution — a `and … or` mutation that would make
+the guard fire on partial input. `_obfuscate_secret` had no boundary test at
+`len(raw) == 8` (the `<= 8` threshold). New mutant-killing test classes were added
+to make those mutations observable and fatal.
+
+**Cross-platform regression.** `resolve_asset()` in all three adapter modules used
+`Path.exists()` for fallback path validation. On Windows (NTFS) and macOS (HFS+) this
+returns `True` regardless of capitalisation — `Logo.png` passes when the file on disk
+is `logo.png`. A new `case_sensitive_exists()` helper using `os.listdir()` enforces
+exact case on every platform, fixing a CI regression on the Windows and macOS legs of
+the cross-platform matrix.
+
+**CVE-2026-3219.** `pip 26.0.1` is affected by a polyglot archive vulnerability (no
+patched release on PyPI). Zenzic uses `uv` for all package management and never invokes
+pip programmatically — the exposure is zero. The `nox security` session was updated to
+suppress the advisory with a documented removal reminder.
+
+The test count at the close of the parity sprint: **1,195 tests, all passing.**
+
+## The Precision Sprint: Eliminating False Positives
+
+After CLI symmetry was established, two false-positive bugs were closed.
+
+**BUG-012 — Z502 MDX Frontmatter Leak.** The placeholder detector (`Z502 PLACEHOLDER`)
+was firing on React-style template expressions inside MDX files — `{children}`,
+`{props.title}` — because the frontmatter extraction boundary was too permissive. The fix
+constrained YAML extraction to terminate at the first `---` close marker, preventing MDX
+body content from bleeding into the frontmatter scan. No legitimate placeholder finding was
+affected.
+
+**BUG-013 — Z105 `pathname:///` False Positive.** Docusaurus uses `pathname:///` as a
+pseudo-protocol for links that resolve at build time into absolute paths. Zenzic's absolute
+link detector (`Z105 ABSOLUTE_LINK`) was flagging these as portability violations. The fix
+adds `pathname:` to the recognised protocol allowlist (Rule R16: Protocol Awareness). Teams
+migrating Docusaurus projects to Zenzic no longer see spurious Z105 warnings on
+build-generated links.
+
+The pattern is significant: precision failures are more dangerous than false negatives. A
+scanner that cries wolf trains engineers to suppress its output — and the one real finding
+gets lost in the noise. Every false positive is a credibility tax on the tool that emits it.
+
+## Total CLI Symmetry: The Sovereign Root Protocol
+
+The original v0.7.0 release shipped with `check all` accepting a `PATH` argument. The other
+six `check` sub-commands (`links`, `orphans`, `snippets`, `placeholders`, `assets`,
+`references`) and `init` did not. The gap was architectural inconsistency — a tool that
+claims uniform behaviour with a non-uniform interface.
+
+D060 closed the gap. Every filesystem-interacting CLI command now accepts an optional `PATH`
+with full sovereign root semantics:
+
+```bash
+zenzic check links   ../other-project       # config follows target, not CWD
+zenzic check orphans content/               # sub-directory scope
+zenzic check assets  /abs/path/to/docs      # absolute paths accepted
+zenzic init          /workspace/new-docs    # Genesis Nomad: create and scaffold
+```
+
+The sovereign root protocol ensures configuration follows the target, not the caller.
+Running `zenzic check links ../other-project` from your current working directory loads
+`../other-project/zenzic.toml`, not your project's config. Context cannot be hijacked.
+
+D062 added visual confirmation — the resolved scanning target is printed immediately after
+the Sentinel header when `PATH` is provided:
+
+```text
+  Scanning: ../other-project/docs
+```
+
+For `init` in Genesis Nomad mode:
+
+```text
+  Target: ../new-project
+```
+
+Operators now see exactly which root Zenzic has elected before the first result appears.
+
+## The Law of Contemporary Testimony
+
+In parallel with the code changes, a policy was codified: the **Law of Contemporary
+Testimony**.
+
+> *Code and documentation are a single, indivisible unit of work. No sprint is closed if
+> the documentation still reflects the previous state of the code.*
+
+The enforcement mechanism is the Zenzic Structural Map, a mandatory protocol that
+ensures no sprint is closed unless the documentation is as mature as the code. If a wrapper
+behavior changed, the architecture diagram must be updated. If a CLI flag was added, the
+reference must be updated. If an exit code semantic changed, the policy table and the user
+documentation must both be updated.
+
+This sounds like documentation discipline. It is actually a defect prevention system. The
+navbar badge drift, the i18n silent fallback, the README links pointing at URL paths that no
+longer exist — every one of these was a failure of the implicit contract between code author
+and documentation author. When those roles are collapsed (as they are in any sufficiently
+small team), the failure mode is: *I know this in my head, I'll update the docs later.*
+Later compounds. The Law makes "later" unconstitutional.
+
+The test count at close of all v0.7.0 consolidation sprints: **1,301 passing tests.**
+
+## The Purity Protocol: Zero Engine Leaks in Core
+
+One invariant that emerged from the consolidation: `validator.py` — the heart of Zenzic —
+must contain no reference to any engine by name. No "docusaurus", no "sidebar", no
+"navbar". The Core receives a `frozenset[str]` of navigable paths from
+`adapter.get_nav_paths()`. What lives inside that method is the adapter's problem, not
+the Core's.
+
+This is not aesthetic. It is architectural insurance. A Core that knows about Docusaurus
+is a Core that will accumulate Docusaurus special-cases. A Core that knows about MkDocs
+nav-plugins will accumulate MkDocs exceptions. Every engine leak is a future maintenance
+trap.
+
+The **Purity Protocol** (confirmed by `grep -n "docusaurus\|sidebar\|navbar\|footer"
+validator.py` → 0 matches) is the enforcement gate. Adding a new adapter that modifies
+`validator.py` is a protocol violation. The adapter contract is the boundary — everything
+engine-specific must live behind it.
+
+Part 5 of this series explains what the Purity Protocol unlocks for the Docusaurus
+adapter specifically — how `get_nav_paths()` became a Multi-Source Harvester covering
+sidebar, navbar, and footer simultaneously.
+
+## The Safe Harbor Is Open
+
+v0.7.0 is a point of arrival. The documentation pipeline is verified, the Shield is
+hardened, the adapters are parity-complete, and the Core is pure. Every claim Zenzic
+makes about itself — engine-agnostic architecture, sovereign root semantics, zero
+subprocesses — holds when checked against the actual codebase.
+
+The pipe is probably still leaking somewhere in your documentation — a broken link,
+a credential fragment in a frontmatter field, a file invisible to every reader because
+no clickable navigation surface references it. Find out before your users do.
+
+[Part 5 →](/blog/zenzic-v070-quartz-maturity-stable) covers what v0.7.0 unlocks
+for UX-Discoverability and the full product vision.
+
+```bash
+uvx zenzic lab
+```
+
+---
+
+| | |
+|---|---|
+| **GitHub** | [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic) |
+| **Documentation** | [zenzic.dev](https://zenzic.dev/) |
+| **PyPI** | [pypi.org/project/zenzic](https://pypi.org/project/zenzic/) |
+| **Changelog** | [v0.7.0 Release Notes](https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0) |
+
+:::note[The Zenzic Chronicles]
+This is **Part 4** of a five-part engineering series documenting the path from v0.5 to v0.7.0 Stable.
+
+[Part 1 — The Sentinel](/blog/hardening-the-documentation-pipeline) · [Part 2 — Sentinel Bastion](/blog/docs-pipeline-security-risk-obsidian-bastion) · [Part 3 — The AI Siege](/blog/ai-driven-siege-shield-postmortem) · **Part 4 — Beyond the Siege** · [Part 5 — Quartz Maturity](/blog/zenzic-v070-quartz-maturity-stable)
+:::
+
+*Part 4 of the **Zenzic Chronicles**. For the complete architectural journey, visit the [Safe Harbor Blog](https://zenzic.dev/blog/).*

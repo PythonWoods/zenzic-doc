@@ -35,12 +35,34 @@ zenzic check all --offline          # Forza URL piatti (es. per build su USB o r
 zenzic check links --show-info      # Mostra finding di livello info (es. link circolari)
 ```
 
+Tutti i sotto-comandi `check` accettano un argomento opzionale `PATH` per limitare il
+controllo a una directory o a un progetto specifico. Zenzic carica la configurazione dalla
+destinazione, non dalla CWD del chiamante (semantica sovereign root — identica a `check all`):
+
+```bash
+zenzic check links   ../altro-progetto      # controlla i link in un progetto adiacente
+zenzic check orphans content/               # controlla gli orfani in una sotto-directory
+zenzic check assets  /percorso/assoluto     # percorso assoluto accettato
+zenzic check all     /percorso/assoluto     # tutti i controlli su un progetto remoto
+```
+
 ## Flag globali {#global-flags}
 
 Questi flag controllano il profilo signal-to-noise di Zenzic tra scansioni quotidiane,
 gate CI e risposta agli incidenti.
 
 ### `--strict`
+
+**`--strict` controlla il gate della pipeline, non la visualizzazione dei finding.** La Sentinella
+mostra sempre tutti i finding rilevati — errori e warning — indipendentemente da questo flag.
+Ciò che cambia è il modo in cui i warning influenzano l'**exit code**:
+
+- **Senza `--strict`:** i warning → Exit 0 (la pipeline passa). Gli errori bloccanti causano comunque Exit 1.
+- **Con `--strict`:** i warning vengono promossi a errori bloccanti → Exit 1 (la pipeline si ferma).
+
+Quando la modalità strict è attiva, la Sentinella stampa la riga
+`STRICT MODE: Warnings have been promoted to errors.` nel footer del report, in modo che il
+log CI sia inequivocabile anche quando gli stessi finding sarebbero altrimenti non bloccanti.
 
 | Comando | Effetto |
 | :--- | :--- |
@@ -117,12 +139,147 @@ Questo garantisce che Zenzic resti un Custode Strutturale coerente indipendentem
 motore di build.
 :::
 
+### `--no-external`
+
+`--no-external` è disponibile su `check all` e `check links`. Salta il **Passaggio 3** —
+la validazione HTTP HEAD concorrente degli URL esterni — lasciando il Passaggio 1 (Shield, Z201)
+e il Passaggio 2 (risoluzione link interni) completamente attivi.
+
+Usalo in ambienti di sviluppo air-gapped o offline dove la raggiungibilità degli URL esterni
+non può essere verificata, o come ottimizzazione quando la salute dei link esterni è confermata
+da altri strumenti.
+
+```bash
+zenzic check all --strict --no-external   # verifica struttura/qualità; salta HTTP esterno
+zenzic check links --no-external          # solo link interni; Shield (Z201) sempre attivo
+```
+
+Quando attivo, il report aggiunge un messaggio di trasparenza:
+
+```text
+💡 External link validation skipped (--no-external). Shield (Z201) remains active.
+```
+
+:::warning[Mai usare in CI]
+`--no-external` è un **controllo di ambito per sviluppatori**, non un flag CI. Omettilo nelle
+pipeline CI non presidiate — i fallimenti dei link esterni sono fallimenti di gate legittimi.
+Il meccanismo permanente per escludere URL noti-instabili è `excluded_external_urls` in
+`zenzic.toml`.
+:::
+
+| Preoccupazione | Influenzato da `--no-external`? |
+| :--- | :--- |
+| Passaggio 1 — Shield / rilevamento credenziali (Z201) | ❌ Mai saltato |
+| Passaggio 1 — Blood Sentinel / path traversal (Z202/Z203) | ❌ Mai saltato |
+| Passaggio 2 — Risoluzione link interni | ❌ Mai saltato |
+| Passaggio 3 — Richieste HTTP HEAD esterne | ✅ Saltato |
+
+### `--exclude-url` {#exclude-url}
+
+`--exclude-url <PREFISSO>` è disponibile su `check all` e `check links`. Bypassa la
+validazione esterna degli URL per qualsiasi URL che inizia con il prefisso indicato —
+**a runtime**, senza toccare `zenzic.toml`. Il flag è ripetibile.
+
+```bash
+# Sopprime un dominio il cui DNS non è ancora attivo
+zenzic check all --strict --exclude-url https://staging.esempio.com/
+
+# Sopprime più URL di paradosso CI/CD in una singola invocazione
+zenzic check all --strict \
+  --exclude-url https://mio-sito.esempio.com/blog/ \
+  --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+```
+
+I prefissi runtime vengono **uniti** con le voci `excluded_external_urls` già presenti
+in `zenzic.toml` — i due meccanismi coesistono e si accumulano.
+
+:::tip[Paradosso di deployment CI/CD]
+Usa `--exclude-url` nel tuo workflow CI per URL che referenziano artefatti pubblicati
+non ancora raggiungibili al momento della build (es. una pagina GitHub Release, un
+deployment di staging, o un post del blog schedulato per una data futura). Inietta il
+flag tramite una variabile d'ambiente:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: >-
+    --exclude-url https://mio-sito.esempio.com/blog/
+    --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
+```
+:::
+
+:::info[Le esclusioni permanenti appartengono a `zenzic.toml`]
+Per gli URL **sempre** irraggiungibili (es. pagine di autenticazione GitHub, API private
+con rate-limiting), usa `excluded_external_urls` in `zenzic.toml` — quella lista è
+versionata e verificabile. Riserva `--exclude-url` ai **paradossi di deployment transitori**.
+:::
+
+### `--exclude-dir` / `--include-dir`
+
+Disponibili su `zenzic check all` (e sui sotto-comandi individuali). Questi flag forniscono
+override di ambito per singola directory **per invocazione** senza toccare `zenzic.toml`:
+
+| Flag | Effetto |
+| :--- | :--- |
+| `--exclude-dir DIR` | Salta questa directory durante la scansione (ripetibile) |
+| `--include-dir DIR` | Forza l'inclusione di una directory anche se esclusa dalla config (ripetibile) |
+
+`--include-dir` non può sovrascrivere i **System Guardrails** (esclusioni di Livello 1a/1b
+come `node_modules/` o file di metadati degli adapter).
+
+```bash
+# Escludi una cartella generata solo per questa esecuzione
+zenzic check all --exclude-dir build/ --exclude-dir .cache/
+
+# Forza l'inclusione di una directory esclusa in zenzic.toml
+zenzic check all --include-dir legacy-docs/
+```
+
+### `--no-color` / `--force-color` {#output-flags}
+
+Questi flag globali (accettati da tutti i comandi) controllano l'output ANSI indipendentemente
+dal rilevamento automatico del terminale.
+
+| Flag | Effetto |
+| :--- | :--- |
+| `--no-color` | Rimuove tutti i codici ANSI di colore e stile dall'output |
+| `--force-color` | Emette codici ANSI anche quando stdout non è un TTY |
+
+**Variabili d'ambiente:**
+
+| Variabile | Equivale a |
+| :--- | :--- |
+| `NO_COLOR` (qualsiasi valore) | `--no-color` |
+| `FORCE_COLOR` (qualsiasi valore) | `--force-color` |
+
+`NO_COLOR` è conforme alla convenzione standard `NO_COLOR` (no-color.org).
+Quando sono impostate sia `NO_COLOR` che `FORCE_COLOR`, `--no-color` / `NO_COLOR` ha sempre
+la precedenza.
+
+**Comportamento predefinito:** Zenzic usa il rilevamento automatico TTY di Rich. I colori
+sono attivi quando stdout è un terminale; vengono rimossi automaticamente in caso di pipe
+o reindirizzamento — nessun flag richiesto.
+
+```bash
+# Rimuovi colori: aggregatori di log CI, file di testo puro
+zenzic check all --no-color
+NO_COLOR=1 zenzic check all
+
+# Forza colori: sistemi CI con supporto ANSI ma senza TTY dichiarato
+zenzic check all --force-color
+FORCE_COLOR=1 zenzic check all
+
+# Abbina con --format json per output completamente machine-readable
+zenzic check all --no-color --format json > report.json
+```
+
 ---
 
 ## Inizializzazione
 
 ```bash
 zenzic init                               # Crea zenzic.toml nel progetto corrente
+zenzic init ../nuovo-progetto             # Inizializza una directory remota (la crea se necessario)
 zenzic init --pyproject                   # Scrive la config in pyproject.toml [tool.zenzic]
 zenzic init --force                       # Sovrascrive la config esistente senza prompt
 zenzic init --plugin plugin-scaffold-demo # Crea un pacchetto SDK plugin
@@ -133,10 +290,14 @@ zenzic init --plugin plugin-scaffold-demo # Crea un pacchetto SDK plugin
 invece di creare un file `zenzic.toml` separato.  Usa `--pyproject` per saltare il
 prompt e scrivere direttamente in `pyproject.toml`.
 
+**Modalità Nomad** — `zenzic init <percorso>` tratta il percorso indicato come root del
+progetto di destinazione. La directory viene creata se non esiste. La CWD del chiamante
+non viene modificata.
+
 Il rilevamento automatico dell'engine è incluso in entrambe le modalità: se `mkdocs.yml`
 o `zensical.toml` è presente, la configurazione generata preimposta il campo `engine`.
 Se non viene trovato alcun file di configurazione engine, si applicano i default
-vanilla (indipendenti dall'engine).
+standalone (indipendenti dall'engine).
 
 `zenzic init --plugin <nome>` genera uno scheletro di pacchetto Python con
 entry-point `zenzic.rules` pronto all'uso e template `BaseRule`
@@ -183,6 +344,20 @@ altri codici di uscita. Non viene mai soppresso da `--exit-zero`. Consultare
 [Controlli: Blood Sentinel](./checks#blood-sentinel) per i dettagli.
 :::
 
+Ogni codice di uscita ha una firma visiva distinta nel Sentinel Report:
+
+**Uscita 0 — Sentinel Seal**
+
+<SentinelOutput variant="clean" compact />
+
+**Uscita 1 — Anomalie di qualità**
+
+<SentinelOutput variant="findings" compact />
+
+**Uscita 2 — Violazione di sicurezza Shield**
+
+<SentinelOutput variant="breach" compact />
+
 ---
 
 ## Output JSON
@@ -228,9 +403,9 @@ zenzic check references --format json --strict
     {
       "rel_path": "guides/setup.md",
       "line_no": 42,
-      "code": "BROKEN_LINK",
+      "code": "Z104",
       "severity": "error",
-      "message": "Link target 'install.md' not found"
+      "message": "guides/setup.md:42: 'install.md' not found in docs"
     }
   ],
   "summary": {
@@ -250,6 +425,105 @@ exit 3 per path traversal Blood Sentinel — lo stesso contratto dell'output tes
 
 ---
 
+## Output SARIF {#sarif-output}
+
+Tutti i comandi `check` supportano `--format sarif` per emettere un report conforme a
+**SARIF 2.1.0**, pronto per il caricamento diretto in
+[GitHub Code Scanning](https://docs.github.com/code-security/code-scanning).
+
+```bash
+zenzic check all --format sarif > zenzic-results.sarif
+```
+
+:::note[Machine Silence — Regola R20]
+Quando `--format sarif` (o `--format json`) è attivo, **tutti i banner Rich e i pannelli
+informativi vengono soppressi su `stdout`**. Solo il payload machine-readable viene emesso.
+Questo garantisce che l'output sia sempre valido rispetto allo schema SARIF, indipendentemente
+dallo stato del terminale.
+:::
+
+### Mapping `Zxxx` → `ruleId` SARIF
+
+Ogni finding di Zenzic viene mappato verbatim: il codice `Zxxx` diventa il `ruleId`. L'array
+`tool.driver.rules` viene popolato dinamicamente — vengono dichiarati solo i codici che hanno
+prodotto almeno un risultato nel run. Ogni entry della regola porta un `helpUri` che punta
+all'ancora corrispondente in questa pagina di riferimento.
+
+| Finding | `ruleId` | SARIF `level` |
+| :--- | :---: | :---: |
+| Z101 LINK_BROKEN | `Z101` | `error` |
+| Z102 ANCHOR_MISSING | `Z102` | `warning` |
+| Z103 ORPHAN_LINK | `Z103` | `warning` |
+| Z104 FILE_NOT_FOUND | `Z104` | `error` |
+| Z105 ABSOLUTE_PATH | `Z105` | `warning` |
+| Z106 CIRCULAR_LINK | `Z106` | `note` |
+| Z201 SHIELD_SECRET | `Z201` | `error` |
+| Z202 PATH_TRAVERSAL | `Z202` | `error` |
+| Z203 PATH_TRAVERSAL_FATAL | `Z203` | `error` |
+| Z301–Z303 Integrità Riferimenti | `Z301`–`Z303` | `error` / `warning` |
+| Z401–Z404 Struttura | `Z401`–`Z404` | `note` / `warning` |
+| Z501–Z504 Qualità Contenuti | `Z501`–`Z504` | `warning` / `error` |
+| Z901–Z904 Sistema | `Z901`–`Z904` | `error` / `warning` |
+
+### Esempio di output SARIF 2.1.0
+
+```json
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Zenzic",
+          "version": "0.7.0",
+          "informationUri": "https://zenzic.dev",
+          "rules": [
+            {
+              "id": "Z104",
+              "name": "FILE_NOT_FOUND",
+              "shortDescription": { "text": "File non trovato" },
+              "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z104"
+            },
+            {
+              "id": "Z201",
+              "name": "SHIELD_SECRET",
+              "shortDescription": { "text": "Credenziale rilevata" },
+              "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z201"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "Z104",
+          "level": "error",
+          "message": { "text": "docs/guides/setup.md:42: 'install.md' non trovato in docs" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docs/guides/setup.md",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": { "startLine": 42 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Per il caricamento automatico in GitHub Code Scanning, usa la
+[Zenzic GitHub Action](../how-to/configure-ci-cd#github-actions-zenzic-shield-gate) —
+valida l'integrità SARIF prima del caricamento (guardia anti-troncamento) e visualizza i
+finding come annotazioni inline nelle PR.
+
+---
+
 ## Override dell'engine
 
 Il flag `--engine` sovrascrive l'adapter del motore di build per una singola esecuzione senza
@@ -258,7 +532,7 @@ modificare `zenzic.toml`. Accettato da `check orphans` e `check all`:
 ```bash
 zenzic check orphans --engine mkdocs
 zenzic check all --engine zensical
-zenzic check all --engine vanilla    # disabilita il controllo orfani indipendentemente dalla config
+zenzic check all --engine standalone    # disabilita il controllo orfani indipendentemente dalla config
 ```
 
 Se passi un nome di engine per cui non esiste un adapter registrato, Zenzic elenca gli adapter
@@ -266,12 +540,12 @@ disponibili ed esce con codice 1:
 
 ```text
 ERROR: Unknown engine adapter 'hugo'.
-Installed adapters: mkdocs, vanilla, zensical
+Installed adapters: mkdocs, standalone, zensical
 Install a third-party adapter or choose from the list above.
 ```
 
 Gli adapter di terze parti vengono scoperti automaticamente una volta installati — nessun
-aggiornamento Zenzic richiesto. Vedi [Scrivere un Adapter](../community/developers/how-to/implement-adapter.mdx).
+aggiornamento Zenzic richiesto. Vedi [Scrivere un Adapter](/developers/how-to/implement-adapter).
 
 ---
 
@@ -286,10 +560,12 @@ zenzic score                   # Calcola punteggio 0–100
 zenzic score --save            # Calcola e persiste snapshot in .zenzic-score.json
 zenzic score --fail-under 80   # Esce con 1 se il punteggio è sotto la soglia
 zenzic score --format json     # Report punteggio machine-readable
+zenzic score [PATH]            # Punteggio di un progetto remoto (sovereign root)
 
 zenzic diff                    # Confronta punteggio attuale con snapshot salvato
 zenzic diff --threshold 5      # Esce con 1 solo se il calo è superiore a 5 punti
 zenzic diff --format json      # Report diff machine-readable
+zenzic diff [PATH]             # Diff di un progetto remoto rispetto al suo baseline salvato
 ```
 
 ### Come è calcolato il punteggio
@@ -344,28 +620,95 @@ zenzic score                   # mostra il punteggio per visibilità
 
 ---
 
-## Ispezione dei plugin
+## Arsenal: Ispezione delle Capacità
 
 ```bash
-zenzic plugins list   # Elenca tutte le regole registrate nel gruppo zenzic.rules
+zenzic inspect capabilities   # Mostra tutti i scanner built-in, le regole plugin e i bypass di link engine-specific
 ```
 
-`zenzic plugins list` mostra ogni regola di linting che il motore conosce — le regole Core
-incluse in Zenzic e qualsiasi regola di terze parti installata da pacchetti esterni:
+`zenzic inspect capabilities` mostra l'arsenale completo di Zenzic in due sezioni:
 
-```text
-Installed plugin rules (1 found)
+**Sezione A — Scanner Core (Built-in):** sette scanner compilati in Zenzic. Lo Shield (Z201)
+e il Blood Sentinel (Z202–203) usano codici di uscita dedicati (2 e 3 rispettivamente) che non
+sono mai sopprimibili con `--exit-zero`.
 
-  broken-links  Z001  (core)  zenzic.core.rules.VSMBrokenLinkRule
-```
+**Sezione B — Regole Estensibili (Sistema Plugin):** regole registrate tramite il gruppo
+entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
-Ogni riga mostra il nome dell'entry-point, il `rule_id` stabile della regola (usato nei
-finding e nelle liste di soppressione), la distribuzione di origine (`(core)` per le regole
-built-in, o il nome del pacchetto per i plugin di terze parti), e il nome completo della
-classe Python.
+<SentinelOutput
+  variant="inspect"
+  scanners={[
+    { codes: 'Z201',     scanner: 'The Shield',       capability: 'Rilevamento credenziali e sicurezza',          exit: '2', icon: '🛡', security: true },
+    { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Prevenzione path-traversal e jailbreak',       exit: '3', icon: '🩸', security: true },
+    { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Link interrotti e risoluzione ancoraggi',      exit: '1', icon: '🔗' },
+    { codes: 'Z401–404', scanner: 'Structure Guard',  capability: 'Orfani, indici e asset di configurazione',    exit: '1', icon: '🏗' },
+    { codes: 'Z501–504', scanner: 'Content Sentinel', capability: 'Segnaposto, snippet e punteggio qualità',     exit: '1', icon: '📄' },
+  ]}
+/>
 
 Usa questo comando per verificare quali regole sono attive dopo aver installato un pacchetto
 plugin.
+
+---
+
+## Lab Interattivo {#lab}
+
+```bash
+zenzic lab [ATTO] [--list]
+```
+
+`zenzic lab` è una vetrina interattiva che esegue esempi di documentazione inclusi nel
+pacchetto contro il Sentinel e riporta se ogni atto ha soddisfatto l'esito atteso.
+
+### Selezione degli atti
+
+| Sintassi | Comportamento |
+| :--- | :--- |
+| `zenzic lab` | Mostra il menu degli atti |
+| `zenzic lab 3` | Esegue un singolo atto |
+| `zenzic lab 11-16` | Esegue un intervallo di atti (inclusivo) |
+| `zenzic lab all` | Esegue tutti i 17 atti in sequenza |
+| `zenzic lab --list` | Stampa l'indice degli atti senza eseguire |
+
+### Menu degli atti
+
+Gli atti sono raggruppati in quattro sezioni tematiche:
+
+| Sezione | Icona | Atti | Focus |
+| :--- | :---: | :---: | :--- |
+| Guardrail OS & Ambiente | 🛡 | 0–3 | Linting base, The Shield, run pulito |
+| Integrità Strutturale & SEO | 🔗 | 4–6 | File singolo, dir custom, proxy trasparente |
+| Adattatori Enterprise & Migrazione | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, guardie Z404 |
+| Matrice Red/Blue Team | 🔴 | 11–16 | Attacco/difesa, credenziali offuscate, stress test |
+
+### Etichette di esito
+
+Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Sentinel Seal riporta
+se l'aspettativa è stata soddisfatta:
+
+| Etichetta | Significato |
+| :--- | :--- |
+| `PASS ✓` | Esecuzione pulita attesa — zero finding |
+| `EXPECTED FAIL ✓` | Gli errori attesi sono stati trovati |
+| `BREACH ✓` | Rilevamento credenziali Shield atteso |
+| `FAIL (unexpected)` | L'atto doveva passare ma ha trovato errori |
+| `BREACH expected — not triggered` | Il rilevamento Shield atteso non si è prodotto |
+
+### Esempi
+
+```bash
+# Esegui la Matrice Red/Blue Team (tutti e 6 gli atti attacco/difesa)
+zenzic lab 11-16
+
+# Esegui il tour completo
+zenzic lab all
+
+# Esegui un singolo atto
+zenzic lab 3
+
+# Stampa il menu senza eseguire
+zenzic lab --list
+```
 
 ---
 

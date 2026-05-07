@@ -1,13 +1,62 @@
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-nav-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="static/assets/brand/svg/zenzic-nav-light.svg">
+    <img src="static/assets/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
+  </picture>
+</div>
+
 # zenzic-doc Developer Guide
+
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.0-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
+[![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
+[![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
+[![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
+[![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
+
+> **This documentation is strictly aligned to Zenzic v0.7.0 "Quartz Maturity".**
+> If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
 
 This repository contains the Docusaurus documentation website for Zenzic.
 
-This guide is written for both experienced maintainers and first-time contributors.
-If you are new, follow the sections in order.
+> **Compliance gate.** This repository is the live evidence of the auditor's own
+> discipline: `zenzic check all --strict` exits 0 with zero findings on every push.
+> The documentation of the tool that enforces traceability is itself traceable.
+> A broken link in these docs would falsify the entire correctness claim.
+
+---
+
+## 📖 Documentation Map — Quartz Promise
+
+The Zenzic documentation ships as **two separate Docusaurus instances** under one
+domain. Each has its own sidebar, search index, and audience — never mixed.
+
+```text
+zenzic.dev/
+├── docs/           → User Area    — install, configure, CI/CD, finding codes
+├── developers/     → Dev Area     — plugins, adapters, ADRs, tech debt ledger
+├── blog/           → Release notes & engineering post-mortems
+└── community/      → Brand kit, FAQs, governance
+```
+
+**The Quartz Promise.** Two instances, one Sentinel. The split is enforced by
+[ADR 011: Cross-Instance Allowlist](https://zenzic.dev/developers/explanation/adr-cross-instance-allowlist) — every
+cross-boundary link is a documented contract, never a silent suppression.
+See the [Technical Debt Ledger](https://zenzic.dev/developers/governance/technical-debt) for what we deferred and why.
+
+| You are a... | Start here |
+| :--- | :--- |
+| 👤 User reading the docs | [User Guide](https://zenzic.dev/docs/) |
+| 🔧 Contributor / docs author | [Developer Portal](https://zenzic.dev/developers/) · [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) |
+| 🛡️ Security reviewer | [Engineering Ledger](https://zenzic.dev/developers/explanation/engineering-ledger) · [SECURITY.md](SECURITY.md) |
+
+---
 
 ## 1) Prerequisites
 
-- Node.js 20 or newer
+- Node.js 24 or newer
 - npm 10 or newer
 - Optional: [just](https://github.com/casey/just) to run short, memorable commands
 
@@ -89,14 +138,18 @@ What `just verify` does:
 | --- | --- | --- |
 | `just setup` | First setup or reset | Runs `npm ci` |
 | `just start` | Daily editing | Runs local dev server |
-| `just serve` | Same as start | Alias of `just start` |
+| `just serve` | Preview production build | Serves `build/` with full locale switch (the correct way to test EN↔IT) |
 | `just markdownlint` | After editing docs | Runs markdown lint checks |
 | `just lint` | After editing React/TS source | Runs TypeScript/React lint checks |
 | `just typecheck` | Before opening/updating PR | Runs TypeScript checks |
 | `just build` | Build validation | Runs production build |
 | `just preview` | Validate built output | Serves already-built site |
 | `just verify` | Recommended final local check | Runs `markdownlint` + `lint` + `typecheck` + `build` |
+| `just preflight` | Before every commit | Runs all pre-commit hooks against every tracked file |
+| `just reuse` | After adding/renaming files | Checks REUSE/SPDX licence compliance |
+| `just sentinel` | Quick quality spot-check | Runs the Zenzic Sentinel alone (faster than full preflight) |
 | `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
+| `just bump VERSION [BADGE]` | After a Zenzic core release | Updates all hardcoded version references |
 
 You can list all recipes with:
 
@@ -104,7 +157,7 @@ You can list all recipes with:
 just --list
 ```
 
-## 6) Pre-commit hooks (Obsidian Guard)
+## 6) Pre-commit hooks (Sentinel Guard)
 
 This repository enforces quality gates before every commit via [pre-commit](https://pre-commit.com/).
 
@@ -134,14 +187,14 @@ If a hook fails, fix the reported issue and retry the commit.
 To run all hooks manually without committing:
 
 ```bash
-pre-commit run --all-files
+just preflight
 ```
 
 ## 7) CI/CD workflows
 
 | Workflow | File | Trigger | Goal |
 | --- | --- | --- | --- |
-| Docs CI | `.github/workflows/ci.yml` | PR, push to `main`, manual | Validate install, markdown lint, TS/React lint, typecheck, and build on Node 20 and 22 |
+| Docs CI | `.github/workflows/ci.yml` | PR, push to `main`, manual | Validate install, markdown lint, TS/React lint, typecheck, and build on Node 22 and 24 |
 | Dependency Audit | `.github/workflows/npm-audit.yml` | PR, push to `main`, weekly, manual | Detect high-severity dependency vulnerabilities |
 | Dependency Review | `.github/workflows/dependency-review.yml` | PR, manual | Detect risky dependency changes introduced by PRs |
 | CodeQL (opt-in) | `.github/workflows/codeql.yml` | PR, push to `main`, weekly, manual | Static analysis when `ENABLE_CODEQL=true` |
@@ -165,7 +218,7 @@ Already implemented:
 - Concurrency controls (cancel obsolete runs).
 - Job timeouts (avoid stuck runners).
 - Manual `workflow_dispatch` triggers.
-- Node matrix (20 and 22) for compatibility.
+- Node matrix (22 and 24) for compatibility.
 - npm cache in workflows, keyed by `package-lock.json`.
 
 Possible future hardening:
@@ -214,7 +267,7 @@ npm run build
 
 Fix type errors first, then retry the build.
 
-### `/it/docs/intro` is 404 on localhost
+### `/it/docs/index` is 404 on localhost
 
 This is expected when running `npm run start` with default locale (`en`):
 the dev server serves one locale at a time.
@@ -228,8 +281,8 @@ npm run start:it
 
 Notes:
 
-- With `start:it`, open `http://localhost:3000/docs/intro` (Italian content served at root in dev).
-- If you want prefixed routes like `/it/docs/intro`, build + serve production output:
+- With `start:it`, open `http://localhost:3000/docs/` (Italian content served at root in dev).
+- If you want prefixed routes like `/it/docs/`, build + serve production output:
 
 ```bash
 npm run build
@@ -246,9 +299,41 @@ just verify
 
 If CI still differs, check:
 
-- Node version (CI uses Node 20 and 22)
+- Node version (CI uses Node 22 and 24)
 - Lockfile changes (`package-lock.json`)
 - Workflow-specific jobs (dependency audit, dependency review)
+
+### The i18n Silent Fallback Trap
+
+**Symptom:** `http://localhost:3000/it/docs/` renders English content even though the
+Italian translation files exist under `i18n/it/`.
+
+**Root cause:** Docusaurus derives the `path` property from `htmlLang` when `path` is
+not set explicitly. If you declare `htmlLang: 'it-IT'`, Docusaurus looks for translations
+in `i18n/it-IT/` — a directory that does not exist. The build completes silently with
+`translate: false` and falls back to the English source for all content pages. The UI
+chrome (navbar, breadcrumbs, pagination labels) remains translated because those strings
+come from Docusaurus's own bundled translations, masking the problem.
+
+**Diagnosis:** In `build/it/.docusaurus/i18n.json` (or `.docusaurus/i18n.json` after a
+build), check whether the `it` locale has `"translate": false`. If so, the path mismatch
+is the cause.
+
+**Fix:** Always set `path` explicitly in `localeConfigs`:
+
+```ts
+// docusaurus.config.ts
+i18n: {
+  defaultLocale: 'en',
+  locales: ['en', 'it'],
+  localeConfigs: {
+    en: { label: 'English' },
+    it: { label: 'Italiano', htmlLang: 'it-IT', path: 'it' }, // ← path is mandatory
+  },
+},
+```
+
+**Discovered in:** v0.7.0 release audit (D090 "The i18n Lockdown").
 
 ## 11) Pull Request Checklist
 
@@ -260,6 +345,7 @@ Before opening or updating a PR, run this checklist.
 - [ ] I reviewed `README.md` sections if I changed commands/workflows.
 - [ ] I updated docs or comments when behavior changed.
 - [ ] My branch contains only intentional changes.
+- [ ] If I touched `i18n` config or locale files: I verified the `/it/` pages show **Italian content** (not just an Italian URL), by checking the page body after `npm run build && npm run serve`.
 
 Minimal command sequence before PR:
 
@@ -267,3 +353,28 @@ Minimal command sequence before PR:
 just setup
 just verify
 ```
+
+---
+
+## 📚 The Zenzic Chronicles
+
+Zenzic was born from a technical journey through the fragility of modern documentation
+ecosystems. Discover the philosophy, the security siege, and the engineering behind the
+Sentinel in the [**Engineering Chronicles**](https://zenzic.dev/blog/tags/engineering-chronicles) on the official blog.
+
+---
+
+<div align="center">
+  <a href="https://zenzic.dev">
+    <img src="static/img/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
+  </a>
+  <p>
+    <strong>Engineered with precision by PythonWoods in Italy 🇮🇹</strong><br/>
+    <em>"Building the Safe Harbor for technical knowledge."</em>
+  </p>
+  <p>
+    <a href="https://zenzic.dev"><strong>Documentation</strong></a> &middot;
+    <a href="https://github.com/PythonWoods"><strong>GitHub</strong></a> &middot;
+    <a href="https://zenzic.dev/blog"><strong>Journal</strong></a>
+  </p>
+</div>

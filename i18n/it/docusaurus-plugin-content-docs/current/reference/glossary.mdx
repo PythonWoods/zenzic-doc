@@ -10,6 +10,8 @@ Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in 
 
 ---
 
+## Terms
+
 ### Adapter {#adapter}
 
 Componente che media tra il core di Zenzic e un motore di build specifico (MkDocs, Zensical, Docusaurus). Ogni adapter implementa il protocollo `BaseAdapter` e fornisce la risoluzione dei percorsi locale-aware, la mappa di navigazione e la classificazione delle route. Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters` e istanziati dalla factory `get_adapter`. Vedi [Architettura -- Protocollo Adapter](../explanation/architecture#adapter-protocol).
@@ -28,8 +30,8 @@ Il sistema a quattro livelli che determina quali file e directory vengono inclus
 
 | Livello | Nome | Descrizione |
 | :---: | :--- | :--- |
-| L1 | Guardrail di Sistema | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
-| L2 | Inclusioni Forzate + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
+| L1 | System Guardrails | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
+| L2 | Forced Inclusions + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
 | L3 | Configurazione | `excluded_dirs`, `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
 | L4 | CLI | `--exclude-dir`, `--include-dir` per override temporanei |
 
@@ -43,7 +45,7 @@ Una pagina che non esiste fisicamente su disco ma che appare nella navigazione d
 
 ---
 
-### Guardrail di Sistema (L1) {#system-guardrails}
+### System Guardrails (L1) {#system-guardrails}
 
 L'insieme immutabile di directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Includono `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`. Le voci dell'utente in `excluded_dirs` si aggiungono ai Guardrail, non li sostituiscono. Nessuna inclusione forzata o flag CLI puo sovrascriverli.
 
@@ -79,23 +81,15 @@ L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti,
 
 ---
 
-### Porto Sicuro {#safe-harbor}
+### Safe Harbor {#safe-harbor}
 
-La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Porto Sicuro si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
+La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Safe Harbor si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
 
 ---
 
 ### Punteggio Sentinella {#sentinel-score}
 
-Il punteggio di qualita documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di cinque categorie di problemi:
-
-- Link rotti
-- Pagine orfane
-- Errori negli snippet di codice
-- Pagine segnaposto
-- Asset inutilizzati
-
-Ogni categoria ha un peso specifico e una funzione di penalita. Il punteggio puo essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima puo essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
+Il punteggio di qualità documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di quattro categorie (D092 — Quartz Penalty Scorer): Structural (40%), Content (30%), Navigation (20%) e Brand & Assets (10%). Ogni categoria accumula deduzioni per codice Zxxx trovato. Il punteggio può essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima può essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
 
 ---
 
@@ -107,4 +101,4 @@ Un risultato emesso dallo Zenzic Shield quando un pattern di credenziale viene r
 
 ### Virtual Site Map (VSM) — Mappa Virtuale del Sito {#vsm}
 
-Proiezione in memoria dell'insieme di URL che il motore di build generera. Costruita a partire dai file sorgente Markdown e dalla configurazione dell'adapter, la VSM mappa ogni file `.md` al suo URL canonico e al suo stato di routing (`REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`). La VSM e significativa solo quando l'adapter ha una configurazione engine (ad esempio `mkdocs.yml`); per il `VanillaAdapter`, ogni file e `REACHABLE` per definizione.
+Proiezione in memoria dell'insieme di URL che il motore di build generera. Costruita a partire dai file sorgente Markdown e dalla configurazione dell'adapter, la VSM mappa ogni file `.md` al suo URL canonico e al suo stato di routing (`REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`). La VSM e significativa solo quando l'adapter ha una configurazione engine (ad esempio `mkdocs.yml`); per il `StandaloneAdapter`, ogni file e `REACHABLE` per definizione.

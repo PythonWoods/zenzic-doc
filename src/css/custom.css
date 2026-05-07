@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 /* Tailwind v4 — theme + utilities only.
    Preflight excluded: @layer base (preflight) appears after @layer docusaurus.infima
    in the final bundle, meaning it would override Infima and break Docusaurus layout. */
@@ -14,19 +17,52 @@
   --color-zinc-950: #09090b;
 }
 
+/*
+ * Blog Sovereignty: Hide locale dropdown on blog routes.
+ * Uses the Docusaurus native 'plugin-blog' class on the <html> element
+ * (added by PluginHtmlClassNameProvider for @docusaurus/plugin-content-blog).
+ * Targets <a lang="..."> — the attribute Docusaurus sets on locale dropdown links
+ * (NOT hreflang, which is only used in <head> alternates, not in navbar anchors).
+ * visibility:hidden prevents layout shift (preserves the box).
+ */
+html.plugin-blog .navbar__item.dropdown--hoverable:has(a[lang]),
+html.plugin-blog .navbar__item:has(a[lang]) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Hide entire navbar on homepage to replace the deleted React swizzle */
+body:has(.zz-homepage) .navbar {
+  display: none !important;
+}
+
 /**
  * Zenzic Bastion Global Design System
  * 100% Native Architecture. Zero `!important` hacks.
  */
 
 :root {
-  --ifm-color-primary: #4f46e5;
-  --ifm-color-primary-dark: #4338ca;
-  --ifm-color-primary-darker: #3730a3;
-  --ifm-color-primary-darkest: #312e81;
-  --ifm-color-primary-light: #6366f1;
-  --ifm-color-primary-lighter: #818cf8;
-  --ifm-color-primary-lightest: #a5b4fc;
+  /* ── Light mode defaults ── */
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.4:1 on white) */
+  --ifm-color-primary-dark: #3730a3;
+  --ifm-color-primary-darker: #312e81;
+  --ifm-color-primary-darkest: #1e1b6e;
+  --ifm-color-primary-light: #4f46e5;
+  --ifm-color-primary-lighter: #6366f1;
+  --ifm-color-primary-lightest: #818cf8;
+  --obsidian-accent: #0891b2;             /* Cyan profondo — leggibile su sfondo chiaro */
+  --obsidian-blood: #991b1b;              /* Rosso mattone tecnico */
+
+  /* ── SentinelWebPalette — CLI semantic color bridge ──
+     Dark mode: optical match with CLI terminal.
+     Light mode (these defaults): WCAG-calibrated for white backgrounds. */
+  --zenzic-brand:   #4f46e5;   /* Indigo — exact CLI match, AA on white */
+  --zenzic-success: #059669;   /* Emerald-600 — WCAG-calibrated (CLI: #10b981) */
+  --zenzic-warning: #b45309;   /* Amber-700 — WCAG-calibrated (CLI: #f59e0b) */
+  --zenzic-error:   #e11d48;   /* Rose-600 — WCAG-calibrated (CLI: #f43f5e) */
+  --zenzic-dim:     #475569;   /* Slate-600 — WCAG-calibrated (CLI: #64748b) */
+  --zenzic-fatal:   var(--obsidian-blood);  /* Follows --obsidian-blood per mode */
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
@@ -35,7 +71,37 @@
   --ifm-heading-font-weight: 600;
 }
 
+[data-theme='light'] {
+  /* ── D112/D113: Zinc Standard Typography — structure is neutral, cold, precise ── */
+  --ifm-heading-color: #3f3f46;           /* Zinc-700 — autorevole senza peso */
+  --ifm-font-color-base: #27272a;         /* Zinc-800 — premium readability */
+  --ifm-color-emphasis-600: #52525b;      /* Zinc-600 — metadata, secondary (WCAG AA 7.8:1 on white) */
+
+  /* ── D114: The Author's Signature — Indigo reserved for human identity ── */
+  --obsidian-author-signature: #3730a3;   /* Indigo-800 — deep, ink-grade */
+
+  /* Links/actions: Indigo for function */
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light */
+  --ifm-link-color: #4338ca;
+
+  --obsidian-accent: #0891b2;             /* Cyan profondo */
+  --obsidian-blood: #991b1b;              /* Rosso mattone */
+}
+
 [data-theme='dark'] {
+  /* ── Adaptive Palette — Dark mode ── */
+  --obsidian-accent: #06b6d4;             /* Cyan elettrico */
+  --obsidian-blood: #8b0000;              /* Sangue profondo */
+
+  /* ── SentinelWebPalette — exact CLI terminal match in dark mode ── */
+  --zenzic-brand:   #4f46e5;
+  --zenzic-success: #10b981;
+  --zenzic-warning: #f59e0b;
+  --zenzic-error:   #f43f5e;
+  --zenzic-dim:     #94a3b8;  /* Slate-400 — WCAG AA 8.2:1 on #09090b (D110: raised from #64748b) */
+  /* --zenzic-fatal inherits var(--obsidian-blood) = #8b0000 — exact CLI match */
+
+
   /* Core colours */
   --ifm-color-primary: #818cf8;
   --ifm-color-primary-dark: #6366f1;
@@ -228,11 +294,11 @@ body {
 }
 
 [data-theme='dark'] .footer__copyright {
-  color: #52525b;
+  color: #a1a1aa;  /* Zinc-400 — 7.6:1 on #09090b (D110: raised from #52525b which failed AA) */
 }
 
 [data-theme='light'] .footer__copyright {
-  color: #a1a1aa;
+  color: #52525b;  /* Zinc-600 — 7.8:1 on white (D110: raised from #a1a1aa which failed AA) */
 }
 
 /* ── Code blocks ── */
@@ -268,7 +334,7 @@ body {
 
 /* ── TOC (right sidebar) ── */
 [data-theme='dark'] .table-of-contents__link {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a which failed AA) */
 }
 
 [data-theme='dark'] .table-of-contents__link:hover,
@@ -278,8 +344,8 @@ body {
 
 /* ── Admonitions ── */
 [data-theme='dark'] .alert {
-  background: rgba(15, 15, 19, 0.8);
-  border: 1px solid rgba(63, 63, 70, 0.3);
+  background: rgba(79, 70, 229, 0.03);
+  border: 1px solid rgba(79, 70, 229, 0.2);
   border-radius: 8px;
   border-left: 4px solid var(--ifm-alert-border-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -346,7 +412,7 @@ table thead tr {
 
 /* ── Breadcrumbs ── */
 [data-theme='dark'] .breadcrumbs__link {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
 }
 
 [data-theme='dark'] .breadcrumbs__link:hover {
@@ -372,7 +438,7 @@ table thead tr {
 }
 
 [data-theme='dark'] .pagination-nav__sublabel {
-  color: #71717a;
+  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
 }
 
 [data-theme='dark'] .pagination-nav__label {
@@ -412,4 +478,358 @@ table thead tr {
 .zz-terminal-monolith:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.55), 0 0 14px rgba(79, 70, 229, 0.12);
+}
+
+/* ── Zenzic Blog — Semantic Tag Colours ── */
+/* Release → Indigo (brand primary) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
+a.tag_oVPq[href*="/blog/tags/release"] { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.35); }
+
+/* Security → Blood (#8b0000 lightened for contrast) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
+a.tag_oVPq[href*="/blog/tags/security"] { background: rgba(139, 0, 0, 0.15); color: #f87171; border-color: rgba(139, 0, 0, 0.35); }
+
+/* Engineering → Cyan */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/engineering"],
+a.tag_oVPq[href*="/blog/tags/engineering"] { background: rgba(6, 182, 212, 0.12); color: var(--obsidian-accent); border-color: rgba(6, 182, 212, 0.3); }
+
+/* Post-Mortem → Bone white (muted) */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/post-mortem"],
+a.tag_oVPq[href*="/blog/tags/post-mortem"] { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.25); }
+
+/* Community → Emerald */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/community"],
+a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+
+/* Shared tag chip base — dark mode */
+[data-theme='dark'] .tag_oVPq {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+/* ── Zenzic Blog — Blog List Card Layout ── */
+[data-theme='dark'] article.margin-bottom--xl {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem !important;
+}
+
+/* Hover: title brightens to Accent Cyan */
+[data-theme='dark'] article h2 a:hover {
+  color: var(--obsidian-accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Card container subtle glow on hover */
+[data-theme='dark'] article.margin-bottom--xl:hover {
+  border-bottom-color: rgba(79, 70, 229, 0.2);
+  transition: border-color 0.25s ease;
+}
+
+/* Blog post title colour — Zinc-200, softer than pure white */
+[data-theme='dark'] article h2 a {
+  color: #e4e4e7;
+  transition: color 0.2s ease;
+}
+
+/* D112 fix: blog list titles are <h2><a> — link color overrides heading-color.
+   Light mode: Zinc-700 for titles, Zinc-600 on hover (no Indigo bleed). */
+[data-theme='light'] article h2 a {
+  color: #3f3f46;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+[data-theme='light'] article h2 a:hover {
+  color: #52525b;
+  text-decoration: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   D118 — The Absolute Title Consistency
+   Blocco totale: ogni titolo nel blog ha la stessa autorità visiva
+   indipendentemente dallo stato visited/read.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Light: Zinc-700 locked across all states */
+[data-theme='light'] .blog-list-page h2 a,
+[data-theme='light'] .blog-list-page h2 a:visited,
+[data-theme='light'] .blog-list-page h2 a:active {
+  color: #3f3f46 !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+[data-theme='light'] .blog-list-page h2 a:hover {
+  color: var(--obsidian-accent) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+/* Dark: White/Silk locked across all states */
+[data-theme='dark'] .blog-list-page h2 a,
+[data-theme='dark'] .blog-list-page h2 a:visited,
+[data-theme='dark'] .blog-list-page h2 a:active {
+  color: #fafafa !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+[data-theme='dark'] .blog-list-page h2 a:hover {
+  color: var(--obsidian-accent) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+/* Remove any opacity fade on blog post list item containers */
+[data-theme='light'] .blog-list-page article,
+[data-theme='dark'] .blog-list-page article {
+  opacity: 1 !important;
+}
+
+/* Blog post page single title <h1> */
+[data-theme='light'] .blog-post-page h1 {
+  color: #3f3f46;
+}
+
+/* Blog header — very subtle separation, Sentinel Lead bg */
+[data-theme='dark'] .blog-post-page header,
+[data-theme='dark'] article header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Blog hero/banner background — Sentinel Lead */
+[data-theme='dark'] .hero.hero--primary,
+[data-theme='dark'] .blogPostContainer header {
+  background: #09090b;
+}
+
+/* ── Zenzic Blog — Monolith Enforcement (D103) ── */
+
+/* Prose column — narrower than docs for readability */
+[data-theme='dark'] .blog-wrapper .container,
+[data-theme='dark'] .blogPostContainer .container {
+  max-width: 820px;
+}
+
+/* D107.1: Gradient purged. Black is absolute. Typography is the only light. */
+
+/* ── D111: Transparent Monolith — reveal the Sentinel Lead body ── */
+/* All blog/doc containers become transparent so the single #09090b body surface shows through */
+[data-theme='dark'] .blog-wrapper,
+[data-theme='dark'] .blog-post-page,
+[data-theme='dark'] .theme-blog-post-container,
+[data-theme='dark'] main.docMainContainer,
+[data-theme='dark'] main {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ── D106: Active Archive — sidebar navigation hover states ── */
+/* "All posts" title link */
+[data-theme='dark'] .blog-sidebar-all-posts-link,
+[data-theme='dark'] .blog-sidebar-all-posts-link:visited {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+[data-theme='dark'] .blog-sidebar-all-posts-link:hover {
+  color: var(--obsidian-accent);
+  text-decoration: none;
+}
+/* Year group heading link */
+[data-theme='dark'] .blog-sidebar-year-link,
+[data-theme='dark'] .blog-sidebar-year-link:visited {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+[data-theme='dark'] .blog-sidebar-year-link:hover {
+  color: var(--obsidian-accent);
+  text-decoration: none;
+}
+
+/* ── D107: Sentinel Archive Reconstruction — Card Catalogue ── */
+
+/* Archive page hero — Sentinel Lead bg, no hero--primary noise */
+[data-theme='dark'] .archive-hero {
+  background: #09090b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 3.5rem 0 2.5rem;
+}
+
+[data-theme='dark'] .archive-hero__title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: #fafafa;
+  margin-bottom: 0.5rem;
+}
+
+[data-theme='dark'] .archive-hero__subtitle {
+  color: var(--ifm-font-color-secondary);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0;
+}
+
+/* Archive main content area */
+[data-theme='dark'] .archive-main {
+  background: #09090b;
+  padding: 3rem 0 5rem;
+}
+
+/* Year section heading */
+[data-theme='dark'] .archive-year-heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4f46e5;
+  border-bottom: 1px solid rgba(79, 70, 229, 0.3);
+  padding-bottom: 0.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Card grid — single column, full-width editorial feel */
+[data-theme='dark'] .archive-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Individual archive card */
+[data-theme='dark'] .archive-card {
+  padding: 1.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.2s ease;
+}
+
+[data-theme='dark'] .archive-card:last-child {
+  border-bottom: none;
+}
+
+[data-theme='dark'] .archive-card:hover {
+  border-bottom-color: rgba(79, 70, 229, 0.25);
+}
+
+/* Date chip */
+[data-theme='dark'] .archive-card__date {
+  display: block;
+  font-size: 0.78rem;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ifm-font-color-secondary);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+/* Card title */
+[data-theme='dark'] .archive-card__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  line-height: 1.35;
+}
+
+[data-theme='dark'] .archive-card__title a {
+  color: var(--ifm-color-primary-lighter);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+[data-theme='dark'] .archive-card__title a:hover {
+  color: var(--obsidian-accent);
+  text-decoration: none;
+}
+
+/* Card description excerpt */
+[data-theme='dark'] .archive-card__description {
+  font-size: 0.9rem;
+  color: var(--ifm-font-color-secondary);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 680px;
+}
+
+/* ── D108: Blog Post Prose — breathing room ── */
+.blog-post-page article p {
+  margin-bottom: 1.4rem;
+  line-height: 1.8;
+}
+
+/* ── D113: Sidebar active link — Zinc-100 surface, Indigo text ── */
+[data-theme='light'] .menu__link--active {
+  color: var(--ifm-color-primary) !important;
+  background-color: #f4f4f5 !important;  /* Zinc-100 */
+}
+
+/* ── D114: The Author's Signature — Indigo-800 on author name ── */
+/* Applies in both light and dark but most impactful in light mode */
+[data-theme='light'] .avatar__name a,
+[data-theme='light'] .authorName_Y8Hr {
+  color: var(--obsidian-author-signature) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+[data-theme='light'] .avatar__name a:hover {
+  color: #4f46e5 !important;  /* Vibrant Indigo ignites on hover */
+  text-decoration: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   D116 — The Right-Aligned Navigation Vector
+   Freccia a destra: appare solo al hover, scivola dall'interno.
+   Targets CSS-module class via attribute selector — bilingual safe
+   (same hash in EN + IT sidebar components).
+   ══════════════════════════════════════════════════════════════ */
+[class*='sidebarItemLink'] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 6px;
+  /* Prevent long titles from pushing the arrow off-screen */
+  overflow: hidden;
+}
+
+/* The text span is already a text node — constrain it */
+[class*='sidebarItemLink'] > span,
+[class*='sidebarItemLink'] > :first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+[class*='sidebarItemLink']::after {
+  content: '→';
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95em;
+  flex-shrink: 0;
+  margin-left: 6px;
+  opacity: 0;
+  color: var(--obsidian-accent);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transform: translateX(-6px);
+}
+
+[class*='sidebarItemLink']:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+[class*='sidebarItemLinkActive']::after {
+  opacity: 0.75;
+  transform: translateX(0);
+  color: var(--ifm-color-primary);
 }

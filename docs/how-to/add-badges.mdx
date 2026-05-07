@@ -23,20 +23,22 @@ Use this badge for strict pipelines where any broken link, dead anchor, or leake
 
 **Passing (green):**
 
-```markdown
+```markdown title="README.md"
 [![Zenzic Shield](https://img.shields.io/badge/🛡️_zenzic_shield-passing-4f46e5?style=flat)](https://github.com/PythonWoods/zenzic)
 ```
 
 **Failing (red):**
 
-```markdown
+```markdown title="README.md"
 [![Zenzic Shield](https://img.shields.io/badge/🛡️_zenzic_shield-failing-ef4444?style=flat)](https://github.com/PythonWoods/zenzic)
 ```
 
 ### Recommended CI step
 
-```yaml
+```yaml title=".github/workflows/zenzic.yml"
+
 - name: Lint documentation (Zenzic Shield)
+
   run: uvx zenzic check all --strict
 ```
 
@@ -52,7 +54,7 @@ Use this badge to expose the live quality score (0–100) of your documentation.
 
 ### Copy-paste Markdown
 
-```markdown
+```markdown title="README.md"
 [![Zenzic Score](https://img.shields.io/badge/🛡️_zenzic-100%2F100-4f46e5?style=flat)](https://github.com/PythonWoods/zenzic)
 ```
 
@@ -84,14 +86,17 @@ This file is the machine-readable bridge to dynamic Shields.io badges.
 
 The following two steps save the score and push it to a [GitHub Gist](https://gist.github.com) that Shields.io reads on every request:
 
-```yaml
+```yaml title=".github/workflows/zenzic-score.yml"
+
 - name: Compute Zenzic Score
+
   run: |
     uvx zenzic score --save
     echo "SCORE=$(uvx zenzic score --format json | python3 -c \
       'import sys,json; print(json.load(sys.stdin)["score"])')" >> "$GITHUB_ENV"
 
 - name: Update Score Badge
+
   uses: Schneegans/dynamic-badges-action@v1.7.0
   with:
     auth: ${{ secrets.GIST_SECRET }}
@@ -104,7 +109,7 @@ The following two steps save the score and push it to a [GitHub Gist](https://gi
 
 Then reference the dynamic endpoint in your README:
 
-```markdown
+```markdown title="README.md"
 [![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/<user>/<gist-id>/raw/zenzic-score.json)](https://github.com/PythonWoods/zenzic)
 ```
 

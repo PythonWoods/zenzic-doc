@@ -61,10 +61,11 @@ Ogni header `[[custom_rules]]` aggiunge una regola alla lista (sintassi TOML arr
 Quando una regola custom scatta, Zenzic mostra il problema con uno snippet visivo della riga
 incriminata:
 
-```text
-[ZZ-NODRAFT] docs/guide/install.md:14 — Rimuovere il marker DRAFT prima della pubblicazione.
-  │ > DRAFT: sezione in costruzione
-```
+<SentinelOutput
+  variant="findings"
+  compact
+  rows={[{ code: 'ZZ-NODRAFT', file: 'docs/guide/install.md:14', message: 'Rimuovere il marker DRAFT prima della pubblicazione.', severity: 'error' }]}
+/>
 
 Per la severità `"error"` l'ID della regola viene mostrato in rosso; per `"warning"` in giallo.
 La riga `│` mostra la riga sorgente esattamente come appare nel file.
@@ -76,7 +77,7 @@ Le regole con `severity = "info"` vengono stampate senza lo snippet `│`.
 ## Indipendenza dall'adapter
 
 **Le regole custom sono indipendenti dall'adapter.** Una regola che cerca `DRAFT` si attiva
-identicamente che il progetto usi `MkDocsAdapter`, `ZensicalAdapter` o `VanillaAdapter`. Questo
+identicamente che il progetto usi `MkDocsAdapter`, `ZensicalAdapter` o `StandaloneAdapter`. Questo
 significa che le regole scritte per un progetto MkDocs non richiedono modifiche dopo la
 [migrazione a Zensical](./migrate-engines.mdx).
 

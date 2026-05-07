@@ -11,15 +11,18 @@
     "i18n/**/*.md",
     "i18n/**/*.mdx"
   ],
-  "ignores": [
-    "node_modules/**",
-    "build/**",
-    ".docusaurus/**"
-  ],
+  "gitignore": true,
   "config": {
     "default": true,
     "MD013": false,
+    "MD024": { "siblings_only": true },
+    "MD025": { "front_matter_title": "" },
     "MD033": false,
-    "MD041": false
+    "MD036": false,
+    "MD037": false,
+    "MD041": false,
+    "MD003": { "style": "atx" },
+    "MD010": { "code_blocks": false },
+    "MD046": false
   }
 }

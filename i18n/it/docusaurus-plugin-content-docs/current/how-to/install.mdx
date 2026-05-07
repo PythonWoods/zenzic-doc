@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 sidebar_label: "Panoramica"
 icon: lucide/play
 description: "Installa, configura ed esegui Zenzic sul tuo progetto documentale."
@@ -20,7 +21,9 @@ Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tant
 Il repository include fixture mantenuti e allineati ai contratti documentati:
 
 - `examples/mkdocs-basic/` — baseline MkDocs 1.6 (nav annidata, link nav esterno,
+
   tag YAML tolleranti come `!ENV` e `!relative`).
+
 - `examples/i18n-standard/` — gold standard bilingue in strict mode.
 - `examples/zensical-basic/` — baseline Zensical v0.0.31+ (`[project].nav`).
 - `examples/broken-docs/` — errori intenzionali (exit 1).
@@ -29,9 +32,8 @@ Il repository include fixture mantenuti e allineati ai contratti documentati:
 :::tip[Vuoi eseguirlo subito?]
 
 ```bash
-pip install zenzic
-zenzic lab          # esplora tutti i 9 esempi inclusi — zero setup
-zenzic check all    # proteggi la tua documentazione
+uvx zenzic lab      # esplora tutti i 9 esempi inclusi — zero setup
+uvx zenzic check all  # proteggi la tua documentazione
 ```
 
 Vuoi vedere come Zenzic gestisce Docusaurus v3 o il proxy di Zensical?
@@ -125,11 +127,13 @@ Pattern standard da dipendenza dev con virtual environment locale al progetto.
   </TabItem>
 </Tabs>
 
-### Lean e Agnostico per Design {#lean-agnostic}
+### Solo analisi statica — nessun runtime di build richiesto {#lean-agnostic}
 
-Zenzic esegue un'**analisi statica** dei tuoi file di configurazione (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`). **Non esegue** il motore di build né i suoi plugin.
+Zenzic legge i file di configurazione (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`) come
+testo semplice. **Non esegue** il motore di build né i suoi plugin.
 
-Questo significa che **non è necessario installare** MkDocs, Material for MkDocs o altri plugin di build nel tuo ambiente di linting. Zenzic rimane leggero e privo di dipendenze, rendendolo ideale per pipeline CI/CD veloci e isolate.
+**Non installare** MkDocs, Material for MkDocs o alcun plugin di build nell'ambiente di
+linting. Non servono. L'ambiente di linting ha una sola dipendenza: `zenzic`.
 
 ```bash
 # Fare il lint di qualsiasi progetto MkDocs — nessun extra necessario
@@ -139,7 +143,7 @@ uvx zenzic check all
 :::note[Adapter di terze parti]
 Gli adapter di terze parti (es. un ipotetico `zenzic-hugo-adapter`) sono pacchetti
 installabili separati — non extra di `zenzic` stesso. Nessun extra è richiesto per
-`VanillaAdapter` (cartelle Markdown semplici).
+`StandaloneAdapter` (cartelle Markdown semplici).
 :::
 
 ---
@@ -168,7 +172,7 @@ Run zenzic check all to validate your documentation.
 ```
 
 Se non viene rilevato alcun file di configurazione engine, `zenzic init` produce uno scaffold
-engine-agnostico (modalità Vanilla). In entrambi i casi, tutte le impostazioni sono commentate
+engine-agnostico (modalità Standalone). In entrambi i casi, tutte le impostazioni sono commentate
 per default — decommenta e modifica solo i campi di cui hai bisogno.
 
 Eseguendo Zenzic senza un `zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
@@ -227,32 +231,41 @@ Quando `mkdocs.yml` (MkDocs/Zensical) o `zensical.toml` (Zensical) è presente n
 repository, Zenzic carica l'**adapter** corrispondente che fornisce:
 
 - **Consapevolezza della nav** — il controllo orfani sa la differenza tra "non nella nav" e "non
+
   dovrebbe essere nella nav" (ad esempio i file di locale i18n).
+
 - **Fallback i18n** — i link cross-locale vengono risolti correttamente invece di essere
+
   segnalati come non validi.
+
 - **Soppressione directory locale** — i file sotto `docs/it/`, `docs/fr/`, ecc. non vengono
+
   segnalati come orfani.
 
-### Modalità Vanilla {#vanilla-mode}
+### Modalità Standalone {#standalone-mode}
 
 Quando non viene trovata alcuna configurazione del motore di build, Zenzic ricade su
-`VanillaAdapter`. In questa modalità:
+`StandaloneAdapter`. In questa modalità:
 
 - **Il controllo orfani viene saltato.** Senza una dichiarazione di nav, ogni file sembrerebbe
+
   un orfano.
+
 - **Tutti gli altri controlli vengono eseguiti normalmente** — link, snippet, placeholder, asset
+
   e riferimenti.
 
-La modalità Vanilla è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
+La modalità Standalone è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
 qualsiasi progetto dove la navigazione è implicita.
 
 :::tip[Forza una modalità specifica]
 Usa `--engine` per sovrascrivere l'adapter rilevato per una singola esecuzione:
 
 ```bash
-zenzic check all --engine vanilla    # salta il controllo orfani
-zenzic check all --engine mkdocs     # forza l'adapter MkDocs
+zenzic check all --engine standalone    # salta il controllo orfani
+zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 ```
+
 :::
 
 ---
@@ -260,5 +273,5 @@ zenzic check all --engine mkdocs     # forza l'adapter MkDocs
 **Prossimi passi:**
 
 - [Riferimento comandi CLI](../reference/cli.mdx) — ogni comando, flag e codice di uscita
-- [Funzionalità avanzate](./advanced-options.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
+- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hook, gestione del baseline

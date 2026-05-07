@@ -1,0 +1,136 @@
+---
+sidebar_label: "The Engineering Ledger"
+sidebar_position: 6
+description: "The three architectural pillars of Zenzic v0.7.0 — Zero Assumptions, Subprocess-Free, and Deterministic Graph — explained as proofs of strength."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# The Engineering Ledger
+
+> *"A tool that works for mysterious reasons is not a tool — it is a ritual.
+> Zenzic works for documented reasons. This page is the proof."*
+
+This page is the technical manifesto behind every decision that makes Zenzic v0.7.0
+reliable enough to be called a **Safe Harbor**. It belongs in the Developer quadrant
+because the user does not need to know this to be protected — but the contributor
+must understand it to extend the system without breaking the contract.
+
+---
+
+## Pillar 1 — Zero Assumptions: Lint the Source, Not the Build {#pillar-zero-assumptions}
+
+**The user-facing benefit:** Zenzic catches broken links, leaked credentials, and structural
+errors *before* the documentation build starts — eliminating an entire class of CI failures
+that only surface after a 3-minute build wait.
+
+**The engineering principle:** Analysis is performed exclusively on raw Markdown source files
+and their static configuration (e.g., `mkdocs.yml`, `docusaurus.config.ts`, `zenzic.toml`).
+No HTML output is parsed. No web server is started. No build engine is invoked.
+
+**Why this matters technically:** Build output is a transformation of the source. Validating
+the output means trusting the transformation is correct — which it is not, by definition,
+when the source has structural errors. Zenzic validates the invariants of the source so that
+the build can be trusted to produce a correct output.
+
+**Implementation:** The **Virtual Site Map (VSM)** is the proof. `core/vsm.py` builds a
+complete in-memory projection of the final site from source files alone, using adapter-specific
+knowledge of how each engine maps files to URLs. Ghost Routes (i18n fallbacks, versioned slugs)
+are modelled without running the build that would produce them.
+
+**Invariant:** `core/` never calls `subprocess.run`. No file in `src/zenzic/` spawns an
+external process. This is verified by the `test_cli_e2e.py` test suite, which monkey-patches
+`subprocess` and asserts it is never reached.
+
+---
+
+## Pillar 2 — Subprocess-Free: 100% Pure Python {#pillar-subprocess-free}
+
+**The user-facing benefit:** Zenzic runs identically on Ubuntu, Windows, and macOS — in a
+Docker container, a GitHub Actions runner, or a developer's laptop — with no hidden system
+dependencies. `uvx zenzic check all .` works the same everywhere.
+
+**The engineering principle:** Every analysis function is a pure Python function. The only
+permitted I/O is file reading (source files) and writing (reports, snapshots). No shell
+commands, no `os.system`, no `subprocess.run`, no Node.js execution, no external binaries.
+
+**Why this matters technically:** Subprocesses introduce platform-specific behaviour, PATH
+sensitivity, and non-deterministic timing. A CI gate that behaves differently on the
+developer's machine and in production is not a gate — it is noise. Zero subprocesses means
+`zenzic check all` on your laptop produces the same exit code as `zenzic check all` in CI.
+
+**Implementation:** The 3×3 CI matrix (OS: `[ubuntu, windows, macos]` × Python:
+`[3.11, 3.12, 3.13]`) is the ongoing proof. 1,260+ tests pass on all nine combinations
+as of v0.7.0. Property-based tests (Hypothesis, `ci` profile: 500 examples) stress-test
+core functions across the input space to surface platform-specific edge cases.
+
+**Invariant (RULE R08):** Codified in `copilot-instructions.md` as a permanent non-negotiable.
+Any PR that introduces a subprocess call fails the review gate immediately.
+
+---
+
+## Pillar 3 — Deterministic Graph: Pure Functions First {#pillar-deterministic-graph}
+
+**The user-facing benefit:** Running `zenzic check all` twice on the same source produces
+the same report, the same exit code, and the same score. There are no race conditions, no
+cache invalidation surprises, and no flaky CI failures caused by Zenzic itself.
+
+**The engineering principle:** Analysis logic is pure and deterministic. I/O is isolated at
+the edges (Discovery reads files; Reporting writes results). The hot-path loops —
+link validation, credential scanning, orphan detection — contain zero file system calls,
+zero random state, and zero shared mutable state.
+
+**Why this matters technically:** Non-deterministic analysis tools create a particularly
+damaging failure mode: they teach engineers to re-run CI instead of fixing the root cause.
+A tool that occasionally passes on the same input trains the team to ignore it.
+Determinism is the foundation of trust.
+
+**Implementation:**
+
+```python
+# core/scorer.py — D092 Quartz Penalty Scorer
+def compute_score(findings_counts: dict[str, int]) -> ScoreReport:
+    """
+    No I/O. No side effects. Same inputs → same output, on every OS,
+    in every Python version, at any time of day.
+    findings_counts keys are Zxxx codes (e.g. "Z101", "Z402").
+    """
+    ...
+```
+
+The `AdaptiveRuleEngine` in `core/rules.py` auto-selects between sequential and parallel
+execution at the 50-file threshold — but both modes produce identical findings. Parallelism
+is a performance optimization; it does not alter the analysis result.
+
+**Invariant (RULE R01, RULE R03):** No `Path.exists()` or `open()` inside link/file
+validation loops. Every `Finding` object carries a `Zxxx` code from `codes.py`. The
+`_to_findings()` function in `cli/_check.py` is the single authorised conversion point.
+
+---
+
+## The Exit Code Contract {#exit-code-contract}
+
+The three pillars converge in the exit code contract — the most visible proof that
+Zenzic is a principled tool, not a heuristic scanner:
+
+| Exit | Meaning | Suppressible? |
+|:---:|---|:---:|
+| `0` | All checks passed — documentation is clean | — |
+| `1` | Quality findings (broken links, orphans, placeholders, etc.) | ✅ `--exit-zero` |
+| `2` | **Shield — credential detected (Z201)** | ❌ **Never** |
+| `3` | **Blood Sentinel — path traversal / fatal (Z202/Z203)** | ❌ **Never** |
+
+Exit codes 2 and 3 are enforced at the CLI layer (`cli/_check.py`) before any
+`--exit-zero` flag is consulted. The check is not conditional — it is structurally prior.
+No configuration, flag, or environment variable can suppress a security exit.
+
+This is not a policy decision. It is a **proof of correctness**: a CI gate that can be
+silenced on a credential leak is not a security gate. It is a checkbox.
+
+## Further Reading
+
+- [ADR — Architectural Decision Records](./adr-discovery) — the full decision log
+- [Architecture](./architecture-gaps) — open gaps and v0.8.0 roadmap
+- [Finding Codes Reference](/docs/reference/finding-codes) — the full `Zxxx` catalogue
+- [Safe Harbor](/docs/explanation/safe-harbor) — the philosophy behind the engineering

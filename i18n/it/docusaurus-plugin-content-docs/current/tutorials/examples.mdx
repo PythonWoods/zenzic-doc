@@ -2,12 +2,12 @@
 sidebar_position: 1
 sidebar_label: "Panoramica"
 title: Panoramica degli Esempi
-description: Un indice ragionato dei progetti di riferimento Zenzic — da Vanilla zero-config a VCS-aware, integrazione MkDocs, adapter Docusaurus e security lab Shield.
+description: Un indice ragionato dei progetti di riferimento Zenzic — da Standalone Mode zero-config a VCS-aware, integrazione MkDocs, adapter Docusaurus e security lab Shield.
 ---
 
 # Esempi
 
-Ogni esempio nel repository Zenzic è un **progetto di riferimento autonomo** che puoi clonare ed eseguire immediatamente. Ognuno è progettato per dimostrare una funzionalità o un caso d'uso specifico, così il codice che vedi è il minimo necessario per dimostrare il concetto.
+Ogni esempio nel repository Zenzic è un **progetto di riferimento autonomo**. Clonalo. Esegui `uvx zenzic check all`. Ogni esempio isola una funzionalità — il codice mostrato è il minimo necessario per riprodurre l'exit code riportato.
 
 Tutti gli esempi si trovano in [`examples/`](https://github.com/PythonWoods/zenzic/tree/main/examples) nel repository Zenzic.
 
@@ -35,39 +35,41 @@ zenzic check all
 
 ## Catalogo degli Esempi {#catalog}
 
-### Vanilla — Quality Gate Agnostico al Motore {#vanilla}
+### Standalone — Quality Gate Agnostico al Motore {#standalone}
 
-**Directory:** `examples/vanilla/`
-**Motore:** `vanilla` (nessun motore di build)
+**Directory:** `examples/standalone-markdown/`
+**Motore:** `standalone` (nessun motore di build)
 **Uscita attesa:** 0
 
-Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdocs.yml`, nessun `docusaurus.config.ts` — solo file Markdown e un `zenzic.toml`. Il `VanillaAdapter` tratta ogni file come raggiungibile.
+Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdocs.yml`, nessun `docusaurus.config.ts` — solo file Markdown e un `zenzic.toml`. Il `StandaloneAdapter` tratta ogni file come raggiungibile.
 
 **Inizia qui se:** hai un progetto con Markdown puro e nessun SSG.
 
 ---
 
-### mkdocs-basic — Showcase dell'Integrazione MkDocs {#mkdocs-basic}
+### mkdocs-basic — Showcase dell'Adapter MkDocs {#mkdocs-basic}
 
 **Directory:** `examples/mkdocs-basic/`
 **Motore:** `mkdocs`
 **Uscita attesa:** 0
-**Extra richiesto:** `pip install "zenzic[mkdocs]"`
 
-Il principale showcase per `zenzic.integrations.mkdocs`. Questo esempio dimostra:
+Dimostra `MkDocsAdapter` che legge `mkdocs.yml` staticamente — nessun binario `mkdocs` invocato.
+Mostra la struttura i18n a cartelle con contenuto in inglese e italiano.
 
-- `MkDocsAdapter` che legge `mkdocs.yml` staticamente (nessun binario `mkdocs` invocato).
-- Il plugin `zenzic` dichiarato in `mkdocs.yml` — attiva `check all` come gate di build durante `mkdocs build`.
-- Struttura i18n a cartelle con contenuto in inglese e italiano.
+**Inizia qui se:** usi MkDocs e vuoi validare link, nav e struttura i18n prima di eseguire la build.
 
-```yaml
-# Da mkdocs.yml in questo esempio
-plugins:
-  - search
-  - zenzic      # zenzic.integrations.mkdocs scoperto automaticamente via entry point
+:::note CLI Sovrana
+Il plugin MkDocs nativo (`zenzic.integrations.mkdocs`) è stato rimosso in v0.7.0.
+Esegui Zenzic come step CI — fornisce la stessa applicazione con copertura completa di VSM,
+Shield e Blood Sentinel:
+
+```yaml title=".github/workflows/zenzic.yml"
+
+- run: zenzic check all --strict
+
 ```
 
-**Inizia qui se:** usi MkDocs e vuoi un quality gate al momento della build.
+:::
 
 ---
 
@@ -79,7 +81,7 @@ plugins:
 
 Dimostra `DocusaurusAdapter` che analizza `docusaurus.config.ts` come testo puro — nessuna installazione di Node.js richiesta. Funzionalità chiave: `docs/guide/about.mdx` usa un frontmatter `slug: /about` override, dimostrando che Zenzic mappa correttamente l'URL canonico tramite `_extract_frontmatter_slug()` invece di derivarlo dal percorso filesystem.
 
-```mdx
+```mdx title="docs/guide/about.mdx"
 ---
 title: Informazioni su Questo Progetto
 slug: /about
@@ -117,10 +119,10 @@ Un progetto di documentazione bilingue strutturato per ottenere **100/100** con 
 ### vcs-aware-project — Esclusione VCS-Aware {#vcs-aware}
 
 **Directory:** `examples/vcs-aware-project/`
-**Motore:** `vanilla`
+**Motore:** `standalone`
 **Uscita attesa:** 0
 
-Dimostra il **Modello di Esclusione a Livelli** introdotto in v0.6.1 "Obsidian Bastion":
+Dimostra il **Modello di Esclusione a Livelli** introdotto in v0.6.1:
 
 - `respect_vcs_ignore = true` — Zenzic legge i pattern `.gitignore` al livello L2-VCS.
 - `included_dirs = ["generated-api"]` — forza una directory ignorata da VCS nello scope al livello L2 Forced Inclusion.
@@ -133,7 +135,7 @@ Dimostra il **Modello di Esclusione a Livelli** introdotto in v0.6.1 "Obsidian B
 ### custom-dir-target — Audit di una Directory Non-Default {#custom-dir}
 
 **Directory:** `examples/custom-dir-target/`
-**Motore:** `vanilla`
+**Motore:** `standalone`
 **Uscita attesa:** 0
 
 Mostra come puntare Zenzic a una directory docs che differisce dal default `docs/`. Utile per monorepo o progetti dove la documentazione si trova in `content/`, `pages/`, o un altro percorso personalizzato.
@@ -143,7 +145,7 @@ Mostra come puntare Zenzic a una directory docs che differisce dal default `docs
 ### single-file-target — Audit Mirato su un Singolo File {#single-file}
 
 **Directory:** `examples/single-file-target/`
-**Motore:** `vanilla`
+**Motore:** `standalone`
 **Uscita attesa:** 0
 
 Dimostra come limitare `zenzic check links` a un singolo file specifico usando il flag `--target`. Utile per hook pre-commit che devono controllare solo i file modificati.
@@ -153,7 +155,7 @@ Dimostra come limitare `zenzic check links` a un singolo file specifico usando i
 ### plugin-scaffold-demo — Plugin di Regole Custom {#plugin-scaffold}
 
 **Directory:** `examples/plugin-scaffold-demo/`
-**Motore:** `vanilla`
+**Motore:** `standalone`
 **Uscita attesa:** 0
 
 L'implementazione di riferimento per scrivere un plugin di regole Zenzic personalizzato. Generato da `zenzic init --plugin my-plugin`. Mostra come implementare una sottoclasse `BaseRule`, registrarla tramite l'entry point `zenzic.rules`, e pacchettizzarla come pacchetto Python autonomo.
@@ -165,8 +167,8 @@ L'implementazione di riferimento per scrivere un plugin di regole Zenzic persona
 ### broken-docs — Fixture di Riferimento per i Fallimenti {#broken-docs}
 
 **Directory:** `examples/broken-docs/`
-**Motore:** `vanilla`
-**Uscita attesa:** 1
+**Motore:** `mkdocs`
+<SentinelOutput status="error" exitCode={1} compact />
 
 Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimento completo. Questa è la baseline di regressione per il motore dei controlli. Studia questo esempio per capire esattamente come appare ogni tipo di risultato nell'output.
 
@@ -175,8 +177,8 @@ Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimen
 ### security_lab — Fixture di Test per lo Shield {#security-lab}
 
 **Directory:** `examples/security_lab/`
-**Motore:** `vanilla`
-**Uscita attesa:** 2 (Shield)
+**Motore:** `mkdocs`
+<SentinelOutput status="breach" exitCode={2} compact />
 
 Attiva intenzionalmente lo Zenzic Shield (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema Shield.
 
@@ -190,17 +192,17 @@ Attiva intenzionalmente lo Zenzic Shield (rilevamento credenziali) e il link che
 
 | Funzionalità | Esempio |
 | :--- | :--- |
-| Markdown puro zero-config | [vanilla](#vanilla) |
-| Analisi statica MkDocs | [mkdocs-basic](#mkdocs-basic) |
-| Gate build MkDocs | [mkdocs-basic](#mkdocs-basic) |
-| Adapter Docusaurus + routing slug | [docusaurus-v3](#docusaurus-v3) |
-| Motore Zensical | [zensical-basic](#zensical-basic) |
-| Bilingue / i18n 100/100 | [i18n-standard](#i18n-standard) |
-| Esclusione VCS-aware (L1–L4) | [vcs-aware-project](#vcs-aware) |
+| Markdown puro zero-config | [standalone](#standalone) {/* zenzic:ignore Z107 */} |
+| Analisi statica MkDocs | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
+| Gate build MkDocs | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
+| Adapter Docusaurus + routing slug | [docusaurus-v3](#docusaurus-v3) {/* zenzic:ignore Z107 */} |
+| Motore Zensical | [zensical-basic](#zensical-basic) {/* zenzic:ignore Z107 */} |
+| Bilingue / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
+| Esclusione VCS-aware (L1–4) | [vcs-aware-project](#vcs-aware) |
 | `docs_dir` personalizzata | [custom-dir-target](#custom-dir) |
 | Singolo file `--target` | [single-file-target](#single-file) |
 | Plugin di regole custom | [plugin-scaffold-demo](#plugin-scaffold) |
-| Come appaiono i fallimenti | [broken-docs](#broken-docs) |
+| Come appaiono i fallimenti | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
 | Rilevamento credenziali Shield | [security_lab](#security-lab) |
 
 ---

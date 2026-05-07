@@ -1,93 +1,23 @@
 version = 1
 
-# ── Documentation content ────────────────────────────────────────────────────
+[[annotations]]
+path = ["package.json", "package-lock.json", "tsconfig.json", ".markdownlint-cli2.jsonc", "**/*_category_.json", "i18n/**/*.json", ".vscode/mcp.json"]
+SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
+SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = "docs/**/*.mdx"
+path = ["static/**", "docs/**/assets/**", "i18n/**/assets/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = "i18n/**/*.mdx"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── Source (theme, components, pages) ────────────────────────────────────────
-
-[[annotations]]
-path = "src/**"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-[[annotations]]
-path = "scripts/**"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── Static assets ────────────────────────────────────────────────────────────
-
-[[annotations]]
-path = "static/**"
+path = ["blog/**", "docs/**/*.mdx", "i18n/**/*.mdx"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = "docs/**/assets/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-[[annotations]]
-path = "i18n/**/assets/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── i18n translation files ───────────────────────────────────────────────────
-
-[[annotations]]
-path = "i18n/**/*.json"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── Project root — prose ─────────────────────────────────────────────────────
-
-[[annotations]]
-path = ["LICENSE", "NOTICE", "README.md", ".gitignore"]
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── Project root — configuration ─────────────────────────────────────────────
-
-[[annotations]]
-path = [
-    "package.json",
-    "package-lock.json",
-    "tsconfig.json",
-    "docusaurus.config.ts",
-    "sidebars.ts",
-    "tailwind.config.js",
-    "eslint.config.mjs",
-    ".markdownlint-cli2.jsonc",
-    "RELEASE.md",
-    "zenzic.toml",
-    "justfile",
-    "**/*_category_.json"
-]
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-[[annotations]]
-path = ".vscode/mcp.json"
-SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
-SPDX-License-Identifier = "Apache-2.0"
-
-# ── CI ────────────────────────────────────────────────────────────────────────
-
-[[annotations]]
-path = ".github/**"
+path = ["README.md", "README.it.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "RELEASE.md", "NOTICE", "LICENSE"]
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"

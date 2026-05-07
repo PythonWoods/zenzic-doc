@@ -48,7 +48,7 @@ export default function Quickstart(): React.JSX.Element {
             {/* Shell ready line */}
             <div className="flex items-center gap-2 pb-3 mb-3 border-b dark:border-zinc-800/40 border-zinc-200/50">
               <span className="text-emerald-400 text-[12px]">✓</span>
-              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]">zenzic 0.6.1 · python 3.12 · ready</span>
+              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]">zenzic 0.7.0 · python 3.12 · ready</span>
             </div>
             <p className="dark:text-zinc-600 text-zinc-400 text-[12px]">
               # explore the interactive lab (9 acts, zero setup)
@@ -71,13 +71,20 @@ export default function Quickstart(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Action buttons */}
+        {/* Action buttons — Left=Light=Primary action, Right=Dark=Secondary action */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <Link
+            to={docsHref}
+            className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full dark:bg-zinc-100 dark:text-zinc-950 bg-zinc-900 text-white text-sm font-medium dark:hover:bg-white hover:bg-zinc-800 transition-colors"
+          >
+            <Translate id="quickstart.docs">Read the full docs →</Translate>
+          </Link>
+
           <a
             href="https://github.com/PythonWoods/zenzic"
             target="_blank"
             rel="noopener noreferrer"
-            className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full dark:bg-zinc-100 dark:text-zinc-950 bg-zinc-900 text-white text-sm font-medium dark:hover:bg-white hover:bg-zinc-800 transition-colors"
+            className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-transparent dark:text-zinc-300 text-zinc-600 text-sm font-medium border dark:border-zinc-700 border-zinc-300 dark:hover:border-zinc-500 hover:border-zinc-400 dark:hover:text-white hover:text-zinc-900 transition-colors"
           >
             {/* GitHub icon */}
             <svg
@@ -91,13 +98,6 @@ export default function Quickstart(): React.JSX.Element {
             </svg>
             <Translate id="quickstart.github">Star on GitHub</Translate>
           </a>
-
-          <Link
-            to={docsHref}
-            className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-transparent dark:text-zinc-300 text-zinc-600 text-sm font-medium border dark:border-zinc-700 border-zinc-300 dark:hover:border-zinc-500 hover:border-zinc-400 dark:hover:text-white hover:text-zinc-900 transition-colors"
-          >
-            <Translate id="quickstart.docs">Read the full docs →</Translate>
-          </Link>
         </div>
       </div>
     </section>
