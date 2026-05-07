@@ -49,3 +49,4 @@ mutmut*
 .mutmut-cache/
 .pytest_cache/
 .nox/
+.hypothesis/
