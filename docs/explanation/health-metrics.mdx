@@ -176,7 +176,7 @@ coherent before any build step runs.
 `compute_score()` in `core/scorer.py` is a pure Python function — no shell calls,
 no `subprocess.run`, no network requests. It receives a `findings_counts: dict[str, int]`
 mapping and returns a `ScoreReport`. This guarantees identical results across every OS
-and Python version in the CI matrix (ubuntu / windows / macos × Python 3.11–3.13).
+and Python version in the CI matrix (ubuntu / windows / macos × Python 3.10–3.14).
 
 **3. Pure Functions First.**
 `compute_score()` has no side effects. `save_snapshot()` is the only I/O function

@@ -182,7 +182,7 @@ che è internamente coerente prima che qualsiasi passo di build venga eseguito.
 shell, nessun `subprocess.run`, nessuna richiesta di rete. Riceve una mappa
 `findings_counts: dict[str, int]` e restituisce uno `ScoreReport`. Questo garantisce
 risultati identici su ogni OS e versione Python nella matrice CI
-(ubuntu / windows / macos × Python 3.11–3.13).
+(ubuntu / windows / macos × Python 3.10–3.14).
 
 **3. Funzioni Pure Prima di Tutto.**
 `compute_score()` non ha effetti collaterali. `save_snapshot()` è l'unica funzione

@@ -48,7 +48,7 @@ gigabyte solo per verificare se la destinazione di un link esiste.
 
 Zenzic è **100% Python puro**. Zero chiamate a subprocess. Zero Node.js. Zero npm. Un
 singolo `uvx zenzic check all` e il lavoro è fatto — su Linux, macOS e Windows, con
-Python da 3.11 a 3.13.
+Python da 3.10 a 3.14.
 
 Questa non è una coincidenza. È la **RULE R08** — la Legge Zero Subprocess — sancita
 come invariante architetturale. Significa:
@@ -57,7 +57,7 @@ come invariante architetturale. Significa:
   pre-installazione Python, nessuna wheel da gestire. Una riga aggiunta a qualsiasi workflow.
 - **Pre-commit:** Aggiungi `zenzic-verify` a `.pre-commit-config.yaml`. L'hook gira sui file
   in stage; zero effetti collaterali sull'albero di lavoro.
-- **Qualsiasi runner CI:** Richiede `bash` ≥5 e `python3` ≥3.11 nel `PATH`. Nessun altro runtime. Zero Node.js.
+- **Qualsiasi runner CI:** Richiede `bash` ≥5 e `python3` ≥3.10 nel `PATH`. Nessun altro runtime. Zero Node.js.
 
 La Tassa Node.js è un debito che si accumula. Zenzic si rifiuta di pagarla.
 
