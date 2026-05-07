@@ -108,6 +108,9 @@ check *args:
       --exclude-url "https://zenzic.dev/it/developers/"
       --exclude-url "https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0"
     )
+    if [[ ${#GUARD[@]} -gt 0 ]]; then
+      echo -e "\033[33m[QUARTZ WARNING] Pre-Launch Guard active: skipping internal/future URLs. DO NOT release with these guards active.\033[0m" >&2
+    fi
     uv run --project "{{zenzic_project}}" zenzic check all --strict "${GUARD[@]}" {{args}}
 
 # Static type check
