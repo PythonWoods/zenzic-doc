@@ -3,9 +3,10 @@
 
 # just - Obsidian Enterprise workflow for zenzic-doc
 set shell := ["bash", "-c"]
-# ZRT-010 — Sovereign Parity: _zenzic_core/ mirrors CI CORE_REF checkout.
-# Override with ZENZIC_PROJECT_PATH for ad-hoc testing against other core paths.
-zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "_zenzic_core")
+# ZRT-010 — Unified Registry: zenzic is resolved from PyPI via uvx, mirroring CI exactly.
+# Override for local dev against a monorepo checkout:
+#   ZENZIC_CORE_REF=/path/to/local/zenzic just check
+core_ref := env_var_or_default("ZENZIC_CORE_REF", "zenzic==v0.7.0")
 
 # Use `just --list` to see available commands
 
@@ -15,31 +16,6 @@ zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "_zenzic_core")
 setup:
     npm ci
 
-# Clone or update the local zenzic core into _zenzic_core/ (mirrors CI CORE_REF branch logic).
-# Run once before the first 'just verify'; re-run after branch switches.
-setup-core:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    BRANCH=$(git branch --show-current)
-    REMOTE="https://github.com/PythonWoods/zenzic.git"
-    echo "Resolving core branch for: ${BRANCH}"
-    if git ls-remote --exit-code --heads "${REMOTE}" "${BRANCH}" > /dev/null 2>&1; then
-        CORE_BRANCH="${BRANCH}"
-    else
-        echo "Branch '${BRANCH}' not found in core — falling back to main"
-        CORE_BRANCH="main"
-    fi
-    if [ -d "_zenzic_core/.git" ]; then
-        echo "Updating _zenzic_core (→ ${CORE_BRANCH})..."
-        git -C _zenzic_core fetch --depth=1 origin "${CORE_BRANCH}"
-        git -C _zenzic_core checkout "${CORE_BRANCH}"
-        git -C _zenzic_core reset --hard "origin/${CORE_BRANCH}"
-    else
-        echo "Cloning zenzic core (→ ${CORE_BRANCH})..."
-        git clone --depth=1 --branch "${CORE_BRANCH}" "${REMOTE}" _zenzic_core
-    fi
-    echo "Core ready: $(git -C _zenzic_core log --oneline -1)"
-
 # Clean generated artifacts
 clean:
     rm -rf build .docusaurus
@@ -47,11 +23,6 @@ clean:
 # Deep clean: remove artifacts and node_modules (preserves package-lock.json for reproducible npm ci)
 clean-all: clean
     rm -rf node_modules
-
-# Remove the local zenzic core cache (re-run 'just setup-core' to restore)
-clean-core:
-    rm -rf _zenzic_core
-    @echo "_zenzic_core removed."
 
 # Purge Docusaurus and npm cache to resolve ghost build issues
 purge-cache:
@@ -111,7 +82,7 @@ check *args:
     if [[ ${#GUARD[@]} -gt 0 ]]; then
       echo -e "\033[33m[QUARTZ WARNING] Pre-Launch Guard active: skipping internal/future URLs. DO NOT release with these guards active.\033[0m" >&2
     fi
-    uv run --project "{{zenzic_project}}" zenzic check all --strict "${GUARD[@]}" {{args}}
+    uvx --from "{{core_ref}}" zenzic check all --strict "${GUARD[@]}" {{args}}
 
 # Static type check
 typecheck:
