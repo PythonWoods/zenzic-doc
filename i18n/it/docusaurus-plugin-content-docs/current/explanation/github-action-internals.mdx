@@ -1,0 +1,184 @@
+---
+sidebar_position: 11
+icon: lucide/shield-check
+title: Architettura Interna della GitHub Action
+description: "Come zenzic-action applica la sicurezza: Blood Sentinel Protocol, Contratto Exit Code, cascata Root-First Sentinel e Intenzione Sovrana."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Architettura Interna della GitHub Action
+
+Questa pagina è per gli **ingegneri che devono capire cosa fa `zenzic-action` sotto il cofano** — security reviewer, team di piattaforma che integrano Zenzic in infrastrutture condivise, e contributor dell'action stessa.
+
+Per l'utilizzo quotidiano (YAML da copiare, reference degli input), consulta la [guida all'integrazione CI/CD](../how-to/configure-ci-cd) e il [README dell'action](https://github.com/PythonWoods/zenzic-action).
+
+---
+
+## Panoramica dell'Architettura
+
+`zenzic-action` è una **GitHub Action composita** costruita su un'architettura rigorosa a due livelli:
+
+```
+action.yml            ← contratto pubblico (input, output, iniezione env)
+    │
+    └─▶  zenzic-action-wrapper.sh   ← livello di enforcement (sicurezza, exit code, SARIF)
+              │
+              └─▶  uvx zenzic check all   ← Zenzic Core (motore di analisi)
+```
+
+`action.yml` inietta i valori forniti dal chiamante come variabili d'ambiente. Il wrapper valida, sanifica e orchestra l'esecuzione. **Non si fida mai degli input grezzi** — ogni path è sorvegliato prima di raggiungere il filesystem o la CLI.
+
+---
+
+## Blood Sentinel Protocol {#blood-sentinel}
+
+Il wrapper applica due *Jailbreak Guard* indipendenti — uno per il path di output SARIF, uno per il path del file di configurazione. Entrambi usano lo stesso pattern basato su `case`, garantendo una policy identica ad ogni boundary di lettura/scrittura.
+
+### SARIF Jailbreak Guard
+
+`sarif-file` è un path di scrittura. Un workflow malevolo potrebbe tentare di scrivere fuori dalla directory di checkout:
+
+```bash
+# Rifiutato: path assoluto
+sarif-file: /tmp/evil.sarif
+
+# Rifiutato: path traversal
+sarif-file: ../../etc/evil.sarif
+```
+
+Il wrapper rifiuta entrambi i pattern prima che avvenga qualsiasi I/O su filesystem:
+
+```bash
+case "${ZENZIC_SARIF_FILE}" in
+  /*)
+    echo "::error title=Zenzic — SARIF Jailbreak::..." >&2; exit 1 ;;
+  *../*|*/..|..)
+    echo "::error title=Zenzic — SARIF Jailbreak::..." >&2; exit 1 ;;
+esac
+```
+
+### Config Jailbreak Guard
+
+`config-file` è un path di lettura. Un attaccante che tenta di leggere `/etc/passwd` o un file fuori dal workspace tramite path traversal viene bloccato dallo stesso pattern:
+
+```bash
+case "${ZENZIC_CONFIG_FILE}" in
+  /*)   exit 1 ;;
+  *../* | */..) exit 1 ;;
+esac
+```
+
+:::note[Scope del guard]
+Il Config Jailbreak Guard si applica **solo agli override espliciti** — i valori forniti tramite l'input `config-file`. I path auto-scoperti (`zenzic.toml`, `.github/zenzic.toml`) sono hardcoded nel sorgente del wrapper e non possono essere iniettati da un attaccante. Sorvegliarli sarebbe security theatre, non sicurezza.
+:::
+
+### SARIF Integrity Check
+
+Un `SIGKILL` o un crash del runtime Python durante l'esecuzione di Zenzic può troncare il file SARIF a metà scrittura. Un SARIF incompleto produce un errore criptico dell'API GitHub durante l'upload invece di un messaggio significativo nel log dello step.
+
+Il wrapper valida il SARIF come JSON prima di passarlo a `codeql-action/upload-sarif`:
+
+```python
+import json, os
+json.load(open(os.environ["ZENZIC_SARIF_FILE"]))
+```
+
+Se il file non è JSON valido, viene emessa un'annotation `::warning` — l'upload procede così GitHub mostra il suo preciso errore — e `findings-count` viene lasciato a `0` per evitare falsi positivi.
+
+---
+
+## Contratto Exit Code {#exit-code-contract}
+
+Zenzic definisce quattro codici di uscita. Il wrapper li propaga **senza rimappatura**:
+
+| Codice | Significato | Sopprimibile? |
+|:---:|---|:---:|
+| `0` | Pulito — tutti i check superati | — |
+| `1` | Finding di documentazione (link rotti, orfani, ref dangling, ecc.) | ✅ tramite `fail-on-error: false` |
+| `2` | **SICUREZZA** — pattern di credenziale rilevato (Shield / Z201) | ❌ Mai |
+| `3` | **SICUREZZA** — path traversal verso sistema (Blood Sentinel / Z202–Z203) | ❌ Mai |
+
+Le uscite `2` e `3` terminano il job incondizionatamente. Né `fail-on-error: "false"` né nessun altro input può sopprimerle. Questo è applicato nella logica di uscita del wrapper, non in `action.yml`, quindi non può essere aggirato sovrascrivendo gli input dell'action.
+
+### findings-count coerente per uscite di sicurezza
+
+Quando viene rilevata una violazione di sicurezza, Zenzic può interrompersi prima di produrre un file SARIF completo. In questo caso il SARIF contiene zero risultati, anche se è avvenuto un vero incidente.
+
+Il wrapper gestisce questo forzando `findings-count` a `1` quando `EXIT_CODE` è `2` o `3` e il conteggio analizzato è `0`:
+
+```bash
+if [ "${EXIT_CODE}" -eq 2 ]; then
+  [ "${FINDINGS}" -eq 0 ] && FINDINGS=1
+  echo "findings-count=${FINDINGS}" >> "${GITHUB_OUTPUT}"
+  exit 2
+fi
+```
+
+Questo garantisce che gli step downstream che leggono `findings-count` non vedano mai `"0 finding, exit 2"` — una UX incoerente che implicherebbe che la build è fallita senza motivo.
+
+---
+
+## Root-First Sentinel — Configuration Discovery {#cascade}
+
+Il wrapper implementa un'**auto-discovery gerarchica** per il file di configurazione Zenzic. L'ordine di ricerca riflette il posizionamento convenzionale nei repository reali:
+
+```
+Priorità 1  →  Override esplicito    (l'input config-file è impostato)
+Priorità 2  →  zenzic.toml          (root del repository)
+Priorità 3  →  .github/zenzic.toml  (directory config nascosta)
+Priorità —  →  (nessun file trovato) → Zenzic usa i default predefiniti
+```
+
+Questo ordine garantisce **parità tra esecuzioni locali e CI**: uno sviluppatore che esegue `zenzic check all` in locale trova `zenzic.toml` dalla root, e così fa l'action in CI.
+
+Il path scoperto viene passato alla CLI tramite `--config` usando un array Bash — mai una stringa — così i path contenenti spazi vengono gestiti correttamente:
+
+```bash
+CONFIG_ARGS=(--config "${CANDIDATE_CONFIG}")
+# ...
+uvx "${PKG}" check all --format sarif "${CONFIG_ARGS[@]}" ...
+```
+
+### Contratto di Intenzione Sovrana {#sovereign-intent}
+
+Quando un chiamante imposta esplicitamente `config-file`, sta esprimendo un'**intenzione sovrana** — una dichiarazione deliberata che questo specifico file governa l'esecuzione. Se il file non esiste, il wrapper **non** ricade silenziosamente sull'auto-discovery. Il fallthrough silenzioso sarebbe inganno operativo: lo sviluppatore crede di stare testando con regole custom, ma il sistema usa segretamente una configurazione diversa.
+
+La risposta dipende dalla modalità `strict`:
+
+| `strict` | File specificato | File esiste | Risultato |
+|:---:|:---:|:---:|---|
+| qualsiasi | no | — | L'auto-discovery gira normalmente |
+| qualsiasi | sì | sì | `--config <file>` passato alla CLI |
+| `false` | sì | **no** | `::warning` emesso; Zenzic usa i default predefiniti |
+| `true` | sì | **no** | `::error` + `exit 1` (fatale) |
+
+Quando viene intrapreso il percorso di warning, l'auto-discovery è **soppressa** — `CONFIG_ARGS` rimane vuoto, e l'esecuzione continua senza alcun file di configurazione. Questo è intenzionalmente più conservativo del ricadere su un file scoperto, perché il chiamante ha dichiarato un'intenzione specifica che non può essere onorata.
+
+---
+
+## Passaggio Argomenti Glob-Safe {#glob-safe}
+
+La variabile d'ambiente `ZENZIC_EXTRA_ARGS` permette ai chiamanti di passare flag aggiuntivi (es. `--exclude-url`) alla CLI Zenzic a runtime. Poiché questa variabile è una stringa semplice che deve essere suddivisa in token argv, un'espansione non protetta attiverebbe l'espansione glob di Bash — un `*` o `?` dentro un URL potrebbe essere espanso contro il filesystem CI.
+
+Il wrapper disabilita il globbing intorno alla costruzione dell'array:
+
+```bash
+set -f                                  # disabilita l'espansione glob
+EXTRA_ARGS=(${ZENZIC_EXTRA_ARGS:-})     # word-split IFS intenzionale
+set +f                                  # ripristina l'espansione glob
+```
+
+`set -f` / `set +f` è limitato esattamente a questa singola assegnazione, quindi nient'altro nel wrapper è influenzato. L'espansione successiva usa `"${EXTRA_ARGS[@]}"` — tra virgolette, quindi non avviene nessun ulteriore splitting o globbing quando l'array viene passato a `uvx`.
+
+---
+
+## Risorse Correlate
+
+| Risorsa | Descrizione |
+|---|---|
+| [README dell'action](https://github.com/PythonWoods/zenzic-action) | Quick Start, reference input/output, utilizzo Override Sovrano |
+| [Integrazione CI/CD](../how-to/configure-ci-cd) | Ricette workflow, badge SARIF, badge score |
+| [Architettura](./architecture) | Pipeline a due passate di Zenzic Core, Shield middleware, protocollo adapter |
+| [ADR Vault](https://zenzic.dev/it/developers/explanation/adr-vault) | Decisioni architetturali dietro il contratto exit code e il Blood Sentinel |
