@@ -9,7 +9,7 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 ---
 
-## [0.7.0] — 2026-05-XX (Target) — Quartz Maturity (Stable)
+## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)
 
 > **Fonte autorevole:** [zenzic.dev](https://zenzic.dev). Questo file è la
 > controparte machine-readable di [`RELEASE.md`](RELEASE.md) e segue la stessa
