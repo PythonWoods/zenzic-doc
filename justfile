@@ -3,7 +3,9 @@
 
 # just - Obsidian Enterprise workflow for zenzic-doc
 set shell := ["bash", "-c"]
-zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "../zenzic")
+# ZRT-010 — Sovereign Parity: _zenzic_core/ mirrors CI CORE_REF checkout.
+# Override with ZENZIC_PROJECT_PATH for ad-hoc testing against other core paths.
+zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "_zenzic_core")
 
 # Use `just --list` to see available commands
 
@@ -13,6 +15,31 @@ zenzic_project := env_var_or_default("ZENZIC_PROJECT_PATH", "../zenzic")
 setup:
     npm ci
 
+# Clone or update the local zenzic core into _zenzic_core/ (mirrors CI CORE_REF branch logic).
+# Run once before the first 'just verify'; re-run after branch switches.
+setup-core:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    BRANCH=$(git branch --show-current)
+    REMOTE="https://github.com/PythonWoods/zenzic.git"
+    echo "Resolving core branch for: ${BRANCH}"
+    if git ls-remote --exit-code --heads "${REMOTE}" "${BRANCH}" > /dev/null 2>&1; then
+        CORE_BRANCH="${BRANCH}"
+    else
+        echo "Branch '${BRANCH}' not found in core — falling back to main"
+        CORE_BRANCH="main"
+    fi
+    if [ -d "_zenzic_core/.git" ]; then
+        echo "Updating _zenzic_core (→ ${CORE_BRANCH})..."
+        git -C _zenzic_core fetch --depth=1 origin "${CORE_BRANCH}"
+        git -C _zenzic_core checkout "${CORE_BRANCH}"
+        git -C _zenzic_core reset --hard "origin/${CORE_BRANCH}"
+    else
+        echo "Cloning zenzic core (→ ${CORE_BRANCH})..."
+        git clone --depth=1 --branch "${CORE_BRANCH}" "${REMOTE}" _zenzic_core
+    fi
+    echo "Core ready: $(git -C _zenzic_core log --oneline -1)"
+
 # Clean generated artifacts
 clean:
     rm -rf build .docusaurus
@@ -20,6 +47,11 @@ clean:
 # Deep clean: remove artifacts and node_modules (preserves package-lock.json for reproducible npm ci)
 clean-all: clean
     rm -rf node_modules
+
+# Remove the local zenzic core cache (re-run 'just setup-core' to restore)
+clean-core:
+    rm -rf _zenzic_core
+    @echo "_zenzic_core removed."
 
 # Purge Docusaurus and npm cache to resolve ghost build issues
 purge-cache:
@@ -53,24 +85,30 @@ build: sentinel
     npm run build
 
 # Run the Zenzic Sentinel quality check only (faster than full preflight).
-# ZENZIC_EXTRA_ARGS (env, optional): injects extra flags — e.g.
-#   ZENZIC_EXTRA_ARGS="--no-external" just sentinel
-#   ZENZIC_EXTRA_ARGS="--no-external" just build
+# ZRT-010: delegates to 'just check' — single source of truth for the guard.
 # Pass extra flags directly: just sentinel --no-external
 sentinel *args:
-    bash scripts/pre-commit-zenzic.sh {{args}}
+    just check {{args}}
 
 # Run all pre-commit hooks against every tracked file (mirrors CI gate exactly)
 preflight:
     uvx pre-commit run --all-files
 
-# Explicit Zenzic audit gate (uses local unreleased core).
-# ZENZIC_EXTRA_ARGS (env, optional): injects extra flags at CI time — e.g.
-#   ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just check
-# Local runs leave ZENZIC_EXTRA_ARGS unset; the ${:-} default expands to empty.
+# Explicit Zenzic audit gate (ZRT-010 — Sovereign Parity).
+# Pre-Launch Guard is inlined: local == CI. No env var required.
 # Pass extra flags directly: just check --no-external
 check *args:
-    uv run --project {{zenzic_project}} zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Pre-Launch Guard — remove after GA deploy when all URLs resolve
+    GUARD=(
+      --exclude-url "https://zenzic.dev/blog/"
+      --exclude-url "https://zenzic.dev/docs/explanation/structural-integrity"
+      --exclude-url "https://zenzic.dev/developers/"
+      --exclude-url "https://zenzic.dev/it/developers/"
+      --exclude-url "https://github.com/PythonWoods/zenzic/releases/tag/v0.7.0"
+    )
+    uv run --project "{{zenzic_project}}" zenzic check all --strict "${GUARD[@]}" {{args}}
 
 # Static type check
 typecheck:

@@ -45,13 +45,14 @@ repos:
         pass_filenames: false
         types_or: [ts, tsx]
 
-  # 4. Zenzic Sentinel — local unreleased core only (never uvx)
+  # 4. Zenzic Sentinel — ZRT-010 Sovereign Parity: entry-point is 'just check'
+  #    so local and CI always run the same guard-aware invocation.
   #    always_run: true — config/nav changes can break docs even without .md edits
   - repo: local
     hooks:
       - id: zenzic-check
         name: "Zenzic Sentinel"
-        entry: bash scripts/pre-commit-zenzic.sh
+        entry: just check
         language: system
         pass_filenames: false
         always_run: true
