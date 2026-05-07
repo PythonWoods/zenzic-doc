@@ -21,6 +21,8 @@ on:
       - 'tsconfig.json'
       - 'zenzic.toml'
       - '.github/workflows/ci.yml'
+      - '.pre-commit-config.yaml'
+      - '.pre-commit-hooks.yaml'
   push:
     branches:
       - main
