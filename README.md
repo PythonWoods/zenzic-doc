@@ -8,7 +8,7 @@
 
 # zenzic-doc Developer Guide
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.0-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.1-4f46e5)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
@@ -16,7 +16,7 @@
 [![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
-> **This documentation is strictly aligned to Zenzic v0.7.0 "Quartz Maturity".**
+> **This documentation is strictly aligned to Zenzic v0.7.1 "Quartz Maturity".**
 > If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
 
 This repository contains the Docusaurus documentation website for Zenzic.
@@ -333,7 +333,7 @@ i18n: {
 },
 ```
 
-**Discovered in:** v0.7.0 release audit (D090 "The i18n Lockdown").
+**Discovered in:** v0.7.1 release audit (D090 "The i18n Lockdown").
 
 ## 11) Pull Request Checklist
 

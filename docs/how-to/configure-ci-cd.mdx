@@ -201,7 +201,7 @@ jobs:
 
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.7.0"          # pin to a stable release
+          version: "0.7.1"          # pin to a stable release
           format: sarif             # emit SARIF for Code Scanning
           upload-sarif: "true"
           fail-on-error: "true"
@@ -246,7 +246,7 @@ Slack notifications without re-parsing the SARIF file:
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.7.0"
+          version: "0.7.1"
 
       - name: Post finding count
 

@@ -75,7 +75,7 @@ const config: Config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.7.0',
+              label: '0.7.1',
               badge: false,
               banner: 'none',
             },
@@ -208,7 +208,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.0. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
       theme: prismThemes.github,

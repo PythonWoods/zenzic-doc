@@ -202,7 +202,7 @@ jobs:
 
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.7.0"          # fissa a una release stabile
+          version: "0.7.1"          # fissa a una release stabile
           format: sarif             # emetti SARIF per Code Scanning
           upload-sarif: "true"
           fail-on-error: "true"
@@ -247,7 +247,7 @@ o notifiche Slack senza dover rileggere il file SARIF:
         id: zenzic
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.7.0"
+          version: "0.7.1"
 
       - name: Mostra conteggio finding
 
