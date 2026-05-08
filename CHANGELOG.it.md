@@ -13,6 +13,11 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 #### Aggiunto
 
+- **DX Release Recipes (Sprint DX):** Tutti e quattro i repository dell'ecosistema includono ora:
+  - `just version` — stampa la versione corrente tramite bump-my-version
+  - `just release-dry <part>` — dry-run verbose completo (mostra diff dei file)
+  - `just release-dry <part> --short` — preview compatto (solo 3 righe essenziali)
+  - `just release-contracts` — valida i contratti architetturali del justfile, incluso in `verify`
 - **Branch Parity Rule — parity snapshot con Core v0.7.1:** Nessuna modifica al codice
   in questo repository (ecosistema Node/Docusaurus). Questa voce traccia l'allineamento
   con la release di allineamento infrastrutturale di Zenzic Core (fix della matrice

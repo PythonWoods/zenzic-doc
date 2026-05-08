@@ -13,6 +13,11 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 #### Added
 
+- **DX Release Recipes (Sprint DX):** All four ecosystem repositories now include:
+  - `just version` — prints current version from bump-my-version
+  - `just release-dry <part>` — full verbose dry-run (shows file diffs)
+  - `just release-dry <part> --short` — compact preview (3 essential lines only)
+  - `just release-contracts` — validates justfile architectural contracts, wired into `verify`
 - **Branch Parity Rule — snapshot parity with Core v0.7.1:** No code changes in this
   repository (Node/Docusaurus ecosystem). This entry tracks alignment with the Zenzic
   Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
