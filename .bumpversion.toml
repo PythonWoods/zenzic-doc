@@ -5,20 +5,20 @@ serialize = ["{major}.{minor}.{patch}"]
 
 [[tool.bumpversion.files]]
 filename = "package.json"
-search = '"name": "zenzic-temp-docs",\n  "version": "\\d+\\.\\d+\\.\\d+",'
-replace = '"name": "zenzic-temp-docs",\n  "version": "{new_version}",'
+search = '"name": "zenzic-docs",\n  "version": "\\d+\\.\\d+\\.\\d+",'
+replace = '"name": "zenzic-docs",\n  "version": "{new_version}",'
 regex = true
 
 [[tool.bumpversion.files]]
 filename = "package-lock.json"
-search = '"name": "zenzic-temp-docs",\n  "version": "\\d+\\.\\d+\\.\\d+",'
-replace = '"name": "zenzic-temp-docs",\n  "version": "{new_version}",'
+search = '"name": "zenzic-docs",\n  "version": "\\d+\\.\\d+\\.\\d+",'
+replace = '"name": "zenzic-docs",\n  "version": "{new_version}",'
 regex = true
 
 [[tool.bumpversion.files]]
 filename = "package-lock.json"
-search = '"": {\n      "name": "zenzic-temp-docs",\n      "version": "\\d+\\.\\d+\\.\\d+",'
-replace = '"": {\n      "name": "zenzic-temp-docs",\n      "version": "{new_version}",'
+search = '"": {\n      "name": "zenzic-docs",\n      "version": "\\d+\\.\\d+\\.\\d+",'
+replace = '"": {\n      "name": "zenzic-docs",\n      "version": "{new_version}",'
 regex = true
 
 [[tool.bumpversion.files]]
