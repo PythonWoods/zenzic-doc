@@ -51,7 +51,7 @@ lint *args:
     uvx pre-commit run {{args}}
 
 # Recommended final local check (4-Gates Standard: pre-commit + build + codes parity)
-verify: _check-hooks lint-all build verify-codes
+verify: _check-hooks release-contracts lint-all build verify-codes
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
@@ -133,4 +133,17 @@ _check-hooks:
         echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
         echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
         echo ""
+    fi
+
+# Enforce release contracts: dirty allowed only in release-dry.
+release-contracts:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    grep -qE '^version:' justfile
+    grep -qE '^release part:' justfile
+    grep -qE '^release-dry part:' justfile
+    grep -q -- '--dry-run --allow-dirty --verbose' justfile
+    if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
+        echo "release-contracts failed: release part must not use --allow-dirty"
+        exit 1
     fi
