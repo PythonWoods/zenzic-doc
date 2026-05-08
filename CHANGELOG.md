@@ -9,6 +9,17 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
+## [Unreleased]
+
+#### Added
+
+- **Branch Parity Rule — snapshot parity with Core v0.7.1:** No code changes in this
+  repository (Node/Docusaurus ecosystem). This entry tracks alignment with the Zenzic
+  Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
+  lowered to 3.10).
+
+---
+
 ## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)
 
 > **Authoritative source:** [zenzic.dev](https://zenzic.dev). This file is the

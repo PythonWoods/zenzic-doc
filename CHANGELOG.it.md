@@ -9,6 +9,17 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 ---
 
+## [Non Rilasciato]
+
+#### Aggiunto
+
+- **Branch Parity Rule — parity snapshot con Core v0.7.1:** Nessuna modifica al codice
+  in questo repository (ecosistema Node/Docusaurus). Questa voce traccia l'allineamento
+  con la release di allineamento infrastrutturale di Zenzic Core (fix della matrice
+  Boundary Testing, floor Mypy abbassato a 3.10).
+
+---
+
 ## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)
 
 > **Fonte autorevole:** [zenzic.dev](https://zenzic.dev). Questo file è la
