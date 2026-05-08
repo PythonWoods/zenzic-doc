@@ -74,7 +74,7 @@ check *args:
     )
     CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
     
-    if[ -d "$CORE_PATH" ]; then
+    if [ -d "$CORE_PATH" ]; then
         echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
         uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
     else
