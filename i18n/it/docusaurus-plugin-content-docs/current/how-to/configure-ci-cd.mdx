@@ -440,3 +440,30 @@ repos:
 Con questo hook, `git commit` si rifiuterà di procedere se Zenzic rileva una credenziale,
 un link rotto o qualsiasi finding di qualità con exit 1. Il feedback è istantaneo, la
 correzione è locale, e il segreto non tocca mai il remoto.
+
+---
+
+## Parity Doc-Code {#doc-code-parity}
+
+Ogni codice di finding Zxxx documentato in `docs/` deve avere un'entità registrata in
+`src/zenzic/core/codes.py` nel pacchetto core — e viceversa. Questo invariante
+bidirezionale è applicato dalla sessione Nox `verify-codes-parity`:
+
+```bash
+# Esecuzione autonoma
+nox -s verify-codes-parity
+
+# Esegue automaticamente come parte del gate locale completo
+just verify
+```
+
+La sessione usa la **Graceful Degradation** per localizzare `codes.py`:
+
+| Condizione | Strategia | Comando usato |
+|:-----------|:---------|:--------------|
+| `ZENZIC_PROJECT_PATH` impostato, o `../zenzic` esiste | **Core Maintainer** — usa il source tree locale | `uv run --project <percorso> python -c ...` |
+| Core locale non trovato | **External Contributor** — usa il rilascio PyPI pubblicato | `uv run --with zenzic python -c ...` |
+
+Questo significa che i contributori esterni possono eseguire `nox -s verify-codes-parity`
+senza un checkout locale del repository core — il pacchetto `zenzic` pubblicato su
+PyPI è sufficiente.

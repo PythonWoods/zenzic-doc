@@ -18,6 +18,19 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
   lowered to 3.10).
 
+#### Changed
+
+- **`noxfile.py` refactoring — pipeline unification:** Removed `preflight` nox session
+  (duplicated `just verify`; used bare `uvx zenzic` without version pin). Renamed
+  `verify-docs` session to `verify-codes-parity`.
+- **`verify-codes-parity` — Graceful Degradation:** Step 1 now uses
+  `ZENZIC_PROJECT_PATH` for Core Maintainers (local source via `uv run --project`)
+  and falls back to `uv run --with zenzic` for External Contributors (published PyPI
+  release). Eliminates hardcoded sibling path and `importlib.util` hack.
+- **`justfile` update:** Added `verify-codes` recipe (`uvx nox -s verify-codes-parity`).
+  Updated `verify` target: `lint-all typecheck build verify-codes` (codes parity is
+  now Gate 4 of the standard pipeline).
+
 ---
 
 ## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)

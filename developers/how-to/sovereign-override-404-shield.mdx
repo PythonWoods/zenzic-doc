@@ -76,6 +76,6 @@ If one layer drops the variable, the shield breaks.
 ## Verification Checklist
 
 - `just verify` passes locally with the intended exclusions.
-- `just preflight` passes (ensures pre-commit path also honors the variable).
+- `just lint-all` passes (ensures pre-commit path also honors the variable).
 - CI env includes only the minimum `--exclude-url` entries required.
 - Follow-up issue/PR exists to remove temporary exclusions post-launch.

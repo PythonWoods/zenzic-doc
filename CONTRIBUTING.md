@@ -217,11 +217,10 @@ For full architecture and lifecycle policy, see
 Run the full local gate:
 
 ```bash
-just verify        # markdownlint + lint:ts + typecheck + build
-just preflight     # all pre-commit hooks (mirrors the CI gate exactly)
+just verify        # all pre-commit hooks + typecheck + build + codes parity (full local gate)
 ```
 
-Both must pass with zero errors before you open or update a PR.
+This must pass with zero errors before you open or update a PR.
 
 ### Pre-commit hooks
 

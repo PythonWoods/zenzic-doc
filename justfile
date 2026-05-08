@@ -1,12 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Obsidian Enterprise workflow for zenzic-doc
-set shell := ["bash", "-c"]
-# ZRT-010 — Unified Registry: zenzic is resolved from PyPI via uvx, mirroring CI exactly.
-# Override for local dev against a monorepo checkout:
-#   ZENZIC_CORE_REF=/path/to/local/zenzic just check
-core_ref := env_var_or_default("ZENZIC_CORE_REF", "zenzic==v0.7.0")
+# just - Quartz Enterprise workflow for zenzic-doc
+set shell :=["bash", "-c"]
 
 # Use `just --list` to see available commands
 
@@ -20,7 +16,7 @@ setup:
 clean:
     rm -rf build .docusaurus
 
-# Deep clean: remove artifacts and node_modules (preserves package-lock.json for reproducible npm ci)
+# Deep clean: remove artifacts and node_modules
 clean-all: clean
     rm -rf node_modules
 
@@ -33,11 +29,10 @@ purge-cache:
 # --- DEVELOPMENT ---
 
 # Start local development server (single-locale; locale dropdown inactive in dev mode)
-# Use 'just preview' to test the locale switcher in a full production environment
 start:
     npm run start
 
-# Start local development server in Italian (single-locale dev mode)
+# Start local development server in Italian
 start-it:
     npm run start:it
 
@@ -45,29 +40,31 @@ start-it:
 serve:
     npm run serve
 
-# Build then serve production site locally (full EN+IT testbed — recommended for locale switcher testing)
+# Build then serve production site locally (full EN+IT testbed)
 preview: build
     npm run serve
 
 # --- QUALITY GATES ---
 
-# Build production static site — Sentinel Gate: Zenzic must pass before Docusaurus builds
-build: sentinel
-    npm run build
+# Fast local checks (pre-commit on staged files)
+lint *args:
+    uvx pre-commit run {{args}}
 
-# Run the Zenzic Sentinel quality check only (faster than full preflight).
-# ZRT-010: delegates to 'just check' — single source of truth for the guard.
-# Pass extra flags directly: just sentinel --no-external
-sentinel *args:
-    just check {{args}}
+# Recommended final local check (4-Gates Standard: pre-commit + typecheck + build + codes parity)
+verify: lint-all typecheck build verify-codes
 
-# Run all pre-commit hooks against every tracked file (mirrors CI gate exactly)
-preflight:
+# Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
+verify-codes:
+    uvx nox -s verify-codes-parity
+
+# --- INTERNAL RECIPES (Hidden from 'just --list') ---
+
+lint-all:
     uvx pre-commit run --all-files
 
-# Explicit Zenzic audit gate (ZRT-010 — Sovereign Parity).
-# Pre-Launch Guard is inlined: local == CI. No env var required.
-# Pass extra flags directly: just check --no-external
+build: check
+    npm run build
+
 check *args:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -75,42 +72,31 @@ check *args:
     GUARD=(
       --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
     )
-    uvx --from "{{core_ref}}" zenzic check all --strict "${GUARD[@]}" {{args}}
-
-# Static type check
+    CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
+    
+    if[ -d "$CORE_PATH" ]; then
+        echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
+    else
+        echo "🛡️  [Zenzic Sentinel] Local core not found. Using published PyPI release..."
+        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" {{args}}
+    fi
 typecheck:
     npm run typecheck
 
-# Lint TypeScript/React source files (excluding intentional landing monolith)
-lint:
+lint-ts:
     npm run lint:ts
 
-# Lint Markdown and MDX files
 markdownlint:
     npm run lint:md
 
-# Test suite (docs integration checks via nox)
-test:
-    uvx nox -s tests
-
-# Enterprise local gate (4-Gates Standard)
-verify: check preflight test
-
-# --- PROJECT ADMIN ---
-
-# Check REUSE/SPDX licence compliance
 reuse:
     uvx reuse lint
 
-# Bump all hardcoded Zenzic version references
-# Usage:  just bump 0.6.3
-#         just bump 0.6.3 'v0.6.3 "Obsidian Flux" Stable'
 bump version badge='':
     @bash scripts/bump-version.sh "{{version}}" "{{badge}}"
 
-# Check developer environment health (node, npm, uv, zenzic)
 doctor:
     @node -v || echo "node missing"
     @npm -v || echo "npm missing"
     @uv --version || echo "uv missing"
-    @uvx zenzic --version 2>/dev/null || echo "zenzic not cached (first run: uvx zenzic --version)"

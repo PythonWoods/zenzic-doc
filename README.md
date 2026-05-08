@@ -144,8 +144,8 @@ What `just verify` does:
 | `just typecheck` | Before opening/updating PR | Runs TypeScript checks |
 | `just build` | Build validation | Runs production build |
 | `just preview` | Validate built output | Serves already-built site |
-| `just verify` | Recommended final local check | Runs `markdownlint` + `lint` + `typecheck` + `build` |
-| `just preflight` | Before every commit | Runs all pre-commit hooks against every tracked file |
+| `just verify` | Recommended final local check (full gate) | Runs all pre-commit hooks + `typecheck` + `build` + codes parity |
+| `just lint-all` | Before every commit | Runs all pre-commit hooks against every tracked file |
 | `just reuse` | After adding/renaming files | Checks REUSE/SPDX licence compliance |
 | `just sentinel` | Quick quality spot-check | Runs the Zenzic Sentinel alone (faster than full preflight) |
 | `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
@@ -187,7 +187,7 @@ If a hook fails, fix the reported issue and retry the commit.
 To run all hooks manually without committing:
 
 ```bash
-just preflight
+just lint-all
 ```
 
 ## 7) CI/CD workflows
