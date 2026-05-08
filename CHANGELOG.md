@@ -25,8 +25,10 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   Ecosystem”. Added three new sections: “The Ecosystem at a Glance” (Core / Structum /
   Zenzic-Doc role table), “zenzic-doc — Living Test Bench” (self-dogfooding, Graceful
   Degradation, `verify-codes-parity`), and “The 4-Gates Standard” (IDE / Pre-commit /
-  Pre-push / Remote CI). EN + IT updated atomically.
-
+  Pre-push / Remote CI). EN + IT updated atomically.- **`Z907 I18N_PARITY` — finding-codes.mdx encyclopedia entry (Sprint D102):** Added
+  dedicated `{#z907}` section to `finding-codes.mdx` (EN + IT) documenting the I18n
+  Parity check: mirror-presence and frontmatter-parity invariants. Resolves
+  `verify-codes-parity` MISSING error for Z907. Bilingual symmetry restored.
 #### Changed
 
 - **`noxfile.py` refactoring — pipeline unification:** Removed `preflight` nox session
@@ -39,6 +41,18 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 - **`justfile` update:** Added `verify-codes` recipe (`uvx nox -s verify-codes-parity`).
   Updated `verify` target: `lint-all typecheck build verify-codes` (codes parity is
   now Gate 4 of the standard pipeline).
+- **`_check-hooks` — DX Polish (Sprint D102):** Updated warning copy: ANSI yellow colour,
+  explanatory “why it matters” line, and `uvx pre-commit install -t pre-push` (zero global
+  install required). Applied across all four ecosystem repositories.
+- **Double Execution eliminated — `just verify` pipeline (Sprint D102):** Removed redundant
+  `typecheck` from `verify` chain (already runs inside `lint-all`/pre-commit). Removed
+  `check` dependency from `build` recipe (Zenzic Sentinel already runs inside
+  `lint-all`/pre-commit). `verify` chain: `_check-hooks lint-all build verify-codes`.
+- **`finding-codes.mdx` — Legacy section purged (Sprint D102):** `## Legacy Codes
+  [Deprecated]` section (Z001/Z002/Z009 pre-v0.6.0 codes) removed. Z000 promoted to
+  canonical code in `codes.py`. `## Integration with CI/CD` promoted from H3 to H2.
+- **`docs/reference/checks.mdx` — canonical code modernization (Sprint D102):**
+  Legacy references updated: `Z001`→`Z101`, `Z002`→`Z103`, `Z009`→`Z902`.
 
 ---
 

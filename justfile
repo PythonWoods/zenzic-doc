@@ -50,8 +50,8 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (4-Gates Standard: pre-commit + typecheck + build + codes parity)
-verify: _check-hooks lint-all typecheck build verify-codes
+# Recommended final local check (4-Gates Standard: pre-commit + build + codes parity)
+verify: _check-hooks lint-all build verify-codes
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
@@ -62,7 +62,7 @@ verify-codes:
 lint-all:
     uvx pre-commit run --all-files
 
-build: check
+build:
     npm run build
 
 check *args:
@@ -73,7 +73,7 @@ check *args:
       --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
     )
     CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
-    
+
     if [ -d "$CORE_PATH" ]; then
         echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
         uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
@@ -104,6 +104,8 @@ doctor:
 _check-hooks:
     #!/usr/bin/env bash
     if [ ! -f .git/hooks/pre-push ]; then
-        echo "⚠️  WARNING: Pre-push hook not installed — commits are unprotected before push."
-        echo "👉 Run: pre-commit install -t pre-push"
+        echo -e "\033[33m⚠️  WARNING: Pre-push hook is not installed.\033[0m"
+        echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
+        echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
+        echo ""
     fi

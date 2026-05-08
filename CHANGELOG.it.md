@@ -26,6 +26,10 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
   Structum / Zenzic-Doc), "zenzic-doc — Banco di Prova Vivente" (self-dogfooding, Graceful
   Degradation, `verify-codes-parity`), "Lo Standard a 4 Cancelli" (IDE / Pre-commit /
   Pre-push / CI Remota). EN + IT aggiornati atomicamente.
+- **`Z907 I18N_PARITY` — voce enciclopedia finding-codes.mdx (Sprint D102):** Aggiunta
+  sezione `{#z907}` dedicata a `finding-codes.mdx` (EN + IT) che documenta il controllo
+  di Parità I18n: invariante di presenza del mirror e invariante di parità frontmatter.
+  Risolve l’errore MISSING di `verify-codes-parity` per Z907. Simmetria bilingue ripristinata.
 
 #### Modificato
 
@@ -40,6 +44,18 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
   (`uvx nox -s verify-codes-parity`). Aggiornato il target `verify`:
   `lint-all typecheck build verify-codes` (la parity dei codici è ora Gate 4
   della pipeline standard).
+- **`_check-hooks` — DX Polish (Sprint D102):** Aggiornato il copy del warning: colore
+  ANSI giallo, riga esplicativa del “perché conta” e `uvx pre-commit install -t pre-push`
+  (zero installazioni globali richieste). Applicato in tutti e quattro i repository.
+- **Doppia Esecuzione eliminata — pipeline `just verify` (Sprint D102):** Rimosso
+  `typecheck` ridondante dalla catena `verify` (gira già in `lint-all`/pre-commit).
+  Rimossa la dipendenza `check` dalla recipe `build` (Zenzic Sentinel gira già in
+  `lint-all`/pre-commit). Catena `verify`: `_check-hooks lint-all build verify-codes`.
+- **`finding-codes.mdx` — sezione Legacy rimossa (Sprint D102):** Sezione `## Codici
+  Legacy [Deprecati]` (codici pre-v0.6.0 Z001/Z002/Z009) rimossa. Z000 promosso a
+  codice canonico in `codes.py`. `## Integrazione con CI/CD` promossa da H3 a H2.
+- **`docs/reference/checks.mdx` — modernizzazione codici canonici (Sprint D102):**
+  Riferimenti legacy aggiornati: `Z001`→`Z101`, `Z002`→`Z103`, `Z009`→`Z902`.
 
 ---
 
