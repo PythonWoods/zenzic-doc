@@ -117,9 +117,18 @@ version:
     @uvx --from "bump-my-version==1.2.6" bump-my-version show current_version
 
 # Simulate a release bump without modifying any files
-# Usage: just release-dry patch|minor|major
-release-dry part:
-    uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose
+# Usage: just release-dry patch|minor|major [--short]
+release-dry part *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    _short=false
+    for _arg in {{args}}; do [[ "$_arg" == "--short" ]] && _short=true; done
+    if $_short; then
+        uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose 2>&1 \
+            | grep -E 'current version|New version will be|Dry run'
+    else
+        uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose
+    fi
 
 doctor:
     @node -v || echo "node missing"
@@ -141,7 +150,7 @@ release-contracts:
     set -euo pipefail
     grep -qE '^version:' justfile
     grep -qE '^release part:' justfile
-    grep -qE '^release-dry part:' justfile
+    grep -qE '^release-dry part' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
         echo "release-contracts failed: release part must not use --allow-dirty"
