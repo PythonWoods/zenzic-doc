@@ -16,12 +16,6 @@ replace = '"name": "zenzic-docs",\n  "version": "{new_version}"'
 regex = true
 
 [[tool.bumpversion.files]]
-filename = "package-lock.json"
-search = '"":\s*\{\s*"name":\s*"zenzic-docs",\s*"version":\s*"\d+\.\d+\.\d+"'
-replace = '"": {\n      "name": "zenzic-docs",\n      "version": "{new_version}"'
-regex = true
-
-[[tool.bumpversion.files]]
 filename = "docusaurus.config.ts"
 search = "'{current_version}'"
 replace = "'{new_version}'"
