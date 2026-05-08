@@ -13,24 +13,22 @@ replace = '''
   "version": "{new_version}",'''
 
 [[tool.bumpversion.files]]
-filename = "package-lock.json"
-search = '''
-  "name": "zenzic-doc",
-  "version": "{current_version}",'''
-replace = '''
-  "name": "zenzic-doc",
-  "version": "{new_version}",'''
+filename = "package.json"
+search = '"name":\s*"zenzic-doc",\s*"version":\s*"{current_version}"'
+replace = '"name": "zenzic-doc",\n  "version": "{new_version}"'
+regex = true
 
 [[tool.bumpversion.files]]
 filename = "package-lock.json"
-search = '''
-    "": {
-      "name": "zenzic-doc",
-      "version": "{current_version}",'''
-replace = '''
-    "": {
-      "name": "zenzic-doc",
-      "version": "{new_version}",'''
+search = '"name":\s*"zenzic-doc",\s*"version":\s*"{current_version}"'
+replace = '"name": "zenzic-doc",\n  "version": "{new_version}"'
+regex = true
+
+[[tool.bumpversion.files]]
+filename = "package-lock.json"
+search = '"":\s*\{\s*"name":\s*"zenzic-doc",\s*"version":\s*"{current_version}"'
+replace = '"": {\n      "name": "zenzic-doc",\n      "version": "{new_version}"'
+regex = true
 
 [[tool.bumpversion.files]]
 filename = "docusaurus.config.ts"
