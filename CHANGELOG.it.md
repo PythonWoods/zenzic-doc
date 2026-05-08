@@ -17,6 +17,15 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
   in questo repository (ecosistema Node/Docusaurus). Questa voce traccia l'allineamento
   con la release di allineamento infrastrutturale di Zenzic Core (fix della matrice
   Boundary Testing, floor Mypy abbassato a 3.10).
+- **DX guard `_check-hooks`:** Aggiunta recipe nascosta `_check-hooks` come prima dipendenza
+  di `just verify` in tutti e quattro i repository dell'ecosistema. Emette un avviso se
+  l'hook Final Guard pre-push (`pre-commit install -t pre-push`) non è installato
+  localmente, senza bloccare l'esecuzione della verifica.
+- **`ecosystem.mdx` — Trasparenza Ecosistema (Sprint D101):** Pagina rinominata "L'Ecosistema
+  Zenzic". Aggiunte tre nuove sezioni: "L'Ecosistema in Sintesi" (tabella dei ruoli Core /
+  Structum / Zenzic-Doc), "zenzic-doc — Banco di Prova Vivente" (self-dogfooding, Graceful
+  Degradation, `verify-codes-parity`), "Lo Standard a 4 Cancelli" (IDE / Pre-commit /
+  Pre-push / CI Remota). EN + IT aggiornati atomicamente.
 
 #### Modificato
 

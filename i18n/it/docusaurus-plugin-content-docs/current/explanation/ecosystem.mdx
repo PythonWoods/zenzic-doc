@@ -1,11 +1,23 @@
 ---
 sidebar_position: 1
-sidebar_label: "Modello Adapter"
-title: Il Modello Adapter
-description: Come Zenzic comprende qualsiasi motore di documentazione senza farne parte — il protocollo Adapter e la strategia CLI Sovrana.
+sidebar_label: "Ecosistema Zenzic"
+title: L'Ecosistema Zenzic
+description: Zenzic Core, Structum e zenzic-doc — l'architettura dell'ecosistema, il protocollo Adapter e lo Standard a 4 Cancelli per la qualità della documentazione.
 ---
 
-# Il Modello Adapter
+# L'Ecosistema Zenzic
+
+## L'Ecosistema in Sintesi {#ecosystem-at-a-glance}
+
+| Componente | Ruolo |
+| :--- | :--- |
+| **Zenzic Core** | Il linter puro, agnostico, Zero-Config. Un solo binario. Ogni motore di documentazione. |
+| **Structum** | Interfaccia MCP opzionale che fornisce contesto architetturale agli assistenti AI per la programmazione. |
+| **Zenzic-Doc** | Il banco di prova vivente — un sito Docusaurus auto-validante che testa ogni release di Zenzic su sé stesso. |
+
+Ogni componente è installabile indipendentemente e non ha dipendenze rigide dagli altri.
+
+---
 
 Zenzic opera come **revisore esterno sovrano**. Non si incorpora mai all'interno di un motore di build,
 non avvia mai sottoprocessi e non richiede mai extra di installazione specifici per il motore.
@@ -120,6 +132,45 @@ Zenzic viene eseguito **prima o dopo** la build — mai al suo interno. Questo g
 - Exit 2 per qualsiasi credenziale esposta (la shell si ferma immediatamente)
 - Exit 3 per qualsiasi link path-traversal (non sopprimibile)
 - Risultati engine-agnostici: lo stesso comando `zenzic check all` funziona per ogni motore
+
+---
+
+## zenzic-doc — Banco di Prova Vivente {#living-test-bench}
+
+Il sito di documentazione Zenzic (`zenzic-doc`) non è un artefatto passivo — è un
+partecipante attivo nella pipeline di qualità. Ogni commit esegue `zenzic check all --strict`
+contro sé stesso prima di poter essere inviato (Sovereign Parity, ZRT-010).
+
+Oltre all'audit standard di Zenzic, `zenzic-doc` impone un secondo invariante unico al suo
+ruolo di documentazione di un linter: ogni codice di finding Zxxx presente in `docs/` deve
+avere un'entità registrata in `src/zenzic/core/codes.py` nel pacchetto Core — e viceversa.
+Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parity` tramite
+**Graceful Degradation**:
+
+- **Core Maintainer**: `ZENZIC_PROJECT_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
+- **External Contributor**: core locale assente → `uv run --with zenzic` sulla release PyPI pubblicata.
+
+Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori
+esteri non hanno bisogno di un checkout locale di Zenzic Core.
+
+---
+
+## Lo Standard a 4 Cancelli {#4-gates-standard}
+
+Ogni repository dell'ecosistema Zenzic impone la qualità in quattro checkpoint progressivi:
+
+| Cancello | Trigger | Strumento | Cosa rileva |
+| :--- | :--- | :--- | :--- |
+| **Cancello 1 — IDE** | In tempo reale, al salvataggio | Estensioni editor (Pylance, ESLint) | Errori di tipo, problemi sintattici |
+| **Cancello 2 — Pre-commit** | `git commit` | Hook `pre-commit` | Lint, credenziali, formattazione, REUSE |
+| **Cancello 3 — Pre-push** | `git push` | `just verify` (via `pre-commit -t pre-push`) | Suite di validazione completa identica alla CI |
+| **Cancello 4 — CI Remota** | Pull Request / push | GitHub Actions | `just verify` identico su un runner Ubuntu pulito |
+
+I Cancelli 3 e 4 eseguono lo **stesso comando** (`just verify`) — locale e remoto non possono
+mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
+
+> Per la configurazione operativa (installazione hook, YAML del workflow), vedi la
+> [guida CI/CD Integration](../how-to/configure-ci-cd#doc-code-parity).
 
 ---
 

@@ -51,7 +51,7 @@ lint *args:
     uvx pre-commit run {{args}}
 
 # Recommended final local check (4-Gates Standard: pre-commit + typecheck + build + codes parity)
-verify: lint-all typecheck build verify-codes
+verify: _check-hooks lint-all typecheck build verify-codes
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
@@ -100,3 +100,10 @@ doctor:
     @node -v || echo "node missing"
     @npm -v || echo "npm missing"
     @uv --version || echo "uv missing"
+
+_check-hooks:
+    #!/usr/bin/env bash
+    if [ ! -f .git/hooks/pre-push ]; then
+        echo "⚠️  WARNING: Pre-push hook not installed — commits are unprotected before push."
+        echo "👉 Run: pre-commit install -t pre-push"
+    fi

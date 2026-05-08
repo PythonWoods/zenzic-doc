@@ -17,6 +17,15 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   repository (Node/Docusaurus ecosystem). This entry tracks alignment with the Zenzic
   Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
   lowered to 3.10).
+- **`_check-hooks` DX guard:** Added hidden `_check-hooks` recipe as first dependency of
+  `just verify` across all four ecosystem repositories. Emits a warning if the pre-push
+  Final Guard hook (`pre-commit install -t pre-push`) is not installed locally, without
+  blocking the verification run.
+- **`ecosystem.mdx` — Ecosystem Transparency (Sprint D101):** Page retitled “The Zenzic
+  Ecosystem”. Added three new sections: “The Ecosystem at a Glance” (Core / Structum /
+  Zenzic-Doc role table), “zenzic-doc — Living Test Bench” (self-dogfooding, Graceful
+  Degradation, `verify-codes-parity`), and “The 4-Gates Standard” (IDE / Pre-commit /
+  Pre-push / Remote CI). EN + IT updated atomically.
 
 #### Changed
 
