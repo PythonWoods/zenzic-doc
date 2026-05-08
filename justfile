@@ -93,8 +93,24 @@ markdownlint:
 reuse:
     uvx reuse lint
 
-bump version badge='':
-    @bash scripts/bump-version.sh "{{version}}" "{{badge}}"
+# Release orchestration: explicit, transparent, and lockfile-first.
+release part:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "{{ part }}" in
+        patch|minor|major) ;;
+        *) echo "Invalid part '{{ part }}'. Use patch|minor|major"; exit 2 ;;
+    esac
+    uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
+    npm ci
+    version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
+    if git rev-parse "v${version}" >/dev/null 2>&1; then
+        echo "Tag v${version} already exists. Aborting."
+        exit 3
+    fi
+    git add -u
+    git commit -m "release: bump version to ${version}"
+    git tag -a "v${version}" -m "Release v${version}"
 
 doctor:
     @node -v || echo "node missing"
