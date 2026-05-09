@@ -54,9 +54,9 @@ Each route carries a status that tells Zenzic how to treat links pointing to it:
 | Status | Meaning | Link result |
 | :--- | :--- | :--- |
 | `REACHABLE` | Page is listed in navigation or is a locale route | Valid |
-| `ORPHAN_BUT_EXISTING` | File exists on disk but is not in site navigation | Z002 warning |
-| `IGNORED` | Excluded by configuration (e.g. README files, private directories) | Z001 error |
-| `CONFLICT` | Two source files produce the same canonical URL | Z001 error |
+| `ORPHAN_BUT_EXISTING` | File exists on disk but is not in site navigation | Z103 warning |
+| `IGNORED` | Excluded by configuration (e.g. README files, private directories) | Z101 error |
+| `CONFLICT` | Two source files produce the same canonical URL | Z101 error |
 
 **Why this matters:** A file can exist on your filesystem and still be `IGNORED` in the VSM. A URL can be `REACHABLE` in the VSM without having a corresponding file on disk (for example, locale index routes). The VSM is the authority — Zenzic checks reachability, not just file existence.
 
@@ -98,11 +98,11 @@ validate_same_page_anchors = true
 
 | Code | Severity | Meaning |
 | :--- | :---: | :--- |
-| `Z001` | error | **Broken link** — target does not exist in the VSM |
-| `Z002` | warning | **Orphan link** — target exists on disk but not in site navigation |
+| `Z101` | error | **Broken link** — target does not exist in the VSM |
+| `Z103` | warning | **Orphan link** — target exists on disk but not in site navigation |
 | `ABSOLUTE_PATH` | error | **Absolute path** — link uses a site-absolute path (`/docs/page`) instead of a relative path (`../page`) |
 
-`Z001` always blocks the pipeline (exit code 1). `Z002` is a warning — it appears in the report but does not fail CI unless `--strict` is passed. `ABSOLUTE_PATH` is an error because absolute paths break portability when a site is hosted in a subdirectory.
+`Z101` always blocks the pipeline (exit code 1). `Z103` is a warning — it appears in the report but does not fail CI unless `--strict` is passed. `ABSOLUTE_PATH` is an error because absolute paths break portability when a site is hosted in a subdirectory.
 
 :::note[Physical Consistency — why relative paths matter]
 
@@ -158,7 +158,7 @@ The two streams have opposite filtering rules by design. The Content stream must
 
 **Pre-Scan Normalizer.** Before running detection patterns, the Shield normalises each line to defeat obfuscation. Inline code backticks are unwrapped, concatenation operators are removed, and table pipe characters are collapsed. This means a secret broken across Markdown table columns — such as an AWS key split into `` `AKIA` + `suffix` `` — is reassembled before scanning. Both the raw and normalised forms are checked, and a deduplication set prevents double-reporting.
 
-**ReDoS Protection.** If you add custom regex patterns via `[[custom_rules]]` in `zenzic.toml`, Zenzic stress-tests each pattern with a 100 ms canary before it ever runs against your files. Patterns that exhibit catastrophic backtracking are rejected at startup with a clear error. As a second safety net, every worker process has a 30-second timeout — if a pattern still manages to hang at runtime, the affected file receives a `Z009: ANALYSIS_TIMEOUT` finding instead of blocking your CI pipeline indefinitely.
+**ReDoS Protection.** If you add custom regex patterns via `[[custom_rules]]` in `zenzic.toml`, Zenzic stress-tests each pattern with a 100 ms canary before it ever runs against your files. Patterns that exhibit catastrophic backtracking are rejected at startup with a clear error. As a second safety net, every worker process has a 30-second timeout — if a pattern still manages to hang at runtime, the affected file receives a `Z902: RULE_TIMEOUT` finding instead of blocking your CI pipeline indefinitely.
 
 ### Circular links
 

@@ -8,7 +8,7 @@
 
 # Guida per Sviluppatori zenzic-doc
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.0-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.1-4f46e5)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
@@ -16,7 +16,7 @@
 [![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/it/developers/explanation/adr-vault)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
-> **Questa documentazione è strettamente allineata a Zenzic v0.7.0 "Quarzo".**
+> **Questa documentazione è strettamente allineata a Zenzic v0.7.1 "Quarzo".**
 > Se la versione del core cambia, esegui `just bump NEW_VERSION` per mantenere
 > sincronizzati tutti i riferimenti.
 
@@ -151,8 +151,8 @@ Cosa fa `just verify`:
 | `just typecheck` | Prima di aprire/aggiornare la PR | Esegue i controlli TypeScript |
 | `just build` | Validazione build | Esegue la build di produzione |
 | `just preview` | Valida l'output costruito | Serve il sito già buildato |
-| `just verify` | Controllo locale finale raccomandato | Esegue `markdownlint` + `lint` + `typecheck` + `build` |
-| `just preflight` | Prima di ogni commit | Esegue tutti gli hook pre-commit su ogni file tracciato |
+| `just verify` | Controllo locale finale raccomandato (gate completo) | Esegue tutti gli hook pre-commit + `typecheck` + `build` + parity dei codici |
+| `just lint-all` | Prima di ogni commit | Esegue tutti gli hook pre-commit su ogni file tracciato |
 | `just reuse` | Dopo aver aggiunto/rinominato file | Verifica la conformità della licenza REUSE/SPDX |
 | `just sentinel` | Spot-check rapido qualità | Esegue solo la Zenzic Sentinel (più veloce di un preflight completo) |
 | `just clean` | Pulizia prima di un'esecuzione fresca | Rimuove `build/` e `.docusaurus/` |
@@ -194,7 +194,7 @@ Se un hook fallisce, correggi il problema segnalato e ritenta il commit.
 Per eseguire tutti gli hook manualmente senza committare:
 
 ```bash
-just preflight
+just lint-all
 ```
 
 ## 7) Workflow CI/CD
@@ -341,7 +341,7 @@ i18n: {
 },
 ```
 
-**Scoperto in:** v0.7.0 release audit (D090 "Il Lockdown i18n").
+**Scoperto in:** v0.7.1 release audit (D090 "Il Lockdown i18n").
 
 ## 11) Checklist Pull Request
 

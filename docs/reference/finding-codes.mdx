@@ -662,6 +662,24 @@ Z906 is an informational diagnostic. It does not fail the workflow step and is s
 
 ---
 
+### Z907: I18N_PARITY {#z907}
+
+:::info[Quality Score — Not included]
+Z907 is a **bilingual integrity check**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Resolve it to ensure your translated content is complete and consistent.
+:::
+
+* **Severity:** `warning`
+* **Technical Context:** Emitted by the I18n Parity module when the translation mirror of a base-language documentation file is missing, or when the frontmatter of a translated file diverges from the canonical base-language version. Two specific invariants are enforced:
+    1. **Mirror presence:** Every `.md` / `.mdx` file in the base `docs/` tree must have a counterpart in every configured `i18n/<locale>/` directory. A missing mirror means a locale serves the untranslated fallback silently.
+    2. **Frontmatter parity:** The translated file’s frontmatter (at minimum `sidebar_position`, `sidebar_label`, `title`) must be structurally consistent with the base file. A stale or missing key means the locale sidebar renders incorrectly.
+* **Remediation Steps:**
+    1. Create the missing translation file at the corresponding path under `i18n/<locale>/docusaurus-plugin-content-docs/current/`.
+    2. Copy the base-language frontmatter block and translate the values — do not add or remove keys relative to the base.
+    3. Run `zenzic check all` again to confirm parity is restored.
+    4. For intentional asymmetry (e.g. a locale-only page or a draft not yet translated), suppress with `{/* zenzic:ignore Z907 */}` on the frontmatter block or add the file pattern to `i18n_exclude_patterns` in `zenzic.toml`.
+
+---
+
 ### Suppressing Diagnostics
 
 Zenzic supports **line-level, per-code suppression** via inline comments. Add a `zenzic:ignore` comment at the end of any line to silence a specific diagnostic for that line only.
@@ -702,30 +720,7 @@ Suppression is for intentional, documented decisions — not for silencing findi
 
 ---
 
-## Legacy Codes \[Deprecated\] {#legacy-codes}
-
-The following codes appeared in Zenzic output prior to **v0.6.0**. They are formally
-**deprecated** and are never emitted by current Zenzic output. Zenzic's internal `normalize()`
-function silently maps them to their canonical equivalents so that legacy CI log parsers continue
-to work during the transition period.
-
-| Legacy Code | Status | Canonical Replacement | Context |
-| :---: | :---: | :--- | :--- |
-| `Z001` | **\[DEPRECATED\]** | [`Z101` LINK\_BROKEN](#z101) | Emitted by `VSMBrokenLinkRule` pre-v0.6.0 |
-| `Z002` | **\[DEPRECATED\]** | [`Z103` ORPHAN\_LINK](#z103) | Emitted by `VSMBrokenLinkRule` pre-v0.6.0 |
-| `Z009` | **\[DEPRECATED\]** | [`Z902` RULE\_TIMEOUT](#z902) | Emitted by the rule engine pre-v0.6.0 |
-
-:::note[Z000 — Fatal configuration guard, not a finding]
-`Z000` is **not a finding code** emitted during analysis. It is a fatal configuration guard
-raised as a `ConfigurationError` *before* any analysis begins when an unsupported engine name is
-detected (for example, the permanently removed `"vanilla"` engine). It has no canonical finding
-replacement and will never appear in a SARIF or JSON report.
-:::
-
-If you encounter `Z001`, `Z002`, or `Z009` in your CI logs, update your Zenzic installation
-to **v0.7.0 (Quartz Maturity) or later**. These legacy codes will be removed entirely in the next major version.
-
-### Integration with CI/CD
+## Integration with CI/CD {#cicd-integration}
 
 For maximum effectiveness, integrate Zenzic checks into your CI/CD pipeline:
 

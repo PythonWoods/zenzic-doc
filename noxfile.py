@@ -6,11 +6,10 @@ Sessions delegate to npm scripts for Node-based tasks and use uvx for
 Python-based tooling (REUSE compliance).
 
 Quick reference:
-    nox -s typecheck      — Static type checking (tsc)
-    nox -s build          — Production build (EN + IT)
-    nox -s reuse          — REUSE/SPDX licence compliance
-    nox -s verify-docs    — Doc-Code Validator: Zxxx parity between .mdx and codes.py
-    nox -s preflight      — Full CI-equivalent pipeline (includes Zenzic quality gate)
+    nox -s typecheck            — Static type checking (tsc)
+    nox -s build                — Production build (EN + IT)
+    nox -s reuse                — REUSE/SPDX licence compliance
+    nox -s verify-codes-parity  — Doc-Code Validator: Zxxx parity between .mdx and codes.py
 """
 
 import nox
@@ -46,58 +45,48 @@ def reuse(session: nox.Session) -> None:
     session.run("uvx", "reuse", "lint", external=True)
 
 
-@nox.session(venv_backend="none")
-def preflight(session: nox.Session) -> None:
-    """Full CI-equivalent pipeline: typecheck → build → reuse → zenzic."""
-    session.run("npm", "run", "typecheck", external=True)
-    session.run("npm", "run", "build", external=True)
-    session.run("uvx", "reuse", "lint", external=True)
-    session.run("uvx", "zenzic", "check", "all", "--strict", external=True)
-
-
-@nox.session(name="verify-docs", venv_backend="none")
-def verify_docs(session: nox.Session) -> None:
+@nox.session(name="verify-codes-parity", venv_backend="none")
+def verify_codes_parity(session: nox.Session) -> None:
     """Doc-Code Validator: verify every Zxxx code in .mdx files exists in codes.py.
 
     Scans all .mdx files under docs/ and i18n/ for Zxxx patterns and cross-checks
     them against the canonical CODE_NAMES registry in the core package. Exits non-zero
     if any undocumented code is found in the docs, or any registered code is absent
     from finding-codes.mdx — ensuring documentation and code stay in perfect parity.
+
+    Graceful Degradation:
+      - Core Maintainer: ZENZIC_PROJECT_PATH set (or ../zenzic exists) → uses local source.
+      - External Contributor: local core not found → uses published PyPI release.
     """
+    import os
     import re
     import subprocess
-    import sys
     from pathlib import Path
 
     root = Path(__file__).parent
 
-    # ── Step 1: Load canonical codes from the installed core package ──────────
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            (
-                "import sys; sys.path.insert(0, 'src'); "
-                "from zenzic.core.codes import CODE_NAMES; "
-                "print('\\n'.join(sorted(CODE_NAMES.keys())))"
-            ),
-        ],
-        capture_output=True,
-        text=True,
+    # ── Step 1: Load canonical codes — Graceful Degradation ───────────────────
+    core_path = os.environ.get("ZENZIC_PROJECT_PATH", "../zenzic")
+    python_snippet = (
+        "from zenzic.core.codes import CODE_NAMES; "
+        "print('\\n'.join(sorted(CODE_NAMES.keys())))"
     )
-    if result.returncode != 0:
-        # Try uvx fallback — codes.py may live in a sibling repo
-        codes_path = root.parent / "zenzic" / "src" / "zenzic" / "core" / "codes.py"
-        if not codes_path.exists():
-            session.warn("codes.py not found — skipping core→doc direction check")
-            canonical: set[str] = set()
-        else:
-            import importlib.util
 
-            spec = importlib.util.spec_from_file_location("codes", codes_path)
-            mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
-            spec.loader.exec_module(mod)  # type: ignore[union-attr]
-            canonical = set(mod.CODE_NAMES.keys())
+    if os.path.exists(core_path):
+        # Core Maintainer: run against local source tree
+        session.log(f"[Zenzic] Local core detected at '{core_path}' — using local source.")
+        cmd = ["uv", "run", "--project", core_path, "python", "-c", python_snippet]
+    else:
+        # External Contributor: fall back to published PyPI release
+        session.log("[Zenzic] Local core not found — using published PyPI release.")
+        cmd = ["uv", "run", "--with", "zenzic", "python", "-c", python_snippet]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        session.warn(
+            f"Could not load codes.py: {result.stderr.strip()} — skipping core→doc direction check"
+        )
+        canonical: set[str] = set()
     else:
         canonical = set(result.stdout.strip().splitlines())
 

@@ -1,12 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Obsidian Enterprise workflow for zenzic-doc
-set shell := ["bash", "-c"]
-# ZRT-010 — Unified Registry: zenzic is resolved from PyPI via uvx, mirroring CI exactly.
-# Override for local dev against a monorepo checkout:
-#   ZENZIC_CORE_REF=/path/to/local/zenzic just check
-core_ref := env_var_or_default("ZENZIC_CORE_REF", "zenzic==v0.7.0")
+# just - Quartz Enterprise workflow for zenzic-doc
+set shell :=["bash", "-c"]
 
 # Use `just --list` to see available commands
 
@@ -20,7 +16,7 @@ setup:
 clean:
     rm -rf build .docusaurus
 
-# Deep clean: remove artifacts and node_modules (preserves package-lock.json for reproducible npm ci)
+# Deep clean: remove artifacts and node_modules
 clean-all: clean
     rm -rf node_modules
 
@@ -33,11 +29,10 @@ purge-cache:
 # --- DEVELOPMENT ---
 
 # Start local development server (single-locale; locale dropdown inactive in dev mode)
-# Use 'just preview' to test the locale switcher in a full production environment
 start:
     npm run start
 
-# Start local development server in Italian (single-locale dev mode)
+# Start local development server in Italian
 start-it:
     npm run start:it
 
@@ -45,29 +40,31 @@ start-it:
 serve:
     npm run serve
 
-# Build then serve production site locally (full EN+IT testbed — recommended for locale switcher testing)
+# Build then serve production site locally (full EN+IT testbed)
 preview: build
     npm run serve
 
 # --- QUALITY GATES ---
 
-# Build production static site — Sentinel Gate: Zenzic must pass before Docusaurus builds
-build: sentinel
-    npm run build
+# Fast local checks (pre-commit on staged files)
+lint *args:
+    uvx pre-commit run {{args}}
 
-# Run the Zenzic Sentinel quality check only (faster than full preflight).
-# ZRT-010: delegates to 'just check' — single source of truth for the guard.
-# Pass extra flags directly: just sentinel --no-external
-sentinel *args:
-    just check {{args}}
+# Recommended final local check (4-Gates Standard: pre-commit + build + codes parity)
+verify: _check-hooks release-contracts lint-all build verify-codes
 
-# Run all pre-commit hooks against every tracked file (mirrors CI gate exactly)
-preflight:
+# Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
+verify-codes:
+    uvx nox -s verify-codes-parity
+
+# --- INTERNAL RECIPES (Hidden from 'just --list') ---
+
+lint-all:
     uvx pre-commit run --all-files
 
-# Explicit Zenzic audit gate (ZRT-010 — Sovereign Parity).
-# Pre-Launch Guard is inlined: local == CI. No env var required.
-# Pass extra flags directly: just check --no-external
+build:
+    npm run build
+
 check *args:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -75,42 +72,87 @@ check *args:
     GUARD=(
       --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
     )
-    uvx --from "{{core_ref}}" zenzic check all --strict "${GUARD[@]}" {{args}}
+    CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
 
-# Static type check
+    if [ -d "$CORE_PATH" ]; then
+        echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
+    else
+        echo "🛡️  [Zenzic Sentinel] Local core not found. Using published PyPI release..."
+        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" {{args}}
+    fi
 typecheck:
     npm run typecheck
 
-# Lint TypeScript/React source files (excluding intentional landing monolith)
-lint:
+lint-ts:
     npm run lint:ts
 
-# Lint Markdown and MDX files
 markdownlint:
     npm run lint:md
 
-# Test suite (docs integration checks via nox)
-test:
-    uvx nox -s tests
-
-# Enterprise local gate (4-Gates Standard)
-verify: check preflight test
-
-# --- PROJECT ADMIN ---
-
-# Check REUSE/SPDX licence compliance
 reuse:
     uvx reuse lint
 
-# Bump all hardcoded Zenzic version references
-# Usage:  just bump 0.6.3
-#         just bump 0.6.3 'v0.6.3 "Obsidian Flux" Stable'
-bump version badge='':
-    @bash scripts/bump-version.sh "{{version}}" "{{badge}}"
+# Release orchestration: explicit, transparent, and lockfile-first.
+release part:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "{{ part }}" in
+        patch|minor|major) ;;
+        *) echo "Invalid part '{{ part }}'. Use patch|minor|major"; exit 2 ;;
+    esac
+    uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
+    npm ci
+    version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
+    if git rev-parse "v${version}" >/dev/null 2>&1; then
+        echo "Tag v${version} already exists. Aborting."
+        exit 3
+    fi
+    git add -u
+    git commit -m "release: bump version to ${version}"
+    git tag -a "v${version}" -m "Release v${version}"
 
-# Check developer environment health (node, npm, uv, zenzic)
+# Show the current project version
+version:
+    @uvx --from "bump-my-version==1.2.6" bump-my-version show current_version
+
+# Simulate a release bump without modifying any files
+# Usage: just release-dry patch|minor|major [--short]
+release-dry part *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    _short=false
+    for _arg in {{args}}; do [[ "$_arg" == "--short" ]] && _short=true; done
+    if $_short; then
+        uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose 2>&1 \
+            | grep -E 'current version|New version will be|Dry run'
+    else
+        uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose
+    fi
+
 doctor:
     @node -v || echo "node missing"
     @npm -v || echo "npm missing"
     @uv --version || echo "uv missing"
-    @uvx zenzic --version 2>/dev/null || echo "zenzic not cached (first run: uvx zenzic --version)"
+
+_check-hooks:
+    #!/usr/bin/env bash
+    if [ ! -f .git/hooks/pre-push ]; then
+        echo -e "\033[33m⚠️  WARNING: Pre-push hook is not installed.\033[0m"
+        echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
+        echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
+        echo ""
+    fi
+
+# Enforce release contracts: dirty allowed only in release-dry.
+release-contracts:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    grep -qE '^version:' justfile
+    grep -qE '^release part:' justfile
+    grep -qE '^release-dry part' justfile
+    grep -q -- '--dry-run --allow-dirty --verbose' justfile
+    if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
+        echo "release-contracts failed: release part must not use --allow-dirty"
+        exit 1
+    fi

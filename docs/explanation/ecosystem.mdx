@@ -1,10 +1,22 @@
 ---
 sidebar_position: 1
-title: The Adapter Model
-description: How Zenzic understands any documentation engine without becoming part of it — the Adapter protocol and the Sovereign CLI strategy.
+title: The Zenzic Ecosystem
+description: Zenzic Core, Structum, and zenzic-doc — the ecosystem architecture, the Adapter protocol, and the 4-Gates Standard for documentation quality.
 ---
 
-# The Adapter Model
+# The Zenzic Ecosystem
+
+## The Ecosystem at a Glance {#ecosystem-at-a-glance}
+
+| Component | Role |
+| :--- | :--- |
+| **Zenzic Core** | The pure, agnostic, Zero-Config linter. One binary. Every documentation engine. |
+| **Structum** | Optional MCP interface that supplies architectural context to AI coding assistants. |
+| **Zenzic-Doc** | The living test bench — a self-validating Docusaurus site that dogfoods every Zenzic release. |
+
+Each component is independently installable and has no hard dependency on the others.
+
+---
 
 Zenzic operates as a **sovereign external auditor**. It never embeds itself inside a build engine,
 never spawns subprocesses, and never requires engine-specific installation extras.
@@ -118,6 +130,45 @@ Zenzic runs **before or after** the build — never inside it. This gives you:
 - Exit 2 on any leaked credential (Shell stops immediately)
 - Exit 3 on any path-traversal link (cannot be suppressed)
 - Engine-agnostic results: the same `zenzic check all` command works for every engine
+
+---
+
+## zenzic-doc — Living Test Bench {#living-test-bench}
+
+The Zenzic documentation site (`zenzic-doc`) is not a passive artifact — it is an active
+participant in the quality pipeline. Every commit runs `zenzic check all --strict` against
+itself before it can be pushed (Sovereign Parity, ZRT-010).
+
+Beyond the standard Zenzic audit, `zenzic-doc` enforces a second invariant unique to its
+role as documentation for a linter: every Zxxx finding code present in `docs/` must have a
+registered entry in `src/zenzic/core/codes.py` in the Core package — and vice versa. This
+bidirectional parity is enforced by the `verify-codes-parity` Nox session via **Graceful
+Degradation**:
+
+- **Core Maintainer**: `ZENZIC_PROJECT_PATH` set → `uv run --project <path>` against local source.
+- **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI release.
+
+Running `just verify` in `zenzic-doc` executes all four gates in sequence. External contributors
+need no local checkout of Zenzic Core.
+
+---
+
+## The 4-Gates Standard {#4-gates-standard}
+
+Every repository in the Zenzic ecosystem enforces quality at four progressive checkpoints:
+
+| Gate | Trigger | Tool | What it catches |
+| :--- | :--- | :--- | :--- |
+| **Gate 1 — IDE** | Real-time, on save | Editor extensions (Pylance, ESLint) | Type errors, syntax issues |
+| **Gate 2 — Pre-commit** | `git commit` | `pre-commit` hooks | Lint, credentials, formatting, REUSE |
+| **Gate 3 — Pre-push** | `git push` | `just verify` (via `pre-commit -t pre-push`) | Full validation suite identical to CI |
+| **Gate 4 — Remote CI** | Pull Request / push | GitHub Actions | Identical `just verify` on a clean Ubuntu runner |
+
+Gates 3 and 4 execute the **same command** (`just verify`) — local and remote are never
+allowed to drift. This is the Sovereign Parity principle (ZRT-010).
+
+> For operational setup (installing hooks, workflow YAML), see the
+> [CI/CD Integration guide](../how-to/configure-ci-cd#doc-code-parity).
 
 ---
 

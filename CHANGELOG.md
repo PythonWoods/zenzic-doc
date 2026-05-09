@@ -9,6 +9,58 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
+## [Unreleased]
+
+#### Added
+
+- **DX Release Recipes (Sprint DX):** All four ecosystem repositories now include:
+  - `just version` — prints current version from bump-my-version
+  - `just release-dry <part>` — full verbose dry-run (shows file diffs)
+  - `just release-dry <part> --short` — compact preview (3 essential lines only)
+  - `just release-contracts` — validates justfile architectural contracts, wired into `verify`
+- **Branch Parity Rule — snapshot parity with Core v0.7.1:** No code changes in this
+  repository (Node/Docusaurus ecosystem). This entry tracks alignment with the Zenzic
+  Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
+  lowered to 3.10).
+- **`_check-hooks` DX guard:** Added hidden `_check-hooks` recipe as first dependency of
+  `just verify` across all four ecosystem repositories. Emits a warning if the pre-push
+  Final Guard hook (`pre-commit install -t pre-push`) is not installed locally, without
+  blocking the verification run.
+- **`ecosystem.mdx` — Ecosystem Transparency (Sprint D101):** Page retitled “The Zenzic
+  Ecosystem”. Added three new sections: “The Ecosystem at a Glance” (Core / Structum /
+  Zenzic-Doc role table), “zenzic-doc — Living Test Bench” (self-dogfooding, Graceful
+  Degradation, `verify-codes-parity`), and “The 4-Gates Standard” (IDE / Pre-commit /
+  Pre-push / Remote CI). EN + IT updated atomically.- **`Z907 I18N_PARITY` — finding-codes.mdx encyclopedia entry (Sprint D102):** Added
+  dedicated `{#z907}` section to `finding-codes.mdx` (EN + IT) documenting the I18n
+  Parity check: mirror-presence and frontmatter-parity invariants. Resolves
+  `verify-codes-parity` MISSING error for Z907. Bilingual symmetry restored.
+#### Changed
+
+- **`noxfile.py` refactoring — pipeline unification:** Removed `preflight` nox session
+  (duplicated `just verify`; used bare `uvx zenzic` without version pin). Renamed
+  `verify-docs` session to `verify-codes-parity`.
+- **`verify-codes-parity` — Graceful Degradation:** Step 1 now uses
+  `ZENZIC_PROJECT_PATH` for Core Maintainers (local source via `uv run --project`)
+  and falls back to `uv run --with zenzic` for External Contributors (published PyPI
+  release). Eliminates hardcoded sibling path and `importlib.util` hack.
+- **`justfile` update:** Added `verify-codes` recipe (`uvx nox -s verify-codes-parity`).
+  Updated `verify` target: `lint-all typecheck build verify-codes` (codes parity is
+  now Gate 4 of the standard pipeline).
+- **`_check-hooks` — DX Polish (Sprint D102):** Updated warning copy: ANSI yellow colour,
+  explanatory “why it matters” line, and `uvx pre-commit install -t pre-push` (zero global
+  install required). Applied across all four ecosystem repositories.
+- **Double Execution eliminated — `just verify` pipeline (Sprint D102):** Removed redundant
+  `typecheck` from `verify` chain (already runs inside `lint-all`/pre-commit). Removed
+  `check` dependency from `build` recipe (Zenzic Sentinel already runs inside
+  `lint-all`/pre-commit). `verify` chain: `_check-hooks lint-all build verify-codes`.
+- **`finding-codes.mdx` — Legacy section purged (Sprint D102):** `## Legacy Codes
+  [Deprecated]` section (Z001/Z002/Z009 pre-v0.6.0 codes) removed. Z000 promoted to
+  canonical code in `codes.py`. `## Integration with CI/CD` promoted from H3 to H2.
+- **`docs/reference/checks.mdx` — canonical code modernization (Sprint D102):**
+  Legacy references updated: `Z001`→`Z101`, `Z002`→`Z103`, `Z009`→`Z902`.
+
+---
+
 ## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)
 
 > **Authoritative source:** [zenzic.dev](https://zenzic.dev). This file is the
