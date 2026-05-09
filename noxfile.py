@@ -167,7 +167,8 @@ def verify_codes_parity(session: nox.Session) -> None:
 
     if phantom_codes:
         for code, filepath in phantom_codes:
-            session.warn(f"Phantom code {code} in {filepath} — not in codes.py registry")
+            session.error(f"Phantom code {code} in {filepath} — not in codes.py registry")
+        failed = True
 
     if not failed:
         session.log(

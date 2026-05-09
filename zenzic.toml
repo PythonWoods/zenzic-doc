@@ -40,19 +40,17 @@ default_locale = "en"
 locales        = ["it"]
 
 # --- BRAND INTEGRITY ---
-# Detect deprecated brand terms in documentation source (Z905).
+# Detect deprecated brand terms in documentation source (Z601).
 # ADR files contain intentional historical references — excluded by pattern.
 # Use [HISTORICAL] inline to suppress intentional references in other files.
 [project_metadata]
 release_name = "Quartz"
-obsolete_names = ["Obsidian", "Ossidiana"]
-obsolete_names_exclude_patterns = [
-    "CHANGELOG*.md",
-    "CHANGELOG*.archive.md",
-    "adr-*.mdx",
-]
 
-# --- Z907 I18N PARITY (EPOCH 5) ---
+[governance]
+brand_obsolescence = ["Obsidian", "Ossidiana"]
+i18n_parity = true
+
+# --- Z602 I18N PARITY (EPOCH 5) ---
 # Language-agnostic translation parity gate. Adding ES/FR/JA = edit YAML, no code change.
 # Multi-instance: /docs/* (User) + /developers/* (Dev) declared via extra_sources.
 [i18n]
