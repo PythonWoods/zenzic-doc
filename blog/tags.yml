@@ -98,3 +98,8 @@ engineering-culture:
   label: "Engineering Culture"
   permalink: /engineering-culture
   description: "🧠 Engineering philosophy, team practices, and development methodology."
+
+architecture:
+  label: "Architecture"
+  permalink: /architecture
+  description: "🏗️ System design decisions, ADRs, and architectural deep dives."

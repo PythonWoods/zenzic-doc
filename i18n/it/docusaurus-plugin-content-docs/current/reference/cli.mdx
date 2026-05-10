@@ -348,15 +348,15 @@ Ogni codice di uscita ha una firma visiva distinta nel Sentinel Report:
 
 **Uscita 0 — Sentinel Seal**
 
-<SentinelOutput variant="clean" compact />
+<SentinelOutput status="success" exitCode={0} compact />
 
 **Uscita 1 — Anomalie di qualità**
 
-<SentinelOutput variant="findings" compact />
+<SentinelOutput status="error" code="Z104" exitCode={1} compact />
 
 **Uscita 2 — Violazione di sicurezza Shield**
 
-<SentinelOutput variant="breach" compact />
+<SentinelOutput status="breach" exitCode={2} compact />
 
 ---
 
@@ -636,7 +636,8 @@ sono mai sopprimibili con `--exit-zero`.
 entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
 <SentinelOutput
-  variant="inspect"
+  status="inspect"
+  exitCode={0}
   scanners={[
     { codes: 'Z201',     scanner: 'The Shield',       capability: 'Rilevamento credenziali e sicurezza',          exit: '2', icon: '🛡', security: true },
     { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Prevenzione path-traversal e jailbreak',       exit: '3', icon: '🩸', security: true },
@@ -648,6 +649,75 @@ entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
 Usa questo comando per verificare quali regole sono attive dopo aver installato un pacchetto
 plugin.
+
+### `inspect codes` — Registro codici per tier
+
+```bash
+zenzic inspect codes
+zenzic inspect codes --tier governance
+zenzic inspect codes --tier plugin
+```
+
+`inspect codes` mostra il registro canonico dei codici raggruppato per tier:
+
+- `core`
+- `governance`
+- `plugin`
+- `custom`
+
+La tabella usa sempre quattro colonne: **Tier**, **Code**, **Name**, **Status**.
+
+L'attivazione governance viene letta dalla configurazione caricata:
+
+- `Z601` è `[ACTIVE]` quando `[governance].brand_obsolescence` non è vuoto.
+- `Z602` è `[ACTIVE]` quando `[governance].i18n_parity = true`.
+
+Per le regole plugin, lo stato è `[ACTIVE]` solo quando la sorgente plugin è abilitata
+in `plugins`. Le regole custom definite in `custom_rules` vengono mostrate nel tier
+`custom`.
+
+Tier non validi falliscono con exit code `1`:
+
+```text
+Error: --tier must be one of: core, governance, plugin, custom, all
+```
+
+### `inspect routes` — Esportazione mappa del sito
+
+```bash
+zenzic inspect routes
+zenzic inspect routes --kind physical
+zenzic inspect routes --kind virtual
+zenzic inspect routes --json
+```
+
+`inspect routes` esporta la Virtual Site Map come record di route. `--kind` accetta solo
+`physical`, `virtual` o `all`.
+
+Con `--json`, stdout contiene solo JSON valido in questa forma:
+
+```json
+{
+  "routes": [
+    {
+      "url": "/guide/install",
+      "kind": "physical",
+      "source_files": ["docs/guide/install.md"],
+      "digest": "...sha256..."
+    }
+  ]
+}
+```
+
+Contratto dei campi:
+
+- `url`: URL canonico.
+- `kind`: `physical`, `tag`, `tag_index`, `pagination`, `author` o `author_index`.
+- `source_files`: percorsi sorgente POSIX repo-relative che attivano la route.
+- `digest`: SHA-256 di `url + ':' + ','.join(sorted(source_files))`.
+
+Se `--kind` non è valido, il comando termina con `1` e invia l'errore su stderr quando
+`--json` è attivo, preservando la purezza JSON su stdout.
 
 ---
 
@@ -717,7 +787,7 @@ zenzic lab --list
 | Invocazione | Comportamento | Quando usare |
 | :--- | :--- | :--- |
 | `uvx zenzic ...` | Scarica ed esegue in un ambiente **isolato ed effimero** | Job una-tantum, pre-commit hook, CI senza fase di install del progetto |
-| `uv run zenzic ...` | Esegue dal **virtual environment del progetto** (richiede `uv sync`) | Quando Zenzic è in `pyproject.toml` e serve comportamento version-pinned |
+| `uvx --from zenzic zenzic ...` | Esegue via `uvx` con sorgente pacchetto esplicita | Quando serve risoluzione esplicita del pacchetto senza dipendere dal venv progetto |
 | `zenzic ...` (diretto) | Richiede Zenzic nel `$PATH` | Macchine developer con install globale |
 
 :::tip[Raccomandazione CI]

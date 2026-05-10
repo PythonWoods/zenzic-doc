@@ -58,9 +58,9 @@ Ogni route porta uno stato che indica a Zenzic come trattare i link che vi punta
 | `IGNORED` | Escluso dalla configurazione (es. file README, directory private) | Errore Z001 |
 | `CONFLICT` | Due file sorgente producono lo stesso URL canonico | Errore Z001 |
 
-**Perché è importante:** Un file può esistere nel filesystem ed essere comunque `IGNORED` nella VSM. Un URL può essere `REACHABLE` nella VSM senza avere un file corrispondente su disco (ad esempio, le route indice delle localizzazioni). La VSM è l'autorità — Zenzic verifica la raggiungibilità, non la semplice esistenza del file.
+**Perché è importante:** Un file può esistere nel filesystem ed essere comunque `IGNORED` nella VSM. Un URL può essere `REACHABLE` nella VSM senza avere un file corrispondente su disco (ad esempio, le route indice delle localizzazioni). La VSM è l'autorità — Zenzic verifica la raggiungibilità, non la sola esistenza del file.
 
-Questo design fa sì che `zenzic check links` individui problemi che un semplice controllo di esistenza del file non coglierebbe: pagine rimosse dalla navigazione, route in conflitto e contenuti orfani che i lettori non possono scoprire navigando normalmente.
+Questo design fa sì che `zenzic check links` individui problemi che un controllo diretto di esistenza del file non coglierebbe: pagine rimosse dalla navigazione, route in conflitto e contenuti orfani che i lettori non possono scoprire navigando normalmente.
 
 ### Livello 1 — link interni (sempre verificati)
 

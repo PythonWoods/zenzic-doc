@@ -73,7 +73,7 @@ MkDocs projects typically use `mkdocs build` or a `justfile`. Gate the build rec
 ```just title="justfile"
 # Sentinel Gate — Zenzic must pass before MkDocs builds
 build:
-    uv run zenzic check all . --strict
+  uvx zenzic check all . --strict
     mkdocs build --strict
 ```
 

@@ -89,6 +89,7 @@ const config: Config = {
           postsPerPage: 5,
           showReadingTime: true,
           admonitions: true,
+          onUntruncatedBlogPosts: 'throw',
           onInlineTags: 'throw',
           feedOptions: {
             type: ['rss', 'atom'],

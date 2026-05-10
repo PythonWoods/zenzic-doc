@@ -41,9 +41,9 @@ diventata **obsoleta** e può essere rimossa in sicurezza.
 
 #### Perché lo abbiamo rinviato
 
-Il controllo è concettualmente semplice ma architetturalmente costoso:
+Il controllo è concettualmente diretto ma architetturalmente costoso:
 
-1. **Violazione del Pillar 3.** Z907 e Z105 sono funzioni pure per-link /
+1. **Violazione del Pillar 3.** Z602 e Z105 sono funzioni pure per-link /
    per-file — decidono indipendentemente in ogni worker `pytest-xdist`
    senza stato condiviso. Una determinazione di "usato / non usato"
    richiede l'aggregazione dei risultati su **tutti** i file scansionati

@@ -190,7 +190,7 @@ included_file_patterns = ["api.generated.md"]
 | `included_dirs` | `list[string]` | `[]` | Directory dentro `docs/` forzatamente incluse anche se escluse da pattern VCS o `excluded_dirs` |
 | `included_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) forzatamente inclusi anche se esclusi da pattern VCS o `excluded_file_patterns` |
 
-Le inclusioni forzate non possono mai sovrastare i System Guardrails (`.git`, `.venv`, ecc.). La regola e semplice: i System Guardrails sono immutabili.
+Le inclusioni forzate non possono mai sovrastare i System Guardrails (`.git`, `.venv`, ecc.). La regola è deterministica: i System Guardrails sono immutabili.
 
 ---
 

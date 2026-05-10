@@ -130,15 +130,15 @@ Given a post with the following frontmatter:
 
 ```mdx
 ---
-slug: amazing-post
-title: An Amazing Post
+slug: sample-post
+title: A Sample Post
 ---
 ```
 
 | Link | Result |
 |---|---|
 | `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — filename-derived path absent from the VSM |
-| `[Post](/blog/amazing-post)` | ✅ Validated — slug matches the VSM entry |
+| `[Post](/blog/sample-post)` | ✅ Validated — slug matches the VSM entry |
 
 The validator raises `Z104 FILE_NOT_FOUND` (not Z105) because `/blog/` is a
 project-owned prefix. The prefix is trusted; the exact route must still exist.
@@ -150,7 +150,7 @@ alongside its source file and frontmatter slug:
 
 ```console
 $ zenzic inspect routes --kind physical
-/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+/blog/sample-post/   ←  blog/2026-05-05-post.md  [slug: sample-post]
 ```
 
 Update any link that points to the old filename-derived path to use the slug

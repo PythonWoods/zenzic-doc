@@ -48,7 +48,7 @@ ZENZIC_EXTRA_ARGS="--exclude-url https://a.example --exclude-url https://b.examp
 L'override deve attraversare ogni layer di esecuzione:
 
 1. `just verify` -> `check *args` nel `justfile`
-2. hook `preflight` -> `scripts/pre-commit-zenzic.sh`
+2. hook `verify` -> `scripts/pre-commit-zenzic.sh`
 3. script shared -> `zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} "$@"`
 4. step CI definisce `ZENZIC_EXTRA_ARGS` in `.github/workflows/ci.yml`
 

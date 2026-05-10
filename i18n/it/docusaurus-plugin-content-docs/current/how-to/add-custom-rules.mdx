@@ -62,7 +62,9 @@ Quando una regola custom scatta, Zenzic mostra il problema con uno snippet visiv
 incriminata:
 
 <SentinelOutput
-  variant="findings"
+  status="error"
+  code="ZZ-NODRAFT"
+  exitCode={1}
   compact
   rows={[{ code: 'ZZ-NODRAFT', file: 'docs/guide/install.md:14', message: 'Rimuovere il marker DRAFT prima della pubblicazione.', severity: 'error' }]}
 />

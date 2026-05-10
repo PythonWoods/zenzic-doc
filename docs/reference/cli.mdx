@@ -337,15 +337,15 @@ Each exit code has a distinct visual signature in the Sentinel Report:
 
 **Exit 0 — Sentinel Seal**
 
-<SentinelOutput variant="clean" compact />
+<SentinelOutput status="success" exitCode={0} compact />
 
 **Exit 1 — Quality findings**
 
-<SentinelOutput variant="findings" compact />
+<SentinelOutput status="error" code="Z104" exitCode={1} compact />
 
 **Exit 2 — Shield security breach**
 
-<SentinelOutput variant="breach" compact />
+<SentinelOutput status="breach" exitCode={2} compact />
 
 ---
 
@@ -621,13 +621,81 @@ suppressible with `--exit-zero`.
 **Section B — Extensible Rules (Plugin System):** rules registered via the `zenzic.rules`
 entry-point group from any installed third-party package.
 
-<SentinelOutput variant="inspect" />
+<SentinelOutput status="inspect" exitCode={0} />
 
 Each row in the Extensible Rules table shows the entry-point name, the rule's stable `rule_id`
 (used in findings and suppression lists), the origin distribution (`(core)` for built-in rules,
 or the package name for third-party plugins), and the fully qualified Python class name.
 
 Use this command to verify which rules are active after installing a plugin package.
+
+### `inspect codes` — Tiered code registry
+
+```bash
+zenzic inspect codes
+zenzic inspect codes --tier governance
+zenzic inspect codes --tier plugin
+```
+
+`inspect codes` renders the canonical code registry grouped by tier:
+
+- `core`
+- `governance`
+- `plugin`
+- `custom`
+
+The table always uses four columns: **Tier**, **Code**, **Name**, **Status**.
+
+Governance activation is read from loaded configuration:
+
+- `Z601` is `[ACTIVE]` when `[governance].brand_obsolescence` is non-empty.
+- `Z602` is `[ACTIVE]` when `[governance].i18n_parity = true`.
+
+For plugin rules, status is `[ACTIVE]` only when the plugin source is enabled in
+`plugins`. Custom rules from `custom_rules` are shown in the `custom` tier.
+
+Invalid tiers fail fast with exit code `1`:
+
+```text
+Error: --tier must be one of: core, governance, plugin, custom, all
+```
+
+### `inspect routes` — Site map export
+
+```bash
+zenzic inspect routes
+zenzic inspect routes --kind physical
+zenzic inspect routes --kind virtual
+zenzic inspect routes --json
+```
+
+`inspect routes` exports the Virtual Site Map as route records. `--kind` accepts only
+`physical`, `virtual`, or `all`.
+
+With `--json`, stdout contains only valid JSON in this shape:
+
+```json
+{
+  "routes": [
+    {
+      "url": "/guide/install",
+      "kind": "physical",
+      "source_files": ["docs/guide/install.md"],
+      "digest": "...sha256..."
+    }
+  ]
+}
+```
+
+Field contract:
+
+- `url`: canonical URL.
+- `kind`: `physical`, `tag`, `tag_index`, `pagination`, `author`, or `author_index`.
+- `source_files`: repo-relative POSIX source paths that activate the route.
+- `digest`: SHA-256 of `url + ':' + ','.join(sorted(source_files))`.
+
+If `--kind` is invalid, the command exits `1` and emits the error to stderr when
+`--json` is active, preserving JSON purity on stdout.
 
 ---
 
@@ -697,7 +765,7 @@ zenzic lab --list
 | Invocation | Behaviour | When to use |
 | :--- | :--- | :--- |
 | `uvx zenzic ...` | Downloads and runs in an **isolated, ephemeral** environment | One-off jobs, pre-commit hooks, CI with no project install phase |
-| `uv run zenzic ...` | Runs from the **project's virtual environment** (requires `uv sync`) | When Zenzic is in `pyproject.toml` and you need version-pinned behaviour |
+| `uvx --from zenzic zenzic ...` | Runs via `uvx` with explicit package source | When you want explicit package resolution while staying outside project env |
 | `zenzic ...` (bare) | Requires Zenzic on `$PATH` | Developer machines with a global install |
 
 :::tip[CI recommendation]

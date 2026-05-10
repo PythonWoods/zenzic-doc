@@ -16,7 +16,7 @@
 [![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/it/developers/explanation/adr-vault)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
-> **Questa documentazione è strettamente allineata a Zenzic v0.7.1 "Quarzo".**
+> **Questa documentazione è strettamente allineata a Zenzic v0.7.1 "Quartz".**
 > Se la versione del core cambia, esegui `just bump NEW_VERSION` per mantenere
 > sincronizzati tutti i riferimenti.
 
@@ -32,7 +32,7 @@ la prima volta. Se sei nuovo, segui le sezioni in ordine.
 
 ---
 
-## 📖 Mappa della Documentazione — La Promessa di Quarzo
+## 📖 Mappa della Documentazione — La Promessa di Quartz
 
 La documentazione di Zenzic è distribuita come **due istanze Docusaurus separate**
 sotto lo stesso dominio. Ognuna ha la propria sidebar, il proprio indice di
@@ -46,7 +46,7 @@ zenzic.dev/
 └── community/      → Brand kit, FAQ, governance
 ```
 
-**La Promessa di Quarzo.** Due istanze, una Sentinella. La separazione è imposta
+**La Promessa di Quartz.** Due istanze, una Sentinella. La separazione è imposta
 dall'[ADR 011: Cross-Instance Allowlist](https://zenzic.dev/it/developers/explanation/adr-cross-instance-allowlist) —
 ogni link che attraversa il confine è un contratto documentato, mai una
 soppressione silenziosa. Consulta il

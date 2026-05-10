@@ -85,7 +85,7 @@ un GitHub PAT incorporato in un attributo di componente JSX, non in prosa Markdo
 **Risultato:** Lo Shield ha rilevato `ghp_` immediatamente. Exit 2. VIOLAZIONE DI SICUREZZA RILEVATA.
 
 Lo Shield Pass 1A usa `enumerate(fh, start=1)` sui byte grezzi del file. Non salta mai
-righe in base al tipo di contenuto. Le prop JSX sono testo semplice per lo scanner di
+righe in base al tipo di contenuto. Le prop JSX sono testo statico per lo scanner di
 file. RULE R9 regge incondizionatamente.
 
 🔴 Red Team bloccato · RULE R9 confermata. ✅

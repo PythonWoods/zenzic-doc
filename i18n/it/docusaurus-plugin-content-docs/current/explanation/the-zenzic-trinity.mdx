@@ -31,12 +31,19 @@ tattica**. Contiene ogni riga di logica di analisi che applica i Tre Pilastri.
 
 Il Core applica la legge. Non la decide.
 
+### Perché Zenzic se il mio Static Site Generator (SSG) controlla già i link rotti?
+
+1. **Velocità & Shift-Left:** Le build SSG (basate su Node.js, Go o Python) richiedono la compilazione completa del sito e tipicamente girano in loop CI più lenti. Zenzic esegue analisi statica locale su testo sorgente e metadati prima della build, con feedback pre-commit in millisecondi.
+2. **Sicurezza:** I controlli nativi degli SSG non bloccano il commit di credenziali esposte o tentativi di path traversal. Zenzic applica finding di sicurezza nel tier `Z2xx` e blocca sugli exit di sicurezza.
+3. **Governance:** Gli SSG non applicano contratti di governance come obsolescenza brand (`Z601`), deriva di parità i18n (`Z602`) o asset orfani (`Z405`). Zenzic li espone come contratti espliciti e auditabili.
+4. **Diagnostica azionabile:** Quando falliscono rotte generate, l'output SSG è in genere un 404/fallimento build generico. Zenzic usa reverse mapping VSM per indicare il file sorgente esatto e il contesto frontmatter che generano la rotta virtuale in errore.
+
 ---
 
 ## 2. La Documentazione — L'Anima {#documentation-the-soul}
 
 Il repository [`zenzic-doc`](https://github.com/PythonWoods/zenzic-doc) è il **Livello
-Costituzionale** del progetto. Non è semplicemente un manuale utente — è la fonte di verità che
+Costituzionale** del progetto. Non è solo un manuale utente — è la fonte di verità che
 definisce *perché* il motore esiste e *perché* ogni regola è quella che è.
 
 ### Il Framework Diátaxis
@@ -115,11 +122,15 @@ solo quando tutti e tre sono sincronizzati — garantito dalla
 
 Zenzic è progettato per la **Memoria Istituzionale**. Due proprietà rendono questo possibile:
 
-### Mappe AST — Lo Specchio Strutturale
+### Superficie Regole Deterministica — Lo Specchio Strutturale
 
-Ogni modulo in `zenzic` è mappato da un analizzatore AST deterministico. La
-mappa registra ogni classe pubblica, ogni funzione pubblica e la docstring. Lo stato strutturale
-del Core è sempre leggibile in un singolo documento, analizzabile da una macchina — mai inferito.
+Il core `zenzic` espone una superficie regole deterministica tramite registro codici,
+catalogo finding e contratti adapter. Lo stato strutturale viene letto da registri
+espliciti e output CLI stabili (`inspect capabilities`, `inspect codes`,
+`inspect routes`), non inferito da euristiche runtime.
+
+La cartografia AST a livello repository appartiene a [Structum](./ecosystem.mdx), che è
+il sistema dedicato al contesto strutturale nell'ecosistema.
 
 ### Corpus degli ADR — Lo Specchio delle Decisioni
 
@@ -127,15 +138,15 @@ Ogni scelta architetturale vive in un file MDX strutturato con un formato canoni
 `sidebar_label`, `**Status:**`, `## Context`, `## Decision`, `## Rationale`. Questo rende la
 storia delle decisioni leggibile per le macchine per design.
 
-Insieme, la mappa AST e il corpus degli ADR formano un **livello di contesto trasparente**:
+Insieme, la superficie regole deterministica e il corpus degli ADR formano un **livello di contesto trasparente**:
 
 - **Per gli esseri umani:** un percorso chiaro e prevedibile dalla filosofia all'implementazione —
 
   senza dover fare archeologia nel codice.
 
-- **Per i sistemi AI:** un contesto strutturato e non ambiguo che previene le allucinazioni e
+- **Per i sistemi di automazione:** un contesto strutturato e non ambiguo che mantiene i
 
-  garantisce che ogni suggerimento rispetti gli invarianti fondamentali del progetto.
+  suggerimenti generati allineati agli invarianti fondamentali del progetto.
 
 :::info Il Safe Harbor è un Sistema di Conoscenza Sovrano
 Zenzic non è solo uno strumento che usi. È un ecosistema di cui puoi fidarti — perché le sue

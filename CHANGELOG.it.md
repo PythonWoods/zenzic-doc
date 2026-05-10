@@ -11,56 +11,30 @@ Le versioni seguono la linea di rilascio di Zenzic Core sotto la Branch Parity R
 
 ## [Non Rilasciato]
 
-#### Aggiunto
+### Added
 
-- **DX Release Recipes (Sprint DX):** Tutti e quattro i repository dell'ecosistema includono ora:
-  - `just version` — stampa la versione corrente tramite bump-my-version
-  - `just release-dry <part>` — dry-run verbose completo (mostra diff dei file)
-  - `just release-dry <part> --short` — preview compatto (solo 3 righe essenziali)
-  - `just release-contracts` — valida i contratti architetturali del justfile, incluso in `verify`
-- **Branch Parity Rule — parity snapshot con Core v0.7.1:** Nessuna modifica al codice
-  in questo repository (ecosistema Node/Docusaurus). Questa voce traccia l'allineamento
-  con la release di allineamento infrastrutturale di Zenzic Core (fix della matrice
-  Boundary Testing, floor Mypy abbassato a 3.10).
-- **DX guard `_check-hooks`:** Aggiunta recipe nascosta `_check-hooks` come prima dipendenza
-  di `just verify` in tutti e quattro i repository dell'ecosistema. Emette un avviso se
-  l'hook Final Guard pre-push (`pre-commit install -t pre-push`) non è installato
-  localmente, senza bloccare l'esecuzione della verifica.
-- **`ecosystem.mdx` — Trasparenza Ecosistema (Sprint D101):** Pagina rinominata "L'Ecosistema
-  Zenzic". Aggiunte tre nuove sezioni: "L'Ecosistema in Sintesi" (tabella dei ruoli Core /
-  Structum / Zenzic-Doc), "zenzic-doc — Banco di Prova Vivente" (self-dogfooding, Graceful
-  Degradation, `verify-codes-parity`), "Lo Standard a 4 Cancelli" (IDE / Pre-commit /
-  Pre-push / CI Remota). EN + IT aggiornati atomicamente.
-- **`Z907 I18N_PARITY` — voce enciclopedia finding-codes.mdx (Sprint D102):** Aggiunta
-  sezione `{#z907}` dedicata a `finding-codes.mdx` (EN + IT) che documenta il controllo
-  di Parità I18n: invariante di presenza del mirror e invariante di parità frontmatter.
-  Risolve l’errore MISSING di `verify-codes-parity` per Z907. Simmetria bilingue ripristinata.
+- **ADR-013 aggiunta nel vault ADR developer (EN/IT):** la razionalità Regex
+  ACL e sicurezza RE2 è ora parte del set architetturale ufficiale.
+- **Allineamento governance release:** la sezione Non Rilasciato usa la
+  tassonomia Added/Changed/Fixed/Security condivisa nell'ecosistema.
 
-#### Modificato
+### Changed
 
-- **Refactoring `noxfile.py` — unificazione pipeline:** Rimossa la sessione nox
-  `preflight` (duplicava `just verify`; usava `uvx zenzic` senza pin di versione).
-  Rinominata la sessione `verify-docs` in `verify-codes-parity`.
-- **`verify-codes-parity` — Graceful Degradation:** Lo Step 1 ora usa
-  `ZENZIC_PROJECT_PATH` per i Core Maintainer (sorgente locale via `uv run --project`)
-  e torna a `uv run --with zenzic` per i contributori esterni (release PyPI
-  pubblicata). Elimina il percorso sibling hardcoded e il meccanismo `importlib.util`.
-- **Aggiornamento `justfile`:** Aggiunta la recipe `verify-codes`
-  (`uvx nox -s verify-codes-parity`). Aggiornato il target `verify`:
-  `lint-all typecheck build verify-codes` (la parity dei codici è ora Gate 4
-  della pipeline standard).
-- **`_check-hooks` — DX Polish (Sprint D102):** Aggiornato il copy del warning: colore
-  ANSI giallo, riga esplicativa del “perché conta” e `uvx pre-commit install -t pre-push`
-  (zero installazioni globali richieste). Applicato in tutti e quattro i repository.
-- **Doppia Esecuzione eliminata — pipeline `just verify` (Sprint D102):** Rimosso
-  `typecheck` ridondante dalla catena `verify` (gira già in `lint-all`/pre-commit).
-  Rimossa la dipendenza `check` dalla recipe `build` (Zenzic Sentinel gira già in
-  `lint-all`/pre-commit). Catena `verify`: `_check-hooks lint-all build verify-codes`.
-- **`finding-codes.mdx` — sezione Legacy rimossa (Sprint D102):** Sezione `## Codici
-  Legacy [Deprecati]` (codici pre-v0.6.0 Z001/Z002/Z009) rimossa. Z000 promosso a
-  codice canonico in `codes.py`. `## Integrazione con CI/CD` promossa da H3 a H2.
-- **`docs/reference/checks.mdx` — modernizzazione codici canonici (Sprint D102):**
-  Riferimenti legacy aggiornati: `Z001`→`Z101`, `Z002`→`Z103`, `Z009`→`Z902`.
+- **Narrativa release docs allineata a v0.8.0 Basalt:** documenta la
+  stabilizzazione del namespace (ADR-012), le superfici Frozen Codes e il
+  rollout del Regex ACL (ADR-013).
+- **Parità pipeline mantenuta nel repo docs:** `just verify` e
+  `verify-codes-parity` restano gli entry point canonici di qualità.
+
+### Fixed
+
+- **Struttura Non Rilasciato normalizzata:** rimossa la deriva di heading e
+  semplificata la lettura del diff di release.
+
+### Security
+
+- **Postura sicurezza aggiornata nella documentazione:** i manuali referenziano
+  la policy ZRT-007 con enforcement RE2 strict e no-fallback in runtime.
 
 ---
 

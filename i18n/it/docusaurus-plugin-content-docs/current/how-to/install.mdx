@@ -105,7 +105,7 @@ Installa in un virtual environment dedicato, poi aggiungi la directory `bin/` al
 
 ```bash
 uv add --dev zenzic
-uv run zenzic check all
+uvx zenzic check all
 ```
 
 Installa Zenzic nel virtual environment del progetto e fissa la versione in `uv.lock`.
@@ -130,7 +130,7 @@ Pattern standard da dipendenza dev con virtual environment locale al progetto.
 ### Solo analisi statica — nessun runtime di build richiesto {#lean-agnostic}
 
 Zenzic legge i file di configurazione (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`) come
-testo semplice. **Non esegue** il motore di build né i suoi plugin.
+testo statico. **Non esegue** il motore di build né i suoi plugin.
 
 **Non installare** MkDocs, Material for MkDocs o alcun plugin di build nell'ambiente di
 linting. Non servono. L'ambiente di linting ha una sola dipendenza: `zenzic`.

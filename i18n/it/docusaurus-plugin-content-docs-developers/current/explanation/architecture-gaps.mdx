@@ -72,7 +72,7 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 
 ---
 
-## Chiusi in v0.7.0 — Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+## Chiusi in v0.7.0 — Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
 
 :::info[Cos'era l'Operazione?]
 
@@ -87,7 +87,7 @@ Vedi il post-mortem tecnico completo: [AI Red Team Attacks Code Linter](https://
 
 ### ZRT-001 — Bypass per Normalizzazione Unicode (Shield)
 
-**Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
 **Componente:** `core/shield.py`, `scan_lines_with_lookback()`
 **Descrizione:** I pattern regex dello Shield corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
@@ -110,7 +110,7 @@ La superficie di attacco non è il pattern — è la codifica.
 
 ### ZRT-002 — Fuga dal Buffer di Lookback (Shield)
 
-**Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
 **Componente:** `core/shield.py`, `scan_lines_with_lookback()`
 **Descrizione:** Il buffer di lookback dello Shield era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
@@ -133,7 +133,7 @@ di sicurezza.
 
 ### ZRT-003 — Offuscamento con Entità HTML (Shield)
 
-**Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
 **Componente:** `core/shield.py`
 **Descrizione:** Lo Shield scansionava i byte Markdown grezzi. L'agente Charlie ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
@@ -156,7 +156,7 @@ fa parte della pipeline dei contenuti.
 
 ### ZRT-004 — Confusione Scope Blocco Delimitato (Shield)
 
-**Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
 **Componente:** `core/shield.py`, macchina a stati dei blocchi delimitati
 **Descrizione:** Lo Shield saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti
@@ -287,10 +287,10 @@ non avveniva mai.
    delega a `_scaffold_local_toml()`. Nessun chiamante esterno necessita di aggiornamenti.
 
 **Brand Integrity Shield — Design a Due Livelli:**
-Il Privacy Gate Z204 e il Brand Obsolescence Guard Z905 formano un'architettura a due livelli:
+Il Privacy Gate Z204 e il Brand Obsolescence Guard Z601 formano un'architettura a due livelli:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non sopprimibile.
   Progettato per termini privati che non devono mai apparire in nessun documento pubblicato.
-- **Z905** (`obsolete_names` in `zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore Z905`.
+- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore Z601`.
   Progettato per termini di brand obsoleti dove i riferimenti storici nei file CHANGELOG
   sono accettabili.
 

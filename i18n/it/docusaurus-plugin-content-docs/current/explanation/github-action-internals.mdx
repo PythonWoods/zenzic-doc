@@ -160,7 +160,7 @@ Quando viene intrapreso il percorso di warning, l'auto-discovery è **soppressa*
 
 ## Passaggio Argomenti Glob-Safe {#glob-safe}
 
-La variabile d'ambiente `ZENZIC_EXTRA_ARGS` permette ai chiamanti di passare flag aggiuntivi (es. `--exclude-url`) alla CLI Zenzic a runtime. Poiché questa variabile è una stringa semplice che deve essere suddivisa in token argv, un'espansione non protetta attiverebbe l'espansione glob di Bash — un `*` o `?` dentro un URL potrebbe essere espanso contro il filesystem CI.
+La variabile d'ambiente `ZENZIC_EXTRA_ARGS` permette ai chiamanti di passare flag aggiuntivi (es. `--exclude-url`) alla CLI Zenzic a runtime. Poiché questa variabile è una stringa singola che deve essere suddivisa in token argv, un'espansione non protetta attiverebbe l'espansione glob di Bash — un `*` o `?` dentro un URL potrebbe essere espanso contro il filesystem CI.
 
 Il wrapper disabilita il globbing intorno alla costruzione dell'array:
 

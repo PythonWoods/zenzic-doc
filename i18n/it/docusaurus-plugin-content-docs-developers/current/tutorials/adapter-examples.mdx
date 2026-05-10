@@ -212,7 +212,7 @@ def provides_index(self, directory_path: Path) -> bool:
 
 ```python
 def provides_index(self, directory_path: Path) -> bool:
-    # Nessun config motore — solo un index.md semplice segnala una landing page.
+    # Nessun config motore — solo un index.md minimale segnala una landing page.
     return (directory_path / "index.md").exists()
 ```
 

@@ -47,8 +47,8 @@ sottostante.
 | `just check` | **Auto-lint — esegui Zenzic sulla propria documentazione (strict)** |
 | `just test` | Esegui la suite di test (delega a `nox -s tests`, profilo Hypothesis **dev**) |
 | `just test-full` | Esegui la suite di test con profilo Hypothesis **ci** (500 esempi) |
-| `just preflight` | Pipeline completa equivalente a CI: lint, typecheck, test, reuse, sicurezza |
-| `just verify` | **Gate pre-push: `preflight` + `build-prod`** |
+| `just verify` | Pipeline completa equivalente a CI: lint, typecheck, test, reuse, sicurezza, build |
+| `just check` | Auto-lint della documentazione con Zenzic in modalità strict |
 | `just build` | Build del sito di documentazione (veloce, senza enforcement strict) |
 | `just build-prod` | Build del sito di documentazione (modalità strict, rispecchia CI) |
 | `just serve [port]` | Avvia il server di documentazione live-reload (porta default 8000) |

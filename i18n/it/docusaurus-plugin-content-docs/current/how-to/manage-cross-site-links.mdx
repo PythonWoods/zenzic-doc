@@ -57,7 +57,7 @@ da Z105. Tutto il resto continua a fallire — un typo come
 
 **Regole da ricordare:**
 
-1. Le voci **devono** iniziare con `/`. Il check usa un semplice
+1. Le voci **devono** iniziare con `/`. Il check usa un controllo
    `startswith` matching — niente regex, niente glob.
 2. Il match è solo sul path URL — `?query` e `#anchor` vengono
    rimossi prima del confronto.
@@ -134,15 +134,15 @@ Data una pagina con il seguente frontmatter:
 
 ```mdx
 ---
-slug: amazing-post
-title: Un Post Straordinario
+slug: sample-post
+title: Un Post di Esempio
 ---
 ```
 
 | Link | Risultato |
 |---|---|
 | `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — path derivato dal filename assente dalla VSM |
-| `[Post](/blog/amazing-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
+| `[Post](/blog/sample-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
 
 Il validator solleva `Z104 FILE_NOT_FOUND` (non Z105) perché `/blog/` è un
 prefisso di proprietà del progetto. Il prefisso è fidato; la route esatta
@@ -155,7 +155,7 @@ VSM insieme al file sorgente e allo slug nel frontmatter:
 
 ```console
 $ zenzic inspect routes --kind physical
-/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+/blog/sample-post/   ←  blog/2026-05-05-post.md  [slug: sample-post]
 ```
 
 Aggiorna qualsiasi link che punta al percorso derivato dal filename con l'URL
@@ -175,7 +175,7 @@ Discovery  →  set_slug_map (solo Docusaurus)  →  build_vsm  →  Validate
           guardiano hasattr — no-op per MkDocs / Standalone
 ```
 
-Questo segue il principio della *Maturità del Quarzo*: evolvere l'adapter
+Questo segue il principio della *Maturità del Quartz*: evolvere l'adapter
 complesso senza appesantire quelli più semplici.
 
 ---

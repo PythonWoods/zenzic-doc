@@ -41,7 +41,7 @@ Zenzic richiede Python 3.10 o superiore.
 
 **Come si installa Zenzic?**
 
-Il modo più semplice è usare `uvx` per eseguirlo direttamente senza installazione:
+Il modo più diretto è usare `uvx` per eseguirlo direttamente senza installazione:
 
 ```bash
 uvx zenzic check all
@@ -143,6 +143,7 @@ strumento nella pipeline. `markdownlint --fix` (un hook pre-commit comune) rimuo
 definizioni bare `[id]: url` quando si trovano in certe posizioni — dopo blocchi HTML,
 tag `<figure>` o prima del primo heading — senza segnalare quale regola ha scatenato la
 rimozione. La riga semplicemente scompare.
+rimozione. La riga viene rimossa.
 
 **Soluzione:** Usa link inline (`[testo](url)`) invece dei link reference-style
 (`[testo][id]` + `[id]: url` a fondo pagina). I link inline sono immuni a questa classe

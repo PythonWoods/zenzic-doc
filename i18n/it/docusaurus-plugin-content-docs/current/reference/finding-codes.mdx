@@ -395,7 +395,7 @@ Z301 è un **errore di integrità dei riferimenti**. Non riduce il [Punteggio di
 :::
 
 * **Severità:** `error`
-* **Contesto Tecnico:** Un link in stile riferimento (es. `[testo][id]`) è presente, ma la definizione (es. `[id]: http://...`) manca dal file. Ciò comporta che il link venga reso come testo semplice nella maggior parte dei motori Markdown.
+* **Contesto Tecnico:** Un link in stile riferimento (es. `[testo][id]`) è presente, ma la definizione (es. `[id]: http://...`) manca dal file. Ciò comporta che il link venga reso come testo non collegato nella maggior parte dei motori Markdown.
 * **Passaggi di Rimedio:**
     1. Aggiungi la definizione mancante in fondo al file Markdown.
     2. Controlla eventuali refusi nell'ID del riferimento.
@@ -654,7 +654,7 @@ L’obsolescenza del brand è una metrica chiave della maturità della documenta
 />
 
 * **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "Quartz"`) e `brand_obsolescence` elenca gli identificatori di release precedenti (es. `brand_obsolescence = ["Obsidian", "Ossidiana"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z601. Le righe con un commento `zenzic:ignore Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z601 -->` nei file ``.md`` e `{/* zenzic:ignore Z601 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
+* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "Quartz"`) e `brand_obsolescence` elenca gli identificatori di release precedenti (es. `brand_obsolescence = ["Obsidian", "Obsidian"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z601. Le righe con un commento `zenzic:ignore Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z601 -->` nei file ``.md`` e `{/* zenzic:ignore Z601 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
 * **Passaggi di Rimedio:**
     1. Aggiorna il testo per usare il nome della release corrente.
     2. Per i riferimenti storici intenzionali in file ``.md``, aggiungi `<!-- zenzic:ignore Z601 -->` alla riga.
@@ -723,13 +723,13 @@ Zenzic supporta la **soppressione per riga, per codice** tramite commenti inline
 Nei file ``.md``, usa un commento HTML standard (invisibile nel Markdown renderizzato):
 
 ```markdown
-L'era Ossidiana ha definito le fondamenta. <!-- zenzic:ignore Z601 -->
+L'era Obsidian ha definito le fondamenta. <!-- zenzic:ignore Z601 -->
 ```
 
 Nei file ``.mdx``, usa un commento JSX (invisibile nel MDX renderizzato, sicuro per Docusaurus/React):
 
 ```mdx
-L'era Ossidiana ha definito le fondamenta. {/* zenzic:ignore Z601 */}
+L'era Obsidian ha definito le fondamenta. {/* zenzic:ignore Z601 */}
 ```
 
 Ogni commento di soppressione silenzia **solo** il codice specificato su quella riga. Per sopprimere più codici sulla stessa riga, aggiungi più commenti. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `zenzic.toml` (Z601) o i pattern `excluded_files` pertinenti.

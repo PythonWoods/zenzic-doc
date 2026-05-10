@@ -26,7 +26,7 @@ cancello — nessun ciclo sprecato.
 
 ## Il Principio
 
-Il Sentinel Gate applica un invariante semplice:
+Il Sentinel Gate applica un invariante deterministico:
 
 ```text
 zenzic check all [PATH] --strict  →  successo  →  il tuo strumento di build
@@ -77,7 +77,7 @@ ricetta di build:
 ```just title="justfile"
 # Sentinel Gate — Zenzic deve passare prima che MkDocs compili
 build:
-    uv run zenzic check all . --strict
+  uvx zenzic check all . --strict
     mkdocs build --strict
 ```
 
@@ -104,7 +104,7 @@ da `zenzic check all` interrompe la ricetta prima che `mkdocs build` venga raggi
 
   <TabItem value="zensical" label="Zensical (shell / justfile)">
 
-I progetti Zensical possono proteggere la build con una semplice concatenazione di comandi:
+I progetti Zensical possono proteggere la build con una concatenazione diretta di comandi:
 
 ```bash title="build.sh"
 #!/usr/bin/env bash

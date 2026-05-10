@@ -81,7 +81,8 @@ a prima vista portano conseguenze tecniche concrete per i tool downstream.
 
 L'esempio canonico è [`Z505: UNTAGGED_CODE_BLOCK`](../reference/finding-codes.mdx#z505):
 un blocco di codice delimitato senza specificatore di linguaggio viene renderizzato come testo
-semplice nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
+plain-text nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
+non collegato nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
 snippet e interrompe la misurazione della copertura del syntax highlighting. L'assenza del tag
 linguaggio non è una preferenza stilistica — è un contratto machine-readable mancante tra
 l'autore e ogni strumento nella pipeline.

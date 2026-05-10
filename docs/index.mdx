@@ -38,7 +38,7 @@ uvx zenzic check all .
 
 This is what success looks like:
 
-<SentinelOutput variant="clean" showFrame />
+<SentinelOutput status="success" exitCode={0} showFrame />
 
 A `100/100` is not an estimate. It is a **mathematical proof** that your documentation
 has zero structural issues, zero leaked credentials, and zero navigation failures.
@@ -48,45 +48,21 @@ Anything less is a precise, actionable diagnostic — not a vague warning.
 
 ---
 
-## Stop Deciphering Logs. Start Solving Problems
-
-**Before Zenzic** — a standard CI failure:
-
-```text
-[14:23:01] BUILD FAILED
-[14:23:01]   error: Cannot read properties of undefined (reading 'path')
-[14:23:01]   at DocusaurusContentDocs.<anonymous> (content-docs.js:212:14)
-[14:23:01]   ... 47 more lines omitted ...
-[14:23:01] Process exited with code 1
-```
-
-What broke? Which file? Which line? The build engine knows it failed — but not why.
-
-**After Zenzic** — the Sentinel Report:
-
-<SentinelOutput variant="findings" showFrame />
-
-**Three lines. Three actions. Zero ambiguity.**
-
-The Sentinel Report tells you the file, the line, the `Zxxx` code, and the fix — before
 the build even starts. No log archaeology, no stack-trace spelunking.
+## Deterministic Failure Analysis: Before vs After Zenzic
 
----
+| Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic v0.8.0 (EPOCH 7b)                                                                 |
+|-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | SentinelOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
+| **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | O(1) deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |
+| **Credential Leak**     | Linter may miss secrets in YAML/code blocks; no masking; incident may reach git history.            | Shield: scans all content, masks secrets, halts pipeline (exitCode=2, Z601), never prints full secret. |
+| **Exit Codes**          | Non-standard, ambiguous, or missing.                                                                | Tiered: Z1xx (structural), Z2xx (content), Z4xx (routing), Z6xx (security).                   |
 
-## Shield — Your Last Line of Defense Against the Dark Crisis
+**Example: SentinelOutput for a Virtual Route finding**
 
-A leaked API key in your documentation is not a content issue. It is a security incident.
-
-<SentinelOutput variant="breach" showFrame />
-
-Zenzic's **Shield** scans every line of every file — including YAML frontmatter and code
-blocks — before any other check runs. If a credential is detected:
-
-- The pipeline **halts unconditionally** — exit code 2 cannot be suppressed by any flag
-- The credential is **masked** in the report (never printed in full)
-- You fix it **before it reaches git history** — no BFG Repo Cleaner, no emergency rotations
-
-  at midnight, no incident post-mortem
+<SentinelOutput status="error" code="Z404" exitCode={1} showFrame>
+docs/blog/tags/python/: Virtual route not mapped to any source file (Z404)
+</SentinelOutput>
 
 This is not a lint check. It is a **non-negotiable security gate**.
 

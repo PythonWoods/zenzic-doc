@@ -121,7 +121,7 @@ equivalenti.
 :::warning[Modifica incompatibile nella v0.6.0]
 Le versioni precedenti trattavano ogni voce come un percorso letterale.
 A partire dalla v0.6.0, ogni voce è trattata come un pattern `fnmatch`.
-I percorsi letterali esistenti continuano a funzionare: corrispondono semplicemente a se stessi.
+I percorsi letterali esistenti continuano a funzionare: corrispondono esattamente a se stessi.
 :::
 
 ```toml
@@ -376,6 +376,67 @@ Impostare `exit_zero = true` in `zenzic.toml` disabilita il quality gate globalm
 Preferisci usare `--exit-zero` come flag CLI temporaneo durante gli sprint di cleanup,
 rimuovendolo una volta che il baseline è pulito.
 :::
+
+---
+
+## `[governance]` {#governance}
+
+**Tipo:** sezione TOML — **Aggiunto:** v0.8.0 "Basalt"
+
+Controlli di policy opt-in per i finding di governance-tier esposti da
+`zenzic inspect codes --tier governance`.
+
+### `brand_obsolescence`
+
+**Tipo:** lista di stringhe — **Default:** `[]`
+
+Termini di brand deprecati che attivano `Z601 BRAND_OBSOLESCENCE` quando vengono trovati
+nelle righe di documentazione scansionate.
+
+### `i18n_parity`
+
+**Tipo:** booleano — **Default:** `false`
+
+Quando `true`, abilita il reporting governance per `Z602 I18N_PARITY` nel registro per tier.
+
+```toml
+[governance]
+brand_obsolescence = ["Obsidian"]
+i18n_parity = true
+```
+
+### Semantica di attivazione
+
+- `Z601` è attivo solo quando `brand_obsolescence` contiene almeno un termine.
+- `Z602` è attivo solo quando `i18n_parity = true`.
+
+---
+
+## `.zenzic.local.toml` (overlay locale macchina) {#zenzic-local-toml}
+
+`.zenzic.local.toml` è un overlay locale macchina, ignorato da git, caricato dopo la
+configurazione primaria. È la sede canonica dei pattern `Z204 FORBIDDEN_TERM`.
+
+Dal file locale viene letto un solo campo:
+
+- `forbidden_patterns` (lista di stringhe letterali)
+
+Il merge è additivo e deterministico:
+
+- I `forbidden_patterns` già presenti in `zenzic.toml` vengono preservati.
+- Le voci locali vengono aggiunte in ordine di inserimento.
+- I duplicati vengono rimossi preservando la prima occorrenza.
+
+```toml
+# .zenzic.local.toml
+forbidden_patterns = [
+  "internal-codename",
+  "staging-host.example.internal",
+]
+```
+
+Nota legacy: `.zenzic.dev.toml` è rimosso in v0.7.0; se presente, il caricamento della
+configurazione fallisce con un errore di migrazione esplicito.
 
 ---
 

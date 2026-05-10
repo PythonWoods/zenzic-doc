@@ -368,6 +368,67 @@ the baseline is clean.
 
 ---
 
+## `[governance]` {#governance}
+
+**Type:** TOML section — **Added:** v0.8.0 "Basalt"
+
+Opt-in policy controls for governance-tier findings surfaced by
+`zenzic inspect codes --tier governance`.
+
+### `brand_obsolescence`
+
+**Type:** list of strings — **Default:** `[]`
+
+Deprecated brand terms that activate `Z601 BRAND_OBSOLESCENCE` when found in scanned
+documentation lines.
+
+### `i18n_parity`
+
+**Type:** boolean — **Default:** `false`
+
+When `true`, enables governance reporting for `Z602 I18N_PARITY` in the tiered registry.
+
+```toml
+[governance]
+brand_obsolescence = ["Obsidian"]
+i18n_parity = true
+```
+
+### Activation semantics
+
+- `Z601` is active only when `brand_obsolescence` contains at least one term.
+- `Z602` is active only when `i18n_parity = true`.
+
+---
+
+## `.zenzic.local.toml` (machine-local overlay) {#zenzic-local-toml}
+
+`.zenzic.local.toml` is a git-ignored, machine-local overlay loaded after the primary
+configuration. It is the canonical home for `Z204 FORBIDDEN_TERM` patterns.
+
+Only one field is read from the local overlay:
+
+- `forbidden_patterns` (list of literal strings)
+
+Merge behavior is additive and deterministic:
+
+- Existing `forbidden_patterns` from `zenzic.toml` are preserved.
+- Local entries are appended in insertion order.
+- Duplicates are removed while preserving first occurrence.
+
+```toml
+# .zenzic.local.toml
+forbidden_patterns = [
+  "internal-codename",
+  "staging-host.example.internal",
+]
+```
+
+Legacy file note: `.zenzic.dev.toml` is removed in v0.7.0; if present, config loading
+fails with an explicit migration error.
+
+---
+
 ## `[link_validation]` {#link-validation}
 
 **Type:** TOML section — **Added:** v0.7.0 "Quartz Maturity"

@@ -66,7 +66,7 @@ incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `zenzi
 
 ---
 
-## Closed in v0.7.0 — Operation Obsidian Stress {/* zenzic:ignore Z905 */}
+## Closed in v0.7.0 — Operation Obsidian Stress {/* zenzic:ignore Z601 */}
 
 :::info[What was the Operation?]
 
@@ -80,7 +80,7 @@ See the full technical post-mortem: [AI Red Team Attacks Code Linter](https://ze
 
 ### ZRT-001 — Unicode Normalization Bypass (Shield)
 
-**Identified by:** AI Red Team agent "Alpha" during Operation Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identified by:** AI Red Team agent "Alpha" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
 **Component:** `core/shield.py`, `scan_lines_with_lookback()`
 **Description:** The Shield's regex patterns matched ASCII credential shapes. An attacker
 controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
@@ -101,7 +101,7 @@ is not the pattern — it is the encoding.
 
 ### ZRT-002 — Lookback Buffer Escape (Shield)
 
-**Identified by:** AI Red Team agent "Bravo" during Operation Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identified by:** AI Red Team agent "Bravo" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
 **Component:** `core/shield.py`, `scan_lines_with_lookback()`
 **Description:** The Shield's lookback buffer was used to detect multi-line credential
 constructs (e.g. a `password:` key on one line, the value on the next). Agent Bravo
@@ -123,7 +123,7 @@ pattern. An informal "large enough" buffer is not a security guarantee.
 
 ### ZRT-003 — HTML Entity Obfuscation (Shield)
 
-**Identified by:** AI Red Team agent "Charlie" during Operation Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identified by:** AI Red Team agent "Charlie" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
 **Component:** `core/shield.py`
 **Description:** The Shield scanned raw Markdown bytes. Agent Charlie used HTML entity
 encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The Shield's patterns
@@ -143,7 +143,7 @@ pass (NFKC only) is insufficient when HTML rendering is part of the content pipe
 
 ### ZRT-004 — Fenced Block Scope Confusion (Shield)
 
-**Identified by:** AI Red Team agent "Delta" during Operation Obsidian Stress {/* zenzic:ignore Z905 */}
+**Identified by:** AI Red Team agent "Delta" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
 **Component:** `core/shield.py`, fenced block state machine
 **Description:** The Shield originally skipped scanning inside triple-backtick fenced
 blocks, reasoning that code examples are not live secrets. Agent Delta embedded a
@@ -263,10 +263,10 @@ expecting Zenzic to block those terms from documentation, but the scan never hap
    delegates to `_scaffold_local_toml()`. No external callers need updating.
 
 **Brand Integrity Shield — Two-Layer Design:**
-The Z204 Privacy Gate and the Z905 Brand Obsolescence Guard form a two-layer architecture:
+The Z204 Privacy Gate and the Z601 Brand Obsolescence Guard form a two-layer architecture:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non-suppressible.
   Designed for private terms that must never appear in any published doc.
-- **Z905** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore Z905`.
+- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore Z601`.
   Designed for deprecated brand terms where historical references in CHANGELOG files
   are acceptable.
 

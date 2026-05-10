@@ -9,7 +9,7 @@ description: "Come Zenzic scopre e carica gli adapter dei motori di documentazio
 
 # Guida alla Configurazione dei Motori
 
-Zenzic è **agnostico** — funziona con MkDocs, Zensical o una semplice cartella di file
+Zenzic è **agnostico** — funziona con MkDocs, Zensical o una cartella standard di file
 Markdown senza richiedere l'installazione di alcun framework di build. È anche **opinato**:
 quando dichiari un motore, devi dimostrarlo. Questa guida spiega come configurare Zenzic
 per ogni motore supportato e quali sono le regole.
@@ -303,7 +303,7 @@ Il risultato:
 
 `DocusaurusAdapter` viene selezionato quando `engine = "docusaurus"` o quando
 `docusaurus.config.ts` (o `.js`) viene rilevato nella root del progetto. Legge la
-configurazione di Docusaurus come **testo semplice** usando pattern matching — nessun
+configurazione di Docusaurus come **testo statico** usando pattern matching — nessun
 runtime Node.js, nessun `npm install`, nessuna valutazione JavaScript.
 
 ### Analisi solo-sorgente
@@ -574,7 +574,7 @@ qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
 
 ### Quando usare Standalone
 
-- **Repository Markdown statici** — wiki, ADR log, documentazione in testo semplice senza
+- **Repository Markdown statici** — wiki, ADR log, documentazione in testo statico senza
 
   pipeline di build.
 
