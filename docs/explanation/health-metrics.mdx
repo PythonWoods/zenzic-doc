@@ -32,7 +32,7 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 | **Structural Integrity** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z107] | **40 %** |
 | **Content Excellence** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **30 %** |
 | **Navigation & SEO** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
-| **Brand & Assets** | `zenzic check assets [PATH]` | [Z903], [Z904], [Z905] | **10 %** |
+| **Brand & Assets** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **10 %** |
 
 [Z101]: ../reference/finding-codes.mdx#z101
 [Z102]: ../reference/finding-codes.mdx#z102
@@ -45,9 +45,9 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 [Z502]: ../reference/finding-codes.mdx#z502
 [Z503]: ../reference/finding-codes.mdx#z503
 [Z505]: ../reference/finding-codes.mdx#z505
-[Z903]: ../reference/finding-codes.mdx#z903
-[Z904]: ../reference/finding-codes.mdx#z904
-[Z905]: ../reference/finding-codes.mdx#z905
+[Z405]: ../reference/finding-codes.mdx#z405
+[Z406]: ../reference/finding-codes.mdx#z406
+[Z601]: ../reference/finding-codes.mdx#z601
 
 :::danger[Security Override]
 If any security finding is detected — Z201 (Shield), Z202, or Z203 (Blood Sentinel) —
@@ -71,10 +71,10 @@ category have no further effect on the total score — this is the **Category Ca
 | Z104 | File Not Found | 8.0 | Structural |
 | Z102 | Missing Anchor | 5.0 | Structural |
 | Z402 | Orphan Page | 4.0 | Navigation |
-| Z905 | Brand Obsolescence | 3.0 | Brand |
-| Z903 | Unused Asset | 3.0 | Brand |
+| Z601 | Brand Obsolescence | 3.0 | Brand |
+| Z405 | Unused Asset | 3.0 | Brand |
 | Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
-| Z904 | Nav Contract Error | 2.0 | Brand |
+| Z406 | Nav Contract Error | 2.0 | Brand |
 | Z105 | Absolute Path | 2.0 | Structural |
 | Z502 | Short Content | 1.0 | Content |
 | Z505 | Untagged Code Block | 1.0 | Content |
@@ -189,12 +189,12 @@ mathematical invariants.
 ## Nav Contract Integrity — Scored as Brand & Assets
 
 The CEO's audit noted a terminological correction: what users sometimes call
-"Nav Isolation" is formally **Nav Contract Integrity ([Z904])**.
+"Nav Isolation" is formally **Nav Contract Integrity ([Z406])**.
 
-Z904 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
+Z406 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
 `nav:` entry or a Docusaurus `sidebars.ts` explicit entry) does not exist on disk.
-Each Z904 violation contributes to the **Brand & Assets** category (10%) using the
-same per-code penalty as other scored findings (Z904: 2.0 pts per violation).
+Each Z406 violation contributes to the **Brand & Assets** category (10%) using the
+same per-code penalty as other scored findings (Z406: 2.0 pts per violation).
 
 ---
 
@@ -208,9 +208,9 @@ When `zenzic score` returns 100/100, it is a formal guarantee that:
 - Every code snippet is syntactically valid (zero Z503)
 - No placeholder content exists (zero Z501)
 - No untagged code blocks exist (zero Z505)
-- No unused assets exist (zero Z903)
-- No nav contract violations exist (zero Z904)
-- No obsolete brand references exist (zero Z905)
+- No unused assets exist (zero Z405)
+- No nav contract violations exist (zero Z406)
+- No obsolete brand references exist (zero Z601)
 - The Shield found no credentials in any file (zero Z201 — implicit, collapses score to 0)
 
 <SentinelOutput variant="clean" />

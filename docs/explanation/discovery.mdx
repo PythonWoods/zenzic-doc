@@ -250,7 +250,7 @@ When an adapter does return content roots, four pipeline stages cooperate to adm
 1. **Discovery** -- `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` walks each root with `walk_files` (same `os.walk` engine, same exclusion manager) and yields `(abs_path, logical_rel)` pairs where `logical_rel` carries the URL prefix as its first segment (e.g. `Path('blog/2026-04-12-foo.mdx')`).
 2. **VSM** -- `build_vsm` resolves every file's logical `rel` from `docs_root` *or* a matched extra root, then dispatches to the adapter's `get_route_info(rel)`. The prefix injection lets a single adapter call disambiguate without a second dispatch.
 3. **Validator** -- the link checker loads extra-root files into `md_contents`, extends `_allowed_roots` so cross-tree relative links resolve under the Shield, and feeds the prefixed `rel` into "Did you mean?" suggestions.
-4. **Scanner** -- `find_unused_assets` and `find_placeholders` iterate extra roots when collecting reference sets, so an asset cited only from a blog post is not reported as Z903 (Unused Asset).
+4. **Scanner** -- `find_unused_assets` and `find_placeholders` iterate extra roots when collecting reference sets, so an asset cited only from a blog post is not reported as Z405 (Unused Asset).
 
 ### Auto-discovery without `subprocess` {#auto-discovery}
 

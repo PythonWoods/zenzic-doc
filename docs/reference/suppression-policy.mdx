@@ -22,13 +22,13 @@ Suppression is **format-aware** and operates at the line level. Add a comment at
 **Markdown (`.md`) files:**
 
 ```markdown
-Quartz was previously known as Obsidian. <!-- zenzic:ignore Z905 -->
+Quartz was previously known as Obsidian. <!-- zenzic:ignore Z601 -->
 ```
 
 **MDX (`.mdx`) files:**
 
 ```mdx
-Quartz was previously known as Obsidian. {/* zenzic:ignore Z905 */}
+Quartz was previously known as Obsidian. {/* zenzic:ignore Z601 */}
 ```
 
 Both comment forms are invisible in rendered output — Markdown processors treat HTML comments as non-rendered, and Docusaurus/React treats `{/* */}` as JSX whitespace. The distinction matters: using the wrong comment type in the wrong file format will cause the suppression to be silently ignored.
@@ -36,7 +36,7 @@ Both comment forms are invisible in rendered output — Markdown processors trea
 To suppress **multiple codes on the same line**, add one comment per code:
 
 ```mdx
-Some line. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z905 */}
+Some line. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
 ```
 
 ### Recommended: Trailing Position
@@ -46,7 +46,7 @@ The comment should always appear at the **end of the line** (or end of the cell 
 **Prose / lists:** Comment at absolute end of line.
 
 ```mdx
-- **Historical reference** — Quartz was previously known as Obsidian. <!-- zenzic:ignore Z905 -->
+- **Historical reference** — Quartz was previously known as Obsidian. <!-- zenzic:ignore Z601 -->
 ```
 
 **Markdown tables:** Comment at the end of the **last cell**, before the closing pipe.
@@ -96,9 +96,9 @@ Zenzic divides finding codes into two classes: **Suppressible** (the author's in
 | Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
 | Z901 | RULE_ENGINE_ERROR | ✅ Yes |
 | Z902 | RULE_TIMEOUT | ✅ Yes |
-| Z903 | UNUSED_ASSET | ✅ Yes |
-| Z904 | NAV_CONTRACT | ✅ Yes |
-| Z905 | BRAND_OBSOLESCENCE | ✅ Yes |
+| Z405 | UNUSED_ASSET | ✅ Yes |
+| Z406 | NAV_CONTRACT | ✅ Yes |
+| Z601 | BRAND_OBSOLESCENCE | ✅ Yes |
 
 :::danger[The Inviolability Law — CEO-152]
 `zenzic:ignore Z201`, `zenzic:ignore Z202`, and `zenzic:ignore Z203` are **silently rejected**. The Shield and Blood Sentinel scanners operate independently of the suppression engine. Even if a `zenzic:ignore` comment is present on the same line as a credential, Zenzic will still emit the finding and exit with code 2 or 3.
@@ -133,7 +133,7 @@ You cannot ignore a breach.
 Suppression is an act of **documented intent**, not evasion. In a `git` repository, a `zenzic:ignore` comment is a signed declaration that the author reviewed the finding and considered it a legitimate exception. Suppression should be used for:
 
 - **ToC navigation links** — `[Section Name](#section-name)` is a common in-page ToC pattern that triggers Z107. These are intentional and suppressible. {/* zenzic:ignore Z107 */}
-- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames (Z905).
+- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames (Z601).
 - **Intentionally short pages** — A `glossary.md` with terse definitions may be below the Z502 word-count threshold by design.
 
 Suppression should **not** be used to:

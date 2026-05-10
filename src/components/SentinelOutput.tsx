@@ -37,6 +37,8 @@ type Variant = 'clean' | 'breach' | 'findings' | 'inspect';
  * | 'breach'    | 'breach'   |  2   | Security perimeter compromised   |
  */
 export type Status = 'success' | 'error' | 'warning' | 'inspect' | 'breach';
+export type ScoringTier = 'core' | 'structure' | 'content' | 'governance' | 'security';
+export type ReleaseState = 'active' | 'inactive';
 
 const STATUS_TO_VARIANT: Record<Status, Variant> = {
   success: 'clean',
@@ -61,6 +63,10 @@ export interface FindingRow {
   message: string;
   /** Visual severity — controls icon and colour. Defaults to 'error'. */
   severity?: 'error' | 'warning' | 'info';
+  /** ADR-012 ownership tier associated to this finding code. */
+  tier?: ScoringTier;
+  /** Runtime status from governance controls. */
+  state?: ReleaseState;
 }
 
 /**
@@ -79,6 +85,10 @@ export interface InspectRow {
   icon?: string;
   /** True for non-suppressible security exits (exit 2 & 3) */
   security?: boolean;
+  /** ADR-012 ownership tier represented by this scanner block. */
+  tier?: ScoringTier;
+  /** Runtime status from governance controls. */
+  state?: ReleaseState;
 }
 
 interface SentinelOutputProps {
@@ -350,11 +360,12 @@ function FindingsOutput({
 // ── Inspect variant — scanner arsenal table ───────────────────────────────────
 
 const DEFAULT_SCANNERS: InspectRow[] = [
-  { codes: 'Z201',     scanner: 'The Shield',       capability: 'Credential & security detection',      exit: '2', icon: '🛡', security: true },
-  { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Path-traversal & jailbreak detection', exit: '3', icon: '🩸', security: true },
-  { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Broken links & anchor resolution',     exit: '1', icon: '🔗' },
-  { codes: 'Z401–404', scanner: 'Structure Guard',  capability: 'Orphans, indexes & config assets',     exit: '1', icon: '🏗' },
-  { codes: 'Z501–504', scanner: 'Content Sentinel', capability: 'Placeholders, snippets & score',       exit: '1', icon: '📄' },
+  { codes: 'Z201',     scanner: 'The Shield',       capability: 'Credential & security detection',      exit: '2', icon: '🛡', security: true, tier: 'security', state: 'active' },
+  { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Path-traversal & jailbreak detection', exit: '3', icon: '🩸', security: true, tier: 'security', state: 'active' },
+  { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Broken links & anchor resolution',     exit: '1', icon: '🔗', tier: 'core', state: 'active' },
+  { codes: 'Z401–406', scanner: 'Structure Guard',  capability: 'Orphans, assets & navigation contract', exit: '1', icon: '🏗', tier: 'structure', state: 'active' },
+  { codes: 'Z501–505', scanner: 'Content Sentinel', capability: 'Placeholders, snippets & score',       exit: '1', icon: '📄', tier: 'content', state: 'active' },
+  { codes: 'Z601–602', scanner: 'Governance Watch', capability: 'Brand obsolescence & i18n parity',     exit: '1', icon: '🏛', tier: 'governance', state: 'active' },
 ];
 
 function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }): React.JSX.Element {
@@ -365,22 +376,26 @@ function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }
         CORE SCANNERS  (built-in)
       </div>
 
-      <div className="grid grid-cols-[6rem_9rem_1fr_3.5rem] gap-x-3 border-b border-indigo-200 dark:border-indigo-500/20 pb-2 mb-2">
+      <div className="grid grid-cols-[6rem_9rem_1fr_5rem_5rem_3.5rem] gap-x-3 border-b border-indigo-200 dark:border-indigo-500/20 pb-2 mb-2">
         <span className="text-indigo-700 dark:text-indigo-300 font-semibold">Codes</span>
         <span className="text-indigo-700 dark:text-indigo-300 font-semibold">Scanner</span>
         <span className="text-indigo-700 dark:text-indigo-300 font-semibold">Capability</span>
+        <span className="text-indigo-700 dark:text-indigo-300 font-semibold">Tier</span>
+        <span className="text-indigo-700 dark:text-indigo-300 font-semibold">State</span>
         <span className="text-indigo-700 dark:text-indigo-300 font-semibold text-right">Exit</span>
       </div>
 
       <div className="space-y-1.5 mb-4">
         {rows.map((r, i) => (
-          <div key={i} className="grid grid-cols-[6rem_9rem_1fr_3.5rem] gap-x-3 items-center">
+          <div key={i} className="grid grid-cols-[6rem_9rem_1fr_5rem_5rem_3.5rem] gap-x-3 items-center">
             <span className="dark:text-zinc-300 text-zinc-700">{r.codes}</span>
             <span className="dark:text-zinc-300 text-zinc-700">
               {r.icon && <span className="mr-1 select-none">{r.icon}</span>}
               {r.scanner}
             </span>
             <span className="dark:text-zinc-400 text-zinc-600">{r.capability}</span>
+            <span className="dark:text-zinc-400 text-zinc-600">{r.tier ?? '-'}</span>
+            <span className="dark:text-zinc-400 text-zinc-600">{r.state ?? '-'}</span>
             <span className={r.security ? 'text-right font-bold text-amber-400' : 'text-right font-bold dark:text-zinc-400 text-zinc-500'}>
               {r.exit}{r.security ? ' ⚠' : ''}
             </span>

@@ -22,13 +22,13 @@ La soppressione è **format-aware** e opera a livello di riga. Aggiungi un comme
 **File Markdown (`.md`):**
 
 ```markdown
-Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z905 -->
+Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
 ```
 
 **File MDX (`.mdx`):**
 
 ```mdx
-Quartz era precedentemente noto come Obsidian. {/* zenzic:ignore Z905 */}
+Quartz era precedentemente noto come Obsidian. {/* zenzic:ignore Z601 */}
 ```
 
 Entrambe le forme di commento sono invisibili nell'output renderizzato: i processori Markdown trattano i commenti HTML come non-renderizzati, e Docusaurus/React tratta `{/* */}` come spazio bianco JSX. La distinzione è importante: usare il tipo di commento sbagliato nel formato di file sbagliato farà sì che la soppressione venga silenziosamente ignorata.
@@ -36,7 +36,7 @@ Entrambe le forme di commento sono invisibili nell'output renderizzato: i proces
 Per sopprimere **più codici sulla stessa riga**, aggiungi un commento per ogni codice:
 
 ```mdx
-Alcune riga. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z905 */}
+Alcune riga. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
 ```
 
 ### Posizione Raccomandata: Trailing (In Coda)
@@ -46,7 +46,7 @@ Il commento dovrebbe trovarsi sempre **alla fine della riga** (o alla fine della
 **Prosa / liste:** Commento alla fine assoluta della riga.
 
 ```mdx
-- **Riferimento storico** — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z905 -->
+- **Riferimento storico** — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
 ```
 
 **Tabelle Markdown:** Commento alla fine dell'**ultima cella**, prima del pipe di chiusura.
@@ -96,9 +96,9 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | Z505 | UNTAGGED_CODE_BLOCK | ✅ Sì |
 | Z901 | RULE_ENGINE_ERROR | ✅ Sì |
 | Z902 | RULE_TIMEOUT | ✅ Sì |
-| Z903 | UNUSED_ASSET | ✅ Sì |
-| Z904 | NAV_CONTRACT | ✅ Sì |
-| Z905 | BRAND_OBSOLESCENCE | ✅ Sì |
+| Z405 | UNUSED_ASSET | ✅ Sì |
+| Z406 | NAV_CONTRACT | ✅ Sì |
+| Z601 | BRAND_OBSOLESCENCE | ✅ Sì |
 
 :::danger[La Legge dell'Inviolabilità — CEO-152]
 `zenzic:ignore Z201`, `zenzic:ignore Z202` e `zenzic:ignore Z203` vengono **silenziosamente rifiutati**. Lo Shield e il Blood Sentinel operano indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente sulla stessa riga di una credenziale, Zenzic emetterà comunque il finding e uscirà con il codice 2 o 3.
@@ -133,7 +133,7 @@ Non puoi ignorare una breccia.
 La soppressione è un atto di **intento documentato**, non di evasione. In un repository `git`, un commento `zenzic:ignore` è una dichiarazione firmata che l'autore ha esaminato il finding e lo ha considerato un'eccezione legittima. La soppressione dovrebbe essere usata per:
 
 - **Link di navigazione ToC** — `[Nome Sezione](#nome-sezione)` è un pattern ToC in-page comune che attiva Z107. Sono intenzionali e sopprimibili. {/* zenzic:ignore Z107 */}
-- **Riferimenti storici al brand** — Le voci di CHANGELOG, guide di migrazione e documentazione storica possono legittimamente nominare codename obsoleti (Z905).
+- **Riferimenti storici al brand** — Le voci di CHANGELOG, guide di migrazione e documentazione storica possono legittimamente nominare codename obsoleti (Z601).
 - **Pagine intenzionalmente brevi** — Un `glossary.md` con definizioni concise può essere sotto la soglia di conteggio parole Z502 per design.
 
 La soppressione **non** dovrebbe essere usata per:

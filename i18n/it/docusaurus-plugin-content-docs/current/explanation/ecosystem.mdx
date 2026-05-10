@@ -189,16 +189,14 @@ mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
 
 Il modello Safe Harbor va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti (codename di release non più in uso) porta un tipo di debito diverso: **debito narrativo**. Una pagina v0.7.0 che fa ancora riferimento a un codename v0.6.x contraddice la cronologia delle versioni che cerca di documentare.
 
-Zenzic affronta questo problema attraverso il blocco di configurazione [`[project_metadata]`](../reference/configuration.mdx) e il finding [Z905 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z905):
+Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
 
 ```toml title="zenzic.toml"
-[project_metadata]
-release_name = "Quartz"
-obsolete_names = ["Obsidian"]
-obsolete_names_exclude_patterns = ["CHANGELOG*.md", "adr-*.mdx"]
+[governance]
+brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore Z905 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore Z905 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
+Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore Z601 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore Z601 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
 
 ---
 

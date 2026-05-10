@@ -69,7 +69,7 @@ excluded_dirs = ["includes", "assets", "partials", "_templates"]
 
 ## Protezioni di Sistema (Esclusioni di Livello 1) {#system-guardrails}
 
-Zenzic esclude automaticamente certi file da tutti i controlli di qualità — incluso il controllo asset non utilizzati (Z903). Queste **Protezioni di Livello 1** sono immutabili e non richiedono alcuna configurazione utente.
+Zenzic esclude automaticamente certi file da tutti i controlli di qualità — incluso il controllo asset non utilizzati (Z405). Queste **Protezioni di Livello 1** sono immutabili e non richiedono alcuna configurazione utente.
 
 ### Livello 1a — Infrastruttura Universale
 
@@ -97,7 +97,7 @@ Ogni adapter esclude automaticamente i file di configurazione del motore che con
 :::tip
 **Non è necessario** aggiungere questi file a `excluded_assets`. Zenzic li protegge a livello di
 engine. Eseguendo `zenzic check all .` dalla root del progetto non verranno mai prodotti warning
-Z903 su `docusaurus.config.ts`, `package.json` o qualsiasi altro file di configurazione del motore.
+Z405 su `docusaurus.config.ts`, `package.json` o qualsiasi altro file di configurazione del motore.
 :::
 
 ---

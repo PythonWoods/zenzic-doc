@@ -11,6 +11,25 @@ description: "L'Enciclopedia definitiva dei Codici di Finding di Zenzic. Rimedi 
 
 Ogni problema rilevato da Zenzic è contrassegnato da un **codice di finding canonico** (`Zxxx`). Questa enciclopedia fornisce il contesto tecnico e i passaggi pratici di rimedio per ogni segnale diagnostico.
 
+## Tier Model (ADR-012)
+
+Zenzic organizza le diagnostiche in quattro tier operativi:
+
+| Tier | Ownership | Formato | Ambito |
+|---|---|---|---|
+| Core | Zenzic | `Zxxx` | Scanner built-in e finding di sistema |
+| Governance | Zenzic | `Z6xx` | Check di policy opt-in (`[governance]`) |
+| Plugin | Terze parti | `<plugin-id>:<code>` | Regole esterne via entry-point |
+| Custom | Progetto locale | `ZZxxx` | Regole `[[custom_rules]]` nel TOML |
+
+## Stability Contract
+
+Il registro codici è governato da superfici contrattuali immutabili:
+
+- `FROZEN_CODES`: codici che non possono essere rinumerati o mutati semanticamente senza approvazione architetturale.
+- `NON_SUPPRESSIBLE_CODES`: codici di sicurezza che non possono essere silenziati inline.
+- `PLUGIN_FORBIDDEN_EXITS`: i plugin non possono emettere Exit 2/3 (riservati alla semantica di sicurezza core).
+
 :::tip[Deep-linking]
 Ogni codice ha un'ancora permanente. Puoi collegarti direttamente a un codice specifico usando `https://zenzic.dev/it/docs/reference/finding-codes#z101`.
 :::
@@ -27,7 +46,8 @@ Zenzic organizza le rilevazioni in **sette categorie diagnostiche**, ognuna affr
 | **Z3xx** | Integrità dei Riferimenti | Definizioni riferimenti dangling/duplicate | `error`/`warning` | ✅ Sì |
 | **Z4xx** | Struttura | Directory index, pagine orfane, alt text mancante, asset config | `info`/`warning` | ✅ Sì |
 | **Z5xx** | Qualità Contenuti | Testo placeholder, contenuto corto, validazione snippet, regressioni | `warning`/`error` | ✅ Sì |
-| **Z9xx** | Engine e Sistema | Errori esecuzione regole, timeout, asset inutilizzati, violazioni nav | `error`/`warning` | ✅ Sì |
+| **Z6xx** | Governance | Obsolescenza brand, parità traduzioni (opt-in) | `warning` | ✅ Sì |
+| **Z9xx** | Engine e Sistema | Errori esecuzione regole, timeout, diagnostiche di sistema | `error`/`warning` | ✅ Sì |
 
 :::info[Sintassi di soppressione per riga]
 Sopprimi un finding su una riga specifica con un commento format-aware sulla stessa riga.\
@@ -337,9 +357,9 @@ Zenzic garantisce l'integrità del brand e della privacy attraverso due livelli 
 | Livello | Fonte | Scope | Severità |
 |---|---|---|---|
 | **Z204 Privacy Gate** | `forbidden_patterns` in `.zenzic.local.toml` *(ignorato da git)* | Termini privati — codici interni, host di staging, alias di team | **Exit 2 (Critico)** |
-| **Z905 Brand Guard** | `obsolete_names` in `zenzic.toml` | Termini di brand obsoleti (es. vecchio nome prodotto) | Exit 1 (Qualità) |
+| **Z601 Brand Guard** | `[governance].brand_obsolescence` in `zenzic.toml` | Termini di brand obsoleti (es. vecchio nome prodotto) | Exit 1 (Qualità) |
 
-Usa Z204 per segreti che non devono mai essere committati. Usa Z905 per l'igiene del brand dove i riferimenti storici intenzionali (es. voci di CHANGELOG) devono poter essere soppressi.
+Usa Z204 per segreti che non devono mai essere committati. Usa Z601 per l'igiene del brand dove i riferimenti storici intenzionali (es. voci di CHANGELOG) devono poter essere soppressi.
 :::
 
 * **Severità:** `security_breach` (Exit 2)
@@ -580,10 +600,12 @@ Z902 è un **timeout a livello di sistema**. Non riduce il [Punteggio di Qualit�
     2. Semplifica i pattern per evitare quantificatori annidati come `(a+)+`.
     3. Usa alternative non-backtracking se possibile.
 
-### Z903: UNUSED_ASSET {#z903}
+### Z405: UNUSED_ASSET {#z405}
+
+<span id="z903"></span>
 
 :::info[Punteggio di Qualità — Brand & Asset (10%)]
-Z903 conta verso la categoria **Brand & Asset**, che ha un peso del 10% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni asset inutilizzato applica un −20% di decadimento a questa categoria.
+Z405 conta verso la categoria **Brand & Asset**, che ha un peso del 10% nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni asset inutilizzato applica un −20% di decadimento a questa categoria.
 :::
 
 * **Severità:** `warning`
@@ -592,10 +614,12 @@ Z903 conta verso la categoria **Brand & Asset**, che ha un peso del 10% nel [Pun
     1. Elimina il file inutilizzato.
     2. Oppure, usalo in una pagina di documentazione dove appropriato.
 
-### Z904: NAV_CONTRACT {#z904}
+### Z406: NAV_CONTRACT {#z406}
+
+<span id="z904"></span>
 
 :::info[Punteggio di Qualità — Brand & Asset (10%)]
-Z904 conta verso la categoria **Brand & Asset** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni violazione del contratto di navigazione applica un −20% di decadimento alla categoria brand pesata al 10%. Correggi la configurazione di navigazione per eliminare il finding.
+Z406 conta verso la categoria **Brand & Asset** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Ogni violazione del contratto di navigazione applica un −20% di decadimento alla categoria brand pesata al 10%. Correggi la configurazione di navigazione per eliminare il finding.
 :::
 
 * **Severità:** `error`
@@ -606,31 +630,35 @@ Z904 conta verso la categoria **Brand & Asset** nel [Punteggio di Qualità Deter
 
 ---
 
-### Z905: BRAND_OBSOLESCENCE {#z905}
+## Z6xx — Governance
+
+### Z601: BRAND_OBSOLESCENCE {#z601}
+
+<span id="z905"></span>
 
 :::info[Punteggio di Qualità — Brand & Asset (10%)]
-L’obsolescenza del brand è una metrica chiave della maturità della documentazione. Ogni finding Z905 contribuisce alla categoria **Brand & Asset** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Un punteggio 100/100 richiede coerenza del brand insieme all’integrità strutturale e dei contenuti. Sopprimi i riferimenti storici intenzionali con `<!-- zenzic:ignore Z905 -->` (Markdown) o `{/* zenzic:ignore Z905 */}` (MDX).
+L’obsolescenza del brand è una metrica chiave della maturità della documentazione. Ogni finding Z601 contribuisce alla categoria **Brand & Asset** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Un punteggio 100/100 richiede coerenza del brand insieme all’integrità strutturale e dei contenuti. Sopprimi i riferimenti storici intenzionali con `<!-- zenzic:ignore Z601 -->` (Markdown) o `{/* zenzic:ignore Z601 */}` (MDX).
 :::
 
 <SentinelOutput
   status="warning"
-  code="Z905"
+  code="Z601"
   exitCode={1}
   compact
   rows={[{
-    code: "Z905",
+    code: "Z601",
     file: "docs/explanation/architecture.mdx",
     line: 12,
-    message: "Termine di brand obsoleto 'Obsidian': usa 'Quartz'. Aggiungi <!-- zenzic:ignore Z905 --> (Markdown) o {/* zenzic:ignore Z905 */} (MDX) alla riga per sopprimere i riferimenti storici intenzionali."
+    message: "Termine di brand obsoleto 'Obsidian': usa 'Quartz'. Aggiungi <!-- zenzic:ignore Z601 --> (Markdown) o {/* zenzic:ignore Z601 */} (MDX) alla riga per sopprimere i riferimenti storici intenzionali."
   }]}
 />
 
 * **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[project_metadata]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "Quartz"`) e `obsolete_names` elenca gli identificatori di release precedenti (es. `obsolete_names = ["Obsidian", "Ossidiana"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z905. Le righe con un commento `zenzic:ignore Z905` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z905 -->` nei file ``.md`` e `{/* zenzic:ignore Z905 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
+* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "Quartz"`) e `brand_obsolescence` elenca gli identificatori di release precedenti (es. `brand_obsolescence = ["Obsidian", "Ossidiana"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z601. Le righe con un commento `zenzic:ignore Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z601 -->` nei file ``.md`` e `{/* zenzic:ignore Z601 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
 * **Passaggi di Rimedio:**
     1. Aggiorna il testo per usare il nome della release corrente.
-    2. Per i riferimenti storici intenzionali in file ``.md``, aggiungi `<!-- zenzic:ignore Z905 -->` alla riga.
-    3. Per i riferimenti storici intenzionali in file ``.mdx``, aggiungi `{/* zenzic:ignore Z905 */}` alla riga.
+    2. Per i riferimenti storici intenzionali in file ``.md``, aggiungi `<!-- zenzic:ignore Z601 -->` alla riga.
+    3. Per i riferimenti storici intenzionali in file ``.mdx``, aggiungi `{/* zenzic:ignore Z601 */}` alla riga.
     4. Per esentare un intero pattern di file, aggiungilo a `obsolete_names_exclude_patterns` in `zenzic.toml`.
 
 ---
@@ -664,10 +692,12 @@ Z906 è un diagnostic informativo. Non fa fallire lo step del workflow ed è sop
 
 ---
 
-### Z907: I18N_PARITY {#z907}
+### Z602: I18N_PARITY {#z602}
+
+<span id="z907"></span>
 
 :::info[Non incluso nel Quality Score]
-Z907 è un **controllo di integrità bilingue**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolvilo per garantire che i tuoi contenuti tradotti siano completi e coerenti.
+Z602 è un **controllo di integrità bilingue**. Non riduce il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Risolvilo per garantire che i tuoi contenuti tradotti siano completi e coerenti.
 :::
 
 * **Gravità:** `warning`
@@ -678,7 +708,7 @@ Z907 è un **controllo di integrità bilingue**. Non riduce il [Punteggio di Qua
     1. Crea il file di traduzione mancante nel percorso corrispondente sotto `i18n/<locale>/docusaurus-plugin-content-docs/current/`.
     2. Copia il blocco frontmatter della lingua base e traduci i valori — non aggiungere né rimuovere chiavi rispetto alla base.
     3. Esegui nuovamente `zenzic check all` per confermare che la parità è ripristinata.
-    4. Per asimmetrie intenzionali (es. una pagina specifica per la locale o una bozza non ancora tradotta), sopprimi con `{/* zenzic:ignore Z907 */}` sul blocco frontmatter o aggiungi il pattern del file a `i18n_exclude_patterns` in `zenzic.toml`.
+    4. Per asimmetrie intenzionali (es. una pagina specifica per la locale o una bozza non ancora tradotta), sopprimi con `{/* zenzic:ignore Z602 */}` sul blocco frontmatter o aggiungi il pattern del file a `i18n_exclude_patterns` in `zenzic.toml`.
 
 ---
 
@@ -693,16 +723,16 @@ Zenzic supporta la **soppressione per riga, per codice** tramite commenti inline
 Nei file ``.md``, usa un commento HTML standard (invisibile nel Markdown renderizzato):
 
 ```markdown
-L'era Ossidiana ha definito le fondamenta. <!-- zenzic:ignore Z905 -->
+L'era Ossidiana ha definito le fondamenta. <!-- zenzic:ignore Z601 -->
 ```
 
 Nei file ``.mdx``, usa un commento JSX (invisibile nel MDX renderizzato, sicuro per Docusaurus/React):
 
 ```mdx
-L'era Ossidiana ha definito le fondamenta. {/* zenzic:ignore Z905 */}
+L'era Ossidiana ha definito le fondamenta. {/* zenzic:ignore Z601 */}
 ```
 
-Ogni commento di soppressione silenzia **solo** il codice specificato su quella riga. Per sopprimere più codici sulla stessa riga, aggiungi più commenti. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `zenzic.toml` (Z905) o i pattern `excluded_files` pertinenti.
+Ogni commento di soppressione silenzia **solo** il codice specificato su quella riga. Per sopprimere più codici sulla stessa riga, aggiungi più commenti. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `zenzic.toml` (Z601) o i pattern `excluded_files` pertinenti.
 
 :::tip[Usa la soppressione con parsimonia]
 La soppressione è per decisioni intenzionali e documentate — non per silenziare finding non revisionati. Ogni riga soppressa dovrebbe avere un commento o una voce ADR corrispondente che spieghi il perché.

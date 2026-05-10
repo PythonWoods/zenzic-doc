@@ -68,7 +68,7 @@ excluded_dirs = ["includes", "assets", "partials", "_templates"]
 
 ## System Guardrails (Level 1 Exclusions) {#system-guardrails}
 
-Zenzic automatically excludes certain files from all quality checks — including the unused-assets check (Z903). These **Level 1 Guardrails** are immutable and require no user configuration.
+Zenzic automatically excludes certain files from all quality checks — including the unused-assets check (Z405). These **Level 1 Guardrails** are immutable and require no user configuration.
 
 ### Level 1a — Universal Infrastructure
 
@@ -95,7 +95,7 @@ Each adapter automatically excludes the engine configuration files it consumes:
 
 :::tip
 You do **not** need to add these files to `excluded_assets`. Zenzic guards them at the engine level.
-Running `zenzic check all .` from the project root will never produce Z903 warnings on your
+Running `zenzic check all .` from the project root will never produce Z405 warnings on your
 `docusaurus.config.ts`, `package.json`, or any other engine configuration file.
 :::
 

@@ -363,7 +363,7 @@ Once a blog tree is discovered, `zenzic check all` validates it as first-class c
 
 - Broken links **inside** a blog post are caught (the file would be silently ignored before).
 - Broken links **from `docs/` to a blog post** (or vice-versa) are caught.
-- Assets referenced **only** from a blog post no longer trigger Z903 (Unused Asset).
+- Assets referenced **only** from a blog post no longer trigger Z405 (Unused Asset).
 - File-name date prefixes (`YYYY-MM-DD-slug.md`) and frontmatter `slug:` overrides are honoured exactly like `docusaurus build` does.
 
 To opt out, set `blog: false` in `docusaurus.config.ts`. To use a custom layout, declare it explicitly in the same config — Zenzic will pick it up.

@@ -187,16 +187,14 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 
 The Safe Harbor model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers (release codenames no longer in use) carries a different kind of debt: **narrative debt**. A v0.7.0 page that still refers to a v0.6.x codename contradicts the version history it is trying to document.
 
-Zenzic addresses this through the [`[project_metadata]`](../reference/configuration.mdx) configuration block and the [Z905 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z905) finding:
+Zenzic addresses this through the [`[governance]`](../reference/configuration.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
 
 ```toml title="zenzic.toml"
-[project_metadata]
-release_name = "Quartz"
-obsolete_names = ["Obsidian"]
-obsolete_names_exclude_patterns = ["CHANGELOG*.md", "adr-*.mdx"]
+[governance]
+brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore Z905 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore Z905 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore Z601 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore Z601 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
 
 ---
 
