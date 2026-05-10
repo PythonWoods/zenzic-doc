@@ -47,7 +47,7 @@ locales        = ["it"]
 release_name = "Basalt"
 
 [governance]
-brand_obsolescence = ["Obsidian", "Ossidiana"]
+brand_obsolescence = ["Obsidian"]
 i18n_parity = true
 
 # --- Z602 I18N PARITY (EPOCH 5) ---

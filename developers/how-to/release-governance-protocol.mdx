@@ -1,0 +1,111 @@
+---
+icon: lucide/shield-check
+sidebar_label: "Release & Governance Protocol"
+description: "Operational developer runbook for the 4-gate release flow, brand governance, and namespace contracts."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Developer Release and Governance Protocol
+
+Use this guide as the default operational contract for every contribution in
+Zenzic repositories.
+
+This is the execution protocol. ADRs remain the historical rationale layer.
+
+---
+
+## 1) Four-Gate Hierarchy
+
+A change is Ready for Basalt only when all four gates pass.
+
+1. IDE Gate
+
+Fix lint and type issues while authoring.
+
+2. Pre-commit Gate
+
+Commit is blocked on style, parsing, and local consistency failures.
+
+3. Pre-push Gate
+
+Push is blocked by full project verification, including i18n parity and
+path/link security checks.
+
+4. CI/CD Gate
+
+The same verification runs in shared infrastructure and must match local outcome.
+
+Operational rule: do not bypass a failing gate by downgrading checks. Fix root
+cause or apply a narrowly-scoped and auditable exception.
+
+---
+
+## 2) Brand and Obsolescence Policy
+
+- Basalt is the active release identity.
+- Obsidian is deprecated and must be detected by governance checks.
+- Quartz is currently tolerated as recent historical context during the v0.8.x
+  transition window.
+
+Practical effect:
+
+- New material should target Basalt terminology.
+- Historical Quartz references may remain only where required by chronology.
+- Do not promote Quartz to obsolescence until a dedicated cleanup phase is
+  completed, otherwise Z601 noise will flood the pipeline.
+
+---
+
+## 3) Namespace Contracts (Z4 and Z6)
+
+- Z4 namespace: structural and infrastructure invariants.
+- Z6 namespace: governance and lifecycle policy invariants.
+
+Mandatory rules:
+
+- Frozen code identities are immutable.
+- Reuse or semantic reassignment of frozen IDs is forbidden.
+- New governance behavior belongs in Z6.
+- Structural checks and platform invariants belong in Z4.
+
+---
+
+## 4) Contribution Checklist
+
+Before commit:
+
+- Run the repository standard local checks.
+- Confirm no unsanctioned config bypass was introduced.
+- Keep changes mirrored across EN and IT when parity applies.
+
+Before push:
+
+- Run full verify entrypoint.
+- Confirm hook-driven execution paths and direct command paths produce the same
+  result.
+
+Before merge:
+
+- Ensure CI reproduces local pass state.
+- Remove temporary exclusions that are no longer justified.
+
+---
+
+## 5) Transition to Full Basalt Enforcement
+
+Basalt migration is a two-stage transition:
+
+1. Identity stage (current)
+
+`release_name = "Basalt"` is active while Quartz remains tolerated as legacy
+historical wording.
+
+2. Hardening stage (planned)
+
+After dedicated historical cleanup, Quartz can be promoted to obsolescence and
+strictly enforced by Z601.
+
+This staging prevents false-positive saturation while preserving governance
+signal quality.

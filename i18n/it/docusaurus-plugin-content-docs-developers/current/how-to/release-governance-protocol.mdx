@@ -1,0 +1,111 @@
+---
+icon: lucide/shield-check
+sidebar_label: "Protocollo Rilascio & Governance"
+description: "Runbook operativo per sviluppatori: 4 gate, governance del brand e contratti di namespace."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Protocollo Operativo di Rilascio e Governance
+
+Usa questa guida come contratto operativo predefinito per ogni contributo nei
+repository Zenzic.
+
+Questa è la procedura di esecuzione. Gli ADR restano il livello storico di
+motivazione architetturale.
+
+---
+
+## 1) Gerarchia dei Quattro Gate
+
+Una modifica è Ready for Basalt solo quando tutti e quattro i gate sono verdi.
+
+1. Gate IDE
+
+Correggere lint e type issue durante la fase di authoring.
+
+2. Gate Pre-commit
+
+Il commit viene bloccato in caso di violazioni stile, parsing o coerenza locale.
+
+3. Gate Pre-push
+
+Il push viene bloccato dalla verifica completa di progetto, inclusa parità i18n e
+controlli di sicurezza path/link.
+
+4. Gate CI/CD
+
+La stessa verifica gira in infrastruttura condivisa e deve replicare l'esito locale.
+
+Regola operativa: non aggirare un gate fallito abbassando i controlli. Correggere
+la causa radice o applicare un'eccezione stretta, motivata e tracciabile.
+
+---
+
+## 2) Policy Brand e Obsolescenza
+
+- Basalt è l'identità di release attiva.
+- Obsidian è deprecato e deve essere intercettato dai check di governance.
+- Quartz è attualmente tollerato come storico recente durante la finestra di
+  transizione v0.8.x.
+
+Effetto pratico:
+
+- Il nuovo materiale deve usare terminologia Basalt.
+- I riferimenti storici a Quartz restano solo dove necessari per cronologia.
+- Non promuovere Quartz in obsolescenza finché non è completata una bonifica
+  dedicata, altrimenti il rumore Z601 satura la pipeline.
+
+---
+
+## 3) Contratti di Namespace (Z4 e Z6)
+
+- Namespace Z4: invarianti strutturali e infrastrutturali.
+- Namespace Z6: invarianti di governance e ciclo di vita.
+
+Regole obbligatorie:
+
+- Le identità codice congelate sono immutabili.
+- Il riuso o la riassegnazione semantica di ID frozen è vietato.
+- Nuovi comportamenti di governance appartengono a Z6.
+- Check strutturali e invarianti di piattaforma appartengono a Z4.
+
+---
+
+## 4) Checklist Contributiva
+
+Prima del commit:
+
+- Eseguire i check locali standard del repository.
+- Verificare che non siano stati introdotti bypass di configurazione non autorizzati.
+- Mantenere i mirror EN/IT quando la parità è prevista.
+
+Prima del push:
+
+- Eseguire l'entrypoint di verifica completa.
+- Confermare che percorsi hook e comandi diretti producano lo stesso risultato.
+
+Prima del merge:
+
+- Verificare che la CI replichi il pass locale.
+- Rimuovere esclusioni temporanee non più giustificate.
+
+---
+
+## 5) Transizione verso Enforcement Basalt Completo
+
+La migrazione Basalt segue una transizione a due stadi:
+
+1. Stadio identità (corrente)
+
+`release_name = "Basalt"` è attivo mentre Quartz resta tollerato come lessico
+storico recente.
+
+2. Stadio hardening (pianificato)
+
+Dopo una bonifica storica dedicata, Quartz potrà essere promosso a obsolescenza
+con enforcement Z601 pieno.
+
+Questa sequenza evita saturazione di falsi positivi preservando la qualità del
+segnale di governance.
