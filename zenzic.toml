@@ -1,5 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
+#
+# 🏛️ LOCAL SOVEREIGNTY (Basalt): keep workstation-only overrides and secrets in
+# `.zenzic.local.toml` (git-ignored). Shared `zenzic.toml` is team policy only.
 
 # --- CORE SETTINGS ---
 docs_dir   = "docs"

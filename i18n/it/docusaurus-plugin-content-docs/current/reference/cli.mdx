@@ -26,6 +26,7 @@ zenzic check references   # Reference-style link + Zenzic Shield (rilevamento cr
 
 # Tutti i controlli in sequenza
 zenzic check all                    # Esegue tutti i controlli
+zenzic check all --audit            # Audit Sovrano: ignora soppressioni inline + per-file
 zenzic check all --strict           # Valida anche gli URL esterni; tratta i warning come errori
 zenzic check all --format json      # Output machine-readable
 zenzic check all --exit-zero        # Segnala problemi ma esce sempre con codice 0
@@ -45,6 +46,40 @@ zenzic check orphans content/               # controlla gli orfani in una sotto-
 zenzic check assets  /percorso/assoluto     # percorso assoluto accettato
 zenzic check all     /percorso/assoluto     # tutti i controlli su un progetto remoto
 ```
+
+### Modalità Audit Sovrano (`--audit`)
+
+`--audit` attiva la postura Truth-Seeker su `zenzic check all`.
+
+- Le soppressioni inline (`zenzic-ignore` / `zenzic:ignore`) vengono ignorate.
+- Le soppressioni config (`[governance].per_file_ignores`) vengono ignorate.
+- I finding di sicurezza non sopprimibili restano invariabilmente bloccanti.
+
+Questa modalità mostra la superficie di debito reale del repository ed è
+pensata per review di governance e hardening pre-release.
+
+```bash
+zenzic check all
+zenzic check all --audit
+```
+
+Il footer stampa i conteggi delle soppressioni attive in entrambe le run; con
+`--audit` stampa anche quante direttive attive sono state bypassate.
+
+---
+
+## Introspection & Guard
+
+```bash
+zenzic config explain            # Mostra valori attivi con origine (global/local/default)
+zenzic guard scan --staged       # Secret Guard veloce sui file staged (pre-commit)
+zenzic guard scan docs/          # Scansione su directory personalizzata
+zenzic guard init                # Installa zenzic-guard in .pre-commit-hooks.yaml
+```
+
+`zenzic config explain` è orientato alla source-truth: ogni campo mostra il
+valore attivo e la sua origine, inclusa la semantica di override locale da
+`.zenzic.local.toml`.
 
 ## Flag globali {#global-flags}
 
@@ -303,6 +338,126 @@ standalone (indipendenti dall'engine).
 entry-point `zenzic.rules` pronto all'uso e template `BaseRule`
 (`src/<modulo>/rules.py`). Include anche una fixture docs minima, cosi il
 progetto generato puo eseguire subito `zenzic check all` come smoke test.
+
+### Blueprint Governance-Ready (v0.8.0)
+
+`zenzic init` ora genera una coppia di configurazioni Governance-Ready:
+
+- `zenzic.toml` (costituzione condivisa, versionata)
+- `.zenzic.local.toml` (sacrario locale macchina, ignorato da git)
+
+Il file globale non è più un guscio vuoto: è un blueprint Basalt con commenti
+didattici, default CAP attivi e puntatore diretto al playbook.
+
+```toml
+# SPDX-FileCopyrightText: 2026 [Your Name] <[Your Email]>
+# SPDX-License-Identifier: Apache-2.0
+
+# --- PROJECT IDENTITY ---
+# [project]
+# name = "My Awesome App" # Used for personalized CLI Governance headers
+
+# --- CORE SETTINGS ---
+docs_dir = "docs"
+strict = true
+fail_under = 100
+
+# --- ENGINE CONTEXT ---
+[build_context]
+engine         = "docusaurus" # Supported: docusaurus, mkdocs, zensical, standalone
+base_url       = "/"
+default_locale = "en"
+
+# --- BRAND INTEGRITY ---
+[project_metadata]
+release_name = "Basalt"
+
+[governance]
+# Maximum allowed architectural debt (inline + per-file suppressions).
+# Default: 30. Build fails if exceeded.
+suppression_cap = 30
+suppression_cap_fail_hard = true
+
+# Terms that should no longer appear in your documentation.
+brand_obsolescence = ["OldProduct", "LegacyTerm"]
+
+# Governance Playbook:
+# https://zenzic.dev/developers/how-to/release-governance-protocol
+
+# --- I18N PARITY (Optional) ---
+# [i18n]
+# enabled = true
+# base_lang = "en"
+# base_source = "docs"
+# strict_parity = true
+# [i18n.targets]
+# it = "i18n/it/docusaurus-plugin-content-docs/current"
+
+# --- GATE 4: CI/CD (GitHub Actions, Optional) ---
+# Add this workflow snippet to .github/workflows/zenzic.yml
+#
+# name: zenzic
+# on: [pull_request, push]
+# jobs:
+#   sentinel:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12'
+#       - run: pipx run zenzic check all --strict
+```
+
+### Sacrario Locale (`.zenzic.local.toml`)
+
+`zenzic init` crea anche un overlay locale didattico, pensato per override
+privati della workstation. Questo file non va mai committato ed è protetto
+automaticamente via `.gitignore` nei repository Git.
+
+```toml
+# --- ZENZIC LOCAL OVERRIDES ---
+# This file is machine-local and must stay in .gitignore.
+# Values declared here override shared config for your workstation only.
+
+[core]
+# docs_dir = "my/custom/path/to/docs"
+
+# Z204 Privacy Gate (local secret terms, literal and case-insensitive).
+# forbidden_patterns = ["Project Titan", "internal-api.corp", "staging.acme.io"]
+forbidden_patterns = []
+
+[governance]
+# suppression_cap = 100
+# suppression_cap_fail_hard = false
+
+[secrets]
+# Store API tokens here (never in shared zenzic.toml).
+# github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
+
+[debug]
+# log_level = "DEBUG"
+
+[env]
+# ZENZIC_FORCE_COLOR = "true"
+```
+
+### Best practice
+
+Decommenta `[project].name` nel file generato per personalizzare gli header
+Governance nella CLI. Se `pyproject.toml` o `package.json` contiene già un
+nome progetto, `zenzic init` lo inserisce automaticamente come hint commentato.
+
+Mantieni segreti e override macchina in `.zenzic.local.toml` soltanto. Usa
+`zenzic.toml` solo per policy di team e regole CI riproducibili.
+
+Dopo la generazione, primo comando consigliato:
+
+```bash
+zenzic check all
+```
+
+Dovresti vedere immediatamente il tuo primo Sentinel Seal.
 
 ---
 

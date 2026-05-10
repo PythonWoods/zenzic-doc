@@ -23,6 +23,82 @@ Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sor
 
 Quando il file vincente esiste ma contiene un errore di sintassi TOML, Zenzic solleva un errore con messaggio Rich-formattato. Non c'e fallback silenzioso: nascondere errori dell'utente sarebbe un rischio.
 
+`zenzic init` crea anche `.zenzic.local.toml` come overlay locale macchina.
+Questo file realizza la Local Sovereignty: i valori locali sovrascrivono la
+config condivisa, ma devono restare privati sulla workstation.
+
+## `.zenzic.local.toml` Local Sanctuary {#local-sanctuary}
+
+`.zenzic.local.toml` è lo spazio di manovra privato dell'ingegnere.
+
+- Viene caricato dopo la config condivisa (`zenzic.toml` o `[tool.zenzic]`) e quindi vince in locale.
+- È pensato per percorsi macchina-specifici, knob temporanei di bonifica, diagnostica e segreti privati.
+- Non è mai il file della policy di team.
+
+Quando `zenzic init` gira in un repository Git, forza la presenza di
+`.zenzic.local.toml` in `.gitignore` (creando o aggiornando `.gitignore` in modo sicuro e non distruttivo).
+
+```toml title=".zenzic.local.toml"
+# --- ZENZIC LOCAL OVERRIDES ---
+# This file is auto-generated and must stay in .gitignore.
+# Everything declared here overrides shared zenzic.toml only on your machine.
+
+[core]
+# docs_dir = "my/custom/path/to/docs"
+forbidden_patterns = []
+
+[governance]
+# suppression_cap = 100
+# suppression_cap_fail_hard = false
+
+[secrets]
+# github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
+
+[debug]
+# log_level = "DEBUG"
+
+[env]
+# ZENZIC_FORCE_COLOR = "true"
+```
+
+Usa `zenzic.toml` per la governance costituzionale condivisa. Usa
+`.zenzic.local.toml` solo per esperimenti locali e dati privati.
+
+### Introspezione Source-of-Truth (`zenzic config explain`)
+
+Usa `zenzic config explain` per verificare sia il valore attivo sia la sua
+origine per ogni campo di configurazione.
+
+```bash
+zenzic config explain
+```
+
+Semantica attesa della provenienza:
+
+- `local` -> `.zenzic.local.toml (Override)`
+- `global` -> `zenzic.toml`
+- `default` -> fallback built-in
+
+Esempio (override governance):
+
+```text
+suppression_cap = 45   Source: .zenzic.local.toml (Override)
+```
+
+### Contratto Governance Soppressioni (Fase 2)
+
+```toml
+[governance]
+suppression_cap = 30
+suppression_cap_fail_hard = true
+per_file_ignores = { "docs/legacy/*.md" = ["Z601"] }
+```
+
+- `suppression_cap` e `suppression_cap_fail_hard` applicano la governance CAP.
+- `per_file_ignores` definisce soppressioni scoped nelle run normali.
+- `zenzic check all --audit` ignora sia le soppressioni inline sia
+	`per_file_ignores`, per mostrare la verità completa del debito.
+
 ```bash
 # Crea un file zenzic.toml nella radice del progetto
 zenzic init

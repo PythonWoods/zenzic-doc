@@ -415,24 +415,46 @@ i18n_parity = true
 ## `.zenzic.local.toml` (overlay locale macchina) {#zenzic-local-toml}
 
 `.zenzic.local.toml` è un overlay locale macchina, ignorato da git, caricato dopo la
-configurazione primaria. È la sede canonica dei pattern `Z204 FORBIDDEN_TERM`.
+configurazione primaria. È la sede canonica degli override macchina e dei pattern
+`Z204 FORBIDDEN_TERM`.
 
-Dal file locale viene letto un solo campo:
+Aree di override supportate:
 
-- `forbidden_patterns` (lista di stringhe letterali)
+- `forbidden_patterns` top-level
+- `[core]` (incluso `[core].forbidden_patterns`)
+- `[build_context]`
+- `[project_metadata]`
+- `[governance]`
+- `[i18n]`
 
-Il merge è additivo e deterministico:
+Aree consigliate solo locali (non condivise):
 
-- I `forbidden_patterns` già presenti in `zenzic.toml` vengono preservati.
-- Le voci locali vengono aggiunte in ordine di inserimento.
-- I duplicati vengono rimossi preservando la prima occorrenza.
+- `[secrets]` (per valori API/PAT locali)
+- `[debug]`
+- `[env]`
+
+La semantica di merge è deterministica:
+
+- Per `forbidden_patterns`, il merge è additivo (globale prima, poi aggiunte locali,
+  con deduplica stabile).
+- Per gli override di sezione (`[core]`, `[build_context]`, `[project_metadata]`,
+  `[governance]`, `[i18n]`), i valori locali sostituiscono i campi condivisi
+  corrispondenti.
+- Le sezioni locali sconosciute vengono preservate nel payload locale parsato e sono
+  disponibili a wrapper o tooling personalizzato.
 
 ```toml
 # .zenzic.local.toml
-forbidden_patterns = [
-  "internal-codename",
-  "staging-host.example.internal",
-]
+
+[core]
+forbidden_patterns = ["internal-codename", "staging-host.example.internal"]
+
+[governance]
+suppression_cap = 100
+suppression_cap_fail_hard = false
+
+[secrets]
+github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
 ```
 
 Nota legacy: `.zenzic.dev.toml` è rimosso in v0.7.0; se presente, il caricamento della

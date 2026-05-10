@@ -53,6 +53,82 @@ engine = "mkdocs"
 
 Use `zenzic init` to scaffold a config file. If `pyproject.toml` exists, the command will prompt whether to embed the config there. Use `zenzic init --pyproject` to skip the prompt.
 
+`zenzic init` also scaffolds `.zenzic.local.toml` as a machine-local overlay. This
+file is designed for Local Sovereignty: local values override shared config, but
+must remain private on your workstation.
+
+## `.zenzic.local.toml` Local Sanctuary {#local-sanctuary}
+
+`.zenzic.local.toml` is the private maneuvering space for engineers.
+
+- It is loaded after shared config (`zenzic.toml` or `[tool.zenzic]`) and therefore wins locally.
+- It is intended for machine-specific paths, temporary cleanup knobs, diagnostics, and private secrets.
+- It is never a team policy file.
+
+When `zenzic init` runs in a Git repository, it enforces `.zenzic.local.toml` inside
+`.gitignore` (creating or updating `.gitignore` safely, without destructive edits).
+
+```toml title=".zenzic.local.toml"
+# --- ZENZIC LOCAL OVERRIDES ---
+# This file is auto-generated and must stay in .gitignore.
+# Everything declared here overrides shared zenzic.toml only on your machine.
+
+[core]
+# docs_dir = "my/custom/path/to/docs"
+forbidden_patterns = []
+
+[governance]
+# suppression_cap = 100
+# suppression_cap_fail_hard = false
+
+[secrets]
+# github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
+
+[debug]
+# log_level = "DEBUG"
+
+[env]
+# ZENZIC_FORCE_COLOR = "true"
+```
+
+Use `zenzic.toml` for shared constitutional governance. Use `.zenzic.local.toml`
+for local experiments and private data only.
+
+### Source-of-Truth Introspection (`zenzic config explain`)
+
+Use `zenzic config explain` to verify both active value and origin for each
+config field.
+
+```bash
+zenzic config explain
+```
+
+Expected provenance semantics:
+
+- `local` -> `.zenzic.local.toml (Override)`
+- `global` -> `zenzic.toml`
+- `default` -> built-in fallback
+
+Example (governance override):
+
+```text
+suppression_cap = 45   Source: .zenzic.local.toml (Override)
+```
+
+### Governance Suppression Contract (Phase 2)
+
+```toml
+[governance]
+suppression_cap = 30
+suppression_cap_fail_hard = true
+per_file_ignores = { "docs/legacy/*.md" = ["Z601"] }
+```
+
+- `suppression_cap` and `suppression_cap_fail_hard` enforce CAP governance.
+- `per_file_ignores` defines scoped suppressions in normal runs.
+- `zenzic check all --audit` ignores both inline suppressions and
+  `per_file_ignores` to expose full debt truth.
+
 ---
 
 ## Core Settings {#core-settings}
