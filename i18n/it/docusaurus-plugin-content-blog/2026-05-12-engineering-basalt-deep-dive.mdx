@@ -15,6 +15,8 @@ Basalt è emerso come risposta sistemica a un pattern ricorrente osservato tra c
 
 {/* truncate */}
 
+Versione inglese disponibile nel mirror in locale inglese di questo articolo.
+
 Questo articolo è per architetti software e stakeholder tecnici che vogliono capire perché v0.8.0 conta sotto il livello del changelog. La tesi centrale di Basalt è semplice: zero-config non significa zero-governance. Significa default deterministici, contratti espliciti e interfacce che restano machine-readable sotto pressione.
 
 La release nasce da cinque fronti convergenti: la frammentazione del contesto in repository complessi, l'ambiguità delle rotte dinamiche nell'analisi statica, i rischi di sicurezza delle regex, il drift di parità tra locale e CI, e i punti ciechi di governance che i tradizionali controlli SSG non modellano mai.
@@ -23,9 +25,9 @@ La release nasce da cinque fronti convergenti: la frammentazione del contesto in
 
 Il sintomo iniziale sembrava trascurabile: l'incertezza nelle decisioni architetturali durante sessioni di manutenzione prolungate. Man mano che il corpo delle istruzioni e delle policy cresceva, l'affidabilità della memoria operativa diminuiva. Si applicava correttamente una regola violandone un'altra stabilita precedentemente nello stesso ciclo.
 
-Non era un problema di qualità della documentazione, ma di budget cognitivo.
+Non era un problema di qualità della documentazione, ma di scalabilità dell'informazione.
 
-Il nostro file guida interno, `ZENZIC_BRAIN.md`, era diventato una memoria operativa densa: regole di naming, eccezioni storiche, gate di governance, invarianti e contratti a livello di adapter. Se un lettore umano può navigare questo caos tramite il riconoscimento di pattern, un sistema di automazione non può garantire il richiamo stabile sotto un contesto lungo e a priorità mista.
+Il nostro corpus interno di specifiche di progetto era diventato una memoria operativa densa: regole di naming, eccezioni storiche, gate di governance, invarianti e contratti a livello di adapter. Se un lettore umano può navigare questo caos tramite il riconoscimento di pattern, un sistema di automazione non può garantire il richiamo stabile sotto un contesto lungo e a priorità mista.
 
 Il risultato è stata una classe di regressioni sottili:
 
