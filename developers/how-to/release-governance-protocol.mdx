@@ -14,6 +14,9 @@ Zenzic repositories.
 
 This is the execution protocol. ADRs remain the historical rationale layer.
 
+Release A policy is Basalt-grade hard enforcement: no suppression debt beyond
+the CAP perimeter.
+
 ---
 
 ## 1) Four-Gate Hierarchy
@@ -93,7 +96,72 @@ Before merge:
 
 ---
 
-## 5) Transition to Full Basalt Enforcement
+## 5) Suppression Policy (Release A)
+
+- CAP sovereign default is 30 active suppressions.
+- CAP is configurable per repository in `[governance].suppression_cap`.
+- Scope is global: inline comments plus per-file config suppressions.
+- Enforcement is fail-hard: if count is 31 or more, `check all` exits 1.
+- Every run prints the suppression counter in the report footer.
+
+When configured CAP is higher than the sovereign default (`> 30`), the footer
+shows `[EXTENDED DEBT]` to make tolerance regimes explicit and auditable.
+
+Expected footer format:
+
+```text
+Suppression Audit: X/30
+```
+
+Canonical inline syntax:
+
+- Markdown: `<!-- zenzic-ignore: Z601 - historical reference -->`
+- MDX: `{/* zenzic-ignore: Z601 - historical reference */}`
+
+Legacy syntax remains accepted for backward compatibility, but new edits must
+use the canonical `zenzic-ignore` form.
+
+---
+
+## 6) Common Sentinel Blocks
+
+### Z105 Path Safety Breach
+
+Symptom:
+
+- Sentinel blocks a relative traversal path and reports a path safety breach.
+
+Standard resolution:
+
+- Prefer absolute site-root paths (for example `/blog/post-slug`) over
+  multi-level relative traversals.
+
+Validated exception:
+
+- Use inline suppression only when the bridge is reviewed and intentional.
+
+```mdx
+{/* zenzic-ignore: Z105 - validated cross-locale bridge */}
+[Read in Italian](/blog/it/article)
+```
+
+### Z602 I18N Parity Drift
+
+Symptom:
+
+- CI fails because a base file has no locale mirror or required frontmatter
+  parity fields are missing.
+
+Resolution:
+
+- Create the mirror file in the locale tree.
+- Align required frontmatter fields (`title`, `description` by default).
+
+Z602 is a contract check, not an optional lint preference.
+
+---
+
+## 7) Transition to Full Basalt Enforcement
 
 Basalt migration is a two-stage transition:
 

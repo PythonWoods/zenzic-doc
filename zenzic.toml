@@ -49,6 +49,7 @@ release_name = "Basalt"
 [governance]
 brand_obsolescence = ["Obsidian"]
 i18n_parity = true
+suppression_cap = 45
 
 # --- Z602 I18N PARITY (EPOCH 5) ---
 # Language-agnostic translation parity gate. Adding ES/FR/JA = edit YAML, no code change.

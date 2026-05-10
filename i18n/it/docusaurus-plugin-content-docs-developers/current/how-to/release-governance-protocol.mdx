@@ -15,6 +15,9 @@ repository Zenzic.
 Questa è la procedura di esecuzione. Gli ADR restano il livello storico di
 motivazione architetturale.
 
+La policy Release A è enforcement Basalt-grade: nessun debito di soppressione
+oltre il perimetro CAP.
+
 ---
 
 ## 1) Gerarchia dei Quattro Gate
@@ -93,7 +96,74 @@ Prima del merge:
 
 ---
 
-## 5) Transizione verso Enforcement Basalt Completo
+## 5) Policy Soppressioni (Release A)
+
+- CAP sovrano di default a 30 soppressioni attive.
+- CAP configurabile per repository in `[governance].suppression_cap`.
+- Scope globale: commenti inline + soppressioni per-file in config.
+- Enforcement fail-hard: da 31 in su, `check all` termina con exit 1.
+- Ogni esecuzione stampa il contatore soppressioni nel footer del report.
+
+Quando il CAP configurato e superiore al default sovrano (`> 30`), il footer
+mostra `[EXTENDED DEBT]` per rendere esplicito e auditabile il regime di
+tolleranza estesa.
+
+Formato atteso del footer:
+
+```text
+Suppression Audit: X/30
+```
+
+Sintassi inline canonica:
+
+- Markdown: `<!-- zenzic-ignore: Z601 - historical reference -->`
+- MDX: `{/* zenzic-ignore: Z601 - historical reference */}`
+
+La sintassi legacy resta accettata per compatibilità, ma le nuove modifiche
+devono usare la forma canonica `zenzic-ignore`.
+
+---
+
+## 6) Blocchi Sentinel più comuni
+
+### Z105 Path Safety Breach
+
+Sintomo:
+
+- Sentinel blocca un percorso relativo con risalita e segnala violazione di
+  sicurezza path.
+
+Risoluzione standard:
+
+- Preferire path assoluti dalla root sito (ad esempio `/blog/slug-articolo`) al
+  posto di traversal relativi multi-livello.
+
+Eccezione validata:
+
+- Usare soppressione inline solo quando il bridge è revisionato e intenzionale.
+
+```mdx
+{/* zenzic-ignore: Z105 - cross-locale bridge validato */}
+[Leggi in Italiano](/blog/it/articolo)
+```
+
+### Z602 I18N Parity Drift
+
+Sintomo:
+
+- La CI fallisce perché un file base non ha mirror locale o manca la parità dei
+  campi frontmatter richiesti.
+
+Risoluzione:
+
+- Creare il file speculare nella tree locale.
+- Allineare i campi frontmatter richiesti (`title`, `description` di default).
+
+Z602 è un check di contratto, non una preferenza opzionale di lint.
+
+---
+
+## 7) Transizione verso Enforcement Basalt Completo
 
 La migrazione Basalt segue una transizione a due stadi:
 
