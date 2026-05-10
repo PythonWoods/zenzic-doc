@@ -6,26 +6,26 @@ authors: [pythonwoods]
 tags: [engineering-chronicles, architecture, release]
 date: 2026-05-12
 description: >
-  Un deep dive ingegneristico su Basalt v0.8.0: attention decay,
+  Un deep dive ingegneristico su Basalt v0.8.0: frammentazione del contesto,
   contesto modulare, reverse mapping VSM, hardening RE2 e parità sovrana in CI.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-Basalt non è mai nato come release di marketing. È emerso come risposta sistemica a un pattern osservato tra review, incidenti CI e sessioni di sviluppo assistite da AI: la pipeline di qualità documentale migliorava localmente, ma degradava strutturalmente nel tempo. Stavamo distribuendo check, non garanzie. Stavamo accumulando segnali, non preservando architettura.
+Basalt è emerso come risposta sistemica a un pattern ricorrente osservato tra code review e incidenti CI: le pipeline di qualità documentale miglioravano localmente, ma degradavano strutturalmente nel tempo. Stavamo distribuendo controlli, non garanzie. Stavamo raccogliendo segnali, senza preservare l'architettura.
 
 {/* truncate */}
 
 Questo articolo è per architetti software e stakeholder tecnici che vogliono capire perché v0.8.0 conta sotto il livello del changelog. La tesi centrale di Basalt è semplice: zero-config non significa zero-governance. Significa default deterministici, contratti espliciti e interfacce che restano machine-readable sotto pressione.
 
-La release nasce dalla convergenza di cinque fronti: decadimento del contesto nei workflow LLM, ambiguità sulle rotte dinamiche nell'analisi statica, rischio regex sotto input avversari, deriva di parità tra locale e CI, e zone cieche di governance che i controlli SSG tradizionali non modellano.
+La release nasce da cinque fronti convergenti: la frammentazione del contesto in repository complessi, l'ambiguità delle rotte dinamiche nell'analisi statica, i rischi di sicurezza delle regex, il drift di parità tra locale e CI, e i punti ciechi di governance che i tradizionali controlli SSG non modellano mai.
 
-## 1) Il problema dell'Attention Decay: quando il contesto smette di essere contesto
+## 1) Il Problema della Frammentazione: Quando il Contesto smette di scalare
 
-Il primo sintomo sembrava minore. Gli agenti AI che lavoravano bene su task brevi diventavano instabili nelle sessioni di manutenzione lunghe. Più crescevano le istruzioni, meno risultavano affidabili le decisioni sui dettagli di policy. I contributori applicavano correttamente una regola e violavano un'altra definita in precedenza nello stesso ciclo architetturale.
+Il sintomo iniziale sembrava trascurabile: l'incertezza nelle decisioni architetturali durante sessioni di manutenzione prolungate. Man mano che il corpo delle istruzioni e delle policy cresceva, l'affidabilità della memoria operativa diminuiva. Si applicava correttamente una regola violandone un'altra stabilita precedentemente nello stesso ciclo.
 
-All'inizio sembrava un problema di prompt. Non lo era. Era un problema di budget attentivo.
+Non era un problema di qualità della documentazione, ma di budget cognitivo.
 
-Il nostro file guida interno, `ZENZIC_BRAIN.md`, era cresciuto fino a diventare una memoria operativa densa: regole di naming, eccezioni storiche, gate di governance, invarianti, vincoli di release e contratti a livello adapter. Un umano naviga questo materiale per intenzione e pattern. Un LLM non garantisce richiamo stabile sotto contesto lungo e misto.
+Il nostro file guida interno, `ZENZIC_BRAIN.md`, era diventato una memoria operativa densa: regole di naming, eccezioni storiche, gate di governance, invarianti e contratti a livello di adapter. Se un lettore umano può navigare questo caos tramite il riconoscimento di pattern, un sistema di automazione non può garantire il richiamo stabile sotto un contesto lungo e a priorità mista.
 
 Il risultato è stata una classe di regressioni sottili:
 
@@ -33,16 +33,16 @@ Il risultato è stata una classe di regressioni sottili:
 - codice corretto, semantica di policy obsoleta;
 - diagnostica corretta, provenienza incompleta.
 
-Questo ci ha imposto una decisione di design. Invece di spingere più testo monolitico nel modello, abbiamo spezzato il contesto in artefatti deterministici richiamabili on-demand.
+Invece di spingere più testo monolitico nel sistema, abbiamo diviso il contesto in artefatti deterministici richiesti on-demand.
 
 Da qui derivano due output:
 
 - **Structum**, come progetto indipendente per la cartografia strutturale del repository.
 - **Superfici JSON di Zenzic**, come esportazioni di verità per rotte e codici.
 
-In pratica il modello operativo cambia da "leggi tutto e spera di ricordare" a "richiedi solo il contratto che ti serve, quando ti serve".
+In pratica, si passa dal modello "leggi tutto e spera nella ritenzione" al modello "richiedi solo il contratto necessario, esattamente quando serve".
 
-Per workflow MCP questo è decisivo. Gli agenti non devono più parsare prosa per inferire architettura. Interrogano interfacce canoniche.
+Per i workflow MCP questo è decisivo. Gli agenti non devono più parsare prosa per inferire l'architettura: interrogano interfacce canoniche.
 
 ## 1.5) Metriche Shift-Left verificabili sul tuo hardware
 

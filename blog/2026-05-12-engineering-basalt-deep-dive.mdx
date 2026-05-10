@@ -6,26 +6,26 @@ authors: [pythonwoods]
 tags: [engineering-chronicles, architecture, release]
 date: 2026-05-12
 description: >
-  A long-form engineering deep dive into Basalt v0.8.0: attention decay,
+  A long-form engineering deep dive into Basalt v0.8.0: context fragmentation,
   modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-Basalt was never planned as a marketing release. It emerged as a systems response to a pattern we kept observing across code reviews, CI incidents, and AI-assisted development sessions: documentation quality pipelines were improving locally but degrading structurally over time. We were shipping checks, not guarantees. We were collecting signals, not preserving architecture.
+Basalt emerged as a systems response to a recurring pattern we kept observing across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. We were shipping checks, not guarantees. We were collecting signals, not preserving architecture.
 
 {/* truncate */}
 
 This deep dive is for software architects and technical stakeholders who want to understand why v0.8.0 matters below the changelog line. The central claim of Basalt is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
-The release came from five converging fronts: context decay in LLM workflows, dynamic-route ambiguity in static analysis, regex safety risk under adversarial inputs, deployment parity drift between local and CI, and governance blind spots that traditional SSG checks never model.
+The release came from five converging fronts: context fragmentation in complex repositories, dynamic-route ambiguity in static analysis, regex safety risk under adversarial inputs, deployment parity drift between local and CI, and governance blind spots that traditional SSG checks never model.
 
-## 1) The Attention Decay Problem: When Context Stops Being Context
+## 1) The Fragmentation Problem: When Context Stops Scaling
 
-The initial symptom looked small. AI agents that worked well on short tasks became erratic on long-lived maintenance sessions. The longer the instruction corpus became, the less reliable decisions were around policy details. Contributors would correctly apply one rule while violating another that had been established earlier in the same architectural cycle.
+The initial symptom looked small: architectural decisions became less reliable during long-lived maintenance sessions. As the instruction corpus and policy body grew, operational consistency dropped. Contributors would correctly apply one rule while violating another that had already been established in the same architectural cycle.
 
-At first, this looked like prompt quality. It was not. It was an attention budget issue.
+At first glance, this looked like a documentation quality issue. It was not. It was a cognitive budget issue.
 
-Our internal long-form guidance file, `ZENZIC_BRAIN.md`, had grown into a dense operational memory: naming rules, historical exceptions, governance gates, invariants, release constraints, and adapter-level contracts. Human readers could navigate this through intent and pattern recognition. Language models could not guarantee stable recall under long, mixed-priority context.
+Our internal long-form guidance file, `ZENZIC_BRAIN.md`, had grown into a dense operational memory: naming rules, historical exceptions, governance gates, invariants, release constraints, and adapter-level contracts. Human readers can often navigate this through intent and pattern recognition. Automation systems cannot guarantee stable retrieval under long, mixed-priority context.
 
 The result was a class of subtle regressions:
 
@@ -33,7 +33,7 @@ The result was a class of subtle regressions:
 - Correct code, stale policy semantics.
 - Correct diagnostics, incomplete provenance.
 
-This forced a design decision. Instead of pushing more monolithic text into the model, we split context into deterministic artifacts that can be requested on demand.
+This forced a design decision. Instead of pushing more monolithic text into workflows, we split context into deterministic artifacts that can be requested on demand.
 
 That decision had two outputs:
 
@@ -42,7 +42,7 @@ That decision had two outputs:
 
 In practice, this changes the operating model from "read everything, hope for retention" to "request only the contract you need, exactly when needed."
 
-For MCP-style workflows, this is decisive. Agents no longer parse prose to infer architecture. They query canonical interfaces.
+For MCP-style workflows, this is decisive. Agents no longer parse long prose to infer architecture. They query canonical interfaces.
 
 ## 1.5) Shift-Left Metrics You Can Verify Yourself
 
