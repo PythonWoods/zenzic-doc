@@ -49,7 +49,7 @@ repos:
   - repo: local
     hooks:
       - id: zenzic-check
-        name: "Zenzic Sentinel"
+        name: 🔍 Zenzic Sentinel (docs-portal audit)
         entry: just check
         language: system
         pass_filenames: false
@@ -67,7 +67,7 @@ repos:
   - repo: local
     hooks:
       - id: just-verify
-        name: 🛡️ Doc Final Guard (just verify)
+        name: 🛡️ Zenzic-Doc Final Guard (just verify)
         entry: just verify
         language: system
         stages: [pre-push]
