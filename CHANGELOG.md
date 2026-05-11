@@ -15,21 +15,12 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 - **ADR-013 added to the developer ADR vault (EN/IT):** Regex ACL and RE2
   security rationale is now part of the formal architecture documentation.
-- **Release governance alignment:** Unreleased follows a strict
-  Added/Changed/Fixed/Security taxonomy shared across the ecosystem.
 
 ### Changed
 
 - **Docs release narrative aligned to v0.8.0 Basalt:** documentation now tracks
   namespace contract stabilization (ADR-012), frozen code governance surfaces,
   and Regex ACL rollout (ADR-013).
-- **Pipeline parity retained in docs repo:** `just verify` and
-  `verify-codes-parity` remain the canonical quality entry points.
-
-### Fixed
-
-- **Unreleased structure normalized:** removed section drift and inconsistent
-  heading levels to improve release diff readability.
 
 ### Security
 
