@@ -1,15 +1,15 @@
 ---
 icon: lucide/shield-alert
-sidebar_label: "Sovereign Override (404 Shield)"
+sidebar_label: "Sovereign Override (404 Suppression)"
 description: "Use ZENZIC_EXTRA_ARGS for temporary pre-launch URL exclusions without weakening global external-link validation."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Sovereign Override (404 Shield)
+# Sovereign Override (404 Suppression)
 
-Use this protocol when Sentinel reports `EXTERNAL_LINK` for URLs that are not
+Use this protocol when Zenzic reports `EXTERNAL_LINK` for URLs that are not
 public yet (pre-launch pages, release tags not published, staged docs routes).
 
 The goal is strict integrity with temporary surgical exceptions.
@@ -52,7 +52,7 @@ The override must flow through every execution layer:
 3. shared script -> `zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} "$@"`
 4. CI step sets `ZENZIC_EXTRA_ARGS` in `.github/workflows/ci.yml`
 
-If one layer drops the variable, the shield breaks.
+If one layer drops the variable, the guard breaks.
 
 ---
 

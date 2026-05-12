@@ -17,8 +17,7 @@ You need [uv](https://docs.astral.sh/uv/) on your `PATH`. Everything else is han
 :::info[Why start with the Lab?]
 
 The fastest path to understanding Zenzic is **watching it work**.
-`zenzic lab` runs every scanner against pre-built fixtures: a real security breach, a real
-shield, and a real clean report — in 60 seconds.
+`zenzic lab` runs every scanner against pre-built fixtures: a real security breach and a real clean report — in 60 seconds.
 :::
 
 ---
@@ -42,11 +41,11 @@ This is the recommended workflow for CI and for trying Zenzic on an unfamiliar r
 
 ---
 
-## Step 2 — The Siege & The Credential Scanner {#step-2-siege}
+## Step 2 — Credential Scanner Live Demo {#step-2-credential-scanner}
 
 Before configuring anything, watch Zenzic protect a deliberately broken repo:
 
-**The Siege** — run act 2 (leaked credential demo):
+**Credential scanner demo** — run act 2 (leaked credential demo):
 
 ```bash
 uvx zenzic lab 2
@@ -73,7 +72,7 @@ The Zenzic Audit Badge: every check green, exit 0. The contrast is the proof —
 the same engine that caught the secret confirms that clean documentation is genuinely clean.
 
 :::tip[Interactive Demo — No installation required]
-**Want to see the AI siege live?**
+**Want to see the credential scanner in action?**
 
 ```bash
 uvx zenzic lab
@@ -82,7 +81,7 @@ uvx zenzic lab
 Launches the interactive menu of all 17 acts: credential leaks, broken links, orphan pages,
 path traversal, and the Zenzic Audit Badge. Zero install. Zero config. Pure experience.
 
-→ Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (The Siege), `uvx zenzic lab 0` (The Seal).
+→ Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (credential scanner), `uvx zenzic lab 0` (The Seal).
 :::
 
 ---

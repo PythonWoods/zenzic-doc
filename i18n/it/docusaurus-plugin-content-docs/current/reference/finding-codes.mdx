@@ -142,22 +142,22 @@ Z104 conta verso la categoria **Integrità Strutturale**. Un file di destinazion
   **Variante slug-mismatch (Docusaurus):** Z104 si attiva anche quando un link assoluto punta a un prefisso di route di proprietà del progetto (es. `/blog/`) che è scansionato da Zenzic, ma lo slug esatto non esiste nella Virtual Site Map. La causa più comune è un campo `slug:` nel frontmatter che differisce dall'URL usato in un link:
 
   ```mdx title="blog/2026-05-05-release-log.mdx"
-  {/* Questo link è sbagliato — il vero slug è beyond-the-siege-zenzic-v070 */}
-  [Leggi il post precedente](/blog/beyond-the-siege-v070)
+  {/* Questo link è sbagliato — il vero slug è zenzic-v070-release */}
+  [Leggi il post precedente](/blog/zenzic-v070)
   ```
 
-  ```yaml title="blog/2026-04-29-beyond-the-siege.mdx (frontmatter)"
-  slug: beyond-the-siege-zenzic-v070
+  ```yaml title="blog/2026-04-29-zenzic-v070-release.mdx (frontmatter)"
+  slug: zenzic-v070-release
   ```
 
   Output di Zenzic:
 
   ```
-  blog/2026-05-05-release-log.mdx:12: '/blog/beyond-the-siege-v070' non trovato nella site map
-  💡 Forse intendevi: '/blog/beyond-the-siege-zenzic-v070/'?
+  blog/2026-05-05-release-log.mdx:12: '/blog/zenzic-v070' non trovato nella site map
+  💡 Forse intendevi: '/blog/zenzic-v070-release/'?
   ```
 
-  La Virtual Site Map è costruita dagli slug del frontmatter (non dai filename fisici), quindi il file fisico `2026-04-29-beyond-the-siege.mdx` non crea la route `/blog/beyond-the-siege-v070/` — solo `/blog/beyond-the-siege-zenzic-v070/`.
+  La Virtual Site Map è costruita dagli slug del frontmatter (non dai filename fisici), quindi il file fisico `2026-04-29-zenzic-v070-release.mdx` non crea la route `/blog/zenzic-v070/` — solo `/blog/zenzic-v070-release/`.
 
 * **Passaggi di Rimedio:**
     1. Assicurati che nessun altro processo stia modificando la directory `docs/` durante la scansione di Zenzic.

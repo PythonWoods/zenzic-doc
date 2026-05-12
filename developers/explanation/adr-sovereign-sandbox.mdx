@@ -18,11 +18,11 @@ description: "ADR 007: The path traversal guards escapes FROM the target, not th
 ## Context
 
 When a user runs `zenzic check all /path/to/target`, Zenzic must establish two
-boundaries: the **analysis root** (what to scan) and the **perimeter** (what
+boundaries: the **analysis root** (what to scan) and the **scan scope** (what
 links are permitted to resolve to). The path traversal guard (`Z202`, `Z203`) enforces
-the perimeter — it detects links that escape the documentation sandbox.
+the scan scope — it detects links that escape the documentation sandbox.
 
-The early implementation had a geometric bug: it anchored the perimeter to the
+The early implementation had a geometric bug: it anchored the scan scope to the
 **invoking shell's repo root** rather than to the **target**. This caused a
 false positive when a user ran Zenzic from repo A pointing at repo B:
 

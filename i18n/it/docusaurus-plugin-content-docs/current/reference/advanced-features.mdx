@@ -84,7 +84,7 @@ per intercettare segreti nella prosa normale.
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | Chiavi private PEM (RSA, EC, ecc.) |
 | `hex-encoded-payload` | `(?:\\x[0-9a-fA-F]{2}){3,}` | Rileva tentativi di offuscamento di payload o credenziali tramite escape esadecimali. Questa tecnica è comunemente usata per evadere i linter di stringhe semplici e Zenzic la considera una violazione critica della trasparenza del sorgente. |
 
-### Comportamento delil credential scanner {#shield-behaviour}
+### Comportamento delil credential scanner {#credential-scanner-behaviour}
 
 - **Ogni riga viene scansionata** — incluse le righe dentro i blocchi di codice delimitati (con o
 

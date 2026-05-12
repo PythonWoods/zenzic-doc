@@ -134,7 +134,7 @@ excluded_assets = [
 ```
 
 The `**/_category_.json` pattern was previously recommended for Docusaurus projects.
-Since v0.7.0, `_category_.json` is automatically shielded as a [Level 1b guardrail](#system-guardrails)
+Since v0.7.0, `_category_.json` is automatically excluded from the [Level 1b guardrail](#system-guardrails)
 by the Docusaurus adapter — the manual entry is no longer required. Existing entries in
 `excluded_assets` remain valid and are silently deduplicated.
 

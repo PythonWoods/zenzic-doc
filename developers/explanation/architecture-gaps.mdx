@@ -66,21 +66,19 @@ incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `zenzi
 
 ---
 
-## Closed in v0.7.0 — Operation Obsidian Stress {/* zenzic:ignore Z601 */}
+## Closed in v0.7.0 — Obsidian Stress Test {/* zenzic:ignore Z601 */}
 
-:::info[What was the Operation?]
+:::info[What was the Obsidian Stress Test?]
 
-Before the v0.7.0 release, four AI agents were instructed to break Zenzic's credential scanner
-(credential scanner) using realistic bypass techniques. They found four real vectors.
+Before the v0.7.0 release, a structured adversarial stress-test suite was executed against Zenzic's credential scanner
+using realistic bypass techniques. The suite found four real attack vectors.
 All were closed before stable release.
-
-See the full technical post-mortem: [AI Red Team Attacks Code Linter](https://zenzic.dev/blog/ai-driven-siege-shield-postmortem)
 
 :::
 
 ### ZRT-001 — Unicode Normalization Bypass (credential scanner)
 
-**Identified by:** AI Red Team agent "Alpha" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identified during:** Obsidian Stress Test (v0.7.0 pre-release) {/* zenzic:ignore Z601 */}
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's regex patterns matched ASCII credential shapes. An attacker
 controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
@@ -101,10 +99,10 @@ is not the pattern — it is the encoding.
 
 ### ZRT-002 — Lookback Buffer Escape (credential scanner)
 
-**Identified by:** AI Red Team agent "Bravo" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identified during:** Obsidian Stress Test (v0.7.0 pre-release) {/* zenzic:ignore Z601 */}
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's lookback buffer was used to detect multi-line credential
-constructs (e.g. a `password:` key on one line, the value on the next). Agent Bravo
+constructs (e.g. a `password:` key on one line, the value on the next). The attack
 inserted a sufficiently long "filler" block (> buffer size) between the key and value
 lines. The buffer emptied before the value line was scanned, breaking the association
 and suppressing the Z201 finding.
@@ -123,9 +121,9 @@ pattern. An informal "large enough" buffer is not a security guarantee.
 
 ### ZRT-003 — HTML Entity Obfuscation (credential scanner)
 
-**Identified by:** AI Red Team agent "Charlie" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identified during:** Obsidian Stress Test (v0.7.0 pre-release) {/* zenzic:ignore Z601 */}
 **Component:** `core/credentials.py`
-**Description:**  The credential scanner scanned raw Markdown bytes. Agent Charlie used HTML entity
+**Description:**  The credential scanner scanned raw Markdown bytes. The attack used HTML entity
 encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The credential scanner's patterns
 did not match the entity-encoded form, allowing a fake credential to pass undetected.
 
@@ -143,10 +141,10 @@ pass (NFKC only) is insufficient when HTML rendering is part of the content pipe
 
 ### ZRT-004 — Fenced Block Scope Confusion (credential scanner)
 
-**Identified by:** AI Red Team agent "Delta" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identified during:** Obsidian Stress Test (v0.7.0 pre-release) {/* zenzic:ignore Z601 */}
 **Component:** `core/credentials.py`, fenced block state machine
 **Description:**  The credential scanner originally skipped scanning inside triple-backtick fenced
-blocks, reasoning that code examples are not live secrets. Agent Delta embedded a
+blocks, reasoning that code examples are not live secrets. The attack embedded a
 `ghp_` pattern inside a `bash` fenced block.  The credential scanner did not fire.
 
 **Resolution after deliberation:** The "skip fenced blocks" heuristic was **reversed**.
@@ -199,7 +197,7 @@ that diverged from the URLs Docusaurus actually served.
 
 **Combined effect:** A link `/blog/wrong-slug` where the real slug was
 `/blog/correct-slug` produced no finding from Zenzic, while `docusaurus build` failed
-with a broken-link error. The sentinel was blind to the most common post-rename failure
+with a broken-link error. The validator was blind to the most common post-rename failure
 mode.
 
 **Resolution:** Two coordinated fixes in `core/validator.py`:

@@ -82,7 +82,7 @@ applies a defence-in-depth pass to non-definition lines to catch secrets in plai
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | PEM private keys (RSA, EC, etc.) |
 | `hex-encoded-payload` | `(?:\\x[0-9a-fA-F]{2}){3,}` | Detects obfuscation attempts that hide payloads or credentials via hex escapes. This technique is commonly used to evade naive string linters and is treated as a critical source-transparency violation. |
 
-### credential scanner behaviour {#shield-behaviour}
+### credential scanner behaviour {#credential-scanner-behaviour}
 
 - **Every line is scanned** — including lines inside fenced code blocks (labelled or unlabelled).
 

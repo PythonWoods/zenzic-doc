@@ -530,6 +530,36 @@ exit_zero = true
 
 ---
 
+## Governance Settings {#governance-settings}
+
+### `brand_obsolescence` {#brand-obsolescence}
+
+| | |
+| :--- | :--- |
+| **Type** | `list[str]` |
+| **Default** | `[]` |
+| **Section** | `[governance]` |
+| **Finding** | Z601 `BRAND_OBSOLESCENCE` |
+
+A governance rule to enforce terminology standards across documentation. Ideal for corporate rebranding or deprecating internal project names. Zenzic ships with an empty default list — teams configure their own deprecated term lists here.
+
+When a term in this list appears in any scanned file, Zenzic emits Z601 `BRAND_OBSOLESCENCE` with exit code 2 (same severity as a credential leak). Historical files (e.g. `CHANGELOG*.md`) are excluded via `excluded_file_patterns`. Use an inline `[HISTORICAL]` comment to suppress individual intentional references in other files.
+
+```toml
+[governance]
+brand_obsolescence = [
+    "OldProductName",
+    "LegacyBrand",
+    "DeprecatedInternalTerm",
+]
+```
+
+**Pattern matching:** case-sensitive whole-word scan. The term `"Shield"` does not match `"ShieldCheck"` or `"shields.io"`.
+
+**Scope:** applies to all files within the active `docs_dir` scan scope, subject to the standard exclusion hierarchy.
+
+---
+
 ## Custom Rules {#custom-rules}
 
 Project-specific lint rules can be declared inline without writing Python. Each entry applies a regex pattern line-by-line to every `.md` file.

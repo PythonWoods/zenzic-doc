@@ -544,7 +544,7 @@ zenzic init /workspace/fresh-docs   # creates the directory if needed
 | Invariant | Guarantee |
 | :--- | :--- |
 | Config isolation | Target's `zenzic.toml` is loaded; caller's config is never consulted |
-| Sandbox guard | Path traversal guard perimeter is anchored at `docs_root`, not `cwd` |
+| Sandbox guard | Path traversal guard scan scope is anchored at `docs_root`, not `cwd` |
 | No CWD mutation | `init` writes to the target; caller's working directory is untouched |
 | Hint display | Banner shows the resolved target path for operator confidence |
 
@@ -743,7 +743,7 @@ src/zenzic/cli/
 
 ```
 
-### Visual State Guardian {#visual-state-guardian}
+### UI State Manager {#ui-state-manager}
 
 `_shared.py` is the **sole owner of all console and UI state**. It exposes two dynamic getters:
 

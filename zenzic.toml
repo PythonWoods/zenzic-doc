@@ -50,18 +50,18 @@ locales        = ["it"]
 release_name = "Basalt"
 
 [governance]
-# Temporary: full theatrical-term list used as rebranding verification weapon.
-# Running `just verify` after the refactoring will catch any missed occurrence (Z601).
-# This list will be emptied and commented out once the green light is achieved.
+# Permanent vocabulary guardian: Z601 BRAND_OBSOLESCENCE fires if any of these
+# theatrical brand terms reappear in documentation source.
+# CHANGELOG*.md is excluded by default (historical prose allowed).
+# Use [HISTORICAL] inline to suppress intentional references in other files.
 brand_obsolescence = [
     "Sentinel",
     "Blood Sentinel",
     "Shield",
-    "The Siege",
-    "Obsidian Glass",
-    "Quarzo",
-    "Basalto",
-    "Ossidiana",
+    "Epoch",
+    "Forge",
+    "Red Team",
+    "Operation",
 ]
 i18n_parity = true
 suppression_cap = 45

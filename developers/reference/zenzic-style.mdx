@@ -1,5 +1,5 @@
 ---
-sidebar_label: "Sentinel Style Guide"
+sidebar_label: "Zenzic Style Guide"
 sidebar_position: 6
 description: "Documentation writing standards and formatting rules for Zenzic contributors."
 ---
@@ -7,11 +7,11 @@ description: "Documentation writing standards and formatting rules for Zenzic co
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Sentinel Style Guide
+# Zenzic Style Guide
 
-> *"The Sentinel's rigour in code must extend to every pixel the user sees."*
+> *"The rigour applied to code must extend to every pixel the user sees."*
 
-This document codifies the **Sentinel Visual Language** — the binding rules
+This document codifies the **Zenzic Visual Language** — the binding rules
 for all Zenzic documentation pages. Every contributor must follow these
 rules. Reviewers must reject PRs that violate them.
 
@@ -55,7 +55,7 @@ Every card in a `<div class="grid cards" markdown>` block must have exactly:
 
 ### Exception
 
-**Presentation cards** (e.g., homepage "Sentinel in Action" demos) may omit
+**Presentation cards** (e.g., homepage "Zenzic in Action" demos) may omit
 the action link because their purpose is visual demonstration, not navigation.
 They must still receive the card CSS (border, hover, transition).
 
@@ -208,22 +208,22 @@ Before submitting a PR, verify:
 - [ ] No naked code fences exist (§5).
 - [ ] SPDX header is present (§6).
 - [ ] Italian mirror is structurally identical to English.
-- [ ] No hex literal (`#rrggbb`) in `src/` outside `SentinelPalette._*` (§9).
-- [ ] All colour references use `SentinelPalette.*` — no removed flat constants (§9).
+- [ ] No hex literal (`#rrggbb`) in `src/` outside `ZenzicPalette._*` (§9).
+- [ ] All colour references use `ZenzicPalette.*` — no removed flat constants (§9).
 
 ---
 
-## 8. SentinelUI Gateway {#sentinelui-gateway}
+## 8. ZenzicUI Gateway {#zenzicui-gateway}
 
-All branded terminal output in Zenzic flows through a single object: `SentinelUI` in
-`src/zenzic/ui.py`. Command modules must **never** instantiate `Console` or `SentinelUI`
+All branded terminal output in Zenzic flows through a single object: `ZenzicUI` in
+`src/zenzic/ui.py`. Command modules must **never** instantiate `Console` or `ZenzicUI`
 directly — they must call `get_ui()` and `get_console()` from `zenzic.cli._shared`.
 
 ### Core methods
 
 | Method | When to use |
 | :--- | :--- |
-| `print_header(version)` | The top-of-output Forge Frame banner — once per command invocation |
+| `print_header(version)` | The top-of-output Zenzic Frame banner — once per command invocation |
 | `make_panel(content, *, title, border_style)` | Styled Rich `Panel` — for structured output blocks |
 | `print_exception_alert(message, *, context, title, border_style)` | Error panels for `ZenzicError` and `PluginContractError` |
 
@@ -249,7 +249,7 @@ _shared.get_console().print(panel)
 
 The `--no-color` and `--force-color` CLI flags call `configure_console()`, which atomically
 replaces the module-level `console` and `_ui` singletons. Any locally-created `Console` or
-`SentinelUI` instance will be frozen before the flag takes effect, silently ignoring the
+`ZenzicUI` instance will be frozen before the flag takes effect, silently ignoring the
 user's color preference.
 
 The `force_terminal` parameter must **always** be `None` (auto-detect) in the module-level
@@ -261,15 +261,15 @@ visual regressions in the Zenzic CLI layer.
 
 Add to your PR checklist:
 
-- [ ] No `Console(...)` or `SentinelUI(...)` instantiation in command modules.
+- [ ] No `Console(...)` or `ZenzicUI(...)` instantiation in command modules.
 - [ ] All banner output uses `get_ui().print_header()`, not a locally-created UI instance.
 - [ ] `force_terminal` on any new `Console` call is `None` or conditional (`True if ... else None`), never `False`.
 
 ---
 
-## 9. SentinelPalette — Zero Hex Law {#sentinel-palette}
+## 9. ZenzicPalette — Zero Hex Law {#zenzic-palette}
 
-`SentinelPalette` in `src/zenzic/ui.py` is the **sole authorised source of colour values**
+`ZenzicPalette` in `src/zenzic/ui.py` is the **sole authorised source of colour values**
 in the entire Zenzic codebase. This is the Zero Hex Law.
 
 ### The Law
@@ -277,7 +277,7 @@ in the entire Zenzic codebase. This is the Zero Hex Law.
 :::warning Design Constraint
 
 No hex colour string (e.g. `#4f46e5`) and no raw Rich colour name (e.g. `"red"`, `"cyan"`)
-may appear anywhere in `src/` **except** inside `SentinelPalette._*` private class attributes.
+may appear anywhere in `src/` **except** inside `ZenzicPalette._*` private class attributes.
 Every other file must address only the semantic public attributes shown below.
 
 :::
@@ -286,12 +286,12 @@ Every other file must address only the semantic public attributes shown below.
 
 | Attribute | Hex | Meaning |
 | :--- | :---: | :--- |
-| `SentinelPalette.BRAND` | `#4f46e5` | Zenzic primary / brand accent (Indigo) |
-| `SentinelPalette.SUCCESS` | `#10b981` | OK · clean · pass (Emerald) |
-| `SentinelPalette.WARNING` | `#f59e0b` | Caution · advisory (Amber) |
-| `SentinelPalette.ERROR` | `#f43f5e` | Failure · broken links (Rose) |
-| `SentinelPalette.DIM` | `#64748b` | Muted · secondary text (Slate) |
-| `SentinelPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
+| `ZenzicPalette.BRAND` | `#4f46e5` | Zenzic primary / brand accent (Indigo) |
+| `ZenzicPalette.SUCCESS` | `#10b981` | OK · clean · pass (Emerald) |
+| `ZenzicPalette.WARNING` | `#f59e0b` | Caution · advisory (Amber) |
+| `ZenzicPalette.ERROR` | `#f43f5e` | Failure · broken links (Rose) |
+| `ZenzicPalette.DIM` | `#64748b` | Muted · secondary text (Slate) |
+| `ZenzicPalette.FATAL` | `#8b0000` | Security breach · path traversal (Blood) |
 
 ### Pre-composed style strings
 
@@ -300,45 +300,45 @@ For the most common combinations, use a `STYLE_*` constant instead of constructi
 
 | Constant | Expands to |
 | :--- | :--- |
-| `SentinelPalette.STYLE_BRAND` | `"bold #4f46e5"` |
-| `SentinelPalette.STYLE_OK` | `"bold #10b981"` |
-| `SentinelPalette.STYLE_WARN` | `"bold #f59e0b"` |
-| `SentinelPalette.STYLE_ERR` | `"bold #f43f5e"` |
-| `SentinelPalette.STYLE_DIM` | `"#64748b"` |
+| `ZenzicPalette.STYLE_BRAND` | `"bold #4f46e5"` |
+| `ZenzicPalette.STYLE_OK` | `"bold #10b981"` |
+| `ZenzicPalette.STYLE_WARN` | `"bold #f59e0b"` |
+| `ZenzicPalette.STYLE_ERR` | `"bold #f43f5e"` |
+| `ZenzicPalette.STYLE_DIM` | `"#64748b"` |
 
 ### Usage pattern
 
 ```python
-# CORRECT — semantic alias via SentinelPalette
-from zenzic.ui import SentinelPalette
+# CORRECT — semantic alias via ZenzicPalette
+from zenzic.ui import ZenzicPalette
 
-table = Table(border_style=SentinelPalette.DIM, header_style=SentinelPalette.STYLE_BRAND)
-text = Text.from_markup(f"[{SentinelPalette.BRAND}]Zenzic[/]")
-panel = Panel("...", border_style=SentinelPalette.STYLE_ERR)
+table = Table(border_style=ZenzicPalette.DIM, header_style=ZenzicPalette.STYLE_BRAND)
+text = Text.from_markup(f"[{ZenzicPalette.BRAND}]Zenzic[/]")
+panel = Panel("...", border_style=ZenzicPalette.STYLE_ERR)
 ```
 
 ```python
-# FORBIDDEN — hex literal outside SentinelPalette
+# FORBIDDEN — hex literal outside ZenzicPalette
 text = Text.from_markup("[#4f46e5]Zenzic[/]")   # ✗
 
 # FORBIDDEN — flat constant import (removed in v0.7.0)
 from zenzic.ui import INDIGO, EMERALD            # ✗
 
 # FORBIDDEN — inline alias
-P = SentinelPalette                              # ✗  use full qualification
+P = ZenzicPalette                              # ✗  use full qualification
 ```
 
 ### Updating the palette
 
 To change a colour, edit **only** the corresponding `_PRIVATE` hex attribute inside
-`SentinelPalette` in `src/zenzic/ui.py`. All semantic aliases and pre-composed style
+`ZenzicPalette` in `src/zenzic/ui.py`. All semantic aliases and pre-composed style
 strings derive from those private attributes — the entire codebase updates automatically.
 
 ### Checklist addition
 
 Add to your PR checklist:
 
-- [ ] No hex literal (`#rrggbb`) anywhere in `src/` outside `SentinelPalette._*`.
-- [ ] No raw Rich colour names (`"red"`, `"cyan"`) for brand-palette usage — use `SentinelPalette.*`.
-- [ ] No local alias `P = SentinelPalette` — always use the full class name.
+- [ ] No hex literal (`#rrggbb`) anywhere in `src/` outside `ZenzicPalette._*`.
+- [ ] No raw Rich colour names (`"red"`, `"cyan"`) for brand-palette usage — use `ZenzicPalette.*`.
+- [ ] No local alias `P = ZenzicPalette` — always use the full class name.
 - [ ] No `from zenzic.ui import INDIGO` (or any removed flat constant).

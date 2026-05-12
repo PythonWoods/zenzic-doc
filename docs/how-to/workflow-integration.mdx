@@ -188,7 +188,7 @@ ZENZIC_EXTRA_ARGS="--no-external" just build
 ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just build
 ```
 
-`ZENZIC_EXTRA_ARGS` is an environment variable read by both `just sentinel` and
+`ZENZIC_EXTRA_ARGS` is an environment variable read by both `just verify` and
 `just build`. It injects flags into the Zenzic invocation without modifying
 `zenzic.toml` or the justfile — the source of truth for configuration remains
 unchanged. Unset, it expands to empty and the gate behaves at full strictness.

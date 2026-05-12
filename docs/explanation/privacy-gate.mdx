@@ -97,7 +97,7 @@ Zenzic keeps the verification layer alive while the ecosystem around it evolves.
 
 ---
 
-## The frictionless sentinel
+## Frictionless credential scanning
 
 A linter is only as good as its false-positive rate. When tools blindly raise errors, developers
 learn to ignore them — and a tool that is ignored provides no safety.
@@ -227,7 +227,7 @@ security incident — by design.
 Exit code `3` — the **path traversal guard** — guards against system-path traversal. When a Markdown
 link references a path that escapes the documentation root (e.g. `../../etc/passwd`), Zenzic
 terminates immediately with exit code 3. Like the credential scanner, the path traversal guard cannot be suppressed
-or downgraded. These two non-negotiable exit codes form Zenzic's security perimeter: no
+or downgraded. These two non-negotiable exit codes form Zenzic's security boundary: no
 configuration, no flag, and no adapter can silence them.
 
 ---

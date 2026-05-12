@@ -90,7 +90,7 @@ Z101 counts toward the **Structural Integrity** category in the [Deterministic Q
 :::
 
 * **Severity:** `error`
-* **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs perimeter or was excluded by an exclusion rule.
+* **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs scan scope or was excluded by an exclusion rule.
 * **Remediation Steps:**
     1. Verify the physical existence of the target file.
     2. Check the relative path calculation (e.g., `../folder/target.md`).
@@ -142,22 +142,22 @@ Z104 counts toward the **Structural Integrity** category. A missing target file 
   **Slug-mismatch variant (Docusaurus):** Z104 also fires when an absolute link targets a project-owned route prefix (e.g. `/blog/`) that is scanned by Zenzic, but the exact slug does not exist in the Virtual Site Map. The most common cause is a `slug:` field in frontmatter that differs from the URL used in a link:
 
   ```mdx title="blog/2026-05-05-release-log.mdx"
-  {/* This link is wrong — the real slug is beyond-the-siege-zenzic-v070 */}
-  [Read the previous post](/blog/beyond-the-siege-v070)
+  {/* This link is wrong — the real slug is zenzic-v070-release */}
+  [Read the previous post](/blog/zenzic-v070)
   ```
 
-  ```yaml title="blog/2026-04-29-beyond-the-siege.mdx (frontmatter)"
-  slug: beyond-the-siege-zenzic-v070
+  ```yaml title="blog/2026-04-29-zenzic-v070-release.mdx (frontmatter)"
+  slug: zenzic-v070-release
   ```
 
   Zenzic output:
 
   ```
-  blog/2026-05-05-release-log.mdx:12: '/blog/beyond-the-siege-v070' not found in the site map
-  💡 Did you mean: '/blog/beyond-the-siege-zenzic-v070/'?
+  blog/2026-05-05-release-log.mdx:12: '/blog/zenzic-v070' not found in the site map
+  💡 Did you mean: '/blog/zenzic-v070-release/'?
   ```
 
-  The Virtual Site Map is built from frontmatter slugs (not physical filenames), so the physical file `2026-04-29-beyond-the-siege.mdx` does not create the route `/blog/beyond-the-siege-v070/` — only `/blog/beyond-the-siege-zenzic-v070/`.
+  The Virtual Site Map is built from frontmatter slugs (not physical filenames), so the physical file `2026-04-29-zenzic-v070-release.mdx` does not create the route `/blog/zenzic-v070/` — only `/blog/zenzic-v070-release/`.
 
 * **Remediation Steps:**
     1. Ensure no other process is modifying the `docs/` directory during the Zenzic scan.
@@ -325,7 +325,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The path traversal guard enforces the perimeter boundary unconditionally.
+`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The path traversal guard enforces the scan boundary unconditionally.
 :::
 
 * **Severity:** `error`

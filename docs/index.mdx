@@ -30,7 +30,7 @@ fixtures and see the results in real time.
 uvx zenzic check all .
 ```
 
-→ **[Learn more in the Interactive Lab tutorial](./tutorials/first-audit#step-2-siege)**
+→ **[Learn more in the Interactive Lab tutorial](./tutorials/first-audit#step-2-credential-scanner)**
 
 ---
 
@@ -51,7 +51,7 @@ Anything less is a precise, actionable diagnostic — not a vague warning.
 the build even starts. No log archaeology, no stack-trace spelunking.
 ## Deterministic Failure Analysis: Before vs After Zenzic
 
-| Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic v0.8.0 (EPOCH 7b)                                                                 |
+| Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic v0.8.0                                                                            |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | ZenzicOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
 | **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | O(1) deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |

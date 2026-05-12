@@ -163,7 +163,7 @@ zenzic check orphans --offline
 When active, Zenzic banner displays:
 
 ```text
-SENTINEL: [Offline Mode Active: forcing flat URL structure]
+NOTICE: [Offline mode: forcing flat URL structure]
 ```
 
 :::note[Engine parity]
@@ -388,7 +388,7 @@ brand_obsolescence = ["OldProduct", "LegacyTerm"]
 # name: zenzic
 # on: [pull_request, push]
 # jobs:
-#   sentinel:
+#   zenzic-check:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v4
@@ -882,7 +882,7 @@ Acts are grouped into four thematic sections:
 | OS & Environment Guardrails | 🛡 | 0–3 | Core linting, credential scanner, baseline pass |
 | Structural & SEO Integrity | 🔗 | 4–6 | Single-file, custom dir, transparent proxy |
 | Enterprise Adapters & Migration | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, Z404 guards |
-| Red/Blue Team Matrix | 🔴 | 11–16 | Attack/defense, obfuscated creds, stress tests |
+| Security Audit Matrix | 🔴 | 11–16 | Adversarial validation, obfuscated creds, stress tests |
 
 ### Outcome labels
 
@@ -900,7 +900,7 @@ whether the expectation was met:
 ### Examples
 
 ```bash
-# Run the Red/Blue Team Matrix (all 6 attack/defense acts)
+# Run the Security Audit Matrix (all 6 adversarial validation acts)
 zenzic lab 11-16
 
 # Run the full tour

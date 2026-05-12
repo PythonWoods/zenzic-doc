@@ -27,7 +27,7 @@ Without a known root, Zenzic cannot:
 
 - Resolve absolute-style internal links (`/docs/page.md`) to physical files.
 - Locate `zenzic.toml` or a fallback engine config (`mkdocs.yml`, `zensical.toml`).
-- Enforce the Virtual Site Map (VSM) perimeter — the oracle that determines
+- Enforce the Virtual Site Map (VSM) scan scope — the oracle that determines
 
   what is a valid page and what is a Ghost Route.
 
@@ -49,7 +49,7 @@ markers** (first match wins):
 
 | Marker | Rationale |
 |--------|-----------|
-| `.git/` | Universal VCS signal. If a `.git` directory exists, the user has explicitly defined a repository boundary. Zenzic respects this boundary as the project perimeter. |
+| `.git/` | Universal VCS signal. If a `.git` directory exists, the user has explicitly defined a repository boundary. Zenzic respects this boundary as the project scan scope. |
 | `zenzic.toml` | Zenzic's own configuration file. Its presence is an unambiguous declaration that this directory is the analysis root, even in non-VCS environments. |
 
 `mkdocs.yml`, `pyproject.toml`, and other engine-specific files are
@@ -71,7 +71,7 @@ A naive implementation that defaults to the current directory when no marker
 is found would allow a user invoking `zenzic check all` from `/home/user/` to
 inadvertently index their entire home directory. The strict failure mode is
 an **opt-out-of-danger** default: Zenzic refuses to act until the user
-establishes a perimeter.
+establishes a scan scope.
 
 ### 2. Consistency: Future `.gitignore` Support
 
@@ -132,7 +132,7 @@ When `fallback_to_cwd=True` and no root marker is found, the function returns
 Only the `init` command passes `fallback_to_cwd=True`. Every other command
 (`check`, `scan`, `score`, `serve`, `clean`) retains the strict default
 (`fallback_to_cwd=False`) and will continue to fail loudly outside a project
-perimeter.
+scan scope.
 
 ```python
 # src/zenzic/cli.py — the only permitted call site for fallback_to_cwd=True
@@ -141,17 +141,17 @@ def init(plugin=None, force=False):
     repo_root = find_repo_root(fallback_to_cwd=True)  # Genesis Fallback
     ...
 
-# Every other command — strict perimeter enforcement
+# Every other command — strict scan scope enforcement
 @app.command()
 def check(target=None, strict=False):
     repo_root = find_repo_root()  # raises outside a repo — correct
     ...
 ```
 
-**Security note:** The Genesis Fallback does **not** weaken the perimeter
+**Security note:** The Genesis Fallback does **not** weaken the scan scope
 for analysis commands. `zenzic check all` run from `/home/user/` with no
 `.git` ancestor will still raise `RuntimeError`. The fallback is restricted
-to the one command that is explicitly designed to establish a perimeter from
+to the one command that is explicitly designed to establish a scan scope from
 scratch.
 
 ---

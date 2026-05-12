@@ -194,9 +194,9 @@ Il pruning viene pilotato sia dal `LayeredExclusionManager` (via `should_exclude
 
 ---
 
-## Multi-Root Discovery (EPOCH 7a) {#multi-root}
+## Multi-Root Discovery (v0.7.x) {#multi-root}
 
-`docs_dir` è la radice canonica dei sorgenti, ma gli static-site generator moderni gestiscono regolarmente **alberi di contenuto che vivono fuori da `docs/`**. Il caso di scuola è la directory `blog/` di Docusaurus: viene materializzata in URL reali dalla build, ma una scansione Zenzic pre-EPOCH-7a non avrebbe mai visto i file al suo interno. Il Virtual Site Map ingeriva solo i file sotto `docs_root`, perciò i link rotti dentro (o verso) i post del blog sfuggivano a `zenzic check all` e affioravano solo a valle, quando `docusaurus build` falliva. Chiamiamo questa modalità di fallimento **VSM Blindness**.
+`docs_dir` è la radice canonica dei sorgenti, ma gli static-site generator moderni gestiscono regolarmente **alberi di contenuto che vivono fuori da `docs/`**. Il caso di scuola è la directory `blog/` di Docusaurus: viene materializzata in URL reali dalla build, ma una scansione Zenzic pre-v0.7.x non avrebbe mai visto i file al suo interno. Il Virtual Site Map ingeriva solo i file sotto `docs_root`, perciò i link rotti dentro (o verso) i post del blog sfuggivano a `zenzic check all` e affioravano solo a valle, quando `docusaurus build` falliva. Chiamiamo questa modalità di fallimento **VSM Blindness**.
 
 Multi-Root Discovery cura la cecità permettendo all'adapter attivo di dichiarare ulteriori radici di contenuto in modo deterministico — senza `rglob`, senza `subprocess`, senza euristiche ambientali:
 
@@ -229,12 +229,12 @@ Nessun processo Node.js viene mai avviato — il config viene letto come **dato*
 
 ### Invariante di tracciabilità {#traceability}
 
-Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. La suite di regression (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserisce `(repo_root / route.source).is_file()` per ogni rotta del blog, fissando il contratto che le rotte virtuali della EPOCH 7b (tag, paginazione, autori) erediteranno: una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
+Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. La suite di regression (`tests/test_docusaurus_blog_vsm.py::TestV07xReverseMapping`) asserisce `(repo_root / route.source).is_file()` per ogni rotta del blog, fissando il contratto che le rotte virtuali della v0.7.x (tag, paginazione, autori) erediteranno: una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
 
 ### Invariante di Reverse-Mapping e Virtual Routes {#reverse-mapping}
 
-Il Multi-Root Discovery (EPOCH 7a) ha risolto il **VSM Blindness** per i file fisici
-fuori da `docs/`. La EPOCH 7b estende la garanzia alle **pagine generate dal motore**:
+Il Multi-Root Discovery (v0.7.x) ha risolto il **VSM Blindness** per i file fisici
+fuori da `docs/`. La v0.7.x estende la garanzia alle **pagine generate dal motore**:
 Docusaurus produce URL — pagine di tag, indici paginati, profili autore — che non hanno
 un corrispondente fisico in Markdown. Queste rotte esistono solo nell'output del build,
 mai su disco.
@@ -280,7 +280,7 @@ partecipano alla collision detection alla pari delle rotte fisiche.
 
 ### Esportare la mappa del sito: `inspect routes` {#inspect-routes}
 
-EPOCH 7b include un comando CLI di prima classe che espone il VSM a consumer esterni:
+v0.7.x include un comando CLI di prima classe che espone il VSM a consumer esterni:
 
 ```shell
 zenzic inspect routes --json

@@ -72,22 +72,17 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 
 ---
 
-## Chiusi in v0.7.0 — Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
+## Chiusi in v0.7.0 — Obsidian Stress Test {/* zenzic:ignore Z601 */}
 
-:::info[Cos'era l'Operazione?]
+:::info[Cos'è l'Obsidian Stress Test?]
 
-Prima del rilascio di v0.7.0, quattro agenti AI sono stati istruiti per violare
-il credential scanner di Zenzic (scanner di credenziali) utilizzando tecniche di bypass
-realistiche. Hanno trovato quattro vettori reali. Tutti sono stati chiusi prima
-del rilascio stabile.
-
-Vedi il post-mortem tecnico completo: [AI Red Team Attacks Code Linter](https://zenzic.dev/blog/ai-driven-siege-shield-postmortem)
+Prima del rilascio di v0.7.0, una suite strutturata di stress test avversariali è stata eseguita sul credential scanner di Zenzic utilizzando tecniche di bypass realistiche. La suite ha individuato quattro vettori di attacco reali. Tutti sono stati chiusi prima del rilascio stabile.
 
 :::
 
 ### ZRT-001 — Bypass per Normalizzazione Unicode (credential scanner)
 
-**Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identificato durante:** Obsidian Stress Test (pre-release v0.7.0) {/* zenzic:ignore Z601 */}
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** I pattern regex delil credential scanner corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
@@ -110,11 +105,11 @@ La superficie di attacco non è il pattern — è la codifica.
 
 ### ZRT-002 — Fuga dal Buffer di Lookback (credential scanner)
 
-**Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identificato durante:** Obsidian Stress Test (pre-release v0.7.0) {/* zenzic:ignore Z601 */}
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** Il buffer di lookback delil credential scanner era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
-L'agente Bravo ha inserito un blocco "filler" sufficientemente lungo (> dimensione buffer)
+L'attacco ha inserito un blocco "filler" sufficientemente lungo (> dimensione buffer)
 tra la riga chiave e quella valore. Il buffer si svuotava prima che la riga valore venisse
 scansionata, spezzando l'associazione e sopprimendo il finding Z201.
 
@@ -133,9 +128,9 @@ di sicurezza.
 
 ### ZRT-003 — Offuscamento con Entità HTML (credential scanner)
 
-**Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identificato durante:** Obsidian Stress Test (pre-release v0.7.0) {/* zenzic:ignore Z601 */}
 **Componente:** `core/credentials.py`
-**Descrizione:** Lo credential scanner scansionava i byte Markdown grezzi. L'agente Charlie ha
+**Descrizione:** Lo credential scanner scansionava i byte Markdown grezzi. L'attacco ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
 di codice delimitati. I pattern delil credential scanner non corrispondevano alla forma codificata
 con entità, permettendo a una credenziale falsa di passare inosservata.
@@ -156,11 +151,11 @@ fa parte della pipeline dei contenuti.
 
 ### ZRT-004 — Confusione Scope Blocco Delimitato (credential scanner)
 
-**Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
+**Identificato durante:** Obsidian Stress Test (pre-release v0.7.0) {/* zenzic:ignore Z601 */}
 **Componente:** `core/credentials.py`, macchina a stati dei blocchi delimitati
 **Descrizione:** Il credential scanner saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti
-attivi. L'agente Delta ha incorporato un pattern `ghp_` all'interno di un blocco
+attivi. L'attacco ha incorporato un pattern `ghp_` all'interno di un blocco
 delimitato `bash`. Il credential scanner non si attivava.
 
 **Risoluzione dopo deliberazione:** L'euristica "salta i blocchi delimitati" è stata
@@ -217,7 +212,7 @@ dagli URL effettivamente serviti da Docusaurus.
 
 **Effetto combinato:** Un link `/blog/slug-sbagliato` dove il vero slug era
 `/blog/slug-corretto` non produceva alcun finding da Zenzic, mentre
-`docusaurus build` falliva con un errore di link non trovato. Il sentinel era cieco
+`docusaurus build` falliva con un errore di link non trovato. Il validatore era cieco
 al modo di failure più comune dopo una ridenominazione.
 
 **Risoluzione:** Due fix coordinati in `core/validator.py`:

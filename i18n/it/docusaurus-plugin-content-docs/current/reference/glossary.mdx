@@ -6,7 +6,7 @@ description: Terminologia tecnica di Zenzic — ogni termine definito con rigore
 
 # Glossario
 
-Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in italiano dove la traduzione e naturale; i termini tecnici che sono standard dell'industria (adapter, shield, pipeline) restano in inglese.
+Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in italiano dove la traduzione è naturale; i termini tecnici che sono standard dell'industria (adapter, pipeline) restano in inglese.
 
 ---
 
@@ -87,7 +87,7 @@ La filosofia progettuale di Zenzic: fornire una garanzia di qualita della docume
 
 ---
 
-### Punteggio Zenzic {#sentinel-score}
+### Punteggio Zenzic {#zenzic-score}
 
 Il punteggio di qualità documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di quattro categorie (D092 — Quartz Penalty Scorer): Structural (40%), Content (30%), Navigation (20%) e Brand & Assets (10%). Ogni categoria accumula deduzioni per codice Zxxx trovato. Il punteggio può essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima può essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
 
