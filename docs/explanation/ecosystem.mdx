@@ -46,11 +46,11 @@ flowchart LR
     subgraph CORE ["Zenzic Core"]
         direction TB
         VSM["Virtual Site Map\n(VSM)"]
-        SHIELD["Shield + Blood Sentinel"]
+        CREDENTIALS["Credential Scanner + Path Traversal Guard"]
         RULES["Rule Engine"]
         ADP --> VSM
-        VSM --> SHIELD
-        SHIELD --> RULES
+        VSM --> CREDENTIALS
+        CREDENTIALS --> RULES
     end
 
     subgraph OUT ["Sovereign Output"]
@@ -98,14 +98,14 @@ This is a deliberate architectural decision, not a missing feature.
 
 | Concern | Engine plugin | Sovereign CLI |
 | :--- | :--- | :--- |
-| Credential scanning (Shield) | ❌ Structurally absent — hooks fire too late | ✅ Full ZRT-006/007 hardening |
-| Path traversal (Blood Sentinel) | ❌ Engine controls path resolution | ✅ Every link normalised by Zenzic |
+| Credential scanning (credential scanner) | ❌ Structurally absent — hooks fire too late | ✅ Full ZRT-006/007 hardening |
+| Path traversal (path traversal guard) | ❌ Engine controls path resolution | ✅ Every link normalised by Zenzic |
 | Link validation | ❌ Engine's own resolver — not VSM | ✅ O(1) VSM with SHA256 cache |
 | Engine parity | ❌ MkDocs plugin ≠ Docusaurus plugin | ✅ Single code path for all engines |
 | Dependency isolation | ❌ Requires `pip install zenzic[engine]` | ✅ `pip install zenzic` — done |
 
 A plugin that lives inside a build engine cannot enforce the same guarantees as an
-external auditor. The Shield, Blood Sentinel, and VSM were designed for sovereign execution.
+external auditor. The credential scanner, path traversal guard, and VSM were designed for sovereign execution.
 Embedding them inside a build hook would degrade them to best-effort checks.
 
 ### The recommended workflow
@@ -117,7 +117,7 @@ pip install zenzic
 # Detect engine from config files, write zenzic.toml
 zenzic init
 
-# Full audit — VSM + Shield + Blood Sentinel + link validation
+# Full audit -- VSM + credential scanner + path traversal guard + link validation
 zenzic check all
 
 # In CI (GitHub Actions, GitLab CI, etc.)
@@ -185,7 +185,7 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 
 ## Brand Integrity — Quartz Clarity {#brand-integrity}
 
-The Safe Harbor model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers (release codenames no longer in use) carries a different kind of debt: **narrative debt**. A v0.7.0 page that still refers to a v0.6.x codename contradicts the version history it is trying to document.
+The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers (release codenames no longer in use) carries a different kind of debt: **narrative debt**. A v0.7.0 page that still refers to a v0.6.x codename contradicts the version history it is trying to document.
 
 Zenzic addresses this through the [`[governance]`](../reference/configuration.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
 

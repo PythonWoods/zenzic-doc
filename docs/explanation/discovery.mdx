@@ -12,7 +12,7 @@ Every Zenzic check -- links, orphans, snippets, placeholders, assets, references
 
 ## Single Entry Point: `iter_markdown_sources` {#iter-markdown-sources}
 
-All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()` or `os.walk()` from scanner, validator, or Shield code are prohibited by design. This function:
+All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()` or `os.walk()` from scanner, validator, or credential scanner are prohibited by design. This function:
 
 1. Walks the `docs_root` directory using `os.walk()` with **in-place directory pruning** (excluded subtrees are never entered).
 2. Yields only `.md` and `.mdx` files, in deterministic sorted order.
@@ -28,7 +28,7 @@ for md_file in iter_markdown_sources(docs_root, config, exclusion_manager):
     # ... process file
 ```
 
-The benefit is architectural: when a directory is excluded, it is excluded everywhere -- scanner, validator, Shield, and orphan-checker all see the exact same file set. There is no risk of one module "forgetting" to apply an exclusion rule.
+The benefit is architectural: when a directory is excluded, it is excluded everywhere -- scanner, validator, credential scanner, and orphan-checker all see the exact same file set. There is no risk of one module "forgetting" to apply an exclusion rule.
 
 ---
 
@@ -203,9 +203,9 @@ included_file_patterns = ["api.generated.md"]
 
 ---
 
-## Safe Harbor Philosophy {#safe-harbor}
+## Exclusion Zone Philosophy {#privacy-gate}
 
-The Layered Exclusion model implements the **Safe Harbor** principle: Zenzic creates a protected scanning environment where the file set is deterministic, reproducible, and fully controlled by the project maintainer.
+The Layered Exclusion model implements the **Exclusion Zone** principle: Zenzic creates a protected scanning environment where the file set is deterministic, reproducible, and fully controlled by the project maintainer.
 
 The philosophy has three tenets:
 
@@ -249,7 +249,7 @@ When an adapter does return content roots, four pipeline stages cooperate to adm
 
 1. **Discovery** -- `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` walks each root with `walk_files` (same `os.walk` engine, same exclusion manager) and yields `(abs_path, logical_rel)` pairs where `logical_rel` carries the URL prefix as its first segment (e.g. `Path('blog/2026-04-12-foo.mdx')`).
 2. **VSM** -- `build_vsm` resolves every file's logical `rel` from `docs_root` *or* a matched extra root, then dispatches to the adapter's `get_route_info(rel)`. The prefix injection lets a single adapter call disambiguate without a second dispatch.
-3. **Validator** -- the link checker loads extra-root files into `md_contents`, extends `_allowed_roots` so cross-tree relative links resolve under the Shield, and feeds the prefixed `rel` into "Did you mean?" suggestions.
+3. **Validator** -- the link checker loads extra-root files into `md_contents`, extends `_allowed_roots` so cross-tree relative links resolve under the credential scanner, and feeds the prefixed `rel` into "Did you mean?" suggestions.
 4. **Scanner** -- `find_unused_assets` and `find_placeholders` iterate extra roots when collecting reference sets, so an asset cited only from a blog post is not reported as Z405 (Unused Asset).
 
 ### Auto-discovery without `subprocess` {#auto-discovery}

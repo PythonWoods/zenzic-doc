@@ -5,7 +5,7 @@ sidebar_label: "Your First Audit"
 
 # Your First Audit
 
-**What you'll achieve:** go from zero to a passing Sentinel report in under three minutes —
+**What you'll achieve:** go from zero to a passing Zenzic report in under three minutes —
 and along the way, watch Zenzic catch a leaked credential, flag an orphan page, and hand you
 a 100/100 score. No configuration file required to start.
 
@@ -42,7 +42,7 @@ This is the recommended workflow for CI and for trying Zenzic on an unfamiliar r
 
 ---
 
-## Step 2 — The Siege & The Shield {#step-2-siege}
+## Step 2 — The Siege & The Credential Scanner {#step-2-siege}
 
 Before configuring anything, watch Zenzic protect a deliberately broken repo:
 
@@ -55,7 +55,7 @@ uvx zenzic lab 2
 Zenzic scans the bundled `security_lab` fixture and fires **exit code 2** with the
 Security Breach banner — the non-suppressible alert for a leaked credential:
 
-<SentinelOutput status="breach" exitCode={2} showFrame
+<ZenzicOutput status="breach" exitCode={2} showFrame
   location="docs/how-to/configure.md:4"
   masked="AKIA************MPLE"
   credentialType="aws-access-key"
@@ -63,13 +63,13 @@ Security Breach banner — the non-suppressible alert for a leaked credential:
 
 The masked credential, the non-zero exit: this is how Zenzic teaches.
 
-**The Shield (Sentinel Seal)** — now run act 0:
+**The Credential Scanner (Zenzic Audit Badge)** — now run act 0:
 
 ```bash
 uvx zenzic lab 0
 ```
 
-The Sentinel Seal: every check green, exit 0. The contrast is the proof —
+The Zenzic Audit Badge: every check green, exit 0. The contrast is the proof —
 the same engine that caught the secret confirms that clean documentation is genuinely clean.
 
 :::tip[Interactive Demo — No installation required]
@@ -80,14 +80,14 @@ uvx zenzic lab
 ```
 
 Launches the interactive menu of all 17 acts: credential leaks, broken links, orphan pages,
-path traversal, and the Sentinel Seal. Zero install. Zero config. Pure experience.
+path traversal, and the Zenzic Audit Badge. Zero install. Zero config. Pure experience.
 
 → Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (The Siege), `uvx zenzic lab 0` (The Seal).
 :::
 
 ---
 
-## Step 3 — Initialize your Safe Harbor {#step-3-init}
+## Step 3 — Initialize your Exclusion Zone {#step-3-init}
 
 When you're ready to commit Zenzic to your project, generate a `zenzic.toml` in one command:
 
@@ -127,7 +127,7 @@ creating a separate file.
 zenzic check all
 ```
 
-The Sentinel scans every Markdown file, validates internal links against the Virtual Site Map,
+Zenzic scans every Markdown file, validates internal links against the Virtual Site Map,
 checks anchors, scans for credentials, and runs your custom rules — then prints a structured
 report and exits with a machine-readable code:
 
@@ -135,12 +135,12 @@ report and exits with a machine-readable code:
 | :---: | :--- |
 | **0** | Clean — no issues found |
 | **1** | Findings — documentation quality issues detected |
-| **2** | Shield — leaked credential detected (never suppressed) |
-| **3** | Blood Sentinel — path traversal attempt detected (never suppressed) |
+| **2** | Credential scanner — leaked credential detected (never suppressed) |
+| **3** | Path traversal guard — path traversal attempt detected (never suppressed) |
 
-A clean run looks like this — the **Sentinel Seal**:
+A clean run looks like this — the **Zenzic Audit Badge**:
 
-<SentinelOutput status="success" exitCode={0} showFrame />
+<ZenzicOutput status="success" exitCode={0} showFrame />
 
 This is not a green CI tick. It is a **mathematical proof** that every link resolves,
 every page is reachable, and no credential is exposed. `100/100` is the only number that counts.

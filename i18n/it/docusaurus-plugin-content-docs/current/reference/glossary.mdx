@@ -18,9 +18,9 @@ Componente che media tra il core di Zenzic e un motore di build specifico (MkDoc
 
 ---
 
-### Blood Sentinel (Uscita 3) {#blood-sentinel}
+### Path Traversal Guard (Uscita 3)
 
-Meccanismo di sicurezza che rileva i link la cui risoluzione porta a directory di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Quando viene rilevato un `PATH_TRAVERSAL_SUSPICIOUS`, Zenzic termina con exit code **3** — il codice di uscita piu alto nella gerarchia. Non viene mai soppresso da `--exit-zero`. Un risultato Blood Sentinel puo indicare una template injection, una toolchain di documentazione compromessa o un errore dell'autore che rivela dettagli dell'infrastruttura interna.
+Meccanismo di sicurezza che rileva i link la cui risoluzione porta a directory di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Quando viene rilevato un `PATH_TRAVERSAL_SUSPICIOUS`, Zenzic termina con exit code **3** — il codice di uscita piu alto nella gerarchia. Non viene mai soppresso da `--exit-zero`. Un risultato path traversal guard puo indicare una template injection, una toolchain di documentazione compromessa o un errore dell'autore che rivela dettagli dell'infrastruttura interna.
 
 ---
 
@@ -51,9 +51,9 @@ L'insieme immutabile di directory che Zenzic ignora **sempre**, indipendentement
 
 ---
 
-### Hex Shield {#hex-shield}
+### Hex Pattern Detector
 
-Pattern di rilevamento dello Zenzic Shield specializzato nell'identificazione di sequenze di byte hex-encoded (3 o piu escape `\xNN` consecutivi). Progettato per intercettare payload binari offuscati che potrebbero essere incorporati nella documentazione come shellcode, beacon di comando e controllo o dati esfiltrati.
+Pattern di rilevamento del credential scanner di Zenzic specializzato nell'identificazione di sequenze di byte hex-encoded (3 o piu escape `\xNN` consecutivi). Progettato per intercettare payload binari offuscati che potrebbero essere incorporati nella documentazione come shellcode, beacon di comando e controllo o dati esfiltrati.
 
 ---
 
@@ -77,25 +77,25 @@ Un file `.md` che esiste fisicamente su disco ma non compare nella navigazione d
 
 ### Pipeline a Due Passate {#two-pass-pipeline}
 
-L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti, scansiona lo Shield e costruisce la ReferenceMap. La seconda passata valida i link, risolve i percorsi e verifica le ancore. Questa separazione garantisce che la cross-check dei riferimenti avvenga solo dopo che tutte le definizioni sono state raccolte, e che lo Shield abbia la priorità assoluta. Vedi [Architettura -- Pipeline a Due Passate](../explanation/architecture#two-pass-pipeline).
+L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti, scansiona il credential scanner e costruisce la ReferenceMap. La seconda passata valida i link, risolve i percorsi e verifica le ancore. Questa separazione garantisce che la cross-check dei riferimenti avvenga solo dopo che tutte le definizioni sono state raccolte, e che il credential scanner abbia la priorità assoluta. Vedi [Architettura -- Pipeline a Due Passate](../explanation/architecture#two-pass-pipeline).
 
 ---
 
-### Safe Harbor {#safe-harbor}
+### Exclusion Zone {#privacy-gate}
 
-La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Safe Harbor si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
+La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Exclusion Zone si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
 
 ---
 
-### Punteggio Sentinella {#sentinel-score}
+### Punteggio Zenzic {#sentinel-score}
 
 Il punteggio di qualità documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di quattro categorie (D092 — Quartz Penalty Scorer): Structural (40%), Content (30%), Navigation (20%) e Brand & Assets (10%). Ogni categoria accumula deduzioni per codice Zxxx trovato. Il punteggio può essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima può essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
 
 ---
 
-### Violazione Shield {#shield-violation}
+### Violazione Credential Scanner
 
-Un risultato emesso dallo Zenzic Shield quando un pattern di credenziale viene rilevato in qualsiasi riga di qualsiasi file (incluse le righe dentro blocchi di codice e il frontmatter YAML). Le violazioni Shield causano exit code **2**, che non viene mai soppresso. La risposta corretta a una violazione Shield è: ruotare la credenziale immediatamente, rimuovere o sostituire la riga incriminata, e non committare il segreto nella cronologia del repository.
+Un risultato emesso dal credential scanner di Zenzic quando un pattern di credenziale viene rilevato in qualsiasi riga di qualsiasi file (incluse le righe dentro blocchi di codice e il frontmatter YAML). Le violazioni del credential scanner causano exit code **2**, che non viene mai soppresso. La risposta corretta a una violazione è: ruotare la credenziale immediatamente, rimuovere o sostituire la riga incriminata, e non committare il segreto nella cronologia del repository.
 
 ---
 

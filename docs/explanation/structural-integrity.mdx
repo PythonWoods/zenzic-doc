@@ -1,11 +1,11 @@
 ---
 sidebar_position: 9
-sidebar_label: The Sentinel's Filter
-title: The Sentinel vs. Proofreader
+sidebar_label: The Integrity Filter
+title: Zenzic vs. Proofreader
 description: Why Zenzic focuses on structural integrity and security rather than prose style — and why that distinction defines a separate category of tool.
 ---
 
-# The Sentinel vs. Proofreader
+# Zenzic vs. Proofreader
 
 Zenzic does not care about your writing style.
 
@@ -20,10 +20,10 @@ they occupy orthogonal categories.
 
 ---
 
-## The Sentinel's Filter {#the-sentinels-filter}
+## The Integrity Filter {#the-sentinels-filter}
 
 Every rule that ships in the Quartz Core must pass a three-dimensional admission test.
-We call this **The Sentinel's Filter**: a rule enters Zenzic if and only if it defends
+We call this **The Integrity Filter**: a rule enters Zenzic if and only if it defends
 one of these three dimensions.
 
 ### Dimension 1 — Structural Integrity {#dimension-structural}
@@ -66,7 +66,7 @@ and `fail-on-error: false` unconditionally:
 | [`Z202`](../reference/finding-codes.mdx#z202) | `PATH_TRAVERSAL` | System path escape in a link or config value | 3 |
 | [`Z203`](../reference/finding-codes.mdx#z203) | `PATH_TRAVERSAL_SUSPICIOUS` | Relative traversal patterns escaping the docs root | 3 |
 
-See [Safe Harbor](./safe-harbor.mdx) and [The Zenzic Trinity](./the-zenzic-trinity.mdx)
+See [Exclusion Zone](./privacy-gate.mdx) and [The Zenzic Trinity](./the-zenzic-trinity.mdx)
 for the complete exit code contract.
 
 ---
@@ -126,7 +126,7 @@ and technical accessibility in CI, it is the only one you **need**.
 ## What Zenzic Explicitly Does Not Do {#what-zenzic-does-not-do}
 
 The boundary of what Zenzic rejects is as important as what it enforces. This table is
-permanent. If a proposed rule does not pass The Sentinel's Filter, it does not ship.
+permanent. If a proposed rule does not pass The Integrity Filter, it does not ship.
 
 | Category | Example | Position |
 | :--- | :--- | :--- |
@@ -138,7 +138,7 @@ permanent. If a proposed rule does not pass The Sentinel's Filter, it does not s
 | Trailing whitespace | Extra spaces at line endings | ✗ Auto-fixed by formatters |
 | Prose consistency | Uniform use of terminology | ✗ Domain-specific — use `vale` |
 
-These categories are not beneath Zenzic — they are **outside its mandate**. The Sentinel
+These categories are not beneath Zenzic — they are **outside its mandate**. Zenzic
 enforces the structure. Everything else is editorial sovereignty.
 
 ---
@@ -163,6 +163,6 @@ non-negotiable gate; the others can be advisories depending on your team's matur
 ## Further Reading {#further-reading}
 
 - [The Zenzic Trinity](./the-zenzic-trinity.mdx) — The three non-negotiable pillars: Zero Subprocesses, Pure Functions, Structural Analysis
-- [Safe Harbor](./safe-harbor.mdx) — The exit code contract and the inviolable security gate
+- [Exclusion Zone](./privacy-gate.mdx) — The exit code contract and the inviolable security gate
 - [Finding Codes Reference](../reference/finding-codes.mdx) — The complete Zxxx registry with remediation steps
 - [Health Metrics](./health-metrics.mdx) — How the Deterministic Quality Score is computed

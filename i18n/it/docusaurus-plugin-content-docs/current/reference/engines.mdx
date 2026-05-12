@@ -67,7 +67,7 @@ Se `[build_context]` è assente, Zenzic individua deterministicamente il motore:
 - nessuna configurazione presente, nessun locale dichiarato → `StandaloneAdapter` (controllo orphan disabilitato)
 
 :::info[Ponte CLI — Controlli signal-to-noise]
-Selezione engine e verbosità Sentinel sono aspetti separati. Usa
+Selezione engine e verbosità report sono aspetti separati. Usa
 [Comandi CLI: Flag globali](./cli.mdx#global-flags) per calibrare la policy per run:
 
 1. `--strict` per elevare warning e imporre validazione URL esterni.
@@ -228,7 +228,7 @@ automaticamente la configurazione MkDocs come ponte — senza alcuna configurazi
 
 Questo significa che puoi adottare Zenzic con l'engine Zensical **dal primo giorno di migrazione**,
 prima di scrivere una singola riga di `zensical.toml`. Quando il ponte si attiva, il banner
-Sentinel ti notifica:
+Zenzic notifica:
 
 ```text
 SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.

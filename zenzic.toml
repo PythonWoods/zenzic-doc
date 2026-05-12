@@ -50,7 +50,19 @@ locales        = ["it"]
 release_name = "Basalt"
 
 [governance]
-brand_obsolescence = ["Obsidian"]
+# Temporary: full theatrical-term list used as rebranding verification weapon.
+# Running `just verify` after the refactoring will catch any missed occurrence (Z601).
+# This list will be emptied and commented out once the green light is achieved.
+brand_obsolescence = [
+    "Sentinel",
+    "Blood Sentinel",
+    "Shield",
+    "The Siege",
+    "Obsidian Glass",
+    "Quarzo",
+    "Basalto",
+    "Ossidiana",
+]
 i18n_parity = true
 suppression_cap = 45
 

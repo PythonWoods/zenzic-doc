@@ -83,7 +83,7 @@
     "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
   },
   "chk06.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "chk06.desc": {
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
@@ -93,7 +93,7 @@
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "The Safe Harbor",
+    "message": "The Exclusion Zone",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
@@ -146,7 +146,7 @@
     "message": "Nav Isolation"
   },
   "homepage.sentinel.title": {
-    "message": "Sentinel in Action"
+    "message": "Zenzic in Action"
   },
   "homepage.sentinel.sub": {
     "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
@@ -170,7 +170,7 @@
     "message": "Then configure your environment."
   },
   "sentinel.shield.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "sentinel.shield.desc": {
     "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
@@ -212,7 +212,7 @@
     "message": "FAILED: One or more checks failed."
   },
   "sentinel.label": {
-    "message": "Reporter & Shield"
+    "message": "Reporter & Credentials"
   },
   "score.label": {
     "message": "Health Metrics"

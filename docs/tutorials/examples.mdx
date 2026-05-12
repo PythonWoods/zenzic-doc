@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Examples Overview
-description: A guided index of the Zenzic reference projects — from zero-config Standalone Mode to VCS-aware, MkDocs integration, Docusaurus adapter, and Shield security lab.
+description: A guided index of the Zenzic reference projects — from zero-config Standalone Mode to VCS-aware, MkDocs integration, Docusaurus adapter, and credential scanner security lab.
 ---
 
 # Examples
@@ -61,7 +61,7 @@ before running the build.
 :::note Sovereign CLI
 The MkDocs native plugin (`zenzic.integrations.mkdocs`) was removed in v0.7.0.
 Run Zenzic as a CI step instead — it provides the same enforcement with full VSM,
-Shield, and Blood Sentinel coverage:
+credential scanner, and path traversal guard coverage:
 
 ```yaml title=".github/workflows/zenzic.yml"
 
@@ -168,22 +168,22 @@ The reference implementation for writing a custom Zenzic rule plugin. Generated 
 
 **Directory:** `examples/broken-docs/`
 **Engine:** `mkdocs`
-<SentinelOutput status="error" exitCode={1} compact />
+<ZenzicOutput status="error" exitCode={1} compact />
 
 Intentionally triggers every Zenzic check to produce a complete failure report. This is the regression baseline for the check engine. Study this example to understand exactly what each finding type looks like in the output.
 
 ---
 
-### security_lab — Shield Test Fixture {#security-lab}
+### security_lab — Credential Scanner Test Fixture {#security-lab}
 
 **Directory:** `examples/security_lab/`
 **Engine:** `mkdocs`
-<SentinelOutput status="breach" exitCode={2} compact />
+<ZenzicOutput status="breach" exitCode={2} compact />
 
-Intentionally triggers the Zenzic Shield (credential detection) and the link checker (path traversal, absolute host probes). Exit code 2 is expected and correct — the credential must be rotated. This fixture is the regression baseline for the Shield subsystem.
+Intentionally triggers the credential scanner (credential detection) and the link checker (path traversal, absolute host probes). Exit code 2 is expected and correct — the credential must be rotated. This fixture is the regression baseline for the credential scanner subsystem.
 
 :::danger[This example exits with code 2 by design]
-`security_lab` contains intentionally-placed synthetic credentials for Shield testing. Do **not** treat exit code 2 from this example as a real security incident. To verify Shield is working, run: `cd examples/security_lab && zenzic check all; echo $?` and confirm the output is `2`.
+`security_lab` contains intentionally-placed synthetic credentials for credential scanner testing. Do **not** treat exit code 2 from this example as a real security incident. To verify credential scanner is working, run: `cd examples/security_lab && zenzic check all; echo $?` and confirm the output is `2`.
 :::
 
 ---
@@ -203,7 +203,7 @@ Intentionally triggers the Zenzic Shield (credential detection) and the link che
 | Single-file `--target` | [single-file-target](#single-file) |
 | Custom rule plugin | [plugin-scaffold-demo](#plugin-scaffold) |
 | What failures look like | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
-| Shield credential detection | [security_lab](#security-lab) |
+| credential scanner detection | [security_lab](#security-lab) |
 
 ---
 

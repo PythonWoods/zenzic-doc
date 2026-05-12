@@ -54,7 +54,7 @@ Non importa né esegue mai un framework di build. Questo significa:
   il contenuto è strutturalmente compatibile con un nuovo motore, senza toccare un singolo
   file Markdown.
 
-Questo è il Safe Harbor: **uno strato di validazione fisso che rimane valido
+Questo è il Exclusion Zone: **uno strato di validazione fisso che rimane valido
 prima, durante e dopo qualsiasi cambio di motore di build**.
 
 ---
@@ -214,7 +214,7 @@ Map in modo che non vengano mai segnalate come orfane.
 ## Piano di migrazione
 
 :::info[Ponte CLI — Flag globali]
-La migrazione engine cambia gli adapter, non la policy Sentinel. Mantieni il comportamento
+La migrazione engine cambia gli adapter, non la policy Zenzic. Mantieni il comportamento
 di esecuzione allineato a [Comandi CLI: Flag globali](../reference/cli.mdx#global-flags):
 
 1. `--strict` per validazione hard-gate durante il cutover.
@@ -253,7 +253,7 @@ Ora puoi testare la tua documentazione contro il motore Zensical senza nemmeno c
 zenzic check all --engine zensical
 ```
 
-Zenzic leggerà il tuo file `mkdocs.yml` esistente e validerà come Zensical lo interpreterebbe. Cerca il banner Sentinel per confermare che il ponte è attivo:
+Zenzic leggerà il tuo file `mkdocs.yml` esistente e validerà come Zensical lo interpreterebbe. Cerca il Zenzic banner per confermare che il ponte è attivo:
 
 ```text
 SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
@@ -321,7 +321,7 @@ completata:
 # Link interni + risoluzione fallback i18n
 zenzic check links
 
-# Link reference-style + Shield (rilevamento credenziali)
+# Link reference-style + credential scanner (rilevamento credenziali)
 zenzic check references
 
 # Suite completa

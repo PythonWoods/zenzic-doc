@@ -25,7 +25,7 @@ function AssetsIso(): React.JSX.Element {
   return <Iso><path d="M50 70 L100 45 L150 70 L100 95 Z" /><path d="M50 90 L100 115 L150 90" /><path d="M50 110 L100 135 L150 110" /><path d="M50 150 L100 125 L150 150 L100 175 Z" strokeDasharray="3 3" stroke="#38bdf8" strokeWidth="1" /><ellipse cx="100" cy="70" rx="20" ry="10" stroke="#38bdf8" strokeWidth="1" /></Iso>;
 }
 
-function ShieldIso(): React.JSX.Element {
+function CredentialIcon(): React.JSX.Element {
   return <Iso><path d="M100 160 L60 130 L60 80 L100 60 L140 80 L140 130 Z" /><path d="M100 90 A 10 5 0 1 0 100 110" stroke="#10b981" strokeWidth="1.5" /><path d="M96 110 L96 125 L104 125 L104 110" stroke="#10b981" strokeWidth="1.5" /><path d="M60 80 L100 100 L140 80" /><path d="M100 100 L100 160" /></Iso>;
 }
 
@@ -89,8 +89,8 @@ export default function Features(): React.JSX.Element {
           />
           <CheckCard
             code="0.6"
-            visual={<ShieldIso />}
-            title={<Translate id="chk06.title">Zenzic Shield</Translate>}
+            visual={<CredentialIcon />}
+            title={<Translate id="chk06.title">credential scanner</Translate>}
             desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately.'}</Translate>}
           />
         </div>

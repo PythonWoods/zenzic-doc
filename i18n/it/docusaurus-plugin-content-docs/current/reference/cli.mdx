@@ -22,7 +22,7 @@ zenzic check orphans      # Pagine su disco mancanti dalla nav
 zenzic check snippets     # Blocchi Python che non compilano
 zenzic check placeholders # Pagine stub: basso conteggio parole o pattern vietati
 zenzic check assets       # File media non referenziati da nessuna pagina
-zenzic check references   # Reference-style link + Zenzic Shield (rilevamento credenziali)
+zenzic check references   # Reference-style link + credential scanner (rilevamento credenziali)
 
 # Tutti i controlli in sequenza
 zenzic check all                    # Esegue tutti i controlli
@@ -88,14 +88,14 @@ gate CI e risposta agli incidenti.
 
 ### `--strict`
 
-**`--strict` controlla il gate della pipeline, non la visualizzazione dei finding.** La Sentinella
+**`--strict` controlla il gate della pipeline, non la visualizzazione dei finding.** Zenzic
 mostra sempre tutti i finding rilevati — errori e warning — indipendentemente da questo flag.
 Ciò che cambia è il modo in cui i warning influenzano l'**exit code**:
 
 - **Senza `--strict`:** i warning → Exit 0 (la pipeline passa). Gli errori bloccanti causano comunque Exit 1.
 - **Con `--strict`:** i warning vengono promossi a errori bloccanti → Exit 1 (la pipeline si ferma).
 
-Quando la modalità strict è attiva, la Sentinella stampa la riga
+Quando la modalità strict è attiva, Zenzic stampa la riga
 `STRICT MODE: Warnings have been promoted to errors.` nel footer del report, in modo che il
 log CI sia inequivocabile anche quando gli stessi finding sarebbero altrimenti non bloccanti.
 
@@ -114,8 +114,8 @@ Esce sempre con codice `0` anche quando vengono trovati problemi. Tutti i proble
 comunque stampati e inclusi nel punteggio — solo il codice di uscita viene soppresso. Utile per
 pipeline di sola osservazione.
 
-Gli eventi di sicurezza non vengono mai declassati da questo flag: Exit 2 (violazione Shield)
-ed Exit 3 (incidente Blood Sentinel su path di sistema) mantengono sempre priorità sui fallimenti ordinari.
+Gli eventi di sicurezza non vengono mai declassati da questo flag: Exit 2 (violazione credential scanner)
+ed Exit 3 (incidente path traversal guard su path di sistema) mantengono sempre priorità sui fallimenti ordinari.
 
 Puoi anche impostare `exit_zero = true` in `zenzic.toml` per renderlo il default permanente.
 
@@ -123,7 +123,7 @@ Puoi anche impostare `exit_zero = true` in `zenzic.toml` per renderlo il default
 
 Per impostazione predefinita, i finding di livello info sono nascosti per mantenere l'output
 quotidiano concentrato sulle violazioni azionabili. Usa `--show-info` quando vuoi piena visibilità
-Sentinel sui segnali non bloccanti, come la topologia dei cicli link (`CIRCULAR_LINK`).
+Zenzic sui segnali non bloccanti, come la topologia dei cicli link (`CIRCULAR_LINK`).
 
 Disponibile su tutti i comandi `zenzic check`.
 
@@ -137,9 +137,9 @@ zenzic check all --show-info
 `--quiet` è disponibile su `zenzic check all` ed è pensato per i Silent Builders
 (pre-commit e hook CI) che richiedono output minimo.
 
-- Sopprime il pannello Sentinel ricco e il report verboso per file.
+- Sopprime il pannello di analisi ricco e il report verboso per file.
 - Stampa una sintesi compatta a riga singola per errori/warning.
-- Stampa una riga di sicurezza esplicita per violazioni Shield (Exit 2).
+- Stampa una riga di sicurezza esplicita per violazioni credential scanner (Exit 2).
 - Mantiene comunque l'enforcement degli exit code fatali, inclusa la priorità sicurezza (`3 > 2 > 1`).
 
 ```bash
@@ -162,7 +162,7 @@ zenzic check links --offline
 zenzic check orphans --offline
 ```
 
-Quando attivo, il banner Sentinel mostra:
+Quando attivo, il Zenzic banner mostra:
 
 ```text
 SENTINEL: [Offline Mode Active: forcing flat URL structure]
@@ -177,7 +177,7 @@ motore di build.
 ### `--no-external`
 
 `--no-external` è disponibile su `check all` e `check links`. Salta il **Passaggio 3** —
-la validazione HTTP HEAD concorrente degli URL esterni — lasciando il Passaggio 1 (Shield, Z201)
+la validazione HTTP HEAD concorrente degli URL esterni — lasciando il Passaggio 1 (credential scanner, Z201)
 e il Passaggio 2 (risoluzione link interni) completamente attivi.
 
 Usalo in ambienti di sviluppo air-gapped o offline dove la raggiungibilità degli URL esterni
@@ -186,13 +186,13 @@ da altri strumenti.
 
 ```bash
 zenzic check all --strict --no-external   # verifica struttura/qualità; salta HTTP esterno
-zenzic check links --no-external          # solo link interni; Shield (Z201) sempre attivo
+zenzic check links --no-external          # solo link interni; credential scanner (Z201) sempre attivo
 ```
 
 Quando attivo, il report aggiunge un messaggio di trasparenza:
 
 ```text
-💡 External link validation skipped (--no-external). Shield (Z201) remains active.
+💡 External link validation skipped (--no-external). Credential scanner (Z201) remains active.
 ```
 
 :::warning[Mai usare in CI]
@@ -204,8 +204,8 @@ Il meccanismo permanente per escludere URL noti-instabili è `excluded_external_
 
 | Preoccupazione | Influenzato da `--no-external`? |
 | :--- | :--- |
-| Passaggio 1 — Shield / rilevamento credenziali (Z201) | ❌ Mai saltato |
-| Passaggio 1 — Blood Sentinel / path traversal (Z202/Z203) | ❌ Mai saltato |
+| Passaggio 1 — credential scanner / rilevamento credenziali (Z201) | ❌ Mai saltato |
+| Passaggio 1 — path traversal guard / path traversal (Z202/Z203) | ❌ Mai saltato |
 | Passaggio 2 — Risoluzione link interni | ❌ Mai saltato |
 | Passaggio 3 — Richieste HTTP HEAD esterne | ✅ Saltato |
 
@@ -457,7 +457,7 @@ Dopo la generazione, primo comando consigliato:
 zenzic check all
 ```
 
-Dovresti vedere immediatamente il tuo primo Sentinel Seal.
+Dovresti vedere immediatamente il tuo primo Zenzic Audit Badge.
 
 ---
 
@@ -481,37 +481,37 @@ questi pattern.
 | :---: | :--- |
 | `0` | Tutti i controlli selezionati sono passati (o `--exit-zero` era impostato) |
 | `1` | Uno o più controlli hanno segnalato problemi |
-| **`2`** | **SECURITY CRITICAL — Zenzic Shield ha rilevato una credenziale esposta** |
-| **`3`** | **INCIDENTE DI SICUREZZA — Blood Sentinel: il link punta a una directory di sistema dell'OS** |
+| **`2`** | **SECURITY CRITICAL — credential scanner ha rilevato una credenziale esposta** |
+| **`3`** | **INCIDENTE DI SICUREZZA — path traversal guard: il link punta a una directory di sistema dell'OS** |
 
 :::danger[Il codice di uscita 2 è riservato agli eventi di sicurezza]
-Il codice 2 viene emesso da `zenzic check references` e `zenzic check all` quando lo Shield
+Il codice 2 viene emesso da `zenzic check references` e `zenzic check all` quando il credential scanner
 rileva un pattern di credenziale noto incorporato in un URL di riferimento. Non viene mai
 usato per i fallimenti ordinari dei controlli. Se ricevi il codice di uscita 2, trattalo
 come un incidente di sicurezza bloccante e **ruota immediatamente la credenziale esposta**.
 :::
 
-:::danger[Codice di uscita 3 — Incidente di Sicurezza Blood Sentinel]
-Il codice 3 viene emesso quando il Blood Sentinel rileva un link che risolve verso una
+::::danger[Codice di uscita 3 — Incidente di Sicurezza Path Traversal Guard]
+Il codice 3 viene emesso quando il path traversal guard rileva un link che risolve verso una
 directory di sistema dell'OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`).
 A differenza del codice 1, questo è un incidente di sicurezza e ha priorità su tutti gli
 altri codici di uscita. Non viene mai soppresso da `--exit-zero`. Consultare
-[Controlli: Blood Sentinel](./checks#blood-sentinel) per i dettagli.
+[Controlli: Path Traversal Guard](./checks#path-traversal-guard) per i dettagli.
 :::
 
-Ogni codice di uscita ha una firma visiva distinta nel Sentinel Report:
+Ogni codice di uscita ha una firma visiva distinta nel Zenzic Report:
 
-**Uscita 0 — Sentinel Seal**
+**Uscita 0 — Zenzic Audit Badge**
 
-<SentinelOutput status="success" exitCode={0} compact />
+<ZenzicOutput status="success" exitCode={0} compact />
 
 **Uscita 1 — Anomalie di qualità**
 
-<SentinelOutput status="error" code="Z104" exitCode={1} compact />
+<ZenzicOutput status="error" code="Z104" exitCode={1} compact />
 
-**Uscita 2 — Violazione di sicurezza Shield**
+**Uscita 2 — Violazione di sicurezza credential scanner**
 
-<SentinelOutput status="breach" exitCode={2} compact />
+<ZenzicOutput status="breach" exitCode={2} compact />
 
 ---
 
@@ -575,8 +575,8 @@ zenzic check references --format json --strict
 ```
 
 I codici di uscita sono preservati in modalità JSON: exit 0 quando vengono trovati solo
-warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni Shield,
-exit 3 per path traversal Blood Sentinel — lo stesso contratto dell'output testuale.
+warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni credential scanner,
+exit 3 per path traversal guard — lo stesso contratto dell'output testuale.
 
 ---
 
@@ -673,7 +673,7 @@ all'ancora corrispondente in questa pagina di riferimento.
 ```
 
 Per il caricamento automatico in GitHub Code Scanning, usa la
-[Zenzic GitHub Action](../how-to/configure-ci-cd#github-actions-zenzic-shield-gate) —
+[Zenzic GitHub Action](../how-to/configure-ci-cd#github-actions-zenzic-credential-gate) —
 valida l'integrità SARIF prima del caricamento (guardia anti-troncamento) e visualizza i
 finding come annotazioni inline nelle PR.
 
@@ -783,22 +783,22 @@ zenzic inspect capabilities   # Mostra tutti i scanner built-in, le regole plugi
 
 `zenzic inspect capabilities` mostra l'arsenale completo di Zenzic in due sezioni:
 
-**Sezione A — Scanner Core (Built-in):** sette scanner compilati in Zenzic. Lo Shield (Z201)
-e il Blood Sentinel (Z202–203) usano codici di uscita dedicati (2 e 3 rispettivamente) che non
+**Sezione A — Scanner Core (Built-in):** sette scanner compilati in Zenzic. Il credential scanner (Z201)
+e il path traversal guard (Z202–203) usano codici di uscita dedicati (2 e 3 rispettivamente) che non
 sono mai sopprimibili con `--exit-zero`.
 
 **Sezione B — Regole Estensibili (Sistema Plugin):** regole registrate tramite il gruppo
 entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
-<SentinelOutput
+<ZenzicOutput
   status="inspect"
   exitCode={0}
   scanners={[
-    { codes: 'Z201',     scanner: 'The Shield',       capability: 'Rilevamento credenziali e sicurezza',          exit: '2', icon: '🛡', security: true },
-    { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Prevenzione path-traversal e jailbreak',       exit: '3', icon: '🩸', security: true },
+    { codes: 'Z201',     scanner: 'Credential Scanner', capability: 'Rilevamento credenziali e sicurezza',          exit: '2', icon: '🛡', security: true },
+    { codes: 'Z202–203', scanner: 'Path Traversal Guard', capability: 'Prevenzione path-traversal e jailbreak',       exit: '3', icon: '🔒', security: true },
     { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Link interrotti e risoluzione ancoraggi',      exit: '1', icon: '🔗' },
     { codes: 'Z401–404', scanner: 'Structure Guard',  capability: 'Orfani, indici e asset di configurazione',    exit: '1', icon: '🏗' },
-    { codes: 'Z501–504', scanner: 'Content Sentinel', capability: 'Segnaposto, snippet e punteggio qualità',     exit: '1', icon: '📄' },
+    { codes: 'Z501–504', scanner: 'Content scanner', capability: 'Segnaposto, snippet e punteggio qualità',     exit: '1', icon: '📄' },
   ]}
 />
 
@@ -883,7 +883,7 @@ zenzic lab [ATTO] [--list]
 ```
 
 `zenzic lab` è una vetrina interattiva che esegue esempi di documentazione inclusi nel
-pacchetto contro il Sentinel e riporta se ogni atto ha soddisfatto l'esito atteso.
+pacchetto contro Zenzic e riporta se ogni atto ha soddisfatto l'esito atteso.
 
 ### Selezione degli atti
 
@@ -901,23 +901,23 @@ Gli atti sono raggruppati in quattro sezioni tematiche:
 
 | Sezione | Icona | Atti | Focus |
 | :--- | :---: | :---: | :--- |
-| Guardrail OS & Ambiente | 🛡 | 0–3 | Linting base, The Shield, run pulito |
+| Guardrail OS & Ambiente | 🛡 | 0–3 | Linting base, credential scanner, run pulito |
 | Integrità Strutturale & SEO | 🔗 | 4–6 | File singolo, dir custom, proxy trasparente |
 | Adattatori Enterprise & Migrazione | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, guardie Z404 |
 | Matrice Red/Blue Team | 🔴 | 11–16 | Attacco/difesa, credenziali offuscate, stress test |
 
 ### Etichette di esito
 
-Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Sentinel Seal riporta
+Ogni atto dichiara il proprio esito atteso. Dopo l'esecuzione, il Zenzic Audit Badge riporta
 se l'aspettativa è stata soddisfatta:
 
 | Etichetta | Significato |
 | :--- | :--- |
 | `PASS ✓` | Esecuzione pulita attesa — zero finding |
 | `EXPECTED FAIL ✓` | Gli errori attesi sono stati trovati |
-| `BREACH ✓` | Rilevamento credenziali Shield atteso |
+| `BREACH ✓` | Rilevamento credenziali atteso |
 | `FAIL (unexpected)` | L'atto doveva passare ma ha trovato errori |
-| `BREACH expected — not triggered` | Il rilevamento Shield atteso non si è prodotto |
+| `BREACH expected — not triggered` | Il rilevamento credential scanner atteso non si è prodotto |
 
 ### Esempi
 

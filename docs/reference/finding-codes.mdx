@@ -42,7 +42,7 @@ Zenzic organizes findings into **seven diagnostic categories**, each addressing 
 |---|---|---|---|---|
 | **Z0xx** | Migration & Compatibility | Engine deprecation; migration guidance | `error` | ❌ No (fatal abort) |
 | **Z1xx** | Link Integrity | Broken/circular links, orphaned pages, path issues | `error`/`warning` | ✅ Yes |
-| **Z2xx** | Security (Shield) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` | 🔒 **Never** |
+| **Z2xx** | Security (credential scanner) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` | 🔒 **Never** |
 | **Z3xx** | Reference Integrity | Dangling/duplicate reference definitions | `error`/`warning` | ✅ Yes |
 | **Z4xx** | Structure | Directory indexes, orphan pages, missing alt text, config assets | `info`/`warning` | ✅ Yes |
 | **Z5xx** | Content Quality | Placeholder text, short content, snippet validation, regressions | `warning`/`error` | ✅ Yes |
@@ -97,7 +97,7 @@ Z101 counts toward the **Structural Integrity** category in the [Deterministic Q
     3. Ensure the file is not matched by `ignored_patterns` in your config.
     4. If referencing a file outside `docs/`, use a global path or symlink (though relative is preferred).
 
-<SentinelOutput
+<ZenzicOutput
   status="error"
   code="Z101"
   exitCode={1}
@@ -209,7 +209,7 @@ Z106 counts toward the **Structural Integrity** category at `info` severity. Cir
 Z107 counts toward the **Structural Integrity** category at `warning` severity. Self-referential anchor links provide no navigation value. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z107"
   exitCode={1}
@@ -292,7 +292,7 @@ Z107 counts toward the **Structural Integrity** category at `warning` severity. 
 
 ---
 
-## Z2xx — Security (Shield)
+## Z2xx — Security (credential scanner)
 
 ### Z201: SHIELD_SECRET {#z201}
 
@@ -301,18 +301,18 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 :::
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z201` is **silently rejected**. The Shield fires unconditionally on every line. Security findings are facts, not suggestions — a credential leak cannot be declared a false positive.
+`zenzic:ignore Z201` is **silently rejected**. The credential scanner fires unconditionally on every line. Security findings are facts, not suggestions — a credential leak cannot be declared a false positive.
 :::
 
 * **Severity:** `security_breach` (Exit 2)
-* **Technical Context:** The Shield scans every line — raw and normalised — for known credential patterns. Speculative Base64 decoding is applied to candidate tokens: if decoding reveals a credential pattern, the original (encoded) line is flagged. This prevents obfuscation via Base64 encoding in frontmatter values or code blocks.
+* **Technical Context:** The credential scanner scans every line — raw and normalised — for known credential patterns. Speculative Base64 decoding is applied to candidate tokens: if decoding reveals a credential pattern, the original (encoded) line is flagged. This prevents obfuscation via Base64 encoding in frontmatter values or code blocks.
 * **Remediation Steps:**
     1. **IMMEDIATE:** Rotate the leaked credential. It must be considered compromised.
     2. Remove the secret from the file.
     3. Purge the git history using `git-filter-repo` or a similar tool to ensure the secret is not just hidden but gone.
     4. Use placeholders like `YOUR_API_KEY` for documentation examples.
 
-<SentinelOutput
+<ZenzicOutput
   status="breach"
   code="Z201"
   exitCode={2}
@@ -325,7 +325,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The Blood Sentinel enforces the perimeter boundary unconditionally.
+`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The path traversal guard enforces the perimeter boundary unconditionally.
 :::
 
 * **Severity:** `error`
@@ -337,7 +337,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 ### Z203: PATH_TRAVERSAL_FATAL {#z203}
 
 * **Severity:** `security_incident` (Exit 3)
-* **Technical Context:** The **Blood Sentinel** detected an attempt to access restricted OS directories (e.g., `/etc/`, `/root/`). This is treated as a high-authority security incident, triggering a non-zero exit code that cannot be suppressed.
+* **Technical Context:** The **path traversal guard** detected an attempt to access restricted OS directories (e.g., `/etc/`, `/root/`). This is treated as a high-authority security incident, triggering a non-zero exit code that cannot be suppressed.
 * **Remediation Steps:**
     1. Investigate the source file for malicious intent or supply-chain compromise.
     2. Remove any absolute paths that reference host-system locations.
@@ -349,7 +349,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 `zenzic:ignore Z204` is **silently rejected**. The Privacy Gate fires unconditionally on every line — a forbidden-term exposure is a security fact, not a suggestion.
 :::
 
-:::info[Brand Integrity Shield — Two-Layer Architecture]
+:::info[Brand Integrity — Two-Layer Architecture]
 Zenzic enforces brand and privacy integrity through two complementary layers:
 
 | Layer | Source | Scope | Severity |
@@ -372,7 +372,7 @@ Use Z204 for secrets you must never commit. Use Z601 for brand hygiene where int
     2. If the term is legitimately public, remove it from `forbidden_patterns` in `.zenzic.local.toml`.
     3. Verify that `.zenzic.local.toml` is listed in `.gitignore` — terms in this file must never be committed.
 
-<SentinelOutput
+<ZenzicOutput
   status="breach"
   code="Z204"
   exitCode={2}
@@ -474,7 +474,7 @@ Z404 is a **configuration integrity warning**. It does not reduce the [Determini
     1. Check the `favicon:` or `logo.src:` paths in your config file.
     2. Ensure the file is physically present in the `static/` directory (for Docusaurus) or `docs/` (for MkDocs).
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z404"
   exitCode={1}
@@ -510,7 +510,7 @@ Z502 counts toward the **Content Excellence** category alongside Z501, which car
     1. Expand the documentation with more detail.
     2. If the page is a placeholder, combine it with a related page.
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z502"
   exitCode={1}
@@ -548,7 +548,7 @@ Z503 counts toward the **Content Excellence** category, which carries a 30% weig
 Z505 counts toward the **Content Excellence** category at `warning` severity. Each untagged code block reduces syntax highlighting coverage and prevents snippet validation. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z505"
   exitCode={1}
@@ -563,7 +563,7 @@ Z505 counts toward the **Content Excellence** category at `warning` severity. Ea
 
 * **Severity:** `warning`
 * **Technical Context:** Detected by `UntaggedCodeBlockRule`. A fenced code block opening delimiter (`` ``` `` or `~~~`) with no info string (or only whitespace). Zenzic implements the CommonMark fence invariant: a *closing* fence must have an empty info string — any non-whitespace character in the info string makes it an *opening* fence. This means Docusaurus metadata (e.g. `` ```python title="file.py" showLineNumbers ``) is fully supported and never flagged.
-* **Why Zenzic implements this:** Pure-Python structural check that eliminates the Node.js Tax from your CI pipeline. See [The Sentinel vs. Proofreader](../explanation/structural-integrity.mdx#dimension-accessibility) for the full rationale.
+* **Why Zenzic implements this:** Pure-Python structural check that eliminates the Node.js Tax from your CI pipeline. See [Zenzic vs. Proofreader](../explanation/structural-integrity.mdx#dimension-accessibility) for the full rationale.
 * **Remediation Steps:**
     1. Add a language tag immediately after the opening backticks: `` ```python ``, `` ```bash ``, `` ```toml ``.
     2. For output or display-only blocks, use `` ```text `` or `` ```plaintext ``.
@@ -638,7 +638,7 @@ Z406 counts toward the **Brand & Assets** category in the [Deterministic Quality
 Brand obsolescence is a key metric of your documentation's maturity. Every Z601 finding contributes to the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). A 100/100 score requires brand consistency alongside structural and content integrity. Suppress intentional historical references with `<!-- zenzic:ignore Z601 -->` (Markdown) or `{/* zenzic:ignore Z601 */}` (MDX).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z601"
   exitCode={1}
@@ -667,7 +667,7 @@ Brand obsolescence is a key metric of your documentation's maturity. Every Z601 
 Z906 is an informational diagnostic. It does not fail the workflow step and is suppressed in machine output formats (`json`, `sarif`) per Rule R20.
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z906"
   exitCode={0}
@@ -737,7 +737,7 @@ Suppression is for intentional, documented decisions — not for silencing findi
 ### Recommended Workflow
 
 1. **Baseline scan:** Run `zenzic check all` to establish a baseline of findings.
-2. **Prioritize security:** Address all Z2xx (Shield) findings immediately—these are security-critical.
+2. **Prioritize security:** Address all Z2xx (credential scanner) findings immediately—these are security-critical.
 3. **Fix structural issues:** Resolve Z4xx (Structure) findings to ensure proper navigation and accessibility.
 4. **Gradual quality improvement:** Address Z5xx (Content Quality) findings incrementally as part of routine documentation maintenance.
 5. **Suppress intentional violations:** Use inline comments sparingly for design decisions (e.g., hidden landing pages, experimental sections).

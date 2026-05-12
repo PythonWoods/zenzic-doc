@@ -8,7 +8,7 @@ import '@site/src/css/homepage.css';
 
 import Hero from '../components/Homepage/Hero';
 import EngineeringLedger from '../components/Homepage/EngineeringLedger';
-import SentinelSection from '../components/Homepage/SentinelSection';
+import SecuritySection from '../components/Homepage/SecuritySection';
 import QualityScore from '../components/Homepage/QualityScore';
 import Quickstart from '../components/Homepage/Quickstart';
 
@@ -17,17 +17,17 @@ export default function Home(): React.JSX.Element {
     <Layout
       noFooter
       wrapperClassName="zz-homepage"
-      title="Zenzic — The Safe Harbor for Markdown"
+      title="Zenzic — The Exclusion Zone for Markdown"
       description="High-performance, engine-agnostic, and security-hardened static analysis for Markdown documentation."
     >
       <div data-theme="dark" className="flex flex-col min-h-screen relative w-full">
         <Head>
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="Zenzic — The Safe Harbor for Markdown Documentation" />
+          <meta property="og:title" content="Zenzic — The Exclusion Zone for Markdown Documentation" />
           <meta property="og:description" content="High-performance, engine-agnostic, and security-hardened static analysis. Catch broken links, orphan pages, and leaked credentials before your users do." />
           <meta property="og:image" content="https://zenzic.dev/assets/social/social-card.png" />
           <meta property="og:url" content="https://zenzic.dev/" />
-          <meta name="twitter:title" content="Zenzic — The Safe Harbor for Markdown Documentation" />
+          <meta name="twitter:title" content="Zenzic — The Exclusion Zone for Markdown Documentation" />
           <meta name="twitter:description" content="High-performance, engine-agnostic, and security-hardened static analysis. Catch broken links, orphan pages, and leaked credentials before your users do." />
           <meta name="twitter:image" content="https://zenzic.dev/assets/social/social-card.png" />
           <script type="application/ld+json">{JSON.stringify({
@@ -51,7 +51,7 @@ export default function Home(): React.JSX.Element {
           <Hero />
           <div className="w-full border-t dark:border-zinc-800 border-zinc-200" />
           <EngineeringLedger />
-          <SentinelSection />
+          <SecuritySection />
           <QualityScore />
           <Quickstart />
         </main>

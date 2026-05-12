@@ -6,12 +6,11 @@ description: Sei controlli indipendenti per l'integrità della documentazione �
 
 import {
   GutterTerminal,
-  ShieldTerminal,
+  CredentialTerminal,
   SummaryTerminal,
-  BloodSentinel,
   SnippetTerminal,
   OrphanTerminal,
-} from '@site/src/components/SentinelTerminal';
+} from '@site/src/components/ZenzicTerminal';
 
 ## Riferimento Controlli {#checks-reference}
 
@@ -112,28 +111,28 @@ Alcuni build engine (es. Docusaurus) permettono override `slug` nel frontmatter 
 
 :::
 
-**Output Sentinel — reporter gutter:**
+**Output Zenzic — reporter gutter:**
 
 <GutterTerminal />
 
-### Blood Sentinel — traversamento path di sistema {#blood-sentinel}
+### Path Traversal Guard — traversamento path di sistema {#path-traversal-guard}
 
-Blood Sentinel tratta il traversamento host-path come un **evento di sicurezza**, non come routine di igiene dei link. Se un link esce da `docs/` e si risolve verso path di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emette `PATH_TRAVERSAL_SUSPICIOUS` ed esce con codice **3**.
+Il path traversal guard tratta il traversamento host-path come un **evento di sicurezza**, non come routine di igiene dei link. Se un link esce da `docs/` e si risolve verso path di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emette `PATH_TRAVERSAL_SUSPICIOUS` ed esce con codice **3**.
 
 | Codice | Severità | Exit code | Significato |
 | :--- | :---: | :---: | :--- |
 | `PATH_TRAVERSAL_SUSPICIOUS` | incidente_sicurezza | **3** | L'href punta a una directory di sistema OS |
 | `PATH_TRAVERSAL` | errore | 1 | L'href esce da `docs/` verso un percorso non di sistema |
 
-:::danger[Exit Code 3 — Blood Sentinel]
+::::danger[Exit Code 3 — Path Traversal Guard]
 Un risultato `PATH_TRAVERSAL_SUSPICIOUS` significa che un file sorgente della documentazione contiene un link il cui target risolto punta a `/etc/passwd`, `/root/`, o un altro path di sistema OS. Questo può indicare una template injection, una toolchain di documentazione compromessa, o un errore dell'autore che rivela dettagli dell'infrastruttura interna. Trattarlo come un incidente di sicurezza bloccante per la build.
 :::
 
-<BloodSentinel />
+<CredentialTerminal />
 
-### Come funziona lo Shield {#shield-how-it-works}
+### Come funziona il credential scanner {#shield-how-it-works}
 
-Lo Zenzic Shield utilizza un'**architettura a doppio flusso** per garantire che nessuna parte di un file sfugga alla scansione delle credenziali.
+Lo credential scanner utilizza un'**architettura a doppio flusso** per garantire che nessuna parte di un file sfugga alla scansione delle credenziali.
 
 Quando il Reference Scanner elabora un file, crea due flussi indipendenti:
 
@@ -154,9 +153,9 @@ flowchart LR
     disk --> CT
 ```
 
-I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti deve saltare il frontmatter YAML per evitare di interpretare metadati come `author: Jane Doe` come una definizione reference rotta. Il flusso Shield deve vedere il frontmatter perché una chiave come `aws_key: AKIA...` nascosta nei metadati YAML è un segreto reale che deve essere intercettato. I flussi non condividono mai una sorgente dati — unirli creerebbe un punto cieco.
+I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti deve saltare il frontmatter YAML per evitare di interpretare metadati come `author: Jane Doe` come una definizione reference rotta. Il flusso credential scanner deve vedere il frontmatter perché una chiave come `aws_key: AKIA...` nascosta nei metadati YAML è un segreto reale che deve essere intercettato. I flussi non condividono mai una sorgente dati — unirli creerebbe un punto cieco.
 
-**Normalizzatore Pre-Scansione.** Prima di eseguire i pattern di rilevamento, lo Shield normalizza ogni riga per contrastare l'offuscamento. I backtick di codice inline vengono rimossi, gli operatori di concatenazione eliminati e i caratteri pipe delle tabelle collassati. Questo significa che un segreto spezzato tra colonne di una tabella Markdown — come una chiave AWS divisa in `` `AKIA` + `suffisso` `` — viene riassemblato prima della scansione. Vengono verificate sia la forma grezza che quella normalizzata, e un set di deduplicazione previene le doppie segnalazioni.
+**Normalizzatore Pre-Scansione.** Prima di eseguire i pattern di rilevamento, il credential scanner normalizza ogni riga per contrastare l'offuscamento. I backtick di codice inline vengono rimossi, gli operatori di concatenazione eliminati e i caratteri pipe delle tabelle collassati. Questo significa che un segreto spezzato tra colonne di una tabella Markdown — come una chiave AWS divisa in `` `AKIA` + `suffisso` `` — viene riassemblato prima della scansione. Vengono verificate sia la forma grezza che quella normalizzata, e un set di deduplicazione previene le doppie segnalazioni.
 
 **Protezione ReDoS.** Se aggiungi pattern regex personalizzati tramite `[[custom_rules]]` in `zenzic.toml`, Zenzic sottopone ogni pattern a uno stress test con un canary di 100 ms prima che venga eseguito sui tuoi file. I pattern che presentano backtracking catastrofico vengono rifiutati all'avvio con un errore chiaro. Come seconda rete di sicurezza, ogni processo worker ha un timeout di 30 secondi — se un pattern riesce comunque a bloccarsi a runtime, il file interessato riceve un risultato `Z009: ANALYSIS_TIMEOUT` invece di bloccare la tua pipeline CI indefinitamente.
 
@@ -211,7 +210,7 @@ Gli esempi di codice nella documentazione vengono testati con meno rigore rispet
 | `json` | `json.loads()` | Sintassi JSON |
 | `toml` | `tomllib.loads()` (stdlib 3.11+) | Sintassi TOML v1.0 |
 
-I blocchi con qualsiasi altro tag linguaggio (`bash`, `javascript`, `mermaid`, ecc.) sono trattati come testo puro e non vengono verificati sintatticamente. Tuttavia, **ogni blocco di codice è comunque scansionato dallo Zenzic Shield** per pattern di credenziali.
+I blocchi con qualsiasi altro tag linguaggio (`bash`, `javascript`, `mermaid`, ecc.) sono trattati come testo puro e non vengono verificati sintatticamente. Tuttavia, **ogni blocco di codice è comunque scansionato dallo credential scanner** per pattern di credenziali.
 
 ### Cosa individua
 
@@ -290,17 +289,17 @@ Un asset è considerato **usato** se appare come link immagine Markdown (`![alt]
 
 **CLI:** `zenzic check references`
 
-Il controllo di sicurezza e integrità dei link per i [link in stile reference di Markdown](https://spec.commonmark.org/0.31.2/#link-reference-definitions). Funge anche da superficie primaria per lo **Zenzic Shield**.
+Il controllo di sicurezza e integrità dei link per i [link in stile reference di Markdown](https://spec.commonmark.org/0.31.2/#link-reference-definitions). Funge anche da superficie primaria per lo **credential scanner**.
 
 ### Pipeline Reference a Tre Passaggi
 
 | Passaggio | Nome | Cosa succede |
 | :---: | :--- | :--- |
-| 1 | **Raccolta** | Processa ogni riga; registra le definizioni `[id]: url`; esegue Shield su ogni URL e riga |
+| 1 | **Raccolta** | Processa ogni riga; registra le definizioni `[id]: url`; esegue credential scanner su ogni URL e riga |
 | 2 | **Verifica Incrociata** | Risolve ogni utilizzo `[testo][id]` contro la `ReferenceMap` completa; segnala gli ID non risolvibili |
 | 3 | **Report Integrità** | Calcola il punteggio di integrità per file; aggiunge avvisi su Definizioni Morte e alt-text |
 
-Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati Shield.
+Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati credential scanner.
 
 ### Codici di violazione riferimenti
 
@@ -310,11 +309,11 @@ Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati Shi
 | `DEAD_DEF` | avviso | 0 / 1 `--strict` | `[id]: url` definito ma mai referenziato |
 | `DUPLICATE_DEF` | avviso | 0 / 1 `--strict` | Stesso `id` definito due volte; il primo vince |
 | `MISSING_ALT` | avviso | 0 / 1 `--strict` | Immagine con alt text vuoto o assente |
-| Corrispondenza pattern Shield | violazione_sicurezza | **2** | Credenziale rilevata in qualsiasi riga o URL |
+| Corrispondenza pattern credential scanner | violazione_sicurezza | **2** | Credenziale rilevata in qualsiasi riga o URL |
 
-### Zenzic Shield — rilevamento credenziali
+### credential scanner — rilevamento credenziali
 
-Lo Shield scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse le righe dentro blocchi di codice.
+Lo credential scanner scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse le righe dentro blocchi di codice.
 
 **Famiglie di pattern rilevati:**
 
@@ -330,13 +329,13 @@ Lo Shield scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse l
 | `hex-encoded-payload` | Sequenze di byte hex-encoded (3+ escape `\xNN` consecutivi) |
 | `gitlab-pat` | GitLab Personal Access Token (`glpat-…`) |
 
-**Exit Code 2** è riservato agli eventi Shield. Non viene mai soppresso da `--exit-zero` o `exit_zero = true` in `zenzic.toml`.
+**Exit Code 2** è riservato agli eventi credential scanner. Non viene mai soppresso da `--exit-zero` o `exit_zero = true` in `zenzic.toml`.
 
 :::danger[Se ricevi exit code 2]
 
 Ruota la credenziale esposta immediatamente, poi rimuovi o sostituisci la riga incriminata. Non committare il segreto nella cronologia del repository.
 :::
 
-<ShieldTerminal />
+<CredentialTerminal />
 
 <SummaryTerminal />

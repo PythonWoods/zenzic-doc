@@ -87,12 +87,12 @@ Ogni comando di controllo singolo restituisce una struttura findings uniforme:
 ```
 
 I codici di uscita sono preservati in modalità JSON: exit 0 quando vengono trovati solo
-warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni Shield,
-exit 3 per Blood Sentinel — lo stesso contratto dell'output da terminale.
+warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni credential scanner,
+exit 3 per path traversal guard — lo stesso contratto dell'output da terminale.
 
 ---
 
-## GitHub Actions: Gate Zenzic Shield {#github-actions-zenzic-shield-gate}
+## GitHub Actions: Gate credential scanner {#github-actions-zenzic-credential-gate}
 
 L'integrazione diretta — blocca la build a qualsiasi errore di documentazione.
 
@@ -122,7 +122,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Controllo riferimenti e Shield
+      - name: Controllo riferimenti e credential scanner
 
         run: uvx zenzic check references
 ```
@@ -159,7 +159,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Controllo riferimenti e Shield
+      - name: Controllo riferimenti e credential scanner
 
         run: uvx zenzic check references
 ```
@@ -167,7 +167,7 @@ jobs:
 L'opzione `enable-cache: true` mantiene la cache degli strumenti uv tra
 le esecuzioni, eliminando il download da PyPI ad ogni push.
 
-L'exit code `2` indica che una credenziale è stata rilevata in un URL di riferimento. L'exit code `3` indica che un link risolve a un percorso di sistema OS (Blood Sentinel). Entrambi richiedono indagine immediata — ruota le credenziali esposte e rimuovi il link incriminato.
+L'exit code `2` indica che una credenziale è stata rilevata in un URL di riferimento. L'exit code `3` indica che un link risolve a un percorso di sistema OS (path traversal guard). Entrambi richiedono indagine immediata — ruota le credenziali esposte e rimuovi il link incriminato.
 
   </TabItem>
   <TabItem value="zenzic-action-(consigliata)" label="zenzic-action (consigliata)">
@@ -255,8 +255,8 @@ o notifiche Slack senza dover rileggere il file SARIF:
 ```
 
 :::warning[Gli incidenti di sicurezza sono sempre fatali]
-`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Shield — credenziale
-rilevata) e exit 3 (Blood Sentinel — path traversal) **non sono mai sopprimibili** con alcun input.
+`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Credential scanner — credenziale
+rilevata) e exit 3 (path traversal guard — path traversal) **non sono mai sopprimibili** con alcun input.
 L'action lo applica incondizionatamente. Vedi il
 [Contratto Exit Code](../reference/cli#exit-codes).
 :::
@@ -344,21 +344,21 @@ Combina con le branch protection rules per bloccare i merge che degradano la qua
 |:---:|---|---|
 | `0` | Tutti i controlli superati | Mantieni il badge verde |
 | `1` | Uno o più controlli falliti | Imposta il badge a `failing` / `ef4444` |
-| **`2`** | **Zenzic Shield: credenziale rilevata** | **Ruota la credenziale immediatamente** |
-| **`3`** | **Blood Sentinel: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
+| **`2`** | **credential scanner: credenziale rilevata** | **Ruota la credenziale immediatamente** |
+| **`3`** | **Path traversal guard: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
 
 > Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](./add-badges.mdx).
 
 ---
 
-## Recupero dallo Shield — Quando Viene Rilevata una Credenziale {#shield-recovery}
+## Recupero dalil credential scanner — Quando Viene Rilevata una Credenziale {#credential-recovery}
 
 Un rilevamento di credenziale (exit code 2) non è una build fallita. È un **incidente di sicurezza**.
 Il protocollo di recupero è breve e non negoziabile:
 
 ### Step 1 — Identifica l'esposizione
 
-Il Sentinel Report ti dice tutto ciò di cui hai bisogno:
+Il Zenzic Report ti dice tutto ciò di cui hai bisogno:
 
 ```text
  ✘  Z201  docs/how-to/configure.md:4    Secret rilevato (aws-access-key)
@@ -397,21 +397,21 @@ su un branch condiviso. Se il repository è pubblico, considera la credenziale g
 a prescindere dalla riscrittura della history — la rotazione è obbligatoria.
 :::
 
-### Step 5 — Verifica che lo Shield sia soddisfatto
+### Step 5 — Verifica che il credential scanner sia soddisfatto
 
 ```bash
 uvx zenzic check all
-# Atteso: exit 0, sezione Shield mostra ✔ nessuna credenziale rilevata
+# Atteso: exit 0, sezione credential scanner mostra ✔ nessuna credenziale rilevata
 ```
 
-Solo exit 0 dal pass Shield significa che il recupero è completo.
+Solo exit 0 dal pass credential scanner significa che il recupero è completo.
 
 :::info[Perché Zenzic ti salva da BFG Repo Cleaner]
 BFG Repo Cleaner è uno strumento irreversibile per eliminare segreti dalla git history.
 Il suo utilizzo è un sintomo di un fallimento di processo: il segreto ha raggiunto il repository
-senza essere rilevato. Lo Shield di Zenzic previene questo intercettando le credenziali **prima**
+senza essere rilevato. Il credential scanner di Zenzic previene questo intercettando le credenziali **prima**
 che entrino nella pipeline CI — idealmente tramite un hook pre-commit. Vedi
-[Integrazione pre-commit](#pre-commit) per aggiungere lo Shield come gate locale che
+[Integrazione pre-commit](#pre-commit) per aggiungere il credential scanner come gate locale che
 gira ad ogni `git commit`.
 :::
 
@@ -419,7 +419,7 @@ gira ad ogni `git commit`.
 
 ## Integrazione Pre-commit {#pre-commit}
 
-Lo Shield in CI è la tua ultima linea di difesa. L'hook pre-commit è la prima:
+Il credential scanner in CI è la tua ultima linea di difesa. L'hook pre-commit è la prima:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -430,7 +430,7 @@ repos:
 
       - id: zenzic-shield
 
-        name: Zenzic Shield
+        name: credential scanner
         language: system
         entry: uvx zenzic check all
         pass_filenames: false

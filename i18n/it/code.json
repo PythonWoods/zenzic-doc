@@ -447,7 +447,7 @@
     "message": "Segnala immagini e file che esistono in docs/ ma non sono mai referenziati."
   },
   "homepage.check.shield.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "homepage.check.shield.code": {
     "message": "CHK 0.6"
@@ -465,7 +465,7 @@
     "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice 2 immediatamente."
   },
   "homepage.sentinel.title": {
-    "message": "Sentinella in Azione"
+    "message": "Zenzic in Azione"
   },
   "homepage.sentinel.subtitle": {
     "message": "Ogni rilevamento è associato a file, riga e sorgente. Output strutturato per occhi umani e pipeline CI."
@@ -477,7 +477,7 @@
     "message": "Ogni errore mostra la riga sorgente esatta con contesto di contorno. Niente scorrimento di log."
   },
   "homepage.sentinel.shield.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "homepage.sentinel.shield.desc.before": {
     "message": "Scansiona ogni riga — inclusi i blocchi delimitati "
@@ -674,7 +674,7 @@
     "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
   },
   "chk06.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "chk06.desc": {
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
@@ -684,7 +684,7 @@
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "Il Safe Harbor",
+    "message": "Il Exclusion Zone",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
@@ -752,7 +752,7 @@
     "message": "Then configure your environment."
   },
   "sentinel.shield.title": {
-    "message": "Zenzic Shield"
+    "message": "credential scanner"
   },
   "sentinel.shield.desc": {
     "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
@@ -794,7 +794,7 @@
     "message": "FAILED: One or more checks failed."
   },
   "sentinel.label": {
-    "message": "Reporter & Shield"
+    "message": "Reporter & Credentials"
   },
   "score.label": {
     "message": "Metriche di Qualità"

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Architettura
-description: Approfondimento tecnico sulla pipeline a due passate, il flusso middleware Shield, il protocollo Adapter e i codici di uscita.
+description: Approfondimento tecnico sulla pipeline a due passate, il flusso del credential scanner, il protocollo Adapter e i codici di uscita.
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -9,7 +9,7 @@ import ThemedImage from '@theme/ThemedImage';
 
 # Architettura
 
-Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strutture interne che ne governano il funzionamento: dalla pipeline di scansione al protocollo degli adapter, dal flusso dello Shield al sistema di esclusione a livelli.
+Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strutture interne che ne governano il funzionamento: dalla pipeline di scansione al protocollo degli adapter, dal flusso del credential scanner al sistema di esclusione a livelli.
 
 ---
 
@@ -19,7 +19,7 @@ La pipeline principale di Zenzic opera in due passate sequenziali sul medesimo i
 
 <div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
   <ThemedImage
-    alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (Shield + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
+    alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (credential scanner + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
@@ -34,13 +34,13 @@ La prima passata attraversa tutti i file `.md` e `.mdx` scoperti da `iter_markdo
 
 | Fase | Descrizione | Output |
 | :--- | :--- | :--- |
-| **1.a Shield pass** | Scansiona **ogni riga** del file (incluso il frontmatter YAML e le righe dentro blocchi di codice) alla ricerca di pattern di credenziali | Lista di `SecurityFinding` |
+| **1.a Credential scanner pass** | Scansiona **ogni riga** del file (incluso il frontmatter YAML e le righe dentro blocchi di codice) alla ricerca di pattern di credenziali | Lista di `SecurityFinding` |
 | **1.b Content pass** | Estrae le definizioni reference-link (`[id]: url`), rileva le immagini inline, verifica la presenza dell'alt text | `ReferenceMap` popolata, eventi `DEF`, `IMG`, `MISSING_ALT` |
-| **1.c Shield URL** | Per ogni URL trovato in una definizione reference, esegue `scan_url_for_secrets` | `SecurityFinding` aggiuntivi (se la riga non era gia segnalata da 1.a) |
+| **1.c Credential scanner URL** | Per ogni URL trovato in una definizione reference, esegue `scan_url_for_secrets` | `SecurityFinding` aggiuntivi (se la riga non era gia segnalata da 1.a) |
 
-Lo Shield ha la priorità assoluta. Se la fase 1.a rileva un segreto, l'evento viene emesso immediatamente. I risultati Shield e Content vengono poi uniti e ordinati per numero di riga.
+Il credential scanner ha la priorità assoluta. Se la fase 1.a rileva un segreto, l'evento viene emesso immediatamente. I risultati del credential scanner e Content vengono poi uniti e ordinati per numero di riga.
 
-Lo Shield scansiona le righe **senza saltare i blocchi di codice** — questo e intenzionale. Un segreto incorporato in un esempio `bash` o in un blocco senza etichetta linguistica e comunque un segreto esposto.
+Il credential scanner scansiona le righe **senza saltare i blocchi di codice** — questo e intenzionale. Un segreto incorporato in un esempio `bash` o in un blocco senza etichetta linguistica e comunque un segreto esposto.
 
 Durante la Passata 1, il `ReferenceScanner` popola una `ReferenceMap` per file:
 
@@ -50,7 +50,7 @@ scanner = ReferenceScanner(Path("docs/guide.md"))
 for event in scanner.harvest():
     lineno, event_type, data = event
     if event_type == "SECRET":
-        # Shield ha rilevato una credenziale — interruzione immediata
+        # Credential scanner ha rilevato una credenziale — interruzione immediata
         raise SystemExit(2)
 ```
 
@@ -62,9 +62,9 @@ Gli eventi di harvest includono:
 | `DUPLICATE_DEF` | `(norm_id, url)` | ID duplicato (il primo vince per CommonMark 4.7) |
 | `IMG` | `(alt_text, url)` | Immagine con alt text trovata |
 | `MISSING_ALT` | `url` | Immagine senza alt text |
-| `SECRET` | `SecurityFinding` | Credenziale rilevata dallo Shield |
+| `SECRET` | `SecurityFinding` | Credenziale rilevata dal credential scanner |
 
-Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Lo Shield agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
+Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Il credential scanner agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
 
 ### Passata 1.5 — Costruzione del grafo dei link {#pass-1-5}
 
@@ -104,7 +104,7 @@ Il report include:
 - **Riferimenti dangling** (errori) dalla Passata 2
 - **Definizioni morte** (warning) — definite ma mai referenziate
 - **Definizioni duplicate** (warning) — stesso ID definito due volte
-- **Risultati Shield** dalla Passata 1
+- **Risultati del credential scanner** dalla Passata 1
 - **Risultati delle regole** dall'Adaptive Rule Engine (se configurato)
 
 ### Pipeline di Validazione dei Link {#link-validation}
@@ -121,13 +121,13 @@ Il validatore di link (`validate_links_async`) opera indipendentemente con la pr
 
 ---
 
-## Flusso Middleware Shield {#shield-middleware}
+## Flusso Credential Scanner
 
-Lo Zenzic Shield e un middleware di sicurezza che opera trasversalmente a tutta la pipeline. Il suo flusso per ogni riga di ogni file e il seguente:
+Il credential scanner di Zenzic è un componente di sicurezza che opera trasversalmente a tutta la pipeline. Il suo flusso per ogni riga di ogni file e il seguente:
 
 <div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
   <ThemedImage
-    alt="Zenzic Shield — algoritmo di normalizzazione in 8 passaggi: dalla riga grezza attraverso ZRT-006/007/003 fino alla scansione duale e al SecurityFinding"
+    alt="Zenzic credential scanner — algoritmo di normalizzazione in 8 passaggi: dalla riga grezza attraverso ZRT-006/007/003 fino alla scansione duale e al SecurityFinding"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization.svg'),
@@ -168,9 +168,9 @@ Il normalizzatore applica sei passate prima della corrispondenza regex:
 
 Vengono scansionate sia la forma grezza che quella normalizzata. Se lo stesso tipo di segreto viene rilevato in entrambe le forme, viene emesso un solo risultato.
 
-### Famiglie di pattern {#shield-patterns}
+### Famiglie di pattern
 
-Lo Shield rileva nove famiglie di pattern di credenziali:
+Il credential scanner rileva nove famiglie di pattern di credenziali:
 
 | Pattern | Regex | Prefisso esempio |
 | :--- | :--- | :--- |
@@ -186,8 +186,8 @@ Lo Shield rileva nove famiglie di pattern di credenziali:
 
 ### Proprieta del middleware
 
-- **Nessuna riga invisibile:** lo Shield scansiona anche le righe dentro blocchi di codice e il frontmatter YAML
-- **Priorità assoluta:** un risultato Shield blocca la Passata 2 per quel file (la `ReferenceMap` non viene cross-checked)
+- **Nessuna riga invisibile:** il credential scanner scansiona anche le righe dentro blocchi di codice e il frontmatter YAML
+- **Priorità assoluta:** un risultato del credential scanner blocca la Passata 2 per quel file (la `ReferenceMap` non viene cross-checked)
 - **Exit Code 2 dedicato:** non viene mai soppresso da `--exit-zero` o `exit_zero = true`
 - **Deduplicazione:** se `scan_line_for_secrets` e `scan_url_for_secrets` rilevano lo stesso segreto sulla stessa riga, viene emesso un solo evento
 
@@ -200,7 +200,7 @@ Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft
 line = safe_read_line(raw_line, file_path, line_no)
 ```
 
-### Hardening {#shield-hardening}
+### Hardening
 
 - **Limite lunghezza riga** (F2-1): Le righe che superano 1 MiB vengono troncate silenziosamente prima della corrispondenza regex per prevenire il ReDoS.
 - **Buffer di lookback** (ZRT-007): Lo scanner mantiene uno stato di lookback di 1 riga. Per ogni riga, la coda della riga precedente normalizzata (`[-80:]`) viene concatenata con la testa della riga corrente (`[:80]`) e scansionata come passata aggiuntiva. Questo rileva i segreti divisi su scalari YAML folded o interruzioni di riga Markdown.
@@ -344,7 +344,7 @@ attivo:
 
 La directory `examples/matrix/` in questo repository contiene la prova vivente:
 vettori d'attacco red-team identici producono findings identici su engine `standalone`,
-`mkdocs` e `zensical`. I fixture blue-team producono un Sentinel Seal identico su tutti
+`mkdocs` e `zensical`. I fixture blue-team producono un Zenzic Audit Badge identico su tutti
 e tre. Zero asimmetrie.
 
 ### Risoluzione Link e Mapping degli Slug {#link-resolution}
@@ -430,11 +430,11 @@ if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
     raw_line = raw_line.encode("utf-8")[:_MAX_LINE_BYTES].decode("utf-8", errors="replace")
 ```
 
-La riga troncata viene comunque scansionata — una credenziale che inizia nel primo 1 MiB di una riga verrà comunque rilevata. Solo il contenuto oltre il limite è invisibile allo Shield.
+La riga troncata viene comunque scansionata — una credenziale che inizia nel primo 1 MiB di una riga verrà comunque rilevata. Solo il contenuto oltre il limite è invisibile al credential scanner.
 
 ### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
 
-La funzione `_validate_docs_root()` in `cli.py` eleva il **Blood Sentinel** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
+La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
 
 **Modello di minaccia:** Un `zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
 
@@ -453,7 +453,7 @@ def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
 
 `resolve()` espande tutti i symlink e i componenti `..` prima del confronto, quindi `docs_dir = "repo/../../../etc"` viene catturato incondizionatamente. Il controllo viene eseguito prima della costruzione di `LayeredExclusionManager`, prima di qualsiasi fase I/O, e non può essere aggirato da flag CLI.
 
-**Il Codice di Uscita 3 non viene mai soppresso** da `--exit-zero` o `exit_zero = true`. Se viene rilevato un tentativo di jailbreak, il processo termina immediatamente dopo la stampa del messaggio diagnostico del Blood Sentinel.
+**Il Codice di Uscita 3 non viene mai soppresso** da `--exit-zero` o `exit_zero = true`. Se viene rilevato un tentativo di jailbreak, il processo termina immediatamente dopo la stampa del messaggio diagnostico del path traversal guard.
 
 | Scenario | Valore `docs_dir` | Risultato |
 | :--- | :--- | :--- |
@@ -536,7 +536,7 @@ Passo 2 — _apply_target(repo_root, config, raw_path)
 
 Passo 3 — Guardia Sandbox CEO-043
           Se docs_root cade fuori da repo_root (target esterno), adotta docs_root
-          come nuovo repo_root in modo che Blood Sentinel protegga le fughe dal
+          come nuovo repo_root in modo che il path traversal guard protegga le fughe dal
           target, non dalla posizione del chiamante.
 ```
 
@@ -557,7 +557,7 @@ zenzic init /workspace/docs-freschi    # crea la directory se necessario
 | Invariante | Garanzia |
 | :--- | :--- |
 | Isolamento della config | Il `zenzic.toml` della destinazione viene caricato; la config del chiamante non viene mai consultata |
-| Guardia sandbox | Il perimetro di Blood Sentinel è ancorato a `docs_root`, non a `cwd` |
+| Guardia sandbox | Il perimetro del path traversal guard è ancorato a `docs_root`, non a `cwd` |
 | Nessuna mutazione della CWD | `init` scrive nella destinazione; la directory di lavoro del chiamante non viene modificata |
 | Visualizzazione dell'hint | Il banner mostra il percorso assoluto risolto della destinazione per la fiducia dell'operatore |
 
@@ -571,21 +571,21 @@ Zenzic usa quattro codici di uscita, ognuno con una semantica precisa:
 | :---: | :--- | :--- | :---: |
 | **0** | Pulito | Nessun problema trovato (o `--exit-zero` attivo per problemi non-sicurezza) | — |
 | **1** | Risultati | Errori di qualita trovati (link rotti, orfani, snippet, segnaposto, asset, riferimenti) | Si |
-| **2** | Shield | Credenziale rilevata dallo Zenzic Shield | **No** |
-| **3** | Blood Sentinel | Traversamento path verso directory di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`) | **No** |
+| **2** | Credential Scanner | Credenziale rilevata dallo Zenzic credential scanner | **No** |
+| **3** | Path Traversal Guard | Traversamento path verso directory di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`) | **No** |
 
 ### Gerarchia di priorità dei codici di uscita
 
 Quando piu condizioni si verificano nella stessa esecuzione, la priorità è:
 
 ```text
-Exit 3 (Blood Sentinel)  >  Exit 2 (Shield)  >  Exit 1 (Risultati)  >  Exit 0 (Pulito)
+Exit 3 (Path Traversal Guard)  >  Exit 2 (Credential Scanner)  >  Exit 1 (Risultati)  >  Exit 0 (Pulito)
 ```
 
-Il Blood Sentinel (exit 3) viene valutato per primo. Poi lo Shield (exit 2). Solo dopo viene valutata la presenza di risultati standard (exit 1).
+Il path traversal guard (exit 3) viene valutato per primo. Poi il credential scanner (exit 2). Solo dopo viene valutata la presenza di risultati standard (exit 1).
 
 :::danger[Exit 2 e 3 non sono mai sopprimibili]
-I codici di uscita 2 (Shield) e 3 (Blood Sentinel) rappresentano eventi di sicurezza. Non vengono mai soppressi da `--exit-zero` o `exit_zero = true` nella configurazione. Questo e un contratto architetturale invariante.
+I codici di uscita 2 (credential scanner) e 3 (path traversal guard) rappresentano eventi di sicurezza. Non vengono mai soppressi da `--exit-zero` o `exit_zero = true` nella configurazione. Questo e un contratto architetturale invariante.
 :::
 
 ### Exit Code 0 — Pulito
@@ -598,17 +598,17 @@ Sono stati rilevati problemi di qualità della documentazione: link rotti, pagin
 
 Può essere soppresso da `exit_zero = true` nella configurazione o `--exit-zero` nella CLI.
 
-### Exit Code 2 — Shield
+### Exit Code 2 — Credential Scanner
 
-Una credenziale esposta è stata rilevata dallo Zenzic Shield. Questo codice di uscita **non viene mai** soppresso da `--exit-zero` o `exit_zero = true`. La credenziale deve essere ruotata immediatamente.
+Una credenziale esposta è stata rilevata dallo Zenzic credential scanner. Questo codice di uscita **non viene mai** soppresso da `--exit-zero` o `exit_zero = true`. La credenziale deve essere ruotata immediatamente.
 
-### Exit Code 3 — Blood Sentinel
+### Exit Code 3 — Path Traversal Guard {#exit-code-3}
 
 Un link nella documentazione risolve verso un percorso di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Viene classificato come `PATH_TRAVERSAL_SUSPICIOUS` — un incidente di sicurezza che indica una potenziale iniezione template, toolchain compromessa o divulgazione di infrastruttura.
 
-Il codice di uscita 3 ha la **priorità massima**. Se esistono risultati sia di Shield che di Blood Sentinel nella stessa esecuzione, il codice 3 vince.
+Il codice di uscita 3 ha la **priorità massima**. Se esistono risultati sia di credential scanner che di path traversal guard nella stessa esecuzione, il codice 3 vince.
 
-Il Blood Sentinel scatta anche quando `docs_dir` stesso risolve fuori dalla radice del repository (protezione jailbreak F4-1).
+Il path traversal guard scatta anche quando `docs_dir` stesso risolve fuori dalla radice del repository (protezione jailbreak F4-1).
 
 ---
 
@@ -707,7 +707,7 @@ La soglia di 50 file (`ADAPTIVE_PARALLEL_THRESHOLD`) e un'euristica conservativa
 ### Garanzie del motore parallelo
 
 - **Determinismo:** i risultati sono sempre ordinati per `file_path` indipendentemente dalla modalita di esecuzione
-- **Shield per-worker:** ogni worker applica lo Shield indipendentemente. I file con risultati di sicurezza vengono esclusi dalla validazione link
+- **Credential scanner per-worker:** ogni worker applica il credential scanner indipendentemente. I file con risultati di sicurezza vengono esclusi dalla validazione link
 - **Contratto di immutabilità:** `config` e `rule_engine` vengono serializzati via `pickle`. Ogni worker riceve una copia indipendente — nessuno stato condiviso tra processi. I pattern `CustomRule` compilati dal motore RE2 sono DFA-safe e non possono bloccare un processo worker
 
 ---
@@ -719,7 +719,7 @@ Zenzic v0.7.0 rimuove completamente il namespace `zenzic.integrations`. Il vecch
 
 **Perché:** un hook embedded nel motore accoppia il ciclo di rilascio di Zenzic all'API plugin di
 uno strumento di build esterno. Impedisce inoltre agli utenti di altri motori di accedere
-all'hardening completo di Shield e Blood Sentinel, disponibile solo nella pipeline CLI.
+all'hardening completo di credential scanner e path traversal guard, disponibile solo nella pipeline CLI.
 Una CLI Sovrana disaccoppia il quality gate dallo strumento di build e rende ogni punto di
 applicazione engine-agnostico.
 
@@ -732,7 +732,7 @@ applicazione engine-agnostico.
 
 ```
 
-Questo produce un'applicazione identica con VSM completo, Shield (ZRT-006/007) e Blood Sentinel
+Questo produce un'applicazione identica con VSM completo, credential scanner (ZRT-006/007) e path traversal guard
 attivi — capacità che il layer plugin non aveva mai esposto completamente.
 
 ---
@@ -760,7 +760,7 @@ src/zenzic/cli/
 | Getter | Restituisce |
 | :--- | :--- |
 | `get_console()` | Il singleton `rich.console.Console` corrente |
-| `get_ui()` | Il singleton `SentinelUI` corrente (avvolge la console) |
+| `get_ui()` | Il singleton `ZenzicUI` corrente (avvolge la console) |
 
 `configure_console()` — chiamata dal callback Typer `--no-color` / `--force-color` in `main.py` — **sostituisce** entrambi i singleton atomicamente. Poiché ogni comando chiama `get_ui()` / `get_console()` al momento dell'invocazione anziché all'importazione, ricevono sempre l'istanza che riflette i flag colore dell'utente.
 
@@ -788,4 +788,4 @@ Il banner scrive sempre su **stdout** (il `_shared.console` condiviso), quindi u
 | :--- | :--- |
 | Aggiungere un comando a una sub-app esistente | Aggiungere `@check_app.command()` (o altra app) nel `_*.py` rilevante — nessuna modifica a `__init__.py` o `main.py` |
 | Aggiungere una nuova sub-app top-level | Creare `_miafeature.py`, esportare da `__init__.py`, registrare in `main.py`, aggiungere a `_SUBAPPS_WITH_MENU` se `no_args_is_help=True` |
-| Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `SentinelUI` localmente |
+| Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `ZenzicUI` localmente |

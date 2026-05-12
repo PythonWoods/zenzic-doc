@@ -27,7 +27,7 @@ Il repository include fixture mantenuti e allineati ai contratti documentati:
 - `examples/i18n-standard/` — gold standard bilingue in strict mode.
 - `examples/zensical-basic/` — baseline Zensical v0.0.31+ (`[project].nav`).
 - `examples/broken-docs/` — errori intenzionali (exit 1).
-- `examples/security_lab/` — fixture sicurezza (Shield exit 2, Blood Sentinel exit 3).
+- `examples/security_lab/` — fixture sicurezza (credential scanner exit 2, path traversal guard exit 3).
 
 :::tip[Vuoi eseguirlo subito?]
 
@@ -37,7 +37,7 @@ uvx zenzic check all  # proteggi la tua documentazione
 ```
 
 Vuoi vedere come Zenzic gestisce Docusaurus v3 o il proxy di Zensical?
-Lancia `zenzic lab` e guarda la Sentinel in azione su ogni engine supportato.
+Lancia `zenzic lab` e guarda Zenzic in azione su ogni engine supportato.
 :::
 
 ---
@@ -273,5 +273,5 @@ zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 **Prossimi passi:**
 
 - [Riferimento comandi CLI](../reference/cli.mdx) — ogni comando, flag e codice di uscita
-- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
+- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, credential scanner, utilizzo programmatico
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hook, gestione del baseline

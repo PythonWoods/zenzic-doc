@@ -22,7 +22,7 @@ l'adapter Docusaurus. Rilevava quando un file dichiarato in `docusaurus.config.t
 (favicon, immagine Open Graph, CSS personalizzato) non esisteva su disco.
 
 Questa scelta creava una contraddizione strutturale: Zenzic si presenta come un
-**Safe Harbor per tutti i motori di documentazione**. Offrire un controllo
+**Exclusion Zone per tutti i motori di documentazione**. Offrire un controllo
 dell'integrità degli asset di configurazione solo agli utenti Docusaurus violava
 questa garanzia. Un progetto MkDocs che dichiarava un `theme.favicon` puntante
 a un file inesistente non riceveva alcuna diagnostica — una lacuna silenziosa
@@ -48,9 +48,9 @@ asset di configurazione gestisce, e il motore centrale invoca
 
 ## Motivazione
 
-### 1. Safe Harbor Significa Tutti i Porti
+### 1. Exclusion Zone Significa Tutti i Porti
 
-Un porto sicuro solo per le navi Docusaurus non è un Safe Harbor — è un
+Un porto sicuro solo per le navi Docusaurus non è un Exclusion Zone — è un
 **porto di marca con una limitazione di stazza**. Nel momento in cui un
 controllo è specifico per un motore senza una ragione tecnica, si segnala ai
 contributori che la parità tra motori è opzionale. Quel segnale si amplifica

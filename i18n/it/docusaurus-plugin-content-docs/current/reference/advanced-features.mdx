@@ -1,7 +1,7 @@
 ---
 icon: lucide/shield-check
 sidebar_label: "Funzionalità Avanzate"
-description: "Integrità dei riferimenti, rilevamento credenziali Shield e uso programmatico."
+description: "Integrità dei riferimenti, rilevamento credenziali e uso programmatico."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,7 +9,7 @@ description: "Integrità dei riferimenti, rilevamento credenziali Shield e uso p
 
 # Funzionalità avanzate
 
-Riferimento approfondito sulla Three-Pass Pipeline, Zenzic Shield, controlli di accessibilità
+Riferimento approfondito sulla Three-Pass Pipeline, credential scanner, controlli di accessibilità
 e utilizzo programmatico da Python.
 
 ---
@@ -27,11 +27,11 @@ appare prima della sua definizione. Zenzic risolve questo con una struttura deli
 
 | Pass | Nome | Cosa succede |
 | :---: | :--- | :--- |
-| 1 | **Harvest** | Legge il file riga per riga; registra tutte le definizioni `[id]: url` in una `ReferenceMap`; esegue lo Shield su ogni URL e riga |
+| 1 | **Harvest** | Legge il file riga per riga; registra tutte le definizioni `[id]: url` in una `ReferenceMap`; esegue il credential scanner su ogni URL e riga |
 | 2 | **Cross-Check** | Riscorre il file; per ogni utilizzo `[testo][id]`, cerca `id` nella `ReferenceMap` ora completa; segnala gli ID mancanti come **Dangling Reference** |
 | 3 | **Integrity Report** | Calcola il punteggio di integrità; aggiunge le **Dead Definition**, i warning per ID duplicati e per alt-text mancanti |
 
-Il Pass 2 inizia solo quando il Pass 1 termina senza security finding. Se lo Shield scatta
+Il Pass 2 inizia solo quando il Pass 1 termina senza security finding. Se il credential scanner scatta
 durante l'harvesting, Zenzic esce immediatamente con codice 2 — nessuna risoluzione di
 riferimenti avviene su file che contengono credenziali esposte.
 
@@ -64,11 +64,11 @@ link boilerplate non usati.
 
 ---
 
-## Zenzic Shield
+## credential scanner
 
-Lo Shield gira **dentro il Pass 1** — ogni URL estratto da una reference definition viene
+Il credential scanner gira **dentro il Pass 1** — ogni URL estratto da una reference definition viene
 scansionato nel momento in cui l'harvester lo incontra, prima che qualsiasi altra elaborazione
-continui. Lo Shield applica anche un pass di difesa in profondità alle righe non-definizione
+continui. Il credential scanner applica anche un pass di difesa in profondità alle righe non-definizione
 per intercettare segreti nella prosa normale.
 
 ### Pattern di credenziali rilevati
@@ -84,7 +84,7 @@ per intercettare segreti nella prosa normale.
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | Chiavi private PEM (RSA, EC, ecc.) |
 | `hex-encoded-payload` | `(?:\\x[0-9a-fA-F]{2}){3,}` | Rileva tentativi di offuscamento di payload o credenziali tramite escape esadecimali. Questa tecnica è comunemente usata per evadere i linter di stringhe semplici e Zenzic la considera una violazione critica della trasparenza del sorgente. |
 
-### Comportamento dello Shield {#shield-behaviour}
+### Comportamento delil credential scanner {#shield-behaviour}
 
 - **Ogni riga viene scansionata** — incluse le righe dentro i blocchi di codice delimitati (con o
 
@@ -93,13 +93,13 @@ per intercettare segreti nella prosa normale.
 
 - Il rilevamento è **non sopprimibile** — `--exit-zero`, `exit_zero = true` in `zenzic.toml` e
 
-  `--strict` non hanno effetto sui security finding dello Shield.
+  `--strict` non hanno effetto sui security finding delil credential scanner.
 
-- Il codice di uscita 2 è riservato **esclusivamente** agli eventi Shield. Non viene mai usato
+- Il codice di uscita 2 è riservato esclusivamente agli eventi credential scanner. Non viene mai usato
 
   per i fallimenti ordinari dei controlli.
 
-- Il codice di uscita 3 è riservato agli eventi **Blood Sentinel** — link che risolvono a
+- Il codice di uscita 3 è riservato agli eventi del **path traversal guard** — link che risolvono a
 
   directory di sistema OS. Come l'exit code 2, non è mai sopprimibile.
 
@@ -107,7 +107,7 @@ per intercettare segreti nella prosa normale.
 
   a URL che potrebbero contenere credenziali esposte.
 
-- **Isolamento dei link nei blocchi di codice** — lo Shield scansiona l'interno dei blocchi
+- **Isolamento dei link nei blocchi di codice** — lo credential scanner scansiona l'interno dei blocchi
 
   delimitati, ma il validatore di link e riferimenti no. Gli URL di esempio nei blocchi di codice
   (es. `https://api.example.com`) non producono mai falsi positivi nei link.
@@ -118,10 +118,10 @@ esposta, poi rimuovi o sostituisci l'URL di riferimento incriminato. Non committ
 segreto nella history.
 :::
 
-:::note[Scopri lo Shield in azione]
+:::note[Scopri il credential scanner in azione]
 Il repository include `examples/safety_demonstration.md` — una fixture di test intenzionale
 contenente un link circolare e un payload hex-encoded. Esegui `zenzic check all` contro di esso
-per osservare una violazione Shield live e un finding `CIRCULAR_LINK` di tipo info.
+per osservare una violazione credential scanner live e un finding `CIRCULAR_LINK` di tipo info.
 :::
 
 ---
@@ -131,7 +131,7 @@ per osservare una violazione Shield live e un finding `CIRCULAR_LINK` di tipo in
 Zenzic applica regole di scansione diverse alla prosa e ai blocchi di codice perché i due
 contesti hanno profili di rischio diversi:
 
-| Posizione del contenuto | Shield (segreti) | Sintassi snippet | Validazione link/ref |
+| Posizione del contenuto | Credential scanner (segreti) | Sintassi snippet | Validazione link/ref |
 | :--- | :---: | :---: | :---: |
 | Prosa e definizioni di riferimento | ✓ | — | ✓ |
 | Blocco delimitato — linguaggio supportato (`python`, `yaml`, `json`, `toml`) | ✓ | ✓ | — |

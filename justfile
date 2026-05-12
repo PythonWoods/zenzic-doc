@@ -75,10 +75,10 @@ check *args:
     CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
 
     if [ -d "$CORE_PATH" ]; then
-        echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
+        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
         uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
     else
-        echo "🛡️  [Zenzic Sentinel] Local core not found. Using published PyPI release..."
+        echo "🛡️  [Zenzic] Local core not found. Using published PyPI release..."
         uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" {{args}}
     fi
 typecheck:

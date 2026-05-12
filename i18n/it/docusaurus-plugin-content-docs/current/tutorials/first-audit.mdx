@@ -5,7 +5,7 @@ sidebar_label: "Il tuo primo audit"
 
 # Il tuo primo audit
 
-**Cosa farai:** passare da una cartella di file Markdown a un report della Sentinella in meno di
+**Cosa farai:** passare da una cartella di file Markdown a un report delZenzic in meno di
 tre minuti — senza file di configurazione per iniziare.
 
 :::tip[Prerequisiti]
@@ -47,7 +47,7 @@ uvx zenzic lab 2
 Zenzic scansiona il fixture `security_lab` incluso e attiva l'**exit code 2** con
 il banner Security Breach — l'allerta non sopprimibile per una credenziale esposta:
 
-<SentinelOutput status="breach" exitCode={2} showFrame
+<ZenzicOutput status="breach" exitCode={2} showFrame
   location="docs/how-to/configure.md:4"
   masked="AKIA************MPLE"
   credentialType="aws-access-key"
@@ -55,13 +55,13 @@ il banner Security Breach — l'allerta non sopprimibile per una credenziale esp
 
 La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
 
-**Lo Scudo (Sentinel Seal)** — ora esegui l'atto 0:
+**Il Credential Scanner (Zenzic Audit Badge)** — ora esegui l'atto 0:
 
 ```bash
 uvx zenzic lab 0
 ```
 
-Il Sentinel Seal: ogni controllo verde, exit 0. Il contrasto è la prova —
+Il Zenzic Audit Badge: ogni controllo verde, exit 0. Il contrasto è la prova —
 lo stesso motore che ha rilevato il segreto conferma che la documentazione
 pulita è genuinamente pulita.
 
@@ -73,14 +73,14 @@ uvx zenzic lab
 ```
 
 Lancia il menu interattivo di tutti i 17 atti: credenziali esposte, link rotti, pagine orfane,
-path traversal e il Sentinel Seal. Zero installazione. Zero configurazione. Esperienza pura.
+path traversal e il Zenzic Audit Badge. Zero installazione. Zero configurazione. Esperienza pura.
 
 → Scegli qualsiasi atto dal menu, oppure eseguine uno specifico: `uvx zenzic lab 2` (L'Assedio), `uvx zenzic lab 0` (Il Sigillo).
 :::
 
 ---
 
-## Step 3 — Inizializza il tuo Safe Harbor {#step-3-init}
+## Step 3 — Inizializza il tuo Exclusion Zone {#step-3-init}
 
 Quando sei pronto a integrare Zenzic nel progetto, genera un `zenzic.toml` con un comando:
 
@@ -120,7 +120,7 @@ creare un file separato.
 zenzic check all
 ```
 
-La Sentinella scansiona ogni file Markdown, valida i link interni rispetto alla Virtual Site Map,
+Zenzic scansiona ogni file Markdown, valida i link interni rispetto alla Virtual Site Map,
 controlla le ancore, cerca credenziali, esegue le regole personalizzate — poi stampa un report
 strutturato ed esce con un codice leggibile dalla macchina:
 
@@ -128,12 +128,12 @@ strutturato ed esce con un codice leggibile dalla macchina:
 | :---: | :--- |
 | **0** | Pulito — nessun problema rilevato |
 | **1** | Risultati — problemi di qualità della documentazione rilevati |
-| **2** | Shield — credenziale esposta rilevata (mai sopprimibile) |
-| **3** | Blood Sentinel — tentativo di path traversal rilevato (mai sopprimibile) |
+| **2** | Credential scanner — credenziale esposta rilevata (mai sopprimibile) |
+| **3** | Path traversal guard — tentativo di path traversal rilevato (mai sopprimibile) |
 
-Un'esecuzione pulita si presenta così — il **Sentinel Seal**:
+Un'esecuzione pulita si presenta così — il **Zenzic Audit Badge**:
 
-<SentinelOutput status="success" exitCode={0} showFrame />
+<ZenzicOutput status="success" exitCode={0} showFrame />
 
 Non è solo un segno di spunta verde in CI. È una **prova matematica** che ogni link si risolve,
 ogni pagina è raggiungibile e nessuna credenziale è esposta. `100/100` è l'unico numero che conta.

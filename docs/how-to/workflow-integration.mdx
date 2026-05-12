@@ -1,6 +1,6 @@
 ---
 icon: lucide/shield-check
-sidebar_label: "Local Sentinel Gate"
+sidebar_label: "Local Quality Gate"
 description: "Close the gate before the build. Integrate Zenzic into your local workflow so documentation errors never reach CI."
 ---
 
@@ -10,21 +10,21 @@ description: "Close the gate before the build. Integrate Zenzic into your local 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Local Sentinel Gate
+# Local Quality Gate
 
 > *Don't debug the build output. Fix the source before the build starts.*
 
 A documentation error discovered in CI means a failed pipeline, a context switch, and a
 wasted build minute. Discovered **before** the build, it is just a one-line fix.
 
-The Sentinel Gate pattern closes the gap: Zenzic runs as a mandatory pre-step, blocking
+The Quality Gate pattern closes the gap: Zenzic runs as a mandatory pre-step, blocking
 the build command if the source is not clean. No findings — no gate — no wasted cycle.
 
 ---
 
 ## The Principle
 
-The Sentinel Gate enforces a simple invariant:
+The Quality Gate enforces a simple invariant:
 
 ```text
 zenzic check all [PATH] --strict  →  success  →  your build tool
@@ -71,7 +71,7 @@ warm install, uv caches the wheel — subsequent runs are near-instant.
 MkDocs projects typically use `mkdocs build` or a `justfile`. Gate the build recipe:
 
 ```just title="justfile"
-# Sentinel Gate — Zenzic must pass before MkDocs builds
+# Quality Gate — Zenzic must pass before MkDocs builds
 build:
   uvx zenzic check all . --strict
     mkdocs build --strict
@@ -113,7 +113,7 @@ zensical build
 Or via a `justfile` recipe:
 
 ```just title="justfile"
-# Sentinel Gate — documentation must be clean before Zensical renders
+# Quality Gate — documentation must be clean before Zensical renders
 build:
     uvx zenzic check all . --strict
     zensical build
@@ -150,7 +150,7 @@ or shell script entry point.
 | **CI pipeline** | Minutes — push, wait, read log, fix, re-push |
 | **Production deploy** | Hours — rollback, triage, hotfix |
 
-The Sentinel Gate shifts discovery to the cheapest possible moment. By the time CI
+The Quality Gate shifts discovery to the cheapest possible moment. By the time CI
 runs, the documentation is already clean — CI becomes a **confirmation** rather than
 a **detector**.
 
@@ -162,8 +162,8 @@ a **detector**.
 | :--- | :--- | :--- |
 | `0` | All checks passed | Build proceeds |
 | `1` | Quality findings (links, orphans, placeholders) | Build blocked by default; add `--no-fail-under` to allow |
-| `2` | Shield breach — credential detected | Always blocked. Never suppressible. |
-| `3` | Blood Sentinel — system path traversal | Always blocked. Never suppressible. |
+| `2` | credential scanner finding — credential detected | Always blocked. Never suppressible. |
+| `3` | Path traversal guard — system path traversal | Always blocked. Never suppressible. |
 
 Exit codes 2 and 3 are unconditional stops. No flag or configuration can suppress a
 security incident.
@@ -173,7 +173,7 @@ security incident.
 ## Pre-Launch and Staging Environments {#pre-launch}
 
 External links to sites that are not yet public — documentation domains, GitHub release
-tags, staging URLs — return HTTP 404 until the deploy completes. The Sentinel Gate
+tags, staging URLs — return HTTP 404 until the deploy completes. The Quality Gate
 blocks the build on these, which is correct behaviour: a broken external link is a
 real finding.
 
@@ -208,7 +208,7 @@ The protection is active by default. The variable is an operator exception, not 
 configuration change.
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="error"
   code="Z301"
   exitCode={1}
@@ -229,6 +229,6 @@ invocation only.
 
 - [Health Metrics](../explanation/health-metrics.mdx) — how Zenzic calculates the quality
 
-  score that the Sentinel Gate defends
+  score that the Quality Gate defends
 
 - [Exit Codes Reference](../reference/cli.mdx#exit-codes) — full exit code semantics

@@ -13,7 +13,7 @@ description: "I tre pilastri architetturali di Zenzic v0.7.0 — Zero Assunzioni
 > Zenzic funziona per ragioni documentate. Questa pagina è la prova."*
 
 Questa pagina è il manifesto tecnico dietro ogni decisione che rende Zenzic v0.7.0
-abbastanza affidabile da essere chiamato un **Safe Harbor**. Appartiene al quadrante
+abbastanza affidabile da essere chiamato un **Exclusion Zone**. Appartiene al quadrante
 Developer perché l'utente non ha bisogno di conoscerla per essere protetto — ma il
 contributor deve comprenderla per estendere il sistema senza rompere il contratto.
 
@@ -126,8 +126,8 @@ Zenzic è uno strumento fondato su principi, non uno scanner euristico:
 |:---:|---|:---:|
 | `0` | Tutti i controlli passati — documentazione pulita | — |
 | `1` | Finding di qualità (link rotti, orfani, placeholder, ecc.) | ✅ `--exit-zero` |
-| `2` | **Shield — credenziale rilevata (Z201)** | ❌ **Mai** |
-| `3` | **Blood Sentinel — path traversal / fatale (Z202/Z203)** | ❌ **Mai** |
+| `2` | **Credential scanner — credenziale rilevata (Z201)** | ❌ **Mai** |
+| `3` | **Path traversal guard — path traversal / fatale (Z202/Z203)** | ❌ **Mai** |
 
 Gli exit code 2 e 3 sono verificati al layer CLI (`cli/_check.py`) prima che qualsiasi
 flag `--exit-zero` venga consultato. Il controllo non è condizionale — è strutturalmente
@@ -143,4 +143,4 @@ casella da spuntare.
 - [ADR — Architectural Decision Records](./adr-discovery) — il log completo delle decisioni
 - [Architecture](./architecture-gaps) — gap aperti e roadmap v0.8.0
 - [Riferimento ai Codici di Finding](/docs/reference/finding-codes) — il catalogo completo `Zxxx`
-- [Safe Harbor](/docs/explanation/safe-harbor) — la filosofia dietro l'ingegneria
+- [Exclusion Zone](/docs/explanation/privacy-gate) — la filosofia dietro l'ingegneria

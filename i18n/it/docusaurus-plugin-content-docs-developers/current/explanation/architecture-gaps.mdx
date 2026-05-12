@@ -37,7 +37,7 @@ zenzic fix links          # corregge solo Z101/Z104 (link rotti) — rinomina o 
 
 **Vincoli di design:**
 
-- L'Auto-Fix non deve mai toccare i file che hanno attivato Z201 (Shield secret) —
+- L'Auto-Fix non deve mai toccare i file che hanno attivato Z201 (credential secret) —
 
   quelli richiedono giudizio umano.
 
@@ -77,7 +77,7 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 :::info[Cos'era l'Operazione?]
 
 Prima del rilascio di v0.7.0, quattro agenti AI sono stati istruiti per violare
-lo Shield di Zenzic (scanner di credenziali) utilizzando tecniche di bypass
+il credential scanner di Zenzic (scanner di credenziali) utilizzando tecniche di bypass
 realistiche. Hanno trovato quattro vettori reali. Tutti sono stati chiusi prima
 del rilascio stabile.
 
@@ -85,14 +85,14 @@ Vedi il post-mortem tecnico completo: [AI Red Team Attacks Code Linter](https://
 
 :::
 
-### ZRT-001 — Bypass per Normalizzazione Unicode (Shield)
+### ZRT-001 — Bypass per Normalizzazione Unicode (credential scanner)
 
 **Identificato da:** Agente AI "Alpha" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
-**Componente:** `core/shield.py`, `scan_lines_with_lookback()`
-**Descrizione:** I pattern regex dello Shield corrispondevano a forme di credenziali
+**Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
+**Descrizione:** I pattern regex delil credential scanner corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
 Unicode simile (es. `ｇhp_…` usando lettere latine a larghezza intera) in quello che
-sembrava un token. Lo Shield non si attivava perché la sequenza di byte non corrispondeva
+sembrava un token. Il credential scanner non si attivava perché la sequenza di byte non corrispondeva
 al pattern ASCII.
 
 **Risoluzione:** La normalizzazione Unicode (NFKC) viene applicata ad ogni riga prima
@@ -108,11 +108,11 @@ La superficie di attacco non è il pattern — è la codifica.
 
 ---
 
-### ZRT-002 — Fuga dal Buffer di Lookback (Shield)
+### ZRT-002 — Fuga dal Buffer di Lookback (credential scanner)
 
 **Identificato da:** Agente AI "Bravo" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
-**Componente:** `core/shield.py`, `scan_lines_with_lookback()`
-**Descrizione:** Il buffer di lookback dello Shield era usato per rilevare costrutti
+**Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
+**Descrizione:** Il buffer di lookback delil credential scanner era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
 L'agente Bravo ha inserito un blocco "filler" sufficientemente lungo (> dimensione buffer)
 tra la riga chiave e quella valore. Il buffer si svuotava prima che la riga valore venisse
@@ -131,17 +131,17 @@ di sicurezza.
 
 ---
 
-### ZRT-003 — Offuscamento con Entità HTML (Shield)
+### ZRT-003 — Offuscamento con Entità HTML (credential scanner)
 
 **Identificato da:** Agente AI "Charlie" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
-**Componente:** `core/shield.py`
-**Descrizione:** Lo Shield scansionava i byte Markdown grezzi. L'agente Charlie ha
+**Componente:** `core/credentials.py`
+**Descrizione:** Lo credential scanner scansionava i byte Markdown grezzi. L'agente Charlie ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
-di codice delimitati. I pattern dello Shield non corrispondevano alla forma codificata
+di codice delimitati. I pattern delil credential scanner non corrispondevano alla forma codificata
 con entità, permettendo a una credenziale falsa di passare inosservata.
 
 **Risoluzione:** Un decodificatore leggero di entità HTML viene applicato ad ogni
-riga prima del pattern matching dello Shield (dopo la normalizzazione NFKC). Il
+riga prima del pattern matching delil credential scanner (dopo la normalizzazione NFKC). Il
 decodificatore gestisce entità numeriche (`&#103;`) e nominali (`&amp;`). I riferimenti
 di carattere XML/HTML sono normalizzati ai loro codepoint Unicode prima che la regex
 venga eseguita.
@@ -154,17 +154,17 @@ fa parte della pipeline dei contenuti.
 
 ---
 
-### ZRT-004 — Confusione Scope Blocco Delimitato (Shield)
+### ZRT-004 — Confusione Scope Blocco Delimitato (credential scanner)
 
 **Identificato da:** Agente AI "Delta" durante l'Operazione Obsidian Stress {/* zenzic:ignore Z601 */}
-**Componente:** `core/shield.py`, macchina a stati dei blocchi delimitati
-**Descrizione:** Lo Shield saltava originariamente la scansione all'interno dei blocchi
+**Componente:** `core/credentials.py`, macchina a stati dei blocchi delimitati
+**Descrizione:** Il credential scanner saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti
 attivi. L'agente Delta ha incorporato un pattern `ghp_` all'interno di un blocco
-delimitato `bash`. Lo Shield non si attivava.
+delimitato `bash`. Il credential scanner non si attivava.
 
 **Risoluzione dopo deliberazione:** L'euristica "salta i blocchi delimitati" è stata
-**invertita**. Lo Shield ora scansiona tutte le righe, compresi i blocchi di codice
+**invertita**. Il credential scanner ora scansiona tutte le righe, compresi i blocchi di codice
 delimitati. La motivazione: un file di documentazione che espone una credenziale reale
 all'interno di un blocco `bash` sta comunque esponendo una credenziale reale. La natura
 di esempio del blocco è irrilevante per l'esito di sicurezza.
@@ -247,12 +247,12 @@ al modo di failure più comune dopo una ridenominazione.
 
 ### D100 — Migrazione Privacy Gate: `.zenzic.dev.toml` → `.zenzic.local.toml`
 
-**Componente:** `cli/_standalone.py`, `models/config.py`, `core/shield.py`, `core/codes.py`
+**Componente:** `cli/_standalone.py`, `models/config.py`, `core/credentials.py`, `core/codes.py`
 
 **Descrizione:** Il D002 Environmental Privacy Gate originale (`_scaffold_dev_toml`) creava
 `.zenzic.dev.toml` con una tabella `[development_gate]` contenente `forbidden_patterns`
 per la redazione delle esportazioni. Questo file non era integrato nella pipeline di
-scansione dello Shield — serviva solo come suggerimento locale di redazione per gli
+scansione delil credential scanner — serviva solo come suggerimento locale di redazione per gli
 strumenti di export. I pattern non venivano mai verificati contro il contenuto della
 documentazione, quindi uno sviluppatore poteva pubblicare inavvertitamente un documento
 contenente un nome in codice proibito senza alcun avviso da Zenzic.
@@ -276,7 +276,7 @@ non avveniva mai.
    primaria (`zenzic.toml` o `[tool.zenzic]`). I duplicati vengono rimossi;
    l'ordine di inserimento è preservato.
 
-4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/shield.py`
+4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/credentials.py`
    esegue una ricerca verbatim case-insensitive contro la lista `forbidden_patterns`
    unita. Qualsiasi corrispondenza su qualsiasi riga di qualsiasi file di documentazione
    viene emessa come `SecurityFinding` con `secret_type="FORBIDDEN_TERM"`. Lo scanner
@@ -286,7 +286,7 @@ non avveniva mai.
 5. **Compatibilità retroattiva:** `_scaffold_dev_toml()` è mantenuto come shim che
    delega a `_scaffold_local_toml()`. Nessun chiamante esterno necessita di aggiornamenti.
 
-**Brand Integrity Shield — Design a Due Livelli:**
+**Brand Integrity — Design a Due Livelli:**
 Il Privacy Gate Z204 e il Brand Obsolescence Guard Z601 formano un'architettura a due livelli:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non sopprimibile.
   Progettato per termini privati che non devono mai apparire in nessun documento pubblicato.

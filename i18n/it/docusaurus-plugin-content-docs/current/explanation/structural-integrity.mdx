@@ -1,11 +1,11 @@
 ---
 sidebar_position: 9
-sidebar_label: Il Filtro della Sentinella
-title: La Sentinella vs. il Correttore
+sidebar_label: Il Filtro di Zenzic
+title: Zenzic vs. il Correttore
 description: Perché Zenzic si concentra sull'integrità strutturale e sulla sicurezza piuttosto che sullo stile della prosa — e perché questa distinzione definisce una categoria di strumento separata.
 ---
 
-# La Sentinella vs. il Correttore
+# Zenzic vs. il Correttore
 
 Zenzic non si interessa al tuo stile di scrittura.
 
@@ -20,10 +20,10 @@ occupano categorie ortogonali.
 
 ---
 
-## Il Filtro della Sentinella {#the-sentinels-filter}
+## Il Filtro delZenzic {#the-sentinels-filter}
 
 Ogni regola che entra nel Quartz Core deve superare un test di ammissione tridimensionale.
-Lo chiamiamo **Il Filtro della Sentinella**: una regola entra in Zenzic se e solo se difende
+Lo chiamiamo **Il Filtro di Zenzic**: una regola entra in Zenzic se e solo se difende
 una di queste tre dimensioni.
 
 ### Dimensione 1 — Integrità Strutturale {#dimension-structural}
@@ -66,7 +66,7 @@ Le regole di sicurezza sono **non sopprimibili per design**. I codici di uscita 
 | [`Z202`](../reference/finding-codes.mdx#z202) | `PATH_TRAVERSAL` | Escape di path di sistema in un link o valore di config | 3 |
 | [`Z203`](../reference/finding-codes.mdx#z203) | `PATH_TRAVERSAL_SUSPICIOUS` | Pattern di traversal relativo che esce dalla docs root | 3 |
 
-Vedi [Safe Harbor](./safe-harbor.mdx) e [La Trinità di Zenzic](./the-zenzic-trinity.mdx)
+Vedi [Exclusion Zone](./privacy-gate.mdx) e [La Trinità di Zenzic](./the-zenzic-trinity.mdx)
 per il contratto completo sui codici di uscita.
 
 ---
@@ -129,7 +129,7 @@ strutturale, la sicurezza e l'accessibilità tecnica in CI, è l'unico di cui ha
 ## Cosa Zenzic Esplicitamente Non Fa {#what-zenzic-does-not-do}
 
 Il confine di ciò che Zenzic rifiuta è importante quanto ciò che applica. Questa tabella è
-permanente. Se una regola proposta non supera Il Filtro della Sentinella, non viene inclusa.
+permanente. Se una regola proposta non supera Il Filtro di Zenzic, non viene inclusa.
 
 | Categoria | Esempio | Posizione |
 | :--- | :--- | :--- |
@@ -142,7 +142,7 @@ permanente. Se una regola proposta non supera Il Filtro della Sentinella, non vi
 | Coerenza della prosa | Uso uniforme della terminologia | ✗ Specifico del dominio — usa `vale` |
 
 Queste categorie non sono al di sotto di Zenzic — sono **al di fuori del suo mandato**.
-La Sentinella applica la struttura. Tutto il resto è sovranità editoriale.
+Zenzic applica la struttura. Tutto il resto è sovranità editoriale.
 
 ---
 
@@ -167,6 +167,6 @@ del tuo team.
 ## Letture Correlate {#further-reading}
 
 - [La Trinità di Zenzic](./the-zenzic-trinity.mdx) — I tre pilastri non negoziabili: Zero Subprocess, Funzioni Pure, Analisi Strutturale
-- [Safe Harbor](./safe-harbor.mdx) — Il contratto sui codici di uscita e il gate di sicurezza inviolabile
+- [Exclusion Zone](./privacy-gate.mdx) — Il contratto sui codici di uscita e il gate di sicurezza inviolabile
 - [Riferimento Codici Finding](../reference/finding-codes.mdx) — Il registro completo Zxxx con i passaggi di rimedio
 - [Metriche di Salute](./health-metrics.mdx) — Come viene calcolato il Punteggio di Qualità Deterministico

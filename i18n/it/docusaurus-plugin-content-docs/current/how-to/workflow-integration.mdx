@@ -1,6 +1,6 @@
 ---
 icon: lucide/shield-check
-sidebar_label: "Sentinel Gate Locale"
+sidebar_label: "Quality Gate Locale"
 description: "Chiudi il cancello prima della build. Integra Zenzic nel tuo workflow locale così gli errori di documentazione non raggiungono mai la CI."
 ---
 
@@ -10,7 +10,7 @@ description: "Chiudi il cancello prima della build. Integra Zenzic nel tuo workf
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Sentinel Gate Locale
+# Quality Gate Locale
 
 > *Non debuggare l'output della build. Correggi i sorgenti prima che la build inizi.*
 
@@ -18,7 +18,7 @@ Un errore di documentazione scoperto in CI significa una pipeline fallita, un ca
 contesto e un minuto di build sprecato. Scoperto **prima** della build, è solo una
 correzione di una riga.
 
-Il pattern Sentinel Gate chiude il gap: Zenzic viene eseguito come pre-step obbligatorio,
+Il pattern Quality Gate chiude il gap: Zenzic viene eseguito come pre-step obbligatorio,
 bloccando il comando di build se i sorgenti non sono puliti. Nessun finding — nessun
 cancello — nessun ciclo sprecato.
 
@@ -26,7 +26,7 @@ cancello — nessun ciclo sprecato.
 
 ## Il Principio
 
-Il Sentinel Gate applica un invariante deterministico:
+Il Quality Gate applica un invariante deterministico:
 
 ```text
 zenzic check all [PATH] --strict  →  successo  →  il tuo strumento di build
@@ -75,7 +75,7 @@ I progetti MkDocs usano tipicamente `mkdocs build` o un `justfile`. Proteggi la
 ricetta di build:
 
 ```just title="justfile"
-# Sentinel Gate — Zenzic deve passare prima che MkDocs compili
+# Quality Gate — Zenzic deve passare prima che MkDocs compili
 build:
   uvx zenzic check all . --strict
     mkdocs build --strict
@@ -117,7 +117,7 @@ zensical build
 Oppure tramite una ricetta `justfile`:
 
 ```just title="justfile"
-# Sentinel Gate — la documentazione deve essere pulita prima che Zensical la renderizzi
+# Quality Gate — la documentazione deve essere pulita prima che Zensical la renderizzi
 build:
     uvx zenzic check all . --strict
     zensical build
@@ -154,7 +154,7 @@ L'operatore `&&` fa cortocircuito: se Zenzic esce con codice non-zero,
 | **Pipeline CI** | Minuti — push, attesa, lettura log, correzione, re-push |
 | **Deploy in produzione** | Ore — rollback, triage, hotfix |
 
-Il Sentinel Gate sposta la scoperta nel momento meno costoso possibile. Quando la CI
+Il Quality Gate sposta la scoperta nel momento meno costoso possibile. Quando la CI
 viene eseguita, la documentazione è già pulita — la CI diventa una **conferma**
 piuttosto che un **rilevatore**.
 
@@ -166,8 +166,8 @@ piuttosto che un **rilevatore**.
 | :--- | :--- | :--- |
 | `0` | Tutti i controlli superati | Build procede |
 | `1` | Finding di qualità (link, orfani, placeholder) | Build bloccata per default; aggiungi `--no-fail-under` per permetterlo |
-| `2` | Violazione Shield — credenziale rilevata | Sempre bloccata. Non sopprimibile. |
-| `3` | Blood Sentinel — path traversal di sistema | Sempre bloccata. Non sopprimibile. |
+| `2` | Violazione credential scanner — credenziale rilevata | Sempre bloccata. Non sopprimibile. |
+| `3` | Path traversal guard — path traversal di sistema | Sempre bloccata. Non sopprimibile. |
 
 I codici di uscita 2 e 3 sono stop incondizionati. Nessun flag o configurazione può
 sopprimere un incidente di sicurezza.
@@ -178,7 +178,7 @@ sopprimere un incidente di sicurezza.
 
 I link esterni a siti non ancora pubblici — domini di documentazione, tag di release
 GitHub, URL di staging — restituiscono HTTP 404 finché il deploy non è completato.
-Il Sentinel Gate blocca la build su questi, e il comportamento è corretto: un link
+Il Quality Gate blocca la build su questi, e il comportamento è corretto: un link
 esterno rotto è un finding reale.
 
 Quando stai **deliberatamente compilando la documentazione prima che il sito di destinazione
@@ -213,7 +213,7 @@ La protezione è attiva per default. La variabile è un'eccezione dell'operatore
 non una modifica alla configurazione.
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="error"
   code="Z301"
   exitCode={1}
@@ -234,7 +234,7 @@ invocazione di build.
 
 - [Metriche di Salute](../explanation/health-metrics.mdx) — come Zenzic calcola il
 
-  punteggio di qualità che il Sentinel Gate difende
+  punteggio di qualità che il Quality Gate difende
 
 - [Riferimento Codici di Uscita](../reference/cli.mdx#exit-codes) — semantica completa
 

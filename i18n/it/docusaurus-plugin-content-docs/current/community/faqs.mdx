@@ -124,13 +124,13 @@ Il flag `--strict` ha due effetti a seconda del comando:
 
 Consigliato nelle pipeline CI per intercettare tutte le categorie di problemi.
 
-**Cos'è il Zenzic Shield (exit code 2)?**
+**Cos'è il credential scanner (exit code 2)?**
 
 Exit code `2` indica che il check dei riferimenti ha rilevato un pattern che assomiglia a
 una credenziale (API key, token, password) in un URL o in un testo. Ruota immediatamente
 la credenziale se ricevi questo codice.
 
-**Cos'è il Blood Sentinel (exit code 3)?**
+**Cos'è il path traversal guard (exit code 3)?**
 
 Exit code `3` indica che un link risolve a una directory di sistema OS (`/etc/`, `/root/`, `/var/`,
 ecc.). Questo viene trattato come un incidente di sicurezza e non può essere soppresso. Rimuovi

@@ -47,11 +47,11 @@ flowchart LR
     subgraph CORE ["Core di Zenzic"]
         direction TB
         VSM["Virtual Site Map\n(VSM)"]
-        SHIELD["Shield + Blood Sentinel"]
+        CREDENTIALS["Credential Scanner + Path Traversal Guard"]
         RULES["Motore delle Regole"]
         ADP --> VSM
-        VSM --> SHIELD
-        SHIELD --> RULES
+        VSM --> CREDENTIALS
+        CREDENTIALS --> RULES
     end
 
     subgraph OUT ["Output Sovrano"]
@@ -100,14 +100,14 @@ Questa è una decisione architetturale deliberata, non una funzionalità mancant
 
 | Aspetto | Plugin nel motore | CLI Sovrana |
 | :--- | :--- | :--- |
-| Scansione credenziali (Shield) | ❌ Strutturalmente assente — gli hook si attivano troppo tardi | ✅ Hardening completo ZRT-006/007 |
-| Path traversal (Blood Sentinel) | ❌ Il motore controlla la risoluzione dei path | ✅ Ogni link normalizzato da Zenzic |
+| Scansione credenziali | ❌ Strutturalmente assente — gli hook si attivano troppo tardi | ✅ Hardening completo ZRT-006/007 |
+| Path traversal (path traversal guard) | ❌ Il motore controlla la risoluzione dei path | ✅ Ogni link normalizzato da Zenzic |
 | Validazione dei link | ❌ Resolver del motore — non la VSM | ✅ VSM O(1) con cache SHA256 |
 | Parità tra motori | ❌ Plugin MkDocs ≠ Plugin Docusaurus | ✅ Percorso di codice unico per tutti i motori |
 | Isolamento dipendenze | ❌ Richiede `pip install zenzic[motore]` | ✅ `pip install zenzic` — fatto |
 
 Un plugin che vive all'interno di un motore di build non può garantire le stesse proprietà di un
-revisore esterno. Lo Shield, il Blood Sentinel e la VSM sono stati progettati per l'esecuzione
+revisore esterno. Il credential scanner, il path traversal guard e la VSM sono stati progettati per l'esecuzione
 sovrana. Incorporarli in un hook di build li degraderebbe a controlli best-effort.
 
 ### Il workflow consigliato
@@ -119,7 +119,7 @@ pip install zenzic
 # Rilevamento motore dai file di configurazione, scrittura zenzic.toml
 zenzic init
 
-# Audit completo — VSM + Shield + Blood Sentinel + validazione link
+# Audit completo — VSM + credential scanner + path traversal guard + validazione link
 zenzic check all
 
 # In CI (GitHub Actions, GitLab CI, ecc.)
@@ -187,7 +187,7 @@ mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
 
 ## Integrità del Brand — Quartz Clarity {#brand-integrity}
 
-Il modello Safe Harbor va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti (codename di release non più in uso) porta un tipo di debito diverso: **debito narrativo**. Una pagina v0.7.0 che fa ancora riferimento a un codename v0.6.x contraddice la cronologia delle versioni che cerca di documentare.
+Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti (codename di release non più in uso) porta un tipo di debito diverso: **debito narrativo**. Una pagina v0.7.0 che fa ancora riferimento a un codename v0.6.x contraddice la cronologia delle versioni che cerca di documentare.
 
 Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
 

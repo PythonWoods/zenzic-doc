@@ -1,14 +1,14 @@
 ---
 sidebar_position: 10
 sidebar_label: "Perché Zenzic"
-title: "Perché Zenzic — La Safe Harbor Philosophy"
+title: "Perché Zenzic — La Exclusion Zone Philosophy"
 description: "Una dichiarazione di principi. Zenzic non spiega la documentazione; la difende. Ecco perché questa distinzione è fondamentale."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Perché Zenzic — La Safe Harbor Philosophy
+# Perché Zenzic — La Exclusion Zone Philosophy
 
 > *"Una documentazione che non viene difesa è una documentazione che prima o poi mentirà."*
 
@@ -32,7 +32,7 @@ disciplina che la tua applicazione applica a un confine di rete — valida prima
 di configurazione è codice. Una destinazione di link è un'affermazione che deve essere
 verificata, non creduta.
 
-Questa è la garanzia del **Safe Harbor**: esegui Zenzic, ottieni un certificato. Se il
+Questa è la garanzia del **Exclusion Zone**: esegui Zenzic, ottieni un certificato. Se il
 tool termina con exit 0, la documentazione è strutturalmente integra. Non perfetta — ma
 strutturalmente verificabile. Nessun link interno rotto. Nessuna credenziale trapelata.
 Nessuna pagina scomparsa silenziosamente dalla navigazione. Il sorgente è sicuro da
@@ -75,12 +75,12 @@ Zenzic valida ogni link interno, ogni riferimento di ancora, ogni percorso cross
 Costruisce una **Virtual Site Map** (VSM) in memoria — una proiezione del sito
 finale — e verifica le rotte fantasma che si romperebbero solo a runtime.
 
-### 2. Lo Shield (Z201)
+### 2. Credential Scanner (Z201) {#credential-scanner}
 
 Le credenziali nella documentazione affossano le aziende. Una chiave di accesso AWS,
 un token GitHub, una chiave API privata — qualsiasi di questi, committata in un repository
 pubblico, innesca una violazione che nessun `git history --rewrite` può mai annullare
-completamente. Lo Shield scansiona ogni byte di ogni file, incluso il frontmatter YAML
+completamente. Lo credential scanner scansiona ogni byte di ogni file, incluso il frontmatter YAML
 (dove i segreti si nascondono frequentemente), prima che qualsiasi altro controllo venga
 eseguito.
 
@@ -88,11 +88,11 @@ eseguito.
 `fail-on-error: false`. Non da `zenzic:ignore`. Una credenziale trapelata è un arresto
 definitivo.
 
-### 3. Blood Sentinel (Z202/Z203)
+### 3. Path Traversal Guard (Z202/Z203) {#path-traversal-guard}
 
 Il path traversal nelle configurazioni di documentazione è una classe di attacchi che
 la maggior parte dei team non immagina mai possa esistere. Un `docs_dir: "../../etc"` in
-un file di configurazione non è un errore — è un jailbreak. Blood Sentinel chiude questo
+un file di configurazione non è un errore — è un jailbreak. Il path traversal guard chiude questo
 vettore in modo incondizionato.
 
 **Il codice di uscita 3 non è mai sopprimibile.** Punto.

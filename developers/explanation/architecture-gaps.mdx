@@ -81,7 +81,7 @@ See the full technical post-mortem: [AI Red Team Attacks Code Linter](https://ze
 ### ZRT-001 — Unicode Normalization Bypass (Shield)
 
 **Identified by:** AI Red Team agent "Alpha" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
-**Component:** `core/shield.py`, `scan_lines_with_lookback()`
+**Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The Shield's regex patterns matched ASCII credential shapes. An attacker
 controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
 using fullwidth Latin letters) into what appeared to be a token. The Shield would not
@@ -102,7 +102,7 @@ is not the pattern — it is the encoding.
 ### ZRT-002 — Lookback Buffer Escape (Shield)
 
 **Identified by:** AI Red Team agent "Bravo" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
-**Component:** `core/shield.py`, `scan_lines_with_lookback()`
+**Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The Shield's lookback buffer was used to detect multi-line credential
 constructs (e.g. a `password:` key on one line, the value on the next). Agent Bravo
 inserted a sufficiently long "filler" block (> buffer size) between the key and value
@@ -124,7 +124,7 @@ pattern. An informal "large enough" buffer is not a security guarantee.
 ### ZRT-003 — HTML Entity Obfuscation (Shield)
 
 **Identified by:** AI Red Team agent "Charlie" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
-**Component:** `core/shield.py`
+**Component:** `core/credentials.py`
 **Description:** The Shield scanned raw Markdown bytes. Agent Charlie used HTML entity
 encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The Shield's patterns
 did not match the entity-encoded form, allowing a fake credential to pass undetected.
@@ -144,7 +144,7 @@ pass (NFKC only) is insufficient when HTML rendering is part of the content pipe
 ### ZRT-004 — Fenced Block Scope Confusion (Shield)
 
 **Identified by:** AI Red Team agent "Delta" during Operation Obsidian Stress {/* zenzic:ignore Z601 */}
-**Component:** `core/shield.py`, fenced block state machine
+**Component:** `core/credentials.py`, fenced block state machine
 **Description:** The Shield originally skipped scanning inside triple-backtick fenced
 blocks, reasoning that code examples are not live secrets. Agent Delta embedded a
 `ghp_` pattern inside a `bash` fenced block. The Shield did not fire.
@@ -227,7 +227,7 @@ behaviour change.
 
 ### D100 — Privacy Gate Migration: `.zenzic.dev.toml` → `.zenzic.local.toml`
 
-**Component:** `cli/_standalone.py`, `models/config.py`, `core/shield.py`, `core/codes.py`
+**Component:** `cli/_standalone.py`, `models/config.py`, `core/credentials.py`, `core/codes.py`
 
 **Description:** The original D002 Environmental Privacy Gate (`_scaffold_dev_toml`) created
 `.zenzic.dev.toml` with a `[development_gate]` table that held `forbidden_patterns` for
@@ -253,7 +253,7 @@ expecting Zenzic to block those terms from documentation, but the scan never hap
    `forbidden_patterns` from `.zenzic.local.toml` after loading the primary config
    (`zenzic.toml` or `[tool.zenzic]`). Duplicates are removed; insertion order is preserved.
 
-4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/shield.py`
+4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/credentials.py`
    performs a case-insensitive verbatim substring scan against the merged `forbidden_patterns`
    list. Any match on any line of any documentation file is emitted as a `SecurityFinding`
    with `secret_type="FORBIDDEN_TERM"`. The scanner bridges this to Z204 (not Z201),

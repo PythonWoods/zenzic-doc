@@ -6,7 +6,7 @@ description: Come Zenzic scopre i file sorgente e il modello di esclusione a qua
 
 # Discovery Universale e Esclusione a Livelli
 
-Zenzic adotta un principio architetturale preciso: **un solo punto d'ingresso** per la scoperta dei file. Ogni modulo del sistema — scanner, validator, Shield, orphan-checker — vede lo stesso identico insieme di file. Non esistono scorciatoie.
+Zenzic adotta un principio architetturale preciso: **un solo punto d'ingresso** per la scoperta dei file. Ogni modulo del sistema — scanner, validator, credential scanner, orphan-checker — vede lo stesso identico insieme di file. Non esistono scorciatoie.
 
 ---
 
@@ -171,9 +171,9 @@ I percorsi contenenti `..` vengono sempre trattati come non corrispondenti (prot
 
 ---
 
-## Safe Harbor Philosophy {#safe-harbor}
+## Exclusion Zone Philosophy {#privacy-gate}
 
-Il sistema di esclusione e progettato seguendo la Safe Harbor Philosophy:
+Il sistema di esclusione e progettato seguendo la Exclusion Zone Philosophy:
 
 - **Nessuna sorpresa:** senza configurazione, Zenzic funziona con valori predefiniti ragionevoli
 - **Nessun file critico esposto:** i System Guardrails proteggono directory che non contengono mai documentazione utile (`.git`, `.venv`, ecc.)
@@ -215,7 +215,7 @@ Quando un adapter restituisce content root, quattro stadi della pipeline coopera
 
 1. **Discovery** — `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` percorre ogni radice con `walk_files` (stesso motore `os.walk`, stesso exclusion manager) e produce coppie `(abs_path, logical_rel)` dove `logical_rel` porta il prefisso URL come primo segmento (es. `Path('blog/2026-04-12-foo.mdx')`). L'uso di `os.walk` invece di `Path.rglob()` non è una preferenza stilistica: `rglob` non offre la **potatura in-place delle sottodirectory escluse** (il walker entrerebbe in `node_modules/`, `.venv/` e `.git/` per poi scartare i risultati), e l'ordine di yield dipende dall'implementazione del filesystem. `os.walk` con potatura `dirs[:]` garantisce determinismo bit-per-bit indipendentemente dal filesystem sottostante — invariante necessario perché il VSM resti riproducibile.
 2. **VSM** — `build_vsm` risolve il `rel` logico di ogni file da `docs_root` *o* da una radice extra abbinata, poi dispatcha al `get_route_info(rel)` dell'adapter. L'iniezione del prefisso permette a una sola chiamata dell'adapter di disambiguare senza un secondo dispatch.
-3. **Validator** — il link checker carica i file delle radici extra in `md_contents`, estende `_allowed_roots` così i link relativi cross-tree risolvono sotto lo Shield, e usa il `rel` con prefisso nei suggerimenti "Did you mean?".
+3. **Validator** — il link checker carica i file delle radici extra in `md_contents`, estende `_allowed_roots` così i link relativi cross-tree risolvono sotto il credential scanner, e usa il `rel` con prefisso nei suggerimenti "Did you mean?".
 4. **Scanner** — `find_unused_assets` e `find_placeholders` iterano le radici extra quando raccolgono i set di riferimento, così un asset citato solo da un post del blog non viene segnalato come Z405 (Asset Inutilizzato).
 
 ### Auto-discovery senza `subprocess` {#auto-discovery}

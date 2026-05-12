@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * SentinelOutput — Live React replica of Zenzic's terminal output.
+ * ZenzicOutput — Live React replica of Zenzic's terminal output.
  *
- * Self-contained, theme-aware panel matching the landing page (SentinelSection)
+ * Self-contained, theme-aware panel matching the landing page (SecuritySection)
  * design system. Text is selectable, weight is near-zero, dark/light parity is
  * exact.  Replaces static SVG + TerminalWindow combinations entirely.
  *
  * Usage in MDX (globally registered — no import required):
  *
- *   <SentinelOutput variant="clean" />
- *   <SentinelOutput variant="findings" />
- *   <SentinelOutput variant="breach" />
- *   <SentinelOutput variant="breach" location="docs/setup.md:42" masked="ghp_****3456" />
+ *   <ZenzicOutput variant="clean" />
+ *   <ZenzicOutput variant="findings" />
+ *   <ZenzicOutput variant="breach" />
+ *   <ZenzicOutput variant="breach" location="docs/setup.md:42" masked="ghp_****3456" />
  *
  * Tailwind Invariant (RULE): Never interpolate class names dynamically.
  * All variant-specific classes are expressed as static string literals in the
@@ -75,7 +75,7 @@ export interface FindingRow {
 export interface InspectRow {
   /** Z-code range (e.g. "Z201", "Z101\u2013106") */
   codes: string;
-  /** Scanner display name (e.g. "The Shield") */
+  /** Scanner display name (e.g. "Credential Scanner") */
   scanner: string;
   /** Short capability description */
   capability: string;
@@ -91,7 +91,7 @@ export interface InspectRow {
   state?: ReleaseState;
 }
 
-interface SentinelOutputProps {
+interface ZenzicOutputProps {
   /**
    * Legacy variant discriminant — preserved for backward compatibility.
    * Prefer `status` for new usages.
@@ -120,8 +120,8 @@ interface SentinelOutputProps {
    * |------|----------------------------------|
    * |  0   | Clean — no issues               |
    * |  1   | Findings — quality issues       |
-   * |  2   | Shield — credential detected   |
-   * |  3   | Blood Sentinel — path traversal |
+   * |  2   | credential scanner — credential detected   |
+   * |  3   | path traversal guard — path traversal |
    */
   exitCode?: 0 | 1 | 2 | 3;
   /**
@@ -188,7 +188,7 @@ const CONTAINER_CLASSES: Record<Variant, string> = {
   findings: 'max-w-xl mx-auto my-6',
   inspect:  'max-w-2xl mx-auto my-6',};
 
-// ── Clean variant — 100/100 Sentinel Seal ───────────────────────────────────
+// ── Clean variant — 100/100 Zenzic Audit Badge ───────────────────────────
 
 function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const rows = [
@@ -216,18 +216,18 @@ function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Elem
           <span className="select-none">🏆</span>
           <span className="dark:text-zinc-400 text-zinc-600">Quality Score:</span>
           <span className="text-emerald-400 font-bold">100 / 100</span>
-          <span className="dark:text-emerald-500 text-emerald-600">◆ Sentinel Seal</span>
+          <span className="dark:text-emerald-500 text-emerald-600">◆ Zenzic Audit Badge</span>
         </div>
       </div>
 
       <div className="border-t dark:border-emerald-900/40 border-emerald-200/60 pt-3 space-y-1">
         <div className="flex items-center gap-2">
           <span className="text-emerald-500 select-none">✔</span>
-          <span className="dark:text-zinc-400 text-zinc-600">Shield: no credentials detected</span>
+          <span className="dark:text-zinc-400 text-zinc-600">credential scanner: no credentials detected</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-emerald-500 select-none">✔</span>
-          <span className="dark:text-zinc-400 text-zinc-600">Blood Sentinel: no path-traversal attempts</span>
+          <span className="dark:text-zinc-400 text-zinc-600">path traversal guard: no path-traversal attempts</span>
         </div>
         {!compact && (
           <div className="dark:text-zinc-600 text-zinc-400 pt-1">
@@ -239,13 +239,13 @@ function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Elem
   );
 }
 
-// ── Breach variant — Z201 Shield Breach ─────────────────────────────────────
+// ── Breach variant — Z201 Credential Breach ─────────────────────────────────────
 
 function BreachOutput({
   location = 'docs/how-to/configure.md:4',
   masked = 'AKIA************MPLE',
   credentialType = 'aws-access-key',
-}: Pick<SentinelOutputProps, 'location' | 'masked' | 'credentialType'>): React.JSX.Element {
+}: Pick<ZenzicOutputProps, 'location' | 'masked' | 'credentialType'>): React.JSX.Element {
   return (
     <>
       <div className="-mx-6 -mt-5 mb-4 bg-[#8b0000] text-white font-bold px-6 py-2 text-center tracking-[0.2em]">
@@ -360,11 +360,11 @@ function FindingsOutput({
 // ── Inspect variant — scanner arsenal table ───────────────────────────────────
 
 const DEFAULT_SCANNERS: InspectRow[] = [
-  { codes: 'Z201',     scanner: 'The Shield',       capability: 'Credential & security detection',      exit: '2', icon: '🛡', security: true, tier: 'security', state: 'active' },
-  { codes: 'Z202–203', scanner: 'Blood Sentinel',   capability: 'Path-traversal & jailbreak detection', exit: '3', icon: '🩸', security: true, tier: 'security', state: 'active' },
+  { codes: 'Z201',     scanner: 'Credential Scanner', capability: 'Credential & security detection',      exit: '2', icon: '🔒', security: true, tier: 'security', state: 'active' },
+  { codes: 'Z202–203', scanner: 'Path Traversal Guard',   capability: 'Path-traversal & jailbreak detection', exit: '3', icon: '🚫', security: true, tier: 'security', state: 'active' },
   { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Broken links & anchor resolution',     exit: '1', icon: '🔗', tier: 'core', state: 'active' },
   { codes: 'Z401–406', scanner: 'Structure Guard',  capability: 'Orphans, assets & navigation contract', exit: '1', icon: '🏗', tier: 'structure', state: 'active' },
-  { codes: 'Z501–505', scanner: 'Content Sentinel', capability: 'Placeholders, snippets & score',       exit: '1', icon: '📄', tier: 'content', state: 'active' },
+  { codes: 'Z501–505', scanner: 'Content scanner', capability: 'Placeholders, snippets & score',       exit: '1', icon: '📄', tier: 'content', state: 'active' },
   { codes: 'Z601–602', scanner: 'Governance Watch', capability: 'Brand obsolescence & i18n parity',     exit: '1', icon: '🏛', tier: 'governance', state: 'active' },
 ];
 
@@ -408,7 +408,7 @@ function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }
           <span className="text-amber-400 select-none">⚠</span>{' '}
           Exit 2 and Exit 3 are non-suppressible —{' '}
           <span className="dark:text-zinc-400 text-zinc-600 italic">--exit-zero</span>{' '}
-          has no effect on Shield or Blood Sentinel.
+          has no effect on the credential scanner or path traversal guard.
         </div>
         <div className="dark:text-zinc-600 text-zinc-400 text-[11px]">
           Extensible Rules{' '}
@@ -424,7 +424,7 @@ function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }
 }
 // ── Main export ──────────────────────────────────────────────────────────────
 
-export default function SentinelOutput({
+export default function ZenzicOutput({
   variant: variantProp,
   status,
   code,
@@ -438,7 +438,7 @@ export default function SentinelOutput({
   masked,
   credentialType,
   isStrict = false,
-}: SentinelOutputProps): React.JSX.Element {
+}: ZenzicOutputProps): React.JSX.Element {
   // Resolve effective variant: `status` takes precedence over legacy `variant`.
   let variant: Variant;
   if (status !== undefined) {
@@ -447,7 +447,7 @@ export default function SentinelOutput({
     if (process.env.NODE_ENV === 'development') {
 
       console.warn(
-        '[SentinelOutput] ‘variant’ is deprecated. Use ‘status’ instead. ' +
+        '[ZenzicOutput] ‘variant’ is deprecated. Use ‘status’ instead. ' +
         `Received variant="${variantProp}".`
       );
     }
@@ -456,7 +456,7 @@ export default function SentinelOutput({
     // Neither status nor variant provided: fall back to a safe default.
     if (process.env.NODE_ENV === 'development') {
 
-      console.error('[SentinelOutput] Neither ‘status’ nor ‘variant’ was provided. Rendering ‘clean’ as fallback.');
+      console.error('[ZenzicOutput] Neither ‘status’ nor ‘variant’ was provided. Rendering ‘clean’ as fallback.');
     }
     variant = 'clean';
   }
@@ -470,7 +470,7 @@ export default function SentinelOutput({
   ) {
 
     console.warn(
-      '[SentinelOutput] ‘code’ is strongly recommended when status="error" or status="warning". ' +
+      '[ZenzicOutput] ‘code’ is strongly recommended when status="error" or status="warning". ' +
       'A finding without a Zxxx code violates the Absolute Traceability principle.'
     );
   }

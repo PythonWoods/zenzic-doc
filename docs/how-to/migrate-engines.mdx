@@ -53,7 +53,7 @@ It never imports or executes a build framework. This means:
   content is structurally compatible with a new engine, without touching a single Markdown
   file.
 
-This is the Safe Harbor: **a fixed validation layer that remains valid before, during, and
+This is the Exclusion Zone: **a fixed validation layer that remains valid before, during, and
 after any build engine change**.
 
 ---
@@ -212,7 +212,7 @@ reported as orphans.
 ## Migration playbook
 
 :::info[CLI bridge — Global flags]
-Engine migration changes adapters, not Sentinel policy. Keep run behavior aligned with
+Engine migration changes adapters, not Zenzic policy. Keep run behavior aligned with
 [CLI Commands: Global flags](../reference/cli.mdx#global-flags):
 
 1. `--strict` for hard-gate validation during cutover.
@@ -250,7 +250,7 @@ You can now test your documentation against the Zensical engine without even cre
 zenzic check all --engine zensical
 ```
 
-Zenzic will read your existing `mkdocs.yml` and validate how Zensical would interpret it. Look for the Sentinel banner to confirm the bridge is active:
+Zenzic will read your existing `mkdocs.yml` and validate how Zensical would interpret it. Look for Zenzic banner to confirm the bridge is active:
 
 ```text
 SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
@@ -316,7 +316,7 @@ migration:
 # Internal links + i18n fallback resolution
 zenzic check links
 
-# Reference-style links + Shield (credential detection)
+# Reference-style links + credential scanner (credential detection)
 zenzic check references
 
 # Full suite

@@ -2,7 +2,7 @@
 sidebar_position: 11
 icon: lucide/shield-check
 title: Architettura Interna della GitHub Action
-description: "Come zenzic-action applica la sicurezza: Blood Sentinel Protocol, Contratto Exit Code, cascata Root-First Sentinel e Intenzione Sovrana."
+description: "Come zenzic-action applica la sicurezza: protocollo path traversal guard, Contratto Exit Code, cascata Root-First Discovery e Intenzione Sovrana."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -32,7 +32,7 @@ action.yml            ← contratto pubblico (input, output, iniezione env)
 
 ---
 
-## Blood Sentinel Protocol {#blood-sentinel}
+## Protocollo Path Traversal Guard
 
 Il wrapper applica due *Jailbreak Guard* indipendenti — uno per il path di output SARIF, uno per il path del file di configurazione. Entrambi usano lo stesso pattern basato su `case`, garantendo una policy identica ad ogni boundary di lettura/scrittura.
 
@@ -97,8 +97,8 @@ Zenzic definisce quattro codici di uscita. Il wrapper li propaga **senza rimappa
 |:---:|---|:---:|
 | `0` | Pulito — tutti i check superati | — |
 | `1` | Finding di documentazione (link rotti, orfani, ref dangling, ecc.) | ✅ tramite `fail-on-error: false` |
-| `2` | **SICUREZZA** — pattern di credenziale rilevato (Shield / Z201) | ❌ Mai |
-| `3` | **SICUREZZA** — path traversal verso sistema (Blood Sentinel / Z202–Z203) | ❌ Mai |
+| `2` | **SICUREZZA** — pattern di credenziale rilevato (credential scanner / Z201) | ❌ Mai |
+| `3` | **SICUREZZA** — path traversal verso sistema (path traversal guard / Z202–Z203) | ❌ Mai |
 
 Le uscite `2` e `3` terminano il job incondizionatamente. Né `fail-on-error: "false"` né nessun altro input può sopprimerle. Questo è applicato nella logica di uscita del wrapper, non in `action.yml`, quindi non può essere aggirato sovrascrivendo gli input dell'action.
 
@@ -120,7 +120,7 @@ Questo garantisce che gli step downstream che leggono `findings-count` non vedan
 
 ---
 
-## Root-First Sentinel — Configuration Discovery {#cascade}
+## Root-First Discovery — Configuration Cascade {#cascade}
 
 Il wrapper implementa un'**auto-discovery gerarchica** per il file di configurazione Zenzic. L'ordine di ricerca riflette il posizionamento convenzionale nei repository reali:
 
@@ -180,5 +180,5 @@ set +f                                  # ripristina l'espansione glob
 |---|---|
 | [README dell'action](https://github.com/PythonWoods/zenzic-action) | Quick Start, reference input/output, utilizzo Override Sovrano |
 | [Integrazione CI/CD](../how-to/configure-ci-cd) | Ricette workflow, badge SARIF, badge score |
-| [Architettura](./architecture) | Pipeline a due passate di Zenzic Core, Shield middleware, protocollo adapter |
-| [ADR Vault](https://zenzic.dev/it/developers/explanation/adr-vault) | Decisioni architetturali dietro il contratto exit code e il Blood Sentinel |
+| [Architettura](./architecture) | Pipeline a due passate di Zenzic Core, credential scanner middleware, protocollo adapter |
+| [ADR Vault](https://zenzic.dev/it/developers/explanation/adr-vault) | Decisioni architetturali dietro il contratto exit code e il path traversal guard |

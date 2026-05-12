@@ -4,16 +4,16 @@
 import React from 'react';
 import Translate from '@docusaurus/Translate';
 
-export default function SentinelSection(): React.JSX.Element {
+export default function SecuritySection(): React.JSX.Element {
   return (
     <section className="border-t dark:border-zinc-800 border-zinc-200 dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-5xl mx-auto px-6">
         <div className="mb-24 text-center">
           <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
-            <Translate id="sentinel.label">Reporter &amp; Shield</Translate>
+            <Translate id="sentinel.label">Reporter &amp; Credentials</Translate>
           </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="homepage.sentinel.title">Sentinel in Action</Translate>
+            <Translate id="homepage.sentinel.title">Zenzic in Action</Translate>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto">
             <Translate id="homepage.sentinel.sub">
@@ -55,11 +55,11 @@ export default function SentinelSection(): React.JSX.Element {
             </div>
           </div>
 
-          {/* Shield Breaches */}
+          {/* Credential Breaches */}
           <div className="flex flex-col md:flex-row-reverse gap-12 lg:gap-20 items-center">
             <div className="flex-1 md:pl-8">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
-                <Translate id="sentinel.shield.title">Zenzic Shield</Translate>
+                <Translate id="sentinel.shield.title">credential scanner</Translate>
               </h3>
               <p className="dark:text-zinc-400 text-zinc-500 leading-relaxed text-sm">
                 <Translate id="sentinel.shield.desc" values={{ code1: (str: string) => <code>{str}</code>, code2: (str: string) => <code>{str}</code>, code3: (str: string) => <code>{str}</code> }}>

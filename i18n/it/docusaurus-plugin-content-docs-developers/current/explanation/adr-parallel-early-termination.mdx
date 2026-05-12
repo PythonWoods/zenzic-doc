@@ -22,7 +22,7 @@ parallelo quando un repository contiene 50 o più file Markdown
 (`ADAPTIVE_PARALLEL_THRESHOLD` in `core/scanner.py`). Ogni worker esegue
 `_scan_single_file()` in modo indipendente e restituisce un `IntegrityReport`
 contenente eventuali findings, inclusi gli oggetti `SecurityFinding` emessi dallo
-Shield (Z201/Z202/Z203).
+credential scanner (Z201/Z202/Z203).
 
 Nell'implementazione precedente alla v0.7.0, il coordinatore raccoglieva i
 risultati iterando su `futures_map.items()` **nell'ordine di submission**,

@@ -1,7 +1,7 @@
 ---
 icon: lucide/award
 sidebar_label: "Badge Ufficiali"
-description: "Mostra punteggi di qualità Zenzic come badge nel tuo README."
+description: "Mostra lo stato dell'audit Zenzic e i punteggi di qualità come badge nel tuo README."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,53 +9,53 @@ description: "Mostra punteggi di qualità Zenzic come badge nel tuo README."
 
 # Badge Ufficiali & Integrazione CI/CD
 
-Zenzic fornisce due tipologie di badge ufficiali. Aggiungili al `README.md` del tuo progetto per segnalare l'integrità della documentazione a collaboratori e utenti.
+Zenzic fornisce due tipologie di badge ufficiali. Aggiungili al `README.md` del tuo progetto per segnalare l’integrità della documentazione a collaboratori e utenti.
 
 ---
 
-## 🛡️ Zenzic Shield (Stato Binario)
+## ✅ Zenzic Audit Badge (Stato Binario)
 
-![Badge Zenzic Shield](../assets/brand/svg/zenzic-badge-shield.svg)
+![Badge Zenzic Audit](/assets/brand/svg/zenzic-badge-audit.svg)
 
-Usa questo badge per le pipeline strict in cui qualsiasi link non funzionante, ancora morta o credenziale esposta deve bloccare la build. È un gate binario: **passing** oppure **failing**.
+Usa questo badge per certificare che la documentazione ha superato il controllo di integrità completo di Zenzic: link strutturali, credential scanner (Z201–Z204) e path traversal guard (Z205). È un gate binario: **audit: passed** oppure **audit: failed**.
 
-### Markdown pronto all'uso
+### Markdown pronto all’uso
 
 **Passing (verde):**
 
 ```markdown title="README.md"
-[![Zenzic Shield](https://img.shields.io/badge/🛡️_zenzic_shield-passing-4f46e5?style=flat)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_passed-success?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
 ```
 
 **Failing (rosso):**
 
 ```markdown title="README.md"
-[![Zenzic Shield](https://img.shields.io/badge/🛡️_zenzic_shield-failing-ef4444?style=flat)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_failed-critical?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
 ```
 
 ### Step CI raccomandato
 
 ```yaml title=".github/workflows/zenzic.yml"
-
-- name: Lint documentazione (Zenzic Shield)
-
+- name: Audit documentazione (Zenzic)
   run: uvx zenzic check all --strict
 ```
 
-Inserisci l'URL `passing` nel tuo README. Se questo step fallisce in CI, sostituisci manualmente il badge con `failing` — oppure automatizzalo tramite [dynamic-badges-action](https://github.com/Schneegans/dynamic-badges-action) (vedi [Integrazione CI/CD](./configure-ci-cd.mdx)).
+Inserisci l’URL `audit: passed` nel tuo README. Se questo step fallisce in CI, sostituisci manualmente il badge con `audit: failed` — oppure automatizzalo tramite [dynamic-badges-action](https://github.com/Schneegans/dynamic-badges-action) (vedi [Integrazione CI/CD](./configure-ci-cd.mdx)).
+
+> **Perché “audit”?** Il badge certifica che il corpus documentale ha superato controlli deterministici di integrità strutturale e sicurezza — non una revisione stilistica. `audit: passed` corrisponde direttamente all’exit code 0 di `zenzic check all --strict`.
 
 ---
 
 ## 💯 Zenzic Score (Metrica di Miglioramento)
 
-![Badge Zenzic Score](../assets/brand/svg/zenzic-badge-score.svg)
+![Badge Zenzic Score](/assets/brand/svg/zenzic-badge-score.svg)
 
 Usa questo badge per esporre il punteggio di qualità live (0–100) della documentazione. Ideale per progetti legacy che adottano Zenzic progressivamente: una build verde può comunque mostrare un punteggio non perfetto, incoraggiando il miglioramento continuo senza bloccare il workflow.
 
-### Markdown pronto all'uso
+### Markdown pronto all’uso
 
 ```markdown title="README.md"
-[![Zenzic Score](https://img.shields.io/badge/🛡️_zenzic-100%2F100-4f46e5?style=flat)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Score](https://img.shields.io/badge/zenzic_score-100%2F100-4f46e5?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
 ```
 
 ### Usare `--fail-under` per l'adozione progressiva
@@ -102,7 +102,7 @@ I seguenti due step calcolano il punteggio e lo pubblicano su un [GitHub Gist](h
     auth: ${{ secrets.GIST_SECRET }}
     gistID: <il-tuo-gist-id>
     filename: zenzic-score.json
-    label: "🛡️ zenzic"
+    label: "zenzic score"
     message: "${{ env.SCORE }} / 100"
     color: ${{ env.SCORE == '100' && '4f46e5' || env.SCORE >= '80' && 'f59e0b' || 'ef4444' }}
 ```
@@ -123,8 +123,8 @@ I progetti in ambienti air-gapped o aziendali che non possono chiamare `img.shie
 
 | File | Descrizione |
 |---|---|
-| `zenzic-badge-shield.svg` | Badge shield statico "passing" |
-| `zenzic-badge-score.svg` | Badge score statico "100 / 100" |
+| `zenzic-badge-audit.svg` | Badge statico “audit: passed” |
+| `zenzic-badge-score.svg` | Badge score statico “100 / 100” |
 
 **Nota:** `brand-kit.zip` è un artefatto di build. Non è archiviato nel repository — scaricalo dalla
 pagina [GitHub Releases](https://github.com/PythonWoods/zenzic/releases/latest), oppure

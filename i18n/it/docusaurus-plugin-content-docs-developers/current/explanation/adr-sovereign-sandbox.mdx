@@ -1,7 +1,7 @@
 ---
 sidebar_label: "ADR 007: Sandbox Sovrano"
 sidebar_position: 3
-description: "ADR 007: Il Blood Sentinel sorveglia le fughe DAL target, non la posizione DEL target."
+description: "ADR 007: Il path traversal guard sorveglia le fughe DAL target, non la posizione DEL target."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -19,7 +19,7 @@ description: "ADR 007: Il Blood Sentinel sorveglia le fughe DAL target, non la p
 
 Quando un utente esegue `zenzic check all /path/to/target`, Zenzic deve stabilire
 due confini: la **radice di analisi** (cosa scansionare) e il **perimetro** (dove
-i link possono risolvere). Il Blood Sentinel (`Z202`, `Z203`) impone il perimetro
+i link possono risolvere). Il path traversal guard (`Z202`, `Z203`) impone il perimetro
 — rileva i link che fuoriescono dal sandbox di documentazione.
 
 L'implementazione iniziale aveva un bug geometrico: ancorava il perimetro alla
@@ -35,7 +35,7 @@ zenzic check all /home/user/repo-b/docs
 Zenzic calcolava `repo_root = /home/user/repo-a`, poi classificava qualsiasi
 link in `repo-b/docs` che risolvesse fuori da `/home/user/repo-a` come un
 tentativo di path traversal — anche se l'utente aveva esplicitamente specificato
-`repo-b/docs` come target di analisi. Il Blood Sentinel sparava su invocazioni
+`repo-b/docs` come target di analisi. Il path traversal guard sparava su invocazioni
 cross-progetto legittime.
 
 ---
@@ -43,7 +43,7 @@ cross-progetto legittime.
 ## Decisione
 
 **L'argomento `PATH` esplicito fornito dall'utente è la radice del sandbox
-sovrano.** Il Blood Sentinel sorveglia le fughe **dal** target, non la posizione
+sovrano.** Il path traversal guard sorveglia le fughe **dal** target, non la posizione
 **del** target.
 
 Implementazione: dopo aver calcolato `docs_root` dal percorso fornito dall'utente,
@@ -75,7 +75,7 @@ propria intenzione in modo inequivocabile. Lo strumento deve rispettare quella
 intenzione. Sovrascrivere un argomento esplicito con un confine derivato dal
 contesto implicito è una **violazione del Principio del Minimo Stupore**.
 
-### 2. Il Dominio Corretto del Blood Sentinel
+### 2. Il Dominio Corretto del Path Traversal Guard
 
 Z202 (`PATH_TRAVERSAL`) è stato progettato per rilevare autori Markdown che
 scrivono link come `[config](../../../etc/passwd)` nel tentativo di fuoriuscire
@@ -100,7 +100,7 @@ Senza questa correzione, tale configurazione era impossibile.
   un argomento `PATH` esplicito e quel percorso ricade fuori dalla radice del
   repo della CWD.
 
-- Il Blood Sentinel (`Z202`/`Z203`) rimane attivo incondizionatamente all'interno
+- Il path traversal guard (`Z202`/`Z203`) rimane attivo incondizionatamente all'interno
 
   del sandbox sovrano. Nessun path traversal è permesso all'interno del target
   dichiarato.

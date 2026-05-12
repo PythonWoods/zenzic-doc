@@ -73,21 +73,21 @@ internal link, every anchor reference, every cross-locale path. It builds a **Vi
 Map** (VSM) in memory — a projection of the final site — and verifies ghost routes that would
 only break at runtime.
 
-### 2. The Shield (Z201)
+### 2. Credential Scanner (Z201) {#credential-scanner}
 
 Credentials in documentation kill companies. An AWS access key, a GitHub token, a private
 API key — any of these committed to a public repository triggers a breach that no `git history
---rewrite` can fully undo. The Shield scans every byte of every file, including YAML
+--rewrite` can fully undo. The credential scanner scans every byte of every file, including YAML
 frontmatter (where secrets frequently hide), before any other check runs.
 
 **Exit code 2 is never suppressible.** Not by `--exit-zero`. Not by `fail-on-error: false`.
 Not by `zenzic:ignore`. A leaking credential is a hard stop.
 
-### 3. Blood Sentinel (Z202/Z203)
+### 3. Path Traversal Guard (Z202/Z203) {#path-traversal-guard}
 
 Path traversal in documentation configurations is a class of attack that most teams never
 imagine exists. A `docs_dir: "../../etc"` in a configuration file is not an accident — it is
-a jailbreak. Blood Sentinel closes this vector unconditionally.
+a jailbreak. The path traversal guard closes this vector unconditionally.
 
 **Exit code 3 is never suppressible.** Full stop.
 

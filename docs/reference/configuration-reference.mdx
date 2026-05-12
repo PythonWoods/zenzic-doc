@@ -239,7 +239,7 @@ These represent the **L1 System Guardrails** layer. No configuration can overrid
 | **Type** | `list[str]` |
 | **Default** | `[]` |
 
-Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and Shield). Uses `fnmatch` syntax.
+Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and credential scanner). Uses `fnmatch` syntax.
 
 ```toml
 # Skip locale-suffixed files and changelogs
@@ -496,7 +496,7 @@ fallback_to_default = false
 | **Type** | `int` |
 | **Default** | `0` |
 
-Minimum quality score (0--100). If the Sentinel Score falls below this value, `zenzic score` exits with code 1. A value of `0` disables the threshold (observational mode).
+Minimum quality score (0--100). If the Zenzic Score falls below this value, `zenzic score` exits with code 1. A value of `0` disables the threshold (observational mode).
 
 ```toml
 fail_under = 80
@@ -522,7 +522,7 @@ strict = true
 | **Type** | `bool` |
 | **Default** | `false` |
 
-When `true`, `zenzic check all` always exits with code 0 even when issues are found. Issues are still printed and scored. Useful for observation-only pipelines. Shield violations (exit code 2) and Blood Sentinel events (exit code 3) are **never** suppressed.
+When `true`, `zenzic check all` always exits with code 0 even when issues are found. Issues are still printed and scored. Useful for observation-only pipelines. Credential scanner violations (exit code 2) and path traversal guard events (exit code 3) are **never** suppressed.
 
 ```toml
 exit_zero = true
@@ -586,7 +586,7 @@ Several configuration values can be overridden per-run via CLI flags on `zenzic 
 | `--exclude-dir DIR` | (additive) | Additional directories to exclude (repeatable) |
 | `--include-dir DIR` | (additive) | Force-include directories even if excluded by config (repeatable). Cannot override System Guardrails |
 | `--show-info` | (display) | Show info-level findings (e.g. circular links) |
-| `--format json` | (display) | Output in JSON format instead of the Sentinel report |
+| `--format json` | (display) | Output in JSON format instead of Zenzic report |
 | `--fail-under N` | `fail_under` | Exit non-zero if score is below threshold (on `zenzic score`) |
 | `--quiet` / `-q` | (display) | Minimal one-line output for pre-commit hooks |
 

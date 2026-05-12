@@ -39,8 +39,8 @@ export function GutterTerminal(): React.JSX.Element {
   );
 }
 
-// ── Shield Breach Terminal ─────────────────────────────────────────────────
-export function ShieldTerminal(): React.JSX.Element {
+// ── Credential Scanner Terminal ────────────────────────────────────────────
+export function CredentialTerminal(): React.JSX.Element {
   return (
     <div
       className="zz-terminal-monolith bg-zinc-900/20 backdrop-blur-md border border-rose-900/30 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed"
@@ -111,14 +111,14 @@ export function SummaryTerminal(): React.JSX.Element {
   );
 }
 
-// ── Blood Sentinel Terminal (Path Traversal) ──────────────────────────────
-export function BloodSentinel(): React.JSX.Element {
+// ── Path Traversal Guard Terminal (Path Traversal) ────────────────────────────
+export function PathTraversalGuardTerminal(): React.JSX.Element {
   return (
     <div
       className="zz-terminal-monolith bg-zinc-900/20 backdrop-blur-md border border-rose-900/40 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed"
     >
       <div className="text-rose-600 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b border-rose-900/30 pb-3">
-        &#x1F6A8; BLOOD SENTINEL — PATH TRAVERSAL
+        &#x1F6AB; PATH TRAVERSAL GUARD — PATH TRAVERSAL
       </div>
       <div className="flex items-center gap-3 mb-2">
         <span className="text-rose-500">&#10008;</span>

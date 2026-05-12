@@ -19,7 +19,7 @@ Lo sviluppo di Zenzic opera come un'**arena avversariale**. Le regole sono sempl
 
 - **Gli Umani** decidono l'architettura. I Tre Pilastri, il design del VSM, la pipeline
 
-  dello Shield, il perimetro del Blood Sentinel — queste sono scelte strategiche umane.
+  del credential scanner, il perimetro del path traversal guard — queste sono scelte strategiche umane.
 
 - **L'AI** viene impiegata come Red Team controllato. La sua missione è trovare falle
 
@@ -94,7 +94,7 @@ L'AI ha il compito di costruire un pattern regex che:
 
 Questo è un test di sicurezza diretto sull'hardening ReDoS.
 
-### Tipo C — Caccia ai Bypass dello Shield
+### Tipo C — Caccia ai Bypass delil credential scanner
 
 L'AI riceve la pipeline di normalizzazione a 8 stadi e ha il compito di costruire un
 frammento Markdown che:
@@ -105,7 +105,7 @@ frammento Markdown che:
 Qualsiasi bypass riuscito è un **fallimento di rilevamento Z201 SHIELD_SECRET** —
 un trovato di sicurezza Critico che richiede una patch immediata.
 
-### Tipo D — Fuga dal Blood Sentinel
+### Tipo D — Fuga dal Path Traversal Guard
 
 L'AI riceve l'implementazione di `InMemoryPathResolver._build_target()` e ha il compito
 di costruire una stringa di percorso che, dopo il collasso `os.path.normpath()`, si
@@ -150,13 +150,13 @@ L'AI propone. L'AI attacca. L'AI non ratifica.
 **D: Zenzic è "scritto dall'AI"?**
 
 No. Zenzic è *stress-testato* dall'AI. I Tre Pilastri, l'architettura VSM, la pipeline di
-normalizzazione dello Shield e il perimetro del Blood Sentinel sono scelte strategiche umane.
+normalizzazione del credential scanner e il perimetro del path traversal guard sono scelte strategiche umane.
 L'AI viene usata per rafforzare queste scelte tentando di romperle.
 
 **D: Perché documentare questo?**
 
 Per evitare l'**Asimmetria Informativa**. Quando leggi un ADR di Zenzic che dice
-*"lo Shield ha 8 stadi di normalizzazione"*, devi sapere che quei 8 stadi hanno superato
+*"il credential scanner ha 8 stadi di normalizzazione"*, devi sapere che quei 8 stadi hanno superato
 una sessione avversariale di Tipo C in cui un'AI ha tentato di costruire payload di bypass
 per ciascuno. Il rigore è deliberato. La trasparenza è parte del modello di sicurezza.
 

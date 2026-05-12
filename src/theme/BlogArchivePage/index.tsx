@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Swizzled BlogArchivePage — D107: The Sentinel Archive Reconstruction
+ * Swizzled BlogArchivePage — D107: Zenzic Archive Reconstruction
  *
  * Replaces the default bullet-list archive with a card-based catalogue.
  * Each card shows: post title (link), date chip, and description excerpt.

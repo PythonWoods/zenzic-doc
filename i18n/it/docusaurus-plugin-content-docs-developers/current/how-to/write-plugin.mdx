@@ -210,7 +210,7 @@ plugins = ["no-internal-hostname"]
 
 Solo i plugin elencati qui verranno caricati. L'installazione di un pacchetto
 che registra regole sotto `zenzic.rules` senza elencarlo in `plugins` non ha
-effetto — questo è il comportamento intenzionale del **Safe Harbor**: sai sempre
+effetto — questo è il comportamento intenzionale del **Exclusion Zone**: sai sempre
 esattamente quali regole sono attive nel tuo progetto.
 
 ---
@@ -297,7 +297,7 @@ Zenzic.
 - [ ] Plugin ID elencato nel `zenzic.toml` del progetto sotto `plugins`.
 
 :::info[Passaggi Successivi]
- Collega la regola dal codice al flusso Sentinel in produzione:
+ Collega la regola dal codice al flusso Zenzic in produzione:
 
  1. Registra e abilita il plugin ID nel `zenzic.toml` sotto `plugins`
 

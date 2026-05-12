@@ -87,12 +87,12 @@ Each individual check command returns a uniform findings structure:
 ```
 
 Exit codes are preserved in JSON mode: exit 0 when only warnings are found,
-exit 1 on errors (or warnings under `--strict`), exit 2 on Shield breaches,
-exit 3 on Blood Sentinel — the same contract as terminal output.
+exit 1 on errors (or warnings under `--strict`), exit 2 on credential scanner findings,
+exit 3 on path traversal guard — the same contract as terminal output.
 
 ---
 
-## GitHub Actions: Zenzic Shield Gate
+## GitHub Actions: Zenzic Credential Gate
 
 The simplest integration — fails the build on any documentation error.
 
@@ -122,7 +122,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Check references and run Shield
+      - name: Check references and credentials
 
         run: uvx zenzic check references
 ```
@@ -159,7 +159,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Check references and run Shield
+      - name: Check references and credentials
 
         run: uvx zenzic check references
 ```
@@ -167,7 +167,7 @@ jobs:
 The `enable-cache: true` option caches the uv tool cache across runs,
 eliminating the PyPI download on every push.
 
-Exit code `2` means a credential was detected in a reference URL. Exit code `3` means a link resolves to an OS system path (Blood Sentinel). Both require immediate investigation — rotate any exposed credential and remove the offending link.
+Exit code `2` means a credential was detected in a reference URL. Exit code `3` means a link resolves to an OS system path (path traversal guard). Both require immediate investigation — rotate any exposed credential and remove the offending link.
 
   </TabItem>
   <TabItem value="zenzic-action-(recommended)" label="zenzic-action (recommended)">
@@ -254,8 +254,8 @@ Slack notifications without re-parsing the SARIF file:
 ```
 
 :::warning[Security incidents are always fatal]
-`fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (Shield — credential
-detected) and exit 3 (Blood Sentinel — path traversal) are **never suppressible** by any input.
+`fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (credential scanner — credential
+detected) and exit 3 (path traversal guard — path traversal) are **never suppressible** by any input.
 The action enforces this unconditionally. See the
 [Exit Code Contract](../reference/cli#exit-codes).
 :::
@@ -343,21 +343,21 @@ Combine with branch protection rules to block merges that degrade documentation 
 |:---:|---|---|
 | `0` | All checks passed | Keep badge green |
 | `1` | One or more checks failed | Set badge to `failing` / `ef4444` |
-| **`2`** | **Zenzic Shield: credential detected** | **Rotate credential immediately** |
-| **`3`** | **Blood Sentinel: path traversal detected** | **Remove offending link immediately** |
+| **`2`** | **Credential scanner: credential detected** | **Rotate credential immediately** |
+| **`3`** | **Path traversal guard: path traversal detected** | **Remove offending link immediately** |
 
 > For the full badge copy-paste reference, see [Official Badges](./add-badges.mdx).
 
 ---
 
-## Shield Recovery — When a Credential Is Detected {#shield-recovery}
+## Credential Recovery — When a Credential Is Detected {#credential-recovery}
 
 A credential detection (exit code 2) is not a failed build. It is a **security incident**.
 The recovery playbook is short and non-negotiable:
 
 ### Step 1 — Identify the exposure
 
-The Sentinel Report tells you everything you need:
+The Zenzic Report tells you everything you need:
 
 ```text
  ✘  Z201  docs/how-to/configure.md:4    Secret detected (aws-access-key)
@@ -395,20 +395,20 @@ on a shared branch. If the repository is public, assume the credential is alread
 regardless of history rewriting — rotation is mandatory.
 :::
 
-### Step 5 — Verify the Shield is satisfied
+### Step 5 — Verify no credentials are detected
 
 ```bash
 uvx zenzic check all
-# Expected: exit 0, Shield section shows ✔ no credentials detected
+# Expected: exit 0, no credentials detected
 ```
 
-Only exit 0 from the Shield pass means the recovery is complete.
+Only exit 0 means the recovery is complete.
 
 :::info[Why Zenzic saves you from BFG Repo Cleaner]
 BFG Repo Cleaner is an irreversible tool for purging secrets from git history.
 Its use is a symptom of a process failure: the secret reached the repository undetected.
-Zenzic’s Shield prevents this by catching credentials **before** they enter the CI pipeline
-— ideally via a pre-commit hook. See [pre-commit integration](#pre-commit) to add the Shield
+Zenzic prevents this by catching credentials **before** they enter the CI pipeline
+— ideally via a pre-commit hook. See [pre-commit integration](#pre-commit) to add Zenzic
 as a local gate that runs on every `git commit`.
 :::
 
@@ -416,7 +416,7 @@ as a local gate that runs on every `git commit`.
 
 ## Pre-commit Integration {#pre-commit}
 
-The Shield in CI is your last line of defence. The pre-commit hook is your first:
+The credential scanner in CI is your last line of defence. The pre-commit hook is your first:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -425,9 +425,9 @@ repos:
 
     hooks:
 
-      - id: zenzic-shield
+      - id: zenzic-credentials
 
-        name: Zenzic Shield
+        name: Zenzic Credentials
         language: system
         entry: uvx zenzic check all
         pass_filenames: false

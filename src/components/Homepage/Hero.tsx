@@ -5,7 +5,7 @@ import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Translate from '@docusaurus/Translate';
 
-export function SentinelBadge(): React.JSX.Element {
+export function ZenzicBadge(): React.JSX.Element {
   return (
     <span className="relative flex h-2 w-2 mr-2">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -23,14 +23,14 @@ export default function Hero(): React.JSX.Element {
       <img src={iconUrl} alt="Zenzic Icon" style={{ width: '40px' }} className="mb-8 drop-shadow-sm opacity-60 grayscale contrast-125 hover:opacity-100 hover:grayscale-0 hover:contrast-100 transition-all duration-500 cursor-pointer" />
 
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
-        <SentinelBadge />
+        <ZenzicBadge />
         <Translate id="homepage.hero.badge" description="Wait release version badge">
           v0.7.1 &quot;Quartz Maturity&quot; Stable
         </Translate>
       </div>
       <h1 className="text-4xl sm:text-5xl md:text-[56px] font-semibold tracking-tight dark:text-white text-zinc-900 leading-[1.1] mb-8">
         <Translate id="homepage.hero.title" description="Main hero headline">
-          The Safe Harbor
+          The Exclusion Zone
         </Translate>
         <br />
         <span className="dark:text-zinc-500 text-zinc-400">

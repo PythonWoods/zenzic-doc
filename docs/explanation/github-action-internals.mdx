@@ -2,7 +2,7 @@
 sidebar_position: 11
 icon: lucide/shield-check
 title: GitHub Action Internals
-description: "How zenzic-action enforces security: Blood Sentinel Protocol, Exit Code Contract, Root-First Sentinel cascade, and Sovereign Intent."
+description: "How zenzic-action enforces security: Path Traversal Guard protocol, Exit Code Contract, Root-First discovery cascade, and Sovereign Intent."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -32,7 +32,7 @@ action.yml            ← public contract (inputs, outputs, env injection)
 
 ---
 
-## Blood Sentinel Protocol {#blood-sentinel}
+## Path Traversal Guard Protocol
 
 The wrapper enforces two independent *Jailbreak Guards* — one for the SARIF output path, one for the configuration file path. Both use the same `case`-based pattern, ensuring identical policy at every read/write boundary.
 
@@ -97,8 +97,8 @@ Zenzic defines four exit codes. The wrapper propagates them **without remapping*
 |:---:|---|:---:|
 | `0` | Clean — all checks passed | — |
 | `1` | Documentation findings (broken links, orphans, dead refs, etc.) | ✅ via `fail-on-error: false` |
-| `2` | **SECURITY** — credential pattern detected (Shield / Z201) | ❌ Never |
-| `3` | **SECURITY** — system path traversal (Blood Sentinel / Z202–Z203) | ❌ Never |
+| `2` | **SECURITY** — credential pattern detected (credential scanner / Z201) | ❌ Never |
+| `3` | **SECURITY** — system path traversal (path traversal guard / Z202–Z203) | ❌ Never |
 
 Exits `2` and `3` terminate the job unconditionally. Neither `fail-on-error: "false"` nor any other input can suppress them. This is enforced in the wrapper's exit logic, not in `action.yml`, so it cannot be circumvented by overriding action inputs.
 
@@ -120,7 +120,7 @@ This ensures downstream steps that read `findings-count` never see `"0 findings,
 
 ---
 
-## Root-First Sentinel — Configuration Discovery {#cascade}
+## Root-First Discovery — Configuration Cascade {#cascade}
 
 The wrapper implements a **hierarchical auto-discovery** for the Zenzic configuration file. The search order reflects the conventional placement in real-world repositories:
 
@@ -180,5 +180,5 @@ set +f                         # restore glob expansion
 |---|---|
 | [action README](https://github.com/PythonWoods/zenzic-action) | Quick Start, inputs/outputs reference, Sovereign Override usage |
 | [CI/CD Integration](../how-to/configure-ci-cd) | Workflow recipes, SARIF badge, score badge |
-| [Architecture](./architecture) | Zenzic Core two-pass pipeline, Shield middleware, adapter protocol |
-| [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) | Architectural decisions behind the exit code contract and Blood Sentinel |
+| [Architecture](./architecture) | Zenzic Core two-pass pipeline, credential scanner middleware, adapter protocol |
+| [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) | Architectural decisions behind the exit code contract and path traversal guard |

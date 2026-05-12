@@ -42,7 +42,7 @@ Zenzic organizza le rilevazioni in **sette categorie diagnostiche**, ognuna affr
 |---|---|---|---|---|
 | **Z0xx** | Migrazione e Compatibilità | Deprecazione engine; guida migrazione | `error` | ❌ No (abort fatale) |
 | **Z1xx** | Integrità dei Link | Link rotti/circolari, pagine orfane, problemi percorso | `error`/`warning` | ✅ Sì |
-| **Z2xx** | Sicurezza (Shield) | Rilevamento segreti; path traversal; incidenti sicurezza | `warning`/`security_breach`/`security_incident` | 🔒 **Mai** |
+| **Z2xx** | Sicurezza (credential scanner) | Rilevamento segreti; path traversal; incidenti sicurezza | `warning`/`security_breach`/`security_incident` | 🔒 **Mai** |
 | **Z3xx** | Integrità dei Riferimenti | Definizioni riferimenti dangling/duplicate | `error`/`warning` | ✅ Sì |
 | **Z4xx** | Struttura | Directory index, pagine orfane, alt text mancante, asset config | `info`/`warning` | ✅ Sì |
 | **Z5xx** | Qualità Contenuti | Testo placeholder, contenuto corto, validazione snippet, regressioni | `warning`/`error` | ✅ Sì |
@@ -97,7 +97,7 @@ Z101 conta verso la categoria **Integrità Strutturale** nel [Punteggio di Quali
     3. Assicurati che il file non sia incluso in `ignored_patterns` nella tua configurazione.
     4. Se stai referenziando un file fuori da `docs/`, usa un percorso globale o un symlink (sebbene il relativo sia preferito).
 
-<SentinelOutput
+<ZenzicOutput
   status="error"
   code="Z101"
   exitCode={1}
@@ -209,7 +209,7 @@ Z106 conta verso la categoria **Integrità Strutturale** a severità `info`. I c
 Z107 conta verso la categoria **Integrità Strutturale** a severità `warning`. I link ancora auto-referenziali non hanno valore di navigazione. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z107"
   exitCode={1}
@@ -294,7 +294,7 @@ Z107 conta verso la categoria **Integrità Strutturale** a severità `warning`. 
 
 ---
 
-## Z2xx — Sicurezza (Shield)
+## Z2xx — Sicurezza (credential scanner)
 
 ### Z201: SHIELD_SECRET {#z201}
 
@@ -303,18 +303,18 @@ Quando viene rilevato un finding Z201, Z202, Z203 o Z204, il [Punteggio di Quali
 :::
 
 :::danger[🔒 INVIOLABILE — Non può essere soppresso]
-`zenzic:ignore Z201` viene **silenziosamente rifiutato**. Lo Shield si attiva incondizionatamente su ogni riga. I finding di sicurezza sono fatti, non suggerimenti — una fuga di credenziali non può essere dichiarata un falso positivo.
+`zenzic:ignore Z201` viene **silenziosamente rifiutato**. Il credential scanner si attiva incondizionatamente su ogni riga. I finding di sicurezza sono fatti, non suggerimenti — una fuga di credenziali non può essere dichiarata un falso positivo.
 :::
 
 * **Severità:** `security_breach` (Exit 2)
-* **Contesto Tecnico:** Lo Shield scansiona ogni riga — grezza e normalizzata — alla ricerca di pattern di credenziali noti. La decodifica Base64 speculativa viene applicata ai token candidati: se la decodifica rivela un pattern di credenziale, la riga originale (codificata) viene segnalata. Questo impedisce l'offuscamento tramite codifica Base64 nei valori frontmatter o nei blocchi di codice.
+* **Contesto Tecnico:** Lo credential scanner scansiona ogni riga — grezza e normalizzata — alla ricerca di pattern di credenziali noti. La decodifica Base64 speculativa viene applicata ai token candidati: se la decodifica rivela un pattern di credenziale, la riga originale (codificata) viene segnalata. Questo impedisce l'offuscamento tramite codifica Base64 nei valori frontmatter o nei blocchi di codice.
 * **Passaggi di Rimedio:**
     1. **IMMEDIATO:** Ruota la credenziale trapelata. Deve essere considerata compromessa.
     2. Rimuovi il segreto dal file.
     3. Pulisci la cronologia git usando `git-filter-repo` o uno strumento simile per assicurarti che il segreto non sia solo nascosto ma eliminato.
     4. Usa segnaposto come `TUA_CHIAVE_API` per gli esempi di documentazione.
 
-<SentinelOutput
+<ZenzicOutput
   status="breach"
   code="Z201"
   exitCode={2}
@@ -327,7 +327,7 @@ Quando viene rilevato un finding Z201, Z202, Z203 o Z204, il [Punteggio di Quali
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABILE — Non può essere soppresso]
-`zenzic:ignore Z202` e `zenzic:ignore Z203` vengono **silenziosamente rifiutati**. Il Blood Sentinel applica il confine del perimetro incondizionatamente.
+`zenzic:ignore Z202` e `zenzic:ignore Z203` vengono **silenziosamente rifiutati**. Il path traversal guard applica il confine del perimetro incondizionatamente.
 :::
 
 * **Severità:** `error`
@@ -339,7 +339,7 @@ Quando viene rilevato un finding Z201, Z202, Z203 o Z204, il [Punteggio di Quali
 ### Z203: PATH_TRAVERSAL_FATAL {#z203}
 
 * **Severità:** `security_incident` (Exit 3)
-* **Contesto Tecnico:** Il **Blood Sentinel** ha rilevato un tentativo di accesso a directory di sistema riservate del SO (es. `/etc/`, `/root/`). Questo è trattato come un incidente di sicurezza ad alta autorità, attivando un codice di uscita non zero che non può essere soppresso.
+* **Contesto Tecnico:** Il **path traversal guard** ha rilevato un tentativo di accesso a directory di sistema riservate del SO (es. `/etc/`, `/root/`). Questo è trattato come un incidente di sicurezza ad alta autorità, attivando un codice di uscita non zero che non può essere soppresso.
 * **Passaggi di Rimedio:**
     1. Indaga sul file sorgente per intenti malevoli o compromissione della supply-chain.
     2. Rimuovi qualsiasi percorso assoluto che referenzi posizioni del sistema host.
@@ -351,7 +351,7 @@ Quando viene rilevato un finding Z201, Z202, Z203 o Z204, il [Punteggio di Quali
 `zenzic:ignore Z204` viene **silenziosamente rifiutato**. Il Privacy Gate si attiva incondizionatamente su ogni riga — l'esposizione di un termine proibito è un fatto di sicurezza, non un suggerimento.
 :::
 
-:::info[Brand Integrity Shield — Architettura a Due Livelli]
+:::info[Brand Integrity — Architettura a Due Livelli]
 Zenzic garantisce l'integrità del brand e della privacy attraverso due livelli complementari:
 
 | Livello | Fonte | Scope | Severità |
@@ -374,7 +374,7 @@ Usa Z204 per segreti che non devono mai essere committati. Usa Z601 per l'igiene
     2. Se il termine è legittimamente pubblico, rimuovilo da `forbidden_patterns` in `.zenzic.local.toml`.
     3. Verifica che `.zenzic.local.toml` sia elencato in `.gitignore` — i termini in questo file non devono mai essere committati.
 
-<SentinelOutput
+<ZenzicOutput
   status="breach"
   code="Z204"
   exitCode={2}
@@ -476,7 +476,7 @@ Z404 è un **avviso di integrità della configurazione**. Non riduce il [Puntegg
     1. Controlla i percorsi `favicon:` o `logo.src:` nel tuo file di configurazione.
     2. Assicurati che il file sia fisicamente presente nella directory `static/` (per Docusaurus) o `docs/` (per MkDocs).
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z404"
   exitCode={1}
@@ -512,7 +512,7 @@ Z502 conta verso la categoria **Eccellenza dei Contenuti** insieme a Z501, che h
     1. Espandi la documentazione con maggiori dettagli.
     2. Se la pagina è un segnaposto, combinala con una pagina correlata.
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z502"
   exitCode={1}
@@ -550,7 +550,7 @@ Z503 conta verso la categoria **Eccellenza dei Contenuti**, che ha un peso del 3
 Z505 conta verso la categoria **Eccellenza dei Contenuti** a severità `warning`. Ogni blocco di codice non etichettato riduce la copertura della sintassi evidenziata e impedisce la validazione degli snippet. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z505"
   exitCode={1}
@@ -565,7 +565,7 @@ Z505 conta verso la categoria **Eccellenza dei Contenuti** a severità `warning`
 
 * **Severità:** `warning`
 * **Contesto Tecnico:** Rilevato da `UntaggedCodeBlockRule`. Un delimitatore di apertura di blocco codice recinzato (`` ``` `` o `~~~`) senza info string (o solo spazi). Zenzic implementa l'invariante CommonMark: una *chiusura* del fence deve avere una info string vuota — qualsiasi carattere non-spazio la rende un'*apertura*. I metadati Docusaurus (es. `` ```python title="file.py" showLineNumbers ``) sono pienamente supportati e non vengono mai segnalati.
-* **Perché Zenzic implementa questo:** Controllo strutturale in puro Python che elimina la Node.js Tax dalla tua pipeline CI. Vedi [La Sentinella vs. il Correttore](../explanation/structural-integrity.mdx#dimension-accessibility) per la motivazione completa.
+* **Perché Zenzic implementa questo:** Controllo strutturale in puro Python che elimina la Node.js Tax dalla tua pipeline CI. Vedi [Zenzic vs. il Correttore](../explanation/structural-integrity.mdx#dimension-accessibility) per la motivazione completa.
 * **Passaggi di Rimedio:**
     1. Aggiungi un tag linguaggio subito dopo i backtick di apertura: `` ```python ``, `` ```bash ``, `` ```toml ``.
     2. Per blocchi di output o solo visualizzazione, usa `` ```text `` o `` ```plaintext ``.
@@ -640,7 +640,7 @@ Z406 conta verso la categoria **Brand & Asset** nel [Punteggio di Qualità Deter
 L’obsolescenza del brand è una metrica chiave della maturità della documentazione. Ogni finding Z601 contribuisce alla categoria **Brand & Asset** nel [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx). Un punteggio 100/100 richiede coerenza del brand insieme all’integrità strutturale e dei contenuti. Sopprimi i riferimenti storici intenzionali con `<!-- zenzic:ignore Z601 -->` (Markdown) o `{/* zenzic:ignore Z601 */}` (MDX).
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z601"
   exitCode={1}
@@ -669,7 +669,7 @@ L’obsolescenza del brand è una metrica chiave della maturità della documenta
 Z906 è un diagnostic informativo. Non fa fallire lo step del workflow ed è soppresso nei formati di output machine-readable (`json`, `sarif`) secondo la Regola R20.
 :::
 
-<SentinelOutput
+<ZenzicOutput
   status="warning"
   code="Z906"
   exitCode={0}
@@ -741,7 +741,7 @@ La soppressione è per decisioni intenzionali e documentate — non per silenzia
 ### Workflow Consigliato
 
 1. **Scan baseline:** Esegui `zenzic check all` per stabilire una baseline di rilevazioni.
-2. **Prioritizza la sicurezza:** Affronta immediatamente tutte le rilevazioni Z2xx (Shield)—sono critiche per la sicurezza.
+2. **Prioritizza la sicurezza:** Affronta immediatamente tutte le rilevazioni Z2xx (credential scanner)—sono critiche per la sicurezza.
 3. **Correggi problemi strutturali:** Risolvi le rilevazioni Z4xx (Struttura) per garantire corretta navigazione e accessibilità.
 4. **Miglioramento qualità graduale:** Affronta le rilevazioni Z5xx (Qualità Contenuti) incrementalmente come parte della manutenzione routinaria della documentazione.
 5. **Soppressione violazioni intenzionali:** Usa commenti inline raramente per decisioni di design (es. pagine di landing nascoste, sezioni sperimentali).

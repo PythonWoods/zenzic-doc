@@ -21,7 +21,7 @@ uvx zenzic lab
 ```
 
 `zenzic lab` launches an interactive showcase of every scanner in action: credential detection,
-broken links, orphan pages, Blood Sentinel path-traversal enforcement. Run it against bundled
+broken links, orphan pages, path traversal guard enforcement. Run it against bundled
 fixtures and see the results in real time.
 
 **The full audit in one second — no installation, no setup:**
@@ -34,11 +34,11 @@ uvx zenzic check all .
 
 ---
 
-## The Sentinel Dashboard — 100/100
+## Zenzic Dashboard — 100/100
 
 This is what success looks like:
 
-<SentinelOutput status="success" exitCode={0} showFrame />
+<ZenzicOutput status="success" exitCode={0} showFrame />
 
 A `100/100` is not an estimate. It is a **mathematical proof** that your documentation
 has zero structural issues, zero leaked credentials, and zero navigation failures.
@@ -53,20 +53,20 @@ the build even starts. No log archaeology, no stack-trace spelunking.
 
 | Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic v0.8.0 (EPOCH 7b)                                                                 |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | SentinelOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
+| **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | ZenzicOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
 | **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | O(1) deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |
-| **Credential Leak**     | Linter may miss secrets in YAML/code blocks; no masking; incident may reach git history.            | Shield: scans all content, masks secrets, halts pipeline (exitCode=2, Z601), never prints full secret. |
+| **Credential Leak**     | Linter may miss secrets in YAML/code blocks; no masking; incident may reach git history.            | Credential scanner: scans all content, masks secrets, halts pipeline (exitCode=2, Z601), never prints full secret. |
 | **Exit Codes**          | Non-standard, ambiguous, or missing.                                                                | Tiered: Z1xx (structural), Z2xx (content), Z4xx (routing), Z6xx (security).                   |
 
-**Example: SentinelOutput for a Virtual Route finding**
+**Example: ZenzicOutput for a Virtual Route finding**
 
-<SentinelOutput status="error" code="Z404" exitCode={1} showFrame>
+<ZenzicOutput status="error" code="Z404" exitCode={1} showFrame>
 docs/blog/tags/python/: Virtual route not mapped to any source file (Z404)
-</SentinelOutput>
+</ZenzicOutput>
 
 This is not a lint check. It is a **non-negotiable security gate**.
 
-→ **[How to act when Shield blocks a secret](./how-to/configure-ci-cd#shield-recovery)**
+→ **[How to act when credential scanner blocks a secret](./how-to/configure-ci-cd#credential-recovery)**
 
 ---
 
@@ -101,4 +101,4 @@ Cross-platform verified: Ubuntu · Windows · macOS · Python 3.10–3.14.
 
 ---
 
-*"The Code is Law. The Documentation is Truth. The Sentinel is vigilant."*
+*"The Code is Law. The Documentation is Truth. Zenzic is vigilant."*

@@ -1,81 +1,40 @@
 ---
 sidebar_position: 8
-sidebar_label: "Il Sentiero Minerale"
-title: "Il Sentiero Minerale: La Filosofia dei Rilasci"
-description: "I rilasci di Zenzic seguono il Sentiero Minerale — una tradizione che sceglie materiali geologici che rappresentano precisione, trasparenza e durabilità strutturale."
+sidebar_label: "Codenames di Rilascio"
+title: "Codenames di Rilascio"
+description: "Mappa delle versioni SemVer di Zenzic ai rispettivi codenames di rilascio ufficiali e alle aree di focus ingegneristico."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Il Sentiero Minerale
+# Codenames di Rilascio
 
-I rilasci di Zenzic seguono il **Sentiero Minerale** — una tradizione che sceglie materiali
-geologici che rappresentano precisione, trasparenza e durabilità strutturale. Il nome di ogni
-versione non è decorativo: porta con sé una metafora materiale per il lavoro ingegneristico
-compiuto in quel ciclo.
+Ogni ciclo di rilascio di Zenzic riceve un codename derivato da un minerale geologico.
+I codenames sono sempre in inglese, non vengono mai tradotti e servono come segnalibri
+architetturali stabili nella documentazione, nei changelog e nelle guide di migrazione.
 
-## La Filosofia
+## Registro dei Codenames
 
-I tool di documentazione sono infrastruttura. L'infrastruttura deve essere:
+| Versione | Codename | Proprietà chiave | Focus ingegneristico |
+|----------|----------|-----------------|----------------------|
+| **v0.6.x** | **Obsidian** {/* zenzic:ignore Z601 */} | Vetro vulcanico — formato sotto pressione estrema, bordo eccezionalmente tagliente | Credential scanner (Z2xx), path traversal guard, primo output SARIF, modello Exclusion Zone |
+| **v0.7.x** | **Quartz** | Piezoelettrico — preciso, auto-oscillante, riferimento per la frequenza | Codici di finding (`Zxxx`), contratto dei codici di uscita, Virtual Site Map, compatibilità SARIF |
+| **v0.8.x** | **Basalt** | Roccia vulcanica densa — rinforzo strutturale ad alta resistenza | Plugin SDK, stabilizzazione dell'adapter protocol, performance su larga scala |
+| **v0.9.x** | **Graphite** | Altamente conduttivo — abilita il flusso tra sistemi | Integrazioni di terze parti, API pubblica, espansione dell'ecosistema |
+| **v1.0.0** | **Diamond** | Materiale naturale più duro — massima integrità strutturale | Long-Term Support, garanzie di stabilità, piena maturità dell'API |
 
-- **Difficile da rompere** — come i minerali sotto compressione
-- **Trasparente** — perché gli utenti possano vedere esattamente cosa fa e perché
-- **Precisa** — nessuna ambiguità in ciò che rileva, segnala o rifiuta
+## Convenzioni d'uso
 
-Il Sentiero Minerale comunica che Zenzic è costruito per durare. Scegliamo materiali che si sono
-dimostrati affidabili su scale temporali geologiche, non cicli di marketing. Quando una versione
-prende il nome da un minerale, le proprietà fisiche di quel minerale descrivono le priorità
-ingegneristiche del rilascio.
+I codenames compaiono in:
+- Intestazioni di sezione in `CHANGELOG.md` (es. `## [0.8.0] — Basalt`)
+- `RELEASE.md` e il campo `version-note` di `CITATION.cff`
+- Guide di migrazione e annunci di breaking change
 
-## La Roadmap
-
-| Versione | Minerale | Era | Focus Ingegneristico |
-|---------|---------|-----|-------------------|
-| **v0.6.x** | **Obsidian** | L'Era del Fuoco e della Crisi | Tagliente, vulcanica, nata dal collasso dell'integrazione MkDocs. Lo Shield, il Blood Sentinel e il primo output SARIF — strumenti di precisione forgiati sotto pressione estrema. {/* zenzic:ignore Z601 */} |
-| **v0.7.x** | **Quartz** | L'Era della Chiarezza | Precisione piezoelettrica: trasparente, auto-oscillante, il riferimento per la misurazione del tempo e delle frequenze. Un nucleo stabile e verificabile — codici di finding, contratto dei codici di uscita, Virtual Site Map. |
-| **v0.8.x** | **Basalt** | L'Era delle Fondamenta | Denso, vulcanico, usato per il rinforzo ad alta resistenza nelle costruzioni. Focus: Plugin SDK e performance su larga scala. |
-| **v0.9.x** | **Grafite** | L'Era della Connettività | Altamente conduttiva — il ponte tra i sistemi. Focus: integrazioni di terze parti, API pubblica ed espansione dell'ecosistema. |
-| **v1.0.0** | **Diamante** | L'Era dell'Indistruttibilità | Il materiale naturale più duro. Focus: Long-Term Support, garanzie di stabilità e piena maturità. |
-
-## L'Origine dell'Obsidian {/* zenzic:ignore Z601 */}
-
-Il primo rilascio stabile di Zenzic è stato chiamato **Obsidian** deliberatamente. L'ossidiana è {/* zenzic:ignore Z601 */}
-vetro vulcanico — formatosi sotto calore e pressione estremi, al confine tra roccia fusa e
-atmosfera. Il ciclo v0.6.x è stato esattamente questo: il collasso dell'architettura del plugin
-MkDocs originale, una riscrittura forzata e l'emergenza del modello Safe Harbor dalle macerie.
-
-L'ossidiana è anche il materiale naturale più tagliente. Era il materiale dei primi strumenti {/* zenzic:ignore Z601 */}
-chirurgici — lame capaci di incisioni più sottili di un bisturi moderno. Zenzic v0.6.x ha
-introdotto lo [Shield](../reference/finding-codes.mdx#z201) (rilevamento credenziali), il
-Blood Sentinel (applicazione dell'isolamento path traversal) e il primo output SARIF. Strumenti di
-precisione, forgiati nel fuoco.
-
-## Lo Standard del Quartz
-
-Il quarzo è scelto per v0.7.x perché è il materiale geologico della **misura del tempo di
-precisione**. Gli oscillatori al quarzo sono la base di ogni orologio, ogni ricevitore GPS, ogni
-circuito digitale che deve sapere *esattamente* quando qualcosa accade.
-
-Zenzic v0.7.x porta quello stesso standard all'analisi della documentazione:
-
-- **Codici di finding (`Zxxx`)** — identificatori stabili, leggibili dalle macchine, invarianti per versione
-- **Output SARIF** — compatibile con ogni piattaforma di scansione di sicurezza
-- **Contratto dei codici di uscita** — deterministico, non sopprimibile per gli incidenti di sicurezza
-- **Virtual Site Map** — una proiezione in memoria del sito finale, validata prima di qualsiasi build
-
-Il quarzo non si piega. Il quarzo non mente. Il quarzo ti dice esattamente che ora è.
-
-## Oltre il Quartz
-
-Il Sentiero Minerale continua. Basalt, Grafite e Diamante non sono promesse — sono coordinate.
-Indicano a contributori e utenti che tipo di lavoro ingegneristico ogni ciclo prioritizza. I nomi
-non cambieranno a meno che non cambi la direzione ingegneristica.
-
-Il Sentiero Minerale è anche una dichiarazione su ciò che Zenzic **non** è: un prodotto le cui
-versioni prendono il nome da città, animali o parole chiave di brand arbitrarie. Ogni nome su
-questo percorso ha un referente fisico nella terra. Ogni referente fisico ha proprietà che si
-mappano nel codice.
+I codenames **non** compaiono in:
+- Testo dei tutorial o delle guide how-to (usare il numero di versione)
+- Messaggi di errore o output della CLI (usare il numero di versione)
+- Traduzioni (i codenames sono nomi propri — sempre scritti in inglese)
 
 Se vuoi contribuire a un milestone specifico, il
 [Registro Ingegneristico](/developers/explanation/engineering-ledger) contiene il

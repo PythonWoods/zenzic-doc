@@ -9,7 +9,7 @@ description: "The Deterministic Quality Score — how Zenzic measures, tracks, a
 
 # Health Metrics — Why 100/100 Is the Only Number That Counts
 
-> *"A Safe Harbor must be able to say exactly how solid its pier is."*
+> *"A Exclusion Zone must be able to say exactly how solid its pier is."*
 
 **For your users, a broken link is a lost sale. For your team, a leaked credential is a crisis at midnight.
 For your brand, a score of 97 means three things you haven’t fixed yet.**
@@ -50,7 +50,7 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 [Z601]: ../reference/finding-codes.mdx#z601
 
 :::danger[Security Override]
-If any security finding is detected — Z201 (Shield), Z202, or Z203 (Blood Sentinel) —
+If any security finding is detected — Z201 (credential scanner), Z202, or Z203 (path traversal guard) —
 the Quality Score **collapses to 0/100 unconditionally**. A documentation source that
 is actively leaking a credential cannot receive a Quality Score.
 :::
@@ -198,7 +198,7 @@ same per-code penalty as other scored findings (Z406: 2.0 pts per violation).
 
 ---
 
-## Safe Harbor Guarantee
+## Exclusion Zone Guarantee
 
 When `zenzic score` returns 100/100, it is a formal guarantee that:
 
@@ -211,11 +211,11 @@ When `zenzic score` returns 100/100, it is a formal guarantee that:
 - No unused assets exist (zero Z405)
 - No nav contract violations exist (zero Z406)
 - No obsolete brand references exist (zero Z601)
-- The Shield found no credentials in any file (zero Z201 — implicit, collapses score to 0)
+- The credential scanner found no credentials in any file (zero Z201 — implicit, collapses score to 0)
 
-<SentinelOutput status="success" exitCode={0} />
+<ZenzicOutput status="success" exitCode={0} />
 
-This is the **Sentinel Seal**: the state where the documentation is structurally
+This is the **Zenzic Audit Badge**: the state where the documentation is structurally
 complete, content-clean, and security-verified.
 
 > **Carry the Seal in your README:** once you reach 100/100, run `zenzic score --save`

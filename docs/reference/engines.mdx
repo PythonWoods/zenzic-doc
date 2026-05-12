@@ -63,7 +63,7 @@ If `[build_context]` is absent entirely, Zenzic deterministically discovers the 
 - neither config present, no locales declared → `StandaloneAdapter` (orphan check disabled)
 
 :::info[CLI bridge — Signal-to-noise controls]
-Engine selection and Sentinel verbosity are independent concerns. Use
+Engine selection and report verbosity are independent concerns. Use
 [CLI Commands: Global flags](./cli.mdx#global-flags) to tune policy per run:
 
 1. `--strict` to elevate warnings and enforce external URL validation.
@@ -218,7 +218,7 @@ The Transparent Proxy is Zensical's signature migration feature: if `zensical.to
 reads the MkDocs configuration as a bridge — no manual configuration required.
 
 This means you can adopt Zenzic with the Zensical engine on **day one of migration**, before
-writing a single line of `zensical.toml`. When the bridge activates, the Sentinel banner
+writing a single line of `zensical.toml`. When the bridge activates, Zenzic banner
 notifies you:
 
 ```text

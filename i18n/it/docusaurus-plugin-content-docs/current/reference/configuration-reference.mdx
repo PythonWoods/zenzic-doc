@@ -386,7 +386,7 @@ exit_zero = false
 | `exit_zero` | `bool` | `false` | Quando `true`, `zenzic check all` esce sempre con codice 0 anche quando vengono trovati problemi. I problemi vengono comunque stampati e valutati. Utile per pipeline di sola osservazione |
 
 :::danger[exit_zero non sopprime mai Exit Code 2 e 3]
-L'opzione `exit_zero` non sopprime mai gli exit code di sicurezza. Lo Shield (exit code 2) e il Blood Sentinel (exit code 3) interrompono sempre la pipeline.
+L'opzione `exit_zero` non sopprime mai gli exit code di sicurezza. Il credential scanner (exit code 2) e il path traversal guard (exit code 3) interrompono sempre la pipeline.
 :::
 
 ---

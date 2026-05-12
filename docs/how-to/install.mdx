@@ -27,7 +27,7 @@ The repository ships maintained fixtures that mirror the documented contracts:
 - `examples/i18n-standard/` — strict bilingual gold standard.
 - `examples/zensical-basic/` — Zensical v0.0.31+ baseline (`[project].nav`).
 - `examples/broken-docs/` — intentional failures (exit 1).
-- `examples/security_lab/` — security fixture (Shield exit 2, Blood Sentinel exit 3).
+- `examples/security_lab/` — security fixture (credential scanner exit 2, path traversal guard exit 3).
 
 :::tip[Just want to run it now?]
 
@@ -37,10 +37,10 @@ uvx zenzic check all  # protect your own documentation
 ```
 
 Curious how Zenzic handles Docusaurus v3 versioning or the Zensical transparent proxy?
-Launch `zenzic lab` and watch the Sentinel in action across every supported engine.
+Launch `zenzic lab` and watch Zenzic in action across every supported engine.
 :::
 
-import { SummaryTerminal } from '@site/src/components/SentinelTerminal';
+import { SummaryTerminal } from '@site/src/components/ZenzicTerminal';
 
 <SummaryTerminal />
 
@@ -274,5 +274,5 @@ zenzic check all --engine mkdocs        # force MkDocs adapter
 **Next steps:**
 
 - [CLI Commands reference](../reference/cli.mdx) — every command, flag, and exit code
-- [Advanced features](../reference/advanced-features.mdx) — Reference integrity, Shield, programmatic usage
+- [Advanced features](../reference/advanced-features.mdx) — Reference integrity, credential scanner, programmatic usage
 - [CI/CD Integration](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hooks, baseline management

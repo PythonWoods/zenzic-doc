@@ -101,7 +101,7 @@ Zenzic divides finding codes into two classes: **Suppressible** (the author's in
 | Z601 | BRAND_OBSOLESCENCE | ✅ Yes |
 
 :::danger[The Inviolability Law — CEO-152]
-`zenzic:ignore Z201`, `zenzic:ignore Z202`, and `zenzic:ignore Z203` are **silently rejected**. The Shield and Blood Sentinel scanners operate independently of the suppression engine. Even if a `zenzic:ignore` comment is present on the same line as a credential, Zenzic will still emit the finding and exit with code 2 or 3.
+`zenzic:ignore Z201`, `zenzic:ignore Z202`, and `zenzic:ignore Z203` are **silently rejected**. The credential scanner and path traversal guard operate independently of the suppression engine. Even if a `zenzic:ignore` comment is present on the same line as a credential, Zenzic will still emit the finding and exit with code 2 or 3.
 
 You cannot ignore a breach.
 :::

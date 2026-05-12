@@ -53,7 +53,7 @@ body:has(.zz-homepage) .navbar {
   --obsidian-accent: #0891b2;             /* Cyan profondo — leggibile su sfondo chiaro */
   --obsidian-blood: #991b1b;              /* Rosso mattone tecnico */
 
-  /* ── SentinelWebPalette — CLI semantic color bridge ──
+  /* ── ZenzicWebPalette — CLI semantic color bridge ──
      Dark mode: optical match with CLI terminal.
      Light mode (these defaults): WCAG-calibrated for white backgrounds. */
   --zenzic-brand:   #4f46e5;   /* Indigo — exact CLI match, AA on white */
@@ -93,7 +93,7 @@ body:has(.zz-homepage) .navbar {
   --obsidian-accent: #06b6d4;             /* Cyan elettrico */
   --obsidian-blood: #8b0000;              /* Sangue profondo */
 
-  /* ── SentinelWebPalette — exact CLI terminal match in dark mode ── */
+  /* ── ZenzicWebPalette — exact CLI terminal match in dark mode ── */
   --zenzic-brand:   #4f46e5;
   --zenzic-success: #10b981;
   --zenzic-warning: #f59e0b;
@@ -598,7 +598,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   color: #3f3f46;
 }
 
-/* Blog header — very subtle separation, Sentinel Lead bg */
+/* Blog header — very subtle separation, Zenzic Lead bg */
 [data-theme='dark'] .blog-post-page header,
 [data-theme='dark'] article header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -606,7 +606,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   margin-bottom: 1.5rem;
 }
 
-/* Blog hero/banner background — Sentinel Lead */
+/* Blog hero/banner background — Zenzic Lead */
 [data-theme='dark'] .hero.hero--primary,
 [data-theme='dark'] .blogPostContainer header {
   background: #09090b;
@@ -622,7 +622,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* D107.1: Gradient purged. Black is absolute. Typography is the only light. */
 
-/* ── D111: Transparent Monolith — reveal the Sentinel Lead body ── */
+/* ── D111: Transparent Monolith — reveal Zenzic Lead body ── */
 /* All blog/doc containers become transparent so the single #09090b body surface shows through */
 [data-theme='dark'] .blog-wrapper,
 [data-theme='dark'] .blog-post-page,
@@ -658,9 +658,9 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   text-decoration: none;
 }
 
-/* ── D107: Sentinel Archive Reconstruction — Card Catalogue ── */
+/* ── D107: Zenzic Archive Reconstruction — Card Catalogue ── */
 
-/* Archive page hero — Sentinel Lead bg, no hero--primary noise */
+/* Archive page hero — Zenzic Lead bg, no hero--primary noise */
 [data-theme='dark'] .archive-hero {
   background: #09090b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
