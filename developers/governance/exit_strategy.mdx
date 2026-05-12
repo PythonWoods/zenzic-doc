@@ -16,7 +16,7 @@ sidebar_label: "The Sovereignty Oath"
 
 Zenzic makes one unconditional promise: **it will never hold your codebase hostage.**
 
-To ensure the integrity of the Safe Harbor, Zenzic's audit core is strictly read-only.
+To ensure the integrity of the Privacy Gate, Zenzic's audit core is strictly read-only.
 We believe that a linter should never be a source of unintended mutations. Any future
 remediation features will be implemented as explicit, interactive utilities
 (e.g. `zenzic fix`), keeping the analysis phase 100% mutation-free.
@@ -122,7 +122,7 @@ Or, if running directly:
 ```yaml title=".github/workflows/docs.yml"
 # Delete this block
 
-- name: Zenzic Sentinel
+- name: Zenzic
 
   run: uvx zenzic check all
 ```

@@ -1,7 +1,7 @@
 ---
 sidebar_label: "ADR 007: Sovereign Sandbox"
 sidebar_position: 3
-description: "ADR 007: The Blood Sentinel guards escapes FROM the target, not the location OF the target."
+description: "ADR 007: The path traversal guards escapes FROM the target, not the location OF the target."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -19,7 +19,7 @@ description: "ADR 007: The Blood Sentinel guards escapes FROM the target, not th
 
 When a user runs `zenzic check all /path/to/target`, Zenzic must establish two
 boundaries: the **analysis root** (what to scan) and the **perimeter** (what
-links are permitted to resolve to). The Blood Sentinel (`Z202`, `Z203`) enforces
+links are permitted to resolve to). The path traversal guard (`Z202`, `Z203`) enforces
 the perimeter — it detects links that escape the documentation sandbox.
 
 The early implementation had a geometric bug: it anchored the perimeter to the
@@ -34,14 +34,14 @@ zenzic check all /home/user/repo-b/docs
 Zenzic would compute `repo_root = /home/user/repo-a`, then classify any link in
 `repo-b/docs` that resolved outside `/home/user/repo-a` as a path traversal
 attempt — even though the user explicitly specified `repo-b/docs` as the analysis
-target. The Blood Sentinel was firing on legitimate cross-project invocations.
+target. The path traversal guard was firing on legitimate cross-project invocations.
 
 ---
 
 ## Decision
 
 **The explicit `PATH` argument provided by the user is the sovereign sandbox
-root.** Blood Sentinel guards escapes **from** the target, not the location
+root.** path traversal guards escapes **from** the target, not the location
 **of** the target.
 
 Implementation: after computing `docs_root` from the user-provided path, if
@@ -72,7 +72,7 @@ intent unambiguously. The tool must respect that intent. Overriding an explicit
 argument with an implicit context-derived boundary is a **violation of the
 Principle of Least Surprise**.
 
-### 2. The Blood Sentinel's Correct Domain
+### 2. The Path Traversal Guard's Correct Domain
 
 Z202 (`PATH_TRAVERSAL`) was designed to catch Markdown authors who write links
 like `[config](../../../etc/passwd)` attempting to escape the documentation
@@ -95,7 +95,7 @@ Without this fix, such a setup was impossible.
 
   is provided and that path falls outside the CWD repo root.
 
-- Blood Sentinel (`Z202`/`Z203`) remains unconditionally active within the
+- path traversal guard (`Z202`/`Z203`) remains unconditionally active within the
 
   sovereign sandbox. No path traversal is permitted inside the declared target.
 

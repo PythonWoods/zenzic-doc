@@ -204,7 +204,7 @@ plugins = ["no-internal-hostname"]
 
 Only plugins listed here will be loaded.  Installing a package that registers
 rules under `zenzic.rules` without listing it in `plugins` has no effect —
-this is intentional **Safe Harbor** behaviour: you always know exactly which
+this is intentional **Privacy Gate** behaviour: you always know exactly which
 rules are active in your project.
 
 ---
@@ -290,7 +290,7 @@ refuses to start.  Fix the rule before running Zenzic.
 - [ ] Plugin ID listed in the project's `zenzic.toml` under `plugins`.
 
 :::info[Next Steps]
- Bridge your rule from implementation to production Sentinel flow:
+ Bridge your rule from implementation to production Zenzic flow:
 
  1. Register and enable the plugin ID in `zenzic.toml` under `plugins`
 

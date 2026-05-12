@@ -22,7 +22,7 @@ Docusaurus adapter. It detected when a file declared in `docusaurus.config.ts`
 (favicon, Open Graph image, custom CSS) did not exist on disk.
 
 This created a structural contradiction: Zenzic's public claim is that it is a
-**Safe Harbor for all documentation engines**. Offering a config-asset integrity
+**Privacy Gate for all documentation engines**. Offering a config-asset integrity
 check only to Docusaurus users violated this claim. An MkDocs project declaring
 a `theme.favicon` that pointed to a non-existent file would receive no
 diagnostic — a silent gap in the safety perimeter.
@@ -46,9 +46,9 @@ core engine invokes `check_config_assets()` uniformly across all adapters.
 
 ## Rationale
 
-### 1. Safe Harbor Means All Ports
+### 1. Privacy Gate Means All Ports
 
-A harbor that is safe only for Docusaurus ships is not a Safe Harbor — it is a
+A gate that works only for Docusaurus ships is not a Privacy Gate — it is a
 **branded harbor with a size restriction**. The moment a check is engine-specific
 without a technical reason, it signals to contributors that engine parity is
 optional. That signal compounds over releases.

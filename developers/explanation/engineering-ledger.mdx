@@ -13,7 +13,7 @@ description: "The three architectural pillars of Zenzic v0.7.0 — Zero Assumpti
 > Zenzic works for documented reasons. This page is the proof."*
 
 This page is the technical manifesto behind every decision that makes Zenzic v0.7.0
-reliable enough to be called a **Safe Harbor**. It belongs in the Developer quadrant
+reliable enough to be called a **Privacy Gate**. It belongs in the Developer quadrant
 because the user does not need to know this to be protected — but the contributor
 must understand it to extend the system without breaking the contract.
 
@@ -118,8 +118,8 @@ Zenzic is a principled tool, not a heuristic scanner:
 |:---:|---|:---:|
 | `0` | All checks passed — documentation is clean | — |
 | `1` | Quality findings (broken links, orphans, placeholders, etc.) | ✅ `--exit-zero` |
-| `2` | **Shield — credential detected (Z201)** | ❌ **Never** |
-| `3` | **Blood Sentinel — path traversal / fatal (Z202/Z203)** | ❌ **Never** |
+| `2` | **Credential scanner — credential detected (Z201)** | ❌ **Never** |
+| `3` | **Path traversal guard — path traversal / fatal (Z202/Z203)** | ❌ **Never** |
 
 Exit codes 2 and 3 are enforced at the CLI layer (`cli/_check.py`) before any
 `--exit-zero` flag is consulted. The check is not conditional — it is structurally prior.

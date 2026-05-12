@@ -62,7 +62,7 @@ Zenzic utilizza exit code per comunicare la severità attraverso pipeline CI/CD:
 
 * **Exit 0:** Tutti i check passati (o soppressi via `--exit-zero`).
 * **Exit 1:** Errori e warning rilevati; usa `--strict` per promuovere warning.
-* **Exit 2:** Violazioni di sicurezza (Z201 SHIELD_SECRET) o termini proibiti rilevati (Z204 FORBIDDEN_TERM). **Mai** soppressi.
+* **Exit 2:** Violazioni di sicurezza (Z201 CREDENTIAL_SECRET) o termini proibiti rilevati (Z204 FORBIDDEN_TERM). **Mai** soppressi.
 * **Exit 3:** Incidenti di sicurezza rilevati (Z203 PATH_TRAVERSAL_FATAL). **Mai** soppressi, anche con `--exit-zero`.
 
 ---
@@ -296,7 +296,7 @@ Z107 conta verso la categoria **Integrità Strutturale** a severità `warning`. 
 
 ## Z2xx — Sicurezza (credential scanner)
 
-### Z201: SHIELD_SECRET {#z201}
+### Z201: CREDENTIAL_SECRET {#z201}
 
 :::danger[Punteggio di Qualità — Override di Sicurezza]
 Quando viene rilevato un finding Z201, Z202, Z203 o Z204, il [Punteggio di Qualità Deterministico](../explanation/health-metrics.mdx) crolla a **0/100** incondizionatamente. Una sorgente documentale che perde credenziali o termini proibiti non può ricevere un punteggio di qualità.

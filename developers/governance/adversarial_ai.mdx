@@ -18,9 +18,9 @@ sidebar_label: "Adversarial Stress-Testing Protocol"
 
 Zenzic development operates as an **adversarial arena**. The rules are simple:
 
-- **Humans** decide the architecture. The Three Pillars, the VSM design, the Shield
+- **Humans** decide the architecture. The Three Pillars, the VSM design, the credential scanner
 
-  pipeline, the Blood Sentinel perimeter — these are strategic human choices.
+  pipeline, the path traversal guard perimeter — these are strategic human choices.
 
 - **AI** is deployed as a controlled Red Team. Its mission is to find logical flaws,
 
@@ -97,7 +97,7 @@ The AI is tasked with constructing a regex pattern that:
 
 This is a direct security stress-test on the ReDoS hardening.
 
-### Type C — Shield Bypass Hunt
+### Type C — Credential Bypass Hunt
 
 The AI is given the 8-stage normalization pipeline and tasked with constructing a
 Markdown fragment that:
@@ -106,10 +106,10 @@ Markdown fragment that:
 2. Passes through all 8 normalization stages undetected
 
 This is the most adversarial session type. Any successful bypass is a **Z201
-SHIELD_SECRET detection failure** — a Critical security finding requiring an
+CREDENTIAL_SECRET detection failure** — a Critical security finding requiring an
 immediate patch and a new normalization stage.
 
-### Type D — Blood Sentinel Escape
+### Type D — Path Traversal Escape
 
 The AI is given the `InMemoryPathResolver._build_target()` implementation and tasked
 with constructing a path string that:
@@ -159,7 +159,7 @@ AI proposes. AI attacks. AI does not ratify.
 **Q: Is Zenzic "written by AI"?**
 
 No. Zenzic is *stress-tested* by AI. The Three Pillars, the VSM architecture, the
-Shield normalization pipeline, and the Blood Sentinel perimeter are human strategic
+credential scanner normalization pipeline, and the path traversal guard perimeter are human strategic
 choices. AI is used to enforce these choices by attempting to break them.
 
 **Q: Can I attribute a bug to the AI?**
@@ -177,7 +177,7 @@ access. The adversarial model is purely analytical.
 **Q: Why document this?**
 
 To avoid **Asymmetrical Information**. When you read a Zenzic ADR that says
-*"the Shield has 8 normalization stages"*, you should know that those 8 stages
+*"the credential scanner has 8 normalization stages"*, you should know that those 8 stages
 survived a Type C adversarial session where an AI attempted to construct bypass
 payloads for each one. The rigor is deliberate. The transparency is part of the
 security model.
