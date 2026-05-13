@@ -140,20 +140,18 @@ chiamato **Fallback Genesis**.
 
 **Ambito di autorizzazione:** Il Fallback Genesis è un'esenzione a punto
 singolo. Solo il comando `init` passa `fallback_to_cwd=True`. Ogni altro
-comando (`check`, `scan`, `score`, `serve`, `clean`) mantiene il default
+comando (`check`, `guard`, `score`, `diff`, `clean`) mantiene il default
 rigoroso (`fallback_to_cwd=False`) e continuerà a fallire esplicitamente
 fuori da un perimetro di progetto.
 
 ```python
-# src/zenzic/cli.py — l'unico call site autorizzato per fallback_to_cwd=True
-@app.command()
-def init(plugin=None, force=False):
+# src/zenzic/cli/_standalone.py — l'unico call site autorizzato per fallback_to_cwd=True
+def init(path=None, plugin=None, force=False):
     repo_root = find_repo_root(fallback_to_cwd=True)  # Fallback Genesis
     ...
 
 # Tutti gli altri comandi — applicazione rigorosa del perimetro
-@app.command()
-def check(target=None, strict=False):
+def check_all(path=None, strict=False):
     repo_root = find_repo_root()  # solleva fuori da un repo — corretto
     ...
 ```
@@ -169,7 +167,7 @@ perimetro da zero.
 ## Riferimenti
 
 - `src/zenzic/core/scanner.py` — implementazione di `find_repo_root()`
-- `src/zenzic/cli.py` — comando `init`, unico consumatore di `fallback_to_cwd=True`
+- `src/zenzic/cli/_standalone.py` — comando `init`, unico consumatore di `fallback_to_cwd=True`
 - `tests/test_scanner.py` — `test_find_repo_root_genesis_fallback`,
 
   `test_find_repo_root_genesis_fallback_still_raises_without_flag`

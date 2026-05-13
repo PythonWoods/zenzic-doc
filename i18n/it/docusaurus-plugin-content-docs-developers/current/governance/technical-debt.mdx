@@ -63,9 +63,9 @@ Il controllo è concettualmente diretto ma architetturalmente costoso:
 
 #### Cosa faremo nella v0.8.0
 
-La sede naturale di questo controllo è un comando separato — nome
-proposto `zenzic inspect config` — che audita i file di configurazione
-end-to-end: voci di allowlist non referenziate, pattern `excluded_dirs`
+La sede naturale di questo controllo è una superficie dedicata di audit
+configurazione all'interno della famiglia di introspezione esistente
+(oggi: `zenzic config explain`): voci di allowlist non referenziate, pattern `excluded_dirs`
 contraddittori, chiavi deprecate, ecc. Questo separa il **lint dei
 contenuti** (pass del validator) dall'**audit della configurazione**
 (pass dell'inspector) e mantiene puri entrambi i pass.

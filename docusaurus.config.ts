@@ -209,7 +209,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.8.0. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
     },
     prism: {
       theme: prismThemes.github,

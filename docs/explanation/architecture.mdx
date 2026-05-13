@@ -409,13 +409,13 @@ flowchart LR
     CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
     CONSTRUCT_STD --> HAS_CONFIG
     HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| VANILLA["Fallback: StandaloneAdapter()"]
-    EP -->|Not found| VANILLA
-    VANILLA --> STORE
+    HAS_CONFIG -->|No| STANDALONE["Fallback: StandaloneAdapter()"]
+    EP -->|Not found| STANDALONE
+    STANDALONE --> STORE
 
     style CACHE fill:#3b82f6,color:#fff
     style STORE fill:#22c55e,color:#fff
-    style VANILLA fill:#f59e0b,color:#fff
+    style STANDALONE fill:#f59e0b,color:#fff
 
 ```
 
@@ -737,8 +737,12 @@ src/zenzic/cli/
 ├── _shared.py        # Visual State Guardian: console singleton, _ui singleton, utilities
 ├── _check.py         # check_app sub-app + 7 check commands
 ├── _clean.py         # clean_app sub-app + clean assets
+├── _config_explain.py # explain command + config introspection surface
+├── _governance.py    # config_app sub-app + governance profile commands
+├── _guard.py         # guard_app sub-app + secret-guard scan/init commands
 ├── _inspect.py       # inspect_app sub-app + capabilities command
 ├── _lab.py           # lab command — interactive example showcase
+├── _metadata.py      # SSOT for top-level command metadata and help panels
 └── _standalone.py    # score, diff, init commands
 
 ```

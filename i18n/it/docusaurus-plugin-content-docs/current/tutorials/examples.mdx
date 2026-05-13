@@ -148,7 +148,7 @@ Mostra come puntare Zenzic a una directory docs che differisce dal default `docs
 **Motore:** `standalone`
 **Uscita attesa:** 0
 
-Dimostra come limitare `zenzic check links` a un singolo file specifico usando il flag `--target`. Utile per hook pre-commit che devono controllare solo i file modificati.
+Dimostra come limitare `zenzic check links` a un singolo file specifico usando l'argomento posizionale `PATH` (per esempio: `zenzic check links docs/pagina.md`). Utile per hook pre-commit che devono controllare solo i file modificati.
 
 ---
 
@@ -183,7 +183,7 @@ Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimen
 Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema credential scanner.
 
 :::danger[Questo esempio esce con codice 2 per design]
-`security_lab` contiene credenziali sintetiche posizionate intenzionalmente per i test delil credential scanner. **Non** interpretare il codice di uscita 2 di questo esempio come un vero incidente di sicurezza. Per verificare che il credential scanner funzioni, esegui: `cd examples/security_lab && zenzic check all; echo $?` e conferma che l'output sia `2`.
+`security_lab` contiene credenziali sintetiche posizionate intenzionalmente per i test del credential scanner. **Non** interpretare il codice di uscita 2 di questo esempio come un vero incidente di sicurezza. Per verificare che il credential scanner funzioni, esegui: `cd examples/security_lab && zenzic check all; echo $?` e conferma che l'output sia `2`.
 :::
 
 ---
@@ -200,7 +200,7 @@ Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il lin
 | Bilingue / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
 | Esclusione VCS-aware (L1–4) | [vcs-aware-project](#vcs-aware) |
 | `docs_dir` personalizzata | [custom-dir-target](#custom-dir) |
-| Singolo file `--target` | [single-file-target](#single-file) |
+| Scope `PATH` su singolo file | [single-file-target](#single-file) |
 | Plugin di regole custom | [plugin-scaffold-demo](#plugin-scaffold) |
 | Come appaiono i fallimenti | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
 | Rilevamento credenziali | [security_lab](#security-lab) |

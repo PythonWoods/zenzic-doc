@@ -130,20 +130,18 @@ When `fallback_to_cwd=True` and no root marker is found, the function returns
 
 **Authorisation scope:** The Genesis Fallback is a single-point exemption.
 Only the `init` command passes `fallback_to_cwd=True`. Every other command
-(`check`, `scan`, `score`, `serve`, `clean`) retains the strict default
+(`check`, `guard`, `score`, `diff`, `clean`) retains the strict default
 (`fallback_to_cwd=False`) and will continue to fail loudly outside a project
 scan scope.
 
 ```python
-# src/zenzic/cli.py — the only permitted call site for fallback_to_cwd=True
-@app.command()
-def init(plugin=None, force=False):
+# src/zenzic/cli/_standalone.py — the only permitted call site for fallback_to_cwd=True
+def init(path=None, plugin=None, force=False):
     repo_root = find_repo_root(fallback_to_cwd=True)  # Genesis Fallback
     ...
 
 # Every other command — strict scan scope enforcement
-@app.command()
-def check(target=None, strict=False):
+def check_all(path=None, strict=False):
     repo_root = find_repo_root()  # raises outside a repo — correct
     ...
 ```
@@ -159,7 +157,7 @@ scratch.
 ## References
 
 - `src/zenzic/core/scanner.py` — `find_repo_root()` implementation
-- `src/zenzic/cli.py` — `init` command, sole consumer of `fallback_to_cwd=True`
+- `src/zenzic/cli/_standalone.py` — `init` command, sole consumer of `fallback_to_cwd=True`
 - `tests/test_scanner.py` — `test_find_repo_root_genesis_fallback`,
 
   `test_find_repo_root_genesis_fallback_still_raises_without_flag`

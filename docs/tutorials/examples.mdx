@@ -148,7 +148,7 @@ Shows how to point Zenzic at a docs directory that differs from the default `doc
 **Engine:** `standalone`
 **Expected exit:** 0
 
-Demonstrates scoping `zenzic check links` to one specific file using the `--target` flag. Useful for pre-commit hooks that only need to check changed files.
+Demonstrates scoping `zenzic check links` to one specific file using the positional `PATH` argument (for example: `zenzic check links docs/page.md`). Useful for pre-commit hooks that only need to check changed files.
 
 ---
 
@@ -200,7 +200,7 @@ Intentionally triggers the credential scanner (credential detection) and the lin
 | Bilingual / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
 | VCS-aware exclusion (L1–4) | [vcs-aware-project](#vcs-aware) |
 | Custom `docs_dir` | [custom-dir-target](#custom-dir) |
-| Single-file `--target` | [single-file-target](#single-file) |
+| Single-file `PATH` scope | [single-file-target](#single-file) |
 | Custom rule plugin | [plugin-scaffold-demo](#plugin-scaffold) |
 | What failures look like | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
 | credential scanner detection | [security_lab](#security-lab) |

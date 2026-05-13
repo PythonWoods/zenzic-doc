@@ -382,13 +382,13 @@ flowchart LR
     CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
     CONSTRUCT_STD --> HAS_CONFIG
     HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| VANILLA["Fallback: StandaloneAdapter()"]
-    EP -->|Not found| VANILLA
-    VANILLA --> STORE
+    HAS_CONFIG -->|No| STANDALONE["Fallback: StandaloneAdapter()"]
+    EP -->|Not found| STANDALONE
+    STANDALONE --> STORE
 
     style CACHE fill:#3b82f6,color:#fff
     style STORE fill:#22c55e,color:#fff
-    style VANILLA fill:#f59e0b,color:#fff
+    style STANDALONE fill:#f59e0b,color:#fff
 ```
 
 La factory `get_adapter` segue un protocollo di costruzione a due fasi:
@@ -749,7 +749,12 @@ src/zenzic/cli/
 ├── _shared.py        # Custode dello Stato Visivo: singleton console, singleton _ui, utility
 ├── _check.py         # sub-app check_app + 7 comandi check
 ├── _clean.py         # sub-app clean_app + pulizia asset
-├── _plugins.py       # sub-app plugins_app + lista plugin
+├── _config_explain.py # comando explain + superficie introspezione configurazione
+├── _governance.py    # sub-app config_app + comandi profili governance
+├── _guard.py         # sub-app guard_app + comandi secret-guard scan/init
+├── _inspect.py       # sub-app inspect_app + comando capabilities
+├── _lab.py           # comando lab — showcase interattivo esempi
+├── _metadata.py      # SSOT dei metadati top-level comandi e pannelli help
 └── _standalone.py    # comandi score, diff, init
 ```
 
