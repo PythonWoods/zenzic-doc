@@ -44,7 +44,7 @@ npm ci
 Install the pre-commit hooks (run once after cloning):
 
 ```bash
-uvx pre-commit install               # commit-stage: hygiene + typecheck + zenzic sentinel
+uvx pre-commit install               # commit-stage: hygiene + typecheck + zenzic
 uvx pre-commit install -t pre-push   # pre-push: 🛡️ Final Guard runs `just verify`
 ```
 
@@ -77,7 +77,7 @@ i18n/
 blog/                 ← Zenzic Blog engineering posts
 src/
   components/         ← React components (Icon, Homepage sections)
-  css/custom.css      ← Obsidian visual system (do not edit without CEO approval)
+  css/custom.css      ← design system (do not edit without CEO approval)
 static/               ← Static files served verbatim
 ```
 
@@ -194,7 +194,7 @@ This allows you to perform global searches across all repositories simultaneousl
 
 ## 404 Emergency Protocol (Sovereign Override)
 
-If Sentinel fails on a pre-launch external URL (HTTP 404), do not disable external checks globally.
+If Zenzic fails on a pre-launch external URL (HTTP 404), do not disable external checks globally.
 Apply a surgical runtime exclusion with `ZENZIC_EXTRA_ARGS`:
 
 ```bash
@@ -232,7 +232,7 @@ The repository enforces quality automatically on every `git commit`:
 | end-of-file-fixer | Files end with a newline |
 | check-yaml / check-json / check-toml | Valid structured data |
 | TypeScript Typecheck | `tsc --noEmit` must pass |
-| Zenzic Sentinel | `zenzic check all` must exit 0 |
+| Zenzic | `zenzic check all` must exit 0 |
 | REUSE/SPDX | All files have licence information |
 
 If a hook fails, fix the reported issue and retry the commit.

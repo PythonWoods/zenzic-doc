@@ -109,7 +109,7 @@ repositories in sequence. There is no "context hijacking" — each analysis is f
 
 ---
 
-## The Quartz Break
+## The v0.7.0 Scoring Model
 
 Zenzic v0.7.0 introduced a scoring model that is **not backward-compatible** with v0.6.x
 baselines.
@@ -118,7 +118,7 @@ The v0.6.x model used a uniform decay rate: five issues in any category zeroed t
 category regardless of severity. It punished volume, not severity. A single broken link and
 fifty broken links produced proportionally different — but not meaningfully different — scores.
 
-The **Quartz Penalty Scorer** (D092) replaces this with a per-code penalty table:
+The **Zenzic Penalty Scorer** (D092) replaces this with a per-code penalty table:
 
 | Category | Weight | Example codes |
 |---|---|---|
@@ -135,7 +135,7 @@ If you have a v0.6.x snapshot file (`.zenzic-score.json`), Zenzic v0.7.0 will re
 load it and ask you to create a new baseline. This is intentional. Comparing apples to
 oranges is worse than having no comparison at all.
 
-Run `zenzic score --save` once to establish a Quartz Maturity baseline.
+Run `zenzic score --save` once to establish a Zenzic baseline.
 
 ---
 

@@ -415,7 +415,7 @@ The `[build_context]` table tells Zenzic which documentation engine produced the
 
 Build engine identifier. Used by the adapter factory to select the correct path-resolution strategy. Built-in adapters: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
 
-When set to `"auto"` (the default), Zenzic probes the project root at runtime using **Quartz Auto-Discovery**, scanning for engine config files in priority order:
+When set to `"auto"` (the default), Zenzic probes the project root at runtime using **engine auto-discovery**, scanning for engine config files in priority order:
 
 1. `zensical.toml` → `zensical`
 2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
@@ -554,7 +554,7 @@ brand_obsolescence = [
 ]
 ```
 
-**Pattern matching:** case-sensitive whole-word scan. The term `"Shield"` does not match `"ShieldCheck"` or `"shields.io"`.
+**Pattern matching:** case-sensitive whole-word scan. The term `"Deprecated"` does not match `"DeprecatedFeature"` or `"deprecated"`.
 
 **Scope:** applies to all files within the active `docs_dir` scan scope, subject to the standard exclusion hierarchy.
 

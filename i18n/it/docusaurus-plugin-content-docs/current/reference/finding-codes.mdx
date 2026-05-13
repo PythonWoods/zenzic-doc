@@ -459,7 +459,7 @@ Z403 è un **avviso di accessibilità**. Non riduce il [Punteggio di Qualità De
 :::
 
 * **Severità:** `warning`
-* **Contesto Tecnico:** Le immagini senza testo alternativo sono invisibili agli screen reader e peggiorano la SEO. Zenzic impone l'accessibilità come pilastro fondamentale della "Maturità Quartz".
+* **Contesto Tecnico:** Le immagini senza testo alternativo sono invisibili agli screen reader e peggiorano la SEO. Zenzic impone l'accessibilità come pilastro fondamentale degli standard di qualità Zenzic.
 * **Passaggi di Rimedio:**
     1. Aggiungi testo descrittivo tra le parentesi quadre: `![Una descrizione dell'immagine](url)`.
     2. Evita testi generici come "immagine" o "screenshot".
@@ -649,12 +649,12 @@ L’obsolescenza del brand è una metrica chiave della maturità della documenta
     code: "Z601",
     file: "docs/explanation/architecture.mdx",
     line: 12,
-    message: "Termine di brand obsoleto 'Obsidian': usa 'Quartz'. Aggiungi <!-- zenzic:ignore Z601 --> (Markdown) o {/* zenzic:ignore Z601 */} (MDX) alla riga per sopprimere i riferimenti storici intenzionali."
+    message: "Termine di brand obsoleto 'OldRelease': aggiorna all'identificatore di release corrente. Aggiungi <!-- zenzic:ignore Z601 --> (Markdown) o {/* zenzic:ignore Z601 */} (MDX) alla riga per sopprimere i riferimenti storici intenzionali."
   }]}
 />
 
 * **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "Quartz"`) e `brand_obsolescence` elenca gli identificatori di release precedenti (es. `brand_obsolescence = ["Obsidian", "Obsidian"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z601. Le righe con un commento `zenzic:ignore Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z601 -->` nei file ``.md`` e `{/* zenzic:ignore Z601 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
+* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato tramite `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "CurrentRelease"`) e `brand_obsolescence` elenca gli identificatori di release precedenti (es. `brand_obsolescence = ["OldRelease"]`), ogni occorrenza di un termine elencato in un file scansionato genera Z601. Le righe con un commento `zenzic:ignore Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore Z601 -->` nei file ``.md`` e `{/* zenzic:ignore Z601 */}` nei file ``.mdx``. I file che corrispondono a `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono completamente esenti.
 * **Passaggi di Rimedio:**
     1. Aggiorna il testo per usare il nome della release corrente.
     2. Per i riferimenti storici intenzionali in file ``.md``, aggiungi `<!-- zenzic:ignore Z601 -->` alla riga.

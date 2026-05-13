@@ -131,22 +131,22 @@ documentation engine:
 ```mermaid
 flowchart LR
     classDef source  fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
-    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef credentials fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
     classDef adapter fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
     classDef vsm     fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#e2e8f0
     classDef engine  fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#e2e8f0
     classDef output  fill:#0f172a,stroke:#dc2626,stroke-width:2px,color:#e2e8f0
 
     S["📄 Source\n.md / .mdx files\nzenzic.toml"]:::source
-    SH["🛡️ Credential Scanner IO\nsafe_read_line()\nShieldViolation → Exit 2"]:::shield
+    CRED["🛡️ Credential Scanner IO\nsafe_read_line()\nCredentialViolation → Exit 2"]:::credentials
     M["📦 Metadata\nbuild_metadata_cache()\nFileMetadata\n(slug · draft · tags)"]:::adapter
     A["🔌 Adapter\nget_route_info()\nRouteMetadata\n(URL · status · proxy)"]:::adapter
     V["🗺️ Virtual Site Map\nURL → Route\n(status · anchors)"]:::vsm
     R["⚙️ Rule Engine\nBuilt-in checks\nCustom Rules DSL\nPlugin rules"]:::engine
     F["📋 Findings\nIntegrityReport\nRuleFindings\nExit code"]:::output
 
-    S -->|"read files"| SH
-    SH -->|"clean lines"| M
+    S -->|"read files"| CRED
+    CRED -->|"clean lines"| M
     M -->|"FileMetadata"| A
     S -->|"get_adapter()"| A
     A -->|"RouteMetadata"| V
@@ -160,7 +160,7 @@ from disk. No HTML build required.
 
 **Credential Scanner IO** — Every frontmatter line passes through `safe_read_line()`
 before any parser sees it. If a credential pattern matches (OpenAI key,
-GitHub token, AWS key, etc.), Zenzic raises `ShieldViolation` and aborts
+GitHub token, AWS key, etc.), Zenzic raises `CredentialViolation` and aborts
 with Exit 2 — the line is never stored or parsed. This makes the credential scanner an
 IO middleware: it sits between disk reads and metadata extraction.
 
@@ -283,20 +283,15 @@ requiring months of reverse-engineering.
 
 ---
 
-## Why "Quartz Clarity" {#naming}
+## The Design Philosophy {#philosophy}
 
-Quartz is crystalline silica — formed under extreme heat and pressure, perfectly transparent,
-and among the hardest minerals on Earth. Ancient civilisations used it to carve lenses and
-instruments of precision because nothing else could match its clarity under light.
+Zenzic is built around three core properties: **transparent** (deterministic, reproducible,
+source-only analysis), **hard** (non-suppressible security gates, strict mode by default in CI),
+and **precise** (zero false positives as the design target, not the marketing claim).
 
-Zenzic aspires to be quartz: transparent (deterministic, reproducible, source-only), hard
-(non-suppressible security gates, strict mode by default in CI), and precise (zero false
-positives as the design target, not the marketing claim).
-
-The name is also a reminder: clarity is fragile if you stop earning it. A quality tool that
-cannot be trusted is worse than no tool at all. Every design decision in Zenzic is made with
-this in mind — the tool must earn the right to interrupt a developer's workflow by being
-unfailingly correct when it does.
+These properties are not aspirational — they are constraints enforced at the architecture level.
+Every design decision in Zenzic is made with this triad in mind: the tool must earn the right to
+interrupt a developer's workflow by being unfailingly correct when it does.
 
 ---
 

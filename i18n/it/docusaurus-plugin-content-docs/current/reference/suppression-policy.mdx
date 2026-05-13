@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: "Politica di Soppressione"
-description: "Il Manifesto della Soppressione Zenzic — sintassi ignore per riga, codici inviolabili e interazione con la modalità --strict."
+description: "Il Manifesto della Soppressione Zenzic — tre livelli di soppressione, formula del Technical Debt, codici inviolabili e override --audit."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,15 +9,32 @@ description: "Il Manifesto della Soppressione Zenzic — sintassi ignore per rig
 
 # Politica di Soppressione
 
-> *"I finding di sicurezza sono fatti, non suggerimenti. Puoi ignorare lo stile, ma non puoi ignorare una breccia."*
+> *"Una soppressione non è una cancellazione. È un'assunzione di responsabilità."*
 
-Il sistema di soppressione di Zenzic permette agli autori di dichiarare **eccezioni validate** — deviazioni intenzionali che non sono difetti. È uno strumento di precisione, non una via di fuga.
+Il sistema di soppressione di Zenzic permette ai team di dichiarare **eccezioni validate** — deviazioni intenzionali che non sono difetti. È uno strumento di governance di precisione, non una via di fuga. Ogni soppressione viene registrata, verificata e **costa punti nel Quality Score**.
 
 ---
 
-## Sintassi di Soppressione per Riga {#syntax}
+## I Tre Livelli di Soppressione {#levels}
 
-La soppressione è **format-aware** e opera a livello di riga. Aggiungi un commento alla fine della riga che genera il finding:
+Zenzic offre tre livelli di soppressione, dal più preciso al più ampio.
+Sono progettati per essere combinati: un progetto ben governato usa ciascun livello per il suo scopo specifico.
+
+| Livello | Meccanismo | Ambito | Audit Trail | Costo Score |
+| :--- | :--- | :--- | :---: | :---: |
+| **1. Inline** | Commento `<!-- zenzic:ignore ZXXX -->` | Singola riga | ✅ Sì | 1 pt/soppressione |
+| **2. Per-file** | `governance.per_file_ignores` nel TOML | Glob di file | ✅ Sì | 1 pt/voce |
+| **3. Exclusion Zone** | `excluded_dirs` / `excluded_file_patterns` | Directory o pattern | ❌ No | 0 pt |
+
+:::warning[Le Exclusion Zone sono silenziose]
+I file nelle exclusion zone sono completamente invisibili a Zenzic. Non vengono emessi finding, non viene mantenuto nessun audit trail e non viene registrato alcun impatto sul punteggio. Usa le exclusion zone solo per asset genuinamente non documentali (output di build, file di terze parti). Per eccezioni intenzionali nella documentazione, usa il Livello 1 o il Livello 2 — mantengono vivo l'audit trail.
+:::
+
+---
+
+## Livello 1 — Soppressione Inline {#inline}
+
+La soppressione più precisa: un commento, una riga, un finding.
 
 **File Markdown (`.md`):**
 
@@ -31,7 +48,7 @@ Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
 Quartz era precedentemente noto come Obsidian. {/* zenzic:ignore Z601 */}
 ```
 
-Entrambe le forme di commento sono invisibili nell'output renderizzato: i processori Markdown trattano i commenti HTML come non-renderizzati, e Docusaurus/React tratta `{/* */}` come spazio bianco JSX. La distinzione è importante: usare il tipo di commento sbagliato nel formato di file sbagliato farà sì che la soppressione venga silenziosamente ignorata.
+Entrambe le forme di commento sono invisibili nell'output renderizzato. La distinzione è importante: usare il tipo di commento sbagliato nel formato di file sbagliato farà sì che la soppressione venga silenziosamente ignorata.
 
 Per sopprimere **più codici sulla stessa riga**, aggiungi un commento per ogni codice:
 
@@ -41,32 +58,80 @@ Alcune riga. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
 
 ### Posizione Raccomandata: Trailing (In Coda)
 
-Il commento dovrebbe trovarsi sempre **alla fine della riga** (o alla fine della cella nelle tabelle Markdown), dopo tutto il contenuto. Questo segue la convenzione industriale stabilita da `# noqa` (Python), `// eslint-disable-line` (JavaScript) e `// lint:ignore` (Go).
-
-**Prosa / liste:** Commento alla fine assoluta della riga.
+Il commento dovrebbe trovarsi sempre **alla fine della riga**, seguendo la convenzione industriale stabilita da `# noqa` (Python), `// eslint-disable-line` (JavaScript) e `// lint:ignore` (Go).
 
 ```mdx
-- **Riferimento storico** — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
+- Riferimento storico — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
 ```
 
-**Tabelle Markdown:** Commento alla fine dell'**ultima cella**, prima del pipe di chiusura.
+---
 
-```md
-| [Sezione](#sezione) | Descrizione di questa sezione. <!-- zenzic:ignore Z107 --> |
+## Livello 2 — Soppressione Per-File {#per-file}
+
+Silenzia una regola per un intero glob di file senza aggiungere commenti inline al sorgente.
+Usalo per le pagine in cui le eccezioni intenzionali sono strutturalmente necessarie (guide legacy, documentazione di migrazione).
+
+Aggiungi una tabella `[governance.per_file_ignores]` al tuo `zenzic.toml`:
+
+```toml
+[governance.per_file_ignores]
+"docs/migration/**"  = ["Z601"]  # riferimenti brand intenzionali nel contesto di migrazione
+"docs/legacy/*.md"   = ["Z101"]  # link rotti noti verso sistemi dismessi
 ```
 
-:::tip[Perché trailing?]
-Positionare `zenzic:ignore` alla fine della riga:
+La chiave della mappa è un glob relativo a `docs_dir`. Ogni voce nell'elenco è una soppressione, conteggiata nel totale del Technical Debt.
 
-1. **Separa contenuto da istruzione** — il messaggio per l'utente non viene interrotto.
-2. **Abilita la scansione visiva** — scorri il bordo destro di un file per vedere tutte le soppressioni attive.
-3. **Evita la rottura della prosa** — i commenti inseriti a metà frase interrompono la lettura.
-
+:::tip[Usa `zenzic explain` per controllare lo stato]
+Esegui `zenzic explain Z601` per vedere lo stato attuale della soppressione per-file di una regola — la tabella Config Genealogy mostrerà ogni glob pattern in cui la regola è silenziata.
 :::
 
 ---
 
-## Codici Sopprimibili vs Inviolabili {#codes}
+## Livello 3 — Exclusion Zone {#exclusion}
+
+Bypass totale: i percorsi nelle exclusion zone non vengono mai scansionati.
+
+```toml
+excluded_dirs          = ["legacy/", "third-party/"]
+excluded_file_patterns = ["CHANGELOG*.md"]
+```
+
+Le exclusion zone non hanno **nessun costo sul punteggio** perché non sono soppressioni — sono confini di perimetro. Usale per:
+
+- Output di build e asset generati (`build/`, `dist/`)
+- Documentazione di terze parti inclusa così com'è
+- Changelog storici che contengono segreti di esempio e sintassi deprecata
+
+**Non** usare le exclusion zone per nascondere il vero debito documentale.
+
+---
+
+## Formula del Costo del Technical Debt {#debt}
+
+Le soppressioni attive (Livelli 1 e 2) riducono il quality score:
+
+$$
+\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+$$
+
+Dove $n$ è il numero totale di soppressioni attive e `cap` è `governance.suppression_cap` (default: **30**).
+
+| Soppressioni attive | Cap = 30 | Debt | Punteggio finale (da 100) |
+| :---: | :---: | :---: | :---: |
+| 0 | 30 | 0 pt | **100** |
+| 1 | 30 | 1 pt | **99** |
+| 10 | 30 | 10 pt | **90** |
+| 30 | 30 | 30 pt | **70** |
+| 31 | 30 | 32 pt | **68** |
+| 35 | 30 | 40 pt | **60** |
+
+Il debt viene applicato **dopo** il Gravity Cap. Se il tuo brand score è 0, il totale viene limitato a 70, e poi il debt viene sottratto da quel valore.
+
+:::info[Perché la soppressione costa punti?]
+Zenzic non può valutare la qualità di ciò che non può vedere. Ogni soppressione è un punto cieco. La formula del debt rende questo costo esplicito e visibile nel punteggio, invece di nasconderlo dietro un numero perfetto. *Zenzic non valuta in curva.*
+:::
+
+---
 
 Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione dell'autore è sovrana) e **Inviolabili** (i fatti di sicurezza non possono essere dichiarati falsi positivi).
 
@@ -82,6 +147,7 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | **Z201** | **CREDENTIAL_SECRET** | 🔒 **Mai** |
 | **Z202** | **PATH_TRAVERSAL** | 🔒 **Mai** |
 | **Z203** | **PATH_TRAVERSAL_FATAL** | 🔒 **Mai** |
+| **Z204** | **FORBIDDEN_TERM** | 🔒 **Mai** |
 | Z301 | DANGLING_REF | ✅ Sì |
 | Z302 | DEAD_DEF | ✅ Sì |
 | Z303 | DUPLICATE_DEF | ✅ Sì |
@@ -101,10 +167,27 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | Z601 | BRAND_OBSOLESCENCE | ✅ Sì |
 
 :::danger[La Legge dell'Inviolabilità — CEO-152]
-`zenzic:ignore Z201`, `zenzic:ignore Z202` e `zenzic:ignore Z203` vengono **silenziosamente rifiutati**. Il credential scanner e il path traversal guard operano indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente sulla stessa riga di una credenziale, Zenzic emetterà comunque il finding e uscirà con il codice 2 o 3.
+`zenzic:ignore Z201`, `Z202`, `Z203` e `Z204` vengono **silenziosamente rifiutati**. Il security gate opera indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente, Zenzic emette comunque il finding ed esce con il codice 2 o 3.
 
-Non puoi ignorare una breccia.
+**Non puoi ignorare una breccia.**
 :::
+
+---
+
+## Bypass di Tutte le Soppressioni: `--audit` {#audit}
+
+Il flag `--audit` forza un sovereign audit completo: tutte le soppressioni attive — sia inline che per-file — vengono ignorate durante l'esecuzione del controllo. Ogni finding che sarebbe normalmente nascosto da un commento `zenzic:ignore` o da una voce `per_file_ignores` viene portato in superficie.
+
+```bash
+zenzic check all --audit
+```
+
+Usa `--audit` per:
+- Vedere lo stato reale della documentazione prima di un rilascio
+- Capire la portata del debt soppresso prima di alzare o abbassare il cap
+- Verificare che i finding soppressi siano ancora eccezioni intenzionali (e non regressioni)
+
+Le exclusion zone (`excluded_dirs`, `excluded_file_patterns`) **non** vengono bypassate da `--audit` — definiscono il perimetro di scansione, non la politica di soppressione.
 
 ---
 
@@ -112,40 +195,39 @@ Non puoi ignorare una breccia.
 
 `--strict` e `zenzic:ignore` operano a **livelli diversi** della pipeline di analisi:
 
-1. **Fase di rilevamento:** Zenzic trova una violazione (es. Z402 Pagina Orfana, severità `warning`).
-2. **Filtro di soppressione (ignore):** Se la riga porta `zenzic:ignore Z402`, la violazione viene distrutta. Per Zenzic, non è mai esistita.
-3. **Valutazione della severità (strict):** `--strict` promuove i warning sopravvissuti ad errori. Agisce solo sulle violazioni che hanno superato il passaggio 2.
-
-**La conseguenza:** Inibire un finding tramite `zenzic:ignore` lo rimuove effettivamente dallo stream di audit. Anche in modalità `--strict`, i finding ignorati non causeranno un codice di uscita non-zero — sono considerati *eccezioni validate* dichiarate dall'autore.
+1. **Rilevamento:** Zenzic trova una violazione (es. Z402, severità `warning`).
+2. **Filtro di soppressione:** Se `zenzic:ignore Z402` è presente, il finding viene rimosso.
+3. **Valutazione della severità:** `--strict` promuove i warning sopravvissuti ad errori. Agisce solo sui finding che hanno superato il passo 2.
 
 | Stato del finding | `--strict`? | Exit code | Motivo |
 | :--- | :---: | :---: | :--- |
-| Warning presente | No | `0` | Il warning è tollerato di default |
-| Warning presente | **Sì** | `1` | `--strict` promuove il warning ad errore |
-| Warning + `ignore` | No | `0` | L'autore ha dichiarato un'eccezione validata |
+| Warning presente | No | `0` | Tollerato di default |
+| Warning presente | **Sì** | `1` | Promosso ad errore |
+| Warning + `ignore` | No | `0` | Eccezione validata |
 | Warning + `ignore` | **Sì** | `0` | **L'intento vince sul rigore** |
-| Z201/Z202/Z203 | Qualsiasi | `2` o `3` | Inviolabile — la soppressione viene rifiutata |
+| Z201/Z202/Z203/Z204 | Qualsiasi | `2` o `3` | Inviolabile |
 
 ---
 
 ## Quando Sopprimere vs Quando Correggere {#guidance}
 
-La soppressione è un atto di **intento documentato**, non di evasione. In un repository `git`, un commento `zenzic:ignore` è una dichiarazione firmata che l'autore ha esaminato il finding e lo ha considerato un'eccezione legittima. La soppressione dovrebbe essere usata per:
+Usa la soppressione per l'**intento documentato**, non per l'evasione:
 
-- **Link di navigazione ToC** — `[Nome Sezione](#nome-sezione)` è un pattern ToC in-page comune che attiva Z107. Sono intenzionali e sopprimibili. {/* zenzic:ignore Z107 */}
-- **Riferimenti storici al brand** — Le voci di CHANGELOG, guide di migrazione e documentazione storica possono legittimamente nominare codename obsoleti (Z601).
-- **Pagine intenzionalmente brevi** — Un `glossary.md` con definizioni concise può essere sotto la soglia di conteggio parole Z502 per design.
+- **Riferimenti storici al brand** — Voci di CHANGELOG, guide di migrazione e documentazione storica possono legittimamente nominare codename obsoleti (Z601).
+- **Link di navigazione ToC** — I pattern `[Sezione](#nome-sezione)` che attivano Z107 in documenti lunghi sono intenzionali.
+- **Pagine intenzionalmente brevi** — Una pagina glossario può essere sotto la soglia di conteggio parole Z502 per design.
 
-La soppressione **non** dovrebbe essere usata per:
+**Non** usare la soppressione per:
 
 - Nascondere un link veramente rotto invece di correggere il target.
-- Silenziare una pagina orfana Z402 invece di aggiungerla alla navigazione.
-- Bypassare Z201 per "documentare" una credenziale reale.
+- Silenziare Z402 invece di aggiungere la pagina alla navigazione.
+- Bypassare Z201/Z204 per "documentare" una credenziale reale o un termine proibito.
 
 ---
 
 ## Vedi Anche {#see-also}
 
+- [Gestire il Technical Debt](../how-to/handle-technical-debt.mdx) — Guida passo-passo per verificare e ridurre il suppression debt.
+- [Algoritmo di Scoring](./scoring-algorithm.mdx) — Come il suppression debt interagisce con il quality score completo.
 - [Riferimento Codici di Finding](./finding-codes.mdx) — Catalogo completo di tutti i codici Zxxx con passaggi di rimedio.
-- [Riferimento Configurazione](./configuration-reference.mdx) — `excluded_codes` per la soppressione a livello di repo.
-- [Metriche di Salute](../explanation/health-metrics.mdx) — Come i finding soppressi influenzano il Quality Score.
+- [Riferimento Configurazione](./configuration-reference.mdx) — Riferimento completo della sezione `governance`.

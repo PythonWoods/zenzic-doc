@@ -34,18 +34,17 @@ Build engines and static analyzers solve different phases of the problem:
 | Governance | No native concept of brand obsolescence or translation parity drift. | Governance codes enforce policy explicitly (`Z601` brand obsolescence, `Z602` i18n parity). |
 | Actionable diagnostics | Generated-route failures often surface as generic 404/build errors. | VSM reverse mapping links the failing virtual route to concrete source files/frontmatter context. |
 
-### Execution-time evidence (local)
+### Execution-time characteristics (architectural)
 
-Measured on a local laptop (Python virtualenv warm, cached dependencies):
+Zenzic's analysis complexity is $O(N)$ in the number of files and links scanned.
+All pattern matching runs on the RE2 DFA engine, which guarantees linear time and
+is immune to catastrophic backtracking (ReDoS). There is no process startup overhead
+and no dependency installation: pure Python on a warm bytecode cache runs entirely
+in the current process.
 
-| Command | Scope | Observed time |
-|:--|:--|:--|
-| `zenzic check references docs/` | Security-only pre-commit gate | 120-300 ms |
-| `zenzic check links docs/` | Link integrity pass | 180-450 ms |
-| `zenzic check all docs/` | Full deterministic scan | 400-1500 ms |
-| Typical full SSG build | Compile + bundle + route emit | 30-180 s |
-
-The numbers can vary by repository size. The phase difference does not vary.
+The phase difference relative to a full SSG build (which compiles, bundles, and
+emits routes) does not vary by environment — Zenzic always runs before the build
+engine is available.
 
 ## The Namespace Contract (ADR-012)
 

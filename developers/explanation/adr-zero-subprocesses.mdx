@@ -119,11 +119,10 @@ coupling, where a binary version bump silently breaks the output parser.
 ### 4. Speed as a First-Class Requirement
 
 A pre-commit gate that takes 30 seconds is a gate that developers disable.
-Zenzic's source-based, subprocess-free analysis completes in 1–5 seconds for
-most documentation repositories. This speed is a consequence of the subprocess
-prohibition: there is no process startup overhead, no dependency installation,
-no partial build to execute. Pure Python on warm bytecode cache is consistently
-fast.
+Zenzic's source-based, subprocess-free analysis runs entirely in the current
+process — no child processes, no dependency installation, no partial build.
+The dominant cost on cold invocations is Python interpreter startup; on a warm
+bytecode cache the overhead is negligible relative to the full SSG build cycle.
 
 ---
 

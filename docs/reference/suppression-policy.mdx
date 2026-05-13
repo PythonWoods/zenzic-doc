@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: "Suppression Policy"
-description: "The Zenzic Suppression Manifesto — per-line ignore syntax, inviolable security codes, and interaction with --strict mode."
+description: "The Zenzic Suppression Manifesto — three suppression levels, Technical Debt cost formula, inviolable security codes, and the --audit override."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,9 +9,231 @@ description: "The Zenzic Suppression Manifesto — per-line ignore syntax, invio
 
 # Suppression Policy
 
-> *"Security findings are facts, not suggestions. You can ignore style, but you cannot ignore a breach."*
+> *"A suppression is not a cancellation. It is an assumption of responsibility."*
 
-Zenzic's suppression system lets authors declare **validated exceptions** — intentional deviations that are not defects. It is a precision instrument, not an escape hatch.
+Zenzic's suppression system lets teams declare **validated exceptions** — intentional deviations that are not defects. It is a precision governance instrument, not an escape hatch. Every suppression is recorded, audited, and **costs Quality Score points**.
+
+---
+
+## The Three Suppression Levels {#levels}
+
+Zenzic offers three levels of suppression, from the most precise to the most broad.
+They are designed to be combined: a well-governed project uses each level for its intended purpose.
+
+| Level | Mechanism | Scope | Audit Trail | Score Cost |
+| :--- | :--- | :--- | :---: | :---: |
+| **1. Inline** | `<!-- zenzic:ignore ZXXX -->` comment | Single line | ✅ Yes | 1 pt/suppress |
+| **2. Per-file** | `governance.per_file_ignores` in TOML | File glob | ✅ Yes | 1 pt/entry |
+| **3. Exclusion Zone** | `excluded_dirs` / `excluded_file_patterns` | Directory or pattern | ❌ No | 0 pt |
+
+:::warning[Exclusion Zones are silent]
+Files in exclusion zones are completely invisible to Zenzic. No findings are emitted, no audit trail is kept, and no score impact is recorded. Use exclusion zones only for genuine non-documentation assets (build outputs, third-party files). For intentional exceptions in documentation, use Level 1 or Level 2 — they keep the audit trail alive.
+:::
+
+---
+
+## Level 1 — Inline Suppression {#inline}
+
+The most precise suppression: one comment, one line, one finding.
+
+**Markdown (`.md`) files:**
+
+```markdown
+Quartz was previously known as Obsidian. <!-- zenzic:ignore Z601 -->
+```
+
+**MDX (`.mdx`) files:**
+
+```mdx
+Quartz was previously known as Obsidian. {/* zenzic:ignore Z601 */}
+```
+
+Both comment forms are invisible in rendered output. The distinction matters: using the wrong comment type in the wrong file format will cause the suppression to be silently ignored.
+
+To suppress **multiple codes on the same line**, add one comment per code:
+
+```mdx
+Some line. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
+```
+
+### Recommended: Trailing Position
+
+The comment should always appear at the **end of the line**, following the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
+
+```mdx
+- Historical reference — Quartz was previously known as Obsidian. <!-- zenzic:ignore Z601 -->
+```
+
+---
+
+## Level 2 — Per-File Suppression {#per-file}
+
+Silence a rule for an entire file glob without adding inline comments to the source.
+Use this for pages where intentional exceptions are structurally necessary (legacy guides, migration docs).
+
+Add a `[governance.per_file_ignores]` table to your `zenzic.toml`:
+
+```toml
+[governance.per_file_ignores]
+"docs/migration/**"  = ["Z601"]  # intentional brand refs in migration context
+"docs/legacy/*.md"   = ["Z101"]  # known broken links to decommissioned systems
+```
+
+The map key is a glob pattern relative to `docs_dir`. Each entry in the list is one suppression, counted toward the Technical Debt total.
+
+:::tip[Use `zenzic explain` to check status]
+Run `zenzic explain Z601` to see the current per-file suppression status for a rule — the Config Genealogy table will show every glob pattern where the rule is silenced.
+:::
+
+---
+
+## Level 3 — Exclusion Zones {#exclusion}
+
+Full bypass: paths in exclusion zones are never scanned.
+
+```toml
+excluded_dirs          = ["legacy/", "third-party/"]
+excluded_file_patterns = ["CHANGELOG*.md"]
+```
+
+Exclusion zones carry **no score cost** because they are not suppressions — they are scope boundaries. Use them for:
+
+- Build outputs and generated assets (`build/`, `dist/`)
+- Third-party documentation included as-is
+- Historical changelogs that contain example secrets and deprecated syntax
+
+Do **not** use exclusion zones to hide real documentation debt.
+
+---
+
+## Technical Debt Cost Formula {#debt}
+
+Active suppressions (Levels 1 and 2) reduce the quality score:
+
+$$
+\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+$$
+
+Where $n$ is the total number of active suppressions and `cap` is `governance.suppression_cap` (default: **30**).
+
+| Active suppressions | Cap = 30 | Debt | Final score (from 100) |
+| :---: | :---: | :---: | :---: |
+| 0 | 30 | 0 pt | **100** |
+| 1 | 30 | 1 pt | **99** |
+| 10 | 30 | 10 pt | **90** |
+| 30 | 30 | 30 pt | **70** |
+| 31 | 30 | 32 pt | **68** |
+| 35 | 30 | 40 pt | **60** |
+
+The debt is applied **after** the Gravity Cap. If your brand score is 0, the total is capped at 70, and then debt is subtracted from that.
+
+:::info[Why does suppression cost points?]
+Zenzic cannot assess the quality of what it cannot see. Every suppression is a blind spot. The debt formula makes this cost explicit and visible in the score, instead of hiding it behind a perfect number. *Zenzic does not grade on a curve.*
+:::
+
+---
+
+## Suppressible vs Inviolable Codes {#codes}
+
+Zenzic divides finding codes into two classes: **Suppressible** (author intent is sovereign) and **Inviolable** (security facts cannot be declared false positives).
+
+| Code | Name | Suppressible? |
+| :--- | :--- | :---: |
+| Z101 | LINK_BROKEN | ✅ Yes |
+| Z102 | ANCHOR_MISSING | ✅ Yes |
+| Z103 | ORPHAN_LINK | ✅ Yes |
+| Z104 | FILE_NOT_FOUND | ✅ Yes |
+| Z105 | ABSOLUTE_PATH | ✅ Yes |
+| Z106 | CIRCULAR_LINK | ✅ Yes |
+| Z107 | CIRCULAR_ANCHOR | ✅ Yes |
+| **Z201** | **CREDENTIAL_SECRET** | 🔒 **Never** |
+| **Z202** | **PATH_TRAVERSAL** | 🔒 **Never** |
+| **Z203** | **PATH_TRAVERSAL_FATAL** | 🔒 **Never** |
+| **Z204** | **FORBIDDEN_TERM** | 🔒 **Never** |
+| Z301 | DANGLING_REF | ✅ Yes |
+| Z302 | DEAD_DEF | ✅ Yes |
+| Z303 | DUPLICATE_DEF | ✅ Yes |
+| Z401 | MISSING_DIRECTORY_INDEX | ✅ Yes |
+| Z402 | ORPHAN_PAGE | ✅ Yes |
+| Z403 | MISSING_ALT | ✅ Yes |
+| Z404 | CONFIG_ASSET_MISSING | ✅ Yes |
+| Z501 | PLACEHOLDER | ✅ Yes |
+| Z502 | SHORT_CONTENT | ✅ Yes |
+| Z503 | SNIPPET_ERROR | ✅ Yes |
+| Z504 | QUALITY_REGRESSION | ✅ Yes |
+| Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
+| Z901 | RULE_ENGINE_ERROR | ✅ Yes |
+| Z902 | RULE_TIMEOUT | ✅ Yes |
+| Z405 | UNUSED_ASSET | ✅ Yes |
+| Z406 | NAV_CONTRACT | ✅ Yes |
+| Z601 | BRAND_OBSOLESCENCE | ✅ Yes |
+
+:::danger[The Inviolability Law — CEO-152]
+`zenzic:ignore Z201`, `Z202`, `Z203`, and `Z204` are **silently rejected**. The security gate operates independently of the suppression engine. Even if a `zenzic:ignore` comment is present, Zenzic still emits the finding and exits with code 2 or 3.
+
+**You cannot ignore a breach.**
+:::
+
+---
+
+## Bypassing All Suppressions: `--audit` {#audit}
+
+The `--audit` flag forces a full sovereign audit: all active suppressions — both inline and per-file — are ignored during the check run. Every finding that would be hidden by a `zenzic:ignore` comment or a `per_file_ignores` entry is surfaced.
+
+```bash
+zenzic check all --audit
+```
+
+Use `--audit` to:
+- See the true state of your documentation before a release
+- Understand the scope of suppressed debt before raising or lowering the cap
+- Verify that suppressed findings are still intentional exceptions (not regressions)
+
+Exclusion zones (`excluded_dirs`, `excluded_file_patterns`) are **not** bypassed by `--audit` — they define the scan perimeter, not the suppression policy.
+
+---
+
+## Interaction with `--strict` Mode {#strict}
+
+`--strict` and `zenzic:ignore` operate at **different layers** of the analysis pipeline:
+
+1. **Detection:** Zenzic finds a violation (e.g. Z402, severity `warning`).
+2. **Suppression filter:** If `zenzic:ignore Z402` is present, the finding is removed.
+3. **Severity evaluation:** `--strict` promotes surviving warnings to errors. It only acts on findings that passed step 2.
+
+| Finding state | `--strict`? | Exit code | Reason |
+| :--- | :---: | :---: | :--- |
+| Warning present | No | `0` | Tolerated by default |
+| Warning present | **Yes** | `1` | Promoted to error |
+| Warning + `ignore` | No | `0` | Validated exception |
+| Warning + `ignore` | **Yes** | `0` | **Intent wins over rigour** |
+| Z201/Z202/Z203/Z204 | Any | `2` or `3` | Inviolable |
+
+---
+
+## When to Suppress vs When to Fix {#guidance}
+
+Use suppression for **documented intent**, not evasion:
+
+- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames.
+- **ToC navigation links** — `[Section](#section-name)` patterns that trigger Z107 in long documents are intentional.
+- **Intentionally short pages** — A glossary page may be below the Z502 word-count threshold by design.
+
+Do **not** suppress to:
+
+- Hide a real broken link instead of fixing the target.
+- Silence Z402 instead of adding the page to navigation.
+- Bypass Z201/Z204 to "document" a real credential or forbidden term.
+
+---
+
+## See Also {#see-also}
+
+- [Handle Technical Debt](../how-to/handle-technical-debt.mdx) — Step-by-step guide to auditing and reducing suppression debt.
+- [Scoring Algorithm](./scoring-algorithm.mdx) — How suppression debt interacts with the full quality score.
+- [Finding Codes Reference](./finding-codes.mdx) — Full catalog of all Zxxx codes with remediation steps.
+- [Configuration Reference](./configuration-reference.mdx) — Full `governance` section reference.
+
 
 ---
 

@@ -129,8 +129,8 @@ Il credential scanner di Zenzic è un componente di sicurezza che opera trasvers
   <ThemedImage
     alt="Zenzic credential scanner — algoritmo di normalizzazione in 8 passaggi: dalla riga grezza attraverso ZRT-006/007/003 fino alla scansione duale e al SecurityFinding"
     sources={{
-      light: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization-light.svg'),
-      dark: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization.svg'),
+        light: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization-light.svg'),
+        dark: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization.svg'),
     }}
     style={{width:'100%',maxWidth:'560px',margin:'1.5rem auto'}}
   />
@@ -193,7 +193,7 @@ Il credential scanner rileva nove famiglie di pattern di credenziali:
 
 ### Middleware I/O: `safe_read_line` {#safe-read-line}
 
-Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft), ogni riga passa attraverso `safe_read_line()`. Se viene rilevato un segreto, viene sollevata immediatamente un'eccezione `ShieldViolation` — la riga non viene mai restituita al chiamante, impedendo al segreto di entrare in qualsiasi parser.
+Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft), ogni riga passa attraverso `safe_read_line()`. Se viene rilevato un segreto, viene sollevata immediatamente un'eccezione `CredentialViolation` — la riga non viene mai restituita al chiamante, impedendo al segreto di entrare in qualsiasi parser.
 
 ```python
 # La riga non raggiunge mai il parser YAML se contiene un segreto
@@ -279,7 +279,7 @@ La Virtual Site Map è l'**unica fonte di verità per il routing** di Zenzic. È
 
 ### Versioning e Supporto Multi-Doc {#vsm-versioning}
 
-A partire dalla v0.6.1 "Quartz Clarity", la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
+A partire dalla v0.6.1, la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
 
 1. **Identifica i confini di versione** tramite la scoperta estesa della root dell'adapter.
 2. **Etichetta le route** con la rispettiva versione in `RouteMetadata`.
@@ -343,8 +343,8 @@ attivo:
 | Indice directory mancante | Z401 | `adapter.provides_index()` — uniforme tra engine |
 
 La directory `examples/matrix/` in questo repository contiene la prova vivente:
-vettori d'attacco red-team identici producono findings identici su engine `standalone`,
-`mkdocs` e `zensical`. I fixture blue-team producono un Zenzic Audit Badge identico su tutti
+vettori di validazione avversariale identici producono findings identici su engine `standalone`,
+`mkdocs` e `zensical`. I fixture integrity-baseline producono un Zenzic Audit Badge identico su tutti
 e tre. Zero asimmetrie.
 
 ### Risoluzione Link e Mapping degli Slug {#link-resolution}
@@ -447,7 +447,7 @@ def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
     try:
         resolved_docs.relative_to(resolved_repo)
     except ValueError:
-        # BLOOD SENTINEL scatta immediatamente — nessun file viene letto
+        # il path traversal guard scatta immediatamente — nessun file viene letto
         raise typer.Exit(3)
 ```
 

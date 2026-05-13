@@ -180,7 +180,7 @@ Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimen
 **Motore:** `mkdocs`
 <ZenzicOutput status="breach" exitCode={2} compact />
 
-Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema Shield.
+Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema credential scanner.
 
 :::danger[Questo esempio esce con codice 2 per design]
 `security_lab` contiene credenziali sintetiche posizionate intenzionalmente per i test delil credential scanner. **Non** interpretare il codice di uscita 2 di questo esempio come un vero incidente di sicurezza. Per verificare che il credential scanner funzioni, esegui: `cd examples/security_lab && zenzic check all; echo $?` e conferma che l'output sia `2`.

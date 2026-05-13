@@ -117,7 +117,7 @@ che analizza più repository in sequenza. Non esiste "context hijacking" — ogn
 
 ---
 
-## La Rottura Quartz
+## Il Modello di Scoring v0.7.0
 
 Zenzic v0.7.0 ha introdotto un modello di scoring che **non è retrocompatibile** con le
 baseline di v0.6.x.
@@ -127,7 +127,7 @@ categoria azzeravano quella categoria indipendentemente dalla severità. Puniva 
 non la gravità. Un singolo link rotto e cinquanta link rotti producevano punteggi
 proporzionalmente diversi — ma non significativamente diversi.
 
-Il **Quartz Penalty Scorer** (D092) sostituisce questo modello con una tabella di penalità
+Il **Zenzic Penalty Scorer** (D092) sostituisce questo modello con una tabella di penalità
 per codice:
 
 | Categoria | Peso | Codici di esempio |
@@ -146,7 +146,7 @@ Se hai un file snapshot v0.6.x (`.zenzic-score.json`), Zenzic v0.7.0 si rifiuter
 caricarlo e ti chiederà di creare una nuova baseline. Questo è intenzionale. Confrontare
 mele con arance è peggio che non avere alcun confronto.
 
-Esegui `zenzic score --save` una volta per stabilire una baseline di Quartz Maturity.
+Esegui `zenzic score --save` una volta per stabilire una baseline Zenzic.
 
 ---
 

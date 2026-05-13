@@ -130,7 +130,7 @@ Un risultato `PATH_TRAVERSAL_SUSPICIOUS` significa che un file sorgente della do
 
 <CredentialTerminal />
 
-### Come funziona il credential scanner {#shield-how-it-works}
+### Come funziona il credential scanner {#scanner-how-it-works}
 
 Lo credential scanner utilizza un'**architettura a doppio flusso** per garantire che nessuna parte di un file sfugga alla scansione delle credenziali.
 
@@ -139,17 +139,17 @@ Quando il Reference Scanner elabora un file, crea due flussi indipendenti:
 ```mermaid
 flowchart LR
     classDef file    fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
-    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef credentials fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
     classDef content fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
 
     disk["📄 File su disco"]:::file
 
     subgraph RS ["Reference Scanner"]
-        SH["🛡️ Flusso CREDENTIAL SCANNER\nVede TUTTE le righe\n(incl. frontmatter YAML)"]:::shield
+        CRED["🛡️ Flusso CREDENTIAL SCANNER\nVede TUTTE le righe\n(incl. frontmatter YAML)"]:::credentials
         CT["📝 Flusso CONTENUTI\nSalta frontmatter + blocchi codice\n(analizza riferimenti e immagini)"]:::content
     end
 
-    disk --> SH
+    disk --> CRED
     disk --> CT
 ```
 

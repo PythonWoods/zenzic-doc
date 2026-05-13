@@ -1,5 +1,5 @@
 ---
-icon: lucide/shield-alert
+icon: lucide/triangle-alert
 sidebar_label: "Sovereign Override (Scudo 404)"
 description: "Usa ZENZIC_EXTRA_ARGS per esclusioni temporanee di URL pre-lancio senza indebolire la validazione globale dei link esterni."
 ---
@@ -20,7 +20,7 @@ L'obiettivo è mantenere integrità rigorosa con eccezioni temporanee e chirurgi
 
 `zenzic check all --strict` deve continuare a verificare i link esterni.
 Usare `--no-external` nasconde regressioni reali e non è accettabile in
-un processo Quartz-grade.
+un processo production-grade.
 
 `ZENZIC_EXTRA_ARGS` fornisce un override solo a runtime, così la CI resta severa
 ma può escludere specifici URL pre-lancio noti.

@@ -91,7 +91,7 @@ A per-file data structure populated during Pass 1 of the Two-Pass Pipeline. The 
 
 ### Zenzic Score {#zenzic-score}
 
-A 0--100 quality score computed across four weighted categories: Structural (40%), Content (30%), Navigation (20%), and Brand & Assets (10%). Each category accumulates per-code penalty deductions (D092 — Quartz Penalty Scorer). The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `zenzic.toml` or `--fail-under` on the CLI.
+A 0--100 quality score computed across four weighted categories: Structural (40%), Content (30%), Navigation (20%), and Brand & Assets (10%). Each category accumulates per-code penalty deductions (D092 — Zenzic Penalty Scorer). The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `zenzic.toml` or `--fail-under` on the CLI.
 
 Use `zenzic score --save` to snapshot the current score and `zenzic diff` to compare against the baseline.
 

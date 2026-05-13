@@ -256,7 +256,7 @@ When an adapter does return content roots, four pipeline stages cooperate to adm
 
 Adapter implementations honour the **Zero Subprocess** invariant. The Docusaurus adapter detects the blog plugin in two passes, both pure parsing:
 
-1. Static regex parse of `docusaurus.config.{ts,js,mjs,cjs}` for a `blog: { path, routeBasePath }` block (or a sentinel `blog: false` to opt out).
+1. Static regex parse of `docusaurus.config.{ts,js,mjs,cjs}` for a `blog: { path, routeBasePath }` block (or a `blog: false` flag to opt out).
 2. Convention fallback: when the config does not pin the blog plugin and `<repo>/blog` exists on disk, assume the default plugin layout (`path = 'blog'`, `routeBasePath = 'blog'`).
 
 No Node.js process is ever spawned -- the config is read as **data**, not executed as code. Pillar 2 (Engine Sovereignty) is preserved.

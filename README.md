@@ -8,15 +8,15 @@
 
 # zenzic-doc Developer Guide
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.1-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.8.0-4f46e5)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
-[![4-Gates: Sentinel Seal](https://img.shields.io/badge/4--Gates-Sentinel%20Seal-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
+[![4-Gates: Zenzic Audit Badge](https://img.shields.io/badge/4--Gates-Zenzic%20Audit%20Badge-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
-> **This documentation is strictly aligned to Zenzic v0.7.1 "Quartz Maturity".**
+> **This documentation is strictly aligned to Zenzic v0.8.0.**
 > If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
 
 This repository contains the Docusaurus documentation website for Zenzic.
@@ -28,7 +28,7 @@ This repository contains the Docusaurus documentation website for Zenzic.
 
 ---
 
-## 📖 Documentation Map — Quartz Promise
+## 📖 Documentation Map — The Integrity Promise
 
 The Zenzic documentation ships as **two separate Docusaurus instances** under one
 domain. Each has its own sidebar, search index, and audience — never mixed.
@@ -41,7 +41,7 @@ zenzic.dev/
 └── community/      → Brand kit, FAQs, governance
 ```
 
-**The Quartz Promise.** Two instances, one Sentinel. The split is enforced by
+**The Integrity Promise.** Two instances, one Quality Gate. The split is enforced by
 [ADR 011: Cross-Instance Allowlist](https://zenzic.dev/developers/explanation/adr-cross-instance-allowlist) — every
 cross-boundary link is a documented contract, never a silent suppression.
 See the [Technical Debt Ledger](https://zenzic.dev/developers/governance/technical-debt) for what we deferred and why.
@@ -147,7 +147,7 @@ What `just verify` does:
 | `just verify` | Recommended final local check (full gate) | Runs all pre-commit hooks + `typecheck` + `build` + codes parity |
 | `just lint-all` | Before every commit | Runs all pre-commit hooks against every tracked file |
 | `just reuse` | After adding/renaming files | Checks REUSE/SPDX licence compliance |
-| `just sentinel` | Quick quality spot-check | Runs the Zenzic Sentinel alone (faster than full preflight) |
+| `just check` | Quick quality spot-check | Runs the Zenzic quality gate alone (faster than full preflight) |
 | `just clean` | Cleanup before fresh run | Removes `build/` and `.docusaurus/` |
 | `just bump VERSION [BADGE]` | After a Zenzic core release | Updates all hardcoded version references |
 
@@ -157,7 +157,7 @@ You can list all recipes with:
 just --list
 ```
 
-## 6) Pre-commit hooks (Sentinel Guard)
+## 6) Pre-commit hooks (Quality Guard)
 
 This repository enforces quality gates before every commit via [pre-commit](https://pre-commit.com/).
 
@@ -179,7 +179,7 @@ Every `git commit` will automatically run:
 | check-merge-conflict | No unresolved merge markers |
 | no-commit-to-branch | Blocks direct commits to `main` |
 | TypeScript Typecheck | `tsc --noEmit` must pass |
-| Zenzic Sentinel | `zenzic check all` must exit 0 |
+| Zenzic Quality Gate | `zenzic check all` must exit 0 |
 | REUSE/SPDX | License compliance on every file |
 
 If a hook fails, fix the reported issue and retry the commit.
@@ -356,11 +356,9 @@ just verify
 
 ---
 
-## 📚 The Zenzic Chronicles
+## 📚 Engineering Blog
 
-Zenzic was born from a technical journey through the fragility of modern documentation
-ecosystems. Discover the philosophy, the security siege, and the engineering behind the
-Sentinel in the [**Engineering Chronicles**](https://zenzic.dev/blog/tags/engineering-chronicles) on the official blog.
+Discover the technical evolution, benchmarks, and architecture behind the Zenzic quality engine in our official [**Engineering Blog**](https://zenzic.dev/blog).
 
 ---
 
@@ -370,7 +368,7 @@ Sentinel in the [**Engineering Chronicles**](https://zenzic.dev/blog/tags/engine
   </a>
   <p>
     <strong>Engineered with precision by PythonWoods in Italy 🇮🇹</strong><br/>
-    <em>"Building the Safe Harbor for technical knowledge."</em>
+    <em>"Building the Standard for Technical Document Integrity."</em>
   </p>
   <p>
     <a href="https://zenzic.dev"><strong>Documentation</strong></a> &middot;

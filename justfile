@@ -76,10 +76,10 @@ check *args:
 
     if [ -d "$CORE_PATH" ]; then
         echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
-        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
+        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
     else
         echo "🛡️  [Zenzic] Local core not found. Using published PyPI release..."
-        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" {{args}}
+        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
     fi
 typecheck:
     npm run typecheck

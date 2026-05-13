@@ -89,7 +89,7 @@
     "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
   },
   "homepage.hero.badge": {
-    "message": "v0.7.1 \"Quartz Maturity\" Stable",
+    "message": "v0.7.1 Stable",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {

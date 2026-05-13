@@ -143,22 +143,22 @@ indipendentemente dal motore di documentazione:
 ```mermaid
 flowchart LR
     classDef source  fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
-    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef credentials fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
     classDef adapter fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
     classDef vsm     fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#e2e8f0
     classDef engine  fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#e2e8f0
     classDef output  fill:#0f172a,stroke:#dc2626,stroke-width:2px,color:#e2e8f0
 
     S["📄 Sorgente\nfile .md / .mdx\nzenzic.toml"]:::source
-    SH["🛡️ Credential Scanner IO\nsafe_read_line()\nShieldViolation → Exit 2"]:::shield
+    CRED["🛡️ Credential Scanner IO\nsafe_read_line()\nCredentialViolation → Exit 2"]:::credentials
     M["📦 Metadati\nbuild_metadata_cache()\nFileMetadata\n(slug · draft · tags)"]:::adapter
     A["🔌 Adapter\nget_route_info()\nRouteMetadata\n(URL · status · proxy)"]:::adapter
     V["🗺️ Virtual Site Map\nURL → Route\n(status · anchors)"]:::vsm
     R["⚙️ Rule Engine\nControlli built-in\nRegole Custom DSL\nRegole Plugin"]:::engine
     F["📋 Findings\nIntegrityReport\nRuleFindings\nExit code"]:::output
 
-    S -->|"lettura file"| SH
-    SH -->|"righe pulite"| M
+    S -->|"lettura file"| CRED
+    CRED -->|"righe pulite"| M
     M -->|"FileMetadata"| A
     S -->|"get_adapter()"| A
     A -->|"RouteMetadata"| V
@@ -173,7 +173,7 @@ direttamente da disco. Nessun build HTML richiesto.
 **Credential Scanner IO** — Ogni riga del frontmatter passa attraverso `safe_read_line()`
 prima che qualsiasi parser la veda. Se un pattern di credenziale viene rilevato
 (chiave OpenAI, token GitHub, chiave AWS, ecc.), Zenzic solleva
-`ShieldViolation` e interrompe con Exit 2 — la riga non viene mai salvata né
+`CredentialViolation` e interrompe con Exit 2 — la riga non viene mai salvata né
 parsata. Questo rende il credential scanner un middleware IO: si posiziona tra le letture
 da disco e l'estrazione dei metadati.
 
@@ -298,20 +298,17 @@ minimo, senza richiedere mesi di reverse-engineering.
 
 ---
 
-## Perché "Quartz Clarity" {#naming}
+## La Filosofia di Design {#philosophy}
 
-Il quarzo è silice cristallina — formato sotto calore e pressione estremi, perfettamente trasparente
-e tra i minerali più duri della Terra. Le civiltà antiche lo usavano per intagliare lenti e
-superfici di misura — perché le sue facce erano geometricamente perfette.
+Zenzic è costruito su tre proprietà fondamentali: **trasparente** (analisi deterministica,
+riproducibile, solo-sorgente), **solido** (gate di sicurezza non sopprimibili, modalità strict
+di default in CI) e **preciso** (zero falsi positivi come obiettivo di design, non come claim
+di marketing).
 
-Zenzic aspira a essere quarzo: trasparente (deterministico, riproducibile, solo-sorgente), duro
-(gate di sicurezza non sopprimibili, modalità strict di default in CI) e preciso (zero falsi
-positivi come obiettivo di design, non come claim di marketing).
-
-Il nome è anche un promemoria: il vetro è fragile se lo colpisci nel modo sbagliato. Uno strumento
-di qualità che non ispira fiducia è peggio di nessuno strumento. Ogni decisione di design in
-Zenzic è presa con questo in mente — lo strumento deve guadagnarsi il diritto di interrompere il
-flusso di lavoro di uno sviluppatore essendo infallibilmente corretto quando lo fa.
+Queste proprietà non sono aspirazionali — sono vincoli applicati a livello architetturale.
+Ogni decisione di design in Zenzic è presa con questa triade in mente: lo strumento deve
+guadagnarsi il diritto di interrompere il flusso di lavoro di uno sviluppatore essendo
+infallibilmente corretto quando lo fa.
 
 ---
 

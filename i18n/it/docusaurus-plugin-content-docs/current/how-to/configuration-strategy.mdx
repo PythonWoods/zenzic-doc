@@ -1,0 +1,126 @@
+---
+icon: lucide/layers
+sidebar_label: "Strategia di Configurazione"
+description: "Modello di configurazione a due file, regole di precedenza e matrice di troubleshooting per i problemi di configurazione più comuni in Zenzic."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Strategia di Configurazione
+
+Zenzic utilizza un modello di configurazione a due file. Questa pagina spiega la catena di
+precedenza e fornisce una matrice di troubleshooting per i problemi di configurazione più comuni.
+
+---
+
+## Precedenza dei File
+
+La configurazione viene risolta in questo ordine. I file successivi sovrascrivono i precedenti:
+
+| Priorità | File | Committato | Ambito |
+|:--------:|:-----|:-----------|:------|
+| 1 (più bassa) | `zenzic.toml` | Sì | Default condivisi del progetto |
+| 2 | `pyproject.toml [tool.zenzic]` | Sì | Alternativa embedded a `zenzic.toml` |
+| 3 (più alta) | `.zenzic.local.toml` | **No** | Override locali alla macchina |
+
+`zenzic.toml` e `pyproject.toml [tool.zenzic]` si escludono a vicenda — Zenzic legge
+quello presente. Se esistono entrambi, `zenzic.toml` ha la priorità.
+
+`.zenzic.local.toml` è **sempre additivo** per i campi lista (es. `forbidden_patterns`,
+`excluded_dirs`). I campi scalari seguono la regola last-write-wins.
+
+---
+
+## Matrice di Troubleshooting
+
+### `zenzic:ignore` non sopprime un finding Z2xx
+
+I codici Z2xx (`Z201`, `Z202`, `Z203`, `Z204`) sono **non sopprimibili**. Bypassano
+completamente il sistema di soppressione. La direttiva `zenzic:ignore` non ha effetto su questi codici.
+
+**Soluzione:** Rimuovi il contenuto che attiva il finding. Non esiste nessun flag di configurazione
+per disabilitare le regole Z2xx.
+
+---
+
+### Il pattern proibito dichiarato in `.zenzic.local.toml` non viene rilevato
+
+Possibili cause:
+
+| Causa | Diagnostica | Correzione |
+|:------|:-----------|:----|
+| File non trovato | `zenzic config show` → controlla la lista `forbidden_patterns` | Verifica il percorso: `.zenzic.local.toml` deve essere nella root del repo |
+| Il pattern usa la sintassi PCRE | Il pattern non dà match in silenzio | Usa la sintassi RE2 DFA. I lookahead e i backreference non sono supportati |
+| Il file è git-ignorato e non presente in CI | Z204 si attiva solo localmente | Provvedi i pattern tramite secret CI (vedi [Privacy Gate](./configure-privacy-gate.mdx)) |
+
+---
+
+### I file che dovrebbero essere esclusi vengono comunque scansionati
+
+`excluded_dirs` e `excluded_file_patterns` in `zenzic.toml` si applicano solo ai file sorgente
+della documentazione. Non interagiscono con `.gitignore`.
+
+**Percorsi esclusi di sistema** (non è mai necessario dichiararli):
+- Output di build: `build/`, `dist/`, `temp/`, `tmp/`, `.tox/`, `mutants/`
+- Toolchain: `.git/`, `.venv/`, `node_modules/`
+- File di configurazione: `*.toml`, `*.yaml`, `*.json`, `*.lock`, `Makefile`, `justfile`
+
+Solo le voci specifiche del repo non presenti nella lista di esclusione di sistema
+appartengono a `excluded_dirs`.
+
+---
+
+### La soglia `fail_under` non viene rispettata
+
+`fail_under` si applica al **Documentation Quality Score (DQS)**, non ai conteggi
+individuali di finding. Uno score di 0 causato dal Security Override (Z2xx presente)
+provoca sempre l'uscita con codice 2, indipendentemente da `fail_under`.
+
+Verifica la soglia effettiva:
+
+```bash
+zenzic config show | grep fail_under
+```
+
+---
+
+### Il punteggio è 0 ma non ci sono credenziali
+
+Z204 (`FORBIDDEN_TERM`) attiva anch'esso il Security Override. Esegui:
+
+```bash
+zenzic check all --verbose
+```
+
+Cerca `Z204` nell'output. Se `forbidden_patterns` in `.zenzic.local.toml` corrisponde
+a contenuto nella tua documentazione, il punteggio crolla a 0.
+
+---
+
+### L'override locale non viene applicato in CI
+
+`.zenzic.local.toml` è git-ignorato e non presente nei checkout CI di default.
+Questo è previsto. Per applicare gli override in CI, scrivi il file da un secret prima di eseguire Zenzic:
+
+```yaml
+- name: Scrivi overlay zenzic locale
+  env:
+    FORBIDDEN: ${{ secrets.ZENZIC_FORBIDDEN_PATTERNS }}
+  run: printf '[governance]\nforbidden_patterns = %s\n' "$FORBIDDEN" > .zenzic.local.toml
+```
+
+---
+
+## Riferimento Rapido ai Campi di Configurazione
+
+Per la specifica completa dei campi, vedi il [Riferimento Configurazione](../reference/configuration-reference.mdx).
+
+| Campo | File | Tipo | Note |
+|:------|:-----|:-----|:------|
+| `docs_dir` | `zenzic.toml` | string | Root dell'albero della documentazione |
+| `fail_under` | `zenzic.toml` | int 0–100 | DQS minimo; exit 1 se inferiore |
+| `engine` | `zenzic.toml [build_context]` | string | `standalone`, `docusaurus`, `mkdocs` |
+| `forbidden_patterns` | `.zenzic.local.toml [governance]` | list[str] | RE2 DFA; case-insensitive di default |
+| `suppression_cap` | `zenzic.toml [governance]` | int | Numero massimo di direttive `zenzic:ignore` consentite |
+| `brand_obsolescence` | `zenzic.toml [governance]` | list[str] | Termini brand deprecati (Z601) |

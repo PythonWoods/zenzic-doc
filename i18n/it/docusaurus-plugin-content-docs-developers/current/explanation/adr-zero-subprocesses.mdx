@@ -124,11 +124,11 @@ rompe silenziosamente il parser dell'output.
 ### 4. La Velocità come Requisito di Prima Classe
 
 Un gate pre-commit che impiega 30 secondi è un gate che gli sviluppatori
-disabilitano. L'analisi basata sul sorgente e senza subprocess di Zenzic si
-completa in 1–5 secondi per la maggior parte dei repository di documentazione.
-Questa velocità è una conseguenza del divieto di subprocess: non c'è overhead
-di avvio del processo, nessuna installazione di dipendenze, nessuna build parziale
-da eseguire. Python puro su bytecode cache caldo è consistentemente veloce.
+disabilitano. L'analisi basata sul sorgente e senza subprocess di Zenzic gira
+interamente nel processo corrente — nessun processo figlio, nessuna
+installazione di dipendenze, nessuna build parziale. Il costo dominante sulle
+invocazioni a freddo è l'avvio dell'interprete Python; con bytecode cache caldo
+l'overhead è trascurabile rispetto al ciclo di build SSG completo.
 
 ---
 

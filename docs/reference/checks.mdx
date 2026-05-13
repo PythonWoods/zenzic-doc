@@ -130,7 +130,7 @@ A `PATH_TRAVERSAL_SUSPICIOUS` finding means a documentation source file contains
 
 <CredentialTerminal />
 
-### How the credential scanner works {#shield-how-it-works}
+### How the credential scanner works {#scanner-how-it-works}
 
 The Zenzic credential scanner uses a **dual-stream architecture** to ensure that no part of a file escapes credential scanning.
 
@@ -139,17 +139,17 @@ When the Reference Scanner processes a file, it creates two independent streams:
 ```mermaid
 flowchart LR
     classDef file    fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
-    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef credentials fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
     classDef content fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
 
     disk["📄 File on disk"]:::file
 
     subgraph RS ["Reference Scanner"]
-        SH["🛡️ CREDENTIAL SCANNER stream\nSees ALL lines\n(incl. YAML frontmatter)"]:::shield
+        CRED["🛡️ CREDENTIAL SCANNER stream\nSees ALL lines\n(incl. YAML frontmatter)"]:::credentials
         CT["📝 CONTENT stream\nSkips frontmatter + fenced blocks\n(parses references & images)"]:::content
     end
 
-    disk --> SH
+    disk --> CRED
     disk --> CT
 ```
 

@@ -111,8 +111,8 @@ The Zenzic credential scanner is a credential detection engine integrated into P
   <ThemedImage
     alt="Zenzic credential scanner normalization algorithm: 8-step pipeline from Raw Line through ZRT-006/007/003 normalization passes to dual raw/normalized scan, deduplication, and SecurityFinding output"
     sources={{
-      light: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization-light.svg'),
-      dark: useBaseUrl('/assets/brand/svg/zenzic-shield-normalization.svg'),
+        light: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization-light.svg'),
+        dark: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization.svg'),
     }}
     style={{width:'100%',maxWidth:'560px',margin:'1.5rem auto'}}
   />
@@ -170,7 +170,7 @@ Both the raw and normalized forms are scanned. If the same secret type is detect
 
 ### IO Middleware: `safe_read_line` {#safe-read-line}
 
-For metadata extraction (frontmatter parsing for slugs, tags, draft status), every line passes through `safe_read_line()`. If a secret is detected, a `ShieldViolation` exception is raised immediately -- the line is never returned to the caller, preventing the secret from entering any parser.
+For metadata extraction (frontmatter parsing for slugs, tags, draft status), every line passes through `safe_read_line()`. If a secret is detected, a `CredentialViolation` exception is raised immediately -- the line is never returned to the caller, preventing the secret from entering any parser.
 
 ```python
 # The line never reaches the YAML parser if it contains a secret
@@ -303,7 +303,7 @@ The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a
 
 ### Versioning & Multi-Doc Support {#vsm-versioning}
 
-Starting with v0.6.1 "Quartz Clarity", the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
+Starting with v0.6.1, the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
 
 1. **Identifies version boundaries** via the adapter's extended root discovery.
 2. **Tags routes** with their respective version label in `RouteMetadata`.
@@ -367,8 +367,8 @@ content regardless of the active adapter:
 | Missing directory index | Z401 | `adapter.provides_index()` — uniform across engines |
 
 The `examples/matrix/` directory in this repository contains the living proof: identical
-red-team attack vectors produce identical findings across `standalone`, `mkdocs`, and
-`zensical` engines. The blue-team fixtures produce an identical Zenzic Audit Badge on all
+adversarial-validation vectors produce identical findings across `standalone`, `mkdocs`, and
+`zensical` engines. The integrity-baseline fixtures produce an identical Zenzic Audit Badge on all
 three. Zero asymmetries.
 
 ### Link Resolution and Slug Mapping {#link-resolution}

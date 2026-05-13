@@ -347,7 +347,7 @@ fallback_to_default = true
 
 Identificatore del motore di build. Usato dalla factory degli adapter per selezionare la strategia corretta di risoluzione dei percorsi. Adapter integrati: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
 
-Quando impostato su `"auto"` (il default), Zenzic analizza la root del progetto a runtime con la **Quartz Auto-Discovery**, cercando file di configurazione dell'engine nell'ordine di priorità:
+Quando impostato su `"auto"` (il default), Zenzic analizza la root del progetto a runtime con il **rilevamento automatico dell'engine**, cercando file di configurazione dell'engine nell'ordine di priorità:
 
 1. `zensical.toml` → `zensical`
 2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`

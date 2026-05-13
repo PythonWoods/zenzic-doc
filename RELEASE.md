@@ -20,7 +20,7 @@ Before tagging, every item must be green:
 - [ ] `yarn build` — exits 0, no broken-link errors
 - [ ] `package.json` version updated to match Zenzic Core release
 - [ ] `CHANGELOG.md` — `[Unreleased]` section moved to the new version heading
-- [ ] EN/IT bilingual parity — `Z907 I18N_PARITY` clean
+- [ ] EN/IT bilingual parity — `Z602 I18N_PARITY` clean
 - [ ] All blog post tags in `blog/tags.yml` are valid
 
 ## Build & Deploy

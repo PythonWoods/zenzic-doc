@@ -1,0 +1,238 @@
+---
+sidebar_position: 6
+sidebar_label: "Scoring Algorithm"
+description: "The Zenzic scoring engine: 5-tier weight matrix, per-code penalty table, Gravity Cap, Governance Escalation, Suppression Debt formula, and Security Override."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Scoring Algorithm
+
+> *"Zenzic doesn't grade on a curve. Security and Governance are not optional."*
+
+The Zenzic Documentation Quality Score (DQS) is a **deterministic, 0–100 integer** computed from the findings of every active check. Given the same repository state, the algorithm always produces the same score. There is no weighting heuristic, no interpolation, and no rounding until the final integer cast.
+
+---
+
+## Architecture Overview {#overview}
+
+The scoring pipeline has five sequential stages:
+
+```text
+1. Security Gate    → Z2xx finding? score = 0, early return.
+2. Penalty Table    → per-code deductions, per-tier caps.
+3. Governance Esc.  → exponential amplification if Z6xx > 10.
+4. Gravity Cap      → brand score = 0 ⟹ total ≤ 70.
+5. Suppression Debt → subtract ω_debt from capped total.
+```
+
+Each stage is described below with its full formula.
+
+---
+
+## Stage 1 — Security Override {#security-override}
+
+Before any score computation, the engine checks for **Z2xx findings**:
+
+$$
+S_{\text{final}} = 0 \quad \text{if } \sum_{c \in \mathcal{S}} n_c > 0
+$$
+
+where $\mathcal{S} = \{Z201, Z202, Z203, Z204\}$.
+
+This is an **unconditional early return** — no flags, no config options, and no suppressions can bypass it. The four codes in $\mathcal{S}$ represent binary failure conditions:
+
+| Code | Name | Condition |
+| :--- | :--- | :--- |
+| Z201 | CREDENTIAL | Credential pattern detected in document |
+| Z202 | PATH_TRAVERSAL | System-path escape attempt in a link |
+| Z203 | PATTERN_MATCH | Custom forbidden-pattern match |
+| Z204 | FORBIDDEN_TERM | Privacy Gate — confidential term exposure |
+
+When the Security Override fires, `ScoreReport` returns `security_override=True` and `security_findings=N` (total Z2xx count). The `--strict` flag and `fail-on-error` configuration are irrelevant — the gate operates before all of them.
+
+:::danger Security Codes Are Non-Suppressible
+No inline `<!-- zenzic:ignore -->`, no `per_file_ignores`, and no `excluded_dirs` can suppress a Z2xx finding. The finding still fires. The score is still 0.
+:::
+
+---
+
+## Stage 2 — Penalty Table and Tier Caps {#penalty-table}
+
+If no Z2xx finding is present, the engine computes a per-tier score.
+
+### Zenzic Weight Matrix (5-Tier)
+
+| Tier | Category | Codes | Weight | Cap |
+| :--- | :--- | :--- | ---: | ---: |
+| Security Gate | — | Z2xx | — | score = 0 |
+| Structural | `structural` | Z1xx | 30% | 30 pts |
+| Navigation | `navigation` | Z3xx, Z4xx | 25% | 25 pts |
+| Content | `content` | Z5xx | 20% | 20 pts |
+| Governance | `brand` | Z405, Z406, Z6xx | 25% | 25 pts |
+
+### Per-Category Formula
+
+For each tier $i$:
+
+$$
+\text{cat\_pts}_i = \max\!\left(0,\; w_i \times 100 - \sum_{c \in \text{tier}_i} \text{penalty}_c \times n_c\right)
+$$
+
+The **Category Cap Invariant** guarantees that a single tier cannot drag the score below its floor. For example, 1 000 occurrences of Z505 (1 pt each) exhaust the content bucket at −20 pts. The remaining 80 pts from other tiers are unaffected.
+
+### Base Score
+
+$$
+S_{\text{base}} = \sum_{i \in \{\text{structural, navigation, content, brand}\}} \text{cat\_pts}_i
+$$
+
+### Penalty Reference Table
+
+| Code | Name | Penalty / occurrence | Tier |
+| :--- | :--- | ---: | :--- |
+| Z101 | LINK_BROKEN | 8.0 pts | Structural |
+| Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
+| Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
+| Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
+| Z106 | CIRCULAR_LINK | 1.0 pts | Structural |
+| Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
+| Z301 | DANGLING_REF | 4.0 pts | Navigation |
+| Z302 | DEAD_DEF | 1.0 pts | Navigation |
+| Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
+| Z402 | ORPHAN_PAGE | 4.0 pts | Navigation |
+| Z501 | PLACEHOLDER | 2.0 pts | Content |
+| Z502 | SHORT_CONTENT | 1.0 pts | Content |
+| Z503 | SNIPPET_ERROR | 10.0 pts | Content |
+| Z505 | UNTAGGED_CODE_BLOCK | 1.0 pts | Content |
+| Z405 | UNUSED_ASSET | 3.0 pts | Governance |
+| Z406 | NAV_CONTRACT | 2.0 pts | Governance |
+| Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
+
+:::note Z602 is not scored
+Z602 (I18N_PARITY) is a Governance gate that fires as a standalone finding. It does not contribute to any DQS bucket and therefore has no penalty value in the table above.
+:::
+
+---
+
+## Stage 3 — Governance Escalation {#governance-escalation}
+
+Z6xx violations represent **brand and governance decay** — the kind that accumulates silently. Beyond 10 occurrences, the engine applies an exponential amplifier to the Governance bucket deductions:
+
+$$
+\text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{\lfloor n_{\text{excess}} / 5 \rfloor}\right)
+$$
+
+where $n_{\text{excess}} = n_{Z6xx} - 10$.
+
+The deduction is capped at the Governance tier maximum (25 pts) to prevent overflow. The practical effect: a repository with 20 Z601 violations (10 excess → multiplier = $2^2 = 4$) takes four times the normal governance hit.
+
+---
+
+## Stage 4 — Gravity Cap {#gravity-cap}
+
+If the Governance bucket is fully zeroed by its deductions:
+
+$$
+S_{\text{base}} = \min\!\left(S_{\text{base}},\; 70\right) \quad \text{if } \text{cat\_pts}_{\text{brand}} = 0
+$$
+
+**Rationale (ADR-031):** a documentation set with uncontrolled governance violations — brand decay, stale assets, broken navigation contracts — cannot be considered a high-quality product, regardless of its link graph. The Gravity Cap enforces this constraint structurally.
+
+---
+
+## Stage 5 — Suppression Debt {#suppression-debt}
+
+Every active suppression is an acknowledged assumption of responsibility. It is not free. The debt formula is:
+
+$$
+\omega_{\text{debt}} = \min(n, \text{cap}) \times 1 + \max(0,\; n - \text{cap}) \times 2
+$$
+
+where:
+- $n$ = total active suppressions (inline `zenzic:ignore` + `per_file_ignores` entries)
+- $\text{cap}$ = `suppression_cap` from `[governance]` in `zenzic.toml` (default: 30)
+
+The final score is:
+
+$$
+S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - \omega_{\text{debt}}\right)
+$$
+
+### Suppression Cost Reference
+
+| Suppression count | Cost per suppression | Notes |
+| :--- | :---: | :--- |
+| $n \leq \text{cap}$ | 1 pt | Standard rate |
+| $n > \text{cap}$ | 2 pts | Escalation tier — each excess suppression costs double |
+
+:::tip Suppression Debt in the CLI
+Run `zenzic score` to see the current debt deduction:
+
+```text
+Technical Debt (Suppressions): -8 pts
+```
+
+Run `zenzic check all --audit` to see what the score would be without any suppressions.
+:::
+
+---
+
+## Complete Formula {#complete-formula}
+
+Assembling all five stages:
+
+$$
+S_{\text{final}} =
+\begin{cases}
+0 & \text{if } \sum_{c \in \mathcal{S}} n_c > 0 \quad \text{(Security Override)} \\[6pt]
+\max\!\left(0,\; S_{\text{gravity}} - \omega_{\text{debt}}\right) & \text{otherwise}
+\end{cases}
+$$
+
+where:
+
+$$
+S_{\text{gravity}} =
+\begin{cases}
+\min\!\left(S_{\text{base}},\; 70\right) & \text{if } \text{cat\_pts}_{\text{brand}} = 0 \\
+S_{\text{base}} & \text{otherwise}
+\end{cases}
+$$
+
+---
+
+## Worked Example {#example}
+
+**Scenario:** A repository has 2 broken links (Z101), 3 orphan pages (Z402), 5 untagged code blocks (Z505), and 15 Z601 brand violations, with 8 active suppressions (cap = 30).
+
+**Stage 1 — Security Gate:** No Z2xx findings → continue.
+
+**Stage 2 — Penalty Table:**
+
+| Tier | Cap | Deduction | cat_pts |
+| :--- | ---: | ---: | ---: |
+| Structural | 30 | 2 × 8.0 = 16.0 | 14.0 |
+| Navigation | 25 | 3 × 4.0 = 12.0 | 13.0 |
+| Content | 20 | 5 × 1.0 = 5.0 | 15.0 |
+| Governance | 25 | 15 × 2.0 = 30.0 → cap to 25 | 0.0 |
+
+$S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
+
+**Stage 3 — Governance Escalation:** 15 Z601 violations → $n_{\text{excess}} = 5$ → multiplier $= 2^{5/5} = 2.0$ → deduction $= 30 \times 2 = 60 \to \min(60, 25) = 25$. Brand bucket = 0.
+
+**Stage 4 — Gravity Cap:** $\text{cat\_pts}_{\text{brand}} = 0$ → $S_{\text{gravity}} = \min(42, 70) = 42$.
+
+**Stage 5 — Suppression Debt:** $n = 8 \leq 30$ → $\omega_{\text{debt}} = 8 \times 1 = 8$.
+
+$$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
+
+---
+
+## See Also {#see-also}
+
+- [Suppression Policy](./suppression-policy) — Three suppression levels, debt formula, and the `--audit` override
+- [Finding Codes](./finding-codes) — Full encyclopedia of Zxxx codes with remediation steps
+- [Handle Technical Debt](../how-to/handle-technical-debt) — Step-by-step remediation workflow
+- [Configure Privacy Gate](../how-to/configure-privacy-gate) — Z204 FORBIDDEN_TERM architecture

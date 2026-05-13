@@ -255,7 +255,7 @@ o notifiche Slack senza dover rileggere il file SARIF:
 ```
 
 :::warning[Gli incidenti di sicurezza sono sempre fatali]
-`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Credential scanner — credenziale
+`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità) e exit 4 (regressione di qualità via `zenzic diff`). Exit 2 (Credential scanner — credenziale
 rilevata) e exit 3 (path traversal guard — path traversal) **non sono mai sopprimibili** con alcun input.
 L'action lo applica incondizionatamente. Vedi il
 [Contratto Exit Code](../reference/cli#exit-codes).
@@ -263,6 +263,128 @@ L'action lo applica incondizionatamente. Vedi il
 
   </TabItem>
 </Tabs>
+
+---
+
+## Zenzic Quality Gate — Il Protocollo Diff {#diff-protocol}
+
+Il Zenzic Quality Gate usa `zenzic diff` per confrontare il punteggio corrente con un baseline salvato. Se il punteggio è sceso, viene emesso l'exit code 4 e la PR viene bloccata. Questa è la configurazione raccomandata per i team che vogliono applicare la qualità della documentazione come gate di merge rigido.
+
+### Come funziona
+
+1. **Su `main`**: Zenzic esegue, salva il punteggio come `.zenzic-score.json` e lo carica come artefatto CI.
+2. **Su ogni PR**: L'artefatto di `main` viene scaricato come baseline. Zenzic esegue sul branch PR e chiama `zenzic diff --base <baseline>` per confrontare.
+3. **Verdetto**: Se il punteggio è sceso o il suppression debt ha superato il cap, viene emesso exit 4 — il check della PR fallisce.
+
+```yaml title=".github/workflows/zenzic-quality-gate.yml"
+name: Zenzic Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Su main: salva il baseline autorevole
+  baseline:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Esegui Zenzic e salva il baseline
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.8.0"
+          format: json          # genera lo snapshot .zenzic-score.json
+          upload-sarif: "false"
+
+      - name: Carica artefatto baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-score.json
+          retention-days: 90
+
+  # Su PR: confronta contro il baseline di main
+  quality-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Scarica il baseline di main
+        uses: actions/download-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-baseline/
+        continue-on-error: true   # la prima PR su un nuovo repo non ha ancora un baseline
+
+      - name: Zenzic — Quality Gate
+        uses: PythonWoods/zenzic-action@v1
+        id: zenzic
+        with:
+          version: "0.8.0"
+          format: sarif
+          upload-sarif: "true"
+          diff-base: ".zenzic-baseline/.zenzic-score.json"
+
+      - name: Riporta il punteggio di qualità
+        if: always()
+        run: |
+          echo "Score: ${{ steps.zenzic.outputs.score }}"
+          echo "Suppression debt: ${{ steps.zenzic.outputs.suppression-debt-pts }} pts"
+          echo "Finding: ${{ steps.zenzic.outputs.findings-count }}"
+```
+
+:::info[Exit 4 — Regressione di Qualità]
+Quando exit 4 scatta, l'annotazione PR recita: *"Il punteggio di qualità della documentazione è sceso rispetto al baseline. Il Zenzic Quality Gate ha bloccato questa PR."* Aggiungi `fail-on-error: "false"` per rendere exit 4 osservazionale (warning) invece che bloccante.
+:::
+
+---
+
+## Modalità Audit in CI — Sovereign Audit {#audit-mode}
+
+L'input `audit: "true"` forza un sovereign audit: tutti i commenti `zenzic:ignore` inline attivi e tutte le voci `governance.per_file_ignores` vengono bypassati. Ogni finding che normalmente sarebbe nascosto da una soppressione viene portato in superficie.
+
+Usa la modalità audit in:
+- **Build notturne** — verifica settimanale che il debt soppresso rimanga intenzionale.
+- **Workflow di Security Review** — prima di un rilascio, verifica lo stato non filtrato della documentazione.
+- **Sprint di riduzione del debt** — visualizza l'intera portata di ciò che viene soppresso prima di alzare o abbassare `suppression_cap`.
+
+```yaml title=".github/workflows/zenzic-audit.yml"
+name: Zenzic Sovereign Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # ogni lunedì alle 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Sovereign Audit (soppressioni bypassate)
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.8.0"
+          format: sarif
+          upload-sarif: "true"
+          audit: "true"           # bypassa tutti i zenzic:ignore e per_file_ignores
+          fail-on-error: "false"  # l'audit è osservazionale, non bloccante
+```
+
+I risultati appaiono nella scheda **Security → Code Scanning**. Ogni finding soppresso è visibile accanto a quelli attivi. Questa è la verità non filtrata della tua documentazione.
 
 ---
 
@@ -321,20 +443,18 @@ steps:
 
 ---
 
-## Rilevamento Regressioni
+## Rilevamento Regressioni {#regression}
 
-`zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato:
+`zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato e esce con il codice 4 se il punteggio è sceso:
 
 ```yaml title=".github/workflows/zenzic.yml"
-
 - name: Rileva regressione del punteggio
-
   run: |
-    uvx zenzic score --save         # aggiorna snapshot
-    uvx zenzic diff --threshold 5   # fallisce se il punteggio scende > 5 punti
+    uvx zenzic score --save        # aggiorna snapshot
+    uvx zenzic diff --threshold 5  # exit 4 se il punteggio scende > 5 punti
 ```
 
-Combina con le branch protection rules per bloccare i merge che degradano la qualità della documentazione.
+Per il setup completo del Zenzic Quality Gate con blocco PR e upload dell'artefatto baseline, vedi la sezione [Protocollo Diff](#diff-protocol) sopra.
 
 ---
 
@@ -344,8 +464,9 @@ Combina con le branch protection rules per bloccare i merge che degradano la qua
 |:---:|---|---|
 | `0` | Tutti i controlli superati | Mantieni il badge verde |
 | `1` | Uno o più controlli falliti | Imposta il badge a `failing` / `ef4444` |
-| **`2`** | **credential scanner: credenziale rilevata** | **Ruota la credenziale immediatamente** |
+| **`2`** | **Credential scanner: credenziale rilevata** | **Ruota la credenziale immediatamente** |
 | **`3`** | **Path traversal guard: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
+| **`4`** | **Regressione di qualità: punteggio sceso rispetto al baseline** | **Esamina l'output di `zenzic diff`; blocca il merge** |
 
 > Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](./add-badges.mdx).
 
@@ -428,9 +549,9 @@ repos:
 
     hooks:
 
-      - id: zenzic-shield
+      - id: zenzic-credentials
 
-        name: credential scanner
+        name: Zenzic Credentials
         language: system
         entry: uvx zenzic check all
         pass_filenames: false

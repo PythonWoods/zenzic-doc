@@ -256,12 +256,135 @@ Slack notifications without re-parsing the SARIF file:
 :::warning[Security incidents are always fatal]
 `fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (credential scanner — credential
 detected) and exit 3 (path traversal guard — path traversal) are **never suppressible** by any input.
+Exit 4 (quality regression via `zenzic diff`) respects `fail-on-error`.
 The action enforces this unconditionally. See the
 [Exit Code Contract](../reference/cli#exit-codes).
 :::
 
   </TabItem>
 </Tabs>
+
+---
+
+## Zenzic Quality Gate — The Diff Protocol {#diff-protocol}
+
+The Zenzic Quality Gate uses `zenzic diff` to compare the current score against a saved baseline. If the score dropped, exit code 4 is emitted and the PR is blocked. This is the recommended setup for teams that want to enforce documentation quality as a hard merge gate.
+
+### How it works
+
+1. **On `main`**: Zenzic runs, saves the score as `.zenzic-score.json`, and uploads it as a CI artifact.
+2. **On every PR**: The artifact from `main` is downloaded as the baseline. Zenzic runs on the PR branch and calls `zenzic diff --base <baseline>` to compare.
+3. **Verdict**: If the score dropped or suppression debt exceeded the cap, exit 4 is emitted — the PR check fails.
+
+```yaml title=".github/workflows/zenzic-quality-gate.yml"
+name: Zenzic Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # On main: save the authoritative baseline
+  baseline:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run Zenzic and save baseline
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.8.0"
+          format: json          # triggers .zenzic-score.json snapshot
+          upload-sarif: "false"
+
+      - name: Upload baseline artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-score.json
+          retention-days: 90
+
+  # On PRs: compare against main baseline
+  quality-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download main baseline
+        uses: actions/download-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-baseline/
+        continue-on-error: true   # first PR on a new repo has no baseline yet
+
+      - name: Zenzic — Quality Gate
+        uses: PythonWoods/zenzic-action@v1
+        id: zenzic
+        with:
+          version: "0.8.0"
+          format: sarif
+          upload-sarif: "true"
+          diff-base: ".zenzic-baseline/.zenzic-score.json"
+
+      - name: Report quality score
+        if: always()
+        run: |
+          echo "Score: ${{ steps.zenzic.outputs.score }}"
+          echo "Suppression debt: ${{ steps.zenzic.outputs.suppression-debt-pts }} pts"
+          echo "Findings: ${{ steps.zenzic.outputs.findings-count }}"
+```
+
+:::info[Exit 4 — Quality Regression]
+When exit 4 fires, the PR annotation reads: *"Documentation quality score dropped vs baseline. The Zenzic Quality Gate blocked this PR."* Add `fail-on-error: "false"` to make exit 4 observational (warning) rather than blocking.
+:::
+
+---
+
+## Audit Mode in CI — Sovereign Audit {#audit-mode}
+
+The `audit: "true"` input forces a sovereign audit: all active `zenzic:ignore` inline comments and all `governance.per_file_ignores` entries are bypassed. Every finding that would normally be hidden by a suppression is surfaced.
+
+Use audit mode in:
+- **Nightly builds** — weekly sanity check that suppressed debt remains intentional.
+- **Security Review workflows** — before a release, verify the unfiltered documentation state.
+- **Debt reduction sprints** — see the full scope of what is being suppressed before raising or lowering `suppression_cap`.
+
+```yaml title=".github/workflows/zenzic-audit.yml"
+name: Zenzic Sovereign Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # every Monday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Sovereign Audit (suppressions bypassed)
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.8.0"
+          format: sarif
+          upload-sarif: "true"
+          audit: "true"           # bypass all zenzic:ignore and per_file_ignores
+          fail-on-error: "false"  # audit is observational, not blocking
+```
+
+Results appear in the **Security → Code Scanning** tab. Every suppressed finding is visible alongside active ones. This is the unfiltered truth of your documentation.
 
 ---
 
@@ -320,20 +443,18 @@ steps:
 
 ---
 
-## Regression Detection
+## Regression Detection {#regression}
 
-`zenzic diff` compares the current score against the saved `.zenzic-score.json` baseline:
+`zenzic diff` compares the current score against the saved `.zenzic-score.json` baseline and exits with code 4 if the score dropped:
 
 ```yaml title=".github/workflows/zenzic.yml"
-
 - name: Detect score regression
-
   run: |
-    uvx zenzic score --save      # update snapshot
-    uvx zenzic diff --threshold 5  # fail if score drops > 5 points
+    uvx zenzic score --save        # update snapshot
+    uvx zenzic diff --threshold 5  # exit 4 if score drops > 5 points
 ```
 
-Combine with branch protection rules to block merges that degrade documentation quality.
+For the full Zenzic Quality Gate setup with PR blocking and baseline artifact upload, see the Diff Protocol section above.
 
 ---
 
@@ -345,6 +466,7 @@ Combine with branch protection rules to block merges that degrade documentation 
 | `1` | One or more checks failed | Set badge to `failing` / `ef4444` |
 | **`2`** | **Credential scanner: credential detected** | **Rotate credential immediately** |
 | **`3`** | **Path traversal guard: path traversal detected** | **Remove offending link immediately** |
+| **`4`** | **Quality regression: score dropped vs baseline** | **Review `zenzic diff` output; block merge** |
 
 > For the full badge copy-paste reference, see [Official Badges](./add-badges.mdx).
 
