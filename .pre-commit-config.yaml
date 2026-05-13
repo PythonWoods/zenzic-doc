@@ -3,7 +3,7 @@
 
 # ── Dogfooding Enforcement ─────────────────────────────────────────
 # Zenzic guards its own documentation.  No commit enters zenzic-doc
-# without the Sentinel's approval.
+# without passing the Zenzic Check.
 # ───────────────────────────────────────────────────────────────────
 
 repos:
@@ -43,7 +43,7 @@ repos:
         pass_filenames: false
         types_or: [ts, tsx]
 
-  # 4. Zenzic Sentinel — ZRT-010 Sovereign Parity: entry-point is 'just check'
+  # 4. Zenzic Check — ZRT-010 Sovereign Parity: entry-point is 'just check'
   #    so local and CI always run the same guard-aware invocation.
   #    always_run: true — config/nav changes can break docs even without .md edits
   - repo: local

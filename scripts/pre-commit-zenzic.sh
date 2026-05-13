@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# ── Sentinel Guard ─────────────────────────────────────────────────
-# Zenzic Sentinel direct-invocation bootstrap.
+# ── Zenzic Check bootstrap ─────────────────────────────────────────
+# Zenzic Check direct-invocation bootstrap.
 #
 # NOTE (ZRT-010 — Sovereign Parity): the canonical entry-point is
 # 'just check', which inlines the Pre-Launch Guard and uses the
