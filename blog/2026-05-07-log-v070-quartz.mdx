@@ -28,7 +28,7 @@ Routes** with the `zenzic inspect routes` JSON API (EPOCH 7b).
 
 | From (≤ v0.6.x) | To (v0.7.0) | Migration |
 |-----------------|-------------|-----------|
-| `engine = "vanilla"` | `engine = "standalone"` | rename in `zenzic.toml` |
+| Legacy standalone alias | `engine = "standalone"` | normalize in `zenzic.toml` |
 | MkDocs plugin (in-tree) | external adapter | drop dependency, use Sentinel CLI |
 | `just preflight` | `just verify` | recipe rename — same 4-Gates content |
 | Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.7.0` |

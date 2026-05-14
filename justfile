@@ -50,8 +50,8 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (4-Gates Standard: pre-commit + build + codes parity)
-verify: _check-hooks release-contracts lint-all build verify-codes
+# Recommended final local check (4-Gates Standard: pre-commit + docs audit + build + codes parity)
+verify: _check-hooks release-contracts lint-all build verify-codes check
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
@@ -79,7 +79,8 @@ check *args:
         uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
     else
         echo "🛡️  [Zenzic] Local core not found. Using published PyPI release..."
-        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        # TODO(post-pypi-0.8.0): bump fallback pin to zenzic@0.8.0 after publication.
+        uvx zenzic@0.7.1 check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
     fi
 typecheck:
     npm run typecheck

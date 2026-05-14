@@ -144,7 +144,7 @@ What `just verify` does:
 | `just typecheck` | Before opening/updating PR | Runs TypeScript checks |
 | `just build` | Build validation | Runs production build |
 | `just preview` | Validate built output | Serves already-built site |
-| `just verify` | Recommended final local check (full gate) | Runs all pre-commit hooks + `typecheck` + `build` + codes parity |
+| `just verify` | Recommended final local check (full gate) | Runs all pre-commit hooks + `build` + codes parity + strict Zenzic docs audit |
 | `just lint-all` | Before every commit | Runs all pre-commit hooks against every tracked file |
 | `just reuse` | After adding/renaming files | Checks REUSE/SPDX licence compliance |
 | `just check` | Quick quality spot-check | Runs the Zenzic quality gate alone (faster than full preflight) |

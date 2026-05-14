@@ -157,7 +157,7 @@ The two streams have opposite filtering rules by design. The Content stream must
 
 **Pre-Scan Normalizer.** Before running detection patterns, the credential scanner normalises each line to defeat obfuscation. Inline code backticks are unwrapped, concatenation operators are removed, and table pipe characters are collapsed. This means a secret broken across Markdown table columns — such as an AWS key split into `` `AKIA` + `suffix` `` — is reassembled before scanning. Both the raw and normalised forms are checked, and a deduplication set prevents double-reporting.
 
-**ReDoS Protection.** If you add custom regex patterns via `[[custom_rules]]` in `zenzic.toml`, Zenzic stress-tests each pattern with a 100 ms canary before it ever runs against your files. Patterns that exhibit catastrophic backtracking are rejected at startup with a clear error. As a second safety net, every worker process has a 30-second timeout — if a pattern still manages to hang at runtime, the affected file receives a `Z902: RULE_TIMEOUT` finding instead of blocking your CI pipeline indefinitely.
+**ReDoS Protection.** Custom regex patterns declared in `[[custom_rules]]` are compiled through RE2 compatibility gates at load time. Unsupported constructs (for example backreferences or lookarounds) are rejected before any scan begins. Separately, the parallel worker watchdog still emits `Z902: RULE_TIMEOUT` if a worker stalls at runtime because of a systemic hang (for example I/O or coordinator starvation) rather than a regex backtracking canary.
 
 ### Circular links
 

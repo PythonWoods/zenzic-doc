@@ -297,7 +297,7 @@ jobs:
       - name: Run Zenzic and save baseline
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.8.0"
+          version: "0.7.1"
           format: json          # triggers .zenzic-score.json snapshot
           upload-sarif: "false"
 
@@ -329,7 +329,7 @@ jobs:
         uses: PythonWoods/zenzic-action@v1
         id: zenzic
         with:
-          version: "0.8.0"
+          version: "0.7.1"
           format: sarif
           upload-sarif: "true"
           diff-base: ".zenzic-baseline/.zenzic-score.json"
@@ -377,7 +377,7 @@ jobs:
       - name: Sovereign Audit (suppressions bypassed)
         uses: PythonWoods/zenzic-action@v1
         with:
-          version: "0.8.0"
+          version: "0.7.1"
           format: sarif
           upload-sarif: "true"
           audit: "true"           # bypass all zenzic:ignore and per_file_ignores

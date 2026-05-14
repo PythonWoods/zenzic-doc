@@ -75,7 +75,7 @@ const config: Config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.7.1',
+              label: '0.8.0',
               badge: false,
               banner: 'none',
             },
