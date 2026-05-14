@@ -46,9 +46,10 @@ search = "v{current_version}"
 replace = "v{new_version}"
 
 [[tool.bumpversion.files]]
-filename = "RELEASE.it.md"
-search = "v{current_version}"
-replace = "v{new_version}"
+filename = "RELEASE.md"
+search = '(?m)^(\| Date\s+\|\s+)\d{{4}}-\d{{2}}-\d{{2}}(\s*\|)$'
+replace = '| Date     | {now:%Y-%m-%d} |'
+regex = true
 
 [[tool.bumpversion.files]]
 filename = "i18n/en/code.json"
@@ -96,3 +97,13 @@ filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/configure-ci-c
 search = 'version:\s*"?v?{current_version}"?'
 replace = 'version: "{new_version}"'
 regex = true
+
+[[tool.bumpversion.files]]
+filename = "docs/how-to/workflow-integration.mdx"
+search = 'zenzic=={current_version}'
+replace = 'zenzic=={new_version}'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/workflow-integration.mdx"
+search = 'zenzic=={current_version}'
+replace = 'zenzic=={new_version}'
