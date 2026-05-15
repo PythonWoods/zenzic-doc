@@ -4,6 +4,9 @@
 # just - Quartz Enterprise workflow for zenzic-doc
 set shell :=["bash", "-c"]
 
+# Default to the installed Zenzic entry point, allow local override via ZENZIC_BIN.
+ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
+
 # Use `just --list` to see available commands
 
 # --- SETUP & MAINTENANCE ---
@@ -72,16 +75,7 @@ check *args:
     GUARD=(
       --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
     )
-    CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
-
-    if [ -d "$CORE_PATH" ]; then
-        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
-        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
-    else
-        echo "🛡️  [Zenzic] Local core not found. Using published PyPI release..."
-        # TODO(post-pypi-0.8.0): bump fallback pin to zenzic@0.8.0 after publication.
-        uvx zenzic@0.7.1 check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
-    fi
+    {{ZENZIC_CMD}} check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
 typecheck:
     npm run typecheck
 
