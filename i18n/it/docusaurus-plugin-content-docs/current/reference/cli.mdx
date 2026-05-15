@@ -222,7 +222,7 @@ zenzic check all --strict --exclude-url https://staging.esempio.com/
 # Sopprime più URL di paradosso CI/CD in una singola invocazione
 zenzic check all --strict \
   --exclude-url https://mio-sito.esempio.com/blog/ \
-  --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+  --exclude-url https://github.com/org/repo/releases/tag/current release
 ```
 
 I prefissi runtime vengono **uniti** con le voci `excluded_external_urls` già presenti
@@ -238,7 +238,7 @@ flag tramite una variabile d'ambiente:
 env:
   ZENZIC_EXTRA_ARGS: >-
     --exclude-url https://mio-sito.esempio.com/blog/
-    --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+    --exclude-url https://github.com/org/repo/releases/tag/current release
 run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
 ```
 :::
@@ -339,7 +339,7 @@ entry-point `zenzic.rules` pronto all'uso e template `BaseRule`
 (`src/<modulo>/rules.py`). Include anche una fixture docs minima, cosi il
 progetto generato puo eseguire subito `zenzic check all` come smoke test.
 
-### Blueprint Governance-Ready (v0.8.0)
+### Blueprint Governance-Ready
 
 `zenzic init` ora genera una coppia di configurazioni Governance-Ready:
 

@@ -59,8 +59,7 @@ Shows i18n folder-structure with English and Italian content.
 before running the build.
 
 :::note Sovereign CLI
-The MkDocs native plugin (`zenzic.integrations.mkdocs`) was removed in v0.7.0.
-Run Zenzic as a CI step instead — it provides the same enforcement with full VSM,
+Use Zenzic as a standalone CLI tool via Adapter-driven external analysis — it provides the same enforcement with full VSM,
 credential scanner, and path traversal guard coverage:
 
 ```yaml title=".github/workflows/zenzic.yml"
@@ -122,7 +121,7 @@ A bilingual documentation project structured to score **100/100** under `zenzic 
 **Engine:** `standalone`
 **Expected exit:** 0
 
-Demonstrates the **Layered Exclusion Model** introduced in v0.6.1:
+Demonstrates the **Layered Exclusion Model** with the following features:
 
 - `respect_vcs_ignore = true` — Zenzic reads `.gitignore` patterns at L2-VCS.
 - `included_dirs = ["generated-api"]` — forces a VCS-ignored directory back into scope at L2 Forced Inclusion.

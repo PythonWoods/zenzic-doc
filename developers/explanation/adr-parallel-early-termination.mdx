@@ -9,7 +9,7 @@ description: "ADR 020: Why Zenzic uses wait(FIRST_COMPLETED) for parallel result
 
 # ADR 020: Parallel Audit Completeness vs. Fail-Fast
 
-**Status:** Active (v0.7.0 "Quartz Maturity")
+**Date:** 2026-05-10
 **Decider:** Architecture Lead
 **Date:** 2026-05-02
 
@@ -23,7 +23,7 @@ in `core/scanner.py`). Each worker executes `_scan_single_file()` independently
 and returns an `IntegrityReport` containing any findings, including `SecurityFinding`
 objects emitted by the credential scanner (Z201/Z202/Z203).
 
-In the implementation prior to v0.7.0, the coordinator collected results by
+In the implementation prior to current release, the coordinator collected results by
 iterating over `futures_map.items()` **in submission order**, calling
 `fut.result(timeout=30)` on each future in turn. This design had two consequences:
 
@@ -56,7 +56,7 @@ negates the simplicity advantage of `as_completed()`.
 
 ## Decision
 
-> **From v0.7.0, the parallel coordinator uses `concurrent.futures.wait()` with
+> **Zenzic, the parallel coordinator uses `concurrent.futures.wait()` with
 > `return_when=FIRST_COMPLETED` and a `_abort` local flag. On the first
 > `SecurityFinding` in a completed worker result, all still-queued (`PENDING`)
 > futures are cancelled immediately. The ZRT-002 deadlock guard is preserved.**
@@ -76,9 +76,9 @@ When a completed report contains `security_findings`, the coordinator sets
 `_abort = True` and calls `pending_fut.cancel()` on every future still in
 `_pending`. Subsequent iterations discard results silently.
 
-**Behavioural changes in v0.7.0:**
+**Behavioural changes in current release:**
 
-| Scenario | Pre-v0.7.0 | v0.7.0 |
+| Scenario | Pre-current release | current release |
 |---|---|---|
 | No security breach | All files scanned | All files scanned (unchanged) |
 | Security breach in file 1/500 | All 500 files scanned | Breach detected; pending tasks cancelled |
@@ -108,7 +108,7 @@ logic — not analysis logic. The coordinator is the only scope where multiple
 futures are visible simultaneously. No analysis function is aware of the abort
 state.
 
-`_worker()` and `_scan_single_file()` are **unchanged** in v0.7.0. Given the
+`_worker()` and `_scan_single_file()` are **unchanged** in current release Given the
 same inputs, they produce the same output. They have no dependency on shared
 state. This functional purity is what makes them deterministic in isolation and
 trivially testable.

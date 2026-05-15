@@ -117,12 +117,12 @@ che analizza più repository in sequenza. Non esiste "context hijacking" — ogn
 
 ---
 
-## Il Modello di Scoring v0.7.0
+## Il Modello di Scoring
 
-Zenzic v0.7.0 ha introdotto un modello di scoring che **non è retrocompatibile** con le
-baseline di v0.6.x.
+Zenzic current release ha introdotto un modello di scoring che **non è retrocompatibile** con le
+baseline di current series.
 
-Il modello v0.6.x utilizzava un tasso di decadimento uniforme: cinque problemi in qualsiasi
+Il modello current series utilizzava un tasso di decadimento uniforme: cinque problemi in qualsiasi
 categoria azzeravano quella categoria indipendentemente dalla severità. Puniva il volume,
 non la gravità. Un singolo link rotto e cinquanta link rotti producevano punteggi
 proporzionalmente diversi — ma non significativamente diversi.
@@ -142,7 +142,7 @@ strutturale è perfetta, la navigazione è pulita, e solo la categoria del conte
 degradata — non l'intero progetto. I cap per categoria impediscono al rumore di mascherare
 il segnale.
 
-Se hai un file snapshot v0.6.x (`.zenzic-score.json`), Zenzic v0.7.0 si rifiuterà di
+Se hai un file snapshot current series (`.zenzic-score.json`), Zenzic current release si rifiuterà di
 caricarlo e ti chiederà di creare una nuova baseline. Questo è intenzionale. Confrontare
 mele con arance è peggio che non avere alcun confronto.
 

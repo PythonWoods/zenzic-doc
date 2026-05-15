@@ -117,9 +117,9 @@ images.
 Leading slashes are stripped, so `"assets/favicon.svg"` and `"/assets/favicon.svg"` are
 equivalent.
 
-:::warning[Breaking change in v0.6.0]
+:::warning[Breaking change in current release]
 Prior versions treated each entry as a literal path.
-Starting from v0.6.0, every entry is treated as an `fnmatch` pattern.
+Starting from current release, every entry is treated as an `fnmatch` pattern.
 Existing literal paths continue to work — they simply match themselves.
 :::
 
@@ -134,7 +134,7 @@ excluded_assets = [
 ```
 
 The `**/_category_.json` pattern was previously recommended for Docusaurus projects.
-Since v0.7.0, `_category_.json` is automatically excluded from the [Level 1b guardrail](#system-guardrails)
+Zenzic, `_category_.json` is automatically excluded from the [Level 1b guardrail](#system-guardrails)
 by the Docusaurus adapter — the manual entry is no longer required. Existing entries in
 `excluded_assets` remain valid and are silently deduplicated.
 
@@ -370,7 +370,7 @@ the baseline is clean.
 
 ## `[governance]` {#governance}
 
-**Type:** TOML section — **Added:** v0.8.0
+**Type:** TOML section — **Added:** current release
 
 Opt-in policy controls for governance-tier findings surfaced by
 `zenzic inspect codes --tier governance`.
@@ -445,14 +445,14 @@ suppression_cap_fail_hard = false
 github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
 ```
 
-Legacy file note: `.zenzic.dev.toml` is removed in v0.7.0; if present, config loading
+Legacy file note: `.zenzic.dev.toml` is removed in current release; if present, config loading
 fails with an explicit migration error.
 
 ---
 
 ## `[link_validation]` {#link-validation}
 
-**Type:** TOML section — **Added:** v0.7.0
+**Type:** TOML section — **Added:** current release
 
 Controls how Zenzic's link validator treats absolute URL paths. The default
 behavior — rejecting all absolute paths via `Z105 ABSOLUTE_PATH` — assumes

@@ -8,7 +8,7 @@
 
 # Guida per Sviluppatori zenzic-doc
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-v0.7.1-4f46e5)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-current release)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
@@ -16,7 +16,7 @@
 [![4-Gates: Zenzic Audit Badge](https://img.shields.io/badge/4--Gates-Zenzic%20Audit%20Badge-10b981?style=flat-square)](https://zenzic.dev/it/developers/explanation/adr-vault)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
-> **Questa documentazione è strettamente allineata a Zenzic v0.7.1.**
+> **Questa documentazione è strettamente allineata a Zenzic current release**
 > Se la versione del core cambia, esegui `just bump NEW_VERSION` per mantenere
 > sincronizzati tutti i riferimenti.
 
@@ -341,7 +341,7 @@ i18n: {
 },
 ```
 
-**Scoperto in:** v0.7.1 release audit (D090 "Il Lockdown i18n").
+**Scoperto in:** current release release audit (D090 "Il Lockdown i18n").
 
 ## 11) Checklist Pull Request
 

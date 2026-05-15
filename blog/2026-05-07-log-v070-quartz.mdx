@@ -1,7 +1,7 @@
 ---
 slug: log-v070-quartz-maturity
-title: "Log: v0.7.0 — Quartz Maturity"
-sidebar_label: "📜 Log: v0.7.0"
+title: "Log: current release — Quartz Maturity"
+sidebar_label: "📜 Log: current release"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-chronicles]
 date: 2026-05-07T10:00:00
@@ -14,7 +14,7 @@ image: /img/social-card.png
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-**TL;DR.** Zenzic v0.7.0 "Quartz Maturity" closes the post-Obsidian arc with
+**TL;DR.** Zenzic current release "Quartz Maturity" closes the post-Obsidian arc with
 seven epochs: the **4-Gates Standard** (EPOCH 4), the language-agnostic
 **Z907 I18N_PARITY** check (EPOCH 5), **Cross-Instance Sovereignty** now
 Zero-Config (EPOCH 6), **Multi-Root Discovery** (EPOCH 7a), **Zero-Config
@@ -26,12 +26,12 @@ Routes** with the `zenzic inspect routes` JSON API (EPOCH 7b).
 
 ## Breaking changes
 
-| From (≤ v0.6.x) | To (v0.7.0) | Migration |
+| From (≤ current series) | To (current release) | Migration |
 |-----------------|-------------|-----------|
 | Legacy standalone alias | `engine = "standalone"` | normalize in `zenzic.toml` |
 | MkDocs plugin (in-tree) | external adapter | drop dependency, use Sentinel CLI |
 | `just preflight` | `just verify` | recipe rename — same 4-Gates content |
-| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.7.0` |
+| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `current release` |
 | `[link_validation]` TOML schema | *(removed)* | delete the block — URL prefixes auto-detected |
 
 No silent deprecation shims. Industry-grade only.

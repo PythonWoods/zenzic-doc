@@ -1,7 +1,7 @@
 ---
 sidebar_label: "ADR 011: Cross-Instance Allowlist"
 sidebar_position: -1
-description: "ADR 011: Why Zenzic v0.7.0 prefers a declarative absolute_path_allowlist over silent suppression for multi-instance Docusaurus deployments."
+description: "ADR 011: Why Zenzic uses a declarative absolute_path_allowlist over silent suppression for multi-instance Docusaurus deployments."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -11,13 +11,13 @@ description: "ADR 011: Why Zenzic v0.7.0 prefers a declarative absolute_path_all
 
 **Status:** Accepted (May 2026)
 **Decider:** Tech Lead
-**Date:** 2026-05-03 (v0.7.0 "Quartz Maturity" / "Quartz")
+**Date:** 2026-05-03
 
 ---
 
 ## Context
 
-The v0.7.0 documentation restructure introduced a **multi-instance Docusaurus**
+The documentation restructure introduced a **multi-instance Docusaurus**
 architecture: `/docs/*` (User area) and `/developers/*` (Developer area) are
 served by two separate `@docusaurus/plugin-content-docs` instances. This split
 is a discoverability win — search, sidebar, and breadcrumbs no longer mix
@@ -94,7 +94,7 @@ These constraints are permanent consequences of ADR-0011:
    problems.
 4. **Allowlist entries are not validated for existence.** Z108
    `STALE_ALLOWLIST_ENTRY` (config hygiene) is intentionally deferred to
-   v0.8.0 to preserve **Pillar 3: Pure Functions** (no aggregate cross-worker
+   previous releases to preserve **Pillar 3: Pure Functions** (no aggregate cross-worker
    state). See [Technical Debt Ledger](../governance/technical-debt.mdx).
 
 ## Consequences
@@ -153,7 +153,7 @@ The inline ignore is **surgery**: it suppresses an emitted finding on a
 single line, leaves an audit comment in the source, and is reviewed at
 the diff level.
 
-**Anti-pattern (forbidden in v0.7.0+).** Cross-plugin links must never
+**Anti-pattern (forbidden by standard enforcement).** Cross-plugin links must never
 be handled with `<!-- zenzic:ignore Z105 -->`. Doing so would tacitly
 admit that the routing is "broken and accepted"; in fact the routing is
 **correct by design**, and that correctness deserves promotion to the

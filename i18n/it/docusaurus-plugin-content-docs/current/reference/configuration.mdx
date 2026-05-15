@@ -118,9 +118,9 @@ immagini di anteprima social.
 Gli slash iniziali vengono rimossi, quindi `"assets/favicon.svg"` e `"/assets/favicon.svg"` sono
 equivalenti.
 
-:::warning[Modifica incompatibile nella v0.6.0]
+:::warning[Modifica incompatibile nella current release]
 Le versioni precedenti trattavano ogni voce come un percorso letterale.
-A partire dalla v0.6.0, ogni voce è trattata come un pattern `fnmatch`.
+Zenzic, ogni voce è trattata come un pattern `fnmatch`.
 I percorsi letterali esistenti continuano a funzionare: corrispondono esattamente a se stessi.
 :::
 
@@ -135,7 +135,7 @@ excluded_assets = [
 ```
 
 Il pattern `**/_category_.json` era precedentemente raccomandato per i progetti Docusaurus.
-A partire dalla v0.7.0, `_category_.json` è automaticamente protetto come [protezione di Livello 1b](#system-guardrails)
+Zenzic, `_category_.json` è automaticamente protetto come [protezione di Livello 1b](#system-guardrails)
 dall'adapter Docusaurus — la voce manuale non è più necessaria. Le voci esistenti in
 `excluded_assets` restano valide e vengono silenziosamente deduplicate.
 
@@ -381,7 +381,7 @@ rimuovendolo una volta che il baseline è pulito.
 
 ## `[governance]` {#governance}
 
-**Tipo:** sezione TOML — **Aggiunto:** v0.8.0
+**Tipo:** sezione TOML — **Aggiunto:** current release
 
 Controlli di policy opt-in per i finding di governance-tier esposti da
 `zenzic inspect codes --tier governance`.
@@ -457,14 +457,14 @@ suppression_cap_fail_hard = false
 github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
 ```
 
-Nota legacy: `.zenzic.dev.toml` è rimosso in v0.7.0; se presente, il caricamento della
+Nota legacy: `.zenzic.dev.toml` è rimosso in current release; se presente, il caricamento della
 configurazione fallisce con un errore di migrazione esplicito.
 
 ---
 
 ## `[link_validation]` {#link-validation}
 
-**Tipo:** sezione TOML — **Aggiunto:** v0.7.0
+**Tipo:** sezione TOML — **Aggiunto:** current release
 
 Controlla come il validator dei link di Zenzic tratta i path URL assoluti.
 Il comportamento predefinito — rifiutare tutti i path assoluti via

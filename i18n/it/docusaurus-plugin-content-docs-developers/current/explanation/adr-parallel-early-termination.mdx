@@ -9,7 +9,7 @@ description: "ADR 020: Perché Zenzic usa wait(FIRST_COMPLETED) per la raccolta 
 
 # ADR 020: Completezza Audit Parallelo vs. Fail-Fast
 
-**Stato:** Attivo (v0.7.0)
+**Stato:** Attivo (current release)
 **Decisore:** Architecture Lead
 **Data:** 2026-05-02
 
@@ -24,7 +24,7 @@ parallelo quando un repository contiene 50 o più file Markdown
 contenente eventuali findings, inclusi gli oggetti `SecurityFinding` emessi dallo
 credential scanner (Z201/Z202/Z203).
 
-Nell'implementazione precedente alla v0.7.0, il coordinatore raccoglieva i
+Nell'implementazione precedente alla current release, il coordinatore raccoglieva i
 risultati iterando su `futures_map.items()` **nell'ordine di submission**,
 chiamando `fut.result(timeout=30)` su ogni future in sequenza. Questo design
 aveva due conseguenze:
@@ -60,7 +60,7 @@ per-future separato che vanifica il vantaggio di semplicità di `as_completed()`
 
 ## Decisione
 
-> **Dalla v0.7.0, il coordinatore parallelo usa `concurrent.futures.wait()` con
+> **Dalla current release, il coordinatore parallelo usa `concurrent.futures.wait()` con
 > `return_when=FIRST_COMPLETED` e un flag locale `_abort`. Al primo
 > `SecurityFinding` nel risultato di un worker completato, tutti i task ancora
 > in coda (`PENDING`) vengono cancellati immediatamente. Il deadlock guard
@@ -81,9 +81,9 @@ Quando un report completato contiene `security_findings`, il coordinatore impost
 `_abort = True` e chiama `pending_fut.cancel()` su ogni future ancora in
 `_pending`. Le iterazioni successive scartano i risultati silenziosamente.
 
-**Cambiamenti comportamentali nella v0.7.0:**
+**Cambiamenti comportamentali nella current release:**
 
-| Scenario | Pre-v0.7.0 | v0.7.0 |
+| Scenario | Pre-current release | current release |
 |---|---|---|
 | Nessuna violazione di sicurezza | Tutti i file scansionati | Tutti i file scansionati (invariato) |
 | Violazione nel file 1/500 | Tutti i 500 file scansionati | Violazione rilevata; task pendenti cancellati |
@@ -113,7 +113,7 @@ orchestrazione — non logica di analisi. Il coordinatore è l'unico scope dove
 più future sono visibili simultaneamente. Nessuna funzione di analisi è a
 conoscenza dello stato di abort.
 
-`_worker()` e `_scan_single_file()` sono **invariati** nella v0.7.0. A parità
+`_worker()` e `_scan_single_file()` sono **invariati** nella current release A parità
 di input, producono lo stesso output. Non hanno dipendenze da stato condiviso.
 Questa purezza funzionale è ciò che li rende deterministici in isolamento e
 facilmente testabili.

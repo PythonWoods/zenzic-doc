@@ -186,7 +186,7 @@ line = safe_read_line(raw_line, file_path, line_no)
 
 ## Enterprise-Grade Security Foundations {#enterprise-security}
 
-This section documents the security hardening features introduced in v0.6.1. These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
+This section documents the security hardening features. These properties are verified by the test suite and enforced by the `_validate_docs_root` guard and the `safe_read_line` I/O fence.
 
 ### F2-1 — Anti-ReDoS Line Truncation {#f2-1-antiredos}
 
@@ -303,7 +303,7 @@ The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a
 
 ### Versioning & Multi-Doc Support {#vsm-versioning}
 
-Starting with v0.6.1, the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
+Zenzic, the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
 
 1. **Identifies version boundaries** via the adapter's extended root discovery.
 2. **Tags routes** with their respective version label in `RouteMetadata`.
@@ -587,7 +587,7 @@ The path traversal guard also fires when `docs_dir` itself resolves outside the 
 
 ## DFA Guarantee — The RE2 Engine {#dfa-guarantee}
 
-Zenzic v0.7.0 uses exclusively a **DFA (Deterministic Finite Automaton)** engine for all
+Zenzic uses exclusively a **DFA (Deterministic Finite Automaton)** engine for all
 user-supplied regex patterns. This is a hard architectural constraint, not a configuration
 option.
 
@@ -650,7 +650,7 @@ O(n) safe — or it does not compile, and the startup fails with an actionable e
 
 ### Why not a timeout-based canary?
 
-The previous architecture (v0.6.x) used a SIGALRM-based "canary": Python's NFA regex engine
+The previous architecture (current series) used a SIGALRM-based "canary": Python's NFA regex engine
 was run against stress strings inside a 50 ms timer. This provided *probabilistic* protection:
 a fast machine could evaluate `(a+)+` on 50 characters before the timer fired. It also required
 platform-specific code (SIGALRM is POSIX-only) and a separate `timeout.py` module.
@@ -682,15 +682,15 @@ In parallel mode:
 
 ## Sovereign CLI — No Integrations Layer {#sovereign-cli}
 
-Zenzic v0.7.0 removes the `zenzic.integrations` namespace entirely. The former MkDocs plugin
-(`zenzic.integrations.mkdocs`) and its `pip install "zenzic[mkdocs]"` extra are gone.
+Zenzic operates as a standalone CLI with adapter-driven external analysis.
+Build engines are never extended at runtime by Zenzic components.
 
-**Why:** An embedded engine hook couples Zenzic's release cycle to an external build tool's
-plugin API. It also prevented users of other engines from accessing the full credential scanner and path traversal guard
-Zenzic hardening that only the CLI pipeline provides. A Sovereign CLI decouples quality
+**Why:** An embedded engine hook couples Zenzic's release cycle to an external build tool API.
+It also prevents a single, uniform enforcement surface across engines. The CLI pipeline provides full
+credential scanner and path traversal hardening for every adapter. A Sovereign CLI decouples quality
 gating from build tooling and makes every enforcement point engine-agnostic.
 
-**Migration:** Replace the `plugins: - zenzic` entry in `mkdocs.yml` with a CI step:
+**Migration:** Run Zenzic in CI as an external quality gate:
 
 ```yaml title=".github/workflows/zenzic.yml"
 
@@ -701,7 +701,7 @@ gating from build tooling and makes every enforcement point engine-agnostic.
 ```
 
 This produces identical enforcement with the full VSM, credential scanner (ZRT-006/007), and path traversal guard
-active — capabilities that the plugin layer never fully exposed.
+active — without any runtime integration inside the build engine.
 
 ### Extension pattern {#extension-pattern}
 

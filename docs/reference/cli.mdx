@@ -217,7 +217,7 @@ zenzic check all --strict --exclude-url https://staging.example.com/
 # Suppress multiple CI/CD paradox URLs in a single invocation
 zenzic check all --strict \
   --exclude-url https://my-site.example.com/blog/ \
-  --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+  --exclude-url https://github.com/org/repo/releases/tag/current release
 ```
 
 Runtime prefixes are **merged** with any `excluded_external_urls` entries already present
@@ -232,7 +232,7 @@ scheduled for future publication). Inject the flag via an environment variable:
 env:
   ZENZIC_EXTRA_ARGS: >-
     --exclude-url https://my-site.example.com/blog/
-    --exclude-url https://github.com/org/repo/releases/tag/v1.0.0
+    --exclude-url https://github.com/org/repo/releases/tag/current release
 run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
 ```
 :::
@@ -328,7 +328,7 @@ When no engine config file is found, standalone (engine-agnostic) defaults apply
 It also includes a minimal docs fixture so the generated project can immediately
 run `zenzic check all` as a smoke test.
 
-### Governance-Ready Blueprint (v0.8.0)
+### Governance-Ready Blueprint
 
 `zenzic init` now generates a Governance-Ready configuration pair:
 

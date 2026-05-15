@@ -228,9 +228,9 @@ The Privacy Gate (Exclusion Zone) defines a strict boundary where Zenzic's scann
 
 ---
 
-## Multi-Root Discovery (v0.7.x) {#multi-root}
+## Multi-Root Discovery {#multi-root}
 
-`docs_dir` is the canonical source root, but modern static-site generators routinely manage **content trees that live outside `docs/`**. The textbook case is the Docusaurus `blog/` directory: it is materialised as live URLs at build time, yet a pre-v0.7.x Zenzic scan would never see the files inside it. The Virtual Site Map ingested only files under `docs_root`, so broken links inside (or pointing to) blog posts slipped past `zenzic check all` and only surfaced when `docusaurus build` failed downstream. We call this failure mode **VSM Blindness**.
+`docs_dir` is the canonical source root, but modern static-site generators routinely manage **content trees that live outside `docs/`**. The textbook case is the Docusaurus `blog/` directory: it is materialised as live URLs at build time, yet a pre-current series Zenzic scan would never see the files inside it. The Virtual Site Map ingested only files under `docs_root`, so broken links inside (or pointing to) blog posts slipped past `zenzic check all` and only surfaced when `docusaurus build` failed downstream. We call this failure mode **VSM Blindness**.
 
 Multi-Root Discovery cures the blindness by letting the active adapter declare additional content roots:
 
@@ -243,7 +243,7 @@ class ContentRoot:
     label: str        # diagnostic, e.g. 'docusaurus-blog'
 ```
 
-Adapters opt in by implementing the optional `get_extra_content_roots(repo_root) -> list[ContentRoot]` method. The Core discovers it via `hasattr()` (mirroring the pre-existing `get_locale_source_roots` convention) so adapters that have nothing to declare need no stub -- the addition is **non-breaking** for third-party adapters built against the v0.7.0 Protocol.
+The Core discovers it via `hasattr()` (mirroring the existing `get_locale_source_roots` convention) so adapters that have nothing to declare need no stub -- the addition is **non-breaking** for third-party adapters. Adapters opt in
 
 When an adapter does return content roots, four pipeline stages cooperate to admit the files as first-class content:
 
@@ -263,12 +263,12 @@ No Node.js process is ever spawned -- the config is read as **data**, not execut
 
 ### Traceability invariant {#traceability}
 
-Every entry in the VSM, including those produced by an extra content root, carries a `Route.source` that resolves back to a real file on disk. The regression suite (`tests/test_docusaurus_blog_vsm.py::TestV07xReverseMapping`) asserts `(repo_root / route.source).is_file()` for every blog route, locking the contract that v0.7.x virtual routes (tags, pagination, authors) will inherit: a route with no physical origin would be a validator screaming `error` without ever saying `where`.
+Every entry in the VSM, including those produced by an extra content root, carries a `Route.source` that resolves back to a real file on disk. The regression suite (`tests/test_docusaurus_blog_vsm.py::TestV07xReverseMapping`) asserts `(repo_root / route.source).is_file()` for every blog route, locking the contract that current series virtual routes (tags, pagination, authors) will inherit: a route with no physical origin would be a validator screaming `error` without ever saying `where`.
 
 ### Reverse-Mapping Invariant & Virtual Routes {#reverse-mapping}
 
-Multi-Root Discovery (v0.7.x) solved **VSM Blindness** for physical files outside
-`docs/`. v0.7.x extends the guarantee to **engine-generated pages**: Docusaurus renders
+Multi-Root Discovery (current series) solved **VSM Blindness** for physical files outside
+`docs/`. current series extends the guarantee to **engine-generated pages**: Docusaurus renders
 URLs — tag pages, paginated indexes, author profiles — that have no physical Markdown
 counterpart. These routes exist only in the build output, never on disk.
 
@@ -284,7 +284,7 @@ route = VirtualRoute(
     source_files=frozenset({"blog/2026-04-12-post.md"}),
 )
 # Attempting to create a VirtualRoute with source_files=frozenset() raises ValueError:
-# "VirtualRoute '/blog/tags/ghost/': source_files is empty —
+# "VirtualRoute '/blog/tags/ghost/': source_files is empty
 #  Reverse-Mapping Invariant violated"
 ```
 
@@ -307,13 +307,13 @@ on equal footing with physical routes.
 | Engine          | Implements `get_extra_content_roots` | Status                                                                |
 |-----------------|--------------------------------------|------------------------------------------------------------------------|
 | Docusaurus      | Yes                                  | Auto-discovers `blog/` from config or convention.                      |
-| MkDocs (Material) | No                                  | Opt-in deferred until `material/blog` plugin enters the v0.7 scope.   |
+| MkDocs (Material) | No                                  | Opt-in deferred until `material/blog` plugin becomes available.   |
 | Zensical        | No                                   | Architecture is identical -- enabled when an out-of-tree plugin ships. |
 | Standalone      | No                                   | No plugins; `docs_root` is the entire content surface.                 |
 
 ### Exporting the site map: `inspect routes` {#inspect-routes}
 
-v0.7.x ships a first-class CLI command that exposes the VSM to external consumers:
+current series ships a first-class CLI command that exposes the VSM to external consumers:
 
 ```shell
 zenzic inspect routes --json

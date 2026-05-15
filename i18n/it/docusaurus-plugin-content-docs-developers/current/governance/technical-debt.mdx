@@ -1,7 +1,7 @@
 ---
 sidebar_label: "Registro del Debito Tecnico"
 sidebar_position: 50
-description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha scelto di NON rilasciare nella v0.7.0 — e il ragionamento ingegneristico che rende ogni rinvio una caratteristica, non una dimenticanza."
+description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha scelto di NON rilasciare nella current release — e il ragionamento ingegneristico che rende ogni rinvio una caratteristica, non una dimenticanza."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -12,7 +12,7 @@ description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha sce
 > *"Il debito nascosto corrompe la fiducia. Il debito dichiarato è ingegneria."*
 
 Questa pagina è l'**elenco pubblico e deliberato** delle capacità che Zenzic
-ha scelto di **non** rilasciare nella v0.7.0 — e il
+ha scelto di **non** rilasciare nella current release — e il
 ragionamento ingegneristico che rende ogni rinvio una scelta progettuale
 consapevole, non una dimenticanza.
 
@@ -23,13 +23,13 @@ sulla propria evoluzione. Ogni voce qui sotto nomina ciò che manca, perché
 
 ---
 
-## Voci Aperte (v0.7.0 → v0.8.0)
+## Voci Aperte
 
 ### Z108 STALE_ALLOWLIST_ENTRY
 
 **Categoria:** Igiene della configurazione
-**Stato:** Rinviato a v0.8.0
-**Tracciato:** GitHub issue (milestone `v0.8.0`)
+**Stato:** Rinviato a current release
+**Tracciato:** GitHub issue (milestone `current release`)
 **Correlato:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
 
 #### Cosa è stato rinviato
@@ -57,11 +57,11 @@ Il controllo è concettualmente diretto ma architetturalmente costoso:
    validator e oscura quali rilevamenti riguardano contenuto utente vs.
    setup di progetto.
 3. **Segnale YAGNI assente.** Non esistono ancora segnalazioni reali di
-   voci di allowlist obsolete. La v0.7.0 è la prima release che possiede
+   voci di allowlist obsolete. La current release è la prima release che possiede
    la funzionalità in assoluto. Aggiungere un controllo di igiene per un
    problema mai osservato sarebbe prematuro.
 
-#### Cosa faremo nella v0.8.0
+#### Cosa faremo nella
 
 La sede naturale di questo controllo è una superficie dedicata di audit
 configurazione all'interno della famiglia di introspezione esistente
@@ -70,11 +70,11 @@ contraddittori, chiavi deprecate, ecc. Questo separa il **lint dei
 contenuti** (pass del validator) dall'**audit della configurazione**
 (pass dell'inspector) e mantiene puri entrambi i pass.
 
-#### Mitigazione nella v0.7.0
+#### Mitigazione nella
 
 `zenzic.toml` è piccolo, versionato e revisionato in code-review ad ogni
 PR. Una voce di allowlist obsoleta è una preoccupazione di code-review
-nella v0.7.0, promossa a preoccupazione di tooling nella v0.8.0. La
+nella current release, promossa a preoccupazione di tooling nella current release La
 finestra di rischio è limitata: una voce obsoleta può al massimo silenziare
 un rilevamento Z105 legittimo per un prefisso che non necessita più di
 essere silenziato — non può creare falsi positivi, far trapelare dati o
@@ -88,7 +88,7 @@ Questa sezione accumulerà voci man mano che gli elementi rinviati vengono
 rilasciati. Ogni voce chiusa nominerà la versione che l'ha risolta e
 collegherà la PR mergiata.
 
-*(nessuna ancora — la v0.7.0 è la prima release con un Registro del Debito
+*(nessuna ancora — la current release è la prima release con un Registro del Debito
 Tecnico pubblico.)*
 
 ---

@@ -91,7 +91,7 @@ myengine = "my_package.adapter:MyEngineAdapter"
 
 ## Sovereign CLI Strategy {#sovereign-cli}
 
-Zenzic v0.7.0 does not provide build-engine plugins or internal integrations.
+Zenzic does not provide build-engine plugins or internal integrations.
 This is a deliberate architectural decision, not a missing feature.
 
 ### Why no engine plugins
@@ -185,7 +185,7 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 
 ## Brand Integrity {#brand-integrity}
 
-The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers (release codenames no longer in use) carries a different kind of debt: **narrative debt**. A v0.7.0 page that still refers to a v0.6.x codename contradicts the version history it is trying to document.
+The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a release codename contradicts the version history it is trying to document.
 
 Zenzic addresses this through the [`[governance]`](../reference/configuration.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
 

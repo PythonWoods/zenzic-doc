@@ -72,7 +72,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 ### Z000: UNSUPPORTED_ENGINE {#z000}
 
 * **Severity:** `error` (Fatal — aborts execution immediately)
-* **Technical Context:** Z000 is a **fatal configuration error**, not a collectable finding. It surfaces as a `ConfigurationError` exception when the adapter factory encounters a deprecated or removed legacy engine alias in `zenzic.toml` (removed in v0.6.1). Execution stops before any scan begins; Z000 will **not** appear in `--format json` output or the findings array.
+* **Technical Context:** Z000 is a **fatal configuration error**, not a collectable finding. It surfaces as a `ConfigurationError` exception when the adapter factory encounters a deprecated or removed legacy engine alias in `zenzic.toml`. Execution stops before any scan begins; Z000 will **not** appear in `--format json` output or the findings array.
 * **Remediation Steps:**
     1. Open your `zenzic.toml` or `pyproject.toml`.
     2. Locate the `engine` field.
@@ -647,14 +647,14 @@ Brand obsolescence is a key metric of your documentation's maturity. Every Z601 
     code: "Z601",
     file: "docs/explanation/architecture.mdx",
     line: 12,
-    message: "Obsolete brand term 'OldRelease': update to the current release identifier. Add <!-- zenzic:ignore Z601 --> (Markdown) or {/* zenzic:ignore Z601 */} (MDX) to the line to suppress intentional references."
+    message: "Obsolete brand term 'OldRelease': update to the active identifier. Add <!-- zenzic:ignore Z601 --> (Markdown) or {/* zenzic:ignore Z601 */} (MDX) to the line to suppress intentional references."
   }]}
 />
 
 * **Severity:** `warning`
 * **Technical Context:** Detected by `BrandObsolescenceRule`, configured via `[governance]` in `zenzic.toml`. When `release_name` is set (e.g. `release_name = "CurrentRelease"`) and `brand_obsolescence` lists previous release identifiers (e.g. `brand_obsolescence = ["OldRelease"]`), any occurrence of a listed term in a scanned file raises Z601. Lines carrying a `zenzic:ignore Z601` suppression comment are silently skipped — use `<!-- zenzic:ignore Z601 -->` in ``.md`` files and `{/* zenzic:ignore Z601 */}` in ``.mdx`` files. Files matching `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) are fully exempt.
 * **Remediation Steps:**
-    1. Update the text to reference the current release name.
+    1. Update the text to reference the active release name.
     2. For intentional historical references in ``.md`` files, append `<!-- zenzic:ignore Z601 -->` to the line.
     3. For intentional historical references in ``.mdx`` files, append `{/* zenzic:ignore Z601 */}` to the line.
     4. To exempt an entire file pattern, add it to `obsolete_names_exclude_patterns` in `zenzic.toml`.

@@ -1,17 +1,17 @@
 ---
 slug: v080-basalt-namespace-contract
-title: "v0.8.0 Basalt: The Namespace Contract & The End of the SSG Illusion"
-sidebar_label: "📜 Log: v0.8.0 Basalt"
+title: "current release Basalt: The Namespace Contract & The End of the SSG Illusion"
+sidebar_label: "📜 Log: current release Basalt"
 authors: [pythonwoods]
 tags: [engineering-chronicles, release]
 date: 2026-05-10
 description: >
-  v0.8.0 Basalt formalizes the namespace contract, tiered code governance,
+  current release Basalt formalizes the namespace contract, tiered code governance,
   and deterministic diagnostics for virtual routes.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-v0.8.0 Basalt is a contract release: explicit tier boundaries, frozen security guarantees,
+current release Basalt is a contract release: explicit tier boundaries, frozen security guarantees,
 and a machine-consumable route surface for external tools.
 
 {/* truncate */}
@@ -27,7 +27,7 @@ Build engines and static analyzers solve different phases of the problem:
 
 ### Four hard facts
 
-| Topic | Typical SSG Build Flow | Zenzic v0.8.0 Basalt |
+| Topic | Typical SSG Build Flow | Zenzic current release Basalt |
 |:--|:--|:--|
 | Shift-Left and speed | Full compile loop (Node.js/Go/Python stack), usually CI-bound and minute-scale feedback. | Pre-commit local analysis on source text and metadata, millisecond-scale feedback for targeted checks. |
 | Security | A build can succeed while secrets remain committed in source files. | Shield enforces security-tier findings (`Z2xx`) and stops the pipeline on security exits. |
@@ -93,7 +93,7 @@ This removes fragile text scraping from the workflow. Tools consume contracts, n
 
 ## Bottom line
 
-v0.8.0 Basalt closes a long-standing gap in documentation QA:
+current release Basalt closes a long-standing gap in documentation QA:
 
 - Build validity is no longer mistaken for source integrity.
 - Security is enforced as contract, not convention.

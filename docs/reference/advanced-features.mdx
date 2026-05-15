@@ -14,7 +14,7 @@ programmatic usage from Python.
 
 ---
 
-## Reference integrity (v0.2.0) {#reference-integrity-v020}
+## Reference integrity {#reference-integrity-v020}
 
 `zenzic check references` runs the **Three-Pass Reference Pipeline** — the core engine behind
 every reference-quality and security check Zenzic performs.
@@ -229,7 +229,7 @@ for error in link_errors:
 `scan_docs_references` deduplicates external URLs across the entire docs tree before
 firing HTTP requests — 50 files linking to the same URL result in exactly one HEAD request.
 
-### Hybrid Adaptive Engine — v0.5.0a1
+### Hybrid Adaptive Engine
 
 `scan_docs_references` is the single unified entry point for all scan modes.
 It selects sequential or parallel execution **automatically** based on the
@@ -307,7 +307,7 @@ This exclusion is applied consistently in both Pass 1 and Pass 2.
 
 ---
 
-## Nav-Aware Linking (v0.4.0rc4)
+## Nav-Aware Linking
 
 Zenzic does not only check whether a linked file exists on disk — it checks whether that
 file is **reachable** through the site navigation.  This catches an entire class of

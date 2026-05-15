@@ -6,7 +6,7 @@ authors: [pythonwoods]
 tags: [engineering-chronicles, architecture, release]
 date: 2026-05-12
 description: >
-  A long-form engineering deep dive into Basalt v0.8.0: context fragmentation,
+  A long-form engineering deep dive into Basalt current release: context fragmentation,
   modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
@@ -17,7 +17,7 @@ Basalt emerged as a systems response to a recurring pattern we kept observing ac
 
 Italian version available in the Italian locale mirror of this article.
 
-This deep dive is for software architects and technical stakeholders who want to understand why v0.8.0 matters below the changelog line. The central claim of Basalt is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
+This deep dive is for software architects and technical stakeholders who want to understand why current release matters below the changelog line. The central claim of Basalt is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
 The release came from five converging fronts: context fragmentation in complex repositories, dynamic-route ambiguity in static analysis, regex safety risk under adversarial inputs, deployment parity drift between local and CI, and governance blind spots that traditional SSG checks never model.
 
@@ -219,7 +219,7 @@ Security findings are not suggestions. They are enforcement events.
 
 Zero-config often gets misread as "minimal architecture." In Basalt, zero-config means deterministic defaults with explicit contracts that remain inspectable.
 
-That is why JSON inspection surfaces and tiered code contracts are first-class in v0.8.0:
+That is why JSON inspection surfaces and tiered code contracts are first-class in current release:
 
 - They reduce ambiguity for humans.
 - They reduce context burden for automation.
@@ -235,7 +235,7 @@ Basalt rejects that model.
 
 A successful build can still hide leaked credentials, governance drift, unresolved virtual-route provenance, and policy regressions invisible to render pipelines. Build engines remain essential. They are just not sufficient as documentation integrity systems.
 
-v0.8.0 proves a different path:
+current release proves a different path:
 
 - deterministic source-first analysis,
 - machine-consumable architectural truth,

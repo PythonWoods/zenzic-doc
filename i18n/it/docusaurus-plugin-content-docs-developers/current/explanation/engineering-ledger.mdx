@@ -1,7 +1,7 @@
 ---
 sidebar_label: "Il Libro Mastro dell'Ingegneria"
 sidebar_position: 6
-description: "I tre pilastri architetturali di Zenzic v0.7.0 — Zero Assunzioni, Senza Sottoprocessi, e Grafo Deterministico — spiegati come prove di forza."
+description: "I tre pilastri architetturali di Zenzic current release — Zero Assunzioni, Senza Sottoprocessi, e Grafo Deterministico — spiegati come prove di forza."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -12,7 +12,7 @@ description: "I tre pilastri architetturali di Zenzic v0.7.0 — Zero Assunzioni
 > *"Un tool che funziona per ragioni misteriose non è un tool — è un rituale.
 > Zenzic funziona per ragioni documentate. Questa pagina è la prova."*
 
-Questa pagina è il manifesto tecnico dietro ogni decisione che rende Zenzic v0.7.0
+Questa pagina è il manifesto tecnico dietro ogni decisione che rende Zenzic current release
 abbastanza affidabile da essere chiamato un **Exclusion Zone**. Appartiene al quadrante
 Developer perché l'utente non ha bisogno di conoscerla per essere protetto — ma il
 contributor deve comprenderla per estendere il sistema senza rompere il contratto.
@@ -67,7 +67,7 @@ stesso exit code di `zenzic check all` in CI.
 
 **Implementazione:** La matrice CI 3×3 (OS: `[ubuntu, windows, macos]` × Python:
 `[3.11, 3.12, 3.13]`) è la prova continua. 1.260+ test passano su tutte e nove le
-combinazioni dalla versione v0.7.0. I test property-based (Hypothesis, profilo `ci`:
+combinazioni dalla versione current release I test property-based (Hypothesis, profilo `ci`:
 500 esempi) stress-testano le funzioni core sull'intero spazio di input per individuare
 edge case platform-specific.
 
@@ -141,6 +141,6 @@ casella da spuntare.
 ## Ulteriori Risorse
 
 - [ADR — Architectural Decision Records](./adr-discovery) — il log completo delle decisioni
-- [Architecture](./architecture-gaps) — gap aperti e roadmap v0.8.0
+- [Architecture](./architecture-gaps) — gap aperti e roadmap current release
 - [Riferimento ai Codici di Finding](/docs/reference/finding-codes) — il catalogo completo `Zxxx`
 - [Exclusion Zone](/docs/explanation/privacy-gate) — la filosofia dietro l'ingegneria

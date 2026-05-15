@@ -14,14 +14,14 @@ Zenzic repositories.
 
 This is the execution protocol. ADRs remain the historical rationale layer.
 
-Release A policy is Basalt-grade hard enforcement: no suppression debt beyond
+Release A policy applies hard enforcement: no suppression debt beyond
 the CAP scan scope.
 
 ---
 
 ## 1) Four-Gate Hierarchy
 
-A change is Ready for Basalt only when all four gates pass.
+A change is Ready for release only when all four gates pass.
 
 1. IDE Gate
 
@@ -47,16 +47,15 @@ cause or apply a narrowly-scoped and auditable exception.
 
 ## 2) Brand and Obsolescence Policy
 
-- Basalt is the active release identity.
-- Obsidian is deprecated and must be detected by governance checks.
-- Quartz is currently tolerated as recent historical context during the v0.8.x
-  transition window.
+- Strong enforcement baseline is active.
+- Legacy patterns are deprecated and must be detected by governance checks.
+- Transitional terminology is tolerated during the current migration window.
 
 Practical effect:
 
-- New material should target Basalt terminology.
-- Historical Quartz references may remain only where required by chronology.
-- Do not promote Quartz to obsolescence until a dedicated cleanup phase is
+- New material should target stable enforcement terminology.
+- Legacy terminology may remain only where required by historical context.
+- Do not deprecate legacy terminology until a dedicated cleanup phase is
   completed, otherwise Z601 noise will flood the pipeline.
 
 ---
@@ -161,18 +160,18 @@ Z602 is a contract check, not an optional lint preference.
 
 ---
 
-## 7) Transition to Full Basalt Enforcement
+## 7) Transition to Final Enforcement Standard
 
-Basalt migration is a two-stage transition:
+This migration is a two-stage transition:
 
 1. Identity stage (current)
 
-`release_name = "Basalt"` is active while Quartz remains tolerated as legacy
+`release_name` is set to the stable identifier while legacy terminology remains tolerated
 historical wording.
 
 2. Hardening stage (planned)
 
-After dedicated historical cleanup, Quartz can be promoted to obsolescence and
+After dedicated cleanup of legacy references, the historical terminology can be fully deprecated and
 strictly enforced by Z601.
 
 This staging prevents false-positive saturation while preserving governance

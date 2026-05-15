@@ -59,8 +59,7 @@ Mostra la struttura i18n a cartelle con contenuto in inglese e italiano.
 **Inizia qui se:** usi MkDocs e vuoi validare link, nav e struttura i18n prima di eseguire la build.
 
 :::note CLI Sovrana
-Il plugin MkDocs nativo (`zenzic.integrations.mkdocs`) è stato rimosso in v0.7.0.
-Esegui Zenzic come step CI — fornisce la stessa applicazione con copertura completa di VSM,
+Esegui Zenzic come CLI standalone tramite analisi esterna guidata da Adapter — fornisce la stessa applicazione con copertura completa di VSM,
 credential scanner e path traversal guard:
 
 ```yaml title=".github/workflows/zenzic.yml"
@@ -122,7 +121,7 @@ Un progetto di documentazione bilingue strutturato per ottenere **100/100** con 
 **Motore:** `standalone`
 **Uscita attesa:** 0
 
-Dimostra il **Modello di Esclusione a Livelli** introdotto in v0.6.1:
+Dimostra il **Modello di Esclusione a Livelli** introdotto in current release:
 
 - `respect_vcs_ignore = true` — Zenzic legge i pattern `.gitignore` al livello L2-VCS.
 - `included_dirs = ["generated-api"]` — forza una directory ignorata da VCS nello scope al livello L2 Forced Inclusion.

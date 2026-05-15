@@ -1,7 +1,7 @@
 ---
 sidebar_label: "The Engineering Ledger"
 sidebar_position: 6
-description: "The three architectural pillars of Zenzic v0.7.0 — Zero Assumptions, Subprocess-Free, and Deterministic Graph — explained as proofs of strength."
+description: "The three architectural pillars of Zenzic — Zero Assumptions, Subprocess-Free, and Deterministic Graph — explained as proofs of strength."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -12,7 +12,7 @@ description: "The three architectural pillars of Zenzic v0.7.0 — Zero Assumpti
 > *"A tool that works for mysterious reasons is not a tool — it is a ritual.
 > Zenzic works for documented reasons. This page is the proof."*
 
-This page is the technical manifesto behind every decision that makes Zenzic v0.7.0
+This page is the technical manifesto behind every decision that makes Zenzic
 reliable enough to be called a **Privacy Gate**. It belongs in the Developer quadrant
 because the user does not need to know this to be protected — but the contributor
 must understand it to extend the system without breaking the contract.
@@ -62,7 +62,7 @@ developer's machine and in production is not a gate — it is noise. Zero subpro
 
 **Implementation:** The 3×3 CI matrix (OS: `[ubuntu, windows, macos]` × Python:
 `[3.11, 3.12, 3.13]`) is the ongoing proof. 1,260+ tests pass on all nine combinations
-as of v0.7.0. Property-based tests (Hypothesis, `ci` profile: 500 examples) stress-test
+as of the standard release. Property-based tests (Hypothesis, `ci` profile: 500 examples) stress-test
 core functions across the input space to surface platform-specific edge cases.
 
 **Invariant (RULE R08):** Codified in `copilot-instructions.md` as a permanent non-negotiable.
@@ -131,6 +131,6 @@ silenced on a credential leak is not a security gate. It is a checkbox.
 ## Further Reading
 
 - [ADR — Architectural Decision Records](./adr-discovery) — the full decision log
-- [Architecture](./architecture-gaps) — open gaps and v0.8.0 roadmap
+- [Architecture](./architecture-gaps) — open gaps and current release roadmap
 - [Finding Codes Reference](/docs/reference/finding-codes) — the full `Zxxx` catalogue
 - [Privacy Gate](/docs/explanation/privacy-gate) — the philosophy behind the engineering

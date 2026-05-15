@@ -279,7 +279,7 @@ La Virtual Site Map è l'**unica fonte di verità per il routing** di Zenzic. È
 
 ### Versioning e Supporto Multi-Doc {#vsm-versioning}
 
-A partire dalla v0.6.1, la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
+Zenzic, la VSM è **consapevole delle versioni**. Per gli adapter che supportano la documentazione multi-versione (attualmente `DocusaurusAdapter`), il VSM builder:
 
 1. **Identifica i confini di versione** tramite la scoperta estesa della root dell'adapter.
 2. **Etichetta le route** con la rispettiva versione in `RouteMetadata`.
@@ -412,7 +412,7 @@ Quando un adapter viene istanziato ma non trova il file di configurazione del mo
 
 ## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
 
-Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in v0.6.1. Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
+Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in current release Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
 
 ### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
 
@@ -614,7 +614,7 @@ Il path traversal guard scatta anche quando `docs_dir` stesso risolve fuori dall
 
 ## Garanzia DFA — Il Motore RE2 {#dfa-guarantee}
 
-Zenzic v0.7.0 utilizza esclusivamente un motore **DFA (Deterministic Finite Automaton)** per tutti
+Zenzic current release utilizza esclusivamente un motore **DFA (Deterministic Finite Automaton)** per tutti
 i pattern regex forniti dall'utente. Questa è un vincolo architetturale rigido, non un'opzione di
 configurazione.
 
@@ -681,7 +681,7 @@ azionabile.
 
 ### Perché non un canary basato su timeout?
 
-L'architettura precedente (v0.6.x) usava un "canary" basato su SIGALRM: il motore NFA di Python
+L'architettura precedente (current series) usava un "canary" basato su SIGALRM: il motore NFA di Python
 veniva eseguito su stringhe di stress all'interno di un timer da 50 ms. Questo forniva una
 protezione *probabilistica*: una macchina veloce poteva valutare `(a+)+` su 50 caratteri prima
 che il timer scattasse. Richiedeva anche codice platform-specific (SIGALRM è solo POSIX) e un
@@ -714,16 +714,16 @@ La soglia di 50 file (`ADAPTIVE_PARALLEL_THRESHOLD`) e un'euristica conservativa
 
 ## CLI Sovrana — Nessun Layer di Integrazioni {#sovereign-cli}
 
-Zenzic v0.7.0 rimuove completamente il namespace `zenzic.integrations`. Il vecchio plugin MkDocs
-(`zenzic.integrations.mkdocs`) e il suo extra `pip install "zenzic[mkdocs]"` sono stati eliminati.
+Zenzic opera come CLI standalone con analisi esterna guidata da Adapter.
+I build engine non vengono mai estesi a runtime da componenti Zenzic.
 
-**Perché:** un hook embedded nel motore accoppia il ciclo di rilascio di Zenzic all'API plugin di
-uno strumento di build esterno. Impedisce inoltre agli utenti di altri motori di accedere
-all'hardening completo di credential scanner e path traversal guard, disponibile solo nella pipeline CLI.
+**Perché:** un hook embedded nel motore accoppia il ciclo di rilascio di Zenzic all'API di uno
+strumento di build esterno. Inoltre impedisce una superficie di enforcement uniforme tra motori.
+La pipeline CLI fornisce hardening completo di credential scanner e path traversal guard.
 Una CLI Sovrana disaccoppia il quality gate dallo strumento di build e rende ogni punto di
 applicazione engine-agnostico.
 
-**Migrazione:** sostituisci la voce `plugins: - zenzic` in `mkdocs.yml` con uno step CI:
+**Migrazione:** esegui Zenzic in CI come quality gate esterno:
 
 ```yaml title=".github/workflows/zenzic.yml"
 # GitHub Actions
@@ -733,7 +733,7 @@ applicazione engine-agnostico.
 ```
 
 Questo produce un'applicazione identica con VSM completo, credential scanner (ZRT-006/007) e path traversal guard
-attivi — capacità che il layer plugin non aveva mai esposto completamente.
+attivi — senza integrazione runtime dentro il build engine.
 
 ---
 

@@ -49,7 +49,7 @@ i blocchi di codice — prima che qualsiasi altro controllo venga eseguito. Se v
 una credenziale:
 ## Analisi Deterministica dei Fallimenti: Prima vs Con Zenzic
 
-| Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic v0.8.0                                                                             |
+| Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic current release                                                                             |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | ZenzicOutput: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
 | **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica O(1) via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
