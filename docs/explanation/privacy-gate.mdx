@@ -188,7 +188,7 @@ score.
 
 ### Scalability profile
 
-| Site size | Phase 1 | Phase 1.5 | Phase 2 | Total |
+| Site size | Pass 1 | Pass 1.5 | Pass 2 | Total |
 | :--- | :--- | :--- | :--- | :--- |
 | 100 pages, 500 links | < 5 ms | < 1 ms | < 2 ms | ~ 8 ms |
 | 1 000 pages, 5 000 links | ~ 30 ms | ~ 8 ms | ~ 15 ms | ~ 55 ms |
@@ -196,7 +196,7 @@ score.
 | 50 000 pages, 250 000 links | ~ 1.5 s | ~ 400 ms | ~ 750 ms | ~ 2.6 s |
 
 All measurements are single-threaded on a mid-range CI runner (2 vCPU,
-4 GB RAM). The credential scanner scan (Phase 1, overlapping) adds < 10% overhead
+4 GB RAM). The credential scanner scan (Pass 1, overlapping) adds < 10% overhead
 regardless of site size because it is a single regex pass per file.
 
 ---

@@ -1,25 +1,25 @@
 ---
-slug: engineering-basalt-deep-dive
-title: "Engineering Basalt: The Anatomy of a Zero-Config Ecosystem"
-sidebar_label: "📜 Deep Dive: Basalt"
+slug: engineering-v080-deep-dive
+title: "Engineering Zenzic: The Anatomy of a Zero-Config Ecosystem"
+sidebar_label: "📜 Deep Dive"
 authors: [pythonwoods]
-tags: [engineering-chronicles, architecture, release]
+tags: [engineering-logs, architecture, release]
 date: 2026-05-12
 description: >
-  A long-form engineering deep dive into Basalt current release: context fragmentation,
+  A long-form engineering deep dive into Zenzic: context fragmentation,
   modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-Basalt emerged as a systems response to a recurring pattern we kept observing across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. We were shipping checks, not guarantees. We were collecting signals, not preserving architecture.
+Zenzic emerged as a systems response to a recurring pattern we kept observing across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. We were shipping checks, not guarantees. We were collecting signals, not preserving architecture.
 
 {/* truncate */}
 
 Italian version available in the Italian locale mirror of this article.
 
-This deep dive is for software architects and technical stakeholders who want to understand why current release matters below the changelog line. The central claim of Basalt is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
+This deep dive is for software architects and technical stakeholders who want to understand why architecture matters below the changelog line. The central claim of Zenzic is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
-The release came from five converging fronts: context fragmentation in complex repositories, dynamic-route ambiguity in static analysis, regex safety risk under adversarial inputs, deployment parity drift between local and CI, and governance blind spots that traditional SSG checks never model.
+The architecture came from five converging fronts: context fragmentation in complex repositories, dynamic-route ambiguity in static analysis, regex safety risk under adversarial inputs, deployment parity drift between local and CI, and governance blind spots that traditional SSG checks never model.
 
 ## 1) The Fragmentation Problem: When Context Stops Scaling
 
@@ -82,7 +82,7 @@ In Docusaurus, a route like `/blog/tags/python/` may not correspond to a physica
 
 Build engines can resolve this because they execute generation logic. But that happens late, is expensive, and does not produce source-level diagnostics suited to pre-commit loops.
 
-Basalt resolves this using the **Virtual Site Map (VSM)** with reverse mapping invariants.
+Zenzic resolves this using the **Virtual Site Map (VSM)** with reverse mapping invariants.
 
 At a high level:
 
@@ -119,7 +119,7 @@ zenzic inspect routes --json
   "kind": "tag",
   "status": "virtual",
   "source_files": [
-    "blog/2026-05-01-basalt-roadmap.mdx",
+    "blog/2026-05-01-v080-roadmap.mdx",
     "blog/2026-05-07-quartz-retrospective.mdx"
   ],
   "frontmatter_keys": ["tags", "slug", "authors"]
@@ -132,7 +132,7 @@ Now the error loop becomes actionable:
 - you know which files generate it,
 - you know which frontmatter fields drive generation.
 
-No Node.js execution is required to get this answer. That is the mathematical core of the Basalt route model.
+No Node.js execution is required to get this answer. That is the mathematical core of the Zenzic route model.
 
 ## 3) Security and ReDoS: The Incident We Avoided by Design
 
@@ -142,7 +142,7 @@ In a benign repository this may look harmless. In CI at scale, under untrusted o
 
 We treated this as a systems boundary problem, not a style refactor.
 
-The Basalt solution is an **Anti-Corruption Layer (Facade)** around regex operations. Contributors keep a simple internal API. The runtime backend is enforced to use RE2 semantics for linear-time matching where policy requires determinism.
+The Zenzic solution is an **Anti-Corruption Layer (Facade)** around regex operations. Contributors keep a simple internal API. The runtime backend is enforced to use RE2 semantics for linear-time matching where policy requires determinism.
 
 ```python
 # simplified facade pattern
@@ -170,7 +170,7 @@ In architectural terms, the facade prevents dependency leakage. The domain model
 
 ## 4) Four Gates in CI/CD: Security as a Supply Chain, Not a Single Check
 
-Many teams still treat documentation quality as a final build concern. Basalt models it as a layered gate system where each stage narrows risk before it becomes expensive.
+Many teams still treat documentation quality as a final build concern. Zenzic models it as a layered gate system where each stage narrows risk before it becomes expensive.
 
 Our gate model has four levels:
 
@@ -202,7 +202,7 @@ That matters for governance and auditability. A failed gate must mean the same t
 
 ## 5) The Namespace Contract: Why Tier Boundaries Changed the System
 
-Before Basalt, code families existed but ownership semantics were still easy to blur in real contribution flows. A policy rule could be discussed like a core invariant. A plugin rule could be treated like a frozen security guardrail.
+Before Zenzic, code families existed but ownership semantics were still easy to blur in real contribution flows. A policy rule could be discussed like a core invariant. A plugin rule could be treated like a frozen security guardrail.
 
 ADR-012 formalized the namespace contract to prevent that bleed.
 
@@ -211,31 +211,31 @@ ADR-012 formalized the namespace contract to prevent that bleed.
 - **Plugin**: third-party extension surfaces.
 - **Custom**: local project constraints.
 
-This matters because suppression semantics and enforcement expectations are tier-dependent by design. Basalt additionally formalizes immutable surfaces such as `FROZEN_CODES`, `NON_SUPPRESSIBLE_CODES`, and `PLUGIN_FORBIDDEN_EXITS` so that security findings cannot be casually reclassified into optional style noise.
+This matters because suppression semantics and enforcement expectations are tier-dependent by design. Zenzic additionally formalizes immutable surfaces such as `FROZEN_CODES`, `NON_SUPPRESSIBLE_CODES`, and `PLUGIN_FORBIDDEN_EXITS` so that security findings cannot be casually reclassified into optional style noise.
 
 Security findings are not suggestions. They are enforcement events.
 
 ## Why This Is a Zero-Config Ecosystem, Not a Zero-Policy Tool
 
-Zero-config often gets misread as "minimal architecture." In Basalt, zero-config means deterministic defaults with explicit contracts that remain inspectable.
+Zero-config often gets misread as "minimal architecture." In Zenzic, zero-config means deterministic defaults with explicit contracts that remain inspectable.
 
-That is why JSON inspection surfaces and tiered code contracts are first-class in current release:
+That is why JSON inspection surfaces and tiered code contracts are first-class in the current architecture:
 
 - They reduce ambiguity for humans.
 - They reduce context burden for automation.
 - They stabilize governance across contributors, agents, and CI.
 
-From an architectural perspective, Basalt is less about adding checks and more about reducing interpretive entropy.
+From an architectural perspective, Zenzic is less about adding checks and more about reducing interpretive entropy.
 
 ## Closing Perspective
 
 The old mental model said: "if the site builds, documentation quality is acceptable."
 
-Basalt rejects that model.
+Zenzic rejects that model.
 
 A successful build can still hide leaked credentials, governance drift, unresolved virtual-route provenance, and policy regressions invisible to render pipelines. Build engines remain essential. They are just not sufficient as documentation integrity systems.
 
-current release proves a different path:
+The system proves a different path:
 
 - deterministic source-first analysis,
 - machine-consumable architectural truth,
@@ -246,9 +246,9 @@ That is what a zero-config ecosystem looks like when engineering contracts are t
 
 ## Publication Decree and Operational Closure
 
-The Basalt transition is now formally published as:
+The Zenzic transition is now formally published as:
 
-> "Epoch 8: Basalt – The Sovereign Transition. Introducing Suppression CAP, Local Sanctuary, and Avion-Grade Governance."
+> "The Sovereign Transition. Introducing Suppression CAP, Local Sanctuary, and Avion-Grade Governance."
 
-With this decree, Phase 1 closes with CI-green contractual enforcement, Release A
+With this decree, the initial rollout closes with CI-green contractual enforcement, Release A
 dashboard archival, and tag publication under sovereign governance semantics.

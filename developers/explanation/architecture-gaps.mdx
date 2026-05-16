@@ -66,9 +66,9 @@ incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `zenzi
 
 ---
 
-## Closed in — Obsidian Stress Test {/* zenzic:ignore Z601 */}
+## Closed in — Integrity Stress Test
 
-:::info[What was the Obsidian Stress Test?]
+:::info[What was the Integrity Stress Test?]
 
 Before the current release release, a structured adversarial stress-test suite was executed against Zenzic's credential scanner
 using realistic bypass techniques. The suite found four real attack vectors.
@@ -78,7 +78,7 @@ All were closed before stable release.
 
 ### ZRT-001 — Unicode Normalization Bypass (credential scanner)
 
-**Identified during:** Obsidian Stress Test (current release pre-release) {/* zenzic:ignore Z601 */}
+**Identified during:** Integrity Stress Test (current release pre-release)
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's regex patterns matched ASCII credential shapes. An attacker
 controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
@@ -99,7 +99,7 @@ is not the pattern — it is the encoding.
 
 ### ZRT-002 — Lookback Buffer Escape (credential scanner)
 
-**Identified during:** Obsidian Stress Test (current release pre-release) {/* zenzic:ignore Z601 */}
+**Identified during:** Integrity Stress Test (current release pre-release)
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's lookback buffer was used to detect multi-line credential
 constructs (e.g. a `password:` key on one line, the value on the next). The attack
@@ -121,7 +121,7 @@ pattern. An informal "large enough" buffer is not a security guarantee.
 
 ### ZRT-003 — HTML Entity Obfuscation (credential scanner)
 
-**Identified during:** Obsidian Stress Test (current release pre-release) {/* zenzic:ignore Z601 */}
+**Identified during:** Integrity Stress Test (current release pre-release)
 **Component:** `core/credentials.py`
 **Description:**  The credential scanner scanned raw Markdown bytes. The attack used HTML entity
 encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The credential scanner's patterns
@@ -141,7 +141,7 @@ pass (NFKC only) is insufficient when HTML rendering is part of the content pipe
 
 ### ZRT-004 — Fenced Block Scope Confusion (credential scanner)
 
-**Identified during:** Obsidian Stress Test (current release pre-release) {/* zenzic:ignore Z601 */}
+**Identified during:** Integrity Stress Test (current release pre-release)
 **Component:** `core/credentials.py`, fenced block state machine
 **Description:**  The credential scanner originally skipped scanning inside triple-backtick fenced
 blocks, reasoning that code examples are not live secrets. The attack embedded a
@@ -269,3 +269,4 @@ The Z204 Privacy Gate and the Z601 Brand Obsolescence Guard form a two-layer arc
   are acceptable.
 
 **Closed in:** current release sprint D100.
+Basalt Stress Test

@@ -72,9 +72,9 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 
 ---
 
-## Chiusi in — Obsidian Stress Test {/* zenzic:ignore Z601 */}
+## Chiusi in — Integrity Stress Test
 
-:::info[Cos'è l'Obsidian Stress Test?]
+:::info[Cos'è l'Integrity Stress Test?]
 
 Prima del rilascio di current release, una suite strutturata di stress test avversariali è stata eseguita sul credential scanner di Zenzic utilizzando tecniche di bypass realistiche. La suite ha individuato quattro vettori di attacco reali. Tutti sono stati chiusi prima del rilascio stabile.
 
@@ -82,7 +82,7 @@ Prima del rilascio di current release, una suite strutturata di stress test avve
 
 ### ZRT-001 — Bypass per Normalizzazione Unicode (credential scanner)
 
-**Identificato durante:** Obsidian Stress Test (pre-release current release) {/* zenzic:ignore Z601 */}
+**Identificato durante:** Integrity Stress Test (pre-release current release)
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** I pattern regex delil credential scanner corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
@@ -105,7 +105,7 @@ La superficie di attacco non è il pattern — è la codifica.
 
 ### ZRT-002 — Fuga dal Buffer di Lookback (credential scanner)
 
-**Identificato durante:** Obsidian Stress Test (pre-release current release) {/* zenzic:ignore Z601 */}
+**Identificato durante:** Integrity Stress Test (pre-release current release)
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** Il buffer di lookback delil credential scanner era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
@@ -128,7 +128,7 @@ di sicurezza.
 
 ### ZRT-003 — Offuscamento con Entità HTML (credential scanner)
 
-**Identificato durante:** Obsidian Stress Test (pre-release current release) {/* zenzic:ignore Z601 */}
+**Identificato durante:** Integrity Stress Test (pre-release current release)
 **Componente:** `core/credentials.py`
 **Descrizione:** Lo credential scanner scansionava i byte Markdown grezzi. L'attacco ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
@@ -151,7 +151,7 @@ fa parte della pipeline dei contenuti.
 
 ### ZRT-004 — Confusione Scope Blocco Delimitato (credential scanner)
 
-**Identificato durante:** Obsidian Stress Test (pre-release current release) {/* zenzic:ignore Z601 */}
+**Identificato durante:** Integrity Stress Test (pre-release current release)
 **Componente:** `core/credentials.py`, macchina a stati dei blocchi delimitati
 **Descrizione:** Il credential scanner saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti

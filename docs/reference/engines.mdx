@@ -404,9 +404,9 @@ Given a blog post with `tags: [python, tutorial]`, Zenzic emits three virtual ro
 The tag index (`/blog/tags/`) always lists the **union** of all blog files that carry at
 least one tag, giving the cross-file traceability needed for diagnostics.
 
-:::note[Pagination and Authors — Phase 2]
-Pagination routes (`/blog/page/{n}/`) and author routes will be added in subsequent
-phases. The `VirtualRoute.kind` field already reserves the literals `"pagination"`,
+:::note[Pagination and Authors — future milestone]
+Pagination routes (`/blog/page/{n}/`) and author routes will be added in a subsequent
+release. The `VirtualRoute.kind` field already reserves the literals `"pagination"`,
 `"author"`, and `"author_index"` so downstream consumers can handle all route kinds
 without a breaking schema change.
 :::

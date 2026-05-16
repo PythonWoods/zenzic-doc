@@ -222,7 +222,7 @@ Engine migration changes adapters, not Zenzic policy. Keep run behavior aligned 
 
 :::
 
-### Phase 1 — Establish a baseline
+### Step 1 — Establish a baseline
 
 Run the full check suite and lock in a quality baseline before changing anything:
 
@@ -236,7 +236,7 @@ A saved baseline means that any regression introduced during the migration is im
 measurable with `zenzic diff`. The baseline is a snapshot of your source state — it does
 not depend on any build engine being functional.
 
-### Phase 2 — Switch the build binary
+### Step 2 — Switch the build binary
 
 Install Zensical alongside (or instead of) MkDocs:
 
@@ -270,7 +270,7 @@ zenzic check all
 zenzic diff              # should report zero delta against the pre-migration baseline
 ```
 
-### Phase 3 — Declare Zensical identity (optional)
+### Step 3 — Declare Zensical identity (optional)
 
 If you want Zenzic to enforce the Zensical structural contract — requiring `zensical.toml`
 to be present and using `ZensicalAdapter` for nav extraction — update `zenzic.toml`:
@@ -307,7 +307,7 @@ that Zensical ignores: `remote_branch`, `remote_name`, `exclude_docs`, `draft_do
 `not_in_nav`, `validation`, `strict`, `hooks`, and `watch`.
 :::
 
-### Phase 4 — Verify link integrity
+### Step 4 — Verify link integrity
 
 The link check is your most important validation step. Run it against the completed
 migration:

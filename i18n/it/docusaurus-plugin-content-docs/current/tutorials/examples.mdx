@@ -35,7 +35,7 @@ zenzic check all
 
 ## Catalogo degli Esempi {#catalog}
 
-### Standalone — Quality Gate Agnostico al Motore {#standalone}
+### Standalone — Quality Gate Agnostico al Motore {#example-standalone}
 
 **Directory:** `examples/standalone-markdown/`
 **Motore:** `standalone` (nessun motore di build)
@@ -47,7 +47,7 @@ Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdo
 
 ---
 
-### mkdocs-basic — Showcase dell'Adapter MkDocs {#mkdocs-basic}
+### mkdocs-basic — Showcase dell'Adapter MkDocs {#example-mkdocs-basic}
 
 **Directory:** `examples/mkdocs-basic/`
 **Motore:** `mkdocs`
@@ -72,7 +72,7 @@ credential scanner e path traversal guard:
 
 ---
 
-### docusaurus-v3 — Routing Metadata-Driven {#docusaurus-v3}
+### docusaurus-v3 — Routing Metadata-Driven {#example-docusaurus-v3}
 
 **Directory:** `examples/docusaurus-v3/`
 **Motore:** `docusaurus`
@@ -91,7 +91,7 @@ slug: /about
 
 ---
 
-### zensical-basic — Motore Zensical {#zensical-basic}
+### zensical-basic — Motore Zensical {#example-zensical-basic}
 
 **Directory:** `examples/zensical-basic/`
 **Motore:** `zensical`
@@ -103,7 +103,7 @@ Progetto minimale che dimostra `ZensicalAdapter` che legge `zensical.toml`. Ness
 
 ---
 
-### i18n-standard — Documentazione Bilingue Gold Standard {#i18n-standard}
+### i18n-standard — Documentazione Bilingue Gold Standard {#example-i18n-standard}
 
 **Directory:** `examples/i18n-standard/`
 **Motore:** `mkdocs`
@@ -163,7 +163,17 @@ L'implementazione di riferimento per scrivere un plugin di regole Zenzic persona
 
 ---
 
-### broken-docs — Fixture di Riferimento per i Fallimenti {#broken-docs}
+### z108-empty-link — Controllo Link Vuoti {#example-z108-empty-link}
+
+**Directory:** `examples/rules/z108-empty-link/`
+**Motore:** `standalone`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+Dimostra il rilevamento dei link Markdown vuoti (Z108 `EMPTY_LINK_TEXT`). Questa fixture fallisce intenzionalmente il gate di Integrità Strutturale per mostrare come vengono riportate le etichette di link malformate.
+
+---
+
+### broken-docs — Fixture di Riferimento per i Fallimenti {#example-broken-docs}
 
 **Directory:** `examples/broken-docs/`
 **Motore:** `mkdocs`
@@ -191,17 +201,18 @@ Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il lin
 
 | Funzionalità | Esempio |
 | :--- | :--- |
-| Markdown puro zero-config | [standalone](#standalone) {/* zenzic:ignore Z107 */} |
-| Analisi statica MkDocs | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
-| Baseline MkDocs sicura per migrazione | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
-| Adapter Docusaurus + routing slug | [docusaurus-v3](#docusaurus-v3) {/* zenzic:ignore Z107 */} |
-| Motore Zensical | [zensical-basic](#zensical-basic) {/* zenzic:ignore Z107 */} |
-| Bilingue / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
+| Markdown puro zero-config | [standalone](#example-standalone) |
+| Analisi statica MkDocs | [mkdocs-basic](#example-mkdocs-basic) |
+| Baseline MkDocs sicura per migrazione | [mkdocs-basic](#example-mkdocs-basic) |
+| Adapter Docusaurus + routing slug | [docusaurus-v3](#example-docusaurus-v3) |
+| Motore Zensical | [zensical-basic](#example-zensical-basic) |
+| Bilingue / i18n 100/100 | [i18n-standard](#example-i18n-standard) |
 | Esclusione VCS-aware (L1–4) | [vcs-aware-project](#vcs-aware) |
 | `docs_dir` personalizzata | [custom-dir-target](#custom-dir) |
 | Scope `PATH` su singolo file | [single-file-target](#single-file) |
 | Plugin di regole custom | [plugin-scaffold-demo](#plugin-scaffold) |
-| Come appaiono i fallimenti | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
+| Rilevamento link vuoti Z108 | [z108-empty-link](#example-z108-empty-link) |
+| Come appaiono i fallimenti | [broken-docs](#example-broken-docs) |
 | Rilevamento credenziali | [security_lab](#security-lab) |
 
 ---

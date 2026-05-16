@@ -63,9 +63,9 @@ milestone:
   permalink: /milestone
   description: "Historical records of release milestones."
 
-engineering-chronicles:
-  label: "Engineering Chronicles"
-  permalink: /chronicles
+engineering-logs:
+  label: "Engineering Logs"
+  permalink: /logs
   description: "In-depth engineering records: architecture decisions, release deep dives, and implementation notes."
 
 user-tutorials:

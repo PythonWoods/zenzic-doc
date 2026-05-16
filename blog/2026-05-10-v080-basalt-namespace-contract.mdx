@@ -1,17 +1,17 @@
 ---
-slug: v080-basalt-namespace-contract
-title: "current release Basalt: The Namespace Contract & The End of the SSG Illusion"
-sidebar_label: "📜 Log: current release Basalt"
+slug: v080-v080-namespace-contract
+title: "The Namespace Contract & The End of the SSG Illusion"
+sidebar_label: "📜 Log: Namespace Contract"
 authors: [pythonwoods]
-tags: [engineering-chronicles, release]
+tags: [engineering-logs, release]
 date: 2026-05-10
 description: >
-  current release Basalt formalizes the namespace contract, tiered code governance,
+  The current release formalizes the namespace contract, tiered code governance,
   and deterministic diagnostics for virtual routes.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-current release Basalt is a contract release: explicit tier boundaries, frozen security guarantees,
+The system is built on a contract: explicit tier boundaries, frozen security guarantees,
 and a machine-consumable route surface for external tools.
 
 {/* truncate */}
@@ -27,10 +27,10 @@ Build engines and static analyzers solve different phases of the problem:
 
 ### Four hard facts
 
-| Topic | Typical SSG Build Flow | Zenzic current release Basalt |
+| Topic | Typical SSG Build Flow | Zenzic |
 |:--|:--|:--|
 | Shift-Left and speed | Full compile loop (Node.js/Go/Python stack), usually CI-bound and minute-scale feedback. | Pre-commit local analysis on source text and metadata, millisecond-scale feedback for targeted checks. |
-| Security | A build can succeed while secrets remain committed in source files. | Shield enforces security-tier findings (`Z2xx`) and stops the pipeline on security exits. |
+| Security | A build can succeed while secrets remain committed in source files. | Security Core enforces security-tier findings (`Z2xx`) and stops the pipeline on security exits. |
 | Governance | No native concept of brand obsolescence or translation parity drift. | Governance codes enforce policy explicitly (`Z601` brand obsolescence, `Z602` i18n parity). |
 | Actionable diagnostics | Generated-route failures often surface as generic 404/build errors. | VSM reverse mapping links the failing virtual route to concrete source files/frontmatter context. |
 
@@ -48,7 +48,7 @@ engine is available.
 
 ## The Namespace Contract (ADR-012)
 
-Basalt introduces an explicit tier model for findings and ownership.
+Zenzic introduces an explicit tier model for findings and ownership.
 
 | Tier | Ownership | Purpose |
 |:--|:--|:--|
@@ -61,7 +61,7 @@ Basalt introduces an explicit tier model for findings and ownership.
 
 Security is not a style preference. It is a non-negotiable contract.
 
-Basalt formalizes frozen security semantics through immutable code surfaces such as:
+Zenzic formalizes frozen security semantics through immutable code surfaces such as:
 
 - `FROZEN_CODES`
 - `NON_SUPPRESSIBLE_CODES`
@@ -75,7 +75,7 @@ The practical implication is simple:
 
 ## Open Ecosystem: JSON API and Structum Integration
 
-Basalt exposes route truth as a machine interface:
+Zenzic exposes route truth as a machine interface:
 
 ```bash
 zenzic inspect routes --json
@@ -93,7 +93,7 @@ This removes fragile text scraping from the workflow. Tools consume contracts, n
 
 ## Bottom line
 
-current release Basalt closes a long-standing gap in documentation QA:
+The system closes a long-standing gap in documentation QA:
 
 - Build validity is no longer mistaken for source integrity.
 - Security is enforced as contract, not convention.
@@ -102,11 +102,11 @@ current release Basalt closes a long-standing gap in documentation QA:
 
 That is the end of the SSG illusion.
 
-## Publication Decree: Epoch 8
+## Publication Decree: Sovereign Transition
 
-Epoch 8 is now formally declared as:
+The Sovereign Transition is now formally declared as:
 
-> "Epoch 8: Basalt – The Sovereign Transition. Introducing Suppression CAP, Local Sanctuary, and Avion-Grade Governance."
+> "The Sovereign Transition. Introducing Suppression CAP, Local Sanctuary, and Avion-Grade Governance."
 
-Basalt is operational as fleet standard. Release A dashboard can now be archived,
-and repository tagging proceeds under the Basalt protocol.
+The system is operational as fleet standard. The initial rollout dashboard can now be archived,
+and repository tagging proceeds under the new protocol.

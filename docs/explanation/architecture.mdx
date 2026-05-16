@@ -91,15 +91,15 @@ The report includes:
 
 ### Link Validation Pipeline {#link-validation}
 
-The link validator (`validate_links_async`) operates independently with its own multi-phase structure:
+The link validator (`validate_links_async`) operates independently with its own multi-pass structure:
 
-**Phase 1** -- Read all `.md` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
+**Pass 1** -- Read all `.md` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
 
-**Phase 1.5** -- Build the link adjacency graph and run iterative DFS cycle detection. The cycle registry is a `frozenset[str]` -- O(1) membership checks in Phase 2. Total complexity: Theta(V+E).
+**Pass 1.5** -- Build the link adjacency graph and run iterative DFS cycle detection. The cycle registry is a `frozenset[str]` -- O(1) membership checks in Pass 2. Total complexity: Theta(V+E).
 
-**Phase 2** -- Validate each link against the resolver, VSM, and cycle registry. Internal links are resolved entirely in memory (no disk I/O). External links are collected for Phase 3.
+**Pass 2** -- Validate each link against the resolver, VSM, and cycle registry. Internal links are resolved entirely in memory (no disk I/O). External links are collected for Pass 3.
 
-**Phase 3** (strict mode only) -- Concurrent HTTP HEAD validation of external URLs via `httpx`. Up to 20 simultaneous connections. Each unique URL is pinged exactly once regardless of how many files reference it.
+**Pass 3** (strict mode only) -- Concurrent HTTP HEAD validation of external URLs via `httpx`. Up to 20 simultaneous connections. Each unique URL is pinged exactly once regardless of how many files reference it.
 
 ---
 
@@ -383,7 +383,7 @@ However, Zenzic's **link integrity** validation (broken links, absolute paths) r
 
 The `InMemoryPathResolver` is not a simple file-lookup table. It implements an **Alias Mapping** layer that translates virtual path prefixes into physical filesystem paths before any link validation takes place.
 
-The resolver is initialised once during Phase 1 with a complete in-memory file map. At initialisation it also registers all known alias prefixes for the active adapter. Currently supported aliases:
+The resolver is initialised once during Pass 1 with a complete in-memory file map. At initialisation it also registers all known alias prefixes for the active adapter. Currently supported aliases:
 
 | Alias prefix | Resolves to | Engine |
 | :--- | :--- | :--- |
@@ -391,7 +391,7 @@ The resolver is initialised once during Phase 1 with a complete in-memory file m
 
 When a link target uses `@site/static/img/logo.png`, the resolver strips the virtual prefix and remaps the path to `repo_root/static/img/logo.png` before checking for file existence. This prevents spurious `PATH_TRAVERSAL` errors that would otherwise fire for valid Docusaurus project-relative references.
 
-**Key property:** alias resolution happens entirely in memory. No disk I/O is performed; the resolver consults only the file index built during Phase 1. This preserves the Zero-I/O hot-path invariant (Core Law 1).
+**Key property:** alias resolution happens entirely in memory. No disk I/O is performed; the resolver consults only the file index built during Pass 1. This preserves the Zero-I/O hot-path invariant (Core Law 1).
 
 ### Engine Factory {#engine-factory}
 

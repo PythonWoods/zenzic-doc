@@ -34,7 +34,7 @@ zenzic check all
 
 ## Example Catalog {#catalog}
 
-### Standalone — Engine-Agnostic Quality Gate {#standalone}
+### Standalone — Engine-Agnostic Quality Gate {#example-standalone}
 
 **Directory:** `examples/standalone-markdown/`
 **Engine:** `standalone` (no build engine)
@@ -46,7 +46,7 @@ Demonstrates Zenzic running without any documentation engine. No `mkdocs.yml`, n
 
 ---
 
-### mkdocs-basic — MkDocs Adapter Showcase {#mkdocs-basic}
+### mkdocs-basic — MkDocs Adapter Showcase {#example-mkdocs-basic}
 
 **Directory:** `examples/mkdocs-basic/`
 **Engine:** `mkdocs`
@@ -72,7 +72,7 @@ credential scanner, and path traversal guard coverage:
 
 ---
 
-### docusaurus-v3 — Metadata-Driven Routing {#docusaurus-v3}
+### docusaurus-v3 — Metadata-Driven Routing {#example-docusaurus-v3}
 
 **Directory:** `examples/docusaurus-v3/`
 **Engine:** `docusaurus`
@@ -91,7 +91,7 @@ slug: /about
 
 ---
 
-### zensical-basic — Zensical Engine {#zensical-basic}
+### zensical-basic — Zensical Engine {#example-zensical-basic}
 
 **Directory:** `examples/zensical-basic/`
 **Engine:** `zensical`
@@ -103,7 +103,7 @@ Minimal project demonstrating `ZensicalAdapter` reading `zensical.toml`. No Pyth
 
 ---
 
-### i18n-standard — Gold Standard Bilingual Docs {#i18n-standard}
+### i18n-standard — Gold Standard Bilingual Docs {#example-i18n-standard}
 
 **Directory:** `examples/i18n-standard/`
 **Engine:** `mkdocs`
@@ -163,7 +163,17 @@ The reference implementation for writing a custom Zenzic rule plugin. Generated 
 
 ---
 
-### broken-docs — Failure Reference Fixture {#broken-docs}
+### z108-empty-link — Empty Link Check {#example-z108-empty-link}
+
+**Directory:** `examples/rules/z108-empty-link/`
+**Engine:** `standalone`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+Demonstrates the detection of empty Markdown links (Z108 `EMPTY_LINK_TEXT`). This fixture intentionally fails the Structural Integrity gate to show how malformed link labels are reported.
+
+---
+
+### broken-docs — Failure Reference Fixture {#example-broken-docs}
 
 **Directory:** `examples/broken-docs/`
 **Engine:** `mkdocs`
@@ -191,17 +201,18 @@ Intentionally triggers the credential scanner (credential detection) and the lin
 
 | Feature | Example |
 | :--- | :--- |
-| Zero-config plain Markdown | [standalone](#standalone) {/* zenzic:ignore Z107 */} |
-| MkDocs static analysis | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
-| MkDocs migration-safe baseline | [mkdocs-basic](#mkdocs-basic) {/* zenzic:ignore Z107 */} |
-| Docusaurus adapter + slug routing | [docusaurus-v3](#docusaurus-v3) {/* zenzic:ignore Z107 */} |
-| Zensical engine | [zensical-basic](#zensical-basic) {/* zenzic:ignore Z107 */} |
-| Bilingual / i18n 100/100 | [i18n-standard](#i18n-standard) {/* zenzic:ignore Z107 */} |
+| Zero-config plain Markdown | [standalone](#example-standalone) |
+| MkDocs static analysis | [mkdocs-basic](#example-mkdocs-basic) |
+| MkDocs migration-safe baseline | [mkdocs-basic](#example-mkdocs-basic) |
+| Docusaurus adapter + slug routing | [docusaurus-v3](#example-docusaurus-v3) |
+| Zensical engine | [zensical-basic](#example-zensical-basic) |
+| Bilingual / i18n 100/100 | [i18n-standard](#example-i18n-standard) |
 | VCS-aware exclusion (L1–4) | [vcs-aware-project](#vcs-aware) |
 | Custom `docs_dir` | [custom-dir-target](#custom-dir) |
 | Single-file `PATH` scope | [single-file-target](#single-file) |
 | Custom rule plugin | [plugin-scaffold-demo](#plugin-scaffold) |
-| What failures look like | [broken-docs](#broken-docs) {/* zenzic:ignore Z107 */} |
+| Z108 Empty Link detection | [z108-empty-link](#example-z108-empty-link) |
+| What failures look like | [broken-docs](#example-broken-docs) |
 | credential scanner detection | [security_lab](#security-lab) |
 
 ---

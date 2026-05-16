@@ -18,16 +18,16 @@ Zenzic runs **six independent checks**. Each addresses a distinct category of do
 
 | Check | CLI | What it catches |
 | :--- | :--- | :--- |
-| [Links](#links) | `zenzic check links` | Broken internal links, dead anchors, unreachable URLs {/* zenzic:ignore Z107 */} |
-| [Orphans](#orphans) | `zenzic check orphans` | `.md` files present on disk but absent from nav {/* zenzic:ignore Z107 */} |
-| [Snippets](#snippets) | `zenzic check snippets` | Python/YAML/JSON/TOML syntax errors in fenced blocks {/* zenzic:ignore Z107 */} |
-| [Placeholders](#placeholders) | `zenzic check placeholders` | Stub pages with low word count or `TODO` patterns {/* zenzic:ignore Z107 */} |
-| [Assets](#assets) | `zenzic check assets` | Media never referenced by any page {/* zenzic:ignore Z107 */} |
-| [References](#references) | `zenzic check references` | Dangling ref-links, dead definitions, leaked credentials {/* zenzic:ignore Z107 */} |
+| [Links](#check-links) | `zenzic check links` | Broken internal links, dead anchors, unreachable URLs |
+| [Orphans](#check-orphans) | `zenzic check orphans` | `.md` files present on disk but absent from nav |
+| [Snippets](#check-snippets) | `zenzic check snippets` | Python/YAML/JSON/TOML syntax errors in fenced blocks |
+| [Placeholders](#check-placeholders) | `zenzic check placeholders` | Stub pages with low word count or `TODO` patterns |
+| [Assets](#check-assets) | `zenzic check assets` | Media never referenced by any page |
+| [References](#check-references) | `zenzic check references` | Dangling ref-links, dead definitions, leaked credentials |
 
 ---
 
-## Links {#links}
+## Links {#check-links}
 
 **CLI:** `zenzic check links [--strict]`
 
@@ -161,7 +161,7 @@ The two streams have opposite filtering rules by design. The Content stream must
 
 ### Circular links
 
-Cycle detection is computed once with iterative DFS during resolver construction (Phase 1.5, Θ(V+E)). Every Phase 2 membership lookup against the cycle registry is O(1).
+Cycle detection is computed once with iterative DFS during resolver construction (Pass 1.5, Θ(V+E)). Every Pass 2 membership lookup against the cycle registry is O(1).
 
 | Code | Severity | Exit code | Meaning |
 | :--- | :---: | :---: | :--- |
@@ -180,7 +180,7 @@ They never affect exit codes in either normal or `--strict` mode.
 
 ---
 
-## Orphans {#orphans}
+## Orphans {#check-orphans}
 
 **CLI:** `zenzic check orphans`
 
@@ -195,7 +195,7 @@ An orphan page exists on disk but is not listed in the site navigation. It is in
 
 ---
 
-## Snippets {#snippets}
+## Snippets {#check-snippets}
 
 **CLI:** `zenzic check snippets`
 
@@ -234,7 +234,7 @@ snippet_min_lines = 3
 
 ---
 
-## Placeholders {#placeholders}
+## Placeholders {#check-placeholders}
 
 **CLI:** `zenzic check placeholders`
 
@@ -262,7 +262,7 @@ placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
 
 ---
 
-## Assets {#assets}
+## Assets {#check-assets}
 
 **CLI:**
 
@@ -285,7 +285,7 @@ An asset is considered **used** if it appears as a Markdown image link (`![alt](
 
 ---
 
-## References {#references}
+## References {#check-references}
 
 **CLI:** `zenzic check references`
 

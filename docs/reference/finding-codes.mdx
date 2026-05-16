@@ -90,7 +90,7 @@ Z101 counts toward the **Structural Integrity** category in the [Deterministic Q
 :::
 
 * **Severity:** `error`
-* **Technical Context:** Emitted during Phase 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs scan scope or was excluded by an exclusion rule.
+* **Technical Context:** Emitted during Pass 2 (Validation) of the Two-Pass Engine. A relative link points to a resource that does not exist within the **Virtual Site Map (VSM)**. This means that while the file might exist physically, it is either outside the docs scan scope or was excluded by an exclusion rule.
 * **Remediation Steps:**
     1. Verify the physical existence of the target file.
     2. Check the relative path calculation (e.g., `../folder/target.md`).
@@ -112,7 +112,7 @@ Z102 counts toward the **Structural Integrity** category. An unresolved anchor i
 :::
 
 * **Severity:** `error`
-* **Technical Context:** The file target is valid (Z101 pass), but the specific HTML anchor (e.g., `#setup`) cannot be found in the target's header registry. Zenzic parses all Markdown headers and explicit `<a id="...">` tags to build this registry during Phase 1.
+* **Technical Context:** The file target is valid (Z101 pass), but the specific HTML anchor (e.g., `#setup`) cannot be found in the target's header registry. Zenzic parses all Markdown headers and explicit `<a id="...">` tags to build this registry during Pass 1.
 * **Remediation Steps:**
     1. Open the target file and verify the heading text.
     2. Ensure the anchor matches the engine-specific slugification (e.g., Docusaurus uses Kebab-case).
@@ -213,6 +213,10 @@ Z108 is a structural integrity violation at `error` severity. Empty or whitespac
   1. Replace the empty label with descriptive link text, e.g. `[Documentation](./page.md)`.
   2. If the link is only a placeholder, remove it until the destination and label are known.
   3. Re-run `zenzic check links` after the edit to confirm that no Z108 findings remain.
+
+:::tip[Executable Example]
+For a hands-on demonstration, see the [z108-empty-link fixture](https://github.com/PythonWoods/zenzic/tree/main/examples/rules/z108-empty-link) in the official examples repository.
+:::
 
 ---
 

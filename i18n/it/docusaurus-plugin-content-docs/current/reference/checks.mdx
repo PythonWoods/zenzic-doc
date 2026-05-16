@@ -18,16 +18,16 @@ Zenzic esegue **sei controlli indipendenti**. Ciascuno affronta una categoria di
 
 | Controllo | CLI | Cosa individua |
 | :--- | :--- | :--- |
-| [Controllo Link](#links) | `zenzic check links` | Link interni rotti, ancore morte, URL irraggiungibili |
-| [Orfani](#orphans) | `zenzic check orphans` | File `.md` presenti su disco ma assenti dalla navigazione |
-| [Snippet](#snippets) | `zenzic check snippets` | Errori di sintassi Python/YAML/JSON/TOML nei blocchi di codice |
-| [Segnaposto](#placeholders) | `zenzic check placeholders` | Pagine stub con basso conteggio parole o pattern `TODO` |
-| [Asset](#assets) | `zenzic check assets` | Media mai referenziati da alcuna pagina |
-| [Riferimenti](#references) | `zenzic check references` | Ref-link pendenti, definizioni morte, credenziali esposte |
+| [Controllo Link](#check-links) | `zenzic check links` | Link interni rotti, ancore morte, URL irraggiungibili |
+| [Orfani](#check-orphans) | `zenzic check orphans` | File `.md` presenti su disco ma assenti dalla navigazione |
+| [Snippet](#check-snippets) | `zenzic check snippets` | Errori di sintassi Python/YAML/JSON/TOML nei blocchi di codice |
+| [Segnaposto](#check-placeholders) | `zenzic check placeholders` | Pagine stub con basso conteggio parole o pattern `TODO` |
+| [Asset](#check-assets) | `zenzic check assets` | Media mai referenziati da alcuna pagina |
+| [Riferimenti](#check-references) | `zenzic check references` | Ref-link pendenti, definizioni morte, credenziali esposte |
 
 ---
 
-## Link {#links}
+## Link {#check-links}
 
 **CLI:** `zenzic check links [--strict]`
 
@@ -180,7 +180,7 @@ Non influenzano mai gli exit code, né in modalità normale né in modalità `--
 
 ---
 
-## Orfani {#orphans}
+## Orfani {#check-orphans}
 
 **CLI:** `zenzic check orphans`
 
@@ -195,7 +195,7 @@ Una pagina orfana esiste su disco ma non è elencata nella navigazione del sito.
 
 ---
 
-## Snippet {#snippets}
+## Snippet {#check-snippets}
 
 **CLI:** `zenzic check snippets`
 
@@ -234,7 +234,7 @@ snippet_min_lines = 3
 
 ---
 
-## Segnaposto {#placeholders}
+## Segnaposto {#check-placeholders}
 
 **CLI:** `zenzic check placeholders`
 
@@ -262,7 +262,7 @@ placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
 
 ---
 
-## Asset {#assets}
+## Asset {#check-assets}
 
 **CLI:**
 
@@ -285,7 +285,7 @@ Un asset è considerato **usato** se appare come link immagine Markdown (`![alt]
 
 ---
 
-## Riferimenti {#references}
+## Riferimenti {#check-references}
 
 **CLI:** `zenzic check references`
 

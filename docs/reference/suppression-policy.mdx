@@ -274,7 +274,7 @@ The comment should always appear at the **end of the line** (or end of the cell 
 **Markdown tables:** Comment at the end of the **last cell**, before the closing pipe.
 
 ```md
-| [Section](#section) | Description of this section. <!-- zenzic:ignore Z107 --> |
+| [Section](#example-section) | Description of this section. |
 ```
 
 :::tip[Why trailing?]
@@ -354,7 +354,8 @@ You cannot ignore a breach.
 
 Suppression is an act of **documented intent**, not evasion. In a `git` repository, a `zenzic:ignore` comment is a signed declaration that the author reviewed the finding and considered it a legitimate exception. Suppression should be used for:
 
-- **ToC navigation links** — `[Section Name](#section-name)` is a common in-page ToC pattern that triggers Z107. These are intentional and suppressible. {/* zenzic:ignore Z107 */}
+- **ToC navigation links** — `[Section Name](#example-section-name)` is a common in-page ToC pattern that might look like Z107.
+
 - **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames (Z601).
 - **Intentionally short pages** — A `glossary.md` with terse definitions may be below the Z502 word-count threshold by design.
 
