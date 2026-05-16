@@ -29,7 +29,7 @@ excluded_external_urls = [
 placeholder_patterns  = []
 placeholder_max_words = 0
 
-# --- ENGINE CONTEXT (v0.8.0) ---
+# --- ENGINE CONTEXT (DOCS) ---
 # Zero-Config (v0.7.0+):
 #   * `_category_.json` is auto-shielded by DocusaurusAdapter.get_metadata_files()
 #     — no need to declare it under [excluded_assets].
@@ -50,9 +50,8 @@ locales        = ["it"]
 release_name = "Basalt"
 
 [governance]
-# Suppression CAP: max active suppressions before hard build failure.
-# Each suppression within the cap costs 1 pt; beyond the cap, 2 pt each.
-# Cost formula: min(n,45)×1 pt + max(0,n-45)×2 pt.
+# Suppression CAP (ADR-061): allowance of governance-approved exemptions.
+# Suppressions up to this value do not reduce score. Only excess deducts points.
 # Run 'zenzic explain ZXXX' to see the exact penalty for any rule.
 suppression_cap = 49
 suppression_cap_fail_hard = true
@@ -60,8 +59,7 @@ suppression_cap_fail_hard = true
 # Per-file suppression map: silence a rule for specific file globs.
 # WARNING: Every entry increases your Technical Debt Score (see formula above).
 # Use 'zenzic check --audit' to see all findings including suppressed ones.
-# [governance.per_file_ignores]
-# "docs/explanation/**" = ["Z601"]  # intentional historical references
+
 
 # Permanent vocabulary guardian: Z601 BRAND_OBSOLESCENCE fires if any of these
 # theatrical brand terms reappear in documentation source.

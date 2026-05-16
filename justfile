@@ -4,7 +4,8 @@
 # just - Quartz Enterprise workflow for zenzic-doc
 set shell :=["bash", "-c"]
 
-# Default to the installed Zenzic entry point, allow local override via ZENZIC_BIN.
+# Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
+# In CI/CD the installed `zenzic` binary is used by default.
 ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
 
 # Use `just --list` to see available commands

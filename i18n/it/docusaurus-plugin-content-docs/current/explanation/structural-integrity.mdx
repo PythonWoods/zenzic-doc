@@ -41,7 +41,9 @@ Le regole di Integrità Strutturale catturano questi errori **prima che il build
 | :--- | :--- | :--- |
 | [`Z101`](../reference/finding-codes.mdx#z101) | `LINK_BROKEN` | Link interni morti — file non trovato |
 | [`Z102`](../reference/finding-codes.mdx#z102) | `ANCHOR_MISSING` | Link a heading che non esistono più |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Cicli di link circolari (solo informativo) |
 | [`Z107`](../reference/finding-codes.mdx#z107) | `CIRCULAR_ANCHOR` | Link anchor auto-referenziali |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Etichette di link vuote o composte solo da whitespace |
 | [`Z401`](../reference/finding-codes.mdx#z401) | `MISSING_DIRECTORY_INDEX` | Directory senza `index.md` raggiungibile |
 | [`Z402`](../reference/finding-codes.mdx#z402) | `ORPHAN_PAGE` | File irraggiungibili da qualsiasi percorso di navigazione |
 | [`Z404`](../reference/finding-codes.mdx#z404) | `CONFIG_ASSET_MISSING` | Asset dichiarati nella config che non esistono su disco |
@@ -91,7 +93,8 @@ l'autore e ogni strumento nella pipeline.
 | :--- | :--- | :--- |
 | [`Z505`](../reference/finding-codes.mdx#z505) | `UNTAGGED_CODE_BLOCK` | Blocchi delimitati senza specificatore di linguaggio |
 | [`Z503`](../reference/finding-codes.mdx#z503) | `SNIPPET_ERROR` | Snippet di codice che non superano il parsing |
-| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link che formano un ciclo di riferimento circolare |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link che formano un ciclo di riferimento circolare (solo informativo) |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Link con etichetta vuota o composta solo da whitespace |
 
 ---
 

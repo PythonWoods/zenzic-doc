@@ -96,8 +96,9 @@ $$
 | Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
 | Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
 | Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
-| Z106 | CIRCULAR_LINK | 1.0 pts | Structural |
 | Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
+| Z106 | CIRCULAR_LINK | 0.0 pts | Informational (no DQS impact) |
+| Z108 | EMPTY_LINK_TEXT | 1.0 pts | Structural |
 | Z301 | DANGLING_REF | 4.0 pts | Navigation |
 | Z302 | DEAD_DEF | 1.0 pts | Navigation |
 | Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
@@ -109,6 +110,10 @@ $$
 | Z405 | UNUSED_ASSET | 3.0 pts | Governance |
 | Z406 | NAV_CONTRACT | 2.0 pts | Governance |
 | Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
+
+:::note Z106 is informational only
+Z106 is still emitted as a diagnostic for circular link cycles, but it is excluded from the penalty table and does not contribute to any DQS bucket.
+:::
 
 :::note Z602 is not scored
 Z602 (I18N_PARITY) is a Governance gate that fires as a standalone finding. It does not contribute to any DQS bucket and therefore has no penalty value in the table above.

@@ -31,7 +31,7 @@ codici di finding `Zxxx` che emette.
 
 | Categoria | Comando | Codici Finding | Peso |
 |-----------|---------|----------------|---------|
-| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z107] | **40 %** |
+| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z106], [Z107], [Z108] | **40 %** |
 | **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **30 %** |
 | **Navigazione & SEO** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
 | **Brand & Asset** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **10 %** |
@@ -41,7 +41,9 @@ codici di finding `Zxxx` che emette.
 [Z103]: ../reference/finding-codes.mdx#z103
 [Z104]: ../reference/finding-codes.mdx#z104
 [Z105]: ../reference/finding-codes.mdx#z105
+[Z106]: ../reference/finding-codes.mdx#z106
 [Z107]: ../reference/finding-codes.mdx#z107
+[Z108]: ../reference/finding-codes.mdx#z108
 [Z402]: ../reference/finding-codes.mdx#z402
 [Z501]: ../reference/finding-codes.mdx#z501
 [Z502]: ../reference/finding-codes.mdx#z502
@@ -82,7 +84,10 @@ questo è il **Category Cap** (Tetto di Categoria).
 | Z502 | Contenuto Breve | 1.0 | Content |
 | Z505 | Blocco di Codice Non Etichettato | 1.0 | Content |
 | Z107 | Ancora Circolare | 1.0 | Structural |
-| Z106 | Link Circolare | 1.0 | Structural |
+| Z106 | Link Circolare | 0.0 | Informativo |
+| Z108 | Empty Link Text | 1.0 | Structural |
+
+Z106 è una diagnostica di integrità dei link, ma non sottrae punti. Z108 è la nuova penalità strutturale per le etichette di link malformate.
 
 ### Invariante del Category Cap
 

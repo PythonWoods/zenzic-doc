@@ -96,8 +96,9 @@ $$
 | Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
 | Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
 | Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
-| Z106 | CIRCULAR_LINK | 1.0 pts | Structural |
 | Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
+| Z106 | CIRCULAR_LINK | 0.0 pts | Informativo (nessun impatto sul DQS) |
+| Z108 | EMPTY_LINK_TEXT | 1.0 pts | Structural |
 | Z301 | DANGLING_REF | 4.0 pts | Navigation |
 | Z302 | DEAD_DEF | 1.0 pts | Navigation |
 | Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
@@ -109,6 +110,10 @@ $$
 | Z405 | UNUSED_ASSET | 3.0 pts | Governance |
 | Z406 | NAV_CONTRACT | 2.0 pts | Governance |
 | Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
+
+:::note Z106 è solo informativo
+Z106 continua a essere emesso come diagnostica per i cicli di link, ma è escluso dalla tabella delle penalità e non contribuisce ad alcun bucket del DQS.
+:::
 
 :::note Z602 non è incluso nel punteggio
 Z602 (I18N_PARITY) è un gate di Governance che si attiva come finding autonomo. Non contribuisce a nessun bucket DQS e quindi non ha un valore di penalità nella tabella sopra.

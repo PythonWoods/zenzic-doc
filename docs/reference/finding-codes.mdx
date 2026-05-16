@@ -41,7 +41,7 @@ Zenzic organizes findings into **seven diagnostic categories**, each addressing 
 | **Category** | **Range** | **Purpose** | **Default Severity** | **Suppressible?** |
 |---|---|---|---|---|
 | **Z0xx** | Migration & Compatibility | Engine deprecation; migration guidance | `error` | ❌ No (fatal abort) |
-| **Z1xx** | Link Integrity | Broken/circular links, orphaned pages, path issues | `error`/`warning` | ✅ Yes |
+| **Z1xx** | Link Integrity | Broken, empty, circular links; orphaned pages; path issues | `error`/`warning`/`info` | ✅ Yes |
 | **Z2xx** | Security (credential scanner) | Secret detection; path traversal; security incidents | `warning`/`security_breach`/`security_incident` | 🔒 **Never** |
 | **Z3xx** | Reference Integrity | Dangling/duplicate reference definitions | `error`/`warning` | ✅ Yes |
 | **Z4xx** | Structure | Directory indexes, orphan pages, missing alt text, config assets | `info`/`warning` | ✅ Yes |
@@ -192,14 +192,27 @@ Z105 counts toward the **Structural Integrity** category. A non-portable absolut
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::info[Quality Score — Structural Integrity (40%)]
-Z106 counts toward the **Structural Integrity** category at `info` severity. Circular reference cycles flagged by the Graph Integrity module contribute to the structural issue count. See [Health Metrics](../explanation/health-metrics.mdx).
+Z106 is informational only and does not contribute to the DQS. The Graph Integrity module still emits it when a link cycle is detected, and you can inspect it with `--show-info`. See [Health Metrics](../explanation/health-metrics.mdx).
 :::
 
 * **Severity:** `info`
-* **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation.
+* **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation. This is an informational diagnostic signal: it is visible via `--show-info`, excluded from scoring, and does not block the Quality Gate.
 * **Remediation Steps:**
     1. Review the content flow to see if one link can be replaced by a broader "See Also" section.
     2. Ensure that users aren't getting trapped between two pages with no clear exit path.
+
+### Z108: EMPTY_LINK_TEXT {#z108}
+
+:::danger[Quality Score — Structural Integrity (40%)]
+Z108 is a structural integrity violation at `error` severity. Empty or whitespace-only link labels break accessibility and degrade the document quality score. See [Health Metrics](../explanation/health-metrics.mdx).
+:::
+
+* **Severity:** `error`
+* **Technical Context:** Emitted when the visible text in an inline Markdown link or a collapsed reference link is empty or consists only of whitespace. Examples include `[](./page.md)`, `[ ](./page.md)`, and `[][ref]`.
+* **Remediation Steps:**
+  1. Replace the empty label with descriptive link text, e.g. `[Documentation](./page.md)`.
+  2. If the link is only a placeholder, remove it until the destination and label are known.
+  3. Re-run `zenzic check links` after the edit to confirm that no Z108 findings remain.
 
 ---
 

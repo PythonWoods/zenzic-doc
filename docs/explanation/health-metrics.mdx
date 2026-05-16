@@ -29,7 +29,7 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 
 | Category | Command | Finding Codes | Weight |
 |----------|---------|---------------|---------|
-| **Structural Integrity** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z107] | **40 %** |
+| **Structural Integrity** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z106], [Z107], [Z108] | **40 %** |
 | **Content Excellence** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **30 %** |
 | **Navigation & SEO** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
 | **Brand & Assets** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **10 %** |
@@ -39,7 +39,9 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 [Z103]: ../reference/finding-codes.mdx#z103
 [Z104]: ../reference/finding-codes.mdx#z104
 [Z105]: ../reference/finding-codes.mdx#z105
+[Z106]: ../reference/finding-codes.mdx#z106
 [Z107]: ../reference/finding-codes.mdx#z107
+[Z108]: ../reference/finding-codes.mdx#z108
 [Z402]: ../reference/finding-codes.mdx#z402
 [Z501]: ../reference/finding-codes.mdx#z501
 [Z502]: ../reference/finding-codes.mdx#z502
@@ -79,7 +81,10 @@ category have no further effect on the total score — this is the **Category Ca
 | Z502 | Short Content | 1.0 | Content |
 | Z505 | Untagged Code Block | 1.0 | Content |
 | Z107 | Circular Anchor | 1.0 | Structural |
-| Z106 | Circular Link | 1.0 | Structural |
+| Z106 | Circular Link | 0.0 | Informational |
+| Z108 | Empty Link Text | 1.0 | Structural |
+
+Z106 is a link-integrity diagnostic, but it does not deduct points. Z108 is the new structural penalty for malformed link labels.
 
 ### Category Cap Invariant
 

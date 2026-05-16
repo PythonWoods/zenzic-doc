@@ -41,7 +41,9 @@ Structural Integrity rules catch these breaks **before the build runs**:
 | :--- | :--- | :--- |
 | [`Z101`](../reference/finding-codes.mdx#z101) | `LINK_BROKEN` | Dead internal links — file not found |
 | [`Z102`](../reference/finding-codes.mdx#z102) | `ANCHOR_MISSING` | Links to headings that no longer exist |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Circular link cycles (info only) |
 | [`Z107`](../reference/finding-codes.mdx#z107) | `CIRCULAR_ANCHOR` | Self-referential anchor links |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Empty or whitespace-only link labels |
 | [`Z401`](../reference/finding-codes.mdx#z401) | `MISSING_DIRECTORY_INDEX` | Directories without a reachable `index.md` |
 | [`Z402`](../reference/finding-codes.mdx#z402) | `ORPHAN_PAGE` | Files unreachable from any navigation path |
 | [`Z404`](../reference/finding-codes.mdx#z404) | `CONFIG_ASSET_MISSING` | Assets declared in config that do not exist on disk |
@@ -89,7 +91,8 @@ contract between the author and every tool in the pipeline.
 | :--- | :--- | :--- |
 | [`Z505`](../reference/finding-codes.mdx#z505) | `UNTAGGED_CODE_BLOCK` | Fenced blocks with no language specifier |
 | [`Z503`](../reference/finding-codes.mdx#z503) | `SNIPPET_ERROR` | Code snippets that fail to parse |
-| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link that form a circular reference cycle |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link that form a circular reference cycle (info only) |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Links whose label is empty or whitespace-only |
 
 ---
 

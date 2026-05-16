@@ -192,14 +192,27 @@ Z105 conta verso la categoria **Integrità Strutturale**. Un percorso assoluto n
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::info[Punteggio di Qualità — Integrità Strutturale (40%)]
-Z106 conta verso la categoria **Integrità Strutturale** a severità `info`. I cicli di riferimento circolari rilevati dal modulo di Integrità del Grafo contribuiscono al conteggio dei problemi strutturali. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
+Z106 è solo informativo e non contribuisce al DQS. Il modulo di Integrità del Grafo continua a emetterlo quando rileva un ciclo di link, e puoi ispezionarlo con `--show-info`. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
 :::
 
 * **Severità:** `info`
-* **Contesto Tecnico:** Rilevato dal modulo di Integrità del Grafo. Un insieme di link forma un ciclo (A -> B -> A). Sebbene tecnicamente validi, i riferimenti circolari possono indicare un'architettura dei contenuti povera o "loop infiniti" nella navigazione.
+* **Contesto Tecnico:** Rilevato dal modulo di Integrità del Grafo. Un insieme di link forma un ciclo (A -> B -> A). Sebbene tecnicamente validi, i riferimenti circolari possono indicare un'architettura dei contenuti povera o "loop infiniti" nella navigazione. Questo è un segnale diagnostico informativo: è visibile tramite `--show-info`, escluso dal punteggio e non blocca il Quality Gate.
 * **Passaggi di Rimedio:**
     1. Rivedi il flusso dei contenuti per vedere se un link può essere sostituito da una sezione "Vedi Anche" più ampia.
     2. Assicurati che gli utenti non rimangano intrappolati tra due pagine senza un chiaro percorso di uscita.
+
+### Z108: EMPTY_LINK_TEXT {#z108}
+
+:::danger[Punteggio di Qualità — Integrità Strutturale (40%)]
+Z108 è una violazione di integrità strutturale a severità `error`. Le etichette di link vuote o composte solo da spazi rompono l'accessibilità e degradano il punteggio di qualità del documento. Vedi [Metriche di Salute](../explanation/health-metrics.mdx).
+:::
+
+* **Severità:** `error`
+* **Contesto Tecnico:** Emesso quando il testo visibile di un link Markdown inline o di un link reference collapsed è vuoto o composto solo da whitespace. Esempi: `[](./page.md)`, `[ ](./page.md)` e `[][ref]`.
+* **Passaggi di Rimedio:**
+  1. Sostituisci l'etichetta vuota con testo descrittivo, ad esempio `[Documentazione](./page.md)`.
+  2. Se il link è solo un segnaposto, rimuovilo finché destinazione ed etichetta non sono noti.
+  3. Riesegui `zenzic check links` dopo la modifica per confermare che non restino finding Z108.
 
 ---
 
