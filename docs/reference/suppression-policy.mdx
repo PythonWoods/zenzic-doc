@@ -15,6 +15,46 @@ Zenzic's suppression system lets teams declare **validated exceptions** — inte
 
 ---
 
+## Reporting Levels — Audit Footer Semantics {#reporting-levels}
+
+When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting the current state of suppressions. This footer uses a semantic taxonomy with four distinct reporting levels:
+
+| State | Suppressions | Label | Severity | Meaning |
+| :--- | :---: | :--- | :--- | :--- |
+| **Clean State** | 0 | *(no label)* | ✅ Green | Full integrity — no suppressions in use. Documentation is at baseline. |
+| **Managed Debt** | 0 < n < CAP | `[MANAGED DEBT]` (cyan) | ⏳ OK | Suppressions are within budget. Technical debt is monitored and authorized. |
+| **Extended Debt** | n ≥ CAP | `[EXTENDED DEBT]` (yellow) | ⚠️ Warning | Suppression budget is at or exceeded the limit. Immediate review required. |
+| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (red) | 🚨 Error | Suppressions exceed the hard cap. CI gate will fail (exit code 2). Remediation is mandatory. |
+
+### Footer Examples
+
+```shell
+# Clean state — zero suppressions
+🔒 Suppression Audit: 0/34 (inline: 0, per-file: 0)
+
+# Managed debt — within budget (25 out of 34 suppressions allowed)
+🔒 Suppression Audit: 25/34 (inline: 25, per-file: 0) [MANAGED DEBT]
+
+# Extended debt — at the cap (34 out of 34 suppressions; limit reached)
+🔒 Suppression Audit: 34/34 (inline: 34, per-file: 0) [EXTENDED DEBT]
+
+# Critical debt — over the cap (39 out of 34; gate fails)
+🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 2
+```
+
+### Setting the Suppression Budget
+
+The CAP is configured in `zenzic.toml`:
+
+```toml
+[governance]
+suppression_cap = 34  # Maximum allowed suppressions before gate failure
+```
+
+If `suppression_cap` is omitted, Zenzic uses a built-in default of **50**.
+
+---
+
 ## The Three Suppression Levels {#levels}
 
 Zenzic offers three levels of suppression, from the most precise to the most broad.
