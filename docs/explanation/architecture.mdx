@@ -11,6 +11,26 @@ import ThemedImage from '@theme/ThemedImage';
 
 This page describes the internal design of Zenzic for contributors and advanced users who need to understand how the tool works under the hood. For configuration and usage, see the [Configuration Reference](../reference/configuration-reference) and [Checks Reference](../reference/checks).
 
+## Integrity Beyond Code {#integrity-beyond-code}
+
+Zenzic extends static-analysis determinism to its build infrastructure.
+
+The same engineering rule applies at repository level: if execution context is
+not deterministic, analysis results are not trustworthy. For this reason,
+CI/CD controls are treated as part of the architecture contract, not as
+operational afterthoughts.
+
+| Control | Architectural role |
+| :--- | :--- |
+| SHA-pinned GitHub Actions | Prevents mutable tag drift and locks workflow behavior to reviewed commits |
+| Frozen lockfile sync (`uv.lock`) | Ensures deterministic dependency graph during CI and release builds |
+| Build provenance attestations | Provides verifiable origin metadata for distributed artifacts |
+| Dependabot for actions | Automates SHA refresh while preserving immutable pinning model |
+
+This is the infrastructure-layer equivalent of static analysis: constrain
+execution inputs, preserve reproducibility, and make security evidence
+auditable for contributors and downstream users.
+
 ---
 
 ## Two-Pass Pipeline {#two-pass-pipeline}

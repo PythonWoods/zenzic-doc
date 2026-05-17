@@ -44,8 +44,8 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
   `docusaurus.config.ts` or filesystem convention — no `blog_dir` to configure.
 
 - **Editorial Sprint B — Aerospace Manifesto**: Constraint language replaces marketing
-  adjectives across all four ecosystem READMEs (`zenzic`, `zenzic-doc`, `zenzic-action`,
-  `structum`). Taglines rewritten as deterministic invariants:
+  adjectives across governed family READMEs (`zenzic`, `zenzic-doc`, `zenzic-action`).
+  Taglines rewritten as deterministic invariants:
   - `zenzic` — "Deterministic audit of documentation structures with bidirectional
     traceability. Every finding maps to a source file and a line number. Every URL has
     a physical origin. Zero global state."
@@ -53,8 +53,6 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
     with zero findings on every push.
   - `zenzic-action` — Exit code contract paragraph (exits 2 and 3 are never
     suppressible at the enforcement boundary).
-  - `structum` — "Reads, never executes. AST-only. No `eval()`, no dynamic import,
-    no subprocess."
   Engineering Ledger preamble re-framed on NASA Power of 10 Rules 1/4 (deterministic
   control flow, zero global state) and Rule 2 (subprocess ban enforced by ruff).
 

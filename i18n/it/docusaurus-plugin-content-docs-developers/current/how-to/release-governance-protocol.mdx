@@ -172,3 +172,35 @@ obsolescenza con enforcement Z601 pieno.
 
 Questa sequenza evita saturazione di falsi positivi preservando la qualità del
 segnale di governance.
+
+---
+
+## 8) Modello Sovrano di Verifica Condiviso (Repository della Famiglia)
+
+I repository della famiglia zenzic condividono un solo modello deterministico
+per `nox`, `just` e workflow CI:
+
+1. Override esplicito: variabile d'ambiente `ZENZIC_CORE_PATH`.
+2. Topologia canonica CI: `./_zenzic_core`.
+3. Topologia sibling per sviluppo: `../zenzic`.
+4. Ogni candidato deve contenere `src/zenzic`.
+5. Policy fail-closed: il fallback a PyPI e proibito nei quality gate del repository.
+
+Conseguenze operative:
+
+- Locale e CI devono eseguire lo stesso entrypoint di verifica (`just verify`).
+- La CI deve fare checkout del core in `_zenzic_core` prima della verifica.
+- I workaround temporanei di configurazione non devono sostituire
+  l'allineamento strutturale dei gate.
+- L'override esplicito di branch (`ZENZIC_CORE_REF`) e consentito solo come
+  eccezione governata con metadati obbligatori (ticket, reason, approver,
+  expiry) ed enforcement fail-closed.
+- I controlli di isolamento devono rimanere silenti nei file tracciati: il
+  dogfooding contributor usa `.zenzic.local.toml`, mentre in CI i parametri di
+  isolamento sono forniti solo tramite iniezione runtime di variabili
+  d'ambiente.
+
+Riferimento canonico:
+
+- [Modello Sovrano di Verifica Condiviso](../explanation/sovereign-verification-model.mdx)
+- [Profilo Assurance Supply Chain](../reference/supply-chain-assurance-profile.mdx)

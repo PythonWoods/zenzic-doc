@@ -109,8 +109,10 @@ These constraints are permanent consequences of ADR-013:
 
 1. **No stdlib fallback at runtime.** Unsupported patterns must raise. They may
    be rewritten, but they may not be recompiled by `re` in production code.
-2. **All production regex imports go through the ACL.** Core modules must use
-   `from zenzic.core import regex as re` instead of importing `re2` directly.
+2. **All governed regex imports go through the ACL.** Production modules,
+  contract tests, and repository quality tooling must use
+  `from zenzic.core import regex as re` instead of importing `re` or `re2`
+  directly.
 3. **Typing stays centralized.** `RegexPattern` and `Match` aliases live in the
    ACL. The rest of the codebase must not replicate `TYPE_CHECKING` bridges.
 4. **RE2 incompatibilities are solved structurally.** If a pattern uses

@@ -176,3 +176,33 @@ strictly enforced by Z601.
 
 This staging prevents false-positive saturation while preserving governance
 signal quality.
+
+---
+
+## 8) Shared Sovereign Verification Model (Family Repositories)
+
+The zenzic family repositories share one deterministic gate model for `nox`,
+`just`, and CI workflows:
+
+1. Explicit override: environment variable `ZENZIC_CORE_PATH`.
+2. CI canonical topology: `./_zenzic_core`.
+3. Developer sibling topology: `../zenzic`.
+4. Each candidate must contain `src/zenzic`.
+5. Fail-closed policy: PyPI fallback is prohibited in repository quality gates.
+
+Operational consequences:
+
+- Local and CI are required to run the same verification entrypoint (`just verify`).
+- CI must checkout the core repository into `_zenzic_core` before verification.
+- Temporary config workarounds must not replace structural gate alignment.
+- Explicit branch override (`ZENZIC_CORE_REF`) is allowed only as a governed
+  exception with mandatory metadata (ticket, reason, approver, expiry) and
+  fail-closed enforcement.
+- Isolation checks must remain silent in tracked sources: contributor dogfooding
+  uses local `.zenzic.local.toml`, while CI receives isolation parameters only
+  through runtime environment injection.
+
+Canonical reference:
+
+- [Shared Sovereign Verification Model](../explanation/sovereign-verification-model.mdx)
+- [Supply-Chain Assurance Profile](../reference/supply-chain-assurance-profile.mdx)

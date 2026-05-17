@@ -20,7 +20,6 @@ __pycache__/
 .DS_Store
 .idea
 .vscode/
-!.vscode/mcp.json
 .env
 .env.local
 .env.development.local

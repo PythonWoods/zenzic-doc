@@ -1,7 +1,7 @@
 version = 1
 
 [[annotations]]
-path = ["package.json", "package-lock.json", "tsconfig.json", ".markdownlint-cli2.jsonc", "**/*_category_.json", "i18n/**/*.json", ".vscode/mcp.json"]
+path = ["package.json", "package-lock.json", "tsconfig.json", ".markdownlint-cli2.jsonc", "**/*_category_.json", "i18n/**/*.json"]
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 

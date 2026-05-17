@@ -110,9 +110,10 @@ Questi vincoli sono conseguenze permanenti di ADR-013:
 1. **Nessun fallback alla stdlib a runtime.** I pattern non supportati devono
    sollevare errore. Possono essere riscritti, ma non ricompilati da `re` nel
    codice di produzione.
-2. **Tutti gli import regex di produzione passano attraverso l'ACL.** I moduli
-   core devono usare `from zenzic.core import regex as re` invece di importare
-   `re2` direttamente.
+2. **Tutti gli import regex governati passano attraverso l'ACL.** Moduli di
+  produzione, test di contratto e tooling di quality gate del repository
+  devono usare `from zenzic.core import regex as re` invece di importare
+  `re` o `re2` direttamente.
 3. **Il typing resta centralizzato.** Gli alias `RegexPattern` e `Match`
    vivono nell'ACL. Il resto del codebase non deve replicare bridge
    `TYPE_CHECKING`.

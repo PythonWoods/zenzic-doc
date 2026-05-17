@@ -63,30 +63,11 @@ suppression_cap_fail_hard = true
 # Use [HISTORICAL] inline to suppress intentional references in other files.
 brand_obsolescence = [
     "Sentinel",
-    "Blood Sentinel",
     "Shield",
-    "Epoch",
-    "Forge",
-    "Red Team",
-    "Operation",
+    "Blood",
+    "Basalt",
     "Quartz",
     "Obsidian",
-    "ObsidianUI",
-    "Safe Harbor",
-    "Porto Sicuro",
-    "Basalt",
-    "Chronicles",
-    "Siege",
-    "Phase 0",
-    "Phase 1",
-    "Phase 2",
-    "Phase 3",
-    "Phase 4",
-    "Phase 5",
-    "Phase 6",
-    "Phase 7",
-    "Phase 8",
-    "Phase 9",
 ]
 i18n_parity = true
 

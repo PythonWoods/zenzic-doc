@@ -20,7 +20,8 @@ Requirements: rich (already a transitive dep via zenzic)
 
 from __future__ import annotations
 
-import re
+import os
+import sys
 from pathlib import Path
 
 from rich.console import Console
@@ -29,6 +30,50 @@ from rich.table import Table
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 from rich import box
+
+
+def _resolve_core_src_for_acl(root: Path) -> Path:
+    """Resolve local core source path for fail-closed ACL imports."""
+    candidates: list[str] = []
+
+    env_override = os.environ.get("ZENZIC_CORE_PATH")
+    if env_override:
+        candidates.append(env_override)
+    candidates.extend(["_zenzic_core", "../zenzic"])
+
+    checked: list[str] = []
+    for raw in candidates:
+        base = Path(raw).expanduser()
+        if not base.is_absolute():
+            base = (root / base).resolve()
+        else:
+            base = base.resolve()
+        checked.append(str(base))
+
+        src_candidate = base / "src"
+        if (src_candidate / "zenzic").is_dir():
+            return src_candidate
+
+        if (base / "zenzic").is_dir():
+            return base
+
+    checked_lines = "\n".join(f"- {item}" for item in checked)
+    raise ModuleNotFoundError(
+        "Unable to import zenzic.core.regex in fail-closed mode.\n"
+        "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic\n"
+        "Each candidate must contain src/zenzic.\n"
+        f"Checked candidates:\n{checked_lines}\n"
+        "PyPI fallback is prohibited for docs tooling."
+    )
+
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_CORE_SRC = _resolve_core_src_for_acl(_REPO_ROOT)
+if str(_CORE_SRC) not in sys.path:
+    sys.path.insert(0, str(_CORE_SRC))
+
+# Fail-closed ACL policy: tooling uses the same RE2 facade as core.
+from zenzic.core import regex as re
 
 OUT = Path(__file__).parent.parent / "static" / "assets" / "terminal"
 OUT.mkdir(parents=True, exist_ok=True)

@@ -11,6 +11,26 @@ import ThemedImage from '@theme/ThemedImage';
 
 Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strutture interne che ne governano il funzionamento: dalla pipeline di scansione al protocollo degli adapter, dal flusso del credential scanner al sistema di esclusione a livelli.
 
+## Integrita Oltre il Codice {#integrity-beyond-code}
+
+Zenzic estende il determinismo dell'analisi statica anche all'infrastruttura di build.
+
+La stessa regola ingegneristica vale a livello repository: se il contesto di
+esecuzione non e deterministico, i risultati dell'analisi non sono affidabili.
+Per questo i controlli CI/CD sono parte del contratto architetturale, non un
+dettaglio operativo secondario.
+
+| Controllo | Ruolo architetturale |
+| :--- | :--- |
+| GitHub Actions pin-nate a SHA | Impedisce il drift dei tag mutabili e blocca il workflow su commit revisionati |
+| Sync lockfile frozen (`uv.lock`) | Garantisce grafo dipendenze deterministico in CI e in release build |
+| Attestazioni di provenienza build | Fornisce metadati verificabili sull'origine degli artefatti distribuiti |
+| Dependabot per le actions | Automatizza il refresh degli SHA preservando il modello di pinning immutabile |
+
+Questo e l'equivalente infrastrutturale dell'analisi statica: vincolare gli
+input di esecuzione, preservare la riproducibilita e rendere auditabile
+l'evidenza di sicurezza per contributor e utenti finali.
+
 ---
 
 ## Pipeline a Due Passate {#two-pass-pipeline}

@@ -1,0 +1,122 @@
+---
+sidebar_label: "Modello Sovrano di Verifica Condiviso"
+sidebar_position: 6
+description: "Contratto nox/just/CI della famiglia zenzic per parita locale/CI deterministica e risoluzione core fail-closed."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Modello Sovrano di Verifica Condiviso
+
+Questa pagina definisce il contratto di verifica condiviso usato nei repository
+della famiglia zenzic (`zenzic`, `zenzic-doc`, `zenzic-action`).
+
+L'obiettivo e la determinazione operativa: locale e CI devono eseguire la stessa
+logica con la stessa semantica del core.
+
+---
+
+## 1) Perche esiste questo modello
+
+- Prevenire drift comportamentale tra locale e CI.
+- Prevenire esecuzione con core pubblicato obsoleto nei quality gate.
+- Rendere le aspettative dei contributor esplicite, auditabili e stabili.
+
+Questo modello e obbligatorio per i gate di repository (non una linea guida opzionale).
+
+---
+
+## 2) Contratto di Risoluzione del Core
+
+L'ordine di risoluzione e sovrano e deterministico:
+
+1. Override esplicito: `ZENZIC_CORE_PATH`
+2. Topologia CI: `./_zenzic_core`
+3. Topologia sibling per sviluppo: `../zenzic`
+
+Regola di validazione:
+
+- Ogni path candidato deve contenere `src/zenzic`.
+
+Regola fail-closed:
+
+- Se nessun candidato e valido, la verifica si interrompe con errore esplicito.
+- Il fallback a PyPI e proibito nei quality gate del repository.
+
+---
+
+## 3) Contratto di Topologia CI
+
+I workflow CI devono:
+
+1. Risolvere la parita di branch verso il repository core (prima branch target,
+   fallback a `main` solo se la branch target non esiste nel core).
+2. Fare checkout del core in `./_zenzic_core`.
+3. Eseguire lo stesso entrypoint usato in locale (`just verify`).
+
+Esplicitazione raccomandata:
+
+- Esportare `ZENZIC_CORE_PATH=_zenzic_core` nell'ambiente dello step verify.
+- Per repository con naming branch non omonimo, impostare `ZENZIC_CORE_REF`
+  come override esplicito in CI.
+- Quando si usa `ZENZIC_CORE_REF`, i metadati di governance sono obbligatori:
+  `ZENZIC_CORE_REF_TICKET`, `ZENZIC_CORE_REF_REASON`,
+  `ZENZIC_CORE_REF_APPROVER`, `ZENZIC_CORE_REF_EXPIRES_ON`.
+- Il fail-closed si applica a tutto il percorso di override: metadati mancanti,
+  data non valida, override scaduto o branch assente nel core devono bloccare
+  la CI.
+
+---
+
+## 4) Responsabilita per Layer
+
+| Layer | Comportamento richiesto | Invariante non negoziabile |
+|---|---|---|
+| `justfile` | Entry-point operativo primario (`check`, `verify`) | Usa ordine sovrano e stop fail-closed |
+| `noxfile.py` | Wrapper deterministico per sessioni | Usa lo stesso ordine sovrano del `justfile` |
+| `.github/workflows/*.yml` | Topologia di esecuzione condivisa | Checkout di `_zenzic_core` prima di verify |
+| recipe `release-contracts` | Guardia anti-drift | Rifiuta pattern di fallback PyPI nei gate |
+
+---
+
+## 5) Runbook per Contributor
+
+Due setup locali supportati:
+
+1. Layout sibling (raccomandato)
+
+```text
+workspace/
+  zenzic/
+  zenzic-doc/
+  zenzic-action/
+```
+
+Esegui:
+
+```bash
+just verify
+```
+
+2. Layout con override esplicito (path custom)
+
+```bash
+ZENZIC_CORE_PATH=/percorso/assoluto/a/zenzic just verify
+```
+
+Se la verifica segnala core non trovato, trattalo come errore di setup,
+non come warning di qualita da sopprimere.
+
+---
+
+## 6) Policy Anti-Drift
+
+Nei quality gate del repository sono proibiti:
+
+- fallback `uvx zenzic@...` come sostituto della semantica core locale;
+- workaround temporanei di configurazione usati per mascherare drift di versione core;
+- entrypoint di verifica divergenti tra locale e CI.
+
+Gli shim di compatibilita sono ammessi solo come transizione breve e devono
+essere rimossi appena la parita strutturale e ripristinata.
