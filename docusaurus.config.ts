@@ -82,6 +82,9 @@ const config: Config = {
           },
         },
         blog: {
+          // ADR-014: blog chronicles are English-only by policy.
+          // Keep locale routes as framework fallback from @site/blog sources.
+          // Do not create i18n/*/docusaurus-plugin-content-blog assets unless policy changes.
           blogTitle: 'The Zenzic Blog',
           blogDescription: 'Engineering insights, security post-mortems, and the evolution of Zenzic.',
           blogSidebarTitle: 'Recent Posts',

@@ -21,6 +21,16 @@
       --cyan:      #38bdf8;
       --blood:     #FF3B30;
       --magenta:   #FF2D73;
+      --canvas-light: #F1F5F9;
+      --accent-cyan-soft: #06b6d4;
+      --notice-bg: #09090b;
+      --code-bg: #0c0c10;
+      --muted-strong: #a1a1aa;
+      --ink-300: #d4d4d8;
+      --rule-soft: rgba(255,255,255,0.04);
+      --rule-subtle: rgba(255,255,255,0.06);
+      --brand-border-20: rgba(79,70,229,0.2);
+      --drop-shadow-strong: 0 8px 40px rgba(0,0,0,0.5);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -112,7 +122,7 @@
     .logo-variant { display: flex; flex-direction: column; gap: 0; }
 
     .mark-dark  { background: var(--obsidian); border: 1px solid var(--border); }
-    .mark-light { background: #F1F5F9; }
+    .mark-light { background: var(--canvas-light); }
 
     /* ── Palette ── */
     .palette { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -120,7 +130,7 @@
     .swatch-block {
       width: 72px; height: 72px;
       border-radius: 3px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--rule-subtle);
       margin-bottom: 7px;
     }
     .swatch-name { font-size: 8.5px; color: var(--muted); line-height: 1.5; }
@@ -133,7 +143,7 @@
       border: 1px solid var(--border);
       border-radius: 3px;
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      box-shadow: var(--drop-shadow-strong);
     }
 
     /* ── Two-col ── */
@@ -807,7 +817,7 @@
       </thead>
       <tbody>
         <!-- BRAND -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#4f46e5;font-weight:600">BRAND</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-brand</code></td>
           <td style="padding:10px 12px"><span style="background:#4f46e5;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#4f46e5</span></td>
@@ -816,7 +826,7 @@
           <td style="padding:10px 12px;color:var(--muted);font-size:10px">Exact match &mdash; AA on all surfaces</td>
         </tr>
         <!-- SUCCESS -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#10b981;font-weight:600">SUCCESS</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-success</code></td>
           <td style="padding:10px 12px"><span style="background:#10b981;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#10b981</span></td>
@@ -825,7 +835,7 @@
           <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Emerald-600 for WCAG AA</td>
         </tr>
         <!-- WARNING -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#f59e0b;font-weight:600">WARNING</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-warning</code></td>
           <td style="padding:10px 12px"><span style="background:#f59e0b;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#f59e0b</span></td>
@@ -885,9 +895,9 @@
 
       <div class="badge-item">
         <a href="https://github.com/PythonWoods/zenzic" style="display:block">
-          <img src="svg/zenzic-badge-shield.svg" alt="Zenzic Shield badge" width="135" height="20" style="display:block">
+          <img src="svg/zenzic-badge-audit.svg" alt="Zenzic Audit badge" width="135" height="20" style="display:block">
         </a>
-        <span class="label-inline">Shield &middot; Binary gate: passing / failing</span>
+        <span class="label-inline">Audit &middot; Binary gate: passing / failing</span>
       </div>
 
       <div class="badge-item">
@@ -1173,13 +1183,87 @@
       </tbody>
     </table>
 
-    <div style="padding:14px 16px;background:#09090b;border:1px solid var(--border);border-left:3px solid #06b6d4;border-radius:3px">
-      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin:0">
+    <div style="padding:14px 16px;background:var(--notice-bg);border:1px solid var(--border);border-left:3px solid var(--accent-cyan-soft);border-radius:3px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted-strong);line-height:1.9;margin:0">
         <strong style="color:var(--lead)">Law:</strong> No <code>&lt;img&gt;</code> or <code>&lt;Image&gt;</code> component may be
         merged without explicit <code>width</code> and <code>height</code> attributes (or <code>aspect-ratio</code> CSS on
         fluid containers). PRs that introduce dimensionless images are rejected by the visual hardening protocol (D110).
       </p>
     </div>
+  </div>
+
+  <!-- ── SECTION: React Components Palette Contract ── -->
+  <div style="border-top:1px solid var(--rule);padding-top:36px;margin-bottom:36px">
+    <p class="page-title" style="color:var(--muted);margin-bottom:28px">§ 10 &mdash; React Components Palette Contract</p>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;max-width:860px;margin-bottom:22px">
+      Every visual React component must consume palette values via CSS custom properties in
+      <code>src/css/custom.css</code>. Direct hex usage inside JSX/TSX styles is forbidden. The runtime
+      source of truth is the <code>--zenzic-*</code> token family and the semantic bridges bound to Docusaurus
+      variables (<code>--ifm-*</code>).
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:24px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">React Surface</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Approved Variables</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Usage</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Policy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Primary action buttons</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-brand</code>, <code>--zenzic-brand-soft</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">CTA, nav actions, highlighted links</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">No direct brand hex values in component code</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Status indicators</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-success</code>, <code>--zenzic-warning</code>, <code>--zenzic-error</code>, <code>--zenzic-fatal</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Badges, warnings, diagnostics panels</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Semantic mapping must match finding severity</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Text hierarchy</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-ink-100</code>, <code>--zenzic-ink-200</code>, <code>--zenzic-ink-400</code>, <code>--zenzic-ink-700</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Headings, body copy, metadata</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Use token-based contrast tiers only</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;color:var(--lead)">Surface and borders</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-slate-900</code>, <code>--zenzic-slate-800</code>, <code>--zenzic-border-dark-30</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Cards, containers, separators</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">No opaque hardcoded overlays in TSX</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="padding:14px 16px;background:var(--notice-bg);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:3px;margin-bottom:18px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted-strong);line-height:1.9;margin:0">
+        <strong style="color:var(--lead)">Implementation snippet (React):</strong>
+      </p>
+      <pre style="margin-top:10px;background:var(--code-bg);border:1px solid var(--brand-border-20);border-radius:6px;padding:10px;overflow:auto"><code style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-300)">export function AuditBadge(): React.JSX.Element {
+  return (
+    &lt;span
+      style={{
+        backgroundColor: 'var(--zenzic-brand)',
+        color: 'var(--zenzic-ink-100)',
+        border: '1px solid var(--zenzic-border-brand-35)',
+      }}
+    &gt;
+      audit: passed
+    &lt;/span&gt;
+  );
+}</code></pre>
+    </div>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);line-height:1.8">
+      <strong style="color:var(--lead)">Enforcement:</strong> UI pull requests are rejected if JSX inline styles,
+      CSS modules, or component-scoped styles introduce raw hex values instead of <code>--zenzic-*</code> tokens.
+      The brand specification and runtime CSS must remain isomorphic.
+    </p>
   </div>
 
   <!-- footer rule -->
