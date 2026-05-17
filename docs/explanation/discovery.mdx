@@ -10,6 +10,74 @@ Every Zenzic check -- links, orphans, snippets, placeholders, assets, references
 
 ---
 
+## The Authority of Root {#root-authority}
+
+Before Zenzic can discover, exclude, or scan a single file, it must answer one question:
+**where does this project begin?**
+
+Zenzic is a workspace-scoped tool. It does not analyse arbitrary directories; it analyses
+**defined projects**. To establish the project boundary, Zenzic performs an **upward traversal**
+from the target path, searching for a recognised root marker.
+
+### Root Markers {#root-markers}
+
+Two markers are authorised (first match wins):
+
+| Marker | Description |
+| :--- | :--- |
+| `.git/` | Universal VCS marker — present in any Git-tracked repository |
+| `zenzic.toml` | Zenzic's own configuration file — the explicit governance contract |
+
+Both are intentionally engine-neutral: `mkdocs.yml`, `docusaurus.config.ts`, and similar
+build-engine files are not root markers. The Core must remain independent of any specific
+documentation framework.
+
+### Why a Root Marker is Mandatory {#why-mandatory}
+
+Without a root marker (VCS or configuration), Zenzic cannot establish the project's **Sovereignty Perimeter**. This is required for four independent reasons:
+
+- **Resolve relative paths** — every finding is expressed as a path relative to the root. Without a fixed anchor, file locations are ambiguous and non-reproducible across machines.
+- **Map the workspace into the VSM** — Zenzic always builds a Virtual Site Map, regardless of adapter. In engine mode (Docusaurus, MkDocs), the VSM includes ghost routes, slug transformations, and virtual pages. In Standalone Mode, the VSM is a 1:1 projection of the filesystem. In both cases, the root defines the zero-point for canonicalising every internal reference — so that `index.md` at the root is unambiguously distinct from `index.md` in a subdirectory.
+- **Apply `directory_policies`** — governance contracts match paths via glob patterns relative to the workspace root. Without a defined root, exemption rules are non-deterministic and cannot be applied consistently.
+- **Prevent Massive Indexing** — without an explicit boundary, the engine could accidentally scan the entire host filesystem, producing incoherent results and risking information leakage.
+
+The absence of a root marker produces this error:
+
+```text
+ERROR: Could not locate repo root: no .git directory or zenzic.toml found in any
+ancestor of /path/to/target. Run Zenzic from inside the repository.
+```
+
+This is not a configuration error. It is a **safety guarantee**: the Quality Gate halts
+an out-of-bounds scan before it begins.
+
+### Resolution Options {#root-resolution}
+
+To allow Zenzic to analyse a directory, satisfy one of the following:
+
+**Option A — Initialise Zenzic** (creates a `zenzic.toml` root marker):
+
+```bash
+cd /path/to/target
+zenzic init
+```
+
+**Option B — Initialise a Git repository** (creates a `.git/` root marker):
+
+```bash
+cd /path/to/target
+git init
+```
+
+**Option C — Run from inside an existing project** (the upward traversal will find the marker automatically):
+
+```bash
+# From anywhere inside a project that already has .git/ or zenzic.toml
+zenzic check all
+```
+
+---
+
 ## Single Entry Point: `iter_markdown_sources` {#iter-markdown-sources}
 
 All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()` or `os.walk()` from scanner, validator, or credential scanner are prohibited by design. This function:

@@ -74,12 +74,12 @@ Inline ignores are surgical. Reach for them when:
 - The exception is local context, not a project-wide truth.
 
 ```markdown
-<!-- zenzic:ignore Z201 -->
+<!-- zenzic:ignore: Z2XX -->
 api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
 ```
 
 ```mdx
-{/* zenzic:ignore Z105 */}
+{/* zenzic:ignore: Z1XX */}
 [Hard link example](/legacy/path)
 ```
 
@@ -90,7 +90,7 @@ diffs, traceable in `git blame`.
 
 ## Anti-pattern: inline-ignoring cross-plugin links
 
-Do **not** sprinkle `<!-- zenzic:ignore Z105 -->` over every cross-plugin
+Do **not** sprinkle `<!-- zenzic:ignore: Z1XX -->` over every cross-plugin
 link. This:
 
 - Hides the cross-instance dependency from anyone reading `zenzic.toml`.

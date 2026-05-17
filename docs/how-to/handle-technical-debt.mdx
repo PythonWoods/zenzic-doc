@@ -127,7 +127,7 @@ Setting the cap to the current suppression count gives you a governance floor: n
 
 Findings in the Z2xx Security Gate category — `Z201 CREDENTIAL_SECRET`, `Z202 PATH_TRAVERSAL`, `Z203 PATH_TRAVERSAL_FATAL`, and `Z204 FORBIDDEN_TERM` — cannot be suppressed by any mechanism.
 
-A `<!-- zenzic:ignore Z201 -->` comment is **silently ignored**. The finding is still emitted. The exit code is still 2 or 3. The score collapses to 0.
+A `<!-- zenzic:ignore: Z2XX -->` comment is **silently ignored**. The finding is still emitted. The exit code is still 2 or 3. The score collapses to 0.
 
 This is by design. Security findings are facts, not style opinions. You cannot assume responsibility for a credential leak and call it a validated exception.
 

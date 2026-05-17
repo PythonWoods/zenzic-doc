@@ -90,6 +90,20 @@ path traversal, and the Zenzic Audit Badge. Zero install. Zero config. Pure expe
 
 When you're ready to commit Zenzic to your project, generate a `zenzic.toml` in one command:
 
+:::info[Workspace required]
+
+Zenzic analyses **workspaces, not arbitrary directories**. It performs an upward traversal from the
+target path to locate a root marker (`.git/` or `zenzic.toml`). If you see:
+
+```text
+ERROR: Could not locate repo root: no .git directory or zenzic.toml found
+```
+
+Run `zenzic init` in the root directory of your project to establish the workspace boundary.
+See [Discovery & Exclusion — The Authority of Root](../explanation/discovery#root-authority) for the full rationale.
+
+:::
+
 ```bash
 cd your-project/
 zenzic init

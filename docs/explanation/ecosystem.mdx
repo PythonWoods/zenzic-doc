@@ -193,7 +193,7 @@ Zenzic addresses this through the [`[governance]`](../reference/configuration.md
 brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore Z601 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore Z601 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z6XX -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z6XX */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
 
 ---
 

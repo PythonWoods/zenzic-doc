@@ -149,10 +149,12 @@ $$
 
 ## Stage 5 — Suppression Debt {#suppression-debt}
 
-Every active suppression is an acknowledged assumption of responsibility. It is not free. The debt formula is:
+Every active suppression is an acknowledged assumption of responsibility. In v0.8.0, suppressions are allowance-based: up to `suppression_cap`, they are governance-authorized and do not reduce the score. Only excess suppressions generate debt.
+
+The debt formula is:
 
 $$
-\omega_{\text{debt}} = \min(n, \text{cap}) \times 1 + \max(0,\; n - \text{cap}) \times 2
+\omega_{\text{debt}} = \max(0,\; n - \text{cap})
 $$
 
 where:
@@ -169,18 +171,45 @@ $$
 
 | Suppression count | Cost per suppression | Notes |
 | :--- | :---: | :--- |
-| $n \leq \text{cap}$ | 1 pt | Standard rate |
-| $n > \text{cap}$ | 2 pts | Escalation tier — each excess suppression costs double |
+| $n \leq \text{cap}$ | 0 pts | Managed allowance (tracked, not penalized) |
+| $n > \text{cap}$ | 1 pt (excess only) | Debt starts only beyond the configured cap |
 
 :::tip Suppression Debt in the CLI
-Run `zenzic score` to see the current debt deduction:
+Run `zenzic score` to inspect the current suppression posture:
 
 ```text
-Technical Debt (Suppressions): -8 pts
+Suppression Audit: 8/30 (inline: 5, per-file: 3)
 ```
 
-Run `zenzic check all --audit` to see what the score would be without any suppressions.
+Run `zenzic check all --audit` to see findings without applying suppressions.
 :::
+
+## Interpretazione dei Risultati {#interpretazione-dei-risultati}
+
+### 1) Finding Informativi
+
+Informational findings are non-blocking diagnostics for visibility and observability.
+
+- They do not reduce DQS.
+- They never trigger the Security Override.
+- In SARIF they are emitted at `note` level.
+
+Typical examples include Z106 (`CIRCULAR_LINK`) and informational surfaces such as Z114 or Z906.
+
+### 2) Audit delle Soppressioni
+
+The Suppression Audit is governance telemetry, not a raw failure counter.
+
+- It reports the total active suppressions (inline directives + `per_file_ignores`).
+- It expresses explicitly authorized technical debt envelope.
+- Score impact is applied only to suppressions above `suppression_cap`.
+
+### 3) Label Semantics: `[MANAGED DEBT]` and `[EXTENDED DEBT]`
+
+- `[MANAGED DEBT]`: active suppressions are present and the project remains on sovereign cap profile (`suppression_cap <= 30`).
+- `[EXTENDED DEBT]`: active suppressions are present while using an expanded cap profile (`suppression_cap > 30`).
+
+These labels describe governance posture. They are complementary to score math and help reviewers distinguish managed debt from policy expansion.
 
 ---
 
@@ -229,9 +258,9 @@ $S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
 
 **Stage 4 — Gravity Cap:** $\text{cat\_pts}_{\text{brand}} = 0$ → $S_{\text{gravity}} = \min(42, 70) = 42$.
 
-**Stage 5 — Suppression Debt:** $n = 8 \leq 30$ → $\omega_{\text{debt}} = 8 \times 1 = 8$.
+**Stage 5 — Suppression Debt:** $n = 8 \leq 30$ → $\omega_{\text{debt}} = 0$.
 
-$$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
+$$S_{\text{final}} = \max(0,\; 42 - 0) = \mathbf{42}$$
 
 ---
 

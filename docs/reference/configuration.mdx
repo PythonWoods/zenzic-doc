@@ -394,6 +394,45 @@ brand_obsolescence = ["Obsidian"]
 i18n_parity = true
 ```
 
+### `per_file_ignores`
+
+**Type:** `dict[str, list[str]]` — **Default:** `{}`
+
+Per-file suppression map: glob pattern → list of finding codes. Each entry silences the specified
+codes for all files matching the glob. Every active entry costs **1 suppression debt point** toward
+the `suppression_cap`.
+
+```toml
+[governance.per_file_ignores]
+"docs/migration/**" = ["Z601"]  # intentional brand refs in migration guides
+"docs/legacy/*.md"  = ["Z101"]  # known broken links to decommissioned systems
+```
+
+### `directory_policies`
+
+**Type:** `dict[str, list[str]]` — **Default:** `{}`
+
+Strategic directory-level policy exemptions: glob pattern → list of finding codes. Unlike
+`per_file_ignores`, matched findings are **silently dropped before display with zero suppression
+debt cost** — they are never counted in the Suppression Audit footer.
+
+Intended for organizationally-ratified exceptions: historical blog archives, SSOT codename registries,
+and other files where violations are structurally expected.
+
+```toml
+[governance.directory_policies]
+"blog/**"                       = ["Z601"]  # historical blog posts — brand refs expected
+"docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
+```
+
+In `--audit` mode (`zenzic check all --audit`), exempted findings are **not dropped** — they
+surface with a `[POLICY_EXEMPTION]` label prepended to the message so governance reviewers can
+inspect what is strategically exempt without breaking the zero-debt invariant.
+
+Security findings (Z201–Z204) always bypass `directory_policies` unconditionally.
+
+**Hierarchy:** `directory_policies` (0 pt) → `per_file_ignores` (1 pt/entry) → inline `zenzic:ignore` (1 pt each)
+
 ### Activation semantics
 
 - `Z601` is active only when `brand_obsolescence` contains at least one term.
@@ -491,7 +530,7 @@ shared-domain micro-sites, links to satellite documentation hosted at a
 known sub-path.
 
 **When NOT to use:** one-off exceptions in a single file. Use inline
-suppression (`<!-- zenzic:ignore Z105 -->`) instead — see the
+suppression (`<!-- zenzic:ignore: Z1XX -->`) instead — see the
 [Suppression Policy](./suppression-policy.mdx).
 
 For the full operational guide and decision rules, see

@@ -271,7 +271,7 @@ Z107 counts toward the **Structural Integrity** category at `warning` severity. 
     3. Either add the tag to the relevant posts, or update the link to target a tag that
        is actually generated (e.g., `/blog/tags/reactjs/`).
     4. If the link is forward-looking (a tag you plan to introduce), suppress temporarily
-       with `{/* zenzic:ignore Z111 */}` on the offending link.
+       with `{/* zenzic:ignore: Z111 */}` on the offending link.
 
 ---
 
@@ -304,7 +304,7 @@ Z107 counts toward the **Structural Integrity** category at `warning` severity. 
     1. Review `postsPerPage` in your `docusaurus.config.ts` blog block.
     2. Consider enabling the blog archive (`archiveBasePath: 'archive'`) to offload
        historical posts from the paginated index.
-    3. Suppress with `{/* zenzic:ignore Z114 */}` on the link or set a higher threshold
+    3. Suppress with `{/* zenzic:ignore: Z114 */}` on the link or set a higher threshold
        in a future `zenzic.toml` setting (not yet implemented).
 
 ---
@@ -318,7 +318,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 :::
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z201` is **silently rejected**. The credential scanner fires unconditionally on every line. Security findings are facts, not suggestions — a credential leak cannot be declared a false positive.
+`zenzic:ignore: Z201` is **silently rejected**. The credential scanner fires unconditionally on every line. Security findings are facts, not suggestions — a credential leak cannot be declared a false positive.
 :::
 
 * **Severity:** `security_breach` (Exit 2)
@@ -342,7 +342,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z202` and `zenzic:ignore Z203` are **silently rejected**. The path traversal guard enforces the scan boundary unconditionally.
+`zenzic:ignore: Z202` and `zenzic:ignore: Z203` are **silently rejected**. The path traversal guard enforces the scan boundary unconditionally.
 :::
 
 * **Severity:** `error`
@@ -363,7 +363,7 @@ When a Z201, Z202, Z203 or Z204 finding is detected, the [Deterministic Quality 
 ### Z204: FORBIDDEN_TERM {#z204}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed]
-`zenzic:ignore Z204` is **silently rejected**. The Privacy Gate fires unconditionally on every line — a forbidden-term exposure is a security fact, not a suggestion.
+`zenzic:ignore: Z204` is **silently rejected**. The Privacy Gate fires unconditionally on every line — a forbidden-term exposure is a security fact, not a suggestion.
 :::
 
 :::info[Brand Integrity — Two-Layer Architecture]
@@ -652,7 +652,7 @@ Z406 counts toward the **Brand & Assets** category in the [Deterministic Quality
 <span id="z905"></span>
 
 :::info[Quality Score — Brand & Assets (10%)]
-Brand obsolescence is a key metric of your documentation's maturity. Every Z601 finding contributes to the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). A 100/100 score requires brand consistency alongside structural and content integrity. Suppress intentional historical references with `<!-- zenzic:ignore Z601 -->` (Markdown) or `{/* zenzic:ignore Z601 */}` (MDX).
+Brand obsolescence is a key metric of your documentation's maturity. Every Z601 finding contributes to the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). A 100/100 score requires brand consistency alongside structural and content integrity. Suppress intentional historical references with `<!-- zenzic:ignore: Z601 -->` (Markdown) or `{/* zenzic:ignore: Z601 */}` (MDX).
 :::
 
 <ZenzicOutput
@@ -664,16 +664,16 @@ Brand obsolescence is a key metric of your documentation's maturity. Every Z601 
     code: "Z601",
     file: "docs/explanation/architecture.mdx",
     line: 12,
-    message: "Obsolete brand term 'OldRelease': update to the active identifier. Add <!-- zenzic:ignore Z601 --> (Markdown) or {/* zenzic:ignore Z601 */} (MDX) to the line to suppress intentional references."
+    message: "Obsolete brand term 'OldRelease': update to the active identifier. Add a zenzic:ignore: Z601 comment to the line to suppress intentional historical references."
   }]}
 />
 
 * **Severity:** `warning`
-* **Technical Context:** Detected by `BrandObsolescenceRule`, configured via `[governance]` in `zenzic.toml`. When `release_name` is set (e.g. `release_name = "CurrentRelease"`) and `brand_obsolescence` lists previous release identifiers (e.g. `brand_obsolescence = ["OldRelease"]`), any occurrence of a listed term in a scanned file raises Z601. Lines carrying a `zenzic:ignore Z601` suppression comment are silently skipped — use `<!-- zenzic:ignore Z601 -->` in ``.md`` files and `{/* zenzic:ignore Z601 */}` in ``.mdx`` files. Files matching `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) are fully exempt.
+* **Technical Context:** Detected by `BrandObsolescenceRule`, configured via `[governance]` in `zenzic.toml`. When `release_name` is set (e.g. `release_name = "CurrentRelease"`) and `brand_obsolescence` lists previous release identifiers (e.g. `brand_obsolescence = ["OldRelease"]`), any occurrence of a listed term in a scanned file raises Z601. Lines carrying a `zenzic:ignore: Z601` suppression comment are silently skipped — use `<!-- zenzic:ignore: Z601 -->` in ``.md`` files and `{/* zenzic:ignore: Z601 */}` in ``.mdx`` files. Files matching `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) are fully exempt.
 * **Remediation Steps:**
     1. Update the text to reference the active release name.
-    2. For intentional historical references in ``.md`` files, append `<!-- zenzic:ignore Z601 -->` to the line.
-    3. For intentional historical references in ``.mdx`` files, append `{/* zenzic:ignore Z601 */}` to the line.
+    2. For intentional historical references in ``.md`` files, append `<!-- zenzic:ignore: Z601 -->` to the line.
+    3. For intentional historical references in ``.mdx`` files, append `{/* zenzic:ignore: Z601 */}` to the line.
     4. To exempt an entire file pattern, add it to `obsolete_names_exclude_patterns` in `zenzic.toml`.
 
 ---
@@ -723,7 +723,7 @@ Z602 is a **bilingual integrity check**. It does not reduce the [Deterministic Q
     1. Create the missing translation file at the corresponding path under `i18n/<locale>/docusaurus-plugin-content-docs/current/`.
     2. Copy the base-language frontmatter block and translate the values — do not add or remove keys relative to the base.
     3. Run `zenzic check all` again to confirm parity is restored.
-    4. For intentional asymmetry (e.g. a locale-only page or a draft not yet translated), suppress with `{/* zenzic:ignore Z602 */}` on the frontmatter block or add the file pattern to `i18n_exclude_patterns` in `zenzic.toml`.
+    4. For intentional asymmetry (e.g. a locale-only page or a draft not yet translated), suppress with `{/* zenzic:ignore: Z602 */}` on the frontmatter block or add the file pattern to `i18n_exclude_patterns` in `zenzic.toml`.
 
 ---
 
@@ -736,13 +736,13 @@ Zenzic supports **line-level, per-code suppression** via inline comments. Add a 
 For ``.md`` files use a standard HTML comment (invisible in rendered Markdown):
 
 ```markdown
-The Obsidian era defined our foundations. <!-- zenzic:ignore Z601 -->
+The Obsidian era defined our foundations. <!-- zenzic:ignore: Z601 -->
 ```
 
 For ``.mdx`` files use a JSX comment (invisible in rendered MDX, safe for Docusaurus/React):
 
 ```mdx
-The Obsidian era defined our foundations. {/* zenzic:ignore Z601 */}
+The Obsidian era defined our foundations. {/* zenzic:ignore: Z601 */}
 ```
 
 Each suppression comment silences **only** the specified code on that line. To suppress multiple codes on one line, add multiple comments. To exempt an entire file, use `obsolete_names_exclude_patterns` in `zenzic.toml` (Z601) or the relevant `excluded_files` patterns.

@@ -525,13 +525,20 @@ zenzic check all --format json > report.json
   "placeholders":  [],
   "unused_assets": [],
   "references":    [],
-  "nav_contract":  []
+  "nav_contract":  [],
+  "suppression_count": 0,
+  "suppression_cap": 30,
+  "suppression_debt_pts": 0,
+  "debt_status": "CLEAN"
 }
 ```
 
 Each key holds a list of issue strings or objects. An empty list means the check passed.
 `nav_contract` validates `extra.alternate` links in `mkdocs.yml` against the Virtual Site Map
 — always empty for non-MkDocs projects.
+
+For the authoritative machine contract (including `score --format json` and CAP fail-hard payloads),
+see [API JSON Contract](./api-json).
 
 ### Individual commands
 
