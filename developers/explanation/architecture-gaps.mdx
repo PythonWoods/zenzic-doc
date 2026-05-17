@@ -181,7 +181,7 @@ exclusively by `zenzic init`. See [ADR 003](adr-discovery.mdx).
 
 ### ZRT-006 — VSM Bypass: Absolute Slug Links Skipped Silently
 
-**Component:** `core/validator.py` — Phase 2 link validation loop
+**Component:** `core/validator.py` — second-pass link validation loop
 
 **Description:** When a Docusaurus project declares `routeBasePath`-owned prefixes
 (e.g. `/blog/`) via `get_absolute_url_prefixes()`, the validator suppresses Z105
@@ -264,9 +264,8 @@ expecting Zenzic to block those terms from documentation, but the scan never hap
 The Z204 Privacy Gate and the Z601 Brand Obsolescence Guard form a two-layer architecture:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non-suppressible.
   Designed for private terms that must never appear in any published doc.
-- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore Z601`.
+- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore: Z601`.
   Designed for deprecated brand terms where historical references in CHANGELOG files
   are acceptable.
 
 **Closed in:** current release sprint D100.
-Basalt Stress Test

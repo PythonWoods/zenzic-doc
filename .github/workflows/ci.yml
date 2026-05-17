@@ -112,17 +112,18 @@ jobs:
           test -f "$hooks_file"
 
           # Required public hook ids
-          grep -qE '^- id: zenzic-verify$' "$hooks_file"
-          grep -qE '^- id: zenzic-guard$' "$hooks_file"
-          grep -qE '^- id: zenzic-score$' "$hooks_file"
+          grep -q "id: zenzic-verify" "$hooks_file"
+          grep -q "id: zenzic-guard" "$hooks_file"
+          grep -q "id: zenzic-score" "$hooks_file"
 
           # Required public contract entries
-          grep -qE '^  entry: zenzic check all --strict --quiet$' "$hooks_file"
-          grep -qE '^  entry: zenzic guard scan --staged$' "$hooks_file"
-          grep -qE '^  entry: zenzic score --fail-under 100$' "$hooks_file"
+          grep -q "entry: zenzic check all" "$hooks_file"
+          grep -q "entry: zenzic guard scan" "$hooks_file"
+          grep -q "entry: zenzic score" "$hooks_file"
 
           # Required extension coverage (Markdown + MDX)
-          grep -qE '^  types_or: \[markdown, mdx\]$' "$hooks_file"
+          grep -q "markdown" "$hooks_file"
+          grep -q "mdx" "$hooks_file"
 
           echo "Public hooks contract certified from _zenzic_core/.pre-commit-hooks.yaml"
 

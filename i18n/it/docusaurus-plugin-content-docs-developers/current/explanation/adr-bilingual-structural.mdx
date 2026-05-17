@@ -113,7 +113,7 @@ contributore imposta da questo ADR. Non c'è nessun backstop in fase di build.
 ### 3. Coerenza della Storia Git
 
 Un commit atomico che sposta sia i file EN che IT crea un'**unità di storia
-coerente**: la rinomina è una singola operazione reversibile. I commit separati
+coerente**: la rinomina è un singolo passaggio reversibile. I commit separati
 creano rumore nella storia e rendono `bisect` inaffidabile quando si indagano
 regressioni.
 

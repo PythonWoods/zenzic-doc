@@ -48,15 +48,16 @@ release_name = "Basalt"
 # Suppression CAP (ADR-061): allowance of governance-approved exemptions.
 # Suppressions up to this value do not reduce score. Only excess deducts points.
 # Run 'zenzic explain ZXXX' to see the exact penalty for any rule.
-suppression_cap = 34
+suppression_cap = 10
 suppression_cap_fail_hard = true
 
 # Per-file suppression map: silence a rule for specific file globs.
 # WARNING: Every entry increases your Technical Debt Score (see formula above).
 # Use 'zenzic check --audit' to see all findings including suppressed ones.
 
-
-# Permanent vocabulary guardian: Z601 BRAND_OBSOLESCENCE fires if any of these
+# Directory Policy (ADR-084): Strategic exemptions — ZERO suppression debt.
+# Matched findings are silently dropped; --audit shows [POLICY_EXEMPTION] label.
+# Security findings (Z201-Z204) always bypass these policies unconditionally.
 # theatrical brand terms reappear in documentation source.
 # CHANGELOG*.md is excluded by default (historical prose allowed).
 # Use [HISTORICAL] inline to suppress intentional references in other files.
@@ -89,9 +90,16 @@ brand_obsolescence = [
 ]
 i18n_parity = true
 
+[governance.directory_policies]
+"blog/**"                         = ["Z601"]  # historical release blog posts — brand refs expected
+"explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
+"it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+
 # --- Z602 I18N PARITY (EPOCH 5) ---
 # Language-agnostic translation parity gate. Adding ES/FR/JA = edit YAML, no code change.
 # Multi-instance: /docs/* (User) + /developers/* (Dev) declared via extra_sources.
+# ADR-014: blog chronicles remain English-only and are intentionally excluded
+# from translation parity targets.
 [i18n]
 enabled = true
 base_lang = "en"

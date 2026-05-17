@@ -154,7 +154,7 @@ single line, leaves an audit comment in the source, and is reviewed at
 the diff level.
 
 **Anti-pattern (forbidden by standard enforcement).** Cross-plugin links must never
-be handled with `<!-- zenzic:ignore Z105 -->`. Doing so would tacitly
+be handled with `<!-- zenzic:ignore: Z105 -->`. Doing so would tacitly
 admit that the routing is "broken and accepted"; in fact the routing is
 **correct by design**, and that correctness deserves promotion to the
 project's structural configuration. Inline suppression of cross-plugin

@@ -194,7 +194,7 @@ esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).
 
 ### ZRT-006 — Bypass VSM: Link con Slug Assoluti Saltati Silenziosamente
 
-**Componente:** `core/validator.py` — ciclo di validazione link in Fase 2
+**Componente:** `core/validator.py` — ciclo di validazione link di secondo passaggio
 
 **Descrizione:** Quando un progetto Docusaurus dichiara prefissi di proprietà del
 `routeBasePath` (es. `/blog/`) tramite `get_absolute_url_prefixes()`, il validator
@@ -285,7 +285,7 @@ non avveniva mai.
 Il Privacy Gate Z204 e il Brand Obsolescence Guard Z601 formano un'architettura a due livelli:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non sopprimibile.
   Progettato per termini privati che non devono mai apparire in nessun documento pubblicato.
-- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore Z601`.
+- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore: Z601`.
   Progettato per termini di brand obsoleti dove i riferimenti storici nei file CHANGELOG
   sono accettabili.
 
