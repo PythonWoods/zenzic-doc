@@ -200,7 +200,7 @@ esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).
 `routeBasePath` (es. `/blog/`) tramite `get_absolute_url_prefixes()`, il validator
 sopprime Z105 (ABSOLUTE_PATH) per i link che iniziano con quei prefissi. La
 soppressione era implementata come un `continue` nudo, che usciva dall'iterazione
-per-link prima del lookup nella VSM — rendendo impossibile a Z001 di attivarsi
+per-link prima del lookup nella VSM — rendendo impossibile a Z101 di attivarsi
 su link con prefisso assoluto di proprietà del progetto.
 
 Un secondo problema composto: `DocusaurusAdapter.set_slug_map()` non veniva mai

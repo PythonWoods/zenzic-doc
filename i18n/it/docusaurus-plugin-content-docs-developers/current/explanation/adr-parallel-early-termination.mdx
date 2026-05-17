@@ -52,7 +52,7 @@ funzione pura.
 **`concurrent.futures.as_completed()`** — un iteratore che restituisce i future
 nell'ordine di completamento. **Valutato e sostituito.** `as_completed()` non
 fornisce garanzie di timeout per batch. Un worker finale in deadlock bloccherebbe
-il generatore indefinitamente. La protezione ZRT-002 (Z009 per i worker in
+il generatore indefinitamente. La protezione ZRT-002 (Z902 per i worker in
 deadlock) non può essere preservata senza introdurre un meccanismo di timeout
 per-future separato che vanifica il vantaggio di semplicità di `as_completed()`.
 
@@ -87,7 +87,7 @@ Quando un report completato contiene `security_findings`, il coordinatore impost
 |---|---|---|
 | Nessuna violazione di sicurezza | Tutti i file scansionati | Tutti i file scansionati (invariato) |
 | Violazione nel file 1/500 | Tutti i 500 file scansionati | Violazione rilevata; task pendenti cancellati |
-| Worker in deadlock | Z009 dopo 30 s per-worker | Z009 se nessun worker completa in 30 s |
+| Worker in deadlock | Z902 dopo 30 s per-worker | Z902 se nessun worker completa in 30 s |
 | Ordine dei risultati | Ordine di submission → ordinato | Ordine di completamento → ordinato |
 
 **Semantica di cancellazione:** `future.cancel()` opera solo sui task non ancora
@@ -98,7 +98,7 @@ scartati (non aggiunti al report). Il fail-fast è quindi una
 
 **Preservazione ZRT-002:** Se `concurrent.futures.wait()` restituisce un insieme
 `done` vuoto (nessun worker ha completato entro `_WORKER_TIMEOUT_S` secondi),
-tutti i future pendenti vengono cancellati e un finding Z009 viene emesso per
+tutti i future pendenti vengono cancellati e un finding Z902 viene emesso per
 ogni file bloccato. Questo protegge da pattern ReDoS in `[[custom_rules]]` che
 bypassano il canary di avvio (`_assert_regex_canary()`).
 
@@ -140,7 +140,7 @@ prima dell'abort.
 ZRT-002. Con `as_completed()`, un worker finale in deadlock fa bloccare il
 generatore indefinitamente senza modo di imporre un timeout per batch pendente.
 Con `wait(timeout=_WORKER_TIMEOUT_S)`, un insieme `done` vuoto dopo 30 secondi
-attiva incondizionatamente il guard Z009 — senza meccanismi aggiuntivi.
+attiva incondizionatamente il guard Z902 — senza meccanismi aggiuntivi.
 
 ---
 
@@ -154,7 +154,7 @@ attiva incondizionatamente il guard Z009 — senza meccanismi aggiuntivi.
 - I risultati sono sempre ordinati per `file_path` prima di essere restituiti.
   L'ordine di completamento da `wait()` non è mai l'ordine di output finale.
 - Deadlock guard ZRT-002: se nessun future completa entro `_WORKER_TIMEOUT_S`
-  secondi, tutti i future rimanenti vengono cancellati e un finding Z009 viene
+  secondi, tutti i future rimanenti vengono cancellati e un finding Z902 viene
   emesso per ogni file bloccato.
 
 ---

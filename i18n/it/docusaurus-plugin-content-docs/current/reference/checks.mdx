@@ -53,9 +53,9 @@ Ogni route porta uno stato che indica a Zenzic come trattare i link che vi punta
 | Stato | Significato | Risultato link |
 | :--- | :--- | :--- |
 | `REACHABLE` | La pagina è elencata nella navigazione o è una route di localizzazione | Valido |
-| `ORPHAN_BUT_EXISTING` | Il file esiste su disco ma non nella navigazione del sito | Avviso Z002 |
-| `IGNORED` | Escluso dalla configurazione (es. file README, directory private) | Errore Z001 |
-| `CONFLICT` | Due file sorgente producono lo stesso URL canonico | Errore Z001 |
+| `ORPHAN_BUT_EXISTING` | Il file esiste su disco ma non nella navigazione del sito | Avviso Z103 |
+| `IGNORED` | Escluso dalla configurazione (es. file README, directory private) | Errore Z101 |
+| `CONFLICT` | Due file sorgente producono lo stesso URL canonico | Errore Z101 |
 
 **Perché è importante:** Un file può esistere nel filesystem ed essere comunque `IGNORED` nella VSM. Un URL può essere `REACHABLE` nella VSM senza avere un file corrispondente su disco (ad esempio, le route indice delle localizzazioni). La VSM è l'autorità — Zenzic verifica la raggiungibilità, non la sola esistenza del file.
 
@@ -97,11 +97,11 @@ validate_same_page_anchors = true
 
 | Codice | Severità | Significato |
 | :--- | :---: | :--- |
-| `Z001` | errore | **Link rotto** — il target non esiste nella VSM |
-| `Z002` | avviso | **Link orfano** — il target esiste su disco ma non nella navigazione del sito |
+| `Z101` | errore | **Link rotto** — il target non esiste nella VSM |
+| `Z103` | avviso | **Link orfano** — il target esiste su disco ma non nella navigazione del sito |
 | `ABSOLUTE_PATH` | errore | **Percorso assoluto** — il link usa un percorso site-absolute (`/docs/pagina`) invece di un percorso relativo (`../pagina`) |
 
-`Z001` blocca sempre la pipeline (exit code 1). `Z002` è un avviso — appare nel report ma non fa fallire la CI a meno che non venga passato `--strict`. `ABSOLUTE_PATH` è un errore perché i percorsi assoluti compromettono la portabilità quando il sito è ospitato in una sottodirectory.
+`Z101` blocca sempre la pipeline (exit code 1). `Z103` è un avviso — appare nel report ma non fa fallire la CI a meno che non venga passato `--strict`. `ABSOLUTE_PATH` è un errore perché i percorsi assoluti compromettono la portabilità quando il sito è ospitato in una sottodirectory.
 
 :::note[Coerenza Fisica — perché i percorsi relativi contano]
 

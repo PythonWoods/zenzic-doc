@@ -156,6 +156,8 @@ release-contracts:
     grep -qE '^version:' justfile
     grep -qE '^release part:' justfile
     grep -qE '^release-dry part' justfile
+    grep -qE '^verify:[[:space:]].*\bverify-codes\b' justfile
+    grep -qE '^[[:space:]]+uvx nox -s verify-codes-parity$' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
         echo "release-contracts failed: release part must not use --allow-dirty"

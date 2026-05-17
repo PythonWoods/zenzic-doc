@@ -617,8 +617,6 @@ Z902 is a **system-level timeout**. It does not reduce the [Deterministic Qualit
 
 ### Z405: UNUSED_ASSET {#z405}
 
-<span id="z903"></span>
-
 :::info[Quality Score — Brand & Assets (10%)]
 Z405 counts toward the **Brand & Assets** category, which carries a 10% weight in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each unused asset applies a −20% decay to this category.
 :::
@@ -630,8 +628,6 @@ Z405 counts toward the **Brand & Assets** category, which carries a 10% weight i
     2. Or, use it in a documentation page where appropriate.
 
 ### Z406: NAV_CONTRACT {#z406}
-
-<span id="z904"></span>
 
 :::info[Quality Score — Brand & Assets (10%)]
 Z406 counts toward the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). Each nav contract violation applies a −20% decay to the 10%-weighted brand category. Fix the navigation config to eliminate the finding.
@@ -648,8 +644,6 @@ Z406 counts toward the **Brand & Assets** category in the [Deterministic Quality
 ## Z6xx — Governance
 
 ### Z601: BRAND_OBSOLESCENCE {#z601}
-
-<span id="z905"></span>
 
 :::info[Quality Score — Brand & Assets (10%)]
 Brand obsolescence is a key metric of your documentation's maturity. Every Z601 finding contributes to the **Brand & Assets** category in the [Deterministic Quality Score](../explanation/health-metrics.mdx). A 100/100 score requires brand consistency alongside structural and content integrity. Suppress intentional historical references with `<!-- zenzic:ignore: Z601 -->` (Markdown) or `{/* zenzic:ignore: Z601 */}` (MDX).
@@ -709,8 +703,6 @@ Z906 is an informational diagnostic. It does not fail the workflow step and is s
 
 ### Z602: I18N_PARITY {#z602}
 
-<span id="z907"></span>
-
 :::info[Quality Score — Not included]
 Z602 is a **bilingual integrity check**. It does not reduce the [Deterministic Quality Score](../explanation/health-metrics.mdx). Resolve it to ensure your translated content is complete and consistent.
 :::
@@ -724,6 +716,21 @@ Z602 is a **bilingual integrity check**. It does not reduce the [Deterministic Q
     2. Copy the base-language frontmatter block and translate the values — do not add or remove keys relative to the base.
     3. Run `zenzic check all` again to confirm parity is restored.
     4. For intentional asymmetry (e.g. a locale-only page or a draft not yet translated), suppress with `{/* zenzic:ignore: Z602 */}` on the frontmatter block or add the file pattern to `i18n_exclude_patterns` in `zenzic.toml`.
+
+---
+
+## Legacy Migration Matrix {#legacy-migration-matrix}
+
+{/* zenzic:legacy-migration-matrix:start */}
+| Legacy Code | Active Code | Notes |
+|---|---|---|
+| `Z903` | `Z405` | Canonical remap for `UNUSED_ASSET`. |
+| `Z904` | `Z406` | Canonical remap for `NAV_CONTRACT`. |
+| `Z905` | `Z601` | Canonical remap for `BRAND_OBSOLESCENCE`. |
+| `Z907` | `Z602` | Canonical remap for `I18N_PARITY`. |
+{/* zenzic:legacy-migration-matrix:end */}
+
+Legacy identifiers remain valid only as historical references in migration prose. Active findings and section anchors always use the canonical codes listed in this matrix.
 
 ---
 
