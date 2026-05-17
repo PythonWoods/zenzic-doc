@@ -213,6 +213,22 @@ just lint-all
 - Per abilitare i job CodeQL: abilita Code Security (GHAS), poi imposta la variabile di repository `ENABLE_CODEQL=true`.
 - `npm-audit.yml` esegue un audit strict ad alta gravità senza allowlist.
 
+## 8.5) Governance: Directory Policies e Prosa Pulita (v0.8.0)
+
+`zenzic.toml` definisce un contratto `[governance.directory_policies]` che concede **esenzioni zero-debt**
+a specifici pattern di percorso. I finding su percorsi corrispondenti vengono annotati `[POLICY_EXEMPTION]`
+nell'output di audit e non contano contro il `suppression_cap`.
+
+```toml
+[governance.directory_policies]
+"blog/**"                         = ["Z601"]  # post storici: i codename di release sono intenzionali
+"explanation/mineral-path.mdx"    = ["Z601"]  # Registro SSOT dei codename (EN)
+"it/explanation/mineral-path.mdx" = ["Z601"]  # Registro SSOT dei codename (IT)
+```
+
+Questo elimina la necessità di tag `<!-- zenzic:ignore -->` inline dispersi tra i post storici del blog,
+mantenendo la prosa pulita e il suppression cap riservato ai casi limite genuini.
+
 ## 9) Robustezza della pipeline (stato attuale)
 
 Policy della landing page:

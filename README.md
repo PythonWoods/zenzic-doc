@@ -206,6 +206,22 @@ just lint-all
 - To enable CodeQL jobs: enable Code Security (GHAS), then set repository variable `ENABLE_CODEQL=true`.
 - `npm-audit.yml` runs strict high-severity audit without allowlists.
 
+## 8.5) Governance: Directory Policies and Clean Prose (v0.8.0)
+
+`zenzic.toml` defines a `[governance.directory_policies]` contract that grants **zero-debt exemptions**
+to specific path patterns. Findings on matching paths are annotated `[POLICY_EXEMPTION]` in audit
+output and do not count against `suppression_cap`.
+
+```toml
+[governance.directory_policies]
+"blog/**"                         = ["Z601"]  # historical release posts: codenames are intentional
+"explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
+"it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+```
+
+This removes the need for inline `<!-- zenzic:ignore -->` tags scattered across historical blog posts,
+keeping prose clean and the suppression cap reserved for genuine edge cases.
+
 ## 9) Pipeline robustness (current status)
 
 Landing-page policy:
