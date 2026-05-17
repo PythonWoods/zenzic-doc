@@ -1,12 +1,12 @@
 ---
-slug: log-v070-maturity
-title: "Log: current release"
-sidebar_label: "📜 Log: current release"
+slug: log-v080-basalt
+title: "Log: v0.8.0 Basalt"
+sidebar_label: "📜 Log: v0.8.0 Basalt"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-logs]
 date: 2026-05-07T10:00:00
 description: >-
-  Patch-notes leggibili in 30 secondi: 4-Gates Standard, Z907 I18N_PARITY,
+  v0.8.0 patch notes in 30 seconds: 4-Gates Standard, Z907 I18N_PARITY,
   Multi-Root Discovery, Zero-Config Sovereignty, Virtual Routes, breaking changes, migration path.
 image: /img/social-card.png
 ---
@@ -14,7 +14,7 @@ image: /img/social-card.png
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-**TL;DR.** The current release closes the development arc with
+**TL;DR.** v0.8.0 closes the development arc with
 seven epochs: the **4-Gates Standard**, the language-agnostic
 **Z907 I18N_PARITY** check, **Cross-Instance Sovereignty** now
 Zero-Config, **Multi-Root Discovery**, **Zero-Config
@@ -26,12 +26,12 @@ Routes** with the `zenzic inspect routes` JSON API.
 
 ## Breaking changes
 
-| From (≤ current series) | To (current release) | Migration |
+| From (≤ v0.7.x series) | To (v0.8.0 release) | Migration |
 |-----------------|-------------|-----------|
 | Legacy standalone alias | `engine = "standalone"` | normalize in `zenzic.toml` |
 | MkDocs plugin (in-tree) | external adapter | drop dependency, use Core CLI |
 | `just preflight` | `just verify` | recipe rename — same 4-Gates content |
-| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `current release` |
+| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.8.0` |
 | `[link_validation]` TOML schema | *(removed)* | delete the block — URL prefixes auto-detected |
 
 No silent deprecation shims. Industry-grade only.

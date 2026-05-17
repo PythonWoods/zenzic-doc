@@ -1,12 +1,12 @@
 ---
 slug: engineering-v080-deep-dive
-title: "Engineering Zenzic: The Anatomy of a Zero-Config Ecosystem"
+title: "Engineering Zenzic v0.8.0: The Anatomy of a Zero-Config Ecosystem"
 sidebar_label: "📜 Deep Dive"
 authors: [pythonwoods]
 tags: [engineering-logs, architecture, release]
 date: 2026-05-12
 description: >
-  A long-form engineering deep dive into Zenzic: context fragmentation,
+  A long-form engineering deep dive into Zenzic v0.8.0: context fragmentation,
   modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
@@ -15,7 +15,7 @@ Zenzic emerged as a systems response to a recurring pattern we kept observing ac
 
 {/* truncate */}
 
-Italian version available in the Italian locale mirror of this article.
+This engineering chronicle is intentionally published in English under ADR-014 language policy.
 
 This deep dive is for software architects and technical stakeholders who want to understand why architecture matters below the changelog line. The central claim of Zenzic is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
@@ -214,6 +214,81 @@ ADR-012 formalized the namespace contract to prevent that bleed.
 This matters because suppression semantics and enforcement expectations are tier-dependent by design. Zenzic additionally formalizes immutable surfaces such as `FROZEN_CODES`, `NON_SUPPRESSIBLE_CODES`, and `PLUGIN_FORBIDDEN_EXITS` so that security findings cannot be casually reclassified into optional style noise.
 
 Security findings are not suggestions. They are enforcement events.
+
+## 5.5) Adapter Refactoring: From Protocol Flexibility to ABC Contracts
+
+ADR-078 changed the adapter layer from permissive structural typing to explicit runtime contracts.
+
+In the v0.7 line, adapter compliance relied on a `Protocol` surface plus runtime duck-typing checks. That model was flexible but late-failing: missing capabilities could escape until scan or validation paths were already running.
+
+In v0.8, the contract is a concrete `BaseAdapter` Abstract Base Class with required abstract methods and factory-level subclass enforcement. Invalid adapter implementations now fail at instantiation time, not in mid-pipeline execution.
+
+| Dimension | v0.7 Behavior | v0.8 Current Behavior |
+|:--|:--|:--|
+| Contract type | Structural `Protocol` + duck typing | Nominal `ABC` (`BaseAdapter`) |
+| Capability checks | Mixed optional probing | Mandatory abstract methods |
+| Failure point | Late (scan/validate path) | Early (factory construction) |
+| Core coupling | Scanner-side engine probes | IoC-injected callbacks and roots |
+
+This refactor also applies Inversion of Control to the scanner boundary. The Core scanner no longer discovers engine details internally. Adapter context is resolved once by orchestration and injected as explicit callbacks and content roots, keeping the scanner engine-agnostic.
+
+Logical flow:
+
+```text
+BuildContext + repo_root
+  -> get_adapter(...)
+  -> inject adapter callbacks + discovered roots
+  -> scanner/validator execute without engine discovery logic
+```
+
+MkDocs coverage was upgraded in the same cycle: multi-root discovery is now native in `MkDocsAdapter`, including recursive monorepo include traversal. Additional roots are mounted into the same VSM and reference-validation perimeter, so external docs trees no longer require manual wiring.
+
+## 6) Eradicating Inline Noise: Directory Policies
+
+Every governance system eventually encounters a legitimate exemption problem. Brand-term checks are essential for catching stale references in active documentation. But release blogs are historical artifacts. Enforcing `Z601` (obsolete brand term) against a blog post that intentionally names the old release identifier is not quality enforcement — it is false positive noise.
+
+Before `directory_policies`, the only escape was an inline suppression comment scattered across every affected line:
+
+```mdx
+<!-- zenzic:ignore: Z601 historical release -->
+Quartz was the internal code name for v0.6.0.
+<!-- zenzic:ignore: Z601 historical release -->
+The Obsidian milestone closed the legacy adapter contract.
+```
+
+This approach accumulates debt. Inline suppressions count against the `suppression_cap`. Each file that writes its own inline escapes consumes one audit slot. At `suppression_cap = 10`, a fleet with many historical blog posts can exhaust the cap through legitimate exemptions, leaving no headroom for actual suppression abuse.
+
+The structural fix introduced in v0.8.0 is `directory_policies`: a governance-level TOML contract that grants zero-debt exemptions to named path patterns.
+
+```toml title="zenzic.toml"
+[governance]
+suppression_cap = 10
+suppression_cap_fail_hard = true
+
+[governance.directory_policies]
+"blog/**"                         = ["Z601"]  # historical release posts: brand terms are intentional
+"explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
+"it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+```
+
+With this configuration in place, the blog posts become clean:
+
+```mdx
+Quartz was the internal code name for v0.6.0.
+The Obsidian milestone closed the legacy adapter contract.
+```
+
+No inline tags. No suppression comments. No debt. The policy exemption is declared once at the governance contract level, not repeated across every affected line.
+
+When Zenzic applies a policy exemption during a scan, findings in those paths are annotated with `[POLICY_EXEMPTION]` in the audit output — giving reviewers a complete, centralized record of what was exempted and under which pattern. This preserves auditability without hiding the signal.
+
+The hierarchy that emerges is deliberate:
+
+1. **Non-suppressible codes** (`NON_SUPPRESSIBLE_CODES`) — security findings that cannot be overridden by any mechanism.
+2. **Directory policies** — governance-level zero-debt exemptions declared in `zenzic.toml`.
+3. **Inline suppressions** — per-line escape hatches, counted against the cap and logged.
+
+Zero-debt means the suppression cap is preserved for genuine edge cases, and the governance contract remains the authoritative source of intent.
 
 ## Why This Is a Zero-Config Ecosystem, Not a Zero-Policy Tool
 
