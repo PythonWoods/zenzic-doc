@@ -195,7 +195,7 @@ Zenzic affronta questo problema attraverso il blocco di configurazione [`[govern
 brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore Z601 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore Z601 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
+Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore: Z601 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore: Z601 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
 
 ---
 

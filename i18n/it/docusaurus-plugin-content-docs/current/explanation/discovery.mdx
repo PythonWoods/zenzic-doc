@@ -10,6 +10,75 @@ Zenzic adotta un principio architetturale preciso: **un solo punto d'ingresso** 
 
 ---
 
+## L'Autorità della Radice {#root-authority}
+
+Prima che Zenzic possa scoprire, escludere o scansionare un singolo file, deve rispondere a una domanda:
+**dove inizia questo progetto?**
+
+Zenzic è uno strumento con perimetro di Workspace. Non analizza directory arbitrarie; analizza
+**progetti definiti**. Per stabilire il confine del progetto, Zenzic esegue una **traversata
+verso l'alto** (upward traversal) a partire dal percorso target, cercando un marcatore di radice
+autorizzato.
+
+### Marcatori di Radice del Repository {#root-markers}
+
+Due marcatori sono autorizzati (il primo trovato vince):
+
+| Marcatore | Descrizione |
+| :--- | :--- |
+| `.git/` | Marcatore VCS universale — presente in qualsiasi repository tracciato da Git |
+| `zenzic.toml` | Il file di configurazione di Zenzic — il contratto esplicito di governance |
+
+Entrambi sono intenzionalmente engine-neutral: `mkdocs.yml`, `docusaurus.config.ts` e file
+analoghi dei motori di build non sono marcatori di radice. Il Core deve rimanere indipendente
+da qualsiasi framework documentale specifico.
+
+### Perché il Marcatore di Radice è Obbligatorio {#why-mandatory}
+
+Senza un marcatore di radice (VCS o configurazione), Zenzic non può stabilire il **Perimetro di Sovranità** del progetto. Il blocco è necessario per quattro motivi indipendenti:
+
+- **Risolvere i percorsi relativi** — ogni segnalazione è espressa come percorso relativo alla radice. Senza un'ancora fissa, la posizione dei file è ambigua e non riproducibile tra macchine diverse.
+- **Mappare il workspace nel VSM** — Zenzic costruisce sempre una Virtual Site Map, indipendentemente dall'adapter. In modalità engine (Docusaurus, MkDocs), il VSM include ghost route, trasformazioni di slug e pagine virtuali. In modalità Standalone, il VSM è una proiezione 1:1 del filesystem. In entrambi i casi, la radice definisce il punto zero per la canonizzazione di ogni riferimento interno — così che `index.md` alla radice sia distinguibile senza ambiguità da un `index.md` in una sottocartella.
+- **Applicare le `directory_policies`** — i contratti di governance fanno corrispondere percorsi tramite pattern glob relativi alla radice del workspace. Senza una radice definita, le regole di esenzione sono non deterministiche e non possono essere applicate in modo coerente.
+- **Prevenire il Massive Indexing** — senza un confine esplicito, il motore potrebbe scansionare accidentalmente l'intero filesystem host, producendo dati incoerenti e rischiando la fuga di informazioni.
+
+L'assenza di un marcatore di radice produce questo errore:
+
+```text
+ERROR: Could not locate repo root: no .git directory or zenzic.toml found in any
+ancestor of /percorso/al/target. Run Zenzic from inside the repository.
+```
+
+Non si tratta di un errore di configurazione. È una **garanzia di sicurezza**: il Quality Gate
+interrompe una scansione fuori perimetro prima che inizi.
+
+### Opzioni di Risoluzione {#root-resolution}
+
+Per consentire a Zenzic di analizzare una directory, soddisfa uno dei seguenti requisiti:
+
+**Opzione A — Inizializza Zenzic** (crea il marcatore `zenzic.toml`):
+
+```bash
+cd /percorso/al/target
+zenzic init
+```
+
+**Opzione B — Inizializza un repository Git** (crea il marcatore `.git/`):
+
+```bash
+cd /percorso/al/target
+git init
+```
+
+**Opzione C — Esegui dall'interno di un progetto esistente** (la traversata verso l'alto troverà il marcatore automaticamente):
+
+```bash
+# Da qualsiasi punto all'interno di un progetto che ha già .git/ o zenzic.toml
+zenzic check all
+```
+
+---
+
 ## Il punto d'ingresso unico: `iter_markdown_sources` {#entry-point}
 
 La funzione `iter_markdown_sources` e l'unica porta d'accesso autorizzata per iterare sui file sorgente Markdown. Nessun modulo interno chiama `rglob`, `os.walk` o `Path.iterdir` direttamente per cercare file `.md` o `.mdx`.

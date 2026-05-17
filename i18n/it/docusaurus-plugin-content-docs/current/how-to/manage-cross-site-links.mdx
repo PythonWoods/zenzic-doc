@@ -77,12 +77,12 @@ Gli ignore inline sono chirurgici. Usali quando:
 - L'eccezione è contesto locale, non una verità di progetto.
 
 ```markdown
-<!-- zenzic:ignore Z201 -->
+<!-- zenzic:ignore: Z201 -->
 api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
 ```
 
 ```mdx
-{/* zenzic:ignore Z105 */}
+{/* zenzic:ignore: Z105 */}
 [Esempio di link hard](/legacy/path)
 ```
 
@@ -93,7 +93,7 @@ diff delle PR, tracciabile con `git blame`.
 
 ## Anti-pattern: ignorare inline i link cross-plugin
 
-**Non** spargere `<!-- zenzic:ignore Z105 -->` su ogni link cross-plugin.
+**Non** spargere `<!-- zenzic:ignore: Z105 -->` su ogni link cross-plugin.
 Questo:
 
 - Nasconde la dipendenza cross-istanza a chiunque legga `zenzic.toml`.

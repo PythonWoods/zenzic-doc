@@ -84,6 +84,20 @@ path traversal e il Zenzic Audit Badge. Zero installazione. Zero configurazione.
 
 Quando sei pronto a integrare Zenzic nel progetto, genera un `zenzic.toml` con un comando:
 
+:::info[Perimetro del Workspace obbligatorio]
+
+Zenzic analizza **workspace definiti, non directory arbitrarie**. Esegue una traversata verso l'alto
+dal percorso target per localizzare un marcatore di radice (`.git/` o `zenzic.toml`). Se vedi:
+
+```text
+ERROR: Could not locate repo root: no .git directory or zenzic.toml found
+```
+
+Esegui `zenzic init` nella directory radice del tuo progetto per stabilire il perimetro di analisi.
+Vedi [Discovery & Exclusion — L'Autorità della Radice](../explanation/discovery#root-authority) per la motivazione completa.
+
+:::
+
 ```bash
 cd il-tuo-progetto/
 zenzic init

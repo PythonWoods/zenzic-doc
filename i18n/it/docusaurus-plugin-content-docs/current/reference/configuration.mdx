@@ -405,6 +405,45 @@ brand_obsolescence = ["Obsidian"]
 i18n_parity = true
 ```
 
+### `per_file_ignores`
+
+**Tipo:** `dict[str, list[str]]` — **Default:** `{}`
+
+Mappa di soppressione per file: pattern glob → lista di codici di finding. Ogni voce silenzia i codici
+specificati per tutti i file che corrispondono al glob. Ogni voce attiva costa **1 punto di suppression debt**
+verso `suppression_cap`.
+
+```toml
+[governance.per_file_ignores]
+"docs/migration/**" = ["Z601"]  # riferimenti di brand intenzionali nelle guide di migrazione
+"docs/legacy/*.md"  = ["Z101"]  # link interrotti a sistemi dismessi
+```
+
+### `directory_policies`
+
+**Tipo:** `dict[str, list[str]]` — **Default:** `{}`
+
+Esenzioni di policy a livello di directory: pattern glob → lista di codici di finding. A differenza di
+`per_file_ignores`, i finding corrispondenti vengono **rimossi silenziosamente prima della visualizzazione
+con costo zero di suppression debt** — non vengono mai conteggiati nel footer Suppression Audit.
+
+Pensate per eccezioni ratificate organizzativamente: archivi storici del blog, registri SSOT dei codename,
+e altri file dove le violazioni sono strutturalmente attese.
+
+```toml
+[governance.directory_policies]
+"blog/**"                       = ["Z601"]  # post storici del blog — riferimenti ai codename attesi
+"docs/explanation/registry.mdx" = ["Z601"]  # registro SSOT dei codename
+```
+
+In modalità `--audit` (`zenzic check all --audit`), i finding esenti **non vengono eliminati** — emergono
+con un label `[POLICY_EXEMPTION]` preposto al messaggio, così i revisori di governance possono ispezionare
+cosa è strategicamente esente senza rompere l'invariante a costo zero.
+
+I finding di sicurezza (Z201–Z204) bypassano sempre `directory_policies` incondizionatamente.
+
+**Gerarchia:** `directory_policies` (0 pt) → `per_file_ignores` (1 pt/voce) → `zenzic:ignore` inline (1 pt ciascuno)
+
 ### Semantica di attivazione
 
 - `Z601` è attivo solo quando `brand_obsolescence` contiene almeno un termine.
@@ -504,7 +543,7 @@ micro-siti su dominio condiviso, link a documentazione satellite
 ospitata su un sub-path noto.
 
 **Quando NON usarlo:** eccezioni singole in un singolo file. Usa
-invece la soppressione inline (`<!-- zenzic:ignore Z105 -->`) — vedi
+invece la soppressione inline (`<!-- zenzic:ignore: Z105 -->`) — vedi
 la [Politica di Soppressione](./suppression-policy.mdx).
 
 Per la guida operativa completa e le regole decisionali, vedi

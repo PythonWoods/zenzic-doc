@@ -524,7 +524,7 @@ zenzic check all --format json | jq '.orphans'
 zenzic check all --format json > report.json
 ```
 
-Il report JSON contiene sette chiavi:
+Il report JSON contiene undici chiavi:
 
 ```json
 {
@@ -534,13 +534,20 @@ Il report JSON contiene sette chiavi:
   "placeholders":  [],
   "unused_assets": [],
   "references":    [],
-  "nav_contract":  []
+  "nav_contract":  [],
+  "suppression_count": 0,
+  "suppression_cap": 30,
+  "suppression_debt_pts": 0,
+  "debt_status": "CLEAN"
 }
 ```
 
 Ogni chiave contiene una lista di stringhe o oggetti con i problemi. Una lista vuota significa
 che il controllo è passato. `nav_contract` valida i link `extra.alternate` in `mkdocs.yml`
 rispetto alla Virtual Site Map — sempre vuoto per i progetti non MkDocs.
+
+Per il contratto macchina autorevole (inclusi `score --format json` e il payload CAP fail-hard),
+vedi [Contratto API JSON](./api-json).
 
 ### Comandi singoli
 

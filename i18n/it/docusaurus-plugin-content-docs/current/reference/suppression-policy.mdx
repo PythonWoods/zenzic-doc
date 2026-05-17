@@ -65,6 +65,7 @@ Sono progettati per essere combinati: un progetto ben governato usa ciascun live
 | **1. Inline** | Commento `<!-- zenzic:ignore ZXXX -->` | Singola riga | ✅ Sì | 1 pt/soppressione |
 | **2. Per-file** | `governance.per_file_ignores` nel TOML | Glob di file | ✅ Sì | 1 pt/voce |
 | **3. Exclusion Zone** | `excluded_dirs` / `excluded_file_patterns` | Directory o pattern | ❌ No | 0 pt |
+| **4. Directory Policy** | `governance.directory_policies` nel TOML | Glob di file | ✅ Sì (audit mode) | **0 pt** |
 
 :::warning[Le Exclusion Zone sono silenziose]
 I file nelle exclusion zone sono completamente invisibili a Zenzic. Non vengono emessi finding, non viene mantenuto nessun audit trail e non viene registrato alcun impatto sul punteggio. Usa le exclusion zone solo per asset genuinamente non documentali (output di build, file di terze parti). Per eccezioni intenzionali nella documentazione, usa il Livello 1 o il Livello 2 — mantengono vivo l'audit trail.
@@ -79,13 +80,13 @@ La soppressione più precisa: un commento, una riga, un finding.
 **File Markdown (`.md`):**
 
 ```markdown
-Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
+Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore: Z601 -->
 ```
 
 **File MDX (`.mdx`):**
 
 ```mdx
-Quartz era precedentemente noto come Obsidian. {/* zenzic:ignore Z601 */}
+Quartz era precedentemente noto come Obsidian. {/* zenzic:ignore: Z601 */}
 ```
 
 Entrambe le forme di commento sono invisibili nell'output renderizzato. La distinzione è importante: usare il tipo di commento sbagliato nel formato di file sbagliato farà sì che la soppressione venga silenziosamente ignorata.
@@ -93,7 +94,7 @@ Entrambe le forme di commento sono invisibili nell'output renderizzato. La disti
 Per sopprimere **più codici sulla stessa riga**, aggiungi un commento per ogni codice:
 
 ```mdx
-Alcune riga. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
+Alcune riga. {/* zenzic:ignore: Z107 */} {/* zenzic:ignore: Z601 */}
 ```
 
 ### Posizione Raccomandata: Trailing (In Coda)
@@ -101,7 +102,7 @@ Alcune riga. {/* zenzic:ignore Z107 */} {/* zenzic:ignore Z601 */}
 Il commento dovrebbe trovarsi sempre **alla fine della riga**, seguendo la convenzione industriale stabilita da `# noqa` (Python), `// eslint-disable-line` (JavaScript) e `// lint:ignore` (Go).
 
 ```mdx
-- Riferimento storico — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore Z601 -->
+- Riferimento storico — Quartz era precedentemente noto come Obsidian. <!-- zenzic:ignore: Z601 -->
 ```
 
 ---
@@ -143,6 +144,44 @@ Le exclusion zone non hanno **nessun costo sul punteggio** perché non sono sopp
 - Changelog storici che contengono segreti di esempio e sintassi deprecata
 
 **Non** usare le exclusion zone per nascondere il vero debito documentale.
+
+---
+
+## Livello 4 — Directory Policy {#directory-policy}
+
+Esenzioni strategiche a costo zero per interi rami di directory o glob di file specifici.
+Progettate per **eccezioni strutturali** dove le soppressioni sono giustificate organizzativamente, non come debito tecnico.
+A differenza delle exclusion zone, le directory policy mantengono un audit trail in modalità `--audit`.
+
+Aggiungi una tabella `[governance.directory_policies]` al tuo `zenzic.toml`:
+
+```toml
+[governance.directory_policies]
+"blog/**"                       = ["Z601"]  # post storici del blog — riferimenti ai codename attesi
+"docs/explanation/registry.mdx" = ["Z601"]  # registro SSOT dei codename
+```
+
+La chiave della mappa è un pattern glob relativo a `docs_dir`. I finding corrispondenti vengono **rimossi silenziosamente prima della visualizzazione** con **costo zero di suppression debt** — non vengono mai conteggiati nel footer Suppression Audit.
+
+:::info[Gerarchia: Directory Policy > Per-file ignore > Inline]
+Per scegliere il livello di soppressione:
+- **Livello 4** per esenzioni strategiche ratificate organizzativamente che riguardano più file (es. intera directory `blog/`). Costo zero.
+- **Livello 2** per eccezioni file per file con debito esplicito (1 pt/voce). Compare nel Suppression Audit.
+- **Livello 1** per eccezioni ad-hoc a livello di riga nella prosa. 1 pt ciascuna. Massima visibilità nel sorgente.
+:::
+
+### Modalità Audit e Label `[POLICY_EXEMPTION]`
+
+Quando si esegue `zenzic check all --audit`, le esenzioni di directory policy **non vengono eliminate** — emergono con un label `[POLICY_EXEMPTION]` preposto al messaggio del finding. Questo permette ai revisori di governance di ispezionare ciò che è strategicamente esente senza rompere l'invariante a costo zero:
+
+```shell
+$ zenzic check all --audit
+explanation/mineral-path.mdx:21 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Obsidian'
+explanation/mineral-path.mdx:22 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Quartz'
+blog/2026-05-07-log-v080-basalt.mdx:1 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Basalt'
+```
+
+I finding di sicurezza (Z201–Z204) **bypassano sempre le directory policy** incondizionatamente — non possono essere esentati indipendentemente da qualsiasi configurazione TOML.
 
 ---
 
@@ -207,7 +246,7 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | Z601 | BRAND_OBSOLESCENCE | ✅ Sì |
 
 :::danger[La Legge dell'Inviolabilità — CEO-152]
-`zenzic:ignore Z201`, `Z202`, `Z203` e `Z204` vengono **silenziosamente rifiutati**. Il security gate opera indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente, Zenzic emette comunque il finding ed esce con il codice 2 o 3.
+`zenzic:ignore: Z201`, `Z202`, `Z203` e `Z204` vengono **silenziosamente rifiutati**. Il security gate opera indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente, Zenzic emette comunque il finding ed esce con il codice 2 o 3.
 
 **Non puoi ignorare una breccia.**
 :::
@@ -236,7 +275,7 @@ Le exclusion zone (`excluded_dirs`, `excluded_file_patterns`) **non** vengono by
 `--strict` e `zenzic:ignore` operano a **livelli diversi** della pipeline di analisi:
 
 1. **Rilevamento:** Zenzic trova una violazione (es. Z402, severità `warning`).
-2. **Filtro di soppressione:** Se `zenzic:ignore Z402` è presente, il finding viene rimosso.
+2. **Filtro di soppressione:** Se `zenzic:ignore: Z402` è presente, il finding viene rimosso.
 3. **Valutazione della severità:** `--strict` promuove i warning sopravvissuti ad errori. Agisce solo sui finding che hanno superato il passo 2.
 
 | Stato del finding | `--strict`? | Exit code | Motivo |
