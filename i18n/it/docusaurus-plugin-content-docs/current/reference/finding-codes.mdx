@@ -181,7 +181,8 @@ Z105 conta verso la categoria **Integrità Strutturale**. Un percorso assoluto n
   | :--- | :---: | :---: | :--- |
   | `/blog/slug-corretto` (slug esiste nella VSM) | ✅ esente | ✅ passa | Nessun finding |
   | `/blog/slug-sbagliato` (slug assente dalla VSM) | ✅ esente | ❌ fallisce | **Z104** |
-  | `/developers/intro` (plugin sorella, non scansionata) | ✅ esente | ⏭️ saltato | Nessun finding |
+  | `/developers/intro` (content root plugin sorella, pagina presente) | ✅ esente | ✅ passa | Nessun finding |
+  | `/developers/ghost` (content root plugin sorella, pagina assente) | ✅ esente | ❌ fallisce | **Z104** |
   | `/api/v1/users` (prefisso sconosciuto) | ❌ **Z105** | — | Z105 |
 
 * **Passaggi di Rimedio:**

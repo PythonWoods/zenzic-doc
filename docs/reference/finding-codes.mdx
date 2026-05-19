@@ -181,7 +181,8 @@ Z105 counts toward the **Structural Integrity** category. A non-portable absolut
   | :--- | :---: | :---: | :--- |
   | `/blog/correct-slug` (slug exists in VSM) | ✅ exempt | ✅ passes | No finding |
   | `/blog/wrong-slug` (slug absent from VSM) | ✅ exempt | ❌ fails | **Z104** |
-  | `/developers/intro` (sibling plugin, not scanned) | ✅ exempt | ⏭️ skipped | No finding |
+  | `/developers/intro` (sibling plugin content root, page exists) | ✅ exempt | ✅ passes | No finding |
+  | `/developers/ghost` (sibling plugin content root, page absent) | ✅ exempt | ❌ fails | **Z104** |
   | `/api/v1/users` (unknown prefix) | ❌ **Z105** | — | Z105 |
 
 * **Remediation Steps:**
