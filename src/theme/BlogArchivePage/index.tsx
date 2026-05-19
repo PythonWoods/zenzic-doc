@@ -103,7 +103,7 @@ export default function BlogArchivePage({archive}: Props): React.JSX.Element {
               The Zenzic Blog
             </Heading>
             <p className="archive-hero__subtitle">
-              Engineering insights, security chronicles, and the evolution of
+              Engineering insights, security post-mortems, and the evolution of
               Zenzic — indexed by year.
             </p>
           </div>
