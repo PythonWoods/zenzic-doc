@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 // SPDX-License-Identifier: Apache-2.0
 
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -113,7 +113,7 @@ const config: Config = {
     function tailwindPlugin() {
       return {
         name: 'tailwindcss-docusaurus',
-        configurePostCss(postcssOptions: {plugins: unknown[]}) {
+        configurePostCss(postcssOptions: { plugins: unknown[] }) {
           // eslint-disable-next-line @typescript-eslint/no-require-imports
           postcssOptions.plugins.push(require('@tailwindcss/postcss'));
           return postcssOptions;
@@ -138,17 +138,17 @@ const config: Config = {
     // Social sharing image (OG + Twitter Cards)
     image: 'assets/social/social-card.png',
     metadata: [
-      {name: 'keywords', content: 'markdown, linter, docusaurus, mkdocs, static analysis, documentation, security, broken links, orphan pages'},
-      {name: 'twitter:card', content: 'summary_large_image'},
-      {name: 'twitter:site', content: '@PythonWoods'},
-      {name: 'twitter:creator', content: '@PythonWoods'},
-      {name: 'twitter:image:alt', content: 'Zenzic — The Safe Harbor for Markdown Documentation'},
-      {name: 'theme-color', content: '#4f46e5'},
-      {property: 'og:image', content: 'https://zenzic.dev/assets/social/social-card.png'},
-      {property: 'og:image:width', content: '1200'},
-      {property: 'og:image:height', content: '630'},
-      {property: 'og:type', content: 'website'},
-      {property: 'og:url', content: 'https://zenzic.dev/'},
+      { name: 'keywords', content: 'markdown, linter, docusaurus, mkdocs, static analysis, documentation, security, broken links, orphan pages' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:site', content: '@PythonWoods' },
+      { name: 'twitter:creator', content: '@PythonWoods' },
+      { name: 'twitter:image:alt', content: 'Zenzic — The Safe Harbor for Markdown Documentation' },
+      { name: 'theme-color', content: '#4f46e5' },
+      { property: 'og:image', content: 'https://zenzic.dev/assets/social/social-card.png' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://zenzic.dev/' },
     ],
     headTags: [
       {
@@ -230,23 +230,23 @@ const config: Config = {
       options: {
         themeVariables: {
           // Primary nodes → BRAND Indigo
-          primaryColor:        '#4f46e5',
-          primaryTextColor:    '#e4e4e7',
-          primaryBorderColor:  '#3730a3',
+          primaryColor: '#4f46e5',
+          primaryTextColor: '#e4e4e7',
+          primaryBorderColor: '#3730a3',
           // Edges / connectors → DIM Slate
-          lineColor:           '#64748b',
+          lineColor: '#64748b',
           // Secondary / tertiary surfaces → Sentinel depth
-          secondaryColor:      '#1e1e27',
-          tertiaryColor:       '#111118',
+          secondaryColor: '#1e1e27',
+          tertiaryColor: '#111118',
           edgeLabelBackground: '#0f0f13',
           // Cluster boxes
-          clusterBkg:          '#0c0c10',
-          clusterBorder:       '#3730a3',
+          clusterBkg: '#0c0c10',
+          clusterBorder: '#3730a3',
           // Error nodes → ERROR Rose (exit codes 1–3)
-          errorBkgColor:       '#1a0005',
-          errorTextColor:      '#f43f5e',
+          errorBkgColor: '#1a0005',
+          errorTextColor: '#f43f5e',
           // Title and general text
-          titleColor:          '#fafafa',
+          titleColor: '#fafafa',
         },
       },
     },

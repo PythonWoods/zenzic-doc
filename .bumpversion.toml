@@ -28,17 +28,6 @@ filename = "docusaurus.config.ts"
 search = "v{current_version}"
 replace = "v{new_version}"
 
-[[tool.bumpversion.files]]
-filename = "README.md"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-
-[[tool.bumpversion.files]]
-filename = "README.it.md"
-search = "v{current_version}"
-replace = "v{new_version}"
-
 
 [[tool.bumpversion.files]]
 filename = "RELEASE.md"
@@ -107,3 +96,23 @@ replace = 'zenzic=={new_version}'
 filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/workflow-integration.mdx"
 search = 'zenzic=={current_version}'
 replace = 'zenzic=={new_version}'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current.json"
+search = '"message": "{current_version}"'
+replace = '"message": "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/explanation/the-zenzic-trinity.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/reference/cli.mdx"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "developers/governance/exit_strategy.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'

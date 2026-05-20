@@ -571,7 +571,7 @@ table thead tr {
   border: 1px solid var(--zenzic-overlay-black-10);
 }
 
-/* IL SIGILLO DELLA SENTINELLA - CLASSE MONOLITICA */
+/* IL SIGILLO DI ZENZIC - CLASSE MONOLITICA */
 .zz-terminal-monolith {
   background-color: var(--zenzic-code-surface);
   border: 1px solid var(--zenzic-border-brand-20);
@@ -592,7 +592,7 @@ table thead tr {
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
 a.tag_oVPq[href*="/blog/tags/release"] { background: var(--zenzic-bg-brand-15); color: var(--zenzic-brand-400); border-color: var(--zenzic-border-brand-35); }
 
-/* Security → Blood semantic */
+/* Security → Fatal semantic */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
 a.tag_oVPq[href*="/blog/tags/security"] { background: var(--zenzic-bg-fatal-15); color: var(--zenzic-fatal-soft); border-color: var(--zenzic-border-fatal-35); }
 

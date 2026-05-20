@@ -7,7 +7,7 @@
  * Usage in MDX (globally available — no import required):
  *
  *   <TerminalWindow title="zenzic check all">
- *     <img src="/assets/terminal/sentinel-clean.svg" alt="Zenzic Audit Badge — 100/100" />
+ *     <img src="/assets/terminal/zenzic-clean.svg" alt="Zenzic Audit Badge — 100/100" />
  *   </TerminalWindow>
  *
  * Props:
