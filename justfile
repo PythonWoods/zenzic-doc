@@ -76,7 +76,49 @@ check *args:
     GUARD=(
       --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
     )
-    {{ZENZIC_CMD}} check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+
+    if [[ -n "${ZENZIC_BIN:-}" ]]; then
+        ${ZENZIC_BIN} check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        exit 0
+    fi
+
+    CORE_PATH=""
+    CHECKED=()
+
+    if [[ -n "${ZENZIC_CORE_PATH:-}" ]]; then
+        CHECKED+=("ZENZIC_CORE_PATH -> ${ZENZIC_CORE_PATH}")
+        if [[ -d "${ZENZIC_CORE_PATH}/src/zenzic" ]]; then
+            CORE_PATH="${ZENZIC_CORE_PATH}"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("_zenzic_core -> _zenzic_core")
+        if [[ -d "_zenzic_core/src/zenzic" ]]; then
+            CORE_PATH="_zenzic_core"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("../zenzic -> ../zenzic")
+        if [[ -d "../zenzic/src/zenzic" ]]; then
+            CORE_PATH="../zenzic"
+        fi
+    fi
+
+    if [[ -n "$CORE_PATH" ]]; then
+        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    elif command -v zenzic >/dev/null 2>&1; then
+        zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    else
+        echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
+        echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2
+        echo "Each candidate must contain src/zenzic." >&2
+        echo "Checked: ${CHECKED[*]}" >&2
+        echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
+        exit 2
+    fi
 typecheck:
     npm run typecheck
 
