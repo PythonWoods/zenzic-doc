@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 """
-generate_docs_assets.py — Zenzic v0.7.0 "Quartz Maturity"
+generate_docs_assets.py — Zenzic v0.8.0 "Basalt"
 
 Generates SVG terminal assets for the documentation using Rich's native
 SVG export with the agnostic brand color system.
@@ -83,12 +83,12 @@ WIDTH = 76  # characters — matches narrow terminal for docs readability
 # ── Core Brand Theme ───────────────────────────────────────────────────────
 # Exact Zenzic brand colors for SVG export — matches zenzic-brand-system.html
 # Background: #09090b (Core Lead), Foreground: #E2E8F0 (Ghost)
-OBSIDIAN_THEME = TerminalTheme(
+ZENZIC_THEME = TerminalTheme(
     background=(9, 9, 11),          # #09090b — Core Lead
     foreground=(226, 232, 240),     # #E2E8F0 — Ghost (primary text)
     normal=[
         (9, 9, 11),                 # black → Core
-        (255, 59, 48),              # red → Blood
+        (255, 59, 48),              # red → Breach Red
         (16, 185, 129),             # green → Success (Emerald)
         (245, 158, 11),             # yellow → Warning (Amber)
         (56, 189, 248),             # blue → Harbor Cyan
@@ -162,7 +162,7 @@ def _make_console() -> Console:
 
 
 def _save(console: Console, name: str) -> None:
-    raw = console.export_svg(title="", theme=OBSIDIAN_THEME)
+    raw = console.export_svg(title="", theme=ZENZIC_THEME)
     raw = _strip_chrome(raw)
     (OUT / name).write_text(raw, encoding="utf-8")
     print(f"  ✔  {name}")
