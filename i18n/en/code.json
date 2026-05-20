@@ -145,73 +145,73 @@
   "score.nav": {
     "message": "Nav Isolation"
   },
-  "homepage.sentinel.title": {
+  "homepage.scanner.title": {
     "message": "Zenzic in Action"
   },
-  "homepage.sentinel.sub": {
+  "homepage.scanner.sub": {
     "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
   },
-  "sentinel.gutter.title": {
+  "scanner.gutter.title": {
     "message": "Gutter reporter"
   },
-  "sentinel.gutter.desc": {
+  "scanner.gutter.desc": {
     "message": "Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke."
   },
-  "sentinel.gutter.msg": {
+  "scanner.gutter.msg": {
     "message": "'intro.md' not reachable from nav"
   },
-  "sentinel.gutter.ctx1": {
+  "scanner.gutter.ctx1": {
     "message": "before continuing."
   },
-  "sentinel.gutter.line": {
+  "scanner.gutter.line": {
     "message": "See the getting started page for details."
   },
-  "sentinel.gutter.ctx2": {
+  "scanner.gutter.ctx2": {
     "message": "Then configure your environment."
   },
-  "sentinel.shield.title": {
+  "scanner.shield.title": {
     "message": "credential scanner"
   },
-  "sentinel.shield.desc": {
+  "scanner.shield.desc": {
     "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
   },
-  "sentinel.shield.banner": {
+  "scanner.shield.banner": {
     "message": "SECURITY BREACH DETECTED"
   },
-  "sentinel.shield.finding": {
+  "scanner.shield.finding": {
     "message": "Finding:"
   },
-  "sentinel.shield.location": {
+  "scanner.shield.location": {
     "message": "Location:"
   },
-  "sentinel.shield.credential": {
+  "scanner.shield.credential": {
     "message": "Credential:"
   },
-  "sentinel.shield.action": {
+  "scanner.shield.action": {
     "message": "Action:"
   },
-  "sentinel.shield.actionVal": {
+  "scanner.shield.actionVal": {
     "message": "Rotate this credential immediately and purge it from the repository history."
   },
-  "sentinel.summary.title": {
+  "scanner.summary.title": {
     "message": "Severity summary"
   },
-  "sentinel.summary.desc": {
+  "scanner.summary.desc": {
     "message": "Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings."
   },
-  "sentinel.summary.errors": {
+  "scanner.summary.errors": {
     "message": "✘ 2 errors"
   },
-  "sentinel.summary.warnings": {
+  "scanner.summary.warnings": {
     "message": "⚠ 1 warning"
   },
-  "sentinel.summary.files": {
+  "scanner.summary.files": {
     "message": "• 1 file with findings"
   },
-  "sentinel.summary.failed": {
+  "scanner.summary.failed": {
     "message": "FAILED: One or more checks failed."
   },
-  "sentinel.label": {
+  "scanner.label": {
     "message": "Reporter & Credentials"
   },
   "score.label": {

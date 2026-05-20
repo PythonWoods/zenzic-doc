@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Quartz Enterprise workflow for zenzic-doc
+# just - Release Enterprise workflow for zenzic-doc
 set shell :=["bash", "-c"]
 
 # Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").

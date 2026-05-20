@@ -235,7 +235,7 @@ const config: Config = {
           primaryBorderColor: '#3730a3',
           // Edges / connectors → DIM Slate
           lineColor: '#64748b',
-          // Secondary / tertiary surfaces → Sentinel depth
+          // Secondary / tertiary surfaces → Scanner depth
           secondaryColor: '#1e1e27',
           tertiaryColor: '#111118',
           edgeLabelBackground: '#0f0f13',
