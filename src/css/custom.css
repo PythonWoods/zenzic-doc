@@ -55,8 +55,8 @@ body:has(.zz-homepage) .navbar {
   --zenzic-slate-700: #111114;
   --zenzic-cyan-primary: #38bdf8;
   --zenzic-cyan-deep: #0891b2;
-  --obsidian-accent: var(--zenzic-cyan-deep);
-  --obsidian-blood: #991b1b;              /* Violation red (light surface) */
+  --zenzic-accent: var(--zenzic-cyan-deep);
+  --zenzic-fatal-deep: #991b1b;              /* Violation red (light surface) */
 
   /* ── ZenzicWebPalette — CLI semantic color bridge ──
      Dark mode: optical match with CLI terminal.
@@ -66,7 +66,7 @@ body:has(.zz-homepage) .navbar {
   --zenzic-warning: #b45309;   /* Amber-700 — WCAG-calibrated (CLI: #f59e0b) */
   --zenzic-error:   #e11d48;   /* Rose-600 — WCAG-calibrated (CLI: #f43f5e) */
   --zenzic-dim:     #475569;   /* Slate-600 — WCAG-calibrated (CLI: #64748b) */
-  --zenzic-fatal:   var(--obsidian-blood);  /* Follows --obsidian-blood per mode */
+  --zenzic-fatal:   var(--zenzic-fatal-deep);  /* Follows --zenzic-fatal-deep per mode */
   --zenzic-brand-soft: #808af0;
   --zenzic-ink-100: #fafafa;
   --zenzic-ink-200: #e4e4e7;
@@ -186,20 +186,19 @@ html[data-zenzic-palette='technical-neon'] {
   --ifm-color-emphasis-600: var(--zenzic-ink-600);
 
   /* ── D114: The Author's Signature — Indigo reserved for human identity ── */
-  --obsidian-author-signature: var(--zenzic-author-signature);
+  --zenzic-author-sig: var(--zenzic-author-signature);
 
   /* Links/actions: Indigo for function */
   --ifm-color-primary: var(--zenzic-brand-700);
   --ifm-link-color: var(--zenzic-brand-700);
 
-  --obsidian-accent: var(--zenzic-cyan-deep);
-  --obsidian-blood: var(--zenzic-fatal);
+  --zenzic-accent: var(--zenzic-cyan-deep);
 }
 
 [data-theme='dark'] {
   /* ── Adaptive Palette — Dark mode ── */
-  --obsidian-accent: var(--zenzic-cyan-soft);
-  --obsidian-blood: #8b0000;
+  --zenzic-accent: var(--zenzic-cyan-soft);
+  --zenzic-fatal-deep: #8b0000;
 
   /* ── ZenzicWebPalette — exact CLI terminal match in dark mode ── */
   --zenzic-brand: var(--zenzic-brand-600);
@@ -598,7 +597,7 @@ a.tag_oVPq[href*="/blog/tags/security"] { background: var(--zenzic-bg-fatal-15);
 
 /* Engineering → Cyan */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/engineering"],
-a.tag_oVPq[href*="/blog/tags/engineering"] { background: var(--zenzic-bg-cyan-12); color: var(--obsidian-accent); border-color: var(--zenzic-border-cyan-30); }
+a.tag_oVPq[href*="/blog/tags/engineering"] { background: var(--zenzic-bg-cyan-12); color: var(--zenzic-accent); border-color: var(--zenzic-border-cyan-30); }
 
 /* Post-Mortem → Bone white (muted) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/post-mortem"],
@@ -627,7 +626,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
 
 /* Hover: title brightens to Accent Cyan */
 [data-theme='dark'] article h2 a:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -674,7 +673,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
 }
 
 [data-theme='light'] .blog-list-page h2 a:hover {
-  color: var(--obsidian-accent) !important;
+  color: var(--zenzic-accent) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
@@ -689,7 +688,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
 }
 
 [data-theme='dark'] .blog-list-page h2 a:hover {
-  color: var(--obsidian-accent) !important;
+  color: var(--zenzic-accent) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
@@ -750,7 +749,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
   transition: color 0.2s ease;
 }
 [data-theme='dark'] .blog-sidebar-all-posts-link:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 /* Year group heading link */
@@ -761,7 +760,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
   transition: color 0.2s ease;
 }
 [data-theme='dark'] .blog-sidebar-year-link:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 
@@ -854,7 +853,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
 }
 
 [data-theme='dark'] .archive-card__title a:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 
@@ -883,7 +882,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
 /* Applies in both light and dark but most impactful in light mode */
 [data-theme='light'] .avatar__name a,
 [data-theme='light'] .authorName_Y8Hr {
-  color: var(--obsidian-author-signature) !important;
+  color: var(--zenzic-author-sig) !important;
   font-weight: 600;
   letter-spacing: -0.01em;
   text-decoration: none;
@@ -925,7 +924,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-1
   flex-shrink: 0;
   margin-left: 6px;
   opacity: 0;
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
   transform: translateX(-6px);
 }
