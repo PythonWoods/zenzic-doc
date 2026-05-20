@@ -114,11 +114,8 @@ Suppression Audit: X/30
 
 Canonical inline syntax:
 
-- Markdown: `<!-- zenzic-ignore: Z601 - historical reference -->`
-- MDX: `{/* zenzic-ignore: Z601 - historical reference */}`
-
-Legacy syntax remains accepted for backward compatibility, but new edits must
-use the canonical `zenzic-ignore` form.
+- Markdown: `<!-- zenzic:ignore: Z601 - historical reference -->`
+- MDX: `{/* zenzic:ignore: Z601 - historical reference */}`
 
 ---
 
@@ -140,7 +137,7 @@ Validated exception:
 - Use inline suppression only when the bridge is reviewed and intentional.
 
 ```mdx
-{/* zenzic-ignore: Z105 - validated cross-locale bridge */}
+{/* zenzic:ignore: Z105 - validated cross-locale bridge */}
 [Read in Italian](/blog/it/article)
 ```
 

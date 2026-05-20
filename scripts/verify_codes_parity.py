@@ -20,8 +20,8 @@ from zenzic.core import regex as re
 ROOT = Path(__file__).resolve().parent.parent
 
 _CODE_TOKEN_RE = re.compile(r"\bZ\d{3}\b")
-_LEGACY_MATRIX_START = "{/* zenzic:legacy-migration-matrix:start */}"
-_LEGACY_MATRIX_END = "{/* zenzic:legacy-migration-matrix:end */}"
+_MIGRATION_MATRIX_START = "{/* zenzic:migration-matrix:start */}"
+_MIGRATION_MATRIX_END = "{/* zenzic:migration-matrix:end */}"
 _MATRIX_ROW_RE = re.compile(r"\|\s*`?(Z\d{3})`?\s*\|\s*`?(Z\d{3})`?\s*\|")
 
 
@@ -43,10 +43,10 @@ def _iter_parity_files(root: Path) -> list[Path]:
 
 def _extract_legacy_matrix(text: str) -> dict[str, str]:
     """Parse legacy migration mappings from a tagged matrix section."""
-    if _LEGACY_MATRIX_START not in text or _LEGACY_MATRIX_END not in text:
+    if _MIGRATION_MATRIX_START not in text or _MIGRATION_MATRIX_END not in text:
         return {}
-    start_idx = text.index(_LEGACY_MATRIX_START) + len(_LEGACY_MATRIX_START)
-    end_idx = text.index(_LEGACY_MATRIX_END)
+    start_idx = text.index(_MIGRATION_MATRIX_START) + len(_MIGRATION_MATRIX_START)
+    end_idx = text.index(_MIGRATION_MATRIX_END)
     block = text[start_idx:end_idx]
     return {legacy.upper(): active.upper() for legacy, active in _MATRIX_ROW_RE.findall(block)}
 
@@ -133,13 +133,13 @@ def main() -> int:
 
     if not legacy_matrix_en:
         errors.append(
-            "LEGACY MIGRATION MATRIX (EN) not found. "
-            "Expected tagged block between zenzic:legacy-migration-matrix:start/end."
+            "MIGRATION MATRIX (EN) not found. "
+            "Expected tagged block between zenzic:migration-matrix:start/end."
         )
     if not legacy_matrix_it:
         errors.append(
-            "LEGACY MIGRATION MATRIX (IT) not found. "
-            "Expected tagged block between zenzic:legacy-migration-matrix:start/end."
+            "MIGRATION MATRIX (IT) not found. "
+            "Expected tagged block between zenzic:migration-matrix:start/end."
         )
 
     if missing_legacy_en:

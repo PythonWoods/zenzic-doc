@@ -22,24 +22,13 @@ Un **adapter** è una classe Python che soddisfa il protocollo `BaseAdapter`
 validatore di link di Zenzic parlano esclusivamente con questo protocollo — non
 importano né chiamano mai codice specifico del motore direttamente.
 
-Un adapter risponde a domande per ogni albero docs attraverso due superfici API:
+Un adapter risponde a domande per ogni albero docs attraverso una singola superficie API:
 
-### Routing Metadata-Driven (preferito)
+### Routing Metadata-Driven
 
 | Metodo | Domanda |
 |---|---|
 | `get_route_info(rel)` | Qual è l'URL canonico, lo stato della route, lo slug e il flag proxy per questo file sorgente? Restituisce un'istanza `RouteMetadata`. |
-
-### Routing Legacy File-to-URL (compatibilità all'indietro)
-
-| Metodo | Domanda |
-|---|---|
-| `map_url(rel)` | Quale URL canonico produce questo file sorgente? |
-| `classify_route(rel, nav_paths)` | Questo file è `REACHABLE`, `ORPHAN_BUT_EXISTING` o `IGNORED`? |
-
-I nuovi adapter dovrebbero implementare `get_route_info()`.  I metodi legacy sono
-mantenuti per compatibilità all'indietro — le loro implementazioni di default
-delegano a `get_route_info()`.
 
 ### Metodi Comuni
 

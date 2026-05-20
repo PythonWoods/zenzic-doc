@@ -287,7 +287,6 @@ Key methods:
 - **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `StandaloneAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
 - **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
 - **`provides_index(directory_path)`** -- **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for the given directory. Called once per directory by `find_missing_directory_indices()` — never inside per-link or per-file hot loops. This is the only `BaseAdapter` method that may perform disk I/O (`Path.exists()`).
-- **`map_url()` / `classify_route()`** -- Legacy File-to-URL API, preserved for backward compatibility. Default implementations delegate to `get_route_info()`.
 
 ### `RouteMetadata` {#route-metadata}
 

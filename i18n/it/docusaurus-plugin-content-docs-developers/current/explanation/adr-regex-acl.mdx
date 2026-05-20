@@ -75,7 +75,7 @@ Questo modulo agisce come **Regex Anti-Corruption Layer**:
 La conseguenza è intenzionale: **tutta l'esecuzione regex in produzione rimane
 su RE2, ovunque, sempre**.
 
-Quando pattern legacy usavano costrutti validi solo per la stdlib, come
+Quando pattern legacy usavano costrutti validi solo per la stdlib, come <!-- zenzic:ignore: Z601 - ADR historical record -->
 lookbehind, lookahead o altra sintassi non supportata da RE2, quei pattern
 vengono riscritti in forme compatibili con RE2 oppure il codice circostante
 viene adattato per eseguire fuori dalla regex il filtraggio semantico mancante.

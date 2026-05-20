@@ -22,24 +22,13 @@ An **adapter** is a Python class that satisfies the `BaseAdapter` protocol
 scanner, orphan detector, and link validator talk exclusively to this protocol —
 they never import or call engine-specific code directly.
 
-An adapter answers questions for each docs tree through two API surfaces:
+An adapter answers questions for each docs tree through a single API surface:
 
-### Metadata-Driven Routing (preferred)
+### Metadata-Driven Routing
 
 | Method | Question |
 |---|---|
 | `get_route_info(rel)` | What is the canonical URL, route status, slug, and proxy flag for this source file? Returns a `RouteMetadata` instance. |
-
-### Legacy File-to-URL Routing (backward compatible)
-
-| Method | Question |
-|---|---|
-| `map_url(rel)` | What canonical URL does this source file produce? |
-| `classify_route(rel, nav_paths)` | Is this file `REACHABLE`, `ORPHAN_BUT_EXISTING`, or `IGNORED`? |
-
-New adapters should implement `get_route_info()`.  The legacy methods are
-retained for backward compatibility — their default implementations delegate
-to `get_route_info()`.
 
 ### Common Methods
 

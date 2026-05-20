@@ -256,11 +256,10 @@ Metodi chiave:
 | Metodo | Responsabilita |
 | :--- | :--- |
 | `has_engine_config()` | Guard: restituisce `True` se l'adapter ha trovato un file di configurazione del motore. Quando `False`, i controlli nav-dipendenti vengono saltati |
+| `get_route_info()` | API Metadata-Driven Routing. Restituisce tutti i metadati di routing in una singola chiamata: URL canonico, stato della route, slug opzionale, route base path e flag proxy. |
 | `get_nav_paths()` | Restituisce l'insieme dei percorsi `.md` dichiarati nella navigazione del sito |
 | `get_ignored_patterns()` | Pattern fnmatch che l'adapter tratta come ignorati (ad esempio `README.md` per alcuni motori) |
-| `classify_route(rel, nav_paths)` | Classifica una route come `REACHABLE`, `ORPHAN_BUT_EXISTING` o `IGNORED` |
 | `is_locale_dir(name)` | Determina se una directory e un albero di localizzazione |
-| `map_url(rel_path)` | Mappa un percorso file relativo al suo URL canonico |
 | `resolve_asset(path, docs_root)` | Risolve un asset con fallback i18n |
 | `resolve_anchor(file, anchor, cache, docs_root)` | Risolve un'ancora con fallback i18n |
 | `provides_index(directory_path)` | **Hook I/O della fase di discovery.** Restituisce `True` se il motore genererà una landing page per questa directory. Unico metodo del protocollo che può eseguire I/O su disco (`Path.exists()`). |

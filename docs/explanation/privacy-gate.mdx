@@ -174,8 +174,6 @@ engine-specific knowledge into engine-agnostic `RouteMetadata` (canonical URL,
 status, slug, route base path, proxy flag) via the `get_route_info()` API.
 Four built-in adapters ship with Zenzic; third-party adapters install via
 `pip` and are discovered through the `zenzic.adapters` entry-point group.
-Legacy adapters that only implement `map_url()` + `classify_route()` are
-supported via automatic fallback in `build_vsm()`.
 
 **Rule Engine** — applies all active checks to the raw Markdown text:
 built-in checks (orphans, snippets, placeholders, assets, references),
