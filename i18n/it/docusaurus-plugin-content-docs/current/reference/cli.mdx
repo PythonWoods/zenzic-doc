@@ -122,8 +122,13 @@ Puoi anche impostare `exit_zero = true` in `zenzic.toml` per renderlo il default
 ### `--show-info`
 
 Per impostazione predefinita, i finding di livello info sono nascosti per mantenere l'output
-quotidiano concentrato sulle violazioni azionabili. Usa `--show-info` quando vuoi piena visibilità
-Zenzic sui segnali non bloccanti, come la topologia dei cicli link (`CIRCULAR_LINK`).
+quotidiano concentrato sulle violazioni azionabili. Usa `--show-info` per esporre la telemetria
+strutturale — misurazioni non bloccanti che informano le decisioni architetturali senza segnalare difetti.
+
+L'esempio canonico è `CIRCULAR_LINK` (Z106): i Knowledge Graph documentali producono naturalmente
+cicli di link, e l'analizzatore li traccia come metriche topologiche, non come errori.
+Un'elevata densità ciclica su una pagina specifica è un dato per la revisione dell'Information
+Architecture, non un trigger del quality gate.
 
 Disponibile su tutti i comandi `zenzic check`.
 

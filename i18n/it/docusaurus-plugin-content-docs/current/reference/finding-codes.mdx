@@ -197,10 +197,20 @@ Z106 è solo informativo e non contribuisce al DQS. Il modulo di Integrità del 
 :::
 
 * **Severità:** `info`
-* **Contesto Tecnico:** Rilevato dal modulo di Integrità del Grafo. Un insieme di link forma un ciclo (A -> B -> A). Sebbene tecnicamente validi, i riferimenti circolari possono indicare un'architettura dei contenuti povera o "loop infiniti" nella navigazione. Questo è un segnale diagnostico informativo: è visibile tramite `--show-info`, escluso dal punteggio e non blocca il Quality Gate.
+* **Contesto Tecnico:** Rilevato dal modulo di Integrità del Grafo. Un insieme di link forma un ciclo diretto (A → B → A). Si tratta di un segnale di telemetria strutturale: è visibile tramite `--show-info`, escluso dal punteggio e non blocca il Quality Gate.
 * **Passaggi di Rimedio:**
     1. Rivedi il flusso dei contenuti per vedere se un link può essere sostituito da una sezione "Vedi Anche" più ampia.
     2. Assicurati che gli utenti non rimangano intrappolati tra due pagine senza un chiaro percorso di uscita.
+
+:::note[Razionale architetturale]
+**Knowledge Graph, non Dependency Graph.** Nel codice sorgente, una dipendenza ciclica (il modulo A importa B, che importa A) è un difetto a tempo di compilazione. La documentazione è un Knowledge Graph: se un Tutorial linka una pagina di Reference per i dettagli tecnici, è atteso e desiderabile che la pagina di Reference linki a sua volta il Tutorial come esempio di implementazione. Un grafo densamente interconnesso è un indicatore di UX di alta qualità, non un difetto.
+
+**Prevenzione dell'Anti-Pattern sul Punteggio.** Elevare Z106 a Warning o Error sottrarrebbe punti al Quality Score, spingendo gli ingegneri a rimuovere link utili per soddisfare il linter. Questo viola il principio Zero-DBT: un linter deve segnalare solo difetti genuini. Un link circolare intenzionale non è un difetto da risolvere.
+
+**Protezione dalla Ricorsione AST.** L'algoritmo di rilevamento dei cicli (DFS iterativo, Θ(V+E)) è un requisito meccanico del costruttore della Virtual Site Map. Identificare i cicli matematicamente è necessario per interrompere la ricorsione e prevenire loop infiniti durante il calcolo del grafo — non è attivato da una preoccupazione di qualità.
+
+**Telemetria Topologica.** `--show-info` espone i finding Z106 come metriche strutturali, non come violazioni. Una densità ciclica anomalmente elevata su una singola pagina può indicare un problema di Information Architecture da valutare — ma tale valutazione spetta all'ingegnere, non all'analizzatore statico.
+:::
 
 ### Z108: EMPTY_LINK_TEXT {#z108}
 

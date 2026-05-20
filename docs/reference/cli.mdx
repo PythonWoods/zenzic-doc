@@ -121,8 +121,13 @@ You can also set `exit_zero = true` in `zenzic.toml` to make it the permanent de
 ### `--show-info`
 
 By default, info-level findings are hidden to keep everyday output focused on actionable
-violations. Use `--show-info` when you want full visibility into non-blocking
-signals such as link-cycle topology (`CIRCULAR_LINK`).
+violations. Use `--show-info` to surface structural telemetry — non-blocking measurements that
+inform architectural decisions without signalling defects.
+
+The canonical example is `CIRCULAR_LINK` (Z106): documentation Knowledge Graphs naturally
+produce link cycles, and the analyzer tracks them as topological metrics rather than errors.
+High cycle density on a specific page is a data point for Information Architecture review,
+not a quality gate trigger.
 
 Available on all `zenzic check` commands.
 

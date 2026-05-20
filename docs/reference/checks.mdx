@@ -161,21 +161,25 @@ The two streams have opposite filtering rules by design. The Content stream must
 
 ### Circular links
 
+Documentation is a **Knowledge Graph** — a densely interconnected network where cross-linking between pages is expected and desirable. If a Tutorial links a Reference page for technical details, it is natural and beneficial for that Reference page to link back to the Tutorial as a working example. Circular link patterns are therefore structural data points, not defects.
+
 Cycle detection is computed once with iterative DFS during resolver construction (Pass 1.5, Θ(V+E)). Every Pass 2 membership lookup against the cycle registry is O(1).
+
+**Why the engine computes cycles at all.** The DFS traversal is a mechanical requirement of the Virtual Site Map builder: without identifying cycles, the recursive graph walk would loop infinitely. Detection is necessary to make the resolver terminate — it is not triggered by a quality concern.
 
 | Code | Severity | Exit code | Meaning |
 | :--- | :---: | :---: | :--- |
 | `CIRCULAR_LINK` | info | — | Resolved target is a member of a link cycle |
 
-:::info[Info-level finding — suppressed by default]
+:::info[Topological telemetry — suppressed by default]
 
-`CIRCULAR_LINK` findings are hidden from standard output. Use `--show-info` to display them:
+`CIRCULAR_LINK` findings are hidden from standard output because they are not violations. Use `--show-info` to surface them as structural metrics:
 
 ```bash
 zenzic check all --show-info
 ```
 
-They never affect exit codes in either normal or `--strict` mode.
+They never affect exit codes in either normal or `--strict` mode. An unusually high cycle density on a single page may be worth reviewing as an Information Architecture signal — but that judgment belongs to the engineer, not to the analyzer.
 :::
 
 ---

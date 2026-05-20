@@ -197,10 +197,20 @@ Z106 is informational only and does not contribute to the DQS. The Graph Integri
 :::
 
 * **Severity:** `info`
-* **Technical Context:** Detected by the Graph Integrity module. A set of links forms a cycle (A -> B -> A). While technically valid, circular references can indicate poor content architecture or "infinite loops" in documentation navigation. This is an informational diagnostic signal: it is visible via `--show-info`, excluded from scoring, and does not block the Quality Gate.
+* **Technical Context:** Detected by the Graph Integrity module. A set of links forms a directed cycle (A → B → A). This is a structural telemetry signal: it is visible via `--show-info`, excluded from scoring, and does not block the Quality Gate.
 * **Remediation Steps:**
     1. Review the content flow to see if one link can be replaced by a broader "See Also" section.
     2. Ensure that users aren't getting trapped between two pages with no clear exit path.
+
+:::note[Architectural rationale]
+**Knowledge Graph, not Dependency Graph.** In source code, a dependency cycle (module A imports B, which imports A) is a compilation-time defect. Documentation is a Knowledge Graph: if a Tutorial links a Reference page for technical details, it is expected and desirable that the Reference page links back to the Tutorial as a working example. A densely interconnected graph is a signal of high-quality UX, not a defect.
+
+**Score Anti-Pattern Prevention.** Elevating Z106 to Warning or Error would deduct Quality Score points, pressuring engineers to remove useful links in order to satisfy the linter. This violates the Zero-DBT principle: a linter must only flag genuine defects. An intentional circular link is not a defect to resolve.
+
+**AST Recursion Protection.** The cycle-detection algorithm (iterative DFS, Θ(V+E)) is a mechanical requirement of the Virtual Site Map builder. Identifying cycles mathematically is necessary to interrupt recursion and prevent infinite loops during graph traversal — it is not triggered by a quality concern.
+
+**Topological Telemetry.** `--show-info` exposes Z106 findings as structural metrics, not as violations. An abnormally high cycle density on a single page may indicate an Information Architecture problem worth reviewing — but that evaluation belongs to the engineer, not to the static analyzer.
+:::
 
 ### Z108: EMPTY_LINK_TEXT {#z108}
 

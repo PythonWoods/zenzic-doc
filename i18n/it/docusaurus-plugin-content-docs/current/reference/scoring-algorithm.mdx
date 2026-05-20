@@ -111,8 +111,8 @@ $$
 | Z406 | NAV_CONTRACT | 2.0 pts | Governance |
 | Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
 
-:::note Z106 è solo informativo
-Z106 continua a essere emesso come diagnostica per i cicli di link, ma è escluso dalla tabella delle penalità e non contribuisce ad alcun bucket del DQS.
+::: note Z106 — Telemetria del Knowledge Graph, non un difetto
+Z106 è escluso dalla tabella delle penalità per scelta progettuale. Elevarlo a finding con punteggio sottrarrebbe punti al Quality Score, spingendo gli ingegneri a rimuovere link utili per soddisfare il linter — un incentivo perverso che degrada la qualità reale della documentazione. I link circolari in un Knowledge Graph sono dati strutturali, non difetti. Z106 viene emesso come telemetria topologica; ispezionalo con `--show-info`.
 :::
 
 :::note Z602 non è incluso nel punteggio

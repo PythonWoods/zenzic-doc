@@ -161,21 +161,25 @@ I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti 
 
 ### Link circolari
 
+La documentazione è un **Knowledge Graph** — una rete densamente interconnessa dove i link incrociati tra pagine sono attesi e desiderabili. Se un Tutorial linka una pagina di Reference per i dettagli tecnici, è naturale e benefico che quella pagina di Reference linki a sua volta il Tutorial come esempio di implementazione. I pattern di link circolari sono quindi dati strutturali, non difetti.
+
 Il rilevamento dei cicli viene calcolato una sola volta con DFS iterativo durante la costruzione del resolver (Fase 1.5, Θ(V+E)). Ogni lookup di appartenenza in Fase 2 contro il registro dei cicli è O(1).
+
+**Perché il motore calcola i cicli.** Il traversal DFS è un requisito meccanico del costruttore della Virtual Site Map: senza identificare i cicli, la scansione ricorsiva del grafo andrebbe in loop infinito. Il rilevamento è necessario per far terminare il resolver — non è attivato da una preoccupazione di qualità.
 
 | Codice | Severità | Exit code | Significato |
 | :--- | :---: | :---: | :--- |
 | `CIRCULAR_LINK` | info | — | Il target risolto è membro di un ciclo di link |
 
-:::info[Risultato livello info — soppresso di default]
+:::info[Telemetria topologica — soppressa di default]
 
-I risultati `CIRCULAR_LINK` sono nascosti dall'output standard. Usa `--show-info` per visualizzarli:
+I risultati `CIRCULAR_LINK` sono nascosti dall'output standard perché non sono violazioni. Usa `--show-info` per esporli come metriche strutturali:
 
 ```bash
 zenzic check all --show-info
 ```
 
-Non influenzano mai gli exit code, né in modalità normale né in modalità `--strict`.
+Non influenzano mai gli exit code, né in modalità normale né in modalità `--strict`. Una densità ciclica anomalmente elevata su una singola pagina può essere un segnale di Information Architecture da valutare — ma quel giudizio spetta all'ingegnere, non all'analizzatore.
 :::
 
 ---
