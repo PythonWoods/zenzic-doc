@@ -55,7 +55,23 @@ lint *args:
     uvx pre-commit run {{args}}
 
 # Recommended final local check (4-Gates Standard: pre-commit + docs audit + build + codes parity)
-verify: _check-hooks release-contracts lint-all build verify-codes check
+verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
+
+# ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
+# not a public Zenzic linter rule). Pre-commit `rev:` keys must be 40-char
+# commit SHAs, not mutable tags. Regex anchored to line-start so the
+# `# vX.Y.Z` annotation comment is safe.
+check-pinning:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Validating Immutable Infrastructure (ADR-089)..."
+    if grep -E '^[[:space:]]*rev:[[:space:]]*v?[0-9]+\.[0-9]+' .pre-commit-config.yaml >/dev/null 2>&1; then
+        echo "[ADR-089] FATAL: Unpinned tag detected in pre-commit config. Zenzic internal policy requires SHA-256 pinning." >&2
+        grep -nE '^[[:space:]]*rev:[[:space:]]*v?[0-9]+\.[0-9]+' .pre-commit-config.yaml >&2
+        echo "👉 Update via: uvx pre-commit autoupdate --freeze" >&2
+        exit 1
+    fi
+    echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
