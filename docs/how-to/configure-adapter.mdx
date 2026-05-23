@@ -195,7 +195,7 @@ is classified `REACHABLE` — Zensical's default filesystem-based routing applie
 
 **`use_directory_urls`:** Zensical defaults to directory-style URLs (`/page/`).  Set
 `use_directory_urls = false` under `[project]` to switch to flat URLs (`/page.html`).  The
-adapter reads this flag and adjusts `map_url()` accordingly.
+adapter reads this flag and adjusts `get_route_info()` routing accordingly.
 
 ```toml
 [project]

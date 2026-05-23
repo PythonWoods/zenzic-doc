@@ -144,9 +144,8 @@ class MyEngineAdapter(BaseAdapter):
     def get_route_info(self, rel: Path) -> RouteMetadata:
         """Restituisce i metadati di routing unificati per un file sorgente.
 
-        Questo singolo metodo sostituisce il double dispatch legacy
-        map_url() + classify_route().  Il builder VSM chiama questo metodo
-        per costruire RouteMetadata per ogni file sorgente in un unico passaggio.
+        Il builder VSM chiama questo metodo per costruire RouteMetadata
+        per ogni file sorgente in un unico passaggio.
         """
         posix = rel.as_posix()
 

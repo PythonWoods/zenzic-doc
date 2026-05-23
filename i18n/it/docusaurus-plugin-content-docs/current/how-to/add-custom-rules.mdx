@@ -85,6 +85,12 @@ significa che le regole scritte per un progetto MkDocs non richiedono modifiche 
 
 ---
 
+## Performance
+
+**I pattern vengono compilati una volta sola** al caricamento della configurazione, non per ogni file. Non c'è penalità di performance nell'avere molte regole. Pattern regex non validi sollevano un `ConfigurationError` all'avvio con il pattern incriminato e il messaggio di errore della regex.
+
+---
+
 ## Posizionamento TOML
 
 Inserisci tutti i blocchi `[[custom_rules]]` **prima** della sezione `[build_context]`.
@@ -102,12 +108,6 @@ severity = "warning"
 [build_context]          # ← sempre per ultimo
 engine = "mkdocs"
 ```
-
----
-
-## Performance
-
-**I pattern vengono compilati una volta sola** al caricamento della configurazione, non per ogni file. Non c'è penalità di performance nell'avere molte regole. Pattern regex non validi sollevano un `ConfigurationError` all'avvio con il pattern incriminato e il messaggio di errore della regex.
 
 ---
 

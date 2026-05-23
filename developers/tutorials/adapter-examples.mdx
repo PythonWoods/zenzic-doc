@@ -252,20 +252,21 @@ def get_nav_paths(self) -> frozenset[str]:
     return frozenset()
 ```
 
-When `get_nav_paths()` returns an empty frozenset, `classify_route()` treats
+When `get_nav_paths()` returns an empty frozenset, `get_route_info()` treats
 **all** files as `REACHABLE`. This is intentional: in Standalone mode there is no
 navigation contract, so orphan detection (Z402) is disabled.
 
 ---
 
-### `classify_route()` — Is this file reachable
+### `_classify_route()` — Internal route classification
 
-`classify_route(rel, nav_paths)` maps a source file path to its route status.
+`_classify_route(rel, nav_paths)` is a private helper that `get_route_info()` calls internally
+to map a source file path to its route status.
 
-**`DocusaurusAdapter.classify_route()`** — four classification rules:
+**`DocusaurusAdapter._classify_route()`** — four classification rules:
 
 ```python
-def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+def _classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
     # Rule 1: Private/meta files (e.g. _category_.json) → IGNORED
     non_sentinel_parts = [p for p in rel.parts if p != "_version_"]
     if any(part.startswith("_") for part in non_sentinel_parts):
@@ -296,18 +297,27 @@ def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
     return "ORPHAN_BUT_EXISTING"
 ```
 
-**`StandaloneAdapter.classify_route()`** — always reachable:
+**`StandaloneAdapter.get_route_info()`** — always reachable (no `_classify_route()` helper):
 
 ```python
-def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
-    """Always REACHABLE — no nav to compare against."""
-    return "REACHABLE"
+def get_route_info(self, rel: Path) -> RouteMetadata:
+    """Return route metadata derived purely from the filesystem.
+
+    StandaloneAdapter has no engine config, no nav, no slug support.
+    Every file is ``REACHABLE`` with a filesystem-derived URL.
+    """
+    from zenzic.core.adapters._base import RouteMetadata
+
+    return RouteMetadata(
+        canonical_url=self._map_url(rel),
+        status="REACHABLE",
+    )
 ```
 
 The contrast is stark. `DocusaurusAdapter` implements a four-rule priority
-cascade because Docusaurus has explicit navigation contracts (`sidebars.ts`,
-`docusaurus.config.*`). `StandaloneAdapter` returns a constant because with no
-engine there is no navigation contract — every file that exists is reachable.
+cascade in `_classify_route()`, which `get_route_info()` calls internally.
+`StandaloneAdapter` has no `_classify_route()` helper — `get_route_info()` returns
+`REACHABLE` directly because with no engine there is no navigation contract.
 
 ---
 

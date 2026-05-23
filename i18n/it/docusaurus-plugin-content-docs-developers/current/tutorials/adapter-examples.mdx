@@ -255,21 +255,21 @@ def get_nav_paths(self) -> frozenset[str]:
     return frozenset()
 ```
 
-Quando `get_nav_paths()` restituisce un frozenset vuoto, `classify_route()` tratta
+Quando `get_nav_paths()` restituisce un frozenset vuoto, `get_route_info()` tratta
 **tutti** i file come `REACHABLE`. È intenzionale: in modalità Standalone non esiste
 un contratto di navigazione, quindi il rilevamento degli orfani (Z402) è disabilitato.
 
 ---
 
-### `classify_route()` — Questo file è raggiungibile
+### `_classify_route()` — Classificazione interna delle route
 
-`classify_route(rel, nav_paths)` mappa il percorso di un file sorgente al suo stato
-di route.
+`_classify_route(rel, nav_paths)` è un helper privato che `get_route_info()` chiama internamente
+per mappare il percorso di un file sorgente al suo stato di route.
 
-**`DocusaurusAdapter.classify_route()`** — quattro regole di classificazione:
+**`DocusaurusAdapter._classify_route()`** — quattro regole di classificazione:
 
 ```python
-def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
+def _classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
     # Regola 1: File privati/meta (es. _category_.json) → IGNORED
     non_sentinel_parts = [p for p in rel.parts if p != "_version_"]
     if any(part.startswith("_") for part in non_sentinel_parts):
@@ -300,18 +300,27 @@ def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
     return "ORPHAN_BUT_EXISTING"
 ```
 
-**`StandaloneAdapter.classify_route()`** — sempre raggiungibile:
+**`StandaloneAdapter.get_route_info()`** — sempre raggiungibile (nessun helper `_classify_route()`):
 
 ```python
-def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus:
-    """Sempre REACHABLE — nessuna nav con cui confrontare."""
-    return "REACHABLE"
+def get_route_info(self, rel: Path) -> RouteMetadata:
+    """Restituisce i metadati di route derivati puramente dal filesystem.
+
+    StandaloneAdapter non ha config motore, nav, né supporto slug.
+    Ogni file è ``REACHABLE`` con un URL derivato dal filesystem.
+    """
+    from zenzic.core.adapters._base import RouteMetadata
+
+    return RouteMetadata(
+        canonical_url=self._map_url(rel),
+        status="REACHABLE",
+    )
 ```
 
 Il contrasto è netto. `DocusaurusAdapter` implementa una cascata di quattro regole
-perché Docusaurus ha contratti di navigazione espliciti (`sidebars.ts`,
-`docusaurus.config.*`). `StandaloneAdapter` restituisce una costante perché senza
-motore non esiste un contratto di navigazione — ogni file che esiste è raggiungibile.
+in `_classify_route()`, che `get_route_info()` chiama internamente.
+`StandaloneAdapter` non ha un helper `_classify_route()` — `get_route_info()` restituisce
+`REACHABLE` direttamente perché senza motore non esiste un contratto di navigazione.
 
 ---
 
