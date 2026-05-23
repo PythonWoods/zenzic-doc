@@ -59,17 +59,7 @@ Pass 1 reads every `.md` file under `docs/` and performs two independent operati
 
 The credential scanner stream uses raw `enumerate()` -- no line is ever invisible to the credential scanner. The content stream uses a fenced-block-aware state machine that skips lines inside ` ``` ` or `~~~` fences, preventing false-positive reference definitions from code examples.
 
-During Pass 1, the `ReferenceScanner` populates a `ReferenceMap` per file:
-
-```python
-scanner = ReferenceScanner(Path("docs/guide.md"))
-
-for event in scanner.harvest():
-    lineno, event_type, data = event
-    if event_type == "SECRET":
-        # Credential scanner found a credential -- abort immediately
-        raise SystemExit(2)
-```
+During Pass 1, the `ReferenceScanner` populates a `ReferenceMap` per file.
 
 Harvest events include:
 
@@ -85,21 +75,11 @@ If any `SECRET` event is yielded, Pass 2 is **skipped entirely** for that file. 
 
 ### Pass 2 -- Cross-Check and Link Validation {#pass-2}
 
-Pass 2 resolves reference-style links (`[text][id]`) against the populated `ReferenceMap`:
-
-```python
-cross_check_findings = scanner.cross_check()
-```
-
-This pass re-reads the content stream to find all reference link usages and shortcut references. Each usage is resolved against the definitions collected in Pass 1. Undefined IDs produce `DANGLING_REF` findings.
+Pass 2 resolves reference-style links (`[text][id]`) against the populated `ReferenceMap`. This pass re-reads the content stream to find all reference link usages and shortcut references. Each usage is resolved against the definitions collected in Pass 1. Undefined IDs produce `DANGLING_REF` findings.
 
 ### Pass 3 -- Integrity Report {#pass-3}
 
 Pass 3 computes the per-file integrity score and consolidates all findings:
-
-```python
-report = scanner.get_integrity_report(cross_check_findings, security_findings)
-```
 
 The report includes:
 
@@ -138,69 +118,13 @@ The Zenzic credential scanner is a credential detection engine integrated into P
   />
 </div>
 
-### Processing Flow
-
-```text
-Raw line from file
-    |
-    v
-[Normalize] -- Strip backtick spans, table pipes, concat operators
-    |
-    v
-[Scan raw] -- Match against 8 pre-compiled regex patterns
-    |
-    v
-[Scan normalized] -- Match normalized form (catches split-token obfuscation)
-    |
-    v
-[Deduplicate] -- Suppress duplicate findings (same secret type per line)
-    |
-    v
-SecurityFinding (or pass-through)
-```
-
 ### Pre-scan Normalizer {#normalizer}
 
-The normalizer applies six passes before regex matching:
-
-| Transformation | ZRT | Example | Result |
-| :--- | :--- | :--- | :--- |
-| Strip Unicode format characters (Cf category) | ZRT-006 | `AKIA​KEY` (zero-width joiner) | `AKIAKEY` |
-| Decode HTML character references | ZRT-006 | `sk&#45;abc` | `sk-abc` |
-| Strip HTML/MDX comment interleaving | ZRT-007 | `AKIA<!-- -->KEY` | `AKIAKEY` |
-| Unwrap backtick spans | ZRT-003 | `` `AKIA` `` | `AKIA` |
-| Remove concat operators | ZRT-003 | `` `AKIA` + `KEY` `` | `AKIAKEY` |
-| Replace table pipes | ZRT-003 | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
-
-Both the raw and normalized forms are scanned. If the same secret type is detected in both forms, only one finding is emitted.
-
-### Pattern Families
-
-| Pattern | Regex | Example prefix |
-| :--- | :--- | :--- |
-| `openai-api-key` | `sk-[a-zA-Z0-9]{48}` | `sk-abc...` |
-| `github-token` | `gh[pousr]_[a-zA-Z0-9]{36}` | `ghp_abc...` |
-| `aws-access-key` | `AKIA[0-9A-Z]{16}` | `AKIAIOSFODNN7...` |
-| `stripe-live-key` | `sk_live_[0-9a-zA-Z]{24}` | `sk_live_abc...` |
-| `slack-token` | `xox[baprs]-[0-9a-zA-Z]{10,48}` | `xoxb-abc...` |
-| `google-api-key` | `AIza[0-9A-Za-z\-_]{35}` | `AIzaSyC...` |
-| `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | PEM header |
-| `hex-encoded-payload` | `(?:\x[0-9a-fA-F]{2}){3,}` | `\x41\x42` (2× below threshold) |
-| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | `glpat-abc...` |
+The normalizer applies multiple normalization passes before regex matching to detect obfuscated credentials — covering Unicode format characters, HTML character references, comment interleaving, backtick spans, concat operators, and table pipes. Both the raw and normalized forms are scanned; if the same secret type is detected in both forms, only one finding is emitted.
 
 ### IO Middleware: `safe_read_line` {#safe-read-line}
 
 For metadata extraction (frontmatter parsing for slugs, tags, draft status), every line passes through `safe_read_line()`. If a secret is detected, a `CredentialViolation` exception is raised immediately -- the line is never returned to the caller, preventing the secret from entering any parser.
-
-```python
-# The line never reaches the YAML parser if it contains a secret
-line = safe_read_line(raw_line, file_path, line_no)
-```
-
-### Hardening
-
-- **Line length limit** (F2-1): Lines exceeding 1 MiB are silently truncated before regex matching to prevent ReDoS.
-- **Lookback buffer** (ZRT-007): The scanner maintains a 1-line lookback state. For each line, the tail of the previous normalised line (`[-80:]`) is concatenated with the head of the current line (`[:80]`) and scanned as an additional pass. This catches secrets split across YAML folded scalars or Markdown line breaks.
 
 ---
 
@@ -218,20 +142,7 @@ The `_validate_docs_root()` function in `cli/_shared.py` elevates the **path tra
 
 **Threat model:** A malicious or misconfigured `zenzic.toml` containing `docs_dir = "../../etc"` would cause Zenzic to scan OS system directories, potentially leaking sensitive file contents through credential detection findings or exposing the directory structure in error messages.
 
-**Mitigation:**
-
-```python
-def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
-    resolved_repo = repo_root.resolve()
-    resolved_docs = docs_root.resolve()
-    try:
-        resolved_docs.relative_to(resolved_repo)
-    except ValueError:
-        # PATH TRAVERSAL GUARD fires immediately -- no files are read
-        raise typer.Exit(3)
-```
-
-`resolve()` expands all symlinks and `..` components before the comparison, so `docs_dir = "repo/../../../etc"` is caught unconditionally. The check runs before `LayeredExclusionManager` construction, before any I/O phase, and cannot be bypassed by CLI flags.
+**Mitigation:** `resolve()` expands all symlinks and `..` components before the comparison, so `docs_dir = "repo/../../../etc"` is caught unconditionally. The check runs before any I/O phase and cannot be bypassed by CLI flags.
 
 **Exit Code 3 is never suppressed** by `--exit-zero` or `exit_zero = true`. If a jailbreak attempt is detected, the process terminates immediately after printing the path traversal guard diagnostic.
 
@@ -250,33 +161,7 @@ Zenzic is engine-agnostic. It works with MkDocs, Zensical, Docusaurus, or no doc
 
 ### `BaseAdapter` {#base-adapter}
 
-Every adapter must extend `BaseAdapter`:
-
-```python
-from abc import ABC, abstractmethod
-
-class BaseAdapter(ABC):
-    @abstractmethod
-    def has_engine_config(self) -> bool: ...
-    @abstractmethod
-    def get_nav_paths(self) -> frozenset[str]: ...
-    @abstractmethod
-    def get_route_info(self, rel: Path) -> RouteMetadata: ...
-    @abstractmethod
-    def is_locale_dir(self, part: str) -> bool: ...
-    @abstractmethod
-    def resolve_asset(self, missing_abs: Path, docs_root: Path) -> Path | None: ...
-    @abstractmethod
-    def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
-    @abstractmethod
-    def get_ignored_patterns(self) -> set[str]: ...
-    @abstractmethod
-    def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
-    @abstractmethod
-    def provides_index(self, directory_path: Path) -> bool: ...
-```
-
-Key methods:
+Every adapter must extend `BaseAdapter`. Key methods:
 
 - **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `StandaloneAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
 - **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
@@ -332,8 +217,6 @@ The `--offline` flag triggers a global architectural shift in how the VSM resolv
 2. **Adapters force `use_directory_urls = False`**, overriding any engine-specific configuration. Adapters switch to **flat URL resolution** (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
 
 This ensures that Zenzic remains a **Structural Custodian** for documentation distributed on filesystems where directory-index resolution (e.g., `/page/` → `/page/index.html`) is unavailable.
-
-```text
 
 ### Built-in Adapters {#built-in-adapters}
 
@@ -407,50 +290,7 @@ When a link target uses `@site/static/img/logo.png`, the resolver strips the vir
 
 ### Engine Factory {#engine-factory}
 
-The `get_adapter()` factory uses entry-point discovery to find adapters:
-
-```mermaid
-
-flowchart LR
-    CLI["CLI: get_adapter(engine, docs_root, repo_root)"] --> CACHE{Cache hit?}
-    CACHE -->|Yes| RETURN[Return cached adapter]
-    CACHE -->|No| EP["Query entry-point group\nzenzic.adapters"]
-    EP -->|Found| FROM_REPO{"from_repo()\nexists?"}
-    FROM_REPO -->|Yes| CONSTRUCT_FR["adapter = Class.from_repo(ctx, docs, repo)"]
-    FROM_REPO -->|No| CONSTRUCT_STD["adapter = Class()"]
-    CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
-    CONSTRUCT_STD --> HAS_CONFIG
-    HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| STANDALONE["Fallback: StandaloneAdapter()"]
-    EP -->|Not found| STANDALONE
-    STANDALONE --> STORE
-
-    style CACHE fill:#3b82f6,color:#fff
-    style STORE fill:#22c55e,color:#fff
-    style STANDALONE fill:#f59e0b,color:#fff
-
-```
-
-```text
-
-1. Query zenzic.adapters entry-point group for context.engine
-2. If found: instantiate via from_repo() classmethod (if available)
-3. If not found: return StandaloneAdapter (neutral no-op behaviour)
-
-```
-
-Third-party adapters can be registered via `pyproject.toml`:
-
-```toml
-
-[project.entry-points."zenzic.adapters"]
-myengine = "my_package.adapter:MyEngineAdapter"
-
-```
-
-### Adapter Cache {#adapter-cache}
-
-Adapter instances are cached by `(engine, docs_root, repo_root)` key. This prevents redundant construction when `get_adapter()` is called from both `scanner.py` and `validator.py` in the same CLI session.
+The `get_adapter()` factory queries the `zenzic.adapters` entry-point group and falls back to `StandaloneAdapter` if no adapter is found. Third-party adapters register via `pyproject.toml` — see the [Adapter implementation guide](https://zenzic.dev/developers/how-to/implement-adapter).
 
 ### `has_engine_config` Guard {#has-engine-config-guard}
 
@@ -464,33 +304,11 @@ The `LayeredExclusionManager` is constructed once per CLI invocation and passed 
 
 ### Construction {#exclusion-construction}
 
-```python
-
-manager = LayeredExclusionManager(
-    config,
-    repo_root=repo_root,
-    docs_root=docs_root,
-    cli_exclude=["drafts"],
-    cli_include=["generated-api"],
-)
-
-```
-
-At construction time:
-
-1. System Guardrails are loaded from `SYSTEM_EXCLUDED_DIRS` (frozen set).
-2. Config `excluded_dirs` are stripped of system guardrails to keep layers clean.
-3. File patterns are pre-compiled via `fnmatch.translate()` to `re.Pattern`.
-4. If `respect_vcs_ignore` is `true`, `.gitignore` files are parsed and rules are merged into a single `VCSIgnoreParser`.
+The manager is constructed once per CLI invocation and encapsulates all four exclusion levels. If `respect_vcs_ignore` is `true`, `.gitignore` files are parsed at construction time and merged into a single unified `VCSIgnoreParser`.
 
 ### VCS Ignore Parser {#vcs-parser}
 
-The `VCSIgnoreParser` implements the full gitignore specification as a pure-Python parser:
-
-- Patterns are pre-compiled to `re.Pattern` at construction time.
-- Matching is O(N) per path where N = number of rules.
-- When no negation rules exist, a **combined regex fast path** merges all positive rules into a single compiled regex.
-- Paths containing `..` components are always treated as non-matching (safety).
+The `VCSIgnoreParser` implements the full gitignore specification, including negation (`!`), path anchoring, and glob wildcards.
 
 ### `should_exclude_dir` {#should-exclude-dir}
 
@@ -498,7 +316,7 @@ Called by `walk_files()` for each directory during `os.walk()`. Returns `True` t
 
 ### `should_exclude_file` {#should-exclude-file}
 
-Called by `iter_markdown_sources()` for each file that passes directory filtering. Performs full 5-layer evaluation including path-component checks against all exclusion layers.
+Performs full 5-layer evaluation including path-component checks against all exclusion layers.
 
 ---
 
@@ -517,25 +335,7 @@ Hijacking**: the caller's environment silently overrides the target's.
 
 ### The Solution: Three-Step Sovereignty
 
-```text
-
-Step 1 — find_repo_root(search_from=target)
-         Searches upward from the resolved target path, not from os.getcwd().
-         Loads the target repository's zenzic.toml exclusively.
-
-Step 2 — _apply_target(repo_root, config, raw_path)
-         Recalibrates docs_root: if the path is a directory, docs_dir is
-         patched to that directory. If it is a file, the parent directory
-         becomes docs_root and the file is the single audit target.
-         Sovereign root guard: when target == repo_root, the configured
-         docs_dir is preserved (not overridden to ".").
-
-Step 3 — CEO-043 Sandbox Guard
-         If docs_root falls outside repo_root (external target), adopt
-         docs_root as the new repo_root so the path traversal guard guards escapes
-         from the target, not the location of the caller.
-
-```
+The protocol resolves config and scope from the target path (not from `cwd`): it finds the target's `zenzic.toml`, calibrates `docs_root` to the target directory or file, and applies the Sandbox Guard to anchor the path traversal check at the target — not the caller's location.
 
 ### The Genesis Nomad (`init`)
 
@@ -645,30 +445,7 @@ RE2 is a superset of standard POSIX ERE syntax. Patterns like these compile and 
 
 ### The DFA Purity Contract
 
-```python
-# rules.py — CustomRule.__post_init__
-try:
-    self._compiled = re2.compile(self.pattern)
-except re2.error as exc:
-    raise PluginContractError(
-        f"CustomRule '{self.id}': pattern {self.pattern!r} is not supported "
-        f"by the RE2 engine (ZRT-007 — DFA Purity Contract)."
-    ) from exc
-```
-
-`re2.compile` is the only gating step. There is no runtime canary, no SIGALRM timer, and no
-Windows/Linux divergence. A pattern either compiles with RE2 at load time — and is therefore
-O(n) safe — or it does not compile, and the startup fails with an actionable error message.
-
-### Why not a timeout-based canary?
-
-The previous architecture (current series) used a SIGALRM-based "canary": Python's NFA regex engine
-was run against stress strings inside a 50 ms timer. This provided *probabilistic* protection:
-a fast machine could evaluate `(a+)+` on 50 characters before the timer fired. It also required
-platform-specific code (SIGALRM is POSIX-only) and a separate `timeout.py` module.
-
-ZRT-007 eliminates the canary entirely. RE2 compilation is a *deterministic* gate — patterns
-that are incompatible with DFA are rejected unconditionally, on every OS, at constant cost.
+Every `[[custom_rules]]` pattern is compiled with RE2 at load time. A pattern either compiles — and is therefore $O(n)$ safe — or it does not, and the startup fails with an actionable `PluginContractError` message. There is no runtime canary, no SIGALRM timer, and no platform-specific divergence.
 
 ---
 
@@ -681,14 +458,7 @@ The scan engine automatically selects sequential or parallel execution based on 
 | < 50 files | Sequential | Zero process-spawn overhead. Full O(N) I/O. |
 | >= 50 files | Parallel | `ProcessPoolExecutor` with per-worker isolation |
 
-The threshold (50 files) is a conservative heuristic: below it, `ProcessPoolExecutor` spawn overhead (~200-400ms on a cold interpreter) exceeds the parallelism benefit.
-
-In parallel mode:
-
-- Each file is processed by an independent worker process.
-- Workers receive serialised copies of `config` and `rule_engine` via `pickle` — no shared state. `CustomRule` patterns compiled by the RE2 engine are DFA-safe and cannot deadlock a worker process.
-- External URL validation is performed in the main process after all workers complete.
-- Results are always sorted by `file_path` regardless of execution mode (determinism guarantee).
+The threshold (50 files) is a conservative heuristic: below it, process-spawn overhead exceeds the parallelism benefit. Results are always sorted by `file_path` regardless of execution mode.
 
 ---
 

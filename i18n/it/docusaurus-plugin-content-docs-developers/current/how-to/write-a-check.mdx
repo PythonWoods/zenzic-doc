@@ -1,0 +1,139 @@
+---
+icon: lucide/check-circle
+sidebar_label: "Scrivere un Nuovo Check"
+description: "Guida passo-passo per aggiungere un nuovo check all'engine di analisi Zenzic, incluse le Core Laws che ogni contributore deve rispettare."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Scrivere un Nuovo Check
+
+I check di Zenzic si trovano in `src/zenzic/core/`. Ogni check è una funzione standalone in
+`scanner.py` (traversal del filesystem) o `validator.py` (validazione del contenuto). Il wiring
+CLI è nel package `cli/` (`src/zenzic/cli/`).
+
+---
+
+## Checklist in Sei Passi
+
+1. **Implementa** la logica nel modulo core appropriato (`zenzic.core.scanner` o `zenzic.core.validator`).
+2. **Delega la risoluzione** a `InMemoryPathResolver` — non chiamare mai `os.path.exists()`, `Path.is_file()`,
+   o qualsiasi altra probe del filesystem all'interno di un loop per-link. Il resolver viene istanziato
+   una volta prima del loop; re-istanziarlo per file annulla la `_lookup_map` pre-calcolata e riduce
+   il throughput da 430 000+ a meno di 30 000 risoluzioni/s.
+3. **Testa l'i18n** — se il check riguarda path di file, testalo in tutte e tre le configurazioni i18n
+   (nessuna, folder mode, suffix mode).
+4. **Collega la CLI** — aggiungi un comando o sotto-comando corrispondente nel package `cli/`.
+   Vedi il [riferimento Architettura CLI](../reference/cli-architecture).
+5. **Scrivi i test** in `tests/` che coprano sia i casi passanti che quelli fallenti, inclusa una
+   baseline di performance (5 000 link risolti in < 100 ms su un corpus in-memory mockato).
+6. **Aggiorna gli esempi** in `examples/` per esercitare il nuovo check — Zenzic valida i propri
+   esempi ad ogni commit.
+
+> **Contratto di performance:** il hot path di `zenzic.core` deve rimanere allocation-free. Nessuna
+> costruzione di oggetti `Path`, nessuna syscall e nessuna chiamata `relative_to()` all'interno del
+> loop di risoluzione.
+
+---
+
+## Core Laws (non negoziabili)
+
+Queste regole proteggono le garanzie di performance e determinismo di `src/zenzic/core/`.
+Una PR che viola qualsiasi di esse verrà rifiutata indipendentemente dalla copertura dei test.
+
+### Zero I/O nel Hot Path
+
+`src/zenzic/core/` **non deve mai chiamare** `Path.exists()`, `Path.is_file()`, `open()`,
+o qualsiasi altra operazione su filesystem o subprocess all'interno di un loop per-link o per-file.
+
+Le due fasi I/O consentite sono:
+
+| Fase | Dove | Cosa |
+| ----- | ----- | ---- |
+| **Pass 1** | preambolo di `validate_links_async` | traversal `rglob` per costruire `md_contents` e `known_assets` |
+| **Costruzione `InMemoryPathResolver`** | `__init__` | Costruzione di `_lookup_map` dal dict di contenuto pre-letto |
+
+Tutto ciò che segue il Pass 1 deve usare solo strutture dati in-memory:
+
+- Risoluzione `.md` interna → `InMemoryPathResolver.resolve()`
+- Risoluzione asset non-`.md` → `asset_str in known_assets` (`frozenset[str]`, O(1))
+
+### Determinismo i18n
+
+`src/zenzic/core/` deve produrre **finding identici e codici di uscita identici** in tutte
+e tre le configurazioni i18n:
+
+| Configurazione | Struttura root |
+| --- | --- |
+| Nessuna i18n | solo `docs/*.md` |
+| Folder mode | `docs/` + `i18n/<locale>/docusaurus-plugin-content-docs/current/` |
+| Suffix mode | `docs/*.md` + `docs/*.it.md` |
+
+Qualsiasi check che produce finding diversi a seconda della configurazione di locale ha un bug.
+Il rilevamento del locale avviene nel layer adapter; il core deve essere locale-agnostico.
+
+### Ghost Route Awareness
+
+Qualsiasi check che valida link o route **deve interrogare il VSM**, non il filesystem:
+
+```python
+# ❌ Violazione Grado-1 — chiede al filesystem, manca le Ghost Route
+if not (docs_root / resolved_path).exists():
+    yield Finding(...)
+
+# ✅ Corretto — chiede al VSM
+if route_info.status == RouteStatus.ORPHAN_AND_ABSENT:
+    yield Finding(...)
+```
+
+Le Ghost Route sono pagine generate da Docusaurus al build time (listing di tag, indici paginati,
+pagine autore) che non hanno sorgente Markdown fisica su disco. Un controllo sul filesystem le
+riporta sempre come broken.
+
+### Sovranità VSM
+
+Quando si costruisce o interroga il modello di navigazione:
+
+- Usa solo la surface `get_nav_paths()` / `get_route_info()` dell'adapter.
+- Non parsare mai `mkdocs.yml`, `docusaurus.config.ts`, o qualsiasi altro file di configurazione
+  del motore direttamente all'interno di un check. Quella responsabilità appartiene esclusivamente
+  all'adapter.
+- Non chiamare mai `subprocess` per eseguire il build engine. Zenzic legge la configurazione
+  come **dato**, non come codice eseguibile.
+
+### Contratto Adapter
+
+Quando un check ha bisogno di dati dell'adapter:
+
+```python
+# ✅ Corretto — usa l'adapter
+route_info = adapter.get_route_info(rel_path)
+
+# ❌ Sbagliato — non parsare mai mkdocs.yml per dati di locale dentro un check
+with open("mkdocs.yml") as f:
+    config = yaml.safe_load(f)
+    locale = config.get("plugins", {}).get("i18n", {}).get("default_locale", "en")
+```
+
+---
+
+## Obbligazioni del Credential Scanner
+
+Se il tuo check tocca il credential scanner o `harvest()`, vedi il riferimento dedicato
+[Obbligazioni del Credential Scanner](../reference/credential-scanner-obligations).
+Le quattro obbligazioni (Worker Timeout, Regex-Canary, Dual-Stream Invariant, Mutation Score ≥ 90%)
+sono applicate ad ogni PR che tocca `src/zenzic/core/`.
+
+---
+
+## Codici di Finding
+
+Ogni nuovo check deve emettere finding usando un codice registrato in `FROZEN_CODES`. Prima
+di aggiungere un nuovo codice:
+
+1. Esegui `zenzic inspect codes` — conferma che il codice non esista già.
+2. Aggiungi il codice a `FROZEN_CODES` nel tier appropriato (`Core`, `Structure`, o `Governance`).
+3. Aggiorna `CHANGELOG.md` con il nuovo codice nello stesso commit.
+
+Non riutilizzare codici ritirati. I codici ritirati rimangono in `FROZEN_CODES` con stato `retired`.

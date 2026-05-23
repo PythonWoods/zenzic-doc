@@ -62,17 +62,7 @@ Il credential scanner ha la priorità assoluta. Se la fase 1.a rileva un segreto
 
 Il credential scanner scansiona le righe **senza saltare i blocchi di codice** — questo e intenzionale. Un segreto incorporato in un esempio `bash` o in un blocco senza etichetta linguistica e comunque un segreto esposto.
 
-Durante la Passata 1, il `ReferenceScanner` popola una `ReferenceMap` per file:
-
-```python
-scanner = ReferenceScanner(Path("docs/guide.md"))
-
-for event in scanner.harvest():
-    lineno, event_type, data = event
-    if event_type == "SECRET":
-        # Credential scanner ha rilevato una credenziale — interruzione immediata
-        raise SystemExit(2)
-```
+Durante la Passata 1, il `ReferenceScanner` popola una `ReferenceMap` per file.
 
 Gli eventi di harvest includono:
 
@@ -86,38 +76,13 @@ Gli eventi di harvest includono:
 
 Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Il credential scanner agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
 
-### Passata 1.5 — Costruzione del grafo dei link {#pass-1-5}
+### Passata 2 — Cross-Check e Validazione dei Link {#pass-2}
 
-Dopo la Passata 1, e prima della validazione, Zenzic costruisce il **grafo di adiacenza** dei link interni Markdown-to-Markdown. Questo grafo viene usato per il rilevamento dei cicli.
-
-La costruzione avviene in tempo $\Theta(V+E)$ tramite un DFS iterativo con colorazione WHITE/GREY/BLACK:
-
-- **WHITE** — nodo non ancora visitato
-- **GREY** — nodo nella pila di esplorazione corrente (un arco verso un nodo GREY indica un ciclo)
-- **BLACK** — nodo completamente esplorato
-
-Il risultato è un `frozenset` canonico dei percorsi di tutti i nodi che partecipano ad almeno un ciclo. Ogni lookup di appartenenza in Passata 2 è $O(1)$.
-
-### Passata 2 — Validazione e Risoluzione {#pass-2}
-
-La seconda passata valida i link estratti contro gli indici globali costruiti nella Passata 1:
-
-| Operazione | Dettaglio |
-| :--- | :--- |
-| **Risoluzione link interni** | Delegata a `InMemoryPathResolver`. Nessun I/O su disco — la mappa dei file e le ancore sono gia in memoria |
-| **Validazione ancore** | Il frammento `#anchor` viene confrontato con gli slug degli heading estratti dal file target |
-| **Rilevamento traversamento path** | I link che risolvono fuori dalla directory `docs/` vengono classificati come `PATH_TRAVERSAL` o `PATH_TRAVERSAL_SUSPICIOUS` |
-| **Classificazione route (VSM)** | Quando l'adapter ha una configurazione engine, la Virtual Site Map determina se il target e `REACHABLE`, `ORPHAN_BUT_EXISTING` o `IGNORED` |
-| **Rilevamento cicli** | Il target risolto viene cercato nel registro dei cicli ($O(1)$). I risultati `CIRCULAR_LINK` sono a livello `info` |
-| **Link esterni (solo `--strict`)** | Validazione HTTP asincrona con richieste HEAD concorrenti (max 20 connessioni). Fallback a GET su 405. HTTP 401/403/429 trattati come "vivo" |
+La Passata 2 risolve i link stile-reference (`[text][id]`) contro la `ReferenceMap` popolata. Riesamina il content stream per trovare tutti i riferimenti a link e shortcut references. Ogni utilizzo viene risolto contro le definizioni raccolte nella Passata 1. Gli ID non definiti producono risultati `DANGLING_REF`.
 
 ### Passata 3 — Report di Integrità {#pass-3}
 
 La Passata 3 calcola il punteggio di integrità per file e consolida tutti i risultati:
-
-```python
-report = scanner.get_integrity_report(cross_check_findings, security_findings)
-```
 
 Il report include:
 
@@ -156,74 +121,40 @@ Il credential scanner di Zenzic è un componente di sicurezza che opera trasvers
   />
 </div>
 
-```text
-Riga sorgente
-    |
-    v
-Normalizzazione (trim, decodifica)
-    |
-    v
-Scansione pattern (regex pre-compilati)
-    |
-    +---> Nessuna corrispondenza --> Continua pipeline
-    |
-    +---> Corrispondenza trovata --> SecurityFinding emesso
-                                        |
-                                        v
-                                    Exit Code 2
-```
-
 ### Normalizzatore Pre-scansione {#normalizer}
 
-Il normalizzatore applica sei passate prima della corrispondenza regex:
-
-| Trasformazione | ZRT | Esempio | Risultato |
-| :--- | :--- | :--- | :--- |
-| Rimozione caratteri formato Unicode (categoria Cf) | ZRT-006 | `AKIA​KEY` (zero-width joiner) | `AKIAKEY` |
-| Decodifica riferimenti carattere HTML | ZRT-006 | `sk&#45;abc` | `sk-abc` |
-| Rimozione interleaving commenti HTML/MDX | ZRT-007 | `AKIA<!-- -->KEY` | `AKIAKEY` |
-| Rimozione backtick span | ZRT-003 | `` `AKIA` `` | `AKIA` |
-| Rimozione operatori concat | ZRT-003 | `` `AKIA` + `KEY` `` | `AKIAKEY` |
-| Sostituzione pipe tabella | ZRT-003 | `` \| Key \| AKIA... \| `` | `Key AKIA...` |
-
-Vengono scansionate sia la forma grezza che quella normalizzata. Se lo stesso tipo di segreto viene rilevato in entrambe le forme, viene emesso un solo risultato.
-
-### Famiglie di pattern
-
-Il credential scanner rileva nove famiglie di pattern di credenziali:
-
-| Pattern | Regex | Prefisso esempio |
-| :--- | :--- | :--- |
-| `openai-api-key` | `sk-[a-zA-Z0-9]{48}` | `sk-abc...` |
-| `github-token` | `gh[pousr]_[a-zA-Z0-9]{36}` | `ghp_abc...` |
-| `aws-access-key` | `AKIA[0-9A-Z]{16}` | `AKIAIOSFODNN7...` |
-| `stripe-live-key` | `sk_live_[0-9a-zA-Z]{24}` | `sk_live_abc...` |
-| `slack-token` | `xox[baprs]-[0-9a-zA-Z]{10,48}` | `xoxb-abc...` |
-| `google-api-key` | `AIza[0-9A-Za-z\-_]{35}` | `AIzaSyC...` |
-| `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | Header PEM |
-| `hex-encoded-payload` | `(?:\x[0-9a-fA-F]{2}){3,}` | `\x41\x42` (2× sotto soglia) |
-| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | `glpat-abc...` |
-
-### Proprieta del middleware
-
-- **Nessuna riga invisibile:** il credential scanner scansiona anche le righe dentro blocchi di codice e il frontmatter YAML
-- **Priorità assoluta:** un risultato del credential scanner blocca la Passata 2 per quel file (la `ReferenceMap` non viene cross-checked)
-- **Exit Code 2 dedicato:** non viene mai soppresso da `--exit-zero` o `exit_zero = true`
-- **Deduplicazione:** se `scan_line_for_secrets` e `scan_url_for_secrets` rilevano lo stesso segreto sulla stessa riga, viene emesso un solo evento
+Il normalizzatore applica più passate di normalizzazione prima della corrispondenza regex per rilevare credenziali offuscate — coprendo caratteri formato Unicode, riferimenti carattere HTML, interleaving di commenti, backtick span, operatori concat e pipe di tabella. Vengono scansionate sia la forma grezza che quella normalizzata; se lo stesso tipo di segreto viene rilevato in entrambe le forme, viene emesso un solo risultato.
 
 ### Middleware I/O: `safe_read_line` {#safe-read-line}
 
 Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft), ogni riga passa attraverso `safe_read_line()`. Se viene rilevato un segreto, viene sollevata immediatamente un'eccezione `CredentialViolation` — la riga non viene mai restituita al chiamante, impedendo al segreto di entrare in qualsiasi parser.
 
-```python
-# La riga non raggiunge mai il parser YAML se contiene un segreto
-line = safe_read_line(raw_line, file_path, line_no)
-```
+---
 
-### Hardening
+## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
 
-- **Limite lunghezza riga** (F2-1): Le righe che superano 1 MiB vengono troncate silenziosamente prima della corrispondenza regex per prevenire il ReDoS.
-- **Buffer di lookback** (ZRT-007): Lo scanner mantiene uno stato di lookback di 1 riga. Per ogni riga, la coda della riga precedente normalizzata (`[-80:]`) viene concatenata con la testa della riga corrente (`[:80]`) e scansionata come passata aggiuntiva. Questo rileva i segreti divisi su scalari YAML folded o interruzioni di riga Markdown.
+Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in current release Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
+
+### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
+
+Il credential scanner applica un limite rigido di **1 MiB per riga** prima di qualsiasi motore regex per prevenire vulnerabilità ReDoS (hardening F2-1). Le righe che superano questo limite vengono silenziosamente troncate — una credenziale che inizia entro il primo 1 MiB sarà comunque rilevata; solo il contenuto oltre il limite è invisibile allo scanner.
+
+### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
+
+La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
+
+**Modello di minaccia:** Un `zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
+
+**Mitigazione:** `resolve()` espande tutti i symlink e i componenti `..` prima del confronto, quindi `docs_dir = "repo/../../../etc"` viene catturato incondizionatamente. Il controllo viene eseguito prima di qualsiasi fase I/O e non può essere aggirato da flag CLI.
+
+**Il Codice di Uscita 3 non viene mai soppresso** da `--exit-zero` o `exit_zero = true`. Se viene rilevato un tentativo di jailbreak, il processo termina immediatamente dopo la stampa del messaggio diagnostico del path traversal guard.
+
+| Scenario | Valore `docs_dir` | Risultato |
+| :--- | :--- | :--- |
+| Progetto normale | `"docs"` | Risolve dentro la radice del repo → consentito |
+| Radice del repo come docs | `"."` | Risolve alla radice del repo → consentito |
+| Escape dal parent | `"../../etc"` | Risolve fuori dalla radice del repo → **Exit 3** |
+| Escape tramite symlink | `"docs-link"` (symlink a `/tmp`) | `resolve()` espande → **Exit 3** |
 
 ---
 
@@ -233,33 +164,7 @@ Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motor
 
 ### BaseAdapter {#base-adapter}
 
-`BaseAdapter` è un Abstract Base Class (`ABC`) che ogni adapter deve soddisfare:
-
-```python
-from abc import ABC, abstractmethod
-
-class BaseAdapter(ABC):
-    @abstractmethod
-    def has_engine_config(self) -> bool: ...
-    @abstractmethod
-    def get_nav_paths(self) -> frozenset[str]: ...
-    @abstractmethod
-    def get_route_info(self, rel: Path) -> RouteMetadata: ...
-    @abstractmethod
-    def is_locale_dir(self, part: str) -> bool: ...
-    @abstractmethod
-    def resolve_asset(self, missing_abs: Path, docs_root: Path) -> Path | None: ...
-    @abstractmethod
-    def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
-    @abstractmethod
-    def get_ignored_patterns(self) -> set[str]: ...
-    @abstractmethod
-    def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
-    @abstractmethod
-    def provides_index(self, directory_path: Path) -> bool: ...
-```
-
-Metodi chiave:
+`BaseAdapter` è un Abstract Base Class (`ABC`) che ogni adapter deve soddisfare. Metodi chiave:
 
 | Metodo | Responsabilita |
 | :--- | :--- |
@@ -397,82 +302,11 @@ Quando il target di un link usa `@site/static/img/logo.png`, il resolver rimuove
 
 ### Factory degli engine {#engine-factory}
 
-```mermaid
-flowchart LR
-    CLI["CLI: get_adapter(engine, docs_root, repo_root)"] --> CACHE{Cache hit?}
-    CACHE -->|Yes| RETURN[Return cached adapter]
-    CACHE -->|No| EP["Query entry-point group\nzenzic.adapters"]
-    EP -->|Found| FROM_REPO{"from_repo()\nexists?"}
-    FROM_REPO -->|Yes| CONSTRUCT_FR["adapter = Class.from_repo(ctx, docs, repo)"]
-    FROM_REPO -->|No| CONSTRUCT_STD["adapter = Class()"]
-    CONSTRUCT_FR --> HAS_CONFIG{"has_engine_config()?"}
-    CONSTRUCT_STD --> HAS_CONFIG
-    HAS_CONFIG -->|Yes| STORE["Store in cache & return"]
-    HAS_CONFIG -->|No| STANDALONE["Fallback: StandaloneAdapter()"]
-    EP -->|Not found| STANDALONE
-    STANDALONE --> STORE
-
-    style CACHE fill:#3b82f6,color:#fff
-    style STORE fill:#22c55e,color:#fff
-    style STANDALONE fill:#f59e0b,color:#fff
-```
-
-La factory `get_adapter` segue un protocollo di costruzione a due fasi:
-
-1. **Scoperta:** il gruppo entry-point `zenzic.adapters` viene consultato per primo, poi il registro built-in
-2. **Costruzione:** se l'adapter espone un classmethod `from_repo(context, docs_root, repo_root)`, viene usato quello; altrimenti si chiama il costruttore standard
-3. **Guard `has_engine_config`:** se l'adapter costruito restituisce `False` da `has_engine_config()`, la factory ricade su `StandaloneAdapter`
-4. **Cache:** le istanze vengono memorizzate con chiave `(engine, docs_root, repo_root)` per evitare doppie istanziazioni nella stessa sessione CLI
-
-Questo design significa che aggiungere un nuovo adapter per un motore di build **non richiede mai di modificare il core di Zenzic** — basta installare un pacchetto adapter.
-
-### Cache degli Adapter {#adapter-cache}
-
-Le istanze degli adapter vengono memorizzate con chiave `(engine, docs_root, repo_root)`. Questo previene costruzioni ridondanti quando `get_adapter()` viene chiamato sia da `scanner.py` che da `validator.py` nella stessa sessione CLI.
+La factory `get_adapter()` interroga il gruppo entry-point `zenzic.adapters` e ricade su `StandaloneAdapter` se non trova un adapter per il motore richiesto. Gli adapter di terze parti si registrano via `pyproject.toml` — vedi la [guida all'implementazione degli adapter](https://zenzic.dev/developers/how-to/implement-adapter).
 
 ### Guardia `has_engine_config` {#has-engine-config-guard}
 
 Quando un adapter viene istanziato ma non trova il file di configurazione del motore (es. `MkDocsAdapter` senza `mkdocs.yml`), la factory ricade su `StandaloneAdapter`. Questo garantisce che i controlli nav-dipendenti vengano saltati in modo pulito invece di produrre falsi positivi.
-
----
-
-## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
-
-Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in current release Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
-
-### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
-
-Il credential scanner applica un limite rigido di **1 MiB per riga** prima di qualsiasi motore regex per prevenire vulnerabilità ReDoS (hardening F2-1). Le righe che superano questo limite vengono silenziosamente troncate — una credenziale che inizia entro il primo 1 MiB sarà comunque rilevata; solo il contenuto oltre il limite è invisibile allo scanner.
-
-### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
-
-La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
-
-**Modello di minaccia:** Un `zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
-
-**Mitigazione:**
-
-```python
-def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
-    resolved_repo = repo_root.resolve()
-    resolved_docs = docs_root.resolve()
-    try:
-        resolved_docs.relative_to(resolved_repo)
-    except ValueError:
-        # il path traversal guard scatta immediatamente — nessun file viene letto
-        raise typer.Exit(3)
-```
-
-`resolve()` espande tutti i symlink e i componenti `..` prima del confronto, quindi `docs_dir = "repo/../../../etc"` viene catturato incondizionatamente. Il controllo viene eseguito prima della costruzione di `LayeredExclusionManager`, prima di qualsiasi fase I/O, e non può essere aggirato da flag CLI.
-
-**Il Codice di Uscita 3 non viene mai soppresso** da `--exit-zero` o `exit_zero = true`. Se viene rilevato un tentativo di jailbreak, il processo termina immediatamente dopo la stampa del messaggio diagnostico del path traversal guard.
-
-| Scenario | Valore `docs_dir` | Risultato |
-| :--- | :--- | :--- |
-| Progetto normale | `"docs"` | Risolve dentro la radice del repo → consentito |
-| Radice del repo come docs | `"."` | Risolve alla radice del repo → consentito |
-| Escape dal parent | `"../../etc"` | Risolve fuori dalla radice del repo → **Exit 3** |
-| Escape tramite symlink | `"docs-link"` (symlink a `/tmp`) | `resolve()` espande → **Exit 3** |
 
 ---
 
@@ -482,31 +316,11 @@ Il `LayeredExclusionManager` viene costruito una sola volta per invocazione CLI 
 
 ### Costruzione {#exclusion-construction}
 
-```python
-manager = LayeredExclusionManager(
-    config,
-    repo_root=repo_root,
-    docs_root=docs_root,
-    cli_exclude=["drafts"],
-    cli_include=["generated-api"],
-)
-```
-
-Al momento della costruzione:
-
-1. Le System Guardrail vengono caricate da `SYSTEM_EXCLUDED_DIRS` (frozen set).
-2. Le `excluded_dirs` della config vengono ripulite dalle system guardrail per mantenere i livelli separati.
-3. I pattern di file vengono pre-compilati via `fnmatch.translate()` in `re.Pattern`.
-4. Se `respect_vcs_ignore` è `true`, i file `.gitignore` vengono analizzati e le regole unite in un singolo `VCSIgnoreParser`.
+Il manager viene costruito una sola volta per invocazione CLI e incapsula tutti e quattro i livelli di esclusione. Se `respect_vcs_ignore` è `true`, i file `.gitignore` vengono analizzati alla costruzione e uniti in un singolo `VCSIgnoreParser` unificato.
 
 ### VCS Ignore Parser {#vcs-parser}
 
-Il `VCSIgnoreParser` implementa la specifica gitignore completa come parser pure-Python:
-
-- I pattern vengono pre-compilati in `re.Pattern` al momento della costruzione.
-- Il matching è O(N) per percorso dove N = numero di regole.
-- Quando non esistono regole di negazione, un **fast-path combinato** unisce tutte le regole positive in una singola regex compilata.
-- I percorsi contenenti componenti `..` vengono sempre trattati come non corrispondenti (sicurezza).
+Il `VCSIgnoreParser` implementa la specifica gitignore completa, incluse negazione (`!`), ancoraggio al percorso e wildcards glob.
 
 ### `should_exclude_dir` {#should-exclude-dir}
 
@@ -514,7 +328,7 @@ Chiamato da `walk_files()` per ogni directory durante `os.walk()`. Restituisce `
 
 ### `should_exclude_file` {#should-exclude-file}
 
-Chiamato da `iter_markdown_sources()` per ogni file che supera il filtraggio per directory. Esegue una valutazione completa a 5 livelli inclusi i controlli sui componenti del percorso contro tutti i livelli di esclusione.
+Esegue una valutazione completa a 5 livelli inclusi i controlli sui componenti del percorso contro tutti i livelli di esclusione.
 
 ---
 
@@ -534,23 +348,7 @@ quello della destinazione.
 
 ### La Soluzione: Sovranità in Tre Passi
 
-```text
-Passo 1 — find_repo_root(search_from=target)
-          Ricerca verso l'alto a partire dal percorso risolto della destinazione,
-          non da os.getcwd(). Carica esclusivamente il zenzic.toml del repository
-          di destinazione.
-
-Passo 2 — _apply_target(repo_root, config, raw_path)
-          Ricalibra docs_root: se il percorso è una directory, docs_dir viene
-          aggiornato. Se è un file, la directory padre diventa docs_root e il file
-          è l'unico target di audit. Guardia sovereign root: quando target ==
-          repo_root, il docs_dir configurato viene preservato (non sovrascritto).
-
-Passo 3 — Guardia Sandbox CEO-043
-          Se docs_root cade fuori da repo_root (target esterno), adotta docs_root
-          come nuovo repo_root in modo che il path traversal guard protegga le fughe dal
-          target, non dalla posizione del chiamante.
-```
+Il protocollo risolve config e perimetro dal percorso della destinazione (non da `cwd`): trova il `zenzic.toml` della destinazione, calibra `docs_root` alla directory o file di destinazione, e applica la Guardia Sandbox per ancorare il controllo di path traversal alla destinazione — non alla posizione del chiamante.
 
 ### Il Genesis Nomad (`init`)
 
@@ -585,20 +383,6 @@ Zenzic usa quattro codici di uscita, ognuno con una semantica precisa:
 | **1** | Risultati | Errori di qualita trovati (link rotti, orfani, snippet, segnaposto, asset, riferimenti) | Si |
 | **2** | Credential Scanner | Credenziale rilevata dallo Zenzic credential scanner | **No** |
 | **3** | Path Traversal Guard | Traversamento path verso directory di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`) | **No** |
-
-### Gerarchia di priorità dei codici di uscita
-
-Quando piu condizioni si verificano nella stessa esecuzione, la priorità è:
-
-```text
-Exit 3 (Path Traversal Guard)  >  Exit 2 (Credential Scanner)  >  Exit 1 (Risultati)  >  Exit 0 (Pulito)
-```
-
-Il path traversal guard (exit 3) viene valutato per primo. Poi il credential scanner (exit 2). Solo dopo viene valutata la presenza di risultati standard (exit 1).
-
-:::danger[Exit 2 e 3 non sono mai sopprimibili]
-I codici di uscita 2 (credential scanner) e 3 (path traversal guard) rappresentano eventi di sicurezza. Non vengono mai soppressi da `--exit-zero` o `exit_zero = true` nella configurazione. Questo e un contratto architetturale invariante.
-:::
 
 ### Exit Code 0 — Pulito
 
@@ -675,33 +459,7 @@ eseguiti correttamente:
 
 ### Il Contratto di Purezza DFA
 
-```python
-# rules.py — CustomRule.__post_init__
-try:
-    self._compiled = re2.compile(self.pattern)
-except re2.error as exc:
-    raise PluginContractError(
-        f"CustomRule '{self.id}': il pattern {self.pattern!r} non è supportato "
-        f"dal motore RE2 (ZRT-007 — Contratto di Purezza DFA)."
-    ) from exc
-```
-
-`re2.compile` è l'unico step di validazione. Non esiste un canary a runtime, nessun timer
-SIGALRM e nessuna divergenza Windows/Linux. Un pattern si compila con RE2 al caricamento —
-ed è quindi O(n)-safe — oppure non si compila, e l'avvio fallisce con un messaggio di errore
-azionabile.
-
-### Perché non un canary basato su timeout?
-
-L'architettura precedente (current series) usava un "canary" basato su SIGALRM: il motore NFA di Python
-veniva eseguito su stringhe di stress all'interno di un timer da 50 ms. Questo forniva una
-protezione *probabilistica*: una macchina veloce poteva valutare `(a+)+` su 50 caratteri prima
-che il timer scattasse. Richiedeva anche codice platform-specific (SIGALRM è solo POSIX) e un
-modulo `timeout.py` separato.
-
-ZRT-007 elimina completamente il canary. La compilazione RE2 è un gate *deterministico* — i
-pattern incompatibili con il DFA vengono rifiutati incondizionatamente, su qualsiasi OS, a
-costo costante.
+Ogni pattern in `[[custom_rules]]` viene compilato con RE2 al momento del caricamento. Un pattern si compila — ed è quindi $O(n)$-safe — oppure non si compila, e l'avvio fallisce con un messaggio `PluginContractError` azionabile. Non esiste un canary a runtime, nessun timer SIGALRM e nessuna divergenza tra piattaforme.
 
 ---
 
@@ -714,13 +472,7 @@ La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e 
 | `workers=1` (default) oppure file < 50 | **Sequenziale** | Zero overhead di spawn processi. Supporto completo per validazione URL esterni |
 | `workers != 1` e file >= 50 | **Parallelo** | `ProcessPoolExecutor` con distribuzione per-file. Ogni worker e un processo indipendente |
 
-La soglia di 50 file (`ADAPTIVE_PARALLEL_THRESHOLD`) e un'euristica conservativa: sotto questa soglia, l'overhead di spawn del `ProcessPoolExecutor` (~200-400 ms su un interprete freddo) supera il beneficio del parallelismo.
-
-### Garanzie del motore parallelo
-
-- **Determinismo:** i risultati sono sempre ordinati per `file_path` indipendentemente dalla modalita di esecuzione
-- **Credential scanner per-worker:** ogni worker applica il credential scanner indipendentemente. I file con risultati di sicurezza vengono esclusi dalla validazione link
-- **Contratto di immutabilità:** `config` e `rule_engine` vengono serializzati via `pickle`. Ogni worker riceve una copia indipendente — nessuno stato condiviso tra processi. I pattern `CustomRule` compilati dal motore RE2 sono DFA-safe e non possono bloccare un processo worker
+La soglia di 50 file è un'euristica conservativa: sotto questa soglia, l'overhead di spawn dei processi supera il beneficio del parallelismo. I risultati sono sempre ordinati per `file_path` indipendentemente dalla modalità di esecuzione.
 
 ---
 
@@ -746,6 +498,25 @@ applicazione engine-agnostico.
 
 Questo produce un'applicazione identica con VSM completo, credential scanner (ZRT-006/007) e path traversal guard
 attivi — senza integrazione runtime dentro il build engine.
+
+### Pattern di Estensione {#extension-pattern}
+
+Gli strumenti esterni che devono invocare i controlli di Zenzic in modo programmatico devono usare
+l'API Python pubblica direttamente, senza mai fare shell out:
+
+```python
+
+from zenzic.core.scanner import find_repo_root
+from zenzic.models.config import ZenzicConfig
+
+repo_root = find_repo_root()
+config, _ = ZenzicConfig.load(repo_root)
+# ... invoke scanner / validator functions directly
+
+```
+
+Tutta l'intelligenza risiede in `zenzic.core`. La CLI è un thin dispatch layer sulle stesse
+funzioni — non esiste logica nascosta che richieda il percorso subprocess.
 
 ---
 
@@ -806,3 +577,11 @@ Il banner scrive sempre su **stdout** (il `_shared.console` condiviso), quindi u
 | Aggiungere un comando a una sub-app esistente | Aggiungere `@check_app.command()` (o altra app) nel `_*.py` rilevante — nessuna modifica a `__init__.py` o `main.py` |
 | Aggiungere una nuova sub-app top-level | Creare `_miafeature.py`, esportare da `__init__.py`, registrare in `main.py`, aggiungere a `_SUBAPPS_WITH_MENU` se `no_args_is_help=True` |
 | Aggiungere una utility condivisa | Aggiungere in `_shared.py` e importare via `from . import _shared` — non istanziare mai `Console` o `ZenzicUI` localmente |
+
+### Identità Visiva — `zenzic.core.ui` {#core-ui}
+
+`ZenzicPalette`, `ZenzicUI`, `make_banner`, `emoji` e `SUPPORTS_COLOR` risiedono in
+`src/zenzic/core/ui.py`. Il layer core possiede l'identità visiva in modo che `ZenzicReporter`
+(anch'esso in `core/`) possa importarli senza guardare verso l'alto. Il layer CLI importa da
+`zenzic.core.ui` direttamente. Lo stub di compatibilità in `src/zenzic/ui.py` riesporta tutto
+per qualsiasi codice di terze parti che importava già dal vecchio percorso.
