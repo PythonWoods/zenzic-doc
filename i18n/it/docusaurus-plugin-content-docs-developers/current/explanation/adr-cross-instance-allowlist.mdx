@@ -7,6 +7,10 @@ description: "ADR 011: Perché Zenzic current release preferisce una absolute_pa
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
+:::danger[Superata — Feature Rimossa in v0.8.0]
+Questa ADR documenta una feature rimossa in **v0.8.0 (EPOCH 7a.1 purge)**. Lo schema TOML `[link_validation]` non esiste più nel config model. Le configurazioni che dichiarano ancora `[link_validation]` generano un errore di validazione TOML all'avvio. **Migrazione:** eliminare il blocco `[link_validation]` da `zenzic.toml`.
+:::
+
 # ADR 011: Allowlist dei Percorsi Assoluti Cross-Istanza
 
 **Stato:** Accettato (Maggio 2026)

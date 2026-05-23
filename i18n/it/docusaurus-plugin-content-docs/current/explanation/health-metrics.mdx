@@ -31,19 +31,20 @@ codici di finding `Zxxx` che emette.
 
 | Categoria | Comando | Codici Finding | Peso |
 |-----------|---------|----------------|---------|
-| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z103], [Z104], [Z105], [Z106], [Z107], [Z108] | **40 %** |
-| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **30 %** |
-| **Navigazione & SEO** | `zenzic check orphans [PATH]` | [Z402] | **20 %** |
-| **Brand & Asset** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **10 %** |
+| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z104], [Z105], [Z107], [Z108] | **30 %** |
+| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **20 %** |
+| **Navigazione** | `zenzic check orphans [PATH]` | [Z301], [Z302], [Z303], [Z402] | **25 %** |
+| **Brand & Asset** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **25 %** |
 
 [Z101]: ../reference/finding-codes.mdx#z101
 [Z102]: ../reference/finding-codes.mdx#z102
-[Z103]: ../reference/finding-codes.mdx#z103
 [Z104]: ../reference/finding-codes.mdx#z104
 [Z105]: ../reference/finding-codes.mdx#z105
-[Z106]: ../reference/finding-codes.mdx#z106
 [Z107]: ../reference/finding-codes.mdx#z107
 [Z108]: ../reference/finding-codes.mdx#z108
+[Z301]: ../reference/finding-codes.mdx#z301
+[Z302]: ../reference/finding-codes.mdx#z302
+[Z303]: ../reference/finding-codes.mdx#z303
 [Z402]: ../reference/finding-codes.mdx#z402
 [Z501]: ../reference/finding-codes.mdx#z501
 [Z502]: ../reference/finding-codes.mdx#z502
@@ -76,7 +77,7 @@ questo è il **Category Cap** (Tetto di Categoria).
 | Z104 | File Non Trovato | 8.0 | Structural |
 | Z102 | Ancora Mancante | 5.0 | Structural |
 | Z402 | Pagina Orfana | 4.0 | Navigation |
-| Z601 | Brand Obsoleto | 3.0 | Brand |
+| Z601 | Brand Obsoleto | 2.0 | Brand |
 | Z405 | Asset Non Utilizzato | 3.0 | Brand |
 | Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
 | Z406 | Errore Nav Contract | 2.0 | Brand |
@@ -93,14 +94,14 @@ Z106 è una diagnostica di integrità dei link, ma non sottrae punti. Z108 è la
 
 Le deduzioni di categoria sono limitate dal peso della categoria:
 
-- Tetto Structural: **40 pts** (40% × 100)
-- Tetto Content: **30 pts** (30% × 100)
-- Tetto Navigation: **20 pts** (20% × 100)
-- Tetto Brand: **10 pts** (10% × 100)
+- Tetto Structural: **30 pts** (30% × 100)
+- Tetto Content: **20 pts** (20% × 100)
+- Tetto Navigation: **25 pts** (25% × 100)
+- Tetto Brand: **25 pts** (25% × 100)
 
 **Esempio:** 100 × Z505 (1,0 pt ciascuno) genera 100 pts di deduzione potenziale
-contro la categoria Content — ma il tetto limita la perdita effettiva a 30 pts.
-Le altre tre categorie rimangono inalterate: **70/100 totale**.
+contro la categoria Content — ma il tetto limita la perdita effettiva a 20 pts.
+Le altre tre categorie rimangono inalterate: **80/100 totale**.
 
 ### Separazione Score vs. Gate
 

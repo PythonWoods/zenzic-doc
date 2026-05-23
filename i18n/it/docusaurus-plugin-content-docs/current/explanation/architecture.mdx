@@ -233,21 +233,29 @@ Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motor
 
 ### BaseAdapter {#base-adapter}
 
-`BaseAdapter` è un `@runtime_checkable` Protocol che ogni adapter deve soddisfare:
+`BaseAdapter` è un Abstract Base Class (`ABC`) che ogni adapter deve soddisfare:
 
 ```python
-@runtime_checkable
-class BaseAdapter(Protocol):
+from abc import ABC, abstractmethod
+
+class BaseAdapter(ABC):
+    @abstractmethod
     def has_engine_config(self) -> bool: ...
+    @abstractmethod
     def get_nav_paths(self) -> frozenset[str]: ...
-    def map_url(self, rel: Path) -> str: ...
-    def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus: ...
+    @abstractmethod
     def get_route_info(self, rel: Path) -> RouteMetadata: ...
+    @abstractmethod
     def is_locale_dir(self, part: str) -> bool: ...
+    @abstractmethod
     def resolve_asset(self, missing_abs: Path, docs_root: Path) -> Path | None: ...
+    @abstractmethod
     def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
+    @abstractmethod
     def get_ignored_patterns(self) -> set[str]: ...
+    @abstractmethod
     def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
+    @abstractmethod
     def provides_index(self, directory_path: Path) -> bool: ...
 ```
 
@@ -311,8 +319,7 @@ Le route versionate sono spesso trattate come **Ghost Routes** — sono marcate 
 Il flag `--offline` innesca un cambiamento architetturale globale nel modo in cui la VSM risolve gli URL. Quando attivo:
 
 1. **`offline_mode`** viene impostato a `True` nel `BuildContext`.
-2. **Gli adapter forzano `use_directory_urls = False`**, sovrascrivendo qualsiasi configurazione specifica del motore.
-3. **`map_url()`** produce percorsi `.html` piatti (es. `guida/install.md` → `/guida/install.html`) invece di slug in stile directory.
+2. **Gli adapter forzano `use_directory_urls = False`**, sovrascrivendo qualsiasi configurazione specifica del motore. Gli adapter passano alla **risoluzione URL piatta** (es. `guida/install.md` → `/guida/install.html`) invece di slug in stile directory.
 
 Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la documentazione distribuita su filesystem dove la risoluzione dell'indice di directory (es. `/pagina/` → `/pagina/index.html`) non è disponibile.
 
@@ -435,21 +442,7 @@ Questa sezione documenta le funzionalità di hardening della sicurezza introdott
 
 ### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
 
-La funzione `safe_read_line()` impone un limite rigido di **1 MiB** su ogni riga prima che raggiunga qualsiasi motore regex.
-
-**Modello di minaccia:** Un attaccante che può fare commit di un file contenente una riga artificialmente lunga (o una pipeline di build che ne genera una) potrebbe fornire un input patologico a un motore regex con backtracking. Su pattern di backtracking catastrofico, una singola riga da 1 MB potrebbe far girare il worker per minuti o ore, creando effettivamente una condizione di Denial-of-Service sulla pipeline di analisi.
-
-**Mitigazione:**
-
-```python
-# safe_read_line() — riga troncata prima di raggiungere qualsiasi pattern regex
-_MAX_LINE_BYTES = 1 * 1024 * 1024  # limite rigido a 1 MiB
-
-if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
-    raw_line = raw_line.encode("utf-8")[:_MAX_LINE_BYTES].decode("utf-8", errors="replace")
-```
-
-La riga troncata viene comunque scansionata — una credenziale che inizia nel primo 1 MiB di una riga verrà comunque rilevata. Solo il contenuto oltre il limite è invisibile al credential scanner.
+Il credential scanner applica un limite rigido di **1 MiB per riga** prima di qualsiasi motore regex per prevenire vulnerabilità ReDoS (hardening F2-1). Le righe che superano questo limite vengono silenziosamente troncate — una credenziale che inizia entro il primo 1 MiB sarà comunque rilevata; solo il contenuto oltre il limite è invisibile allo scanner.
 
 ### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
 

@@ -27,7 +27,7 @@ tattica**. Contiene ogni riga di logica di analisi che applica i Tre Pilastri.
 | **Virtual Site Map (VSM)** | Costruisce una proiezione in memoria del sito finale dai soli file sorgente. Nessuna build richiesta. |
 | **Credential Scanner** | Scansiona ogni riga del sorgente grezzo alla ricerca di pattern di credenziali prima di qualsiasi altro passaggio. |
 | **Adapter Protocol** | Traduce la configurazione specifica del motore (Docusaurus, MkDocs, Zensical, Standalone) in un modello di analisi unificato. |
-| **Layered Exclusion Manager** | Applica una gerarchia a quattro livelli (ignore VCS → regole di sistema → configurazione utente → flag CLI) per garantire un perimetro pulito. |
+| **Layered Exclusion Manager** | Unifica guardrail di sistema, inclusioni forzate, override CLI, ignore VCS e configurazione utente in un’unica gerarchia di passaggi deterministica per garantire un perimetro di scansione pulito. |
 
 Il Core applica la legge. Non la decide.
 

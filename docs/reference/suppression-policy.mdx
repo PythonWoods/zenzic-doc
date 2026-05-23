@@ -24,7 +24,7 @@ When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting t
 | **Clean State** | 0 | *(no label)* | ✅ Green | Full integrity — no suppressions in use. Documentation is at baseline. |
 | **Managed Debt** | 0 < n < CAP | `[MANAGED DEBT]` (cyan) | ⏳ OK | Suppressions are within budget. Technical debt is monitored and authorized. |
 | **Extended Debt** | n ≥ CAP | `[EXTENDED DEBT]` (yellow) | ⚠️ Warning | Suppression budget is at or exceeded the limit. Immediate review required. |
-| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (red) | 🚨 Error | Suppressions exceed the hard cap. CI gate will fail (exit code 2). Remediation is mandatory. |
+| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (red) | 🚨 Error | Suppressions exceed the hard cap. CI gate will fail (exit code 1). Remediation is mandatory. |
 
 ### Footer Examples
 
@@ -39,7 +39,7 @@ When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting t
 🔒 Suppression Audit: 34/34 (inline: 34, per-file: 0) [EXTENDED DEBT]
 
 # Critical debt — over the cap (39 out of 34; gate fails)
-🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 2
+🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 1
 ```
 
 ### Setting the Suppression Budget
@@ -51,7 +51,7 @@ The CAP is configured in `zenzic.toml`:
 suppression_cap = 34  # Maximum allowed suppressions before gate failure
 ```
 
-If `suppression_cap` is omitted, Zenzic uses a built-in default of **50**.
+If `suppression_cap` is omitted, Zenzic uses a built-in default of **30**.
 
 ---
 
@@ -239,7 +239,6 @@ Zenzic divides finding codes into two classes: **Suppressible** (author intent i
 | Z501 | PLACEHOLDER | ✅ Yes |
 | Z502 | SHORT_CONTENT | ✅ Yes |
 | Z503 | SNIPPET_ERROR | ✅ Yes |
-| Z504 | QUALITY_REGRESSION | ✅ Yes |
 | Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
 | Z901 | RULE_ENGINE_ERROR | ✅ Yes |
 | Z902 | RULE_TIMEOUT | ✅ Yes |
@@ -393,7 +392,6 @@ Zenzic divides finding codes into two classes: **Suppressible** (the author's in
 | Z501 | PLACEHOLDER | ✅ Yes |
 | Z502 | SHORT_CONTENT | ✅ Yes |
 | Z503 | SNIPPET_ERROR | ✅ Yes |
-| Z504 | QUALITY_REGRESSION | ✅ Yes |
 | Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
 | Z901 | RULE_ENGINE_ERROR | ✅ Yes |
 | Z902 | RULE_TIMEOUT | ✅ Yes |

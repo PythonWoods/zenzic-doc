@@ -61,10 +61,10 @@ zenzic diff --format json
   "status": "success",
   "timestamp": "2026-03-24T12:00:00+00:00",
   "categories": [
-    {"name": "structural", "weight": 0.40, "issues": 0, "category_score": 40.0, "contribution": 40.0},
-    {"name": "content",    "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
-    {"name": "navigation", "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
-    {"name": "brand",      "weight": 0.10, "issues": 0, "category_score": 10.0, "contribution": 10.0}
+    {"name": "structural", "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
+    {"name": "content",    "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
+    {"name": "navigation", "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0},
+    {"name": "brand",      "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0}
   ]
 }
 ```
@@ -255,7 +255,7 @@ o notifiche Slack senza dover rileggere il file SARIF:
 ```
 
 :::warning[Gli incidenti di sicurezza sono sempre fatali]
-`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità) e exit 4 (regressione di qualità via `zenzic diff`). Exit 2 (Credential scanner — credenziale
+`fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Credential scanner — credenziale
 rilevata) e exit 3 (path traversal guard — path traversal) **non sono mai sopprimibili** con alcun input.
 L'action lo applica incondizionatamente. Vedi il
 [Contratto Exit Code](../reference/cli#exit-codes).
@@ -268,13 +268,13 @@ L'action lo applica incondizionatamente. Vedi il
 
 ## Zenzic Quality Gate — Il Protocollo Diff {#diff-protocol}
 
-Il Zenzic Quality Gate usa `zenzic diff` per confrontare il punteggio corrente con un baseline salvato. Se il punteggio è sceso, viene emesso l'exit code 4 e la PR viene bloccata. Questa è la configurazione raccomandata per i team che vogliono applicare la qualità della documentazione come gate di merge rigido.
+Il Zenzic Quality Gate usa `zenzic diff` per confrontare il punteggio corrente con un baseline salvato. Se il punteggio è sceso, il check della PR fallisce. Questa è la configurazione raccomandata per i team che vogliono applicare la qualità della documentazione come gate di merge rigido.
 
 ### Come funziona
 
 1. **Su `main`**: Zenzic esegue, salva il punteggio come `.zenzic-score.json` e lo carica come artefatto CI.
 2. **Su ogni PR**: L'artefatto di `main` viene scaricato come baseline. Zenzic esegue sul branch PR e chiama `zenzic diff --base <baseline>` per confrontare.
-3. **Verdetto**: Se il punteggio è sceso o il suppression debt ha superato il cap, viene emesso exit 4 — il check della PR fallisce.
+3. **Verdetto**: Se il punteggio è sceso o il suppression debt ha superato il cap, il check della PR fallisce.
 
 ```yaml title=".github/workflows/zenzic-quality-gate.yml"
 name: Zenzic Quality Gate
@@ -342,8 +342,8 @@ jobs:
           echo "Finding: ${{ steps.zenzic.outputs.findings-count }}"
 ```
 
-:::info[Exit 4 — Regressione di Qualità]
-Quando exit 4 scatta, l'annotazione PR recita: *"Il punteggio di qualità della documentazione è sceso rispetto al baseline. Il Zenzic Quality Gate ha bloccato questa PR."* Aggiungi `fail-on-error: "false"` per rendere exit 4 osservazionale (warning) invece che bloccante.
+:::info[Regressione di Qualità via `zenzic diff`]
+Quando viene rilevata una regressione del punteggio, l'annotazione PR recita: *"Il punteggio di qualità della documentazione è sceso rispetto al baseline. Il Zenzic Quality Gate ha bloccato questa PR."* Aggiungi `fail-on-error: "false"` per rendere il rilevamento di regressione osservazionale (warning) invece che bloccante.
 :::
 
 ---
@@ -445,13 +445,13 @@ steps:
 
 ## Rilevamento Regressioni {#regression}
 
-`zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato e esce con il codice 4 se il punteggio è sceso:
+`zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato e fallisce se il punteggio è sceso:
 
 ```yaml title=".github/workflows/zenzic.yml"
 - name: Rileva regressione del punteggio
   run: |
     uvx zenzic score --save        # aggiorna snapshot
-    uvx zenzic diff --threshold 5  # exit 4 se il punteggio scende > 5 punti
+    uvx zenzic diff --threshold 5  # fallisce se il punteggio scende > 5 punti
 ```
 
 Per il setup completo del Zenzic Quality Gate con blocco PR e upload dell'artefatto baseline, vedi la sezione [Protocollo Diff](#diff-protocol) sopra.
@@ -466,7 +466,6 @@ Per il setup completo del Zenzic Quality Gate con blocco PR e upload dell'artefa
 | `1` | Uno o più controlli falliti | Imposta il badge a `failing` / `ef4444` |
 | **`2`** | **Credential scanner: credenziale rilevata** | **Ruota la credenziale immediatamente** |
 | **`3`** | **Path traversal guard: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
-| **`4`** | **Regressione di qualità: punteggio sceso rispetto al baseline** | **Esamina l'output di `zenzic diff`; blocca il merge** |
 
 > Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](./add-badges.mdx).
 

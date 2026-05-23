@@ -7,6 +7,10 @@ description: "ADR 011: Why Zenzic uses a declarative absolute_path_allowlist ove
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
+:::danger[Superseded — Feature Removed in v0.8.0]
+This ADR documents a feature that was removed in **v0.8.0 (EPOCH 7a.1 purge)**. The `[link_validation]` TOML schema no longer exists in the config model. Configurations that still declare `[link_validation]` raise a TOML validation error at startup. **Migration:** delete the `[link_validation]` block from `zenzic.toml` entirely.
+:::
+
 # ADR 011: Cross-Instance Absolute Path Allowlist
 
 **Status:** Accepted (May 2026)

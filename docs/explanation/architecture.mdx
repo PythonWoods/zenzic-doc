@@ -210,21 +210,7 @@ This section documents the security hardening features. These properties are ver
 
 ### F2-1 — Anti-ReDoS Line Truncation {#f2-1-antiredos}
 
-The `safe_read_line()` function imposes a hard **1 MiB limit** on every line before it reaches any regex engine.
-
-**Threat model:** An attacker who can commit a file containing an artificially long line (or a build pipeline that generates one) could supply a pathological input to a backtracking regex engine. On catastrophic backtracking patterns, a single 1 MB line could cause the worker to spin for minutes or hours, effectively creating a Denial-of-Service condition against the analysis pipeline.
-
-**Mitigation:**
-
-```python
-# safe_read_line() — line truncated before reaching any regex pattern
-_MAX_LINE_BYTES = 1 * 1024 * 1024  # 1 MiB hard cap
-
-if len(raw_line.encode("utf-8")) > _MAX_LINE_BYTES:
-    raw_line = raw_line.encode("utf-8")[:_MAX_LINE_BYTES].decode("utf-8", errors="replace")
-```
-
-The truncated line is still scanned — a credential that begins in the first 1 MiB of a line will still be detected. Only content beyond the cap is invisible to the credential scanner.
+The credential scanner applies a hard **1 MiB per-line limit** before any regex engine to prevent ReDoS vulnerabilities (F2-1 hardening). Lines exceeding this limit are silently truncated — a credential that begins within the first 1 MiB will still be detected; only content beyond the cap is invisible to the scanner.
 
 ### F4-1 — Anti-Jailbreak Path Validation {#f4-1-antijailbreak}
 
@@ -260,25 +246,33 @@ def _validate_docs_root(repo_root: Path, docs_root: Path) -> None:
 
 ## Adapter Protocol {#adapter-protocol}
 
-Zenzic is engine-agnostic. It works with MkDocs, Zensical, Docusaurus, or no documentation engine at all. This is achieved through the **Adapter Protocol** -- a `@runtime_checkable` Protocol that defines the contract between the core pipeline and engine-specific path resolution.
+Zenzic is engine-agnostic. It works with MkDocs, Zensical, Docusaurus, or no documentation engine at all. This is achieved through the **Adapter Protocol** — an Abstract Base Class (`ABC`) that defines the contract between the core pipeline and engine-specific path resolution.
 
-### `BaseAdapter` Protocol {#base-adapter}
+### `BaseAdapter` {#base-adapter}
 
-Every adapter must satisfy the `BaseAdapter` protocol:
+Every adapter must extend `BaseAdapter`:
 
 ```python
-@runtime_checkable
-class BaseAdapter(Protocol):
+from abc import ABC, abstractmethod
+
+class BaseAdapter(ABC):
+    @abstractmethod
     def has_engine_config(self) -> bool: ...
+    @abstractmethod
     def get_nav_paths(self) -> frozenset[str]: ...
-    def map_url(self, rel: Path) -> str: ...
-    def classify_route(self, rel: Path, nav_paths: frozenset[str]) -> RouteStatus: ...
+    @abstractmethod
     def get_route_info(self, rel: Path) -> RouteMetadata: ...
+    @abstractmethod
     def is_locale_dir(self, part: str) -> bool: ...
+    @abstractmethod
     def resolve_asset(self, missing_abs: Path, docs_root: Path) -> Path | None: ...
+    @abstractmethod
     def resolve_anchor(self, resolved_file, anchor, anchors_cache, docs_root) -> bool: ...
+    @abstractmethod
     def get_ignored_patterns(self) -> set[str]: ...
+    @abstractmethod
     def is_shadow_of_nav_page(self, rel: Path, nav_paths: frozenset[str]) -> bool: ...
+    @abstractmethod
     def provides_index(self, directory_path: Path) -> bool: ...
 ```
 
@@ -335,8 +329,7 @@ Versioned routes are often treated as **Ghost Routes** — they are marked `REAC
 The `--offline` flag triggers a global architectural shift in how the VSM resolves URLs. When active:
 
 1. **`offline_mode`** is set to `True` in the `BuildContext`.
-2. **Adapters force `use_directory_urls = False`**, overriding any engine-specific configuration.
-3. **`map_url()`** produces flat `.html` paths (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
+2. **Adapters force `use_directory_urls = False`**, overriding any engine-specific configuration. Adapters switch to **flat URL resolution** (e.g., `guide/install.md` → `/guide/install.html`) instead of directory-style slugs.
 
 This ensures that Zenzic remains a **Structural Custodian** for documentation distributed on filesystems where directory-index resolution (e.g., `/page/` → `/page/index.html`) is unavailable.
 

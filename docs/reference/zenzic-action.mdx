@@ -24,7 +24,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `sarif-file` | `zenzic-results.sarif` | No | SARIF output path. Must be a **relative** path inside the workspace. Absolute paths and `..` traversal sequences are rejected by the wrapper. |
 | `upload-sarif` | `true` | No | Upload SARIF to GitHub Code Scanning. Requires `security-events: write` permission. |
 | `strict` | `false` | No | Treat warnings as errors — promotes all `warning`-severity findings to `error`. |
-| `fail-on-error` | `true` | No | Fail the workflow step on exit 1 (quality findings) or exit 4 (regression). Does **not** suppress exit 2 or 3. |
+| `fail-on-error` | `true` | No | Fail the workflow step on exit 1 (quality findings). Does **not** suppress exit 2 or 3. |
 | `config-file` | *(auto)* | No | Explicit path to a `zenzic.toml` config file. Auto-discovers `zenzic.toml` → `.github/zenzic.toml` when omitted. |
 | `audit` | `false` | No | Sovereign audit mode — bypasses all `zenzic:ignore` inline comments and `governance.per_file_ignores` entries. Reveals the true, unfiltered documentation state. |
 | `diff-base` | *(snapshot)* | No | Path to a JSON baseline file for `zenzic diff` comparison. When set, the action compares the current score against this file instead of the saved `.zenzic-score.json`. Use an artifact from `main` to implement the Zenzic Quality Gate. |
@@ -50,7 +50,6 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `1` | Quality | One or more findings; score may be below `fail_under` | Yes (`fail-on-error: "false"`) |
 | **`2`** | **Credential** | **Z201 CREDENTIAL_SECRET detected — scan aborted** | **Never** |
 | **`3`** | **Path Traversal** | **Z202/Z203 PATH_TRAVERSAL detected — scan aborted** | **Never** |
-| `4` | Regression | `zenzic diff` detected a score drop vs the baseline | Yes (`fail-on-error: "false"`) |
 
 Exit codes 2 and 3 are **never suppressed** by `fail-on-error: "false"`, `--exit-zero`, or any other flag. The wrapper enforces this unconditionally — security findings are facts, not findings to be negotiated.
 
@@ -69,10 +68,9 @@ PR opened
   └─ zenzic check all → exit 0/1 (findings)
   └─ zenzic diff --base <main-baseline>
        ├─ score stable or improved → exit 0 ✅ PR can merge
-       └─ score dropped            → exit 4 ❌ PR blocked
 ```
 
-The suppression debt is included in the score used for comparison. A PR that adds suppressions to hide findings will show a lower score and trigger exit 4.
+The suppression debt is included in the score used for comparison. A PR that adds suppressions to hide findings will show a lower score.
 
 ---
 

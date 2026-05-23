@@ -27,7 +27,7 @@ layer**. It contains every line of analysis logic that enforces the Three Pillar
 | **Virtual Site Map (VSM)** | Builds an in-memory projection of the final site from source files alone. No build required. |
 | **Credential Scanner** | Scans every line of raw source for credential patterns before any other pass. |
 | **Adapter Protocol** | Translates engine-specific configuration (Docusaurus, MkDocs, Zensical, Standalone) into a unified analysis model. |
-| **Layered Exclusion Manager** | Enforces a four-level hierarchy (VCS ignores → system rules → user config → CLI flags) to guarantee a clean scan scope. |
+| **Layered Exclusion Manager** | Unifies system guardrails, forced inclusions, CLI overrides, VCS ignores, and user configuration into a single, deterministic pass hierarchy to guarantee a clean scan scope. |
 
 The Core enforces the law. It does not decide the law.
 

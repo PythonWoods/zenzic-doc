@@ -27,41 +27,20 @@ them — without weakening Z105 elsewhere.
 
 | Situation | Use this | Don't use |
 |---|---|---|
-| Many cross-plugin links share a prefix (`/developers/`, `/api/`) | `[link_validation] absolute_path_allowlist` in `zenzic.toml` | inline ignores |
-| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore Zxxx -->` (or `{/* zenzic:ignore Zxxx */}` for MDX) | allowlist |
-| Two or more files would need the same inline ignore | Promote to allowlist / config | inline ignore in each file |
+| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore Zxxx -->` (or `{/* zenzic:ignore Zxxx */}` for MDX) | — |
+| Multiple cross-plugin links in different files | Inline ignores — one per link | — |
 
-The decision rule: **if it is a property of your project, it belongs in
-config; if it is a property of one line, it belongs inline.**
+The decision rule: **if it is a property of one line, it belongs inline.**
 
 ---
 
-## Allowlist a cross-instance prefix
+## Cross-Instance Prefix Handling
 
-Add the prefixes you trust to `zenzic.toml`:
+:::danger[`[link_validation]` removed in v0.8.0]
+The `[link_validation]` TOML schema — including `absolute_path_allowlist` — was **removed in v0.8.0** (EPOCH 7a.1 purge). A `zenzic.toml` that still declares `[link_validation]` raises a TOML validation error at startup.
 
-```toml
-# zenzic.toml
-[link_validation]
-absolute_path_allowlist = [
-    "/developers/",
-    "/api/",
-]
-```
-
-Now any link starting with `/developers/` or `/api/` is accepted by Z105.
-Everything else still fails — a typo like `/developres/foo` will be
-caught.
-
-**Rules to remember:**
-
-1. Entries **must** start with `/`. The check uses simple `startswith`
-   matching — no regex, no globs.
-2. The match is on the URL path only — `?query` and `#anchor` are
-   stripped before comparison.
-3. The validator does not check that the target actually exists in the
-   sibling instance. The allowlist is a **trust contract**, not a
-   resolver.
+For cross-instance links that Z105 flags, use inline ignores at each affected line. See [ADR 011](/developers/explanation/adr-cross-instance-allowlist) for the removal rationale.
+:::
 
 ---
 
@@ -88,27 +67,23 @@ diffs, traceable in `git blame`.
 
 ---
 
-## Anti-pattern: inline-ignoring cross-plugin links
+## Anti-pattern: over-using inline ignores
 
-Do **not** sprinkle `<!-- zenzic:ignore: Z1XX -->` over every cross-plugin
-link. This:
+Do **not** add `<!-- zenzic:ignore: Z1XX -->` as a blanket suppression. This:
 
-- Hides the cross-instance dependency from anyone reading `zenzic.toml`.
-- Forces every contributor to rediscover the same rule.
 - Implies the link is "broken and accepted" when in reality it is
   correct by design.
+- Hides the cross-instance dependency from PR reviewers.
 
-If two or more files need the same Z105 ignore for the same prefix, that
-prefix is a **systemic truth** of your project — promote it to
-`absolute_path_allowlist`.
+Annotate inline ignores with a comment explaining why the link is legitimately absolute,
+so the suppression is traceable in `git blame`.
 
 ---
 
 ## Reverting
 
-Remove an entry from `absolute_path_allowlist` and Z105 enforcement
-returns immediately on that prefix. The protection is cheap to enable
-and cheap to remove — there is no migration cost either way.
+Remove an inline ignore and Z105 enforcement returns immediately on that line. There is no
+migration cost.
 
 ---
 
@@ -176,7 +151,6 @@ without burdening the simpler ones.
 
 ## Related
 
-- [Configuration Reference — `[link_validation]`](../reference/configuration.mdx#link-validation)
 - [Suppression Policy](../reference/suppression-policy.mdx) — full inline-
   ignore syntax and scope rules.
 - For the full design rationale, see

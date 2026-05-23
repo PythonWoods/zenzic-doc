@@ -1,7 +1,7 @@
 ---
 icon: lucide/plug
 sidebar_label: "Writing an Adapter"
-description: "Implement the BaseAdapter protocol to teach Zenzic about a new documentation engine."
+description: "Implement the BaseAdapter abstract base class to teach Zenzic about a new documentation engine."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -17,9 +17,9 @@ i18n conventions — without modifying Zenzic itself.
 
 ## What Is an Adapter
 
-An **adapter** is a Python class that satisfies the `BaseAdapter` protocol
+An **adapter** is a Python class that extends the `BaseAdapter` abstract base class
 (`src/zenzic/core/adapters/_base.py`).  Zenzic's
-scanner, orphan detector, and link validator talk exclusively to this protocol —
+scanner, orphan detector, and link validator talk exclusively to this interface —
 they never import or call engine-specific code directly.
 
 An adapter answers questions for each docs tree through a single API surface:
@@ -56,9 +56,10 @@ from pathlib import Path
 from typing import Any
 
 from zenzic.core.adapters import RouteMetadata
+from zenzic.core.adapters._base import BaseAdapter
 from zenzic.models.vsm import RouteStatus
 
-class MyEngineAdapter:
+class MyEngineAdapter(BaseAdapter):
     """Adapter for MyEngine documentation projects."""
 
     def __init__(

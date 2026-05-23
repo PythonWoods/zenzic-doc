@@ -210,13 +210,16 @@ facoltativamente validare gli URL esterni:
 ```python
 from pathlib import Path
 from zenzic.core.scanner import scan_docs_references
+from zenzic.core.exclusion import LayeredExclusionManager
 from zenzic.models.config import ZenzicConfig
 
 config, _ = ZenzicConfig.load(Path("."))
+exclusion_mgr = LayeredExclusionManager(config)
 
 reports, link_errors = scan_docs_references(
     Path("."),
-    config,
+    exclusion_mgr,
+    config=config,
     validate_links=True,   # imposta False per saltare la validazione HTTP
 )
 
@@ -253,18 +256,23 @@ conservativo dove il parallelismo ripaga il proprio costo di avvio.
 ```python
 from pathlib import Path
 from zenzic.core.scanner import scan_docs_references
+from zenzic.core.exclusion import LayeredExclusionManager
+from zenzic.models.config import ZenzicConfig
+
+config, _ = ZenzicConfig.load(Path("."))
+exclusion_mgr = LayeredExclusionManager(config)
 
 # Default: sequenziale (workers=1, zero overhead)
-reports, _ = scan_docs_references(Path("."))
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config)
 
 # Parallelo esplicito: 4 worker, si attiva solo se ≥ 50 file
-reports, _ = scan_docs_references(Path("."), workers=4)
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config, workers=4)
 
 # Completamente automatico: ProcessPoolExecutor sceglie il numero di worker da os.cpu_count()
-reports, _ = scan_docs_references(Path("."), workers=None)
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config, workers=None)
 
 # Con validazione link esterni (funziona in entrambe le modalità)
-reports, link_errors = scan_docs_references(Path("."), validate_links=True, workers=None)
+reports, link_errors = scan_docs_references(Path("."), exclusion_mgr, config=config, validate_links=True, workers=None)
 ```
 
 **Garanzia di determinismo:** i risultati sono sempre ordinati per `file_path`

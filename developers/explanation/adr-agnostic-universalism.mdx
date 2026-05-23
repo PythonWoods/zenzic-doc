@@ -32,8 +32,9 @@ diagnostic — a silent gap in the safety boundary.
 ## Decision
 
 Z404 was extended from a Docusaurus-only check to a **universal check** covering
-all supported engines. Each adapter declares which config assets it owns, and the
-core engine invokes `check_config_assets()` uniformly across all adapters.
+all supported engines. Each adapter’s config-asset check is implemented as a
+module-level function. The CLI pipeline dispatches it per engine type after the
+main scan pass.
 
 | Engine | Assets checked |
 |--------|---------------|
@@ -55,10 +56,8 @@ optional. That signal compounds over releases.
 
 ### 2. The Adapter Protocol Already Provides the Hook
 
-`BaseAdapter` already defined `check_config_assets()` as an optional method. The
-universalism decision was not an architectural change — it was the **activation of
-an already-present architectural contract**. Every adapter already had the
-infrastructure; only the MkDocs and Zensical implementations were missing.
+The universalism decision extended an existing pattern — module-level per-adapter
+validation — to all supported engines, not just Docusaurus.
 
 ### 3. Preventing the "Trusted Config" Assumption
 
@@ -71,15 +70,11 @@ happens to live in a YAML file rather than a Markdown document.
 
 ## Implementation
 
-Each adapter's `check_config_assets()` method:
-
-1. Reads the engine config file (one-time I/O, not in a hot loop).
-2. Resolves each declared asset path against `docs_root`.
-3. Emits a `Finding` with code `Z404` for each path that does not exist on disk.
-
-The core `check_all()` pipeline calls `adapter.check_config_assets()` after the
-per-file scan phase, ensuring Z404 findings appear in the same SARIF report and
-exit-code accounting as all other findings.
+Each engine’s config-asset check reads the engine config file, resolves declared
+asset paths against `docs_root`, and emits a `Finding` with code `Z404` for each
+path that does not exist on disk. The CLI dispatches these checks after the main
+scan pass, ensuring Z404 findings appear in the same SARIF report and exit-code
+accounting as all other findings.
 
 ---
 

@@ -24,7 +24,7 @@ Quando esegui `zenzic check` o `zenzic audit`, Zenzic emette un footer che ripor
 | **Clean State** | 0 | *(nessuna etichetta)* | ✅ Verde | Integrità totale — nessuna soppressione in uso. La documentazione è a baseline. |
 | **Managed Debt** | 0 < n < CAP | `[MANAGED DEBT]` (cyan) | ⏳ OK | Le soppressioni sono entro budget. Il debito tecnico è monitorato e autorizzato. |
 | **Extended Debt** | n ≥ CAP | `[EXTENDED DEBT]` (giallo) | ⚠️ Avviso | Il budget di soppressione è al limite o ha raggiunto il limite. Revisione immediata richiesta. |
-| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (rosso) | 🚨 Errore | Le soppressioni superano il cap duro. Il gate di CI fallirà (exit code 2). La bonifica è obbligatoria. |
+| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (rosso) | 🚨 Errore | Le soppressioni superano il cap duro. Il gate di CI fallirà (exit code 1). La bonifica è obbligatoria. |
 
 ### Esempi di Footer
 
@@ -39,7 +39,7 @@ Quando esegui `zenzic check` o `zenzic audit`, Zenzic emette un footer che ripor
 🔒 Suppression Audit: 34/34 (inline: 34, per-file: 0) [EXTENDED DEBT]
 
 # Critical debt — oltre il limite (39 su 34; gate fallisce)
-🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 2
+🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 1
 ```
 
 ### Impostare il Budget di Soppressione
@@ -51,7 +51,7 @@ Il CAP è configurato in `zenzic.toml`:
 suppression_cap = 34  # Massimo numero di soppressioni consentite prima del fallimento del gate
 ```
 
-Se `suppression_cap` è omesso, Zenzic usa un default built-in di **50**.
+Se `suppression_cap` è omesso, Zenzic usa un default built-in di **30**.
 
 ---
 
@@ -237,7 +237,6 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | Z501 | PLACEHOLDER | ✅ Sì |
 | Z502 | SHORT_CONTENT | ✅ Sì |
 | Z503 | SNIPPET_ERROR | ✅ Sì |
-| Z504 | QUALITY_REGRESSION | ✅ Sì |
 | Z505 | UNTAGGED_CODE_BLOCK | ✅ Sì |
 | Z901 | RULE_ENGINE_ERROR | ✅ Sì |
 | Z902 | RULE_TIMEOUT | ✅ Sì |
