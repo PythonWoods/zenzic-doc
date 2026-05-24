@@ -27,81 +27,21 @@ export default function TerminalWindow({
   children,
 }: TerminalWindowProps): React.JSX.Element {
   return (
-    <div
-      style={{
-        borderRadius: '10px',
-        overflow: 'hidden',
-        margin: '1.5rem 0',        maxWidth: '600px',        boxShadow:
-          '0 2px 8px rgba(0,0,0,0.6), 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.45), 0 0 24px rgba(79,70,229,0.12)',
-        border: '1px solid rgba(99,102,241,0.45)',
-        fontFamily: 'monospace',
-      }}
-    >
+    <div className="zz-terminal-frame rounded-xl overflow-hidden my-6 font-mono">
       {/* Title bar */}
-      <div
-        style={{
-          background: 'linear-gradient(180deg,#2d2d2d 0%,#252525 100%)',
-          padding: '8px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
-        }}
-      >
-        {/* Traffic-light dots */}
-        <span
-          style={{
-            width: 11,
-            height: 11,
-            borderRadius: '50%',
-            background: '#ff5f57',
-            display: 'inline-block',
-            flexShrink: 0,
-          }}
-        />
-        <span
-          style={{
-            width: 11,
-            height: 11,
-            borderRadius: '50%',
-            background: '#ffbd2e',
-            display: 'inline-block',
-            flexShrink: 0,
-          }}
-        />
-        <span
-          style={{
-            width: 11,
-            height: 11,
-            borderRadius: '50%',
-            background: '#28c840',
-            display: 'inline-block',
-            flexShrink: 0,
-          }}
-        />
-        {/* Title */}
-        <span
-          style={{
-            flex: 1,
-            textAlign: 'center',
-            fontSize: '11px',
-            color: 'rgba(255,255,255,0.45)',
-            letterSpacing: '0.04em',
-            marginLeft: '-33px', // compensate for dots to achieve true center
-          }}
-        >
+      <div className="zz-terminal-titlebar relative flex items-center gap-2 px-3.5 py-2">
+        {/* Traffic-light dots — Zenzic semantic palette */}
+        <span className="inline-block flex-shrink-0 w-2.5 h-2.5 rounded-full bg-rose-500" />
+        <span className="inline-block flex-shrink-0 w-2.5 h-2.5 rounded-full bg-amber-400" />
+        <span className="inline-block flex-shrink-0 w-2.5 h-2.5 rounded-full bg-emerald-500" />
+        {/* Title — centered over full bar width via absolute positioning */}
+        <span className="absolute inset-x-0 text-center text-[11px] text-white/45 tracking-[0.04em] pointer-events-none">
           {title}
         </span>
       </div>
 
-      {/* Content area — background matches SVG #09090b so no visible seam */}
-      <div
-        style={{
-          background: '#09090b',
-          lineHeight: 0,
-          display: 'block',
-        }}
-      >
+      {/* Content area — bg-zinc-950 = var(--zenzic-slate-900) = #09090b */}
+      <div className="bg-zinc-950 leading-none block">
         {children}
       </div>
     </div>

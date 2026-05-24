@@ -586,6 +586,22 @@ table thead tr {
   box-shadow: var(--zenzic-shadow-terminal-hover);
 }
 
+/* TerminalWindow — macOS-style frame (zero inline styles, zero arbitrary Tailwind values) */
+.zz-terminal-frame {
+  max-width: 600px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px var(--zenzic-bg-brand-12),
+    0 0 24px var(--zenzic-bg-brand-06);
+  border: 1px solid var(--zenzic-bg-brand-12);
+}
+
+.zz-terminal-titlebar {
+  background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 /* ── Zenzic Blog — Semantic Tag Colours ── */
 /* Release → Indigo (brand primary) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
