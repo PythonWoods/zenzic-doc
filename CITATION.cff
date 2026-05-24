@@ -15,7 +15,7 @@ abstract: >-
   architecture: tutorials, how-to guides, reference, and explanation — available in
   English and Italian. Inaugurates the Obsidian Journal engineering blog and the
   formal Zenzic Brand System.
-version: 0.7.0
+version: 0.7.1
 date-released: 2026-05-07
 url: "https://zenzic.dev"
 repository-code: "https://github.com/PythonWoods/zenzic-doc"

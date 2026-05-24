@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 """
-generate_docs_assets.py — Zenzic v0.7.1
+generate_docs_assets.py — Zenzic
 
 Generates SVG terminal assets for the documentation using Rich's native
 SVG export with the agnostic brand color system.

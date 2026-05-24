@@ -143,11 +143,41 @@ search = "v{current_version}"
 replace = "v{new_version}"
 
 [[tool.bumpversion.files]]
-filename = "docs/reference/cli.mdx"
+filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/cli.mdx"
 search = '"version": "{current_version}"'
 replace = '"version": "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/cli.mdx"
-search = '"version": "{current_version}"'
-replace = '"version": "{new_version}"'
+filename = "CITATION.cff"
+search = "version: {current_version}"
+replace = "version: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current/explanation/the-zenzic-trinity.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs-developers/current/governance/exit_strategy.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/reference/zenzic-action.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/reference/zenzic-action.mdx"
+search = '| `version` | `{current_version}` |'
+replace = '| `version` | `{new_version}` |'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/zenzic-action.mdx"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/zenzic-action.mdx"
+search = '| `version` | `{current_version}` |'
+replace = '| `version` | `{new_version}` |'
