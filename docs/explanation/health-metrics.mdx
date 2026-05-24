@@ -175,7 +175,7 @@ The Quality Score is the operational proof of Zenzic's [Three Pillars](architect
 
 **1. Lint the Source, Not the Build.**
 The score is computed from raw Markdown source analysis — never from HTML output
-or a running web server. The 40% structural weight rewards a source that is internally
+or a running web server. The 30% structural weight rewards a source that is internally
 coherent before any build step runs.
 
 **2. No Subprocesses.**
@@ -199,7 +199,7 @@ The CEO's audit noted a terminological correction: what users sometimes call
 
 Z406 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
 `nav:` entry or a Docusaurus `sidebars.ts` explicit entry) does not exist on disk.
-Each Z406 violation contributes to the **Brand & Assets** category (10%) using the
+Each Z406 violation contributes to the **Brand & Assets** category (25%) using the
 same per-code penalty as other scored findings (Z406: 2.0 pts per violation).
 
 ---

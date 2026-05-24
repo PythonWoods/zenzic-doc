@@ -212,6 +212,8 @@ Zenzic non può valutare la qualità di ciò che non può vedere. Ogni soppressi
 
 ---
 
+## Codici Sopprimibili vs Inviolabili {#codes}
+
 Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione dell'autore è sovrana) e **Inviolabili** (i fatti di sicurezza non possono essere dichiarati falsi positivi).
 
 | Codice | Nome | Sopprimibile? |
@@ -309,3 +311,141 @@ Usa la soppressione per l'**intento documentato**, non per l'evasione:
 - [Algoritmo di Scoring](./scoring-algorithm.mdx) — Come il suppression debt interagisce con il quality score completo.
 - [Riferimento Codici di Finding](./finding-codes.mdx) — Catalogo completo di tutti i codici Zxxx con passaggi di rimedio.
 - [Riferimento Configurazione](./configuration-reference.mdx) — Riferimento completo della sezione `governance`.
+
+
+---
+
+## Sintassi di Soppressione Per-Riga {#syntax}
+
+La soppressione è **consapevole del formato** e opera a livello di riga. Aggiungi un commento alla fine della riga problematica:
+
+**File Markdown (`.md`):**
+
+```markdown
+Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
+```
+
+**File MDX (`.mdx`):**
+
+```mdx
+Quartz was previously known as Obsidian. {/* zenzic:ignore: Z601 */}
+```
+
+Entrambe le forme di commento sono invisibili nel rendering — i processori Markdown trattano i commenti HTML come non renderizzati, e Docusaurus/React tratta `{/* */}` come whitespace JSX. La distinzione è importante: usare il tipo di commento sbagliato nel formato di file sbagliato causerà l'ignoranza silenziosa della soppressione.
+
+Per sopprimere **più codici sulla stessa riga**, aggiungi un commento per codice:
+
+```mdx
+Some line. {/* zenzic:ignore: Z107 */} {/* zenzic:ignore: Z601 */}
+```
+
+### Posizione Raccomandata: Trailing (In Coda)
+
+Il commento dovrebbe sempre apparire alla **fine della riga** (o alla fine della cella nelle tabelle Markdown), dopo tutto il contenuto. Questa è la convenzione di settore stabilita da `# noqa` (Python), `// eslint-disable-line` (JavaScript) e `// lint:ignore` (Go).
+
+**Testo / liste:** Commento in fondo assoluto alla riga.
+
+```mdx
+- **Riferimento storico** — Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
+```
+
+**Tabelle Markdown:** Commento alla fine dell'**ultima cella**, prima del pipe di chiusura.
+
+```md
+| [Section](#example-section) | Description of this section. |
+```
+
+:::tip[Perché trailing?]
+Posizionare `zenzic:ignore` alla fine della riga:
+
+1. **Separa contenuto dall'istruzione** — il messaggio umano non viene interrotto.
+2. **Abilita la scansione visiva** — scansiona il margine destro di un file per vedere tutte le soppressioni attive.
+3. **Evita la disruzione della prosa** — i commenti incorporati a metà frase interrompono il flusso di lettura.
+
+:::
+
+---
+
+## Codici Sopprimibili vs Inviolabili {#codes}
+
+Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione dell'autore è sovrana) e **Inviolabili** (i fatti di sicurezza non possono essere dichiarati falsi positivi).
+
+| Codice | Nome | Sopprimibile? |
+| :--- | :--- | :---: |
+| Z101 | LINK_BROKEN | ✅ Sì |
+| Z102 | ANCHOR_MISSING | ✅ Sì |
+| Z103 | ORPHAN_LINK | ✅ Sì |
+| Z104 | FILE_NOT_FOUND | ✅ Sì |
+| Z105 | ABSOLUTE_PATH | ✅ Sì |
+| Z106 | CIRCULAR_LINK | ✅ Sì |
+| Z107 | CIRCULAR_ANCHOR | ✅ Sì |
+| **Z201** | **CREDENTIAL_SECRET** | 🔒 **Mai** |
+| **Z202** | **PATH_TRAVERSAL** | 🔒 **Mai** |
+| **Z203** | **PATH_TRAVERSAL_FATAL** | 🔒 **Mai** |
+| Z301 | DANGLING_REF | ✅ Sì |
+| Z302 | DEAD_DEF | ✅ Sì |
+| Z303 | DUPLICATE_DEF | ✅ Sì |
+| Z401 | MISSING_DIRECTORY_INDEX | ✅ Sì |
+| Z402 | ORPHAN_PAGE | ✅ Sì |
+| Z403 | MISSING_ALT | ✅ Sì |
+| Z404 | CONFIG_ASSET_MISSING | ✅ Sì |
+| Z501 | PLACEHOLDER | ✅ Sì |
+| Z502 | SHORT_CONTENT | ✅ Sì |
+| Z503 | SNIPPET_ERROR | ✅ Sì |
+| Z505 | UNTAGGED_CODE_BLOCK | ✅ Sì |
+| Z901 | RULE_ENGINE_ERROR | ✅ Sì |
+| Z902 | RULE_TIMEOUT | ✅ Sì |
+| Z405 | UNUSED_ASSET | ✅ Sì |
+| Z406 | NAV_CONTRACT | ✅ Sì |
+| Z601 | BRAND_OBSOLESCENCE | ✅ Sì |
+
+:::danger[La Legge dell'Inviolabilità — CEO-152]
+`zenzic:ignore: Z201`, `zenzic:ignore: Z202` e `zenzic:ignore: Z203` vengono **silenziosamente rifiutati**. Il credential scanner e il path traversal guard operano indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente sulla stessa riga di una credenziale, Zenzic emetterà comunque il finding ed uscirà con il codice 2 o 3.
+
+Non puoi ignorare una breccia.
+:::
+
+---
+
+## Interazione con la Modalità `--strict` {#strict}
+
+`--strict` e `zenzic:ignore` operano a **layer diversi** della pipeline di analisi:
+
+1. **Fase di rilevamento:** Zenzic trova una violazione (es. Z402 Orphan Page, severità `warning`).
+2. **Filtro soppressione (ignore):** Se la riga porta `zenzic:ignore: Z402`, la violazione viene distrutta. Per Zenzic, non è mai esistita.
+3. **Valutazione severità (strict):** `--strict` promuove i warning sopravvissuti a errori. Agisce solo sulle violazioni che hanno superato il filtro del passaggio 2.
+
+**La conseguenza:** Inibire un finding tramite `zenzic:ignore` lo rimuove effettivamente dallo stream di audit. Anche quando si esegue in modalità `--strict`, i finding ignorati non scatenano un exit code non-zero — sono considerati *eccezioni validate* dichiarate dall'autore.
+
+| Stato finding | `--strict`? | Exit code | Motivo |
+| :--- | :---: | :---: | :--- |
+| Warning presente | No | `0` | Il warning è tollerato di default |
+| Warning presente | **Sì** | `1` | `--strict` promuove il warning a errore |
+| Warning + `ignore` | No | `0` | L'autore ha dichiarato un'eccezione validata |
+| Warning + `ignore` | **Sì** | `0` | **L'intento vince sulla rigidità** |
+| Z201/Z202/Z203 | Qualsiasi | `2` o `3` | Inviolabile — la soppressione viene rifiutata |
+
+---
+
+## Quando Sopprimere vs Quando Correggere {#guidance}
+
+La soppressione è un atto di **intento documentato**, non di evasione. In un repository `git`, un commento `zenzic:ignore` è una dichiarazione firmata che l'autore ha esaminato il finding e lo ha considerato un'eccezione legittima. La soppressione dovrebbe essere usata per:
+
+- **Link di navigazione ToC** — `[Nome Sezione](#nome-esempio-sezione)` è un pattern ToC comune nelle pagine che potrebbe sembrare Z107.
+
+- **Riferimenti storici al brand** — Voci di CHANGELOG, guide di migrazione e documentazione storica possono legittimamente nominare codename obsoleti (Z601).
+- **Pagine intenzionalmente brevi** — Un `glossary.md` con definizioni sintetiche può essere sotto la soglia di conteggio parole Z502 per design.
+
+La soppressione **non** dovrebbe essere usata per:
+
+- Nascondere un link veramente rotto invece di correggere il target.
+- Silenziare una pagina orfana Z402 invece di aggiungerla alla navigazione.
+- Bypassare Z201 per "documentare" una credenziale reale.
+
+---
+
+## Vedi Anche {#see-also}
+
+- [Riferimento Codici di Finding](./finding-codes.mdx) — Catalogo completo di tutti i codici Zxxx con passaggi di rimedio.
+- [Riferimento Configurazione](./configuration-reference.mdx) — `excluded_codes` per la soppressione a livello di repository.
+- [Metriche di Salute](../explanation/health-metrics.mdx) — Come i finding soppressi influenzano il Quality Score.

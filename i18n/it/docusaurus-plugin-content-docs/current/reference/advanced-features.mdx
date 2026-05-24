@@ -285,6 +285,15 @@ costruzione del motore (**validazione anticipata**). Una regola non
 serializzabile solleva `PluginContractError` immediatamente — prima che venga
 scansionato qualsiasi file.
 
+- **Le regole devono essere definite a livello di modulo** — una classe definita in una
+  funzione o lambda non può essere pickled e verrà rifiutata al caricamento.
+
+- **Tutti gli attributi di istanza devono essere serializzabili** — i pattern `re.compile()`
+  pre-compilati, stringhe e numeri sono sempre sicuri; file handle e closure lambda non lo sono.
+
+- **Nessuno stato globale mutabile** — i worker ricevono copie indipendenti del motore
+  (via pickle); restituisci tutto lo stato come oggetti `RuleFinding`.
+
 Vedi [Scrivere Regole Plugin](/developers/how-to/write-plugin) per il contratto
 completo, esempi e istruzioni di pacchettizzazione.
 

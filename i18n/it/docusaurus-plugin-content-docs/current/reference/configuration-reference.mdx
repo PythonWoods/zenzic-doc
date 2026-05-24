@@ -21,11 +21,41 @@ Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sor
 
 **I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `zenzic.toml` per quella singola esecuzione senza modificare alcun file.
 
+**Le esclusioni e inclusioni sono cumulative, non sostitutive:**
+
+- `--exclude-dir` *aggiunge* alla lista già definita nel file di configurazione.
+- `--include-dir` è un **force override**: una directory esclusa in `zenzic.toml` ma inclusa via `--include-dir` verrà scansionata. L'eccezione sono i System Guardrails di Livello 1 (`node_modules`, `.git`, ecc.) — questi non possono essere force-inclusi.
+
 Quando il file vincente esiste ma contiene un errore di sintassi TOML, Zenzic solleva un errore con messaggio Rich-formattato. Non c'e fallback silenzioso: nascondere errori dell'utente sarebbe un rischio.
 
 `zenzic init` crea anche `.zenzic.local.toml` come overlay locale macchina.
 Questo file realizza la Local Sovereignty: i valori locali sovrascrivono la
 config condivisa, ma devono restare privati sulla workstation.
+
+### Standalone `zenzic.toml`
+
+```toml title="zenzic.toml"
+docs_dir = "docs"
+snippet_min_lines = 3
+strict = true
+
+[build_context]
+engine = "mkdocs"
+```
+
+### Integrato in `pyproject.toml`
+
+```toml title="pyproject.toml"
+[tool.zenzic]
+docs_dir = "docs"
+snippet_min_lines = 3
+strict = true
+
+[tool.zenzic.build_context]
+engine = "mkdocs"
+```
+
+Usa `zenzic init` per generare un file di configurazione. Se `pyproject.toml` esiste, il comando chiederà se incorporare la configurazione. Usa `zenzic init --pyproject` per saltare la richiesta.
 
 ## `.zenzic.local.toml` Local Sanctuary {#local-sanctuary}
 
@@ -109,7 +139,9 @@ zenzic init --pyproject
 
 ---
 
-## Directory della documentazione {#docs-dir}
+## Impostazioni Core {#core-settings}
+
+### `docs_dir` {#docs-dir}
 
 ```toml
 # zenzic.toml
@@ -124,7 +156,7 @@ Tutti i percorsi interni (link, asset, orfani) vengono risolti a partire da ques
 
 ---
 
-## Esclusioni {#exclusions}
+## Impostazioni di Esclusione {#exclusion-settings}
 
 ### Directory escluse {#excluded-dirs}
 
@@ -193,7 +225,7 @@ I link a percorsi corrispondenti a questi pattern non vengono segnalati come rot
 
 ---
 
-## Rispetto VCS Ignore {#respect-vcs-ignore}
+## Esclusione VCS-Aware {#vcs-aware-exclusion}
 
 ### La Via Zenzic: Controllo Consapevole vs. Automazione Cieca {#zenzic-way}
 
@@ -240,6 +272,8 @@ Abilitalo per i progetti con un `.gitignore` pulito e orientato alla documentazi
 
 ---
 
+### `respect_vcs_ignore` {#respect-vcs-ignore}
+
 ```toml
 # zenzic.toml
 respect_vcs_ignore = true
@@ -253,24 +287,35 @@ Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la 
 
 ---
 
-## Inclusioni forzate {#forced-inclusions}
+### `included_dirs` {#included-dirs}
 
 ```toml
 # zenzic.toml
 included_dirs = ["generated-docs"]
-included_file_patterns = ["api.generated.md"]
 ```
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
 | `included_dirs` | `list[string]` | `[]` | Directory dentro `docs/` forzatamente incluse anche se escluse da pattern VCS o `excluded_dirs` |
-| `included_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) forzatamente inclusi anche se esclusi da pattern VCS o `excluded_file_patterns` |
 
 Le inclusioni forzate non possono mai sovrastare i System Guardrails (`.git`, `.venv`, ecc.). La regola è deterministica: i System Guardrails sono immutabili.
 
+### `included_file_patterns` {#included-file-patterns}
+
+```toml
+# zenzic.toml
+included_file_patterns = ["api.generated.md"]
+```
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `included_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) forzatamente inclusi anche se esclusi da pattern VCS o `excluded_file_patterns` |
+
+Usa per documentazione generata a build-time da includere nel lint nonostante sia in `.gitignore`. Non può mai sovrastare i System Guardrails.
+
 ---
 
-## Snippet {#snippets}
+### `snippet_min_lines` {#snippet-min-lines}
 
 ```toml
 # zenzic.toml
@@ -285,37 +330,65 @@ Il valore predefinito `1` controlla tutti i blocchi. Impostare a `3` o superiore
 
 ---
 
-## Segnaposto {#placeholders}
+### `placeholder_max_words` {#placeholder-max-words}
 
 ```toml
 # zenzic.toml
 placeholder_max_words = 100
-placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft", "bozza", "da completare"]
 ```
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
 | `placeholder_max_words` | `int` | `50` | Le pagine con meno di questo numero di parole vengono segnalate come `short-content` |
+
+### `placeholder_patterns` {#placeholder-patterns}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
 | `placeholder_patterns` | `list[string]` | (vedi sotto) | Stringhe case-insensitive che segnalano una pagina come segnaposto |
 
 I pattern predefiniti includono varianti in inglese e italiano: `coming soon`, `work in progress`, `wip`, `todo`, `to do`, `stub`, `placeholder`, `fixme`, `tbd`, `to be written`, `to be completed`, `to be added`, `under construction`, `not yet written`, `draft`, `da completare`, `in costruzione`, `in lavorazione`, `da scrivere`, `da aggiungere`, `bozza`, `prossimamente`.
 
+```toml
+# Default patterns (mostrati per riferimento — personalizza per sovrascrivere)
+placeholder_patterns = [
+  "coming soon", "work in progress", "wip", "todo", "to do",
+  "stub", "placeholder", "fixme", "tbd", "to be written",
+  "to be completed", "to be added", "under construction",
+  "not yet written", "draft",
+  # Italiano
+  "da completare", "in costruzione", "in lavorazione",
+  "da scrivere", "da aggiungere", "bozza", "prossimamente",
+]
+```
+
 ---
 
-## Validazione link {#link-validation}
+### `validate_same_page_anchors` {#validate-same-page-anchors}
 
 ```toml
 # zenzic.toml
 validate_same_page_anchors = true
-excluded_external_urls = ["https://github.com/PythonWoods/zenzic"]
 ```
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
 | `validate_same_page_anchors` | `bool` | `false` | Quando `true`, i link a ancora nella stessa pagina (`#sezione`) vengono validati rispetto agli heading presenti nel file sorgente |
-| `excluded_external_urls` | `list[string]` | `[]` | URL esterni (o prefissi URL) esclusi dal controllo link rotti. Un URL viene saltato quando inizia con una delle voci di questa lista |
 
-La validazione delle ancore stessa pagina è disabilitata per default perché gli ID ancora possono essere generati da attributi HTML, plugin personalizzati o macro a tempo di build che sono invisibili durante la scansione del sorgente.
+La validazione delle ancore nella stessa pagina è disabilitata per default perché gli ID ancora possono essere generati da attributi HTML, plugin personalizzati o macro a tempo di build che sono invisibili durante la scansione del sorgente.
+
+### `excluded_external_urls` {#excluded-external-urls}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `excluded_external_urls` | `list[string]` | `[]` | URL esterni (o prefissi URL) esclusi dal controllo link rotti in modalità `--strict`. Un URL viene saltato quando inizia con una delle voci di questa lista |
+
+```toml
+excluded_external_urls = [
+  "https://internal.example.com",
+  "https://github.com/PythonWoods/unreleased-repo",
+]
+```
 
 :::warning[Regola R19 — Nessuna esclusione a livello di dominio]
 Non aggiungere mai un intero dominio come esclusione (es. `"https://zenzic.dev/"`). Un'esclusione di dominio generico crea un angolo buio permanente che sopravvive alle ristrutturazioni dei contenuti e nasconde silenziosamente i link rotti. Le voci devono puntare a **URL specifici o prefissi**, non a domini radice. Usa `--exclude-url <url>` dalla CLI per esclusioni temporanee e puntuali.
@@ -361,29 +434,85 @@ Per la CI di produzione, si consiglia di fissare l'engine esplicitamente per sal
 engine = "docusaurus"
 ```
 
-| `default_locale` | `string` | `"en"` | Codice ISO 639-1 della lingua predefinita |
-| `locales` | `list[string]` | `[]` | Nomi delle directory di localizzazione non predefinite (ad esempio `["it", "fr"]`) |
-| `base_url` | `string` | `""` | URL base del sito (ad esempio `"/"` o `"/docs/"`). Quando impostato, l'adapter lo usa al posto dell'estrazione statica dal file di configurazione del motore di build |
+### `default_locale` {#default-locale}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `default_locale` | `string` | `"en"` | Codice ISO 639-1 della lingua predefinita. Usato dagli adapter per la logica di fallback i18n |
+
+```toml
+[build_context]
+default_locale = "en"
+```
+
+### `locales` {#locales}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `locales` | `list[string]` | `[]` | Nomi delle directory di localizzazione non predefinite. Le pagine nelle directory locale ricevono una gestione speciale durante il rilevamento degli orfani e la risoluzione degli anchor |
+
+```toml
+[build_context]
+locales = ["it", "fr", "de"]
+```
+
+### `base_url` {#base-url}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `base_url` | `string` | `""` | URL base del sito (ad esempio `"/"` o `"/docs/"`). Quando impostato, l'adapter usa questo valore invece di tentare l'estrazione statica dal file di configurazione del motore di build |
+
+```toml
+[build_context]
+base_url = "/docs/"
+```
+
+### `fallback_to_default` {#fallback-to-default}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
 | `fallback_to_default` | `bool` | `true` | Quando `true`, asset e pagine mancanti nell'albero locale ricadono sull'albero della lingua predefinita |
+
+```toml
+[build_context]
+fallback_to_default = false
+```
 
 Il contesto di build informa gli adapter su quale motore di documentazione ha prodotto il sito e quali directory locale sono traduzioni non predefinite. Viene usato per risolvere correttamente percorsi di asset e pagine attraverso i confini delle lingue.
 
 ---
 
-## Soglia qualita e modalita {#quality-and-modes}
+## Comportamento CI / Exit {#ci-exit-behaviour}
 
-```toml
-# zenzic.toml
-fail_under = 80
-strict = true
-exit_zero = false
-```
+### `fail_under` {#fail-under}
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `fail_under` | `int` | `0` | Punteggio minimo di qualita (0-100). Se il punteggio scende sotto questo valore, `zenzic score` esce con codice 1. `0` significa nessuna soglia (modalita osservazionale) |
-| `strict` | `bool` | `false` | Quando `true`, tratta gli avvisi come errori e valida gli URL esterni tramite richieste di rete. Equivalente a passare `--strict` ad ogni invocazione |
+| `fail_under` | `int` | `0` | Punteggio minimo di qualità (0-100). Se il punteggio scende sotto questo valore, `zenzic score` esce con codice 1. `0` significa nessuna soglia (modalità osservazionale) |
+
+```toml
+fail_under = 80
+```
+
+### `strict` {#strict}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `strict` | `bool` | `false` | Quando `true`, tratta gli avvisi come errori e valida gli URL esterni tramite richieste di rete. Equivalente a passare `--strict` ad ogni invocazione di `check all`, `score` o `diff` |
+
+```toml
+strict = true
+```
+
+### `exit_zero` {#exit-zero}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
 | `exit_zero` | `bool` | `false` | Quando `true`, `zenzic check all` esce sempre con codice 0 anche quando vengono trovati problemi. I problemi vengono comunque stampati e valutati. Utile per pipeline di sola osservazione |
+
+```toml
+exit_zero = true
+```
 
 :::danger[exit_zero non sopprime mai Exit Code 2 e 3]
 L'opzione `exit_zero` non sopprime mai gli exit code di sicurezza. Il credential scanner (exit code 2) e il path traversal guard (exit code 3) interrompono sempre la pipeline.
@@ -391,7 +520,40 @@ L'opzione `exit_zero` non sopprime mai gli exit code di sicurezza. Il credential
 
 ---
 
+## Impostazioni Governance {#governance-settings}
+
+### `brand_obsolescence` {#brand-obsolescence}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `list[str]` |
+| **Default** | `[]` |
+| **Sezione** | `[governance]` |
+| **Finding** | Z601 `BRAND_OBSOLESCENCE` |
+
+Una regola di governance per applicare standard terminologici in tutta la documentazione. Ideale per rebranding aziendali o deprecazione di nomi interni. Zenzic viene fornito con una lista vuota per default — i team configurano qui le proprie liste di termini deprecati.
+
+Quando un termine di questa lista appare in qualsiasi file analizzato, Zenzic emette Z601 `BRAND_OBSOLESCENCE` con exit code 2 (stessa severità di un credential leak). I file storici (es. `CHANGELOG*.md`) vengono esclusi tramite `excluded_file_patterns`.
+Usa un commento inline `[HISTORICAL]` per sopprimere singoli riferimenti intenzionali in altri file.
+
+```toml
+[governance]
+brand_obsolescence = [
+    "VecchioNomeProdotto",
+    "BrandLegacy",
+    "TermineInternoDeprecato",
+]
+```
+
+**Corrispondenza dei pattern:** scansione whole-word case-sensitive. Il termine `"Deprecated"` non corrisponde a `"DeprecatedFeature"` o `"deprecated"`.
+
+**Ambito:** si applica a tutti i file nell'ambito di scansione `docs_dir` attivo, soggetto alla gerarchia di esclusione standard.
+
+---
+
 ## Regole personalizzate {#custom-rules}
+
+Le regole personalizzate del progetto possono essere dichiarate inline senza scrivere Python. Ogni voce applica un pattern regex riga per riga ad ogni file `.md`.
 
 ```toml
 # zenzic.toml
@@ -451,6 +613,15 @@ I flag CLI sovrascrivono la configurazione del file per la singola esecuzione:
 | `--show-info` | — | Mostra i risultati a livello info (ad esempio link circolari) |
 | `--format json` | — | Output in formato JSON |
 | `--quiet` / `-q` | — | Output minimale su una riga (per hook pre-commit) |
+
+### Override Priority
+
+I flag CLI sovrascrivono sempre sia `zenzic.toml` che i valori di `pyproject.toml` per la singola esecuzione. L'ordine di priorità completo è:
+
+1. **Flag CLI** (massima priorità) — sovrascrivono tutto per la run corrente
+2. **`zenzic.toml`** — configurazione sovrana del repository
+3. **`pyproject.toml` `[tool.zenzic]`** — configurazione embedded
+4. **Default integrati** — fallback hardcoded
 
 ---
 

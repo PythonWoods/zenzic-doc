@@ -43,7 +43,7 @@ body:has(.zz-homepage) .navbar {
 
 :root {
   /* ── Light mode defaults ── */
-  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.4:1 on white) */
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.9:1 on white) */
   --ifm-color-primary-dark: #3730a3;
   --ifm-color-primary-darker: #312e81;
   --ifm-color-primary-darkest: #1e1b6e;
@@ -594,6 +594,9 @@ a.tag_oVPq[href*="/blog/tags/release"] { background: var(--zenzic-bg-brand-15); 
 /* Security → Fatal semantic */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
 a.tag_oVPq[href*="/blog/tags/security"] { background: var(--zenzic-bg-fatal-15); color: var(--zenzic-fatal-soft); border-color: var(--zenzic-border-fatal-35); }
+/* Light mode: #f87171 on composited light bg = 2.05:1 FAIL → use --zenzic-fatal-deep (#991b1b) = 6.2:1 AA on light bg */
+[data-theme='light'] .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
+[data-theme='light'] a.tag_oVPq[href*="/blog/tags/security"] { color: var(--zenzic-fatal-deep); }
 
 /* Engineering → Cyan */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/engineering"],

@@ -60,14 +60,12 @@ Zenzic adapts its visual frequency to the ambient light of the engineer's enviro
 
 | Mode | Token | Hex | Contrast Ratio | WCAG Level |
 |------|-------|-----|---------------|------------|
-| Light | `indigo-700` | `#4338ca` | 7.4:1 on white | AAA |
-| Dark | `indigo-300` | `#a5b4fc` | 8.9:1 on `#09090b` | AAA |
+| Light | `indigo-700` | `#4338ca` | 7.9:1 on white | AAA |
+| Dark | `indigo-300` | `#a8b3fb` | 9.9:1 on `#09090b` | AAA |
 | Borders (Light) | `indigo-200` | `#c7d2fe` | structural | — |
 | Borders (Dark) | `indigo-500/20` | `#6366f1` at 20% | structural | — |
 
-**Philosophy:** The Indigo of Zenzic is not a decorative choice — it is a semantic signal. It marks the architecture (the arsenal of scanners, the structural columns of the UI). In light mode it carries the authority of engineering ink. In dark mode it radiates softly, like a control-room indicator: always present, never aggressive.
-
-The `backdrop-blur` layer that sits beneath every `ZenzicOutput` panel acts as an additional dampener, smearing the border glow and preventing the "neon" effect on dark surfaces.
+**Usage Specification:** The Zenzic Indigo color is a semantic indicator reserved for structural components (e.g., Navbar, Footer, Scanner Output). In Light Mode, it ensures a contrast ratio >4.5:1 for primary text. In Dark Mode, contrast levels are recalibrated for extended readability. The `backdrop-blur` layer beneath `ZenzicOutput` panels reduces border intensity to prevent visual fatigue (WCAG 2.1 AA compliance).
 
 ## Brand System Reference
 

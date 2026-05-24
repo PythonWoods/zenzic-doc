@@ -522,7 +522,11 @@ Ogni codice di uscita ha una firma visiva distinta nel Zenzic Report:
 
 ## Output JSON
 
-Passa `--format json` a `check all` per output strutturato:
+Tutti i comandi di controllo supportano `--format json` per output machine-readable.
+
+### `check all`
+
+Il report aggregato raggruppa i finding per controllo:
 
 ```bash
 zenzic check all --format json | jq '.orphans'

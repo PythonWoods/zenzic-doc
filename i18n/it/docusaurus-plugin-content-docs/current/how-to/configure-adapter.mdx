@@ -17,15 +17,20 @@ sono scoperti a runtime tramite Python entry-points.
 
 ## `[build_context]`
 
-**Tipo:** tabella — **Default:** `engine = "mkdocs"`, `default_locale = "en"`, `locales = []`,
+**Tipo:** tabella — **Default:** `engine = "auto"`, `default_locale = "en"`, `locales = []`,
 `fallback_to_default = true`
 
 Contesto engine e i18n per la risoluzione dei percorsi locale-aware. Richiesto solo per i
-progetti che usano **Folder Mode i18n** (`docs_structure: folder`).
+progetti che usano **Folder Mode i18n** (`docs_structure: folder`) — dove le pagine non-default
+risiedono in una directory top-level (es. `docs/it/`).
+
+Quando `[build_context]` è assente (o `locales` è vuoto), Zenzic legge la configurazione i18n
+direttamente da `mkdocs.yml` — inclusi `docs_structure`, `fallback_to_default` e la lista
+`languages`. I progetti zero-configuration non sono interessati.
 
 ```toml
 [build_context]
-engine         = "mkdocs"   # "mkdocs" o "zensical"
+engine         = "auto"     # "auto" (default), "mkdocs", "zensical", "docusaurus"
 default_locale = "en"       # codice ISO 639-1 del locale di default
 locales        = ["it"]     # nomi delle directory locale non-default
 # fallback_to_default = true
@@ -61,22 +66,30 @@ Nomi delle directory locale non-default. Zenzic usa questa lista per:
    in `docs/it/assets/logo.svg` (che non esiste). Sapendo che `"it"` è una directory locale,
    Zenzic rimuove il prefisso e controlla `docs/assets/logo.svg`.
 
-2. **Soppressione orfani** — i file sotto `docs/it/` non vengono segnalati come orfani.
+2. **Soppressione orfani** — i file sotto `docs/it/` non sono mai elencati nel nav (il plugin i18n
+
+   li inietta). Sapere quali directory sono alberi di locale impedisce a ogni file tradotto di essere
+   segnalato come orfano.
 
 ### `fallback_to_default`
 
 **Default:** `true`
 
 Rispecchia il flag `fallback_to_default` del plugin `mkdocs-i18n`. Quando `true`, un link da
-una pagina tradotta a una pagina che esiste solo nel locale di default viene soppresso.
+una pagina tradotta a una pagina che esiste solo nel locale di default viene soppresso — il build
+engine servirà la versione del locale di default a runtime. Imposta `false` per richiedere che ogni
+locale abbia la propria copia di ogni pagina.
 
 ---
 
 ## Scoperta adapter (file-driven)
 
+Zenzic risolve deterministicamente il corretto adapter da `build_context.engine`:
+
 | `build_context.engine` | File di configurazione presente | Adapter selezionato |
 | :--- | :--- | :--- |
-| `"mkdocs"` (default) | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
+| `"auto"` **(default)** | — | `discover_engine()` ricerca i manifesti; vedi ordine Auto-Discovery sopra |
+| `"mkdocs"` | `mkdocs.yml` trovato | `MkDocsAdapter` — legge nav e i18n da `mkdocs.yml` |
 | `"mkdocs"` | `mkdocs.yml` assente, nessun locale | `StandaloneAdapter` — nessuna consapevolezza nav |
 | `"zensical"` | `zensical.toml` trovato | `ZensicalAdapter` — legge nav da `zensical.toml` |
 | `"zensical"` | `zensical.toml` assente, `mkdocs.yml` trovato | `ZensicalAdapter` — **Proxy Trasparente** usando `mkdocs.yml` |
@@ -134,19 +147,22 @@ Install a third-party adapter or choose from the list above.
 
 ## Coesistenza dei motori (`mkdocs.yml` + `zensical.toml` nella stessa repo)
 
-Alcune repository contengono sia `mkdocs.yml` che `zensical.toml` durante una transizione.
+Alcune repository contengono sia `mkdocs.yml` che `zensical.toml` durante una transizione — una
+build in fase di test con Zensical mentre l'altra continua a servire in produzione su MkDocs.
 
-Zenzic **non** rileva automaticamente quale file è presente.  L'adapter attivo è sempre
-determinato da `build_context.engine` in `zenzic.toml`: se è dichiarato `engine = "mkdocs"`,
-Zenzic legge `mkdocs.yml` anche quando esiste anche `zensical.toml`, e viceversa.
+Quando `engine` è dichiarato esplicitamente in `zenzic.toml`, Zenzic usa quell'adapter — anche
+quando è presente anche il file di configurazione di un altro motore.  `engine = "mkdocs"` legge
+sempre `mkdocs.yml` anche se esiste `zensical.toml`, e viceversa.
 
-Se `build_context` è assente da `zenzic.toml`, il default è `engine = "mkdocs"`, quindi
-`MkDocsAdapter` viene usato indipendentemente dalla presenza di `zensical.toml`.
+Se `engine` viene omesso (o `build_context` è assente del tutto), il default è `engine = "auto"`.
+Zenzic applica allora l'Auto-Discovery: ispeziona la radice del progetto per manifesti noti e
+monta automaticamente l'Adapter corretto.
 
-:::warning[L'ambiguità è esplicita, non silenziosa]
-Zenzic non sceglie per te.  Quando entrambi i file di configurazione esistono e non hai
-impostato `engine = "zensical"`, stai usando il MkDocs adapter.  Questo è intenzionale:
-**l'identità del motore deve essere una dichiarazione deliberata**, non un'inferenza.
+:::info[Ordine di priorità dell'Auto-Discovery]
+1. `zensical.toml` → `ZensicalAdapter`
+2. `docusaurus.config.ts` / `docusaurus.config.js` → `DocusaurusAdapter`
+3. `mkdocs.yml` → `MkDocsAdapter`
+4. Nessun manifesto trovato → `StandaloneAdapter`
 :::
 
 ```toml

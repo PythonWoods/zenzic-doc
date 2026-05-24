@@ -13,19 +13,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Guida per Sviluppatori zenzic-doc
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-current release)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
-[![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
-[![4-Gates: Zenzic Audit Badge](https://img.shields.io/badge/4--Gates-Zenzic%20Audit%20Badge-10b981?style=flat-square)](https://zenzic.dev/it/developers/explanation/adr-vault)
+[![Zenzic](https://img.shields.io/badge/Zenzic-v0.7.1-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
-
-> **Questa documentazione è strettamente allineata a Zenzic current release.**
-> Se la versione del core cambia, esegui `just bump NEW_VERSION` per mantenere sincronizzati tutti i riferimenti.
-
-> **Gate di conformità.** Questo repository è la prova vivente della disciplina dell'auditor:
-> `zenzic check all --strict` esce con 0 e zero finding ad ogni push.
 
 ---
 
@@ -35,10 +27,9 @@ La documentazione di Zenzic è distribuita come **due istanze Docusaurus separat
 
 ```text
 zenzic.dev/
-├── docs/           → Area Utente   — installazione, configurazione, CI/CD, codici
-├── developers/     → Area Dev      — plugin, adapter, ADR, ledger del debito tecnico
-├── blog/           → Note di rilascio e post-mortem ingegneristici
-└── community/      → Brand kit, FAQ, governance
+├── docs/           → Area Utente  — installazione, CI/CD, finding codes, community
+├── developers/     → Area Dev     — plugin, adapter, ADR, tech debt ledger
+└── blog/           → Release notes e post-mortem ingegneristici
 ```
 
 Due istanze, un Quality Gate. La separazione è imposta dall'
@@ -103,7 +94,7 @@ mantenendo la prosa pulita e il suppression cap riservato ai casi limite genuini
 
 <div align="center">
   <a href="https://zenzic.dev">
-    <img src="static/img/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
+    <img src="https://raw.githubusercontent.com/PythonWoods/zenzic/main/assets/brand/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
   </a>
   <p>
     <strong>Progettato con precisione da PythonWoods in Italia 🇮🇹</strong><br/>

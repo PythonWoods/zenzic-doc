@@ -201,7 +201,7 @@ The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a
 
 ### Versioning & Multi-Doc Support {#vsm-versioning}
 
-Zenzic, the VSM is **version-aware**. For adapters that support multi-version documentation (currently `DocusaurusAdapter`), the VSM builder:
+Zenzic, the VSM is **version-aware**. For adapters that support multi-version documentation (`DocusaurusAdapter`), the VSM builder:
 
 1. **Identifies version boundaries** via the adapter's extended root discovery.
 2. **Tags routes** with their respective version label in `RouteMetadata`.
@@ -268,7 +268,7 @@ three. Zero asymmetries.
 
 ### Link Resolution and Slug Mapping {#link-resolution}
 
-Adapters that support frontmatter `slug` overrides (currently `DocusaurusAdapter`) map slugs into the Virtual Site Map for **reachability** validation: a page with `slug: /quick-start` at URL `/docs/quick-start` is correctly marked `REACHABLE` even though its file path is `docs/guides/getting-started.mdx`.
+Adapters that support frontmatter `slug` overrides (`DocusaurusAdapter`) map slugs into the Virtual Site Map for **reachability** validation: a page with `slug: /quick-start` at URL `/docs/quick-start` is correctly marked `REACHABLE` even though its file path is `docs/guides/getting-started.mdx`.
 
 However, Zenzic's **link integrity** validation (broken links, absolute paths) resolves relative paths from the *filesystem* location, not the slug URL. This means a heavy divergence between slug and file path can cause a page's relative links to resolve differently in Zenzic (file-based) vs the build engine (URL-based).
 
@@ -278,7 +278,7 @@ However, Zenzic's **link integrity** validation (broken links, absolute paths) r
 
 The `InMemoryPathResolver` is not a simple file-lookup table. It implements an **Alias Mapping** layer that translates virtual path prefixes into physical filesystem paths before any link validation takes place.
 
-The resolver is initialised once during Pass 1 with a complete in-memory file map. At initialisation it also registers all known alias prefixes for the active adapter. Currently supported aliases:
+The resolver is initialised once during Pass 1 with a complete in-memory file map. At initialisation it also registers all known alias prefixes for the active adapter. Supported aliases:
 
 | Alias prefix | Resolves to | Engine |
 | :--- | :--- | :--- |

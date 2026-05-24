@@ -60,12 +60,12 @@ Zenzic adatta la propria frequenza visiva all'ambiente luminoso dell'ingegnere. 
 
 | Modalità | Token | Hex | Contrast Ratio | Livello WCAG |
 |---------|-------|-----|---------------|-------------|
-| Light | `indigo-700` | `#4338ca` | 7,4:1 su bianco | AAA |
-| Dark | `indigo-300` | `#a5b4fc` | 8,9:1 su `#09090b` | AAA |
+| Light | `indigo-700` | `#4338ca` | 7,9:1 su bianco | AAA |
+| Dark | `indigo-300` | `#a8b3fb` | 9,9:1 su `#09090b` | AAA |
 | Bordi (Light) | `indigo-200` | `#c7d2fe` | strutturale | — |
 | Bordi (Dark) | `indigo-500/20` | `#6366f1` al 20% | strutturale | — |
 
-**Filosofia:** L'Indaco di Zenzic non è una scelta decorativa — è un segnale semantico. In Light Mode porta l'autorità dell'inchiostro ingegneristico. In Dark Mode irradia dolcemente, come l'indicatore di una sala controllo: sempre presente, mai aggressivo. Il layer `backdrop-blur` sotto ogni pannello `ZenzicOutput` smorza ulteriormente il riflesso del bordo, prevenendo l'effetto “neon” sulle superfici dark.
+**Specifiche d'Uso:** Il colore Indaco di Zenzic è un indicatore semantico riservato ai componenti strutturali (es. Navbar, Footer, Scanner Output). In Light Mode garantisce un rapporto di contrasto >4.5:1 per il testo primario. In Dark Mode, il livello di contrasto è ricalibrato per la leggibilità prolungata. Il layer `backdrop-blur` sotto i pannelli `ZenzicOutput` riduce l'intensità del bordo per prevenire l'affaticamento visivo (WCAG 2.1 AA compliance).
 
 ## Riferimento al Brand System
 

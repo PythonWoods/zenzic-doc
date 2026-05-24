@@ -128,6 +128,13 @@ flowchart TD
     style INCLUDED fill:#22c55e,color:#fff
 ```
 
+| Livello | Nome | Sorgente | Modificabile? |
+| :---: | :--- | :--- | :---: |
+| **L1** | System Guardrails | Hardcoded in `SYSTEM_EXCLUDED_DIRS` | No |
+| **L2** | Forced Inclusions + VCS | `included_dirs`, `included_file_patterns`, `.gitignore` | Sì (config) |
+| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` | Sì (config) |
+| **L4** | CLI Overrides | Flag `--exclude-dir`, `--include-dir` | Sì (per-run) |
+
 ### L1 — System Guardrails {#level-1-system}
 
 **Priorità assoluta. Immutabili. Non negoziabili.**
@@ -187,6 +194,8 @@ I flag CLI vengono valutati con la stessa logica degli altri livelli: `--include
 ---
 
 ## Flusso di lavoro `respect_vcs_ignore` {#vcs-workflow}
+
+Per default, `respect_vcs_ignore` è `false`. Zenzic scansiona ogni file sotto `docs/` che non sia escluso dai System Guardrails o dalle esclusioni config/CLI. Questo è il **principio Zero-Config**: ciò che vedi nel filesystem è ciò che Zenzic scansiona.
 
 Quando `respect_vcs_ignore = true`, il `LayeredExclusionManager` costruisce un `VCSIgnoreParser` unificato dai file `.gitignore`:
 

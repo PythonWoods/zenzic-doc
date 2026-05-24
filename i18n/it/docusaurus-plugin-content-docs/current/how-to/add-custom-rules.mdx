@@ -31,7 +31,8 @@ message  = "L'hostname interno non deve apparire nella documentazione pubblica."
 severity = "error"
 ```
 
-Ogni header `[[custom_rules]]` aggiunge una regola alla lista (sintassi TOML array-of-tables).
+Ogni header `[[custom_rules]]` aggiunge una regola alla lista. Usa le doppie parentesi quadre — è la
+sintassi TOML per gli array-of-tables.
 
 ---
 
@@ -53,6 +54,10 @@ Ogni header `[[custom_rules]]` aggiunge una regola alla lista (sintassi TOML arr
 | `"error"` | Sì (exit code 1) | Sì |
 | `"warning"` | No | Sì |
 | `"info"` | No | No |
+
+Le regole con `severity = "error"` causano l'uscita di `zenzic check all` con codice 1. I risultati
+`"warning"` vengono mostrati nel report ma non influenzano il codice di uscita a meno che non sia
+passato `--strict`.
 
 ---
 
@@ -79,24 +84,30 @@ Le regole con `severity = "info"` vengono stampate senza lo snippet `│`.
 ## Indipendenza dall'adapter
 
 **Le regole custom sono indipendenti dall'adapter.** Una regola che cerca `DRAFT` si attiva
-identicamente che il progetto usi `MkDocsAdapter`, `ZensicalAdapter` o `StandaloneAdapter`. Questo
-significa che le regole scritte per un progetto MkDocs non richiedono modifiche dopo la
-[migrazione a Zensical](./migrate-engines.mdx).
+identicamente che il progetto usi `MkDocsAdapter`, `ZensicalAdapter` o `StandaloneAdapter`. Il motore
+delle regole opera su testo Markdown grezzo, senza conoscenza del build engine. Ciò significa:
+
+- Le regole scritte per un progetto MkDocs non richiedono modifiche dopo la [migrazione a Zensical](./migrate-engines.mdx).
+- Le regole sono sicure da scrivere prima di decidere quale build engine userà il progetto.
 
 ---
 
 ## Performance
 
-**I pattern vengono compilati una volta sola** al caricamento della configurazione, non per ogni file. Non c'è penalità di performance nell'avere molte regole. Pattern regex non validi sollevano un `ConfigurationError` all'avvio con il pattern incriminato e il messaggio di errore della regex.
+**I pattern vengono compilati una volta sola** al caricamento della configurazione, non per ogni file. Non c'è penalità
+di performance nell'avere molte regole. Pattern regex non validi sollevano un `ConfigurationError` all'avvio con il
+pattern incriminato e il messaggio di errore della regex.
 
 ---
 
 ## Posizionamento TOML
 
-Inserisci tutti i blocchi `[[custom_rules]]` **prima** della sezione `[build_context]`.
-`[build_context]` deve essere l'ultima sezione in `zenzic.toml`.
+Inserisci tutti i blocchi `[[custom_rules]]` **prima** della sezione `[build_context]`. `[build_context]`
+deve essere l'ultima sezione in `zenzic.toml` — le intestazioni di tabella TOML si applicano a tutte le
+chiavi successive, quindi qualsiasi campo scritto dopo `[build_context]` diventerebbe silenziosamente una sotto-chiave di `build_context`.
 
 ```toml
+# Ordinamento corretto
 docs_dir = "docs"
 
 [[custom_rules]]
@@ -120,4 +131,5 @@ engine = "mkdocs"
 | Corrispondenza ovunque sulla riga | `TODO` (non servono ancore — il matching è per riga) |
 | Escludere falsi positivi | Usa i word boundary `\\b` per evitare di matchare `TODOS` cercando `TODO` |
 
-Tutti i pattern vengono applicati con Python `re.search` — una corrispondenza ovunque sulla riga attiva il finding. Usa `^` e `$` solo quando devi vincolare all'inizio o alla fine della riga.
+Tutti i pattern vengono applicati con Python `re.search` — una corrispondenza ovunque sulla riga attiva il
+finding. Usa `^` e `$` solo quando devi vincolare all'inizio o alla fine della riga.

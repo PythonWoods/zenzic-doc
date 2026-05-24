@@ -6,7 +6,7 @@ description: Terminologia tecnica di Zenzic — ogni termine definito con rigore
 
 # Glossario
 
-Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in italiano dove la traduzione è naturale; i termini tecnici che sono standard dell'industria (adapter, pipeline) restano in inglese.
+Questo glossario fornisce definizioni precise per tutti i termini specifici del dominio utilizzati nella documentazione di Zenzic, nell'output della CLI e nel codice sorgente. I termini (gli heading) restano nella forma inglese originale per garantire la tracciabilità con la CLI e il codice sorgente; le definizioni sono in italiano tecnico.
 
 ---
 
@@ -14,91 +14,135 @@ Questo glossario raccoglie la terminologia tecnica di Zenzic. I termini sono in 
 
 ### Adapter {#adapter}
 
-Componente che media tra il core di Zenzic e un motore di build specifico (MkDocs, Zensical, Docusaurus). Ogni adapter implementa il protocollo `BaseAdapter` e fornisce la risoluzione dei percorsi locale-aware, la mappa di navigazione e la classificazione delle route. Gli adapter vengono scoperti tramite il gruppo entry-point `zenzic.adapters` e istanziati dalla factory `get_adapter`. Vedi [Architettura -- Protocollo Adapter](../explanation/architecture#adapter-protocol).
+Modulo specifico per un motore di build che implementa il protocollo `BaseAdapter`. Gli adapter traducono le convenzioni di file di un motore di documentazione (struttura nav, directory locale, mappatura URL) nel core engine-agnostico di Zenzic. Gli adapter integrati sono: `MkDocsAdapter`, `ZensicalAdapter`, `DocusaurusAdapter`, `StandaloneAdapter`. Gli adapter di terze parti possono essere registrati tramite il gruppo entry-point `zenzic.adapters`.
+
+Vedi: [Architettura -- Protocollo Adapter](../explanation/architecture#adapter-protocol)
 
 ---
 
-### Path Traversal Guard (Uscita 3)
+### Path Traversal Guard
 
-Meccanismo di sicurezza che rileva i link la cui risoluzione porta a directory di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Quando viene rilevato un `PATH_TRAVERSAL_SUSPICIOUS`, Zenzic termina con exit code **3** — il codice di uscita piu alto nella gerarchia. Non viene mai soppresso da `--exit-zero`. Un risultato path traversal guard puo indicare una template injection, una toolchain di documentazione compromessa o un errore dell'autore che rivela dettagli dell'infrastruttura interna.
+Classificazione di sicurezza applicata quando un link di documentazione risolve verso una directory di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Il Path Traversal Guard attiva il finding `PATH_TRAVERSAL_SUSPICIOUS` e forza l'**exit code 3** — il codice di uscita a massima priorità in Zenzic. Si attiva anche quando `docs_dir` stesso sfugge dalla root del repository (protezione F4-1 jailbreak).
+
+Gli eventi del Path Traversal Guard non vengono mai soppressi da `--exit-zero`. Indicano potenziale template injection, una toolchain di documentazione compromessa o divulgazione involontaria dell'infrastruttura interna.
+
+Vedi: [Checks Reference -- Path Traversal Guard](./checks#path-traversal-guard)
 
 ---
 
-### Esclusione a Livelli {#layered-exclusion}
+### Dark Page {#dark-page}
 
-Il sistema a quattro livelli che determina quali file e directory vengono inclusi o esclusi dalla scansione di Zenzic. I livelli, in ordine di priorità decrescente, sono:
-
-| Livello | Nome | Descrizione |
-| :---: | :--- | :--- |
-| L1 | System Guardrails | Directory immutabili sempre escluse (`.git`, `.venv`, ecc.) |
-| L2 | Forced Inclusions + VCS | `included_dirs` / `included_file_patterns` sovrascrivono VCS e Config; `.gitignore` quando `respect_vcs_ignore = true` |
-| L3 | Configurazione | `excluded_dirs`, `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
-| L4 | CLI | `--exclude-dir`, `--include-dir` per override temporanei |
-
-Il `LayeredExclusionManager` orchestra tutti i livelli. Vedi [Discovery e Esclusione](../explanation/discovery#four-level-hierarchy).
+Una pagina di documentazione che esiste su disco ed è elencata nella navigazione del sito, ma non può essere raggiunta seguendo link da nessun'altra pagina. Le Dark Page sono strutturalmente valide ma funzionalmente invisibili — i lettori possono trovarle solo navigando l'albero di navigazione o indovinando l'URL direttamente. Distinte dalle Ghost Route (non presenti nella nav del tutto) e dagli orfani (su disco ma non nella nav).
 
 ---
 
 ### Ghost Route {#ghost-route}
 
-Una pagina che non esiste fisicamente su disco ma che appare nella navigazione del sito (ad esempio una voce `nav` in `mkdocs.yml` che punta a un file non ancora creato). Il contrario di una Pagina Oscura.
-
----
-
-### System Guardrails (L1) {#system-guardrails}
-
-L'insieme immutabile di directory che Zenzic ignora **sempre**, indipendentemente da qualsiasi configurazione utente. Includono `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`. Le voci dell'utente in `excluded_dirs` si aggiungono ai Guardrail, non li sostituiscono. Nessuna inclusione forzata o flag CLI puo sovrascriverli.
+Un percorso URL che la configurazione nav del motore di build dichiara ma per cui non esiste alcun file sorgente corrispondente su disco. Le Ghost Route rappresentano voci che il lettore vedrebbe nella navigazione ma che risulterebbero in un 404 al clic. Vengono rilevate durante la costruzione della VSM confrontando i percorsi dichiarati dalla nav con l'insieme fisico dei file su disco.
 
 ---
 
 ### Hex Pattern Detector
 
-Pattern di rilevamento del credential scanner di Zenzic specializzato nell'identificazione di sequenze di byte hex-encoded (3 o piu escape `\xNN` consecutivi). Progettato per intercettare payload binari offuscati che potrebbero essere incorporati nella documentazione come shellcode, beacon di comando e controllo o dati esfiltrati.
+Il pattern del credential scanner specializzato nel rilevamento di sequenze di byte hex-encoded — tre o più escape `\xNN` consecutivi (es. `\x40\x41` · `\x42`, tre in sequenza). Questo pattern intercetta payload offuscati, frammenti di shellcode o credenziali codificate che compaiono negli esempi di documentazione. Fa parte delle otto famiglie di pattern scansionate dal credential scanner di Zenzic.
 
 ---
 
-### Mappa dei Riferimenti (ReferenceMap) {#reference-map}
+### Layered Exclusion {#layered-exclusion}
 
-Struttura dati per-file che raccoglie le definizioni dei reference-link Markdown (`[id]: url`). Viene popolata durante la Passata 1 della pipeline di scansione. La ReferenceMap traccia:
+La gerarchia a 4 livelli che determina quali file e directory Zenzic scansiona. Ogni livello ha un ruolo distinto e una precedenza definita:
 
-- **Definizioni accettate** (prima definizione vince, per CommonMark SS4.7)
-- **ID duplicati** (segnalati come avviso)
-- **ID utilizzati** (marcati durante la cross-check)
-- **Definizioni morte** (definite ma mai referenziate)
-- **Punteggio di integrita** (rapporto tra definizioni utilizzate e totali)
+| Livello | Nome | Descrizione |
+| :---: | :--- | :--- |
+| L1 | System Guardrails | Esclusioni immutabili codificate nel software (`.git`, `.venv`, `node_modules`, ecc.) |
+| L2 | Forced Inclusions + VCS | `included_dirs`/`included_file_patterns` da config e pattern `.gitignore` |
+| L3 | Config Exclusions | `excluded_dirs` e `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
+| L4 | CLI Overrides | Flag `--exclude-dir` e `--include-dir` |
 
----
+La gerarchia viene valutata dall'alto verso il basso; la prima regola corrispondente vince. I System Guardrails (L1) non possono mai essere sovrascritti da nessuna configurazione utente.
 
-### Pagina Oscura {#dark-page}
-
-Un file `.md` che esiste fisicamente su disco ma non compare nella navigazione del sito. Il lettore non puo raggiungerla seguendo l'albero di navigazione — puo accedervi solo indovinando l'URL o trovando un link diretto. Rilevata dal controllo orfani (`zenzic check orphans`). Sinonimo di pagina orfana nel contesto Zenzic.
-
----
-
-### Pipeline a Due Passate {#two-pass-pipeline}
-
-L'architettura fondamentale di Zenzic. La prima passata raccoglie i riferimenti, scansiona il credential scanner e costruisce la ReferenceMap. La seconda passata valida i link, risolve i percorsi e verifica le ancore. Questa separazione garantisce che la cross-check dei riferimenti avvenga solo dopo che tutte le definizioni sono state raccolte, e che il credential scanner abbia la priorità assoluta. Vedi [Architettura -- Pipeline a Due Passate](../explanation/architecture#two-pass-pipeline).
+Vedi: [Discovery e Esclusione](../explanation/discovery)
 
 ---
 
 ### Exclusion Zone {#privacy-gate}
 
-La filosofia progettuale di Zenzic: fornire una garanzia di qualita della documentazione che sia indipendente dal motore di build. Il Exclusion Zone si realizza costruendo una Virtual Site Map (VSM) direttamente dal sorgente Markdown grezzo. Questo protegge il progetto anche quando il motore di build cambia, si aggiorna in modo incompatibile o viene temporaneamente rimosso.
+La filosofia progettuale alla base del modello di file discovery ed esclusione di Zenzic. L'Exclusion Zone garantisce tre proprietà fondamentali:
+
+1. **Determinismo** — Data la stessa configurazione e lo stesso stato del filesystem, Zenzic produce esattamente gli stessi file nello stesso ordine.
+2. **Sicurezza per default** — I System Guardrails impediscono la scansione di VCS internals, ambienti virtuali e cache di build.
+3. **Override esplicito** — Ogni inclusione ed esclusione è tracciabile a una specifica riga di configurazione o flag CLI.
+
+La Privacy Gate (Exclusion Zone) definisce un confine preciso dove gli scanner di Zenzic sono intenzionalmente inibiti per proteggere metadati sensibili o pattern di sicurezza intenzionali.
 
 ---
 
-### Punteggio Zenzic {#zenzic-score}
+### Reference Map {#reference-map}
 
-Il punteggio di qualità documentale calcolato da `zenzic score` su una scala da 0 a 100. Viene derivato dalla composizione ponderata di quattro categorie (D092 — Zenzic Penalty Scorer): Structural (40%), Content (30%), Navigation (20%) e Brand & Assets (10%). Ogni categoria accumula deduzioni per codice Zxxx trovato. Il punteggio può essere salvato come snapshot (`--save`) e confrontato nel tempo (`zenzic diff`). Una soglia minima può essere impostata con `fail_under` in configurazione o `--fail-under` da CLI.
+Struttura dati per-file popolata durante la Passata 1 della Two-Pass Pipeline. La Reference Map memorizza tutte le definizioni reference-link Markdown (`[id]: url`) trovate in un file, indicizzate per ID normalizzato (minuscolo, senza spazi). Traccia:
+
+- **Definizioni** — `{norm_id: (url, line_no)}`, prima-definizione-vince per CommonMark 4.7.
+- **ID Utilizzati** — insieme degli ID referenziati via `[testo][id]` o sintassi shortcut `[testo]`.
+- **ID Duplicati** — insieme degli ID definiti più di una volta.
+- **Definizioni Orfane** — definizioni mai referenziate (definizioni morte).
+- **Punteggio di Integrità** — calcolato dal rapporto tra definizioni utilizzate e totali.
 
 ---
 
-### Violazione Credential Scanner
+### Zenzic Score {#zenzic-score}
 
-Un risultato emesso dal credential scanner di Zenzic quando un pattern di credenziale viene rilevato in qualsiasi riga di qualsiasi file (incluse le righe dentro blocchi di codice e il frontmatter YAML). Le violazioni del credential scanner causano exit code **2**, che non viene mai soppresso. La risposta corretta a una violazione è: ruotare la credenziale immediatamente, rimuovere o sostituire la riga incriminata, e non committare il segreto nella cronologia del repository.
+Un punteggio di qualità da 0 a 100 calcolato su quattro categorie ponderate: Structural (30%), Navigation (25%), Content (20%) e Brand & Assets (25%). Ogni categoria accumula deduzioni di penalità per codice (D092 — Zenzic Penalty Scorer). Il punteggio viene calcolato da `zenzic score` e può essere imposto come soglia in CI tramite `fail_under` in `zenzic.toml` o `--fail-under` da CLI.
+
+Usa `zenzic score --save` per salvare uno snapshot del punteggio corrente e `zenzic diff` per confrontarlo con la baseline.
 
 ---
 
-### Virtual Site Map (VSM) — Mappa Virtuale del Sito {#vsm}
+### Credential Scanner Violation
 
-Proiezione in memoria dell'insieme di URL che il motore di build generera. Costruita a partire dai file sorgente Markdown e dalla configurazione dell'adapter, la VSM mappa ogni file `.md` al suo URL canonico e al suo stato di routing (`REACHABLE`, `ORPHAN_BUT_EXISTING`, `IGNORED`). La VSM e significativa solo quando l'adapter ha una configurazione engine (ad esempio `mkdocs.yml`); per il `StandaloneAdapter`, ogni file e `REACHABLE` per definizione.
+Un'eccezione sollevata dall'IO Middleware del credential scanner (`safe_read_line`) quando una credenziale viene rilevata durante l'estrazione dei metadati. `ShieldViolation` è intenzionalmente fatale — impedisce che il segreto entri in qualsiasi parser (YAML, Markdown, regex) interrompendo immediatamente l'elaborazione. Il chiamante deve catturarla e terminare con il **codice 2**.
+
+Distinta da un *finding* del credential scanner (un dataclass `SecurityFinding` prodotto durante la raccolta della Passata 1). Un finding è un dato; una violation è un'interruzione del flusso di controllo.
+
+---
+
+### System Guardrails (L1) {#system-guardrails}
+
+L'insieme immutabile di directory che Zenzic esclude **sempre**, indipendentemente da qualsiasi configurazione o flag CLI. Sono definite in `SYSTEM_EXCLUDED_DIRS` come `frozenset`:
+
+```text
+.git          .github       .venv         node_modules
+.nox          .tox          .pytest_cache .mypy_cache
+.ruff_cache   __pycache__   .docusaurus   .cache
+.hypothesis   .temp
+```
+
+I System Guardrails formano il Livello 1 della gerarchia di Layered Exclusion. Non possono essere rimossi da `included_dirs`, `--include-dir` o qualsiasi altro meccanismo. Vengono uniti a `excluded_dirs` incondizionatamente durante l'inizializzazione del modello di configurazione.
+
+---
+
+### Two-Pass Pipeline {#two-pass-pipeline}
+
+L'architettura di analisi fondamentale di Zenzic. La pipeline elabora ogni file Markdown in due passate sequenziali:
+
+- **Passata 1 (Raccolta + Credential Scan)** — Stream di ogni riga; registrazione delle definizioni reference `[id]: url`; esecuzione del credential scanner su ogni riga (inclusi blocchi di codice delimitati e frontmatter). Popolamento della Reference Map.
+- **Passata 2 (Cross-Check)** — Risoluzione di ogni utilizzo `[testo][id]` rispetto alla Reference Map completa. Segnalazione degli ID non definiti come `DANGLING_REF`.
+- **Passata 3 (Report di Integrità)** — Calcolo del punteggio di integrità per-file. Aggiunta di avvisi per definizioni morte e alt-text mancanti.
+
+La Passata 2 inizia solo quando la Passata 1 si completa senza finding del credential scanner. Questa è la garanzia "credential scanner come firewall": nessuna ulteriore analisi viene eseguita su file che contengono credenziali trapelate.
+
+Vedi: [Architettura -- Two-Pass Pipeline](../explanation/architecture#two-pass-pipeline)
+
+---
+
+### Virtual Site Map (VSM) {#vsm}
+
+Una proiezione in memoria dei percorsi URL che il motore di build servirà. La VSM mappa ogni file sorgente al suo URL canonico e assegna uno stato di routing:
+
+| Stato | Significato |
+| :--- | :--- |
+| `REACHABLE` | Il file è nella nav e verrà servito al suo URL canonico |
+| `ORPHAN_BUT_EXISTING` | Il file esiste su disco ma non è elencato nella nav |
+| `IGNORED` | Il file è in una directory privata o un README non elencato — il motore non lo servirà mai |
+| `CONFLICT` | Due o più file mappano allo stesso URL canonico (slug collision) |
+
+La VSM viene costruita una volta dopo la Passata 1 usando il metodo `get_route_info()` dell'adapter. Permette a Zenzic di rilevare Ghost Route e link non raggiungibili senza invocare il motore di build.

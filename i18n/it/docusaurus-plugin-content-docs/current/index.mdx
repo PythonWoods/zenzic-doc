@@ -3,6 +3,9 @@ sidebar_position: 0
 sidebar_label: "Panoramica"
 ---
 
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
 # La tua documentazione, completamente protetta
 
 **Zenzic garantisce sicurezza in build-time e tranquillità operativa — rilevando link rotti,
@@ -61,6 +64,8 @@ una credenziale:
 <ZenzicOutput status="error" code="Z404" exitCode={1} showFrame>
 docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente (Z404)
 </ZenzicOutput>
+
+Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
 
 → **[Come agire quando il credential scanner blocca un segreto](./how-to/configure-ci-cd#credential-recovery)**
 

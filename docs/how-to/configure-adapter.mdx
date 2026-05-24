@@ -17,7 +17,7 @@ at runtime via Python entry-points; no Zenzic update is required to add third-pa
 
 ## `[build_context]`
 
-**Type:** table — **Default:** `engine = "mkdocs"`, `default_locale = "en"`, `locales = []`,
+**Type:** table — **Default:** `engine = "auto"`, `default_locale = "en"`, `locales = []`,
 `fallback_to_default = true`
 
 Engine and i18n context for locale-aware path resolution. This section is required only for
@@ -30,7 +30,7 @@ directly from `mkdocs.yml` — including `docs_structure`, `fallback_to_default`
 
 ```toml
 [build_context]
-engine         = "mkdocs"   # "mkdocs" or "zensical"
+engine         = "auto"     # "auto" (default), "mkdocs", "zensical", "docusaurus"
 default_locale = "en"       # ISO 639-1 code of the default locale
 locales        = ["it"]     # non-default locale directory names (e.g. docs/it/, docs/fr/)
 # fallback_to_default = true
@@ -87,7 +87,8 @@ Zenzic deterministically resolves the correct adapter from `build_context.engine
 
 | `build_context.engine` | Config file present | Adapter selected |
 | :--- | :--- | :--- |
-| `"mkdocs"` (default) | `mkdocs.yml` found | `MkDocsAdapter` — reads nav and i18n from `mkdocs.yml` |
+| `"auto"` **(default)** | — | `discover_engine()` probes for manifests; see Auto-Discovery priority above |
+| `"mkdocs"` | `mkdocs.yml` found | `MkDocsAdapter` — reads nav and i18n from `mkdocs.yml` |
 | `"mkdocs"` | `mkdocs.yml` absent, no locales | `StandaloneAdapter` — no nav awareness |
 | `"zensical"` | `zensical.toml` found | `ZensicalAdapter` — reads nav from `zensical.toml` |
 | `"zensical"` | `zensical.toml` absent, `mkdocs.yml` found | `ZensicalAdapter` — **Transparent Proxy** using `mkdocs.yml` |
@@ -143,18 +144,19 @@ Install a third-party adapter or choose from the list above.
 Some repositories carry both `mkdocs.yml` and `zensical.toml` during a transition — one
 build test-running Zensical while the other keeps serving production on MkDocs.
 
-Zenzic does **not** auto-detect which file is present.  The active adapter is always
-determined by `build_context.engine` in `zenzic.toml`:  if `engine = "mkdocs"` is
-declared, Zenzic reads `mkdocs.yml` even when `zensical.toml` also exists, and vice versa.
+When `engine` is explicitly declared in `zenzic.toml`, Zenzic uses that adapter — even when
+another engine's config file is also present.  `engine = "mkdocs"` always reads `mkdocs.yml`
+even if `zensical.toml` exists, and vice versa.
 
-If `build_context` is absent from `zenzic.toml`, the default is `engine = "mkdocs"`, so
-`MkDocsAdapter` is used regardless of whether `zensical.toml` is present.  This is the
-safe default — it never silently switches engines.
+If `engine` is omitted (or `build_context` is absent entirely), the default is `engine = "auto"`.
+Zenzic then uses Auto-Discovery: it inspects the project root for known manifests and mounts
+the correct adapter automatically.
 
-:::warning[Ambiguity is explicit, not silent]
-Zenzic will not choose for you.  When both config files exist and you have not set
-`engine = "zensical"`, you are running with the MkDocs adapter.  This is intentional:
-**engine identity must be a deliberate declaration**, not an inference.
+:::info[Auto-Discovery priority order]
+1. `zensical.toml` → `ZensicalAdapter`
+2. `docusaurus.config.ts` / `docusaurus.config.js` → `DocusaurusAdapter`
+3. `mkdocs.yml` → `MkDocsAdapter`
+4. No manifest found → `StandaloneAdapter`
 :::
 
 ```toml

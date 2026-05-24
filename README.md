@@ -13,19 +13,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # zenzic-doc Developer Guide
 
-[![Zenzic Core](https://img.shields.io/badge/Zenzic_Core-current release)](https://github.com/PythonWoods/zenzic)
 [![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
-[![REUSE status](https://api.reuse.software/badge/github.com/PythonWoods/zenzic-doc)](https://api.reuse.software/info/github.com/PythonWoods/zenzic-doc)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
-[![4-Gates: Zenzic Audit Badge](https://img.shields.io/badge/4--Gates-Zenzic%20Audit%20Badge-10b981?style=flat-square)](https://zenzic.dev/developers/explanation/adr-vault)
+[![Zenzic](https://img.shields.io/badge/Zenzic-v0.7.1-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
-
-> **This documentation is strictly aligned to Zenzic current release.**
-> If the core version changes, run `just bump NEW_VERSION` to keep all references in sync.
-
-> **Compliance gate.** This repository is the live evidence of the auditor's own
-> discipline: `zenzic check all --strict` exits 0 with zero findings on every push.
 
 ---
 
@@ -35,10 +27,9 @@ The Zenzic documentation ships as **two separate Docusaurus instances** under on
 
 ```text
 zenzic.dev/
-├── docs/           → User Area    — install, configure, CI/CD, finding codes
+├── docs/           → User Area    — install, configure, CI/CD, finding codes, community
 ├── developers/     → Dev Area     — plugins, adapters, ADRs, tech debt ledger
-├── blog/           → Release notes & engineering post-mortems
-└── community/      → Brand kit, FAQs, governance
+└── blog/           → Release notes & engineering post-mortems
 ```
 
 Two instances, one Quality Gate. The split is enforced by
@@ -103,7 +94,7 @@ keeping prose clean and the suppression cap reserved for genuine edge cases.
 
 <div align="center">
   <a href="https://zenzic.dev">
-    <img src="static/img/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
+    <img src="https://raw.githubusercontent.com/PythonWoods/zenzic/main/assets/brand/pythonwoods-logo.svg" alt="PythonWoods" height="50" />
   </a>
   <p>
     <strong>Engineered with precision by PythonWoods in Italy 🇮🇹</strong><br/>

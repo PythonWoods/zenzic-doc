@@ -116,3 +116,28 @@ replace = '"version": "{new_version}"'
 filename = "developers/governance/exit_strategy.mdx"
 search = 'version: "{current_version}"'
 replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "badge/Zenzic-v{current_version}-blue"
+replace = "badge/Zenzic-v{new_version}-blue"
+
+[[tool.bumpversion.files]]
+filename = "README.it.md"
+search = "badge/Zenzic-v{current_version}-blue"
+replace = "badge/Zenzic-v{new_version}-blue"
+
+[[tool.bumpversion.files]]
+filename = "static/assets/brand/zenzic-brand-system.html"
+search = "v{current_version}"
+replace = "v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "static/assets/social/social-card.svg"
+search = "v{current_version}"
+replace = "v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "static/assets/social/social-card-light.svg"
+search = "v{current_version}"
+replace = "v{new_version}"

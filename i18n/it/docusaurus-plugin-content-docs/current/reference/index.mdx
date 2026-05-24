@@ -40,17 +40,22 @@ zenzic init --force     # sovrascrive un file esistente
 Quando `pyproject.toml` esiste, `zenzic init` chiede se incorporare la configurazione lì
 come tabella `[tool.zenzic]`.  Usa `--pyproject` per saltare il prompt interattivo.
 
-Crea o modifica `zenzic.toml` nella root del repository quando hai bisogno di personalizzare il
-comportamento:
+Quando hai bisogno di personalizzare il comportamento — ad esempio, per aumentare la soglia
+del conteggio parole per le pagine di riferimento tecnico concise, o per aggiungere pattern
+placeholder specifici del team — crea o modifica `zenzic.toml` nella root del repository:
 
 ```toml
 # zenzic.toml — punto di partenza minimo
+
+# Decommenta e adatta i campi che ti servono
+# Tutto è opzionale. I campi assenti usano i valori di default
 
 # docs_dir = "docs"
 # excluded_dirs = ["includes", "assets", "stylesheets", "overrides", "hooks"]
 # excluded_assets = []
 # snippet_min_lines = 1
 # placeholder_max_words = 50
+# placeholder_patterns = ["coming soon", "work in progress", "wip", "todo", "stub", ...]
 
 # [build_context]
 # engine         = "mkdocs"
@@ -62,6 +67,8 @@ comportamento:
 
 ## Sezioni di riferimento
 
+Questa guida di riferimento è suddivisa in sezioni dedicate:
+
 | Pagina | Contenuto |
 | :--- | :--- |
 | [Impostazioni di Base](./configuration.mdx) | `docs_dir`, liste di esclusione, soglie, punteggio |
@@ -72,6 +79,8 @@ comportamento:
 ---
 
 ## Esempio completo
+
+La `zenzic.toml` più semplice e completa che esercita ogni sezione:
 
 ```toml
 docs_dir = "docs"
