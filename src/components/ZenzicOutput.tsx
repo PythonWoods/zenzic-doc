@@ -192,10 +192,10 @@ const CONTAINER_CLASSES: Record<Variant, string> = {
 
 function CleanOutput({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const rows = [
-    { label: 'Structural Integrity', pts: '40 pts', detail: '0 broken links' },
-    { label: 'Content Excellence',   pts: '30 pts', detail: '0 placeholders' },
-    { label: 'Navigation',           pts: '20 pts', detail: '0 orphan pages' },
-    { label: 'Brand & Assets',       pts: '10 pts', detail: '0 brand violations' },
+    { label: 'Structural Integrity', pts: '30 pts', detail: '0 broken links' },
+    { label: 'Navigation',           pts: '25 pts', detail: '0 orphan pages' },
+    { label: 'Content Excellence',   pts: '20 pts', detail: '0 placeholders' },
+    { label: 'Brand & Assets',       pts: '25 pts', detail: '0 brand violations' },
   ];
 
   return (
@@ -360,12 +360,15 @@ function FindingsOutput({
 // ── Inspect variant — scanner arsenal table ───────────────────────────────────
 
 const DEFAULT_SCANNERS: InspectRow[] = [
-  { codes: 'Z201',     scanner: 'Credential Scanner', capability: 'Credential & security detection',      exit: '2', icon: '🔒', security: true, tier: 'security', state: 'active' },
-  { codes: 'Z202–203', scanner: 'Path Traversal Guard',   capability: 'Path-traversal & jailbreak detection', exit: '3', icon: '🚫', security: true, tier: 'security', state: 'active' },
-  { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Broken links & anchor resolution',     exit: '1', icon: '🔗', tier: 'core', state: 'active' },
-  { codes: 'Z401–406', scanner: 'Structure Guard',  capability: 'Orphans, assets & navigation contract', exit: '1', icon: '🏗', tier: 'structure', state: 'active' },
-  { codes: 'Z501–505', scanner: 'Content scanner', capability: 'Placeholders, snippets & score',       exit: '1', icon: '📄', tier: 'content', state: 'active' },
-  { codes: 'Z601–602', scanner: 'Governance Watch', capability: 'Brand obsolescence & i18n parity',     exit: '1', icon: '🏛', tier: 'governance', state: 'active' },
+  { codes: 'Z201',     scanner: 'Credential Scanner',  capability: 'Credential & secret detection',           exit: '2', icon: '🔒', security: true, tier: 'security',   state: 'active' },
+  { codes: 'Z204',     scanner: 'Privacy Gate',        capability: 'Forbidden term & privacy violation',      exit: '2', icon: '🛡', security: true, tier: 'security',   state: 'active' },
+  { codes: 'Z202–203', scanner: 'Path Traversal Guard', capability: 'Path-traversal & jailbreak detection',  exit: '3', icon: '🚫', security: true, tier: 'security',   state: 'active' },
+  { codes: 'Z101–106', scanner: 'Link Validator',       capability: 'Broken links & anchor resolution',      exit: '1', icon: '🔗', tier: 'core',      state: 'active' },
+  { codes: 'Z301–303', scanner: 'Reference Scanner',    capability: 'Cross-file reference integrity',        exit: '1', icon: '📎', tier: 'core',      state: 'active' },
+  { codes: 'Z401–404', scanner: 'Structure Guard',      capability: 'Orphans & navigation contract',         exit: '1', icon: '🏗', tier: 'structure', state: 'active' },
+  { codes: 'Z405',     scanner: 'Asset Sentry',         capability: 'Unused & unresolved assets',            exit: '1', icon: '🗂', tier: 'structure', state: 'active' },
+  { codes: 'Z501–503', scanner: 'Content Guard',        capability: 'Placeholders, snippets & quality score',exit: '1', icon: '📄', tier: 'content',   state: 'active' },
+  { codes: 'Z601–602', scanner: 'Governance Watch',     capability: 'Brand obsolescence & i18n parity',      exit: '1', icon: '🏛', tier: 'governance', state: 'active' },
 ];
 
 function InspectOutput({ scanners: customScanners }: { scanners?: InspectRow[] }): React.JSX.Element {
