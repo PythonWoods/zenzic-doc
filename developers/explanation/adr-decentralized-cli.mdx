@@ -168,3 +168,28 @@ existing integrations, despite the internal reorganisation.
 - The lab showcase (`cli/_lab.py`) can be extended with new acts without
 
   affecting the analysis pipeline's test surface.
+
+---
+
+## Companion Decision D082 — CLI Decomposition (Phase 82)
+
+**Status:** Accepted — v0.8.0
+
+**Context:** `_check.py` had grown to 1641 lines, accumulating four categories of
+helper that properly belong elsewhere: governance filters, target resolution, command
+setup boilerplate, and the governance reporting already in `_governance.py`.
+
+**Decision:** Extract helpers into dedicated modules with backward-compatible re-exports.
+
+| New module | Extracted from | Functions |
+|:-----------|:---------------|:----------|
+| `_governance.py` | `_check.py` | `_apply_per_file_ignores`, `_apply_directory_policies` |
+| `_target_resolver.py` | `_check.py` | `_resolve_target`, `_apply_target` |
+| `_command_setup.py` | `_check.py` | `setup_command()` factory |
+
+**Zero-Regression Contract:** 1550 tests pass unchanged. All moved symbols remain
+importable from `_check.py` via re-export stubs, so any downstream code that imports
+directly from `_check` continues to work without modification.
+
+**Outcome:** `_check.py` reduced from 1641 → 1478 lines. Each new module has a single,
+clearly-named responsibility consistent with this ADR's decentralised-ownership model.

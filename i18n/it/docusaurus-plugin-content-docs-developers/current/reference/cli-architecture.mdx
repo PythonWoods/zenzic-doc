@@ -19,15 +19,17 @@ Ogni file gestisce un dominio di responsabilità.
 | Modulo | Responsabilità |
 |:-------|:---------------|
 | `_shared.py` | Singleton `console`, singleton `_ui`, `configure_console()` e tutte le utility cross-comando (`_build_exclusion_manager`, `_output_json_findings`, `_render_link_error`, ecc.) |
-| `_check.py` | Sub-app Typer `check_app` + sette comandi `check *` e i loro helper privati |
+| `_check.py` | Sub-app Typer `check_app` + sette comandi `check *`; helper privati re-esportati da `_governance.py`, `_target_resolver.py` e `_command_setup.py` (Fase 82) |
+| `_command_setup.py` | Factory `setup_command()` — consolida la scoperta del repo root, il caricamento config, la risoluzione del target e la costruzione dell'exclusion manager usati da tutti i comandi check |
 | `_clean.py` | Sub-app Typer `clean_app` + comando `clean assets` |
 | `_config_explain.py` | Comando `explain` + surface di introspezione della genealogia config e delle regole |
-| `_governance.py` | Sub-app Typer `config_app` + comandi del profilo di governance |
+| `_governance.py` | Sub-app Typer `config_app` + comandi del profilo di governance + helper per i filtri per-file-ignore e directory-policy (`_apply_per_file_ignores`, `_apply_directory_policies`) |
 | `_guard.py` | Sub-app Typer `guard_app` + comandi `scan` / `init` per il fast secret guard |
 | `_inspect.py` | Sub-app Typer `inspect_app` + comandi `capabilities`, `codes` e `routes` |
 | `_lab.py` | Comando `lab` + showcase interattivo di scenari |
 | `_metadata.py` | Single source of truth per i pannelli help root, il raggruppamento dei comandi e il testo di short help |
 | `_standalone.py` | Comandi `score`, `diff` e `init` + i loro helper privati |
+| `_target_resolver.py` | `_resolve_target()` e `_apply_target()` — helper per la ricerca del path e il patching della config, condivisi dai comandi check e dal comando lab |
 | `__init__.py` | Surface di re-export pubblica consumata da `main.py` — **non aggiungere logica qui** |
 
 `main.py` è la factory di registrazione Typer unificata. I nuovi comandi top-level e le sub-app
