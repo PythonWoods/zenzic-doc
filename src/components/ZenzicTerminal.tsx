@@ -123,7 +123,7 @@ export function PathTraversalGuardTerminal(): React.JSX.Element {
       <div className="flex items-center gap-3 mb-2">
         <span className="text-rose-500">&#10008;</span>
         <span className="w-28 text-zinc-500">Finding:</span>
-        <span className="text-rose-300 font-medium">PATH_TRAVERSAL_SUSPICIOUS</span>
+        <span className="text-rose-300 font-medium">PATH_TRAVERSAL</span>
       </div>
       <div className="flex items-center gap-3 mb-2">
         <span className="text-rose-500">&#10008;</span>
