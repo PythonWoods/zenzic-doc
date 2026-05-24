@@ -70,7 +70,7 @@ Se non sono presenti finding Z2xx, il motore calcola un punteggio per tier.
 | Structural | `structural` | Z1xx | 30% | 30 pts |
 | Navigation | `navigation` | Z3xx, Z4xx | 25% | 25 pts |
 | Content | `content` | Z5xx | 20% | 20 pts |
-| Governance | `brand` | Z405, Z406, Z6xx | 25% | 25 pts |
+| Governance | `brand` | Z404, Z405, Z406, Z6xx | 25% | 25 pts |
 
 ### Formula per Categoria
 
@@ -103,11 +103,14 @@ $$
 | Z302 | DEAD_DEF | 1.0 pts | Navigation |
 | Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
 | Z402 | ORPHAN_PAGE | 4.0 pts | Navigation |
+| Z401 | MISSING_DIRECTORY_INDEX | 2.0 pts | Navigation |
 | Z501 | PLACEHOLDER | 2.0 pts | Content |
 | Z502 | SHORT_CONTENT | 1.0 pts | Content |
 | Z503 | SNIPPET_ERROR | 10.0 pts | Content |
 | Z505 | UNTAGGED_CODE_BLOCK | 1.0 pts | Content |
+| Z403 | MISSING_ALT | 1.0 pts | Content |
 | Z405 | UNUSED_ASSET | 3.0 pts | Governance |
+| Z404 | CONFIG_ASSET_MISSING | 3.0 pts | Governance |
 | Z406 | NAV_CONTRACT | 2.0 pts | Governance |
 | Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
 

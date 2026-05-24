@@ -32,9 +32,9 @@ codici di finding `Zxxx` che emette.
 | Categoria | Comando | Codici Finding | Peso |
 |-----------|---------|----------------|---------|
 | **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z104], [Z105], [Z107], [Z108] | **30 %** |
-| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z501], [Z502], [Z503], [Z505] | **20 %** |
-| **Navigazione** | `zenzic check orphans [PATH]` | [Z301], [Z302], [Z303], [Z402] | **25 %** |
-| **Brand & Asset** | `zenzic check assets [PATH]` | [Z405], [Z406], [Z601] | **25 %** |
+| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z403], [Z501], [Z502], [Z503], [Z505] | **20 %** |
+| **Navigazione** | `zenzic check orphans [PATH]` | [Z301], [Z302], [Z303], [Z401], [Z402] | **25 %** |
+| **Brand & Asset** | `zenzic check assets [PATH]` | [Z404], [Z405], [Z406], [Z601] | **25 %** |
 
 [Z101]: ../reference/finding-codes.mdx#z101
 [Z102]: ../reference/finding-codes.mdx#z102
@@ -53,6 +53,9 @@ codici di finding `Zxxx` che emette.
 [Z405]: ../reference/finding-codes.mdx#z405
 [Z406]: ../reference/finding-codes.mdx#z406
 [Z601]: ../reference/finding-codes.mdx#z601
+[Z401]: ../reference/finding-codes.mdx#z401
+[Z403]: ../reference/finding-codes.mdx#z403
+[Z404]: ../reference/finding-codes.mdx#z404
 
 :::danger[Override di Sicurezza]
 Se viene rilevato un finding di sicurezza — Z201 (credential scanner), Z202 o Z203 (path traversal guard) —
@@ -77,13 +80,16 @@ questo è il **Category Cap** (Tetto di Categoria).
 | Z104 | File Non Trovato | 8.0 | Structural |
 | Z102 | Ancora Mancante | 5.0 | Structural |
 | Z402 | Pagina Orfana | 4.0 | Navigation |
+| Z401 | Indice Directory Mancante | 2.0 | Navigation |
 | Z601 | Brand Obsoleto | 2.0 | Brand |
 | Z405 | Asset Non Utilizzato | 3.0 | Brand |
+| Z404 | Asset Config Mancante | 3.0 | Brand |
 | Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
 | Z406 | Errore Nav Contract | 2.0 | Brand |
 | Z105 | Percorso Assoluto | 2.0 | Structural |
 | Z502 | Contenuto Breve | 1.0 | Content |
 | Z505 | Blocco di Codice Non Etichettato | 1.0 | Content |
+| Z403 | Alt Text Mancante | 1.0 | Content |
 | Z107 | Ancora Circolare | 1.0 | Structural |
 | Z106 | Link Circolare | 0.0 | Informativo |
 | Z108 | Empty Link Text | 1.0 | Structural |

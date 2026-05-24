@@ -1,0 +1,125 @@
+---
+sidebar_label: "Scoring Algorithm"
+sidebar_position: 5
+description: "A conceptual guide to how Zenzic builds a single quality score from four category buckets — and how to read that number."
+---
+
+# Scoring Algorithm — Conceptual Guide
+
+The Deterministic Quality Score (DQS) is a single number in the **0–100** range that
+reflects how much of your documentation's theoretical maximum quality is currently
+realised. A project with zero findings scores **100**. Every finding costs points.
+
+For the exact formulas, weights, and penalty table, see the
+[Scoring Algorithm Reference](../reference/scoring-algorithm.mdx).
+
+---
+
+## The Four Buckets
+
+Zenzic decomposes quality into four independent categories. Each bucket has its own
+weight and a hard cap so that a single very bad category cannot destroy the score
+entirely by itself.
+
+| Category | Weight | Capacity |
+|---|---|---|
+| Structural Integrity | 30 % | 30 pts |
+| Navigation & Logic | 25 % | 25 pts |
+| Content Excellence | 20 % | 20 pts |
+| Governance & Brand | 25 % | 25 pts |
+
+**Reading the weights.** The two largest weights — Structural and Governance — reflect
+Zenzic's design principle: correctness (links that actually resolve) and trust (brand
+and contract compliance) matter more than aesthetic content quality.
+
+---
+
+## How a Finding Becomes a Point Deduction
+
+Each finding code carries a fixed per-occurrence penalty. The penalties are additive
+within a bucket but bounded by that bucket's cap.
+
+```text
+bucket_deduction = min(sum_of_penalties_in_bucket, bucket_cap)
+```
+
+The **cap** exists to prevent catastrophic cascades. A project with 40 dangling
+references does not score 0 on Navigation; it loses at most 25 points — equivalent
+to one completely empty Navigation category.
+
+### Penalty Calibration Philosophy
+
+Penalties are assigned to one of three tiers, independent of which bucket they sit in:
+
+| Tier | Examples | Points |
+|---|---|---|
+| Critical | Z503 (snippet error) | 10.0 |
+| High | Z301, Z402 (broken link, orphan page) | 3.0 – 4.0 |
+| Standard | Z104, Z401, Z403 … | 1.0 – 2.0 |
+
+A **Critical** penalty (10 pts) signals that the content is actively harmful to readers
+(a broken code example). A **High** penalty signals a structural defect that a reader
+will directly encounter (a dead link, an unreachable page). A **Standard** penalty
+signals a quality deficit that degrades the experience over time.
+
+---
+
+## Reading Your Score
+
+| Score | Interpretation |
+|---|---|
+| 95 – 100 | Excellent — minimal residual findings |
+| 80 – 94 | Good — some non-critical findings |
+| 60 – 79 | Fair — meaningful quality gaps |
+| 40 – 59 | Poor — systematic issues requiring attention |
+| < 40 | Critical — documentation integrity at risk |
+
+The score is **deterministic**: given the same source files and the same version of
+Zenzic, the score is identical on every machine. There is no sampling, no weighting
+based on file age, and no subjective component.
+
+---
+
+## Suppression and Governance Gates
+
+Two mechanisms exist that interact with the score differently.
+
+**Suppression (`.zenzic-ignore`)** — removes a specific finding from the output. The
+suppressed finding is not penalised. Use suppression only for deliberate, documented
+exceptions.
+
+**Governance gates** — certain codes (Z602 I18N_PARITY) trigger a hard gate: `zenzic
+check` exits with code 2 regardless of the DQS. The DQS itself is not affected because
+gate codes are excluded from the penalty matrix by design. A project can score 100 and
+still fail the gate if a translation parity violation is present.
+
+---
+
+## Worked Example
+
+Suppose a project has:
+
+- 2 × Z503 SNIPPET_ERROR → 2 × 10.0 = 20.0 pts (capped at 20 — fills the Content bucket)
+- 1 × Z301 DANGLING_REF → 4.0 pts (Navigation)
+- 1 × Z405 UNUSED_ASSET → 3.0 pts (Brand)
+
+```text
+Structural deduction = 0
+Navigation deduction = min(4.0, 25) = 4.0  → contributes 4.0 × (25/25) = 4.0 weighted
+Content   deduction = min(20.0, 20) = 20.0 → contributes 20.0 × (20/20) = 20.0 weighted
+Brand     deduction = min(3.0, 25)  = 3.0  → contributes 3.0 × (25/25) = 3.0 weighted
+
+DQS = 100 − (0 + 4.0 + 20.0 + 3.0) = 73
+```
+
+The two snippet errors alone would reduce the score by 20 points; fixing them recovers
+the Content bucket entirely.
+
+---
+
+## Related pages
+
+- [Health Metrics](./health-metrics.mdx) — DQS over time: trends, thresholds, alerts
+- [Scoring Algorithm Reference](../reference/scoring-algorithm.mdx) — formal weights,
+  penalty table, and mathematical specification
+- [Finding Codes](../reference/finding-codes.mdx) — full catalogue of all Z-codes
