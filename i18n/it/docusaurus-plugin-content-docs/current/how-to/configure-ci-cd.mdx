@@ -388,6 +388,24 @@ I risultati appaiono nella scheda **Security → Code Scanning**. Ogni finding s
 
 ---
 
+## Defense-in-Depth: Secret Guard {#guard-scan}
+
+L'input `guard-scan: "true"` esegue `zenzic guard scan` come step standalone **prima** del gate principale. Usalo nei repository in cui i contributor possono bypassare i pre-commit hook con `git commit --no-verify`:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Run Zenzic Documentation Quality Gate
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          version: "0.7.1"
+          guard-scan: "true"   # zenzic guard scan viene eseguito prima di check all
+          format: sarif
+          upload-sarif: "true"
+```
+
+Se `guard scan` rileva una credenziale hardcodata o un pattern vietato, esce con valore non zero e termina il job. `fail-on-error: "false"` non sopprime questo comportamento — lo scan di guardia è sempre fatale, coerente con il contratto di sicurezza Exit 2.
+
+---
+
 ## GitHub Actions: Badge Score Dinamico {#dynamic-score-badge}
 
 Questo workflow legge lo snapshot `.zenzic-score.json` e pubblica il punteggio live su un [endpoint Shields.io](https://shields.io/badges/dynamic-json-badge) tramite GitHub Gist, mantenendo il badge aggiornato ad ogni push.

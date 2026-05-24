@@ -23,6 +23,8 @@ For day-to-day usage (copy-paste YAML, input reference), see the [CI/CD Integrat
 ```text
 action.yml            ← public contract (inputs, outputs, env injection)
     │
+    ├─▶  uvx zenzic guard scan       ← Defense-in-Depth (when guard-scan: "true")
+    │
     └─▶  zenzic-action-wrapper.sh   ← enforcement layer (security, exit codes, SARIF)
               │
               └─▶  uvx zenzic check all   ← Zenzic Core (analysis engine)
@@ -99,6 +101,7 @@ Zenzic defines four exit codes. The wrapper propagates them **without remapping*
 | `1` | Documentation findings (broken links, orphans, dead refs, etc.) | ✅ via `fail-on-error: false` |
 | `2` | **SECURITY** — credential pattern detected (credential scanner / Z201) | ❌ Never |
 | `3` | **SECURITY** — system path traversal (path traversal guard / Z202–Z203) | ❌ Never |
+| `4` | **QUALITY** — score regression vs baseline (`zenzic diff`) | ❌ Never |
 
 Exits `2` and `3` terminate the job unconditionally. Neither `fail-on-error: "false"` nor any other input can suppress them. This is enforced in the wrapper's exit logic, not in `action.yml`, so it cannot be circumvented by overriding action inputs.
 
@@ -117,6 +120,46 @@ fi
 ```
 
 This ensures downstream steps that read `findings-count` never see `"0 findings, exit 2"` — an incoherent UX that would imply the build failed for no reason.
+
+---
+
+## Secret Guard Step {#guard-scan}
+
+When `guard-scan: "true"` is set, the action runs `zenzic guard scan` as a standalone composite step **before** the main quality gate. This implements Defense-in-Depth for teams where contributors may bypass pre-commit hooks with `git commit --no-verify`.
+
+The guard scan uses the same `version` pin as the main check. It reads `forbidden_patterns` and built-in credential signatures from the repository's `.zenzic.toml`. If it detects a credential or forbidden term, it exits non-zero and terminates the job immediately — the main `check all` never runs.
+
+```yaml
+- name: Run Zenzic Documentation Quality Gate
+  uses: PythonWoods/zenzic-action@v1
+  with:
+    version: "0.7.1"
+    guard-scan: "true"   # runs zenzic guard scan before check all
+    format: sarif
+    upload-sarif: "true"
+```
+
+:::note[Guard scan is always fatal]
+`fail-on-error` does not govern the guard scan step. If secrets are found, the job stops. This mirrors the Exit 2 security contract: security findings are facts, not findings to negotiate.
+:::
+
+---
+
+## Sovereign Job Summary {#job-summary}
+
+The wrapper writes a structured Markdown table to `$GITHUB_STEP_SUMMARY` for every non-zero exit. The summary appears in the **GitHub Actions → job → Summary** tab and in PR check details — without requiring the developer to open the step log.
+
+| Exit | Summary title | Content |
+|:---:|---|---|
+| `1` + CAP | **❌ Suppression CAP Exceeded** | Active/CAP counts, Playbook link |
+| `1` generic | **❌ Documentation Findings** | Findings count, Quality Score |
+| `2` | **❌ Security Breach** | Z201 rule, action guidance |
+| `3` | **❌ Boundary Breach** | Z202/Z203 rules, action guidance |
+| `4` | **❌ Quality Regression** | Score, suppression debt, Playbook link |
+
+The **CAP Exceeded** summary is constructed by parsing the SARIF output for a result with `ruleId: "SUPPRESSION_CAP_EXCEEDED"`. No second invocation of Zenzic is required — the CAP-exceeded SARIF contains exactly one result with governance properties embedded in `properties.governance`.
+
+The `cap-exceeded` output (`"true"` / `"false"`) is available to downstream steps for conditional logic (e.g. dashboard automation, PR labeling).
 
 ---
 

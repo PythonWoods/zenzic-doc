@@ -30,6 +30,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `config-file` | *(auto)* | No | Percorso esplicito a un file di configurazione `.zenzic.toml`. Auto-scopre `.zenzic.toml` → `.github/.zenzic.toml` se omesso. |
 | `audit` | `false` | No | Modalità sovereign audit — bypassa tutti i commenti `zenzic:ignore` inline e tutte le voci `governance.per_file_ignores`. Rivela lo stato reale e non filtrato della documentazione. |
 | `diff-base` | *(snapshot)* | No | Percorso a un file JSON di baseline per il confronto con `zenzic diff`. Quando impostato, l'action confronta il punteggio corrente contro questo file invece del `.zenzic-score.json` salvato. Usa un artefatto da `main` per implementare il Zenzic Quality Gate. |
+| `guard-scan` | `false` | No | Esegue `zenzic guard scan` come step Defense-in-Depth **prima** del gate principale. Rileva credenziali hardcodate e pattern vietati in repo dove gli sviluppatori hanno bypassato i pre-commit hook. Il fallimento è sempre fatale — non governato da `fail-on-error`. |
 
 ---
 
@@ -41,6 +42,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `findings-count` | Numero totale di finding riportati. I finding di sicurezza (exit 2/3) impongono un minimo di 1. |
 | `score` | Documentation Quality Score (0–100). Popolato quando `format: json` o quando `diff-base` è impostato. Stringa vuota negli altri modi. |
 | `suppression-debt-pts` | Punti di Technical Debt detratti dal punteggio a causa delle soppressioni attive. `0` quando non ci sono soppressioni attive o quando la modalità audit è abilitata. |
+| `cap-exceeded` | `"true"` quando il CAP di soppressione è stato superato e ha bloccato la build; `"false"` altrimenti. |
 
 ---
 
@@ -52,6 +54,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `1` | Quality | Uno o più finding; il punteggio potrebbe essere sotto `fail_under` | Sì (`fail-on-error: "false"`) |
 | **`2`** | **Credential** | **Z201 CREDENTIAL_SECRET rilevato — scansione interrotta** | **Mai** |
 | **`3`** | **Path Traversal** | **Z202/Z203 PATH_TRAVERSAL rilevato — scansione interrotta** | **Mai** |
+| **`4`** | **Quality Regression** | **`zenzic diff` ha rilevato un calo del punteggio rispetto alla baseline** | **Mai** |
 
 I codici di uscita 2 e 3 **non vengono mai soppressi** da `fail-on-error: "false"`, `--exit-zero`
 o qualsiasi altro flag. Il wrapper lo applica incondizionatamente — i finding di sicurezza sono
