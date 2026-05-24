@@ -409,7 +409,7 @@ steps:
 
     id: zenzic_step
     run: |
-      uvx zenzic score --save   # threshold read from fail_under in zenzic.toml
+      uvx zenzic score --save   # threshold read from fail_under in .zenzic.toml
       SCORE=$(jq '.score' .zenzic-score.json)
       echo "SCORE=$SCORE" >> "$GITHUB_OUTPUT"
 

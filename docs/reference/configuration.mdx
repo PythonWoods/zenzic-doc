@@ -1,7 +1,7 @@
 ---
 icon: lucide/sliders-horizontal
 sidebar_label: "Core Settings"
-description: "All zenzic.toml fields: thresholds, exclusions, directories, and feature flags."
+description: "All .zenzic.toml fields: thresholds, exclusions, directories, and feature flags."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,7 +9,7 @@ description: "All zenzic.toml fields: thresholds, exclusions, directories, and f
 
 # Core Settings
 
-All top-level fields in `zenzic.toml` that control paths, thresholds, and scoring.
+All top-level fields in `.zenzic.toml` that control paths, thresholds, and scoring.
 
 ---
 
@@ -20,11 +20,11 @@ Zenzic resolves configuration using a **4-level hierarchy** — the most specifi
 | Priority | Source | Description |
 | :---: | :--- | :--- |
 | **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
-| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 2 | `.zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
 | 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
 | 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
 
-**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `.zenzic.toml` for that single run without modifying any file.
 
 ---
 
@@ -316,7 +316,7 @@ The `--fail-under` CLI flag overrides this value for a single run.
 fail_under = 80   # exit 1 if score < 80
 ```
 
-To run in observational mode regardless of what `zenzic.toml` contains:
+To run in observational mode regardless of what `.zenzic.toml` contains:
 
 ```bash
 zenzic score --fail-under 0
@@ -340,7 +340,7 @@ strict = true
 ```
 
 The `--strict` CLI flag overrides this value for a single run (setting it for that run
-regardless of what `zenzic.toml` contains).
+regardless of what `.zenzic.toml` contains).
 
 ---
 
@@ -361,7 +361,7 @@ exit_zero = true
 The `--exit-zero` CLI flag overrides this value for a single run.
 
 :::warning[Use sparingly]
-Setting `exit_zero = true` in `zenzic.toml` disables the quality gate globally. Prefer
+Setting `exit_zero = true` in `.zenzic.toml` disables the quality gate globally. Prefer
 using `--exit-zero` as a temporary CLI flag during cleanup sprints, and removing it once
 the baseline is clean.
 :::

@@ -143,10 +143,10 @@ un PNG per una social card personalizzata e non lo referenzi mai nel frontmatter
 `themeConfig`, Zenzic lo segnala come asset inutilizzato alla prossima esecuzione di
 `zenzic check all`.
 
-Escludi i file sorgente intenzionalmente non referenziati in `zenzic.toml`:
+Escludi i file sorgente intenzionalmente non referenziati in `.zenzic.toml`:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 excluded_assets = [
     "**/_category_.json",
     "assets/social/*.svg",   # SVG sorgenti — non serviti come immagini OG

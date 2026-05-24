@@ -26,7 +26,7 @@ logica chiamata **Workspace**. Il Workspace ha un confine autorizzato unico: la
 Senza una radice nota, Zenzic non può:
 
 - Risolvere link interni in stile assoluto (`/docs/pagina.md`) in file fisici.
-- Localizzare `zenzic.toml` o la configurazione di fallback del motore
+- Localizzare `.zenzic.toml` o la configurazione di fallback del motore
 
   (`mkdocs.yml`, `zensical.toml`).
 
@@ -53,7 +53,7 @@ radice** (vince il primo trovato):
 | Marcatore | Motivazione |
 |-----------|-------------|
 | `.git/` | Segnale VCS universale. La presenza di `.git` indica che l'utente ha definito esplicitamente un confine di repository. Zenzic rispetta questo confine come perimetro del progetto. |
-| `zenzic.toml` | Il file di configurazione nativo di Zenzic. La sua presenza è una dichiarazione inequivocabile che quella directory è la radice dell'analisi, anche in ambienti senza VCS. |
+| `.zenzic.toml` | Il file di configurazione nativo di Zenzic. La sua presenza è una dichiarazione inequivocabile che quella directory è la radice dell'analisi, anche in ambienti senza VCS. |
 
 `mkdocs.yml`, `pyproject.toml` e altri file specifici del motore sono
 deliberatamente **esclusi** dai marcatori di radice. Includerli accoplerebbe
@@ -93,7 +93,7 @@ un suggerimento di rimedio esplicito.
 
 ### 4. Agnosticismo rispetto al Motore
 
-`.git` e `zenzic.toml` sono entrambi marcatori agnostici. La stessa logica di
+`.git` e `.zenzic.toml` sono entrambi marcatori agnostici. La stessa logica di
 scoperta della radice funziona identicamente indipendentemente dal fatto che il
 progetto sia costruito con MkDocs, Zensical, Hugo o plain Pandoc. Questo
 preserva l'invariante fondamentale per cui il comportamento di Zenzic è
@@ -114,8 +114,8 @@ indipendente dal toolchain di build.
 
 - **Negativo (pre-modifica):** Il comando `zenzic init`, il cui scopo è
 
-  *creare* il marcatore di radice `zenzic.toml`, non poteva essere eseguito in
-  una directory priva sia di `.git` sia di `zenzic.toml`. Questo era il
+  *creare* il marcatore di radice `.zenzic.toml`, non poteva essere eseguito in
+  una directory priva sia di `.git` sia di `.zenzic.toml`. Questo era il
   **Paradosso di Bootstrap** (ZRT-005).
 
 ---
@@ -123,7 +123,7 @@ indipendente dal toolchain di build.
 ## Modifica — ZRT-005: Il Fallback Genesis (2026-04-08)
 
 **Problema:** `zenzic init` è il comando di bootstrap per nuovi progetti. Il
-suo scopo esatto è creare il marcatore di radice `zenzic.toml`. Richiedere che
+suo scopo esatto è creare il marcatore di radice `.zenzic.toml`. Richiedere che
 un marcatore di radice *esista già* prima che `init` possa girare è un
 Catch-22.
 

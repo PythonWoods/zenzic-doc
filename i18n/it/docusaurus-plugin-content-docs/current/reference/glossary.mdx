@@ -56,7 +56,7 @@ La gerarchia a 4 livelli che determina quali file e directory Zenzic scansiona. 
 | :---: | :--- | :--- |
 | L1 | System Guardrails | Esclusioni immutabili codificate nel software (`.git`, `.venv`, `node_modules`, ecc.) |
 | L2 | Forced Inclusions + VCS | `included_dirs`/`included_file_patterns` da config e pattern `.gitignore` |
-| L3 | Config Exclusions | `excluded_dirs` e `excluded_file_patterns` da `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
+| L3 | Config Exclusions | `excluded_dirs` e `excluded_file_patterns` da `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` |
 | L4 | CLI Overrides | Flag `--exclude-dir` e `--include-dir` |
 
 La gerarchia viene valutata dall'alto verso il basso; la prima regola corrispondente vince. I System Guardrails (L1) non possono mai essere sovrascritti da nessuna configurazione utente.
@@ -91,7 +91,7 @@ Struttura dati per-file popolata durante la Passata 1 della Two-Pass Pipeline. L
 
 ### Zenzic Score {#zenzic-score}
 
-Un punteggio di qualità da 0 a 100 calcolato su quattro categorie ponderate: Structural (30%), Navigation (25%), Content (20%) e Brand & Assets (25%). Ogni categoria accumula deduzioni di penalità per codice (D092 — Zenzic Penalty Scorer). Il punteggio viene calcolato da `zenzic score` e può essere imposto come soglia in CI tramite `fail_under` in `zenzic.toml` o `--fail-under` da CLI.
+Un punteggio di qualità da 0 a 100 calcolato su quattro categorie ponderate: Structural (30%), Navigation (25%), Content (20%) e Brand & Assets (25%). Ogni categoria accumula deduzioni di penalità per codice (D092 — Zenzic Penalty Scorer). Il punteggio viene calcolato da `zenzic score` e può essere imposto come soglia in CI tramite `fail_under` in `.zenzic.toml` o `--fail-under` da CLI.
 
 Usa `zenzic score --save` per salvare uno snapshot del punteggio corrente e `zenzic diff` per confrontarlo con la baseline.
 

@@ -18,26 +18,23 @@ Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tant
 
 ## Esempi canonici
 
-Il repository include fixture mantenuti e allineati ai contratti documentati:
+Il repository include fixture Z-code mantenuti e allineati ai contratti documentati:
 
-- `examples/mkdocs-basic/` — baseline MkDocs 1.6 (nav annidata, link nav esterno,
-
-  tag YAML tolleranti come `!ENV` e `!relative`).
-
-- `examples/i18n-standard/` — gold standard bilingue in strict mode.
-- `examples/zensical-basic/` — baseline Zensical current release (`[project].nav`).
-- `examples/broken-docs/` — errori intenzionali (exit 1).
-- `examples/security_lab/` — fixture sicurezza (credential scanner exit 2, path traversal guard exit 3).
+- `examples/z101-broken-links/` — fixture integrità link (Z101 LINK_BROKEN, exit 1).
+- `examples/z201-credentials/` — fixture credential scanner (Z201 CREDENTIAL_SECRET, exit 2).
+- `examples/z405-unused-assets/` — fixture asset non referenziato (Z405, exit 1).
+- `examples/z601-brand-obsolescence/` — fixture obsolescenza brand (Z601, exit 1).
+- `examples/z602-i18n-parity/` — fixture parità i18n (Z602, exit 1).
 
 :::tip[Vuoi eseguirlo subito?]
 
 ```bash
-uvx zenzic lab      # esplora tutti i 9 esempi inclusi — zero setup
+uvx zenzic lab      # esplora tutti i 5 scenari Z-code — zero setup
 uvx zenzic check all  # proteggi la tua documentazione
 ```
 
-Vuoi vedere come Zenzic gestisce Docusaurus v3 o il proxy di Zensical?
-Lancia `zenzic lab` e guarda Zenzic in azione su ogni engine supportato.
+Vuoi vedere come Zenzic rileva credenziali o gap di parità i18n?
+Lancia `zenzic lab` e guarda Zenzic in azione su ogni scenario Z-code della galleria.
 :::
 
 ---
@@ -154,7 +151,7 @@ Il workflow standard per adottare Zenzic in un progetto:
 
 ### 1. Init — scaffolding del file di configurazione {#init}
 
-Crea un `zenzic.toml` con un singolo comando. Zenzic identifica il motore di
+Crea un `.zenzic.toml` con un singolo comando. Zenzic identifica il motore di
 documentazione dai file di configurazione presenti e preimposta `[build_context]` di conseguenza:
 
 ```bash
@@ -164,7 +161,7 @@ zenzic init
 **Esempio di output quando è presente `mkdocs.yml`:**
 
 ```text
-Created zenzic.toml
+Created .zenzic.toml
   Engine pre-set to mkdocs (detected from mkdocs.yml).
 
 Edit the file to enable rules, adjust directories, or set a quality threshold.
@@ -175,12 +172,12 @@ Se non viene rilevato alcun file di configurazione engine, `zenzic init` produce
 engine-agnostico (modalità Standalone). In entrambi i casi, tutte le impostazioni sono commentate
 per default — decommenta e modifica solo i campi di cui hai bisogno.
 
-Eseguendo Zenzic senza un `zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
+Eseguendo Zenzic senza un `.zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
 pannello Helpful Hint che suggerisce `zenzic init`:
 
 ```text
 ╭─ 💡 Zenzic Tip ─────────────────────────────────────────────────────╮
-│ Using built-in defaults — no zenzic.toml found.                      │
+│ Using built-in defaults — no .zenzic.toml found.                      │
 │ Run zenzic init to create a project configuration file.              │
 │ Customise docs directory, excluded paths, engine adapter, and rules. │
 ╰──────────────────────────────────────────────────────────────────────╯
@@ -188,10 +185,10 @@ pannello Helpful Hint che suggerisce `zenzic init`:
 
 ### 2. Config — personalizza per il tuo progetto {#config}
 
-Modifica il `zenzic.toml` generato per silenziare il rumore e impostare soglie appropriate:
+Modifica il `.zenzic.toml` generato per silenziare il rumore e impostare soglie appropriate:
 
 ```toml
-# zenzic.toml — nella root del repository
+# .zenzic.toml — nella root del repository
 excluded_assets = [
 "assets/favicon.svg",      # referenziato da mkdocs.yml, non da nessuna pagina .md
 "assets/social-preview.png",

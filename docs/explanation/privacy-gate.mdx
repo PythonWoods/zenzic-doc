@@ -137,7 +137,7 @@ flowchart LR
     classDef engine  fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#e2e8f0
     classDef output  fill:#0f172a,stroke:#dc2626,stroke-width:2px,color:#e2e8f0
 
-    S["📄 Source\n.md / .mdx files\nzenzic.toml"]:::source
+    S["📄 Source\n.md / .mdx files\n.zenzic.toml"]:::source
     CRED["🛡️ Credential Scanner IO\nsafe_read_line()\nCredentialViolation → Exit 2"]:::credentials
     M["📦 Metadata\nbuild_metadata_cache()\nFileMetadata\n(slug · draft · tags)"]:::adapter
     A["🔌 Adapter\nget_route_info()\nRouteMetadata\n(URL · status · proxy)"]:::adapter
@@ -155,7 +155,7 @@ flowchart LR
     R --> F
 ```
 
-**Source** — Zenzic reads raw `.md`/`.mdx` files and `zenzic.toml` directly
+**Source** — Zenzic reads raw `.md`/`.mdx` files and `.zenzic.toml` directly
 from disk. No HTML build required.
 
 **Credential Scanner IO** — Every frontmatter line passes through `safe_read_line()`
@@ -177,7 +177,7 @@ Four built-in adapters ship with Zenzic; third-party adapters install via
 
 **Rule Engine** — applies all active checks to the raw Markdown text:
 built-in checks (orphans, snippets, placeholders, assets, references),
-project-specific `[[custom_rules]]` from `zenzic.toml`, and any installed
+project-specific `[[custom_rules]]` from `.zenzic.toml`, and any installed
 plugin rules (Python classes registered under `zenzic.rules`).
 
 **Findings** — results are aggregated into typed `IntegrityReport` objects
@@ -247,7 +247,7 @@ This separation is deliberate and permanent:
   its own i18n system, its own React components. It is not a subdirectory of the engine — it is
   a peer.
 
-- **Zenzic validates its own documentation.** The docs repo carries a `zenzic.toml` that
+- **Zenzic validates its own documentation.** The docs repo carries a `.zenzic.toml` that
 
   configures the Docusaurus adapter. Every documentation pull request is linted by the tool it
   documents. This is the recursive proof that engine agnosticism works.

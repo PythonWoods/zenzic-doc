@@ -9,7 +9,7 @@ description: "ADR 011: Perché Zenzic current release preferisce una absolute_pa
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
 :::danger[Superata — Feature Rimossa in v0.8.0]
-Questa ADR documenta una feature rimossa in **v0.8.0 (EPOCH 7a.1 purge)**. Lo schema TOML `[link_validation]` non esiste più nel config model. Le configurazioni che dichiarano ancora `[link_validation]` generano un errore di validazione TOML all'avvio. **Migrazione:** eliminare il blocco `[link_validation]` da `zenzic.toml`.
+Questa ADR documenta una feature rimossa in **v0.8.0 (EPOCH 7a.1 purge)**. Lo schema TOML `[link_validation]` non esiste più nel config model. Le configurazioni che dichiarano ancora `[link_validation]` generano un errore di validazione TOML all'avvio. **Migrazione:** eliminare il blocco `[link_validation]` da `.zenzic.toml`.
 :::
 
 # ADR 011: Allowlist dei Percorsi Assoluti Cross-Istanza
@@ -53,12 +53,12 @@ Le opzioni esaminate erano:
 ## Decisione
 
 Adottiamo l'**Opzione A**: una chiave `[link_validation]
-absolute_path_allowlist` in `zenzic.toml`. Il validator onora i prefissi
+absolute_path_allowlist` in `.zenzic.toml`. Il validator onora i prefissi
 elencati come **Trusted Ghost Routes** — percorsi assoluti i cui target sono
 project-internal ma vivono fuori dalla VSM corrente.
 
 ```toml
-# zenzic.toml — contratto cross-plugin dichiarativo
+# .zenzic.toml — contratto cross-plugin dichiarativo
 [link_validation]
 absolute_path_allowlist = ["/developers/", "/api/"]
 ```
@@ -116,7 +116,7 @@ Questi vincoli sono conseguenze permanenti di ADR-0011:
 - **Pillar 1 preservato.** La sorgente Markdown resta engine-agnostica.
 - **Pillar 2 preservato.** La validazione resta deterministica, niente
   processi extra o scansioni di rete.
-- **Audit Trail.** Il `zenzic.toml` diventa una mappa documentata delle
+- **Audit Trail.** Il `.zenzic.toml` diventa una mappa documentata delle
   interdipendenze inter-istanza — leggibile dagli umani, parseable dagli
   strumenti, versionata in git.
 - **Reversibile.** Rimuovere una voce ripristina l'enforcement Z105 su quel
@@ -129,7 +129,7 @@ Questi vincoli sono conseguenze permanenti di ADR-0011:
   validator non può rilevare una rotta rinominata tramite la sola allowlist.
 - **Disciplina di Scope Richiesta.** Un'allowlist sconsiderata (`["/"]`)
   disabiliterebbe silenziosamente Z105. La code review delle modifiche al
-  `zenzic.toml` è la protezione.
+  `.zenzic.toml` è la protezione.
 
 ## Analisi della Trasparenza
 
@@ -173,12 +173,12 @@ ammetterebbe tacitamente che il routing è "rotto e accettato"; in
 realtà il routing è **corretto per design**, e quella correttezza
 merita la promozione alla configurazione strutturale del progetto. La
 soppressione inline dei link cross-plugin frammenta anche la verità:
-un futuro contributor che leggesse `zenzic.toml` non troverebbe alcuna
+un futuro contributor che leggesse `.zenzic.toml` non troverebbe alcuna
 traccia della dipendenza cross-confine.
 
 **Regola decisionale.** Se la stessa soppressione servirebbe in due o
 più file, non è più un'eccezione locale — è una verità sistemica e
-appartiene a `zenzic.toml`. Promuovila.
+appartiene a `.zenzic.toml`. Promuovila.
 
 ---
 

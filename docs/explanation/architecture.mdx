@@ -140,7 +140,7 @@ The credential scanner applies a hard **1 MiB per-line limit** before any regex 
 
 The `_validate_docs_root()` function in `cli/_shared.py` elevates the **path traversal guard** (Exit Code 3) from a link-time check to a **pre-scan filesystem barrier**.
 
-**Threat model:** A malicious or misconfigured `zenzic.toml` containing `docs_dir = "../../etc"` would cause Zenzic to scan OS system directories, potentially leaking sensitive file contents through credential detection findings or exposing the directory structure in error messages.
+**Threat model:** A malicious or misconfigured `.zenzic.toml` containing `docs_dir = "../../etc"` would cause Zenzic to scan OS system directories, potentially leaking sensitive file contents through credential detection findings or exposing the directory structure in error messages.
 
 **Mitigation:** `resolve()` expands all symlinks and `..` components before the comparison, so `docs_dir = "repo/../../../etc"` is caught unconditionally. The check runs before any I/O phase and cannot be bypassed by CLI flags.
 
@@ -329,13 +329,13 @@ follow the target, not the caller's current working directory.
 ### The Problem: Context Hijacking
 
 Without this protocol, running `zenzic check links ../other-project` from inside `project-A`
-would load `project-A`'s `zenzic.toml`, use `project-A`'s engine adapter, and apply
+would load `project-A`'s `.zenzic.toml`, use `project-A`'s engine adapter, and apply
 `project-A`'s exclusion rules — to `other-project`'s documentation. This is **Context
 Hijacking**: the caller's environment silently overrides the target's.
 
 ### The Solution: Three-Step Sovereignty
 
-The protocol resolves config and scope from the target path (not from `cwd`): it finds the target's `zenzic.toml`, calibrates `docs_root` to the target directory or file, and applies the Sandbox Guard to anchor the path traversal check at the target — not the caller's location.
+The protocol resolves config and scope from the target path (not from `cwd`): it finds the target's `.zenzic.toml`, calibrates `docs_root` to the target directory or file, and applies the Sandbox Guard to anchor the path traversal check at the target — not the caller's location.
 
 ### The Genesis Nomad (`init`)
 
@@ -346,7 +346,7 @@ target directory. The caller's CWD is never written to.
 
 ```bash
 
-zenzic init ../new-project          # creates ../new-project/zenzic.toml
+zenzic init ../new-project          # creates ../new-project/.zenzic.toml
 zenzic init /workspace/fresh-docs   # creates the directory if needed
 
 ```
@@ -355,7 +355,7 @@ zenzic init /workspace/fresh-docs   # creates the directory if needed
 
 | Invariant | Guarantee |
 | :--- | :--- |
-| Config isolation | Target's `zenzic.toml` is loaded; caller's config is never consulted |
+| Config isolation | Target's `.zenzic.toml` is loaded; caller's config is never consulted |
 | Sandbox guard | Path traversal guard scan scope is anchored at `docs_root`, not `cwd` |
 | No CWD mutation | `init` writes to the target; caller's working directory is untouched |
 | Hint display | Banner shows the resolved target path for operator confidence |
@@ -405,7 +405,7 @@ option.
 
 ### What this means
 
-Every pattern declared in `[[custom_rules]]` inside `zenzic.toml` is compiled at load time
+Every pattern declared in `[[custom_rules]]` inside `.zenzic.toml` is compiled at load time
 by the [RE2 library](https://github.com/google/re2) (via `google-re2`). RE2 implements a
 true DFA: it processes the input string in a single left-to-right pass, with no backtracking.
 

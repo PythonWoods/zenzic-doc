@@ -9,7 +9,7 @@ description: "ADR 011: Why Zenzic uses a declarative absolute_path_allowlist ove
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
 :::danger[Superseded — Feature Removed in v0.8.0]
-This ADR documents a feature that was removed in **v0.8.0 (EPOCH 7a.1 purge)**. The `[link_validation]` TOML schema no longer exists in the config model. Configurations that still declare `[link_validation]` raise a TOML validation error at startup. **Migration:** delete the `[link_validation]` block from `zenzic.toml` entirely.
+This ADR documents a feature that was removed in **v0.8.0 (EPOCH 7a.1 purge)**. The `[link_validation]` TOML schema no longer exists in the config model. Configurations that still declare `[link_validation]` raise a TOML validation error at startup. **Migration:** delete the `[link_validation]` block from `.zenzic.toml` entirely.
 :::
 
 # ADR 011: Cross-Instance Absolute Path Allowlist
@@ -50,12 +50,12 @@ The options examined were:
 ## Decision
 
 We adopt **Option A**: a `[link_validation] absolute_path_allowlist` key in
-`zenzic.toml`. The validator honors listed prefixes as **Trusted Ghost
+`.zenzic.toml`. The validator honors listed prefixes as **Trusted Ghost
 Routes** — absolute paths whose targets are project-internal but live outside
 the current VSM.
 
 ```toml
-# zenzic.toml — declarative cross-plugin contract
+# .zenzic.toml — declarative cross-plugin contract
 [link_validation]
 absolute_path_allowlist = ["/developers/", "/api/"]
 ```
@@ -109,7 +109,7 @@ These constraints are permanent consequences of ADR-0011:
 - **Pillar 1 preserved.** Markdown source stays engine-agnostic.
 - **Pillar 2 preserved.** Validation remains deterministic, no extra
   processes or network scans.
-- **Audit Trail.** The `zenzic.toml` becomes a documented map of inter-
+- **Audit Trail.** The `.zenzic.toml` becomes a documented map of inter-
   instance dependencies — readable by humans, parseable by tools, versioned
   in git.
 - **Reversible.** Removing an entry restores Z105 enforcement on that
@@ -121,7 +121,7 @@ These constraints are permanent consequences of ADR-0011:
   → `/dev/`), the allowlist in the core repo must be updated by hand. The
   validator cannot detect a renamed route through the allowlist alone.
 - **Scope Discipline Required.** A reckless allowlist (`["/"]`) would
-  silently disable Z105 entirely. Code review of `zenzic.toml` changes is
+  silently disable Z105 entirely. Code review of `.zenzic.toml` changes is
   the protection.
 
 ## Transparency Analysis
@@ -164,11 +164,11 @@ admit that the routing is "broken and accepted"; in fact the routing is
 **correct by design**, and that correctness deserves promotion to the
 project's structural configuration. Inline suppression of cross-plugin
 links also fragments the truth: a future contributor reading
-`zenzic.toml` would see no record of the cross-boundary dependency.
+`.zenzic.toml` would see no record of the cross-boundary dependency.
 
 **Decision rule.** If the same suppression would be needed in two or
 more files, it is no longer a local exception — it is a systemic truth
-and belongs in `zenzic.toml`. Promote it.
+and belongs in `.zenzic.toml`. Promote it.
 
 ---
 

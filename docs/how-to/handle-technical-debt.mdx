@@ -43,7 +43,7 @@ $$
 
 Where:
 - $n$ = total active suppressions (inline + per-file)
-- `cap` = `governance.suppression_cap` in `zenzic.toml` (default: **30**)
+- `cap` = `governance.suppression_cap` in `.zenzic.toml` (default: **30**)
 
 The cost **escalates** once you exceed the cap: each suppression beyond 30 costs **2 pts** instead of 1.
 
@@ -84,7 +84,7 @@ zenzic explain Z601
 The output shows:
 - The rule's scoring tier (structural / navigation / content / brand)
 - The penalty per occurrence (pts/occurrence)
-- The per-file suppression status from your current `zenzic.toml`
+- The per-file suppression status from your current `.zenzic.toml`
 
 ---
 
@@ -104,14 +104,14 @@ Remove the suppression and fix the underlying issue:
 
 If the suppression is genuinely intentional (historical reference, migration context, etc.):
 1. Keep the suppression but add a prose comment explaining why.
-2. Prefer per-file suppression over inline comments for structural exceptions — it centralises the policy in `zenzic.toml`.
+2. Prefer per-file suppression over inline comments for structural exceptions — it centralises the policy in `.zenzic.toml`.
 3. Adjust `governance.suppression_cap` if your project has a legitimately higher baseline.
 
 ---
 
 ## Step 4: Adjust the Governance Cap {#step-4}
 
-If your project has a known-good suppression baseline that is higher than 30, raise the cap in `zenzic.toml`:
+If your project has a known-good suppression baseline that is higher than 30, raise the cap in `.zenzic.toml`:
 
 ```toml
 [governance]

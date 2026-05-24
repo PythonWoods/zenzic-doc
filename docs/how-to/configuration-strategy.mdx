@@ -20,12 +20,12 @@ Configuration is resolved in this order. Later files override earlier ones:
 
 | Priority | File | Committed | Scope |
 |:--------:|:-----|:----------|:------|
-| 1 (lowest) | `zenzic.toml` | Yes | Shared project defaults |
-| 2 | `pyproject.toml [tool.zenzic]` | Yes | Embedded alternative to `zenzic.toml` |
+| 1 (lowest) | `.zenzic.toml` | Yes | Shared project defaults |
+| 2 | `pyproject.toml [tool.zenzic]` | Yes | Embedded alternative to `.zenzic.toml` |
 | 3 (highest) | `.zenzic.local.toml` | **No** | Machine-local overrides |
 
-`zenzic.toml` and `pyproject.toml [tool.zenzic]` are mutually exclusive — Zenzic reads
-whichever is present. If both exist, `zenzic.toml` takes priority.
+`.zenzic.toml` and `pyproject.toml [tool.zenzic]` are mutually exclusive — Zenzic reads
+whichever is present. If both exist, `.zenzic.toml` takes priority.
 
 `.zenzic.local.toml` is **always additive** for list fields (e.g. `forbidden_patterns`,
 `excluded_dirs`). Scalar fields follow last-write-wins.
@@ -58,7 +58,7 @@ Possible causes:
 
 ### Files that should be excluded are still scanned
 
-`excluded_dirs` and `excluded_file_patterns` in `zenzic.toml` apply only to documentation
+`excluded_dirs` and `excluded_file_patterns` in `.zenzic.toml` apply only to documentation
 source files. They do not interact with `.gitignore`.
 
 **System-excluded paths** (never need to be declared):
@@ -117,9 +117,9 @@ For the full field specification, see the [Configuration Reference](../reference
 
 | Field | File | Type | Notes |
 |:------|:-----|:-----|:------|
-| `docs_dir` | `zenzic.toml` | string | Root of the documentation tree |
-| `fail_under` | `zenzic.toml` | int 0–100 | Minimum DQS; exit 1 if below |
-| `engine` | `zenzic.toml [build_context]` | string | `standalone`, `docusaurus`, `mkdocs` |
+| `docs_dir` | `.zenzic.toml` | string | Root of the documentation tree |
+| `fail_under` | `.zenzic.toml` | int 0–100 | Minimum DQS; exit 1 if below |
+| `engine` | `.zenzic.toml [build_context]` | string | `standalone`, `docusaurus`, `mkdocs` |
 | `forbidden_patterns` | `.zenzic.local.toml [governance]` | list[str] | RE2 DFA; case-insensitive by default |
-| `suppression_cap` | `zenzic.toml [governance]` | int | Max allowed `zenzic:ignore` directives |
-| `brand_obsolescence` | `zenzic.toml [governance]` | list[str] | Deprecated brand terms (Z601) |
+| `suppression_cap` | `.zenzic.toml [governance]` | int | Max allowed `zenzic:ignore` directives |
+| `brand_obsolescence` | `.zenzic.toml [governance]` | list[str] | Deprecated brand terms (Z601) |

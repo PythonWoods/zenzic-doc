@@ -48,10 +48,10 @@ the `zenzic.adapters` entry-point group is a valid Zenzic adapter — for any SS
 
 ## Choosing an engine
 
-The `[build_context]` section in `zenzic.toml` tells Zenzic which engine your project uses:
+The `[build_context]` section in `.zenzic.toml` tells Zenzic which engine your project uses:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "mkdocs"   # or "zensical" or "docusaurus"
 ```
@@ -102,13 +102,13 @@ build pipeline. This means:
   Links inside macro expressions are not validated.
 
 For projects that rely heavily on dynamic nav generation, add the plugin-generated paths to
-`excluded_dirs` in `zenzic.toml` to suppress false orphan reports until a native adapter
+`excluded_dirs` in `.zenzic.toml` to suppress false orphan reports until a native adapter
 is available.
 
 ### Minimal configuration
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -206,7 +206,7 @@ using Python's `tomllib` — **zero YAML**. No `mkdocs.yml` is read or required.
 ### Native Enforcement
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "zensical"
 ```
@@ -272,14 +272,14 @@ defines i18n semantics natively in `zensical.toml` without plugin indirection. T
 - `ConfigurationError` is impossible for misconfigured i18n — the TOML schema is explicit
 
 When Zensical's i18n configuration is available in `zensical.toml`, `ZensicalAdapter` will
-read it directly. Until then, locale topology is sourced from `[build_context]` in `zenzic.toml`.
+read it directly. Until then, locale topology is sourced from `[build_context]` in `.zenzic.toml`.
 
 ### Limitations
 
 - **Plugin-generated nav** — Zensical plugins that mutate the nav at runtime are not evaluated.
 
   Pages included only by such plugins may be reported as orphans. Add their paths to
-  `excluded_dirs` in `zenzic.toml` to suppress false reports.
+  `excluded_dirs` in `.zenzic.toml` to suppress false reports.
 
 - **Dynamic content** — `zensical.toml` is parsed as static TOML. Template expressions or
 
@@ -287,7 +287,7 @@ read it directly. Until then, locale topology is sourced from `[build_context]` 
 
 - **Discovery scope** — `ZensicalAdapter` searches for `zensical.toml` (or the MkDocs bridge)
 
-  in the project root only. Nested workspace layouts require an explicit `docs_dir` in `zenzic.toml`.
+  in the project root only. Nested workspace layouts require an explicit `docs_dir` in `.zenzic.toml`.
 
 ---
 
@@ -318,7 +318,7 @@ Node.js code. Instead, the `DocusaurusAdapter`:
 ### Minimal configuration
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -513,7 +513,7 @@ against the repository root. This means Zenzic validates these links without tri
 false-positive **PathTraversal** errors.
 
 :::note
-To enable full `@site/` resolution, set `repo_root` in your `zenzic.toml`
+To enable full `@site/` resolution, set `repo_root` in your `.zenzic.toml`
 `[build_context]` section, or run `zenzic check` from the project root so Zenzic
 can detect it automatically.
 :::
@@ -554,7 +554,7 @@ from Docusaurus to another engine, Zenzic will surface every `pathname:///` link
 
   build-time produce navigation that Zenzic cannot observe statically. Pages included only
   by custom plugins will be reported as orphans. Add their paths to `excluded_dirs` in
-  `zenzic.toml` to suppress false reports.
+  `.zenzic.toml` to suppress false reports.
 
 - **`docusaurus.config.ts` with complex TypeScript** — the adapter uses pattern matching,
 
@@ -612,7 +612,7 @@ does not use a supported SSG.
 ### Minimal configuration
 
 ```toml
-# zenzic.toml — minimum required for standalone
+# .zenzic.toml — minimum required for standalone
 docs_dir = "docs"
 ```
 
@@ -639,4 +639,4 @@ to compare against. Orphan detection requires a nav declaration: MkDocs `nav:`, 
 `[nav]`, or Docusaurus `sidebars.ts`.
 
 For locale-aware projects without a supported engine, add locale directory names to
-`excluded_dirs` in `zenzic.toml` to prevent false orphan reports.
+`excluded_dirs` in `.zenzic.toml` to prevent false orphan reports.

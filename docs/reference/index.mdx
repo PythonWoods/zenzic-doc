@@ -9,11 +9,11 @@ description: "Checks, configuration fields, custom rules DSL, and discovery logi
 
 # Configuration Reference
 
-Zenzic reads a single `zenzic.toml` file at the repository root. All fields are optional — Zenzic works out of the box with no configuration file at all.
+Zenzic reads a single `.zenzic.toml` file at the repository root. All fields are optional — Zenzic works out of the box with no configuration file at all.
 
 :::tip[Zero configuration]
 
-Most projects need no `zenzic.toml` at all. Run `uvx zenzic check all` — if it passes,
+Most projects need no `.zenzic.toml` at all. Run `uvx zenzic check all` — if it passes,
 you're done. Only add configuration when you need to customise specific behaviour.
 :::
 
@@ -22,14 +22,14 @@ you're done. Only add configuration when you need to customise specific behaviou
 ## Getting started
 
 For most projects, no configuration file is needed. Run `zenzic check all` and Zenzic will locate
-the repository root via `.git` or `zenzic.toml` and apply sensible defaults. If no `zenzic.toml`
+the repository root via `.git` or `.zenzic.toml` and apply sensible defaults. If no `.zenzic.toml`
 is found, Zenzic prints a Helpful Hint panel suggesting `zenzic init`.
 
 Use `zenzic init` to scaffold the file automatically. It detects the documentation engine from the
 project root (e.g. `mkdocs.yml`) and pre-sets `engine` in `[build_context]`:
 
 ```bash
-zenzic init             # creates zenzic.toml with detected engine
+zenzic init             # creates .zenzic.toml with detected engine
 zenzic init --pyproject # embeds [tool.zenzic] in pyproject.toml instead
 zenzic init --force     # overwrite an existing file
 ```
@@ -39,10 +39,10 @@ as a `[tool.zenzic]` table.  Pass `--pyproject` to skip the interactive prompt.
 
 When you need to customise behaviour — for example, to raise the word-count threshold for concise
 technical reference pages, or to add team-specific placeholder patterns — create or edit
-`zenzic.toml` at the repository root:
+`.zenzic.toml` at the repository root:
 
 ```toml
-# zenzic.toml — minimal starting point
+# .zenzic.toml — minimal starting point
 
 # Uncomment and adjust the fields you need
 # Everything is optional. Absent fields use their defaults
@@ -77,7 +77,7 @@ This reference is split into focused pages:
 
 ## Full example
 
-The simplest complete `zenzic.toml` that exercises every section:
+The simplest complete `.zenzic.toml` that exercises every section:
 
 ```toml
 docs_dir = "docs"
@@ -112,14 +112,14 @@ at startup:
 
 | Priority | Source | When used |
 | :---: | :--- | :--- |
-| 1 | `zenzic.toml` at repository root | Always preferred — the authoritative sovereign config |
-| 2 | `[tool.zenzic]` in `pyproject.toml` | Used only when `zenzic.toml` is absent |
+| 1 | `.zenzic.toml` at repository root | Always preferred — the authoritative sovereign config |
+| 2 | `[tool.zenzic]` in `pyproject.toml` | Used only when `.zenzic.toml` is absent |
 | 3 | Built-in defaults | Used when neither file is present |
 
 The repository root is located by walking upward from the current working directory until a `.git`
-directory, a `zenzic.toml`, or a `pyproject.toml` is found.
+directory, a `.zenzic.toml`, or a `pyproject.toml` is found.
 
-### zenzic.toml (Priority 1)
+### .zenzic.toml (Priority 1)
 
 The dedicated configuration file. If it exists, Zenzic reads it and ignores `pyproject.toml`
 entirely — there is no merging between the two files.
@@ -146,12 +146,12 @@ message  = "Remove DRAFT marker before publishing."
 severity = "warning"
 ```
 
-All fields supported in `zenzic.toml` are equally supported in `[tool.zenzic]`. The
+All fields supported in `.zenzic.toml` are equally supported in `[tool.zenzic]`. The
 `[build_context]` sub-table becomes `[tool.zenzic.build_context]`, and `[[custom_rules]]` arrays
 become `[[tool.zenzic.custom_rules]]`.
 
 :::note[Sovereignty rule]
-If both `zenzic.toml` **and** `pyproject.toml` exist in the repository root, `zenzic.toml`
+If both `.zenzic.toml` **and** `pyproject.toml` exist in the repository root, `.zenzic.toml`
 wins unconditionally. The `[tool.zenzic]` table in `pyproject.toml` is ignored.
 :::
 

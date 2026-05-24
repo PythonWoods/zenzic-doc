@@ -44,7 +44,7 @@ When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting t
 
 ### Setting the Suppression Budget
 
-The CAP is configured in `zenzic.toml`:
+The CAP is configured in `.zenzic.toml`:
 
 ```toml
 [governance]
@@ -112,7 +112,7 @@ The comment should always appear at the **end of the line**, following the indus
 Silence a rule for an entire file glob without adding inline comments to the source.
 Use this for pages where intentional exceptions are structurally necessary (legacy guides, migration docs).
 
-Add a `[governance.per_file_ignores]` table to your `zenzic.toml`:
+Add a `[governance.per_file_ignores]` table to your `.zenzic.toml`:
 
 ```toml
 [governance.per_file_ignores]
@@ -153,7 +153,7 @@ Zero-debt strategic exemptions for entire directory trees or specific file globs
 Designed for **structural exceptions** where suppressions are organizationally mandated, not technical debt.
 Unlike exclusion zones, directory policies keep an audit trail in `--audit` mode.
 
-Add a `[governance.directory_policies]` table to your `zenzic.toml`:
+Add a `[governance.directory_policies]` table to your `.zenzic.toml`:
 
 ```toml
 [governance.directory_policies]

@@ -20,7 +20,7 @@ Il Privacy Gate usa un modello a due file:
 
 | File | Scopo | Committato? |
 |:-----|:------|:-----------|
-| `zenzic.toml` | Configurazione condivisa del progetto | Sì |
+| `.zenzic.toml` | Configurazione condivisa del progetto | Sì |
 | `.zenzic.local.toml` | Pattern proibiti locali alla macchina | **No** |
 
 `forbidden_patterns` risiede esclusivamente in `.zenzic.local.toml`. Questo file non viene
@@ -111,12 +111,12 @@ tua versione di Zenzic) invece di scrivere un file.
 
 La configurazione viene risolta nel seguente ordine (le voci successive sovrascrivono le precedenti):
 
-1. `zenzic.toml` — default condivisi del progetto
-2. `pyproject.toml [tool.zenzic]` — alternativa embedded a `zenzic.toml`
+1. `.zenzic.toml` — default condivisi del progetto
+2. `pyproject.toml [tool.zenzic]` — alternativa embedded a `.zenzic.toml`
 3. `.zenzic.local.toml` — overlay locale alla macchina (merge additivo per i campi lista)
 
 Per `forbidden_patterns`, l'overlay è **additivo**: i pattern in `.zenzic.local.toml`
-vengono aggiunti a eventuali pattern dichiarati in `zenzic.toml`. Non li sostituiscono.
+vengono aggiunti a eventuali pattern dichiarati in `.zenzic.toml`. Non li sostituiscono.
 
 ---
 
@@ -124,4 +124,4 @@ vengono aggiunti a eventuali pattern dichiarati in `zenzic.toml`. Non li sostitu
 
 - [Riferimento Configurazione](../reference/configuration-reference.mdx) — specifica completa del campo `forbidden_patterns`
 - [Strategia di Configurazione](./configuration-strategy.mdx) — troubleshooting del modello a due file
-- [Esempio Z204](../tutorials/examples.mdx#plugin-scaffold) — dimostrazione eseguibile
+- [Panoramica degli Esempi](../tutorials/examples.mdx) — scenari Z-code eseguibili

@@ -87,7 +87,7 @@ Servers returning `401`, `403`, or `429` are treated as reachable — these indi
 By default, links like `[text](#section)` that point to a heading within the same file are not validated. To enable:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 validate_same_page_anchors = true
 ```
 
@@ -227,10 +227,10 @@ Blocks tagged with any other language (`bash`, `javascript`, `mermaid`, etc.) ar
 
 :::tip[Tuning]
 
-Use `snippet_min_lines` in `zenzic.toml` to skip short blocks. The default of `1` checks everything. Set it to `3` or higher to ignore import stubs.
+Use `snippet_min_lines` in `.zenzic.toml` to skip short blocks. The default of `1` checks everything. Set it to `3` or higher to ignore import stubs.
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 snippet_min_lines = 3
 ```
 
@@ -257,7 +257,7 @@ Both signals are independent. A page may trigger one, both, or neither.
 :::tip[Tuning]
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 placeholder_max_words = 100
 placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
 ```
@@ -333,7 +333,7 @@ The credential scanner scans **every line of every file** during Pass 1, includi
 | `hex-encoded-payload` | Hex-encoded byte sequences (3+ consecutive `\xNN` escapes) |
 | `gitlab-pat` | GitLab Personal Access Tokens (`glpat-…`) |
 
-**Exit Code 2** is reserved for credential scanner events. It is never suppressed by `--exit-zero` or `exit_zero = true` in `zenzic.toml`.
+**Exit Code 2** is reserved for credential scanner events. It is never suppressed by `--exit-zero` or `exit_zero = true` in `.zenzic.toml`.
 
 :::danger[If you receive exit code 2]
 

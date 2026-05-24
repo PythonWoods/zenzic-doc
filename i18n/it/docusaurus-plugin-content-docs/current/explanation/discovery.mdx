@@ -27,7 +27,7 @@ Due marcatori sono autorizzati (il primo trovato vince):
 | Marcatore | Descrizione |
 | :--- | :--- |
 | `.git/` | Marcatore VCS universale — presente in qualsiasi repository tracciato da Git |
-| `zenzic.toml` | Il file di configurazione di Zenzic — il contratto esplicito di governance |
+| `.zenzic.toml` | Il file di configurazione di Zenzic — il contratto esplicito di governance |
 
 Entrambi sono intenzionalmente engine-neutral: `mkdocs.yml`, `docusaurus.config.ts` e file
 analoghi dei motori di build non sono marcatori di radice. Il Core deve rimanere indipendente
@@ -45,7 +45,7 @@ Senza un marcatore di radice (VCS o configurazione), Zenzic non può stabilire i
 L'assenza di un marcatore di radice produce questo errore:
 
 ```text
-ERROR: Could not locate repo root: no .git directory or zenzic.toml found in any
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found in any
 ancestor of /percorso/al/target. Run Zenzic from inside the repository.
 ```
 
@@ -56,7 +56,7 @@ interrompe una scansione fuori perimetro prima che inizi.
 
 Per consentire a Zenzic di analizzare una directory, soddisfa uno dei seguenti requisiti:
 
-**Opzione A — Inizializza Zenzic** (crea il marcatore `zenzic.toml`):
+**Opzione A — Inizializza Zenzic** (crea il marcatore `.zenzic.toml`):
 
 ```bash
 cd /percorso/al/target
@@ -73,7 +73,7 @@ git init
 **Opzione C — Esegui dall'interno di un progetto esistente** (la traversata verso l'alto troverà il marcatore automaticamente):
 
 ```bash
-# Da qualsiasi punto all'interno di un progetto che ha già .git/ o zenzic.toml
+# Da qualsiasi punto all'interno di un progetto che ha già .git/ o .zenzic.toml
 zenzic check all
 ```
 
@@ -132,7 +132,7 @@ flowchart TD
 | :---: | :--- | :--- | :---: |
 | **L1** | System Guardrails | Hardcoded in `SYSTEM_EXCLUDED_DIRS` | No |
 | **L2** | Forced Inclusions + VCS | `included_dirs`, `included_file_patterns`, `.gitignore` | Sì (config) |
-| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` | Sì (config) |
+| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` | Sì (config) |
 | **L4** | CLI Overrides | Flag `--exclude-dir`, `--include-dir` | Sì (per-run) |
 
 ### L1 — System Guardrails {#level-1-system}
@@ -164,7 +164,7 @@ Il livello 2 gestisce due forze opposte:
 L'ordine di precedenza tra questi due sotto-livelli e chiaro: le inclusioni forzate vincono sempre sulle esclusioni VCS.
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 respect_vcs_ignore = true
 included_dirs = ["generated-docs"]
 included_file_patterns = ["api.generated.md"]
@@ -174,7 +174,7 @@ In questo esempio, anche se `generated-docs/` e nel `.gitignore`, Zenzic lo scan
 
 ### L3 — Configurazione {#level-3-config}
 
-Le esclusioni dichiarate in `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml`:
+Le esclusioni dichiarate in `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml`:
 
 - `excluded_dirs` — directory da escludere (additive ai Guardrail)
 - `excluded_file_patterns` — pattern glob applicati ai nomi dei file

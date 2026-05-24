@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Configuration Reference
-description: Complete reference for zenzic.toml and pyproject.toml configuration fields, types, defaults, and CLI overrides.
+description: Complete reference for .zenzic.toml and pyproject.toml configuration fields, types, defaults, and CLI overrides.
 ---
 
 # Configuration Reference
@@ -15,22 +15,22 @@ Zenzic resolves configuration using a **4-level hierarchy** — the most specifi
 | Priority | Source | Description |
 | :---: | :--- | :--- |
 | **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
-| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 2 | `.zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
 | 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
 | 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
 
-**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `.zenzic.toml` for that single run without modifying any file.
 
 **Exclusions and inclusions are cumulative, not replacing:**
 
 - `--exclude-dir` *adds* to the list already defined in the config file.
-- `--include-dir` is a **force override**: a directory excluded in `zenzic.toml` but included via `--include-dir` will be scanned. The only exception is Level 1 System Guardrails (`node_modules`, `.git`, etc.) — these cannot be force-included.
+- `--include-dir` is a **force override**: a directory excluded in `.zenzic.toml` but included via `--include-dir` will be scanned. The only exception is Level 1 System Guardrails (`node_modules`, `.git`, etc.) — these cannot be force-included.
 
 When a config file is present but contains a TOML syntax error, Zenzic raises a `ConfigurationError` with a Rich-formatted message. It will **never** silently fall back to defaults when a file exists but cannot be parsed.
 
-### Standalone `zenzic.toml`
+### Standalone `.zenzic.toml`
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 docs_dir = "docs"
 snippet_min_lines = 3
 strict = true
@@ -61,7 +61,7 @@ must remain private on your workstation.
 
 `.zenzic.local.toml` is the private maneuvering space for engineers.
 
-- It is loaded after shared config (`zenzic.toml` or `[tool.zenzic]`) and therefore wins locally.
+- It is loaded after shared config (`.zenzic.toml` or `[tool.zenzic]`) and therefore wins locally.
 - It is intended for machine-specific paths, temporary cleanup knobs, diagnostics, and private secrets.
 - It is never a team policy file.
 
@@ -71,7 +71,7 @@ When `zenzic init` runs in a Git repository, it enforces `.zenzic.local.toml` in
 ```toml title=".zenzic.local.toml"
 # --- ZENZIC LOCAL OVERRIDES ---
 # This file is auto-generated and must stay in .gitignore.
-# Everything declared here overrides shared zenzic.toml only on your machine.
+# Everything declared here overrides shared .zenzic.toml only on your machine.
 
 [core]
 # docs_dir = "my/custom/path/to/docs"
@@ -91,7 +91,7 @@ forbidden_patterns = []
 # ZENZIC_FORCE_COLOR = "true"
 ```
 
-Use `zenzic.toml` for shared constitutional governance. Use `.zenzic.local.toml`
+Use `.zenzic.toml` for shared constitutional governance. Use `.zenzic.local.toml`
 for local experiments and private data only.
 
 ### Source-of-Truth Introspection (`zenzic config explain`)
@@ -106,7 +106,7 @@ zenzic config explain
 Expected provenance semantics:
 
 - `local` -> `.zenzic.local.toml (Override)`
-- `global` -> `zenzic.toml`
+- `global` -> `.zenzic.toml`
 - `default` -> built-in fallback
 
 Example (governance override):
@@ -337,15 +337,15 @@ htmlcov/
 
 If `respect_vcs_ignore = true`, Zenzic would silently exclude any documentation file whose path matches these patterns. A `docs/coverage-report.md` page, for instance, would vanish from orphan detection without any diagnostic message. The linter would appear healthy while silently skipping entire documentation subtrees.
 
-**The Explicit zenzic.toml is Superior**
+**The Explicit .zenzic.toml is Superior**
 
-The `excluded_dirs` and `excluded_file_patterns` fields in your project config — `zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` — (L3 in the Layered Exclusion hierarchy) are:
+The `excluded_dirs` and `excluded_file_patterns` fields in your project config — `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` — (L3 in the Layered Exclusion hierarchy) are:
 
 - **Visible** — exclusions are declared in one authoritative file, not scattered across `.gitignore`, `.dockerignore`, and `.npmignore`
 - **Reviewable** — a new contributor running `git diff` sees exactly what Zenzic excludes and why
 - **Stable** — exclusions do not change when a developer updates `.gitignore` for unrelated tooling reasons
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 # Explicit exclusions are maintainable and auditable
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
@@ -622,17 +622,17 @@ Several configuration values can be overridden per-run via CLI flags on `zenzic 
 
 ### Override Priority
 
-CLI flags always override both `zenzic.toml` and `pyproject.toml` values for a single run. The full priority chain is:
+CLI flags always override both `.zenzic.toml` and `pyproject.toml` values for a single run. The full priority chain is:
 
 ```text
-CLI flags > zenzic.toml > pyproject.toml [tool.zenzic] > built-in defaults
+CLI flags > .zenzic.toml > pyproject.toml [tool.zenzic] > built-in defaults
 ```
 
 ---
 
 ## Complete Example {#complete-example}
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 
 docs_dir = "docs"
 snippet_min_lines = 3
@@ -717,7 +717,7 @@ Zenzic, Zenzic emits a `WARNING` when it encounters an unrecognised TOML section
 If you see:
 
 ```text
-WARNING  zenzic.toml: unknown section [project] will be ignored …
+WARNING  .zenzic.toml: unknown section [project] will be ignored …
 ```
 
 move all settings that follow that header to the top of the file, before any `[section]` tag.
@@ -725,7 +725,7 @@ move all settings that follow that header to the top of the file, before any `[s
 ### Dogfooding Pattern with Docusaurus {#dogfooding}
 
 Documenting a linter with its own linter creates intentional false positives: pages that *explain* placeholder patterns will trigger the placeholder checker.
-Disable the checker in the `zenzic.toml` of the documentation repository:
+Disable the checker in the `.zenzic.toml` of the documentation repository:
 
 ```toml
 # Doc repository — explains lint rules without triggering them

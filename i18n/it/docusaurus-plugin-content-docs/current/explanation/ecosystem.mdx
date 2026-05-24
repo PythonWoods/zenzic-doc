@@ -115,7 +115,7 @@ sovrana. Incorporarli in un hook di build li degraderebbe a controlli best-effor
 # Installazione — un solo pacchetto, nessun extra
 pip install zenzic
 
-# Rilevamento motore dai file di configurazione, scrittura zenzic.toml
+# Rilevamento motore dai file di configurazione, scrittura .zenzic.toml
 zenzic init
 
 # Audit completo — VSM + credential scanner + path traversal guard + validazione link
@@ -190,7 +190,7 @@ Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codic
 
 Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 [governance]
 brand_obsolescence = ["Obsidian"]
 ```
@@ -203,4 +203,4 @@ Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici
 
 - [Riferimento Architettura](./architecture) — Approfondimento sul Protocollo Adapter e il contratto `BaseAdapter`.
 - [Discovery e Esclusione](./discovery) — Come Zenzic scopre i file prima che l'Adapter venga consultato.
-- [Riferimento Configurazione](../reference/configuration-reference) — Selezione engine in `[build_context]` e opzioni `zenzic.toml`.
+- [Riferimento Configurazione](../reference/configuration-reference) — Selezione engine in `[build_context]` e opzioni `.zenzic.toml`.

@@ -19,7 +19,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
-      - 'zenzic.toml'
+      - '.zenzic.toml'
       - '.github/workflows/ci.yml'
       - '.pre-commit-config.yaml'
       - '.pre-commit-hooks.yaml'
@@ -38,7 +38,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
-      - 'zenzic.toml'
+      - '.zenzic.toml'
       - '.github/workflows/ci.yml'
 
 permissions:

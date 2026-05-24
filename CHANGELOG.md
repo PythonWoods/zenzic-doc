@@ -112,7 +112,7 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 
   Following the Core's EPOCH 7a.1 purge, the `[link_validation].absolute_path_allowlist`
-  TOML block is **gone** from `zenzic-doc/zenzic.toml`. Multi-instance Docusaurus
+  TOML block is **gone** from `zenzic-doc/.zenzic.toml`. Multi-instance Docusaurus
   plugin URL prefixes (`/docs/`, `/developers/`, every additional content-docs
   instance) are now auto-detected by `DocusaurusAdapter.get_absolute_url_prefixes()`
   via static parsing of `docusaurus.config.ts` plus a filesystem heuristic over

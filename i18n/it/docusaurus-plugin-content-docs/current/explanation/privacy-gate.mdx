@@ -149,7 +149,7 @@ flowchart LR
     classDef engine  fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#e2e8f0
     classDef output  fill:#0f172a,stroke:#dc2626,stroke-width:2px,color:#e2e8f0
 
-    S["📄 Sorgente\nfile .md / .mdx\nzenzic.toml"]:::source
+    S["📄 Sorgente\nfile .md / .mdx\n.zenzic.toml"]:::source
     CRED["🛡️ Credential Scanner IO\nsafe_read_line()\nCredentialViolation → Exit 2"]:::credentials
     M["📦 Metadati\nbuild_metadata_cache()\nFileMetadata\n(slug · draft · tags)"]:::adapter
     A["🔌 Adapter\nget_route_info()\nRouteMetadata\n(URL · status · proxy)"]:::adapter
@@ -167,7 +167,7 @@ flowchart LR
     R --> F
 ```
 
-**Sorgente** — Zenzic legge i file `.md`/`.mdx` grezzi e `zenzic.toml`
+**Sorgente** — Zenzic legge i file `.md`/`.mdx` grezzi e `.zenzic.toml`
 direttamente da disco. Nessun build HTML richiesto.
 
 **Credential Scanner IO** — Ogni riga del frontmatter passa attraverso `safe_read_line()`
@@ -191,7 +191,7 @@ installano via `pip` e vengono scoperti tramite l'entry-point group
 
 **Rule Engine** — applica tutti i controlli attivi al testo Markdown grezzo:
 controlli built-in (orfani, snippet, placeholder, asset, riferimenti),
-`[[custom_rules]]` specifiche del progetto da `zenzic.toml`, e qualsiasi
+`[[custom_rules]]` specifiche del progetto da `.zenzic.toml`, e qualsiasi
 regola plugin installata (classi Python registrate sotto `zenzic.rules`).
 
 **Findings** — i risultati vengono aggregati in oggetti tipizzati
@@ -263,7 +263,7 @@ Questa separazione è intenzionale e permanente:
 
   suo sistema i18n, i suoi componenti React. Non è una sottodirectory del motore — è un peer.
 
-- **Zenzic valida la propria documentazione.** Il repo docs include un `zenzic.toml` che configura
+- **Zenzic valida la propria documentazione.** Il repo docs include un `.zenzic.toml` che configura
 
   l'adapter Docusaurus. Ogni pull request documentale è verificata dallo strumento che documenta.
   Questa è la prova ricorsiva che l'agnosticismo di motore funziona.

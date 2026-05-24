@@ -26,7 +26,7 @@ boundary: the **project root**.
 Without a known root, Zenzic cannot:
 
 - Resolve absolute-style internal links (`/docs/page.md`) to physical files.
-- Locate `zenzic.toml` or a fallback engine config (`mkdocs.yml`, `zensical.toml`).
+- Locate `.zenzic.toml` or a fallback engine config (`mkdocs.yml`, `zensical.toml`).
 - Enforce the Virtual Site Map (VSM) scan scope — the oracle that determines
 
   what is a valid page and what is a Ghost Route.
@@ -50,7 +50,7 @@ markers** (first match wins):
 | Marker | Rationale |
 |--------|-----------|
 | `.git/` | Universal VCS signal. If a `.git` directory exists, the user has explicitly defined a repository boundary. Zenzic respects this boundary as the project scan scope. |
-| `zenzic.toml` | Zenzic's own configuration file. Its presence is an unambiguous declaration that this directory is the analysis root, even in non-VCS environments. |
+| `.zenzic.toml` | Zenzic's own configuration file. Its presence is an unambiguous declaration that this directory is the analysis root, even in non-VCS environments. |
 
 `mkdocs.yml`, `pyproject.toml`, and other engine-specific files are
 deliberately **excluded** from root markers. Including them would couple the
@@ -90,7 +90,7 @@ hint.
 
 ### 4. Engine Neutrality
 
-`.git` and `zenzic.toml` are both engine-neutral markers. The same root
+`.git` and `.zenzic.toml` are both engine-neutral markers. The same root
 discovery logic works identically whether the project is built with MkDocs,
 Zensical, Hugo, or plain Pandoc. This preserves the core invariant that
 Zenzic's behaviour is independent of the build toolchain.
@@ -106,8 +106,8 @@ Zenzic's behaviour is independent of the build toolchain.
 - **Positive:** Ghost Route logic and VSM construction have a stable anchor.
 - **Negative (pre-amendment):** The `zenzic init` command, whose purpose is
 
-  to *create* the `zenzic.toml` root marker, could not be run in a directory
-  that had neither `.git` nor `zenzic.toml`. This was the **Bootstrap
+  to *create* the `.zenzic.toml` root marker, could not be run in a directory
+  that had neither `.git` nor `.zenzic.toml`. This was the **Bootstrap
   Paradox** (ZRT-005).
 
 ---
@@ -115,7 +115,7 @@ Zenzic's behaviour is independent of the build toolchain.
 ## Amendment — ZRT-005: The Genesis Fallback (2026-04-08)
 
 **Problem:** `zenzic init` is the bootstrap command for new projects. Its
-entire purpose is to create the `zenzic.toml` root marker. Requiring a root
+entire purpose is to create the `.zenzic.toml` root marker. Requiring a root
 marker to *already exist* before `init` can run is a Catch-22.
 
 **Resolution:** `find_repo_root()` gains a keyword-only parameter:

@@ -188,10 +188,10 @@ myengine = "my_engine_adapter.adapter:MyEngineAdapter"
 ```
 
 The **key** (left of `=`) becomes the engine name users pass to `--engine` or
-set as `engine` in `zenzic.toml`:
+set as `engine` in `.zenzic.toml`:
 
-```toml title="zenzic.toml"
-# In the user's zenzic.toml
+```toml title=".zenzic.toml"
+# In the user's .zenzic.toml
 [build_context]
 engine = "myengine"
 ```
@@ -249,7 +249,7 @@ zenzic check all --engine myengine
 
 ## Step 5 — Custom Rules Are Engine-Independent
 
-`[[custom_rules]]` in `zenzic.toml` run on raw Markdown source and are
+`[[custom_rules]]` in `.zenzic.toml` run on raw Markdown source and are
 completely decoupled from the adapter layer.  A rule that searches for `DRAFT`
 will fire identically whether the adapter is MkDocs, Zensical, or your own
 engine.  No extra work is required to make custom rules compatible with a new

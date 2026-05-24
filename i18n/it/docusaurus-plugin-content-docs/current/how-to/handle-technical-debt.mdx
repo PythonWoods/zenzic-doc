@@ -45,7 +45,7 @@ $$
 
 Dove:
 - $n$ = soppressioni attive totali (inline + per-file)
-- `cap` = `governance.suppression_cap` in `zenzic.toml` (default: **30**)
+- `cap` = `governance.suppression_cap` in `.zenzic.toml` (default: **30**)
 
 Il costo **scala** non appena superi il cap: ogni soppressione oltre 30 costa **2 pt** invece di 1.
 
@@ -89,7 +89,7 @@ zenzic explain Z601
 L'output mostra:
 - Il tier di scoring della regola (structural / navigation / content / brand)
 - La penalità per occorrenza (pt/occorrenza)
-- Lo stato di soppressione per-file dall'attuale `zenzic.toml`
+- Lo stato di soppressione per-file dall'attuale `.zenzic.toml`
 
 ---
 
@@ -110,7 +110,7 @@ Rimuovi la soppressione e correggi il problema sottostante:
 Se la soppressione è genuinamente intenzionale (riferimento storico, contesto di migrazione, ecc.):
 1. Mantieni la soppressione ma aggiungi un commento in prosa che spiega il perché.
 2. Preferisci la soppressione per-file rispetto ai commenti inline per le eccezioni strutturali —
-   centralizza la policy in `zenzic.toml`.
+   centralizza la policy in `.zenzic.toml`.
 3. Aggiusta `governance.suppression_cap` se il tuo progetto ha una baseline di soppressione
    legittimamente più alta.
 
@@ -119,7 +119,7 @@ Se la soppressione è genuinamente intenzionale (riferimento storico, contesto d
 ## Passo 4: Aggiustare il Cap di Governance {#step-4}
 
 Se il tuo progetto ha una baseline di soppressione consolidata che è superiore a 30, alza
-il cap in `zenzic.toml`:
+il cap in `.zenzic.toml`:
 
 ```toml
 [governance]

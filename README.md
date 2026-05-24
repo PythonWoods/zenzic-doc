@@ -76,7 +76,7 @@ just verify
 
 ## Governance: Directory Policies and Clean Prose
 
-`zenzic.toml` defines a `[governance.directory_policies]` contract that grants **zero-debt exemptions**
+`.zenzic.toml` defines a `[governance.directory_policies]` contract that grants **zero-debt exemptions**
 to specific path patterns. Findings on matching paths are annotated `[POLICY_EXEMPTION]` in audit
 output and do not count against `suppression_cap`.
 

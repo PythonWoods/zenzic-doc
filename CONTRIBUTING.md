@@ -204,7 +204,7 @@ ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
 Rules:
 
 1. Exclude only the exact pre-launch URL(s), never broad domains unless explicitly approved.
-2. Keep exclusions in CI runtime env only; do not hardcode them in `zenzic.toml`.
+2. Keep exclusions in CI runtime env only; do not hardcode them in `.zenzic.toml`.
 3. Remove each exclusion as soon as the URL is publicly reachable.
 
 For full architecture and lifecycle policy, see

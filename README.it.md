@@ -76,7 +76,7 @@ just verify
 
 ## Governance: Directory Policies e Prosa Pulita
 
-`zenzic.toml` definisce un contratto `[governance.directory_policies]` che concede **esenzioni zero-debt**
+`.zenzic.toml` definisce un contratto `[governance.directory_policies]` che concede **esenzioni zero-debt**
 a specifici pattern di percorso. I finding su percorsi corrispondenti vengono annotati `[POLICY_EXEMPTION]`
 nell'output di audit e non contano contro il `suppression_cap`.
 

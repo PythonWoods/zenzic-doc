@@ -1,224 +1,137 @@
 ---
 sidebar_position: 1
-sidebar_label: "Panoramica"
 title: Panoramica degli Esempi
-description: Un indice ragionato dei progetti di riferimento Zenzic — da Standalone Mode zero-config a VCS-aware, integrazione MkDocs, adapter Docusaurus e security lab credential scanner.
+description: Un indice guidato della galleria Z-code di Zenzic — cinque scenari di violazione autonomi che dimostrano il motore di audit in azione.
 ---
 
 # Esempi
 
-Ogni esempio nel repository Zenzic è un **progetto di riferimento autonomo**. Clonalo. Esegui `uvx zenzic check all`. Ogni esempio isola una funzionalità — il codice mostrato è il minimo necessario per riprodurre l'exit code riportato.
+Ogni esempio nel repository Zenzic è un **fixture di violazione Z-code autonomo**.
+Clonalo. Esegui `uvx zenzic check all`. Ogni esempio isola una classe di violazione Z-code —
+il codice mostrato è il minimo necessario per riprodurre l'exit code riportato.
 
 Tutti gli esempi si trovano in [`examples/`](https://github.com/PythonWoods/zenzic/tree/main/examples) nel repository Zenzic.
 
 ---
 
-## Schema di Esecuzione Rapida {#quick-run}
+## Pattern di Esecuzione Rapida {#quick-run}
 
 Ogni esempio segue la stessa convenzione:
 
 ```bash
-# Dalla radice del repo — nessuna installazione richiesta
-cd examples/<nome-esempio>
+# Dalla root del repo — nessuna installazione richiesta
+cd examples/<z-code-dir>
 uvx zenzic check all
 ```
 
-Oppure con un'installazione persistente:
+Oppure lancia la galleria interattiva:
 
 ```bash
-pip install zenzic
-cd examples/<nome-esempio>
-zenzic check all
+uvx zenzic lab            # menu della galleria
+uvx zenzic lab z101       # esegui lo scenario Z101
+uvx zenzic lab all        # esegui tutti e 5 gli scenari
 ```
 
 ---
 
-## Catalogo degli Esempi {#catalog}
+## Galleria Z-Code {#gallery}
 
-### Standalone — Quality Gate Agnostico al Motore {#example-standalone}
+### z101-broken-links — Integrità dei Link {#example-z101}
 
-**Directory:** `examples/standalone-markdown/`
-**Motore:** `standalone` (nessun motore di build)
-**Uscita attesa:** 0
-
-Dimostra Zenzic in esecuzione senza alcun motore di documentazione. Nessun `mkdocs.yml`, nessun `docusaurus.config.ts` — solo file Markdown e un `zenzic.toml`. Il `StandaloneAdapter` tratta ogni file come raggiungibile.
-
-**Inizia qui se:** hai un progetto con Markdown puro e nessun SSG.
-
----
-
-### mkdocs-basic — Showcase dell'Adapter MkDocs {#example-mkdocs-basic}
-
-**Directory:** `examples/mkdocs-basic/`
-**Motore:** `mkdocs`
-**Uscita attesa:** 0
-
-Dimostra `MkDocsAdapter` che legge `mkdocs.yml` staticamente — nessun binario `mkdocs` invocato.
-Mostra la struttura i18n a cartelle con contenuto in inglese e italiano.
-
-**Inizia qui se:** usi MkDocs e vuoi validare link, nav e struttura i18n prima di eseguire la build.
-
-:::note CLI Sovrana
-Esegui Zenzic come CLI standalone tramite analisi esterna guidata da Adapter — fornisce la stessa applicazione con copertura completa di VSM,
-credential scanner e path traversal guard:
-
-```yaml title=".github/workflows/zenzic.yml"
-
-- run: zenzic check all --strict
-
-```
-
-:::
-
----
-
-### docusaurus-v3 — Routing Metadata-Driven {#example-docusaurus-v3}
-
-**Directory:** `examples/docusaurus-v3/`
-**Motore:** `docusaurus`
-**Uscita attesa:** 0
-
-Dimostra `DocusaurusAdapter` che analizza `docusaurus.config.ts` come testo puro — nessuna installazione di Node.js richiesta. Funzionalità chiave: `docs/guide/about.mdx` usa un frontmatter `slug: /about` override, dimostrando che Zenzic mappa correttamente l'URL canonico tramite `_extract_frontmatter_slug()` invece di derivarlo dal percorso filesystem.
-
-```mdx title="docs/guide/about.mdx"
----
-title: Informazioni su Questo Progetto
-slug: /about
----
-```
-
-**Inizia qui se:** usi Docusaurus v3 e vuoi validare link, slug e struttura i18n.
-
----
-
-### zensical-basic — Motore Zensical {#example-zensical-basic}
-
-**Directory:** `examples/zensical-basic/`
-**Motore:** `zensical`
-**Uscita attesa:** 0
-
-Progetto minimale che dimostra `ZensicalAdapter` che legge `zensical.toml`. Nessuna libreria Python richiesta per l'adapter — `ZensicalAdapter` usa solo `tomllib` (stdlib).
-
-**Inizia qui se:** usi Zensical come motore di build.
-
----
-
-### i18n-standard — Documentazione Bilingue Gold Standard {#example-i18n-standard}
-
-**Directory:** `examples/i18n-standard/`
-**Motore:** `mkdocs`
-**Uscita attesa:** 0
-
-Un progetto di documentazione bilingue strutturato per ottenere **100/100** con `zenzic check all --strict`. Ogni pagina ha un originale inglese e una traduzione italiana nella struttura di directory corretta. Tutti i link, gli slug e le voci di navigazione sono coerenti tra i locale.
-
-**Inizia qui se:** mantieni documentazione multilingue e vuoi stabilire una baseline di qualità.
-
----
-
-### vcs-aware-project — Esclusione VCS-Aware {#vcs-aware}
-
-**Directory:** `examples/vcs-aware-project/`
-**Motore:** `standalone`
-**Uscita attesa:** 0
-
-Dimostra il **Modello di Esclusione a Livelli** introdotto in current release:
-
-- `respect_vcs_ignore = true` — Zenzic legge i pattern `.gitignore` al livello L2-VCS.
-- `included_dirs = ["generated-api"]` — forza una directory ignorata da VCS nello scope al livello L2 Forced Inclusion.
-- `excluded_file_patterns = ["*_draft_*"]` — esclusione L3 a livello di nome file dalla configurazione.
-
-**Inizia qui se:** hai directory ignorate da VCS che devono (o non devono) essere scansionate.
-
----
-
-### custom-dir-target — Audit di una Directory Non-Default {#custom-dir}
-
-**Directory:** `examples/custom-dir-target/`
-**Motore:** `standalone`
-**Uscita attesa:** 0
-
-Mostra come puntare Zenzic a una directory docs che differisce dal default `docs/`. Utile per monorepo o progetti dove la documentazione si trova in `content/`, `pages/`, o un altro percorso personalizzato.
-
----
-
-### single-file-target — Audit Mirato su un Singolo File {#single-file}
-
-**Directory:** `examples/single-file-target/`
-**Motore:** `standalone`
-**Uscita attesa:** 0
-
-Dimostra come limitare `zenzic check links` a un singolo file specifico usando l'argomento posizionale `PATH` (per esempio: `zenzic check links docs/pagina.md`). Utile per hook pre-commit che devono controllare solo i file modificati.
-
----
-
-### plugin-scaffold-demo — Plugin di Regole Custom {#plugin-scaffold}
-
-**Directory:** `examples/plugin-scaffold-demo/`
-**Motore:** `standalone`
-**Uscita attesa:** 0
-
-L'implementazione di riferimento per scrivere un plugin di regole Zenzic personalizzato. Generato da `zenzic init --plugin my-plugin`. Mostra come implementare una sottoclasse `BaseRule`, registrarla tramite l'entry point `zenzic.rules`, e pacchettizzarla come pacchetto Python autonomo.
-
-**Inizia qui se:** hai bisogno di un controllo che Zenzic non fornisce nativamente.
-
----
-
-### z108-empty-link — Controllo Link Vuoti {#example-z108-empty-link}
-
-**Directory:** `examples/rules/z108-empty-link/`
-**Motore:** `standalone`
+**Directory:** `examples/z101-broken-links/`
+**Engine:** `standalone`
+**Z-Code:** Z101 `LINK_BROKEN`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-Dimostra il rilevamento dei link Markdown vuoti (Z108 `EMPTY_LINK_TEXT`). Questa fixture fallisce intenzionalmente il gate di Integrità Strutturale per mostrare come vengono riportate le etichette di link malformate.
+Dimostra come Zenzic rileva link Markdown che puntano a file non esistenti.
+Il fixture contiene `docs/index.md` con due link rotti — uno verso una pagina mancante e
+uno verso un'ancora inesistente. Entrambi generano finding Z101.
+
+**Parti da qui se:** vuoi capire come Zenzic valida i riferimenti di link interni.
 
 ---
 
-### broken-docs — Fixture di Riferimento per i Fallimenti {#example-broken-docs}
+### z201-credentials — Credential Scanner {#example-z201}
 
-**Directory:** `examples/broken-docs/`
-**Motore:** `mkdocs`
-<ZenzicOutput status="error" exitCode={1} compact />
-
-Attiva intenzionalmente ogni controllo Zenzic per produrre un report di fallimento completo. Questa è la baseline di regressione per il motore dei controlli. Studia questo esempio per capire esattamente come appare ogni tipo di risultato nell'output.
-
----
-
-### security_lab — Fixture di Test per il credential scanner {#security-lab}
-
-**Directory:** `examples/security_lab/`
-**Motore:** `mkdocs`
+**Directory:** `examples/z201-credentials/`
+**Engine:** `standalone`
+**Z-Code:** Z201 `CREDENTIAL_SECRET`
 <ZenzicOutput status="breach" exitCode={2} compact />
 
-Attiva intenzionalmente lo credential scanner (rilevamento credenziali) e il link checker (traversamento path, probe host assoluti). Il codice di uscita 2 è atteso e corretto — la credenziale deve essere ruotata. Questa fixture è la baseline di regressione per il sottosistema credential scanner.
+Contiene una chiave di accesso AWS sintetica incorporata in `docs/setup.md`. Zenzic attiva
+il finding di severity **security_breach** — l'allerta non sopprimibile per una credenziale esposta.
+L'exit code 2 è atteso e corretto.
 
 :::danger[Questo esempio esce con codice 2 per design]
-`security_lab` contiene credenziali sintetiche posizionate intenzionalmente per i test del credential scanner. **Non** interpretare il codice di uscita 2 di questo esempio come un vero incidente di sicurezza. Per verificare che il credential scanner funzioni, esegui: `cd examples/security_lab && zenzic check all; echo $?` e conferma che l'output sia `2`.
+`z201-credentials` contiene una credenziale sintetica inserita intenzionalmente per il testing
+del credential scanner. **Non** trattare l'exit code 2 di questo esempio come un vero
+incidente di sicurezza.
 :::
+
+**Parti da qui se:** vuoi vedere come il credential scanner rileva e segnala i segreti.
 
 ---
 
-## Matrice Funzionalità-Esempio {#matrix}
+### z405-unused-assets — Integrità degli Asset {#example-z405}
 
-| Funzionalità | Esempio |
-| :--- | :--- |
-| Markdown puro zero-config | [standalone](#example-standalone) |
-| Analisi statica MkDocs | [mkdocs-basic](#example-mkdocs-basic) |
-| Baseline MkDocs sicura per migrazione | [mkdocs-basic](#example-mkdocs-basic) |
-| Adapter Docusaurus + routing slug | [docusaurus-v3](#example-docusaurus-v3) |
-| Motore Zensical | [zensical-basic](#example-zensical-basic) |
-| Bilingue / i18n 100/100 | [i18n-standard](#example-i18n-standard) |
-| Esclusione VCS-aware (L1–4) | [vcs-aware-project](#vcs-aware) |
-| `docs_dir` personalizzata | [custom-dir-target](#custom-dir) |
-| Scope `PATH` su singolo file | [single-file-target](#single-file) |
-| Plugin di regole custom | [plugin-scaffold-demo](#plugin-scaffold) |
-| Rilevamento link vuoti Z108 | [z108-empty-link](#example-z108-empty-link) |
-| Come appaiono i fallimenti | [broken-docs](#example-broken-docs) |
-| Rilevamento credenziali | [security_lab](#security-lab) |
+**Directory:** `examples/z405-unused-assets/`
+**Engine:** `standalone`
+**Z-Code:** Z405 `UNREFERENCED_ASSET`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+Contiene `assets/banner.png` — un file immagine che esiste su disco ma non è mai
+collegato da nessun documento Markdown. Zenzic rileva l'asset orfano e riporta Z405.
+
+**Parti da qui se:** vuoi verificare che ogni asset del progetto sia effettivamente utilizzato.
+
+---
+
+### z601-brand-obsolescence — Obsolescenza del Brand {#example-z601}
+
+**Directory:** `examples/z601-brand-obsolescence/`
+**Engine:** `standalone`
+**Z-Code:** Z601 `BRAND_OBSOLESCENCE`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+Il `.zenzic.toml` dichiara `OldPlatform` come nome brand obsoleto. Il file `docs/index.md`
+del fixture menziona `OldPlatform` — generando finding Z601 per ogni occorrenza.
+
+**Parti da qui se:** mantieni un elenco governance di nomi prodotto o brand deprecati
+che devono essere eliminati dalla documentazione.
+
+---
+
+### z602-i18n-parity — Parità i18n {#example-z602}
+
+**Directory:** `examples/z602-i18n-parity/`
+**Engine:** `standalone`
+**Z-Code:** Z602 `I18N_PARITY`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/en/` contiene due pagine: `index.md` e `guide.md`. Il locale italiano
+`docs/it/` ha solo `index.md` — `guide.md` è assente. Zenzic rileva il gap di parità
+e riporta Z602.
+
+**Parti da qui se:** mantieni documentazione multilingua e devi verificare che ogni
+pagina tradotta in un locale esista anche in tutti gli altri locale configurati.
+
+---
+
+## Matrice Feature-Esempio {#matrix}
+
+| Z-Code | Classe di Violazione | Esempio |
+| :---: | :--- | :--- |
+| Z101 | Link interni rotti | [z101-broken-links](#example-z101) |
+| Z201 | Rilevamento credenziali / segreti | [z201-credentials](#example-z201) |
+| Z405 | Asset su disco non referenziato | [z405-unused-assets](#example-z405) |
+| Z601 | Nome brand deprecato nel contenuto | [z601-brand-obsolescence](#example-z601) |
+| Z602 | Gap di parità file locale i18n | [z602-i18n-parity](#example-z602) |
 
 ---
 
 ## Vedi Anche {#see-also}
 
-- [Panoramica Ecosistema](../explanation/ecosystem) — Modello Adapter vs Integrazione.
-- [Discovery e Esclusione](../explanation/discovery) — Come funziona la gerarchia di esclusione a livelli.
-- [Riferimento Controlli](../reference/checks) — Tutti i comandi `zenzic check` disponibili e i loro risultati.
+- [Panoramica dell'Ecosistema](../explanation/ecosystem) — Modello Adapter vs Integration.
+- [Discovery & Esclusione](../explanation/discovery) — Come funziona la gerarchia di esclusione a livelli.
+- [Riferimento Check](../reference/checks) — Tutti i comandi `zenzic check` disponibili e i loro finding.
+- [Riferimento CLI — lab](../reference/cli#lab) — Documentazione completa di `zenzic lab`.

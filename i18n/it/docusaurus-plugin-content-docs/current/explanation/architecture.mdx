@@ -143,7 +143,7 @@ Il credential scanner applica un limite rigido di **1 MiB per riga** prima di qu
 
 La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
 
-**Modello di minaccia:** Un `zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
+**Modello di minaccia:** Un `.zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
 
 **Mitigazione:** `resolve()` espande tutti i symlink e i componenti `..` prima del confronto, quindi `docs_dir = "repo/../../../etc"` viene catturato incondizionatamente. Il controllo viene eseguito prima di qualsiasi fase I/O e non può essere aggirato da flag CLI.
 
@@ -341,14 +341,14 @@ scansione seguono la destinazione, non la directory corrente del chiamante.
 ### Il Problema: Context Hijacking
 
 Senza questo protocollo, eseguire `zenzic check links ../altro-progetto` dall'interno di
-`progetto-A` caricherebbe il `zenzic.toml` di `progetto-A`, userebbe il suo adapter e
+`progetto-A` caricherebbe il `.zenzic.toml` di `progetto-A`, userebbe il suo adapter e
 applicherebbe le sue regole di esclusione — alla documentazione di `altro-progetto`.
 Questo è il **Context Hijacking**: l'ambiente del chiamante sovrascrive silenziosamente
 quello della destinazione.
 
 ### La Soluzione: Sovranità in Tre Passi
 
-Il protocollo risolve config e perimetro dal percorso della destinazione (non da `cwd`): trova il `zenzic.toml` della destinazione, calibra `docs_root` alla directory o file di destinazione, e applica la Guardia Sandbox per ancorare il controllo di path traversal alla destinazione — non alla posizione del chiamante.
+Il protocollo risolve config e perimetro dal percorso della destinazione (non da `cwd`): trova il `.zenzic.toml` della destinazione, calibra `docs_root` alla directory o file di destinazione, e applica la Guardia Sandbox per ancorare il controllo di path traversal alla destinazione — non alla posizione del chiamante.
 
 ### Il Genesis Nomad (`init`)
 
@@ -358,7 +358,7 @@ Il percorso indicato diventa direttamente il `repo_root`, e la directory viene c
 di destinazione (anche vuota). La CWD del chiamante non viene mai modificata.
 
 ```bash
-zenzic init ../nuovo-progetto          # crea ../nuovo-progetto/zenzic.toml
+zenzic init ../nuovo-progetto          # crea ../nuovo-progetto/.zenzic.toml
 zenzic init /workspace/docs-freschi    # crea la directory se necessario
 ```
 
@@ -366,7 +366,7 @@ zenzic init /workspace/docs-freschi    # crea la directory se necessario
 
 | Invariante | Garanzia |
 | :--- | :--- |
-| Isolamento della config | Il `zenzic.toml` della destinazione viene caricato; la config del chiamante non viene mai consultata |
+| Isolamento della config | Il `.zenzic.toml` della destinazione viene caricato; la config del chiamante non viene mai consultata |
 | Guardia sandbox | Il perimetro del path traversal guard è ancorato a `docs_root`, non a `cwd` |
 | Nessuna mutazione della CWD | `init` scrive nella destinazione; la directory di lavoro del chiamante non viene modificata |
 | Visualizzazione dell'hint | Il banner mostra il percorso assoluto risolto della destinazione per la fiducia dell'operatore |
@@ -416,7 +416,7 @@ configurazione.
 
 ### Cosa significa
 
-Ogni pattern dichiarato in `[[custom_rules]]` all'interno di `zenzic.toml` viene compilato al
+Ogni pattern dichiarato in `[[custom_rules]]` all'interno di `.zenzic.toml` viene compilato al
 momento del caricamento dalla libreria [RE2](https://github.com/google/re2) (tramite `google-re2`).
 RE2 implementa un vero DFA: elabora la stringa di input in un'unica passata da sinistra a destra,
 senza backtracking.

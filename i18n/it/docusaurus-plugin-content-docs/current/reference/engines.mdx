@@ -51,11 +51,11 @@ per qualsiasi SSG.
 
 ## Scegliere un motore
 
-La sezione `[build_context]` in `zenzic.toml` indica a Zenzic quale motore utilizza il tuo
+La sezione `[build_context]` in `.zenzic.toml` indica a Zenzic quale motore utilizza il tuo
 progetto:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "mkdocs"   # oppure "zensical" o "docusaurus"
 ```
@@ -107,13 +107,13 @@ build di MkDocs. Questo significa:
   valutato. I link all'interno di espressioni macro non vengono validati.
 
 Per progetti che dipendono fortemente dalla generazione dinamica della nav, aggiungi i
-percorsi generati dai plugin a `excluded_dirs` in `zenzic.toml` per sopprimere i falsi
+percorsi generati dai plugin a `excluded_dirs` in `.zenzic.toml` per sopprimere i falsi
 positivi sugli orfani finché non sarà disponibile un adapter nativo.
 
 ### Configurazione minima
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -215,7 +215,7 @@ né richiesto.
 ### Native Enforcement
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "zensical"
 ```
@@ -287,7 +287,7 @@ Il risultato:
 - **Nav generata da plugin** — I plugin Zensical che modificano la nav a runtime non vengono
 
   valutati. Le pagine incluse solo da tali plugin potrebbero essere segnalate come orphan. Aggiungi
-  i loro percorsi a `excluded_dirs` in `zenzic.toml` per sopprimere i report falsi.
+  i loro percorsi a `excluded_dirs` in `.zenzic.toml` per sopprimere i report falsi.
 
 - **Contenuto dinamico** — `zensical.toml` viene analizzato come TOML statico. Le espressioni
 
@@ -295,7 +295,7 @@ Il risultato:
 
 - **Scope di rilevamento** — `ZensicalAdapter` cerca `zensical.toml` (o il ponte MkDocs) solo
 
-  nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `zenzic.toml`.
+  nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `.zenzic.toml`.
 
 ---
 
@@ -326,7 +326,7 @@ codice Node.js. Il `DocusaurusAdapter` invece:
 ### Configurazione minima
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -523,7 +523,7 @@ questi link senza generare falsi positivi di errore **PathTraversal**.
 
 :::note
 Per abilitare la risoluzione completa di `@site/`, imposta `repo_root` nella sezione
-`[build_context]` del tuo `zenzic.toml`, oppure esegui `zenzic check` dalla root del
+`[build_context]` del tuo `.zenzic.toml`, oppure esegui `zenzic check` dalla root del
 progetto affinché Zenzic possa rilevarlo automaticamente.
 :::
 
@@ -571,7 +571,7 @@ Docusaurus a un altro motore, Zenzic segnalerà ogni link `pathname:///` come er
   modulo o importano da moduli esterni potrebbero non essere analizzate completamente.
 
 Per i casi di sidebar dinamiche, aggiungi i percorsi generati a `excluded_dirs` in
-`zenzic.toml`.
+`.zenzic.toml`.
 
 ---
 
@@ -625,7 +625,7 @@ qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
 ### Configurazione minimale
 
 ```toml
-# zenzic.toml — minimo richiesto per standalone
+# .zenzic.toml — minimo richiesto per standalone
 docs_dir = "docs"
 ```
 
@@ -653,4 +653,4 @@ di riferimento con cui confrontarsi. Il rilevamento orphan richiede una dichiara
 `nav:`, Zensical `[nav]`, o Docusaurus `sidebars.ts`.
 
 Per progetti con localizzazione senza un engine supportato, aggiungi i nomi delle directory
-locale a `excluded_dirs` in `zenzic.toml` per evitare falsi report orphan.
+locale a `excluded_dirs` in `.zenzic.toml` per evitare falsi report orphan.

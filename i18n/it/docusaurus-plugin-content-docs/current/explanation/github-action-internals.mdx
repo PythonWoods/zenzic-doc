@@ -71,7 +71,7 @@ esac
 ```
 
 :::note[Scope del guard]
-Il Config Jailbreak Guard si applica **solo agli override espliciti** — i valori forniti tramite l'input `config-file`. I path auto-scoperti (`zenzic.toml`, `.github/zenzic.toml`) sono hardcoded nel sorgente del wrapper e non possono essere iniettati da un attaccante. Sorvegliarli sarebbe security theatre, non sicurezza.
+Il Config Jailbreak Guard si applica **solo agli override espliciti** — i valori forniti tramite l'input `config-file`. I path auto-scoperti (`.zenzic.toml`, `.github/.zenzic.toml`) sono hardcoded nel sorgente del wrapper e non possono essere iniettati da un attaccante. Sorvegliarli sarebbe security theatre, non sicurezza.
 :::
 
 ### SARIF Integrity Check
@@ -126,12 +126,12 @@ Il wrapper implementa un'**auto-discovery gerarchica** per il file di configuraz
 
 ```text
 Priorità 1  →  Override esplicito    (l'input config-file è impostato)
-Priorità 2  →  zenzic.toml          (root del repository)
-Priorità 3  →  .github/zenzic.toml  (directory config nascosta)
+Priorità 2  →  .zenzic.toml          (root del repository)
+Priorità 3  →  .github/.zenzic.toml  (directory config nascosta)
 Priorità —  →  (nessun file trovato) → Zenzic usa i default predefiniti
 ```
 
-Questo ordine garantisce **parità tra esecuzioni locali e CI**: uno sviluppatore che esegue `zenzic check all` in locale trova `zenzic.toml` dalla root, e così fa l'action in CI.
+Questo ordine garantisce **parità tra esecuzioni locali e CI**: uno sviluppatore che esegue `zenzic check all` in locale trova `.zenzic.toml` dalla root, e così fa l'action in CI.
 
 Il path scoperto viene passato alla CLI tramite `--config` usando un array Bash — mai una stringa — così i path contenenti spazi vengono gestiti correttamente:
 

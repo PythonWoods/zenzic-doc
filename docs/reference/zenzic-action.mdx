@@ -25,7 +25,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `upload-sarif` | `true` | No | Upload SARIF to GitHub Code Scanning. Requires `security-events: write` permission. |
 | `strict` | `false` | No | Treat warnings as errors — promotes all `warning`-severity findings to `error`. |
 | `fail-on-error` | `true` | No | Fail the workflow step on exit 1 (quality findings). Does **not** suppress exit 2 or 3. |
-| `config-file` | *(auto)* | No | Explicit path to a `zenzic.toml` config file. Auto-discovers `zenzic.toml` → `.github/zenzic.toml` when omitted. |
+| `config-file` | *(auto)* | No | Explicit path to a `.zenzic.toml` config file. Auto-discovers `.zenzic.toml` → `.github/.zenzic.toml` when omitted. |
 | `audit` | `false` | No | Sovereign audit mode — bypasses all `zenzic:ignore` inline comments and `governance.per_file_ignores` entries. Reveals the true, unfiltered documentation state. |
 | `diff-base` | *(snapshot)* | No | Path to a JSON baseline file for `zenzic diff` comparison. When set, the action compares the current score against this file instead of the saved `.zenzic-score.json`. Use an artifact from `main` to implement the Zenzic Quality Gate. |
 
@@ -78,7 +78,7 @@ The suppression debt is included in the score used for comparison. A PR that add
 
 When `audit: "true"` is set, the action runs with the `--audit` flag, which bypasses:
 - All inline `<!-- zenzic:ignore ZXXX -->` comments
-- All `[governance.per_file_ignores]` entries in `zenzic.toml`
+- All `[governance.per_file_ignores]` entries in `.zenzic.toml`
 
 Exclusion zones (`excluded_dirs`, `excluded_file_patterns`) are **not** bypassed by audit mode — they define the scan perimeter, not the suppression policy.
 
@@ -96,8 +96,8 @@ Exclusion zones (`excluded_dirs`, `excluded_file_patterns`) are **not** bypassed
 | Priority | Location | When used |
 | :---: | :--- | :--- |
 | 1 | Explicit `config-file` input | Always honoured when provided |
-| 2 | `zenzic.toml` in repository root | Auto-discovered when no explicit override |
-| 3 | `.github/zenzic.toml` | Fallback when root file is absent |
+| 2 | `.zenzic.toml` in repository root | Auto-discovered when no explicit override |
+| 3 | `.github/.zenzic.toml` | Fallback when root file is absent |
 | — | *(none found)* | Zenzic uses its built-in defaults |
 
 **Sovereign Intent Contract:** if you supply `config-file: path/to/custom.toml` and the file does not exist, the action does **not** fall back to auto-discovery. You receive a `::warning` annotation (or a fatal `::error` with `strict: "true"`).

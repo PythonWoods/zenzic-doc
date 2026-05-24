@@ -260,7 +260,7 @@ This approach accumulates debt. Inline suppressions count against the `suppressi
 
 The structural fix introduced in v0.8.0 is `directory_policies`: a governance-level TOML contract that grants zero-debt exemptions to named path patterns.
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 [governance]
 suppression_cap = 10
 suppression_cap_fail_hard = true
@@ -285,7 +285,7 @@ When Zenzic applies a policy exemption during a scan, findings in those paths ar
 The hierarchy that emerges is deliberate:
 
 1. **Non-suppressible codes** (`NON_SUPPRESSIBLE_CODES`) — security findings that cannot be overridden by any mechanism.
-2. **Directory policies** — governance-level zero-debt exemptions declared in `zenzic.toml`.
+2. **Directory policies** — governance-level zero-debt exemptions declared in `.zenzic.toml`.
 3. **Inline suppressions** — per-line escape hatches, counted against the cap and logged.
 
 Zero-debt means the suppression cap is preserved for genuine edge cases, and the governance contract remains the authoritative source of intent.

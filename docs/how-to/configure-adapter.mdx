@@ -36,7 +36,7 @@ locales        = ["it"]     # non-default locale directory names (e.g. docs/it/,
 # fallback_to_default = true
 ```
 
-> **TOML ordering:** `[build_context]` must be the **last** section in `zenzic.toml`. TOML table
+> **TOML ordering:** `[build_context]` must be the **last** section in `.zenzic.toml`. TOML table
 > headers apply to all subsequent keys; placing `[build_context]` before top-level fields silently
 > moves them into the sub-table.
 
@@ -98,7 +98,7 @@ Zenzic deterministically resolves the correct adapter from `build_context.engine
 :::tip[Engine config files are automatically excluded]
 Each adapter protects its engine configuration file from the unused-assets check (Z405). You do
 **not** need to add `docusaurus.config.ts`, `mkdocs.yml`, or `zensical.toml` to `excluded_assets`
-in `zenzic.toml`. See [System Guardrails](../reference/configuration.mdx#system-guardrails) for the
+in `.zenzic.toml`. See [System Guardrails](../reference/configuration.mdx#system-guardrails) for the
 full list of automatically excluded files.
 :::
 
@@ -121,7 +121,7 @@ declare navigation dynamically at build time.
 ## `--engine` flag (one-off override)
 
 The `--engine` flag on `zenzic check orphans` and `zenzic check all` overrides
-`build_context.engine` for a single run without touching `zenzic.toml`:
+`build_context.engine` for a single run without touching `.zenzic.toml`:
 
 ```bash
 zenzic check orphans --engine zensical
@@ -144,7 +144,7 @@ Install a third-party adapter or choose from the list above.
 Some repositories carry both `mkdocs.yml` and `zensical.toml` during a transition — one
 build test-running Zensical while the other keeps serving production on MkDocs.
 
-When `engine` is explicitly declared in `zenzic.toml`, Zenzic uses that adapter — even when
+When `engine` is explicitly declared in `.zenzic.toml`, Zenzic uses that adapter — even when
 another engine's config file is also present.  `engine = "mkdocs"` always reads `mkdocs.yml`
 even if `zensical.toml` exists, and vice versa.
 
@@ -160,7 +160,7 @@ the correct adapter automatically.
 :::
 
 ```toml
-# zenzic.toml — explicit engine declaration required
+# .zenzic.toml — explicit engine declaration required
 [build_context]
 engine = "zensical"   # ← this line is what activates ZensicalAdapter
 ```

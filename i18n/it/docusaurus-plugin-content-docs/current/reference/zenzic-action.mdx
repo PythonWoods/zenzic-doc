@@ -27,7 +27,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `upload-sarif` | `true` | No | Carica il SARIF in GitHub Code Scanning. Richiede il permesso `security-events: write`. |
 | `strict` | `false` | No | Tratta i warning come errori — promuove tutti i finding con severità `warning` ad `error`. |
 | `fail-on-error` | `true` | No | Fa fallire lo step del workflow su exit 1 (finding di qualità). **Non** sopprime exit 2 o 3. |
-| `config-file` | *(auto)* | No | Percorso esplicito a un file di configurazione `zenzic.toml`. Auto-scopre `zenzic.toml` → `.github/zenzic.toml` se omesso. |
+| `config-file` | *(auto)* | No | Percorso esplicito a un file di configurazione `.zenzic.toml`. Auto-scopre `.zenzic.toml` → `.github/.zenzic.toml` se omesso. |
 | `audit` | `false` | No | Modalità sovereign audit — bypassa tutti i commenti `zenzic:ignore` inline e tutte le voci `governance.per_file_ignores`. Rivela lo stato reale e non filtrato della documentazione. |
 | `diff-base` | *(snapshot)* | No | Percorso a un file JSON di baseline per il confronto con `zenzic diff`. Quando impostato, l'action confronta il punteggio corrente contro questo file invece del `.zenzic-score.json` salvato. Usa un artefatto da `main` per implementare il Zenzic Quality Gate. |
 
@@ -85,7 +85,7 @@ soppressioni per nascondere finding mostrerà un punteggio inferiore.
 
 Quando `audit: "true"` è impostato, l'action viene eseguita con il flag `--audit`, che bypassa:
 - Tutti i commenti inline `<!-- zenzic:ignore ZXXX -->`
-- Tutte le voci `[governance.per_file_ignores]` in `zenzic.toml`
+- Tutte le voci `[governance.per_file_ignores]` in `.zenzic.toml`
 
 Le exclusion zone (`excluded_dirs`, `excluded_file_patterns`) **non** vengono bypassate dalla
 modalità audit — definiscono il perimetro di scansione, non la policy di soppressione.
@@ -105,8 +105,8 @@ osservazionale per design.
 | Priorità | Posizione | Quando usata |
 | :---: | :--- | :--- |
 | 1 | Input esplicito `config-file` | Sempre rispettato quando fornito |
-| 2 | `zenzic.toml` nella root del repository | Auto-scoperto quando non c'è override esplicito |
-| 3 | `.github/zenzic.toml` | Fallback quando il file root è assente |
+| 2 | `.zenzic.toml` nella root del repository | Auto-scoperto quando non c'è override esplicito |
+| 3 | `.github/.zenzic.toml` | Fallback quando il file root è assente |
 | — | *(nessuno trovato)* | Zenzic usa i suoi default integrati |
 
 **Contratto di Intento Sovrano:** se fornisci `config-file: path/to/custom.toml` e il file non

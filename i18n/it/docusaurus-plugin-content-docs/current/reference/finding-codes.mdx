@@ -72,10 +72,10 @@ Zenzic utilizza exit code per comunicare la severità attraverso le pipeline CI/
 ### Z000: UNSUPPORTED_ENGINE {#z000}
 
 * **Severità:** `error` (Fatale — interrompe l'esecuzione immediatamente)
-* **Contesto Tecnico:** Z000 è un **errore di configurazione fatale**, non un finding collezionabile. Emerge come eccezione `ConfigurationError` quando l'adapter factory incontra un alias di engine legacy deprecato o rimosso in `zenzic.toml`. L'esecuzione si ferma prima che qualsiasi scansione inizi; Z000 **non** apparirà nell'output `--format json` né nell'array dei findings.
+* **Contesto Tecnico:** Z000 è un **errore di configurazione fatale**, non un finding collezionabile. Emerge come eccezione `ConfigurationError` quando l'adapter factory incontra un alias di engine legacy deprecato o rimosso in `.zenzic.toml`. L'esecuzione si ferma prima che qualsiasi scansione inizi; Z000 **non** apparirà nell'output `--format json` né nell'array dei findings.
 * **Rationale Architetturale:** Un alias di engine deprecato non causa semplicemente una misconfigurazione — invalida il determinismo della Virtual Site Map. La garanzia core di Zenzic è `score(repo) == score(repo)` in qualsiasi ambiente. Se l'adapter factory accettasse un engine sconosciuto e proseguisse con una euristica di fallback, la VSM prodotta sarebbe non-deterministica: ambienti diversi potrebbero risolvere adapter diversi, produrre route table diverse, e generare score diversi per input identici. L'abort hard è l'unica risposta che preserva il contratto di determinismo.
 * **Rimedio:**
-    1. Apri il tuo `zenzic.toml` o `pyproject.toml`.
+    1. Apri il tuo `.zenzic.toml` o `pyproject.toml`.
     2. Individua il campo `engine`.
     3. Imposta `engine = "standalone"`.
     4. Se stai usando MkDocs, assicurati che sia impostato `engine = "mkdocs"`.
@@ -178,7 +178,7 @@ Z105 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
 * **Severità:** `warning`
 * **Contesto Tecnico:** I percorsi assoluti (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) rompono la portabilità della documentazione. Zenzic li flagga per prevenire la sindrome "Funziona sulla mia macchina" nelle pipeline CI/CD.
 
-  **I prefissi project-owned sono esenti da Z105 ma non da Z104.** I siti Docusaurus spesso usano link assoluti che iniziano con `/blog/`, `/docs/`, o altri valori di `routeBasePath` per attraversare i confini fra plugin. Zenzic auto-rileva questi prefissi dalla configurazione dell'engine (Zero-Config — nessuna entry richiesta in `zenzic.toml`) e sopprime Z105 per essi.
+  **I prefissi project-owned sono esenti da Z105 ma non da Z104.** I siti Docusaurus spesso usano link assoluti che iniziano con `/blog/`, `/docs/`, o altri valori di `routeBasePath` per attraversare i confini fra plugin. Zenzic auto-rileva questi prefissi dalla configurazione dell'engine (Zero-Config — nessuna entry richiesta in `.zenzic.toml`) e sopprime Z105 per essi.
 
   Tuttavia, sopprimere Z105 non significa che il link rimanga non controllato. Per i prefissi pienamente scansionati (es. `blog/` è in scope), Zenzic esegue un lookup in VSM e solleva un finding [Z104 — FILE_NOT_FOUND](#z104) se la route esatta è assente. Questo intercetta slug mismatch e post rinominati che rompono i link assoluti. Il costo del lookup è $O(1)$ — una singola `get()` su hash-map — senza impatto misurabile sul tempo di scansione.
 
@@ -345,7 +345,7 @@ Zenzic enforcea l'integrità di brand e privacy tramite due livelli complementar
 | Livello | Sorgente | Scope | Severità |
 |---|---|---|---|
 | **Z204 Privacy Gate** | `forbidden_patterns` in `.zenzic.local.toml` *(git-ignored)* | Termini privati — code-name, host di staging, alias di team | **Exit 2 (Critical)** |
-| **Z601 Brand Guard** | `[governance].brand_obsolescence` in `zenzic.toml` | Termini brand deprecati (es. un vecchio nome di prodotto) | Exit 1 (Quality) |
+| **Z601 Brand Guard** | `[governance].brand_obsolescence` in `.zenzic.toml` | Termini brand deprecati (es. un vecchio nome di prodotto) | Exit 1 (Quality) |
 
 Usa Z204 per i segreti che non devono mai essere committati. Usa Z601 per igiene di brand dove riferimenti storici intenzionali (es. entry di CHANGELOG) devono essere sopprimibili.
 :::
@@ -588,7 +588,7 @@ Z902 è un **timeout a livello di sistema**. Non riduce il [Deterministic Qualit
 * **Contesto Tecnico:** Una regola ha impiegato troppo tempo per essere eseguita (default > 30s). È quasi sempre causato da un problema di **Catastrophic Backtracking** in una regular expression custom fornita in `[[custom_rules]]`.
 * **Rationale Architetturale:** Un timeout di custom rule non è meramente un problema di performance — è una superficie di sicurezza. Un pattern regex con catastrophic backtracking (es. `(a+)+`) può essere triggerato da un file di documentazione craftato per bloccare l'intera scansione CI indefinitamente. È un attacco Regex Denial of Service (ReDoS) contro la pipeline di documentazione. Z902 è classificato come `error` (non `warning`) perché un timeout non rilevato può disabilitare silenziosamente un gate di sicurezza — il credential scanner e la privacy gate continuano a girare sui file successivi, ma la regola in timeout non emette finding. Permettere alla scansione di proseguire come se la regola fosse stata eseguita correttamente produrrebbe falsi negativi con exit 0.
 * **Rimedio:**
-    1. Rivedi i tuoi pattern regex custom in `zenzic.toml`.
+    1. Rivedi i tuoi pattern regex custom in `.zenzic.toml`.
     2. Semplifica i pattern per evitare quantificatori annidati come `(a+)+`.
     3. Usa alternative non-backtracking se possibile.
 
@@ -644,13 +644,13 @@ Z601 conta nel tier **Governance** del [Deterministic Quality Score](./scoring-a
 />
 
 * **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato via `[governance]` in `zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "CurrentRelease"`) e `brand_obsolescence` lista identificatori di release precedenti (es. `brand_obsolescence = ["OldRelease"]`), qualsiasi occorrenza di un termine listato in un file scansionato solleva Z601. Le linee che portano un commento di soppressione `zenzic:ignore: Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore: Z601 -->` nei file ``.md`` e `{/* zenzic:ignore: Z601 */}` nei file ``.mdx``. I file che matchano `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono pienamente esenti.
+* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato via `[governance]` in `.zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "CurrentRelease"`) e `brand_obsolescence` lista identificatori di release precedenti (es. `brand_obsolescence = ["OldRelease"]`), qualsiasi occorrenza di un termine listato in un file scansionato solleva Z601. Le linee che portano un commento di soppressione `zenzic:ignore: Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore: Z601 -->` nei file ``.md`` e `{/* zenzic:ignore: Z601 */}` nei file ``.mdx``. I file che matchano `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono pienamente esenti.
 * **Rationale Architetturale:** L'obsolescenza di brand è un fallimento di governance, non un fallimento di qualità contenuti. Quando un corpus di documentazione mantiene riferimenti a un nome di release deprecato, a un identificatore di prodotto dismesso, o a un team rinominato, segnala che il processo di manutenzione della documentazione non è accoppiato al ciclo di vita del prodotto. Questo drift è cumulativo: ogni occorrenza non corretta accumula dissonanza cognitiva per i lettori che possono cercare il comportamento attuale sotto il vecchio nome o assumere che il prodotto sia ancora nel suo stato deprecato. Zenzic classifica Z601 sotto Governance — non Content — perché la sua causa radice è una lacuna di processo (governance check non eseguiti durante la transizione di release), non un errore di authoring sui contenuti.
 * **Rimedio:**
     1. Aggiorna il testo per fare riferimento al nome di release attivo.
     2. Per riferimenti storici intenzionali nei file ``.md``, accoda `<!-- zenzic:ignore: Z601 -->` alla linea.
     3. Per riferimenti storici intenzionali nei file ``.mdx``, accoda `{/* zenzic:ignore: Z601 */}` alla linea.
-    4. Per esentare un intero pattern di file, aggiungilo a `obsolete_names_exclude_patterns` in `zenzic.toml`.
+    4. Per esentare un intero pattern di file, aggiungilo a `obsolete_names_exclude_patterns` in `.zenzic.toml`.
 
 ---
 
@@ -677,7 +677,7 @@ Z906 è una diagnostica informativa. Non fa fallire lo step del workflow ed è s
 * **Severità:** `note`
 * **Contesto Tecnico:** Emesso da `check_all` quando il `docs_root` risolto contiene zero file `.md` / `.mdx` dopo aver applicato tutti i layer di esclusione. Il trigger più comune è eseguire `zenzic check all` contro la root di un repository che non ha ancora una directory di documentazione (`docs/` mancante o vuota). Il finding è text-output only — i format machine (`json`, `sarif`) rimangono puliti.
 * **Rimedio:**
-    1. Verifica che `docs_dir` in `zenzic.toml` (o il flag `--docs-dir`) punti alla directory corretta.
+    1. Verifica che `docs_dir` in `.zenzic.toml` (o il flag `--docs-dir`) punti alla directory corretta.
     2. Se la directory è intenzionalmente vuota (es. durante il setup iniziale del progetto), Z906 può essere ignorato in sicurezza — esce con 0.
     3. Se stai scansionando per errore un repository non di documentazione, aggiusta il percorso target.
 
@@ -698,7 +698,7 @@ Z602 è un **check di integrità bilingue**. Non riduce il [Deterministic Qualit
     1. Crea il file di traduzione mancante al percorso corrispondente sotto `i18n/<locale>/docusaurus-plugin-content-docs/current/`.
     2. Copia il blocco frontmatter in lingua base e traduci i valori — non aggiungere o rimuovere chiavi rispetto al base.
     3. Esegui di nuovo `zenzic check all` per confermare che la parità sia ripristinata.
-    4. Per asimmetrie intenzionali (es. una pagina locale-only o una draft non ancora tradotta), sopprimi con `{/* zenzic:ignore: Z602 */}` sul blocco frontmatter o aggiungi il pattern di file a `i18n_exclude_patterns` in `zenzic.toml`.
+    4. Per asimmetrie intenzionali (es. una pagina locale-only o una draft non ancora tradotta), sopprimi con `{/* zenzic:ignore: Z602 */}` sul blocco frontmatter o aggiungi il pattern di file a `i18n_exclude_patterns` in `.zenzic.toml`.
 
 ---
 
@@ -765,7 +765,7 @@ I codici in questa sezione sono definiti nel registro Zenzic e riservati a futur
     2. Considera di abilitare il blog archive (`archiveBasePath: 'archive'`) per scaricare
        i post storici dall'indice paginato.
     3. Sopprimi con `{/* zenzic:ignore: Z114 */}` sul link o imposta una soglia più alta
-       in un futuro setting `zenzic.toml` (non ancora implementato).
+       in un futuro setting `.zenzic.toml` (non ancora implementato).
 
 ---
 
@@ -818,7 +818,7 @@ Per i file ``.mdx`` usa un commento JSX (invisibile nell'MDX renderizzato, sicur
 The Obsidian era defined our foundations. {/* zenzic:ignore: Z601 */}
 ```
 
-Ogni commento di soppressione silenzia **solo** il codice specificato su quella linea. Per sopprimere codici multipli su una linea, aggiungi commenti multipli. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `zenzic.toml` (Z601) o i pattern `excluded_files` rilevanti.
+Ogni commento di soppressione silenzia **solo** il codice specificato su quella linea. Per sopprimere codici multipli su una linea, aggiungi commenti multipli. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `.zenzic.toml` (Z601) o i pattern `excluded_files` rilevanti.
 
 :::tip[Usa la soppressione con parsimonia]
 La soppressione è per decisioni intenzionali e documentate — non per silenziare finding che non hai rivisto. Ogni linea soppressa dovrebbe avere un commento corrispondente o una entry ADR che spieghi il perché.

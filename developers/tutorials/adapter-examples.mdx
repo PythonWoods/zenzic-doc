@@ -35,7 +35,7 @@ new check or verifying that an error message is correctly formatted.
 | Snippets | Python block with a `SyntaxError` (missing colon) |
 | Placeholders | `api.md` has only 18 words and a bare task marker |
 | Assets | `assets/unused.png` is on disk but never referenced |
-| Custom rules | `ZZ-NOFIXME` pattern in `zenzic.toml` |
+| Custom rules | `ZZ-NOFIXME` pattern in `.zenzic.toml` |
 
 ```bash
 cd examples/broken-docs
@@ -111,7 +111,7 @@ Engine: `mkdocs`.
 ## standalone — Engine-Agnostic Quality Gate
 
 **Purpose:** Show Zenzic running without any build engine. No `mkdocs.yml`,
-no `zensical.toml`, no Hugo config. Just `engine = "standalone"` in `zenzic.toml`.
+no `zensical.toml`, no Hugo config. Just `engine = "standalone"` in `.zenzic.toml`.
 
 **Expected result:** `SUCCESS` — all applicable checks pass.
 

@@ -44,7 +44,7 @@ Quando esegui `zenzic check` o `zenzic audit`, Zenzic emette un footer che ripor
 
 ### Impostare il Budget di Soppressione
 
-Il CAP è configurato in `zenzic.toml`:
+Il CAP è configurato in `.zenzic.toml`:
 
 ```toml
 [governance]
@@ -112,7 +112,7 @@ Il commento dovrebbe trovarsi sempre **alla fine della riga**, seguendo la conve
 Silenzia una regola per un intero glob di file senza aggiungere commenti inline al sorgente.
 Usalo per le pagine in cui le eccezioni intenzionali sono strutturalmente necessarie (guide legacy, documentazione di migrazione).
 
-Aggiungi una tabella `[governance.per_file_ignores]` al tuo `zenzic.toml`:
+Aggiungi una tabella `[governance.per_file_ignores]` al tuo `.zenzic.toml`:
 
 ```toml
 [governance.per_file_ignores]
@@ -153,7 +153,7 @@ Esenzioni strategiche a costo zero per interi rami di directory o glob di file s
 Progettate per **eccezioni strutturali** dove le soppressioni sono giustificate organizzativamente, non come debito tecnico.
 A differenza delle exclusion zone, le directory policy mantengono un audit trail in modalità `--audit`.
 
-Aggiungi una tabella `[governance.directory_policies]` al tuo `zenzic.toml`:
+Aggiungi una tabella `[governance.directory_policies]` al tuo `.zenzic.toml`:
 
 ```toml
 [governance.directory_policies]

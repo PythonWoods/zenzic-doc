@@ -60,7 +60,7 @@ may be missed in plugin-heavy configurations.
 
 **Planned resolution:** A structured warning (`::warning` annotation in CI mode) when
 Zenzic detects dynamic navbar plugins, indicating that orphan detection may be
-incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `zenzic.toml`.
+incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `.zenzic.toml`.
 
 **Status:** Tracked. RFC open.
 
@@ -172,7 +172,7 @@ negatives in adversarial conditions. Security-critical passes should default to
 **Component:** `core/scanner.py`
 **Description:** `zenzic init` crashed with a configuration error when invoked in an
 empty directory. The `find_repo_root()` function had no fallback, making it impossible
-to initialize a project that did not yet have a `.git` or `zenzic.toml` marker.
+to initialize a project that did not yet have a `.git` or `.zenzic.toml` marker.
 **Resolution:** `fallback_to_cwd=True` parameter added to `find_repo_root()`, used
 exclusively by `zenzic init`. See [ADR 003](adr-discovery.mdx).
 **Closed in:** current release
@@ -249,7 +249,7 @@ expecting Zenzic to block those terms from documentation, but the scan never hap
 
 3. **Config deep-merge:** `ZenzicConfig.load()` performs an additive merge of
    `forbidden_patterns` from `.zenzic.local.toml` after loading the primary config
-   (`zenzic.toml` or `[tool.zenzic]`). Duplicates are removed; insertion order is preserved.
+   (`.zenzic.toml` or `[tool.zenzic]`). Duplicates are removed; insertion order is preserved.
 
 4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/credentials.py`
    performs a case-insensitive verbatim substring scan against the merged `forbidden_patterns`
@@ -264,7 +264,7 @@ expecting Zenzic to block those terms from documentation, but the scan never hap
 The Z204 Privacy Gate and the Z601 Brand Obsolescence Guard form a two-layer architecture:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non-suppressible.
   Designed for private terms that must never appear in any published doc.
-- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, suppressible with `zenzic:ignore: Z601`.
+- **Z601** (`obsolete_names` in `.zenzic.toml`): exit 1, suppressible with `zenzic:ignore: Z601`.
   Designed for deprecated brand terms where historical references in CHANGELOG files
   are acceptable.
 

@@ -30,7 +30,7 @@ uvx zenzic check all
 ```
 
 `uvx` scarica Zenzic in un ambiente isolato e lo elimina al termine del comando.
-Esegui questo comando dalla directory che contiene il tuo `zenzic.toml` (o dalla root del repository).
+Esegui questo comando dalla directory che contiene il tuo `.zenzic.toml` (o dalla root del repository).
 Zenzic individua automaticamente la configurazione e attiva l'engine corretto — incluso
 il controllo orfani (Z402) quando è presente un contratto di navigazione.
 Se una directory `blog/` esiste su disco, o `docusaurus.config.ts` dichiara un blocco del
@@ -44,13 +44,13 @@ Questo è il workflow consigliato per la CI e per provare Zenzic su repository s
 
 Prima di configurare qualsiasi cosa, osserva Zenzic proteggere un repo volutamente compromesso:
 
-**Demo credential scanner** — esegui l'atto 2 (demo credenziale esposta):
+**Demo credential scanner** — esegui lo scenario Z201 (credenziale esposta):
 
 ```bash
-uvx zenzic lab 2
+uvx zenzic lab z201
 ```
 
-Zenzic scansiona il fixture `security_lab` incluso e attiva l'**exit code 2** con
+Zenzic scansiona il fixture `z201-credentials` incluso e attiva l'**exit code 2** con
 il banner Security Breach — l'allerta non sopprimibile per una credenziale esposta:
 
 <ZenzicOutput status="breach" exitCode={2} showFrame
@@ -61,42 +61,42 @@ il banner Security Breach — l'allerta non sopprimibile per una credenziale esp
 
 La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
 
-**Il Credential Scanner (Zenzic Audit Badge)** — ora esegui l'atto 0:
+**Il Credential Scanner (Zenzic Audit Badge)** — ora esegui lo scenario Z101 (integrità dei link):
 
 ```bash
-uvx zenzic lab 0
+uvx zenzic lab z101
 ```
 
-Il Zenzic Audit Badge: ogni controllo verde, exit 0. Il contrasto è la prova —
+Il Zenzic Audit Badge: finding di link rilevati, exit 1. Il contrasto è la prova —
 lo stesso motore che ha rilevato il segreto conferma che la documentazione
 pulita è genuinamente pulita.
 
 :::tip[Demo Interattiva — Nessuna installazione richiesta]
-**Vuoi vedere il Credential Scanner in azione?**
+**Vuoi vedere Zenzic in azione?**
 
 ```bash
 uvx zenzic lab
 ```
 
-Lancia il menu interattivo di tutti i 17 atti: credenziali esposte, link rotti, pagine orfane,
-path traversal e il Zenzic Audit Badge. Zero installazione. Zero configurazione. Esperienza pura.
+Lancia il menu della galleria con 5 scenari Z-code: credenziali esposte, link rotti, asset
+orfani, obsolescenza del brand e parità i18n. Zero installazione. Zero configurazione. Esperienza pura.
 
-→ Scegli qualsiasi atto dal menu, oppure eseguine uno specifico: `uvx zenzic lab 2` (credential scanner), `uvx zenzic lab 0` (Il Sigillo).
+→ Scegli qualsiasi scenario dal menu, oppure eseguine uno specifico: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (integrità dei link).
 :::
 
 ---
 
 ## Step 3 — Inizializza il tuo Exclusion Zone {#step-3-init}
 
-Quando sei pronto a integrare Zenzic nel progetto, genera un `zenzic.toml` con un comando:
+Quando sei pronto a integrare Zenzic nel progetto, genera un `.zenzic.toml` con un comando:
 
 :::info[Perimetro del Workspace obbligatorio]
 
 Zenzic analizza **workspace definiti, non directory arbitrarie**. Esegue una traversata verso l'alto
-dal percorso target per localizzare un marcatore di radice (`.git/` o `zenzic.toml`). Se vedi:
+dal percorso target per localizzare un marcatore di radice (`.git/` o `.zenzic.toml`). Se vedi:
 
 ```text
-ERROR: Could not locate repo root: no .git directory or zenzic.toml found
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found
 ```
 
 Esegui `zenzic init` nella directory radice del tuo progetto per stabilire il perimetro di analisi.
@@ -112,7 +112,7 @@ zenzic init
 Zenzic ispeziona la directory e pre-configura il motore automaticamente:
 
 ```text
-Created zenzic.toml
+Created .zenzic.toml
   Engine pre-set to docusaurus (detected from docusaurus.config.ts).
 
 Edit the file to enable rules, adjust directories, or set a quality threshold.
@@ -185,7 +185,7 @@ Questa è tracciabilità deterministica — la stessa garanzia in CI come in loc
 - **Aggiungi un gate CI** — vedi [Integrazione CI/CD](../how-to/configure-ci-cd) per pubblicare con fiducia
 - **Export SARIF** — `zenzic check all --format sarif` per le annotazioni inline di GitHub Code Scanning
 - **Strict mode** — aggiungi `--strict` per validare anche gli URL esterni
-- **Regole personalizzate** — aggiungi voci `[[custom_rules]]` a `zenzic.toml` per i tuoi pattern
+- **Regole personalizzate** — aggiungi voci `[[custom_rules]]` a `.zenzic.toml` per i tuoi pattern
 - **Codici di finding** — consulta il [riferimento ai Finding Codes](../reference/finding-codes) per il
 
   catalogo diagnostico completo `Zxxx`

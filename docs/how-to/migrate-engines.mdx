@@ -48,7 +48,7 @@ It never imports or executes a build framework. This means:
 
   analysis as on a fully operational project — because the source files have not changed.
 
-- Switching `engine` in `zenzic.toml` (one line) is all it takes to validate whether your
+- Switching `engine` in `.zenzic.toml` (one line) is all it takes to validate whether your
 
   content is structurally compatible with a new engine, without touching a single Markdown
   file.
@@ -90,8 +90,8 @@ Why this holds technically:
 Result: your validation pipeline does not depend on the lifecycle of a single build
 binary. You can keep linting MkDocs 1.x conventions while evaluating migration paths.
 
-For a concrete baseline, use the fixture at `examples/mkdocs-basic/`, which mirrors
-official MkDocs 1.6 nav patterns (nested sections, titled entries, external links).
+For a concrete baseline, use the Z-code gallery fixture `examples/z101-broken-links/`, which isolates
+link integrity violations to show how MkDocs nav patterns interact with the Zenzic link checker.
 
 ---
 
@@ -138,7 +138,7 @@ touching a single documentation file. From Zenzic's perspective:
   reads it directly.
 
 - i18n folder-mode and suffix-mode conventions are structurally identical.
-- `[build_context]` in `zenzic.toml` can stay as `engine = "mkdocs"` until you are ready
+- `[build_context]` in `.zenzic.toml` can stay as `engine = "mkdocs"` until you are ready
 
   to create `zensical.toml`.
 
@@ -273,10 +273,10 @@ zenzic diff              # should report zero delta against the pre-migration ba
 ### Step 3 — Declare Zensical identity (optional)
 
 If you want Zenzic to enforce the Zensical structural contract — requiring `zensical.toml`
-to be present and using `ZensicalAdapter` for nav extraction — update `zenzic.toml`:
+to be present and using `ZensicalAdapter` for nav extraction — update `.zenzic.toml`:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "zensical"
 default_locale = "en"
@@ -297,7 +297,7 @@ nav = [
 ```
 
 :::tip[Flexible Identity — Transparent Bridge]
-Declare `engine = "zensical"` in `zenzic.toml` before `zensical.toml` exists. Zenzic reads
+Declare `engine = "zensical"` in `.zenzic.toml` before `zensical.toml` exists. Zenzic reads
 your existing `mkdocs.yml` via the Transparent Bridge and validates it against the Zensical
 structural contract. Switch the engine declaration, run `zenzic check all`, see the
 result — no Markdown file touched, no pipeline broken.
@@ -333,7 +333,7 @@ If the score matches the pre-migration baseline, the migration is complete.
 Switching to Zensical is one of several paths available to a project on MkDocs. Zenzic
 supports all of them with the same quality guarantee:
 
-| Path | `engine` in `zenzic.toml` | What Zenzic validates |
+| Path | `engine` in `.zenzic.toml` | What Zenzic validates |
 | :--- | :--- | :--- |
 | Stay on MkDocs 1.x | `"mkdocs"` | Full MkDocs 1.x structural contract |
 | Switch to Zensical | `"zensical"` | Zensical nav (via TOML or legacy YAML bridge) |
@@ -341,11 +341,11 @@ supports all of them with the same quality guarantee:
 | Evaluate without committing | `--engine mkdocs` or `--engine zensical` (CLI flag) | Dry-run compatibility check |
 
 The `--engine` CLI flag lets you run a single check against a different engine adapter
-without touching `zenzic.toml`:
+without touching `.zenzic.toml`:
 
 ```bash
 # Test whether your current source is structurally compatible with Zensical
-# without declaring the switch in zenzic.toml
+# without declaring the switch in .zenzic.toml
 zenzic check all --engine zensical
 ```
 
@@ -353,7 +353,7 @@ zenzic check all --engine zensical
 
 ## Keeping custom rules during migration
 
-`[[custom_rules]]` in `zenzic.toml` are **adapter-independent** — they fire identically
+`[[custom_rules]]` in `.zenzic.toml` are **adapter-independent** — they fire identically
 regardless of the engine. Any rules you had in place for your MkDocs project continue to
 work without modification after switching to Zensical:
 
@@ -379,5 +379,5 @@ engine = "zensical"
 | Compatibility dry-run | `zenzic check all --engine zensical` | Structural issues with Zensical adapter |
 | After build switch | `zenzic check all` | Same issues as before |
 | Regression check | `zenzic diff` | Delta = 0 |
-| Flexible identity | `engine = "zensical"` in `zenzic.toml` | Uses `zensical.toml` or falls back to `mkdocs.yml` |
+| Flexible identity | `engine = "zensical"` in `.zenzic.toml` | Uses `zensical.toml` or falls back to `mkdocs.yml` |
 | Final gate | `zenzic diff --threshold 0` | Exit 0 only if score did not drop |

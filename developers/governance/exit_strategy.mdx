@@ -83,7 +83,7 @@ docs_dir = "docs"
 engine = "mkdocs"
 ```
 
-Or in a standalone `zenzic.toml` at the repository root.
+Or in a standalone `.zenzic.toml` at the repository root.
 
 **Removal procedure:**
 
@@ -94,7 +94,7 @@ Or in a standalone `zenzic.toml` at the repository root.
 Or:
 
 ```bash
-rm zenzic.toml
+rm .zenzic.toml
 ```
 
 The `[tool.zenzic]` section is an isolated namespace. Removing it does not affect
@@ -130,7 +130,7 @@ Or, if running directly:
 ### Step 2 — Remove Configuration (15 seconds)
 
 ```bash
-rm zenzic.toml
+rm .zenzic.toml
 # OR edit pyproject.toml: remove the [tool.zenzic] section
 ```
 

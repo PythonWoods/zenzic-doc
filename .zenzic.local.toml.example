@@ -28,7 +28,7 @@
 # forbidden_patterns: ADDITIVE merge with global config. Literal case-insensitive match.
 # Use for confidential terms that must not appear in public documentation (Z204 Privacy Gate).
 # Patterns are matched as literal substrings — NOT as regex. For regex, use [[custom_rules]]
-# in zenzic.toml (not supported in .zenzic.local.toml).
+# in .zenzic.toml (not supported in .zenzic.local.toml).
 # forbidden_patterns = [
 #     "INTERNAL-CODENAME",
 #     "staging.example.corp",
@@ -63,7 +63,7 @@
 # enabled = true
 
 [secrets]
-# Store API tokens here — never in shared zenzic.toml.
+# Store API tokens here — never in shared .zenzic.toml.
 # github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
 
 [debug]

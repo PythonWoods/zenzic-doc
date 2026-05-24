@@ -26,7 +26,7 @@ Two markers are authorised (first match wins):
 | Marker | Description |
 | :--- | :--- |
 | `.git/` | Universal VCS marker — present in any Git-tracked repository |
-| `zenzic.toml` | Zenzic's own configuration file — the explicit governance contract |
+| `.zenzic.toml` | Zenzic's own configuration file — the explicit governance contract |
 
 Both are intentionally engine-neutral: `mkdocs.yml`, `docusaurus.config.ts`, and similar
 build-engine files are not root markers. The Core must remain independent of any specific
@@ -44,7 +44,7 @@ Without a root marker (VCS or configuration), Zenzic cannot establish the projec
 The absence of a root marker produces this error:
 
 ```text
-ERROR: Could not locate repo root: no .git directory or zenzic.toml found in any
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found in any
 ancestor of /path/to/target. Run Zenzic from inside the repository.
 ```
 
@@ -55,7 +55,7 @@ an out-of-bounds scan before it begins.
 
 To allow Zenzic to analyse a directory, satisfy one of the following:
 
-**Option A — Initialise Zenzic** (creates a `zenzic.toml` root marker):
+**Option A — Initialise Zenzic** (creates a `.zenzic.toml` root marker):
 
 ```bash
 cd /path/to/target
@@ -72,7 +72,7 @@ git init
 **Option C — Run from inside an existing project** (the upward traversal will find the marker automatically):
 
 ```bash
-# From anywhere inside a project that already has .git/ or zenzic.toml
+# From anywhere inside a project that already has .git/ or .zenzic.toml
 zenzic check all
 ```
 
@@ -125,7 +125,7 @@ flowchart TD
 | :---: | :--- | :--- | :---: |
 | **L1** | System Guardrails | Hardcoded in `SYSTEM_EXCLUDED_DIRS` | No |
 | **L2** | Forced Inclusions + VCS | `included_dirs`, `included_file_patterns`, `.gitignore` | Yes (config) |
-| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` | Yes (config) |
+| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` | Yes (config) |
 | **L4** | CLI Overrides | `--exclude-dir`, `--include-dir` flags | Yes (per-run) |
 
 ### L1 -- System Guardrails {#l1-system-guardrails}
@@ -160,7 +160,7 @@ included_file_patterns = ["api.generated.md"]
 
 ### L3 -- Config Exclusions {#l3-config-exclusions}
 
-Config-level exclusions from `zenzic.toml` or `pyproject.toml`:
+Config-level exclusions from `.zenzic.toml` or `pyproject.toml`:
 
 - `excluded_dirs` -- directory names inside `docs/` to skip
 - `excluded_file_patterns` -- filename glob patterns to skip

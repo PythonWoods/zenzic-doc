@@ -9,12 +9,12 @@ description: "Controlli, campi di configurazione, regole DSL personalizzate e lo
 
 # Riferimento Configurazione
 
-Zenzic legge un singolo file `zenzic.toml` nella root del repository. Tutti i campi sono
+Zenzic legge un singolo file `.zenzic.toml` nella root del repository. Tutti i campi sono
 opzionali — Zenzic funziona senza alcun file di configurazione.
 
 :::tip[Configurazione zero]
 
-La maggior parte dei progetti non ha bisogno di alcun `zenzic.toml`. Esegui
+La maggior parte dei progetti non ha bisogno di alcun `.zenzic.toml`. Esegui
 `uvx zenzic check all` — se passa, hai finito. Aggiungi configurazione solo quando
 devi personalizzare un comportamento specifico.
 :::
@@ -24,15 +24,15 @@ devi personalizzare un comportamento specifico.
 ## Per iniziare
 
 Per la maggior parte dei progetti non è necessario alcun file di configurazione. Esegui
-`zenzic check all` e Zenzic individuerà la root del repository tramite `.git` o `zenzic.toml`
-e applicherà valori predefiniti ragionevoli. Se non viene trovato alcun `zenzic.toml`, Zenzic
+`zenzic check all` e Zenzic individuerà la root del repository tramite `.git` o `.zenzic.toml`
+e applicherà valori predefiniti ragionevoli. Se non viene trovato alcun `.zenzic.toml`, Zenzic
 mostra un pannello "Helpful Hint" che suggerisce `zenzic init`.
 
 Usa `zenzic init` per scaffoldare il file automaticamente. Rileva il motore di documentazione
 dalla root del progetto (es. `mkdocs.yml`) e preimposta `engine` in `[build_context]`:
 
 ```bash
-zenzic init             # crea zenzic.toml con engine rilevato
+zenzic init             # crea .zenzic.toml con engine rilevato
 zenzic init --pyproject # incorpora [tool.zenzic] in pyproject.toml
 zenzic init --force     # sovrascrive un file esistente
 ```
@@ -42,10 +42,10 @@ come tabella `[tool.zenzic]`.  Usa `--pyproject` per saltare il prompt interatti
 
 Quando hai bisogno di personalizzare il comportamento — ad esempio, per aumentare la soglia
 del conteggio parole per le pagine di riferimento tecnico concise, o per aggiungere pattern
-placeholder specifici del team — crea o modifica `zenzic.toml` nella root del repository:
+placeholder specifici del team — crea o modifica `.zenzic.toml` nella root del repository:
 
 ```toml
-# zenzic.toml — punto di partenza minimo
+# .zenzic.toml — punto di partenza minimo
 
 # Decommenta e adatta i campi che ti servono
 # Tutto è opzionale. I campi assenti usano i valori di default
@@ -80,7 +80,7 @@ Questa guida di riferimento è suddivisa in sezioni dedicate:
 
 ## Esempio completo
 
-La `zenzic.toml` più semplice e completa che esercita ogni sezione:
+La `.zenzic.toml` più semplice e completa che esercita ogni sezione:
 
 ```toml
 docs_dir = "docs"
@@ -115,14 +115,14 @@ configurazione all'avvio:
 
 | Priorità | Sorgente | Quando viene usata |
 | :---: | :--- | :--- |
-| 1 | `zenzic.toml` nella root del repository | Sempre preferita — la configurazione sovrana |
-| 2 | `[tool.zenzic]` in `pyproject.toml` | Usata solo quando `zenzic.toml` è assente |
+| 1 | `.zenzic.toml` nella root del repository | Sempre preferita — la configurazione sovrana |
+| 2 | `[tool.zenzic]` in `pyproject.toml` | Usata solo quando `.zenzic.toml` è assente |
 | 3 | Valori predefiniti interni | Usati quando nessun file è presente |
 
 La root del repository viene individuata risalendo dalla directory di lavoro corrente fino a
-trovare una directory `.git`, un file `zenzic.toml` o un `pyproject.toml`.
+trovare una directory `.git`, un file `.zenzic.toml` o un `pyproject.toml`.
 
-### zenzic.toml (Priorità 1)
+### .zenzic.toml (Priorità 1)
 
 Il file di configurazione dedicato. Se esiste, Zenzic lo legge e ignora completamente
 `pyproject.toml` — non c'è nessuna fusione tra i due file.
@@ -149,13 +149,13 @@ message  = "Rimuovere il marker DRAFT prima della pubblicazione."
 severity = "warning"
 ```
 
-Tutti i campi supportati in `zenzic.toml` sono ugualmente supportati in `[tool.zenzic]`. La
+Tutti i campi supportati in `.zenzic.toml` sono ugualmente supportati in `[tool.zenzic]`. La
 sotto-tabella `[build_context]` diventa `[tool.zenzic.build_context]`, e gli array `[[custom_rules]]`
 diventano `[[tool.zenzic.custom_rules]]`.
 
 :::note[Regola della sovranità]
-Se sia `zenzic.toml` **che** `pyproject.toml` esistono nella root del repository,
-`zenzic.toml` vince incondizionatamente. La tabella `[tool.zenzic]` in `pyproject.toml`
+Se sia `.zenzic.toml` **che** `pyproject.toml` esistono nella root del repository,
+`.zenzic.toml` vince incondizionatamente. La tabella `[tool.zenzic]` in `pyproject.toml`
 viene ignorata.
 :::
 

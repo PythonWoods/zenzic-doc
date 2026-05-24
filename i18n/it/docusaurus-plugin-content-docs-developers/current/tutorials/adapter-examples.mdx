@@ -35,7 +35,7 @@ nuovo controllo o verificare che un messaggio di errore sia formattato correttam
 | Snippet | Blocco Python con `SyntaxError` (due punti mancanti) |
 | Placeholder | `api.md` ha solo 18 parole e un marcatore di task |
 | Asset | `assets/unused.png` è su disco ma mai referenziato |
-| Regole custom | Pattern `ZZ-NOFIXME` in `zenzic.toml` |
+| Regole custom | Pattern `ZZ-NOFIXME` in `.zenzic.toml` |
 
 ```bash
 cd examples/broken-docs
@@ -112,7 +112,7 @@ Motore: `mkdocs`.
 
 **Scopo:** Mostrare Zenzic in esecuzione senza nessun motore di build. Nessun
 `mkdocs.yml`, nessun `zensical.toml`, nessuna config Hugo. Solo
-`engine = "standalone"` in `zenzic.toml`.
+`engine = "standalone"` in `.zenzic.toml`.
 
 **Risultato atteso:** `SUCCESS` — tutti i controlli applicabili passano.
 

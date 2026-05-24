@@ -143,10 +143,10 @@ static assets. If you add a custom social card PNG and never reference it in
 frontmatter or `themeConfig`, Zenzic will flag it as an unused asset on the
 next `zenzic check all` run.
 
-Exclude intentional source-only files in `zenzic.toml`:
+Exclude intentional source-only files in `.zenzic.toml`:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 excluded_assets = [
     "**/_category_.json",
     "assets/social/*.svg",   # SVG sources — not served as OG images

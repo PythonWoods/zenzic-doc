@@ -106,7 +106,7 @@ otherwise be non-blocking.
 | `check references --strict` | Treats Dead Definitions (unused reference links) as hard errors |
 | `score --strict` / `diff --strict` | Runs link check in strict mode |
 
-You can also set `strict = true` in `zenzic.toml` to make it the permanent default.
+You can also set `strict = true` in `.zenzic.toml` to make it the permanent default.
 
 ### `--exit-zero`
 
@@ -116,7 +116,7 @@ scored — only the exit code is suppressed. Useful for observation-only pipelin
 Security events are never downgraded by this flag: Exit 2 (credential scanner breach) and
 Exit 3 (path traversal guard system-path incident) always keep priority over ordinary failures.
 
-You can also set `exit_zero = true` in `zenzic.toml` to make it the permanent default.
+You can also set `exit_zero = true` in `.zenzic.toml` to make it the permanent default.
 
 ### `--show-info`
 
@@ -199,7 +199,7 @@ When active, the report appends a transparency notice:
 :::warning[Never use in CI]
 `--no-external` is a **developer scope control**, not a CI flag. Omit it in unattended
 CI pipelines — external link failures are legitimate gate failures. The permanent mechanism
-for excluding known-unstable URLs is `excluded_external_urls` in `zenzic.toml`.
+for excluding known-unstable URLs is `excluded_external_urls` in `.zenzic.toml`.
 :::
 
 | Concern | Affected by `--no-external`? |
@@ -213,7 +213,7 @@ for excluding known-unstable URLs is `excluded_external_urls` in `zenzic.toml`.
 
 `--exclude-url <PREFIX>` is available on `check all` and `check links`. It bypasses
 external URL validation for any URL that starts with the given prefix — **at runtime**,
-without touching `zenzic.toml`. The flag is repeatable.
+without touching `.zenzic.toml`. The flag is repeatable.
 
 ```bash
 # Suppress a domain whose DNS is not yet live
@@ -226,7 +226,7 @@ zenzic check all --strict \
 ```
 
 Runtime prefixes are **merged** with any `excluded_external_urls` entries already present
-in `zenzic.toml` — the two mechanisms co-exist and accumulate.
+in `.zenzic.toml` — the two mechanisms co-exist and accumulate.
 
 :::tip[CI/CD deployment paradox]
 Use `--exclude-url` in your CI workflow for URLs referencing published artefacts not yet
@@ -242,16 +242,16 @@ run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
 ```
 :::
 
-:::info[Permanent exclusions belong in `zenzic.toml`]
+:::info[Permanent exclusions belong in `.zenzic.toml`]
 For URLs that are **always** unreachable (e.g. GitHub auth pages, rate-limited private APIs),
-use `excluded_external_urls` in `zenzic.toml` — that list is version-controlled and auditable.
+use `excluded_external_urls` in `.zenzic.toml` — that list is version-controlled and auditable.
 Reserve `--exclude-url` for **transient** deployment-time paradoxes.
 :::
 
 ### `--exclude-dir` / `--include-dir`
 
 Available on `zenzic check all` (and individual sub-commands). These flags provide
-one-shot directory scope overrides **per invocation** without touching `zenzic.toml`:
+one-shot directory scope overrides **per invocation** without touching `.zenzic.toml`:
 
 | Flag | Effect |
 | :--- | :--- |
@@ -265,7 +265,7 @@ one-shot directory scope overrides **per invocation** without touching `zenzic.t
 # Exclude a generated folder for this run only
 zenzic check all --exclude-dir build/ --exclude-dir .cache/
 
-# Force-include a directory that was excluded in zenzic.toml
+# Force-include a directory that was excluded in .zenzic.toml
 zenzic check all --include-dir legacy-docs/
 ```
 
@@ -309,7 +309,7 @@ zenzic check all --no-color --format json > report.json
 ## Initialization
 
 ```bash
-zenzic init                               # Scaffold zenzic.toml in the current project
+zenzic init                               # Scaffold .zenzic.toml in the current project
 zenzic init ../new-project                # Initialize a remote directory (creates it if needed)
 zenzic init --pyproject                   # Write config into pyproject.toml [tool.zenzic]
 zenzic init --force                       # Overwrite existing config without prompting
@@ -318,7 +318,7 @@ zenzic init --plugin plugin-scaffold-demo # Scaffold a plugin SDK package
 
 **Smart detection** — when `pyproject.toml` exists in the project root, `zenzic init`
 asks whether to embed the configuration there as a `[tool.zenzic]` table instead of
-creating a separate `zenzic.toml`.  Pass `--pyproject` to skip the prompt and write
+creating a separate `.zenzic.toml`.  Pass `--pyproject` to skip the prompt and write
 directly into `pyproject.toml`.
 
 **Nomad mode** — `zenzic init <path>` treats the given path as the target project root.
@@ -337,7 +337,7 @@ run `zenzic check all` as a smoke test.
 
 `zenzic init` now generates a Governance-Ready configuration pair:
 
-- `zenzic.toml` (shared constitution, versioned)
+- `.zenzic.toml` (shared constitution, versioned)
 - `.zenzic.local.toml` (machine-local sanctuary, git-ignored)
 
 The global file is not an empty shell: it is a governance-ready blueprint with didactic
@@ -426,7 +426,7 @@ forbidden_patterns = []
 # suppression_cap_fail_hard = false
 
 [secrets]
-# Store API tokens here (never in shared zenzic.toml).
+# Store API tokens here (never in shared .zenzic.toml).
 # github_pat = "ghp_xxxxxxxxxxxxxxxxxxxx"
 
 [debug]
@@ -443,7 +443,7 @@ If `pyproject.toml` or `package.json` already contains a project name, `zenzic i
 auto-injects that name as the commented hint.
 
 Keep secrets and machine-specific overrides in `.zenzic.local.toml` only. Use
-`zenzic.toml` only for team policy and reproducible CI rules.
+`.zenzic.toml` only for team policy and reproducible CI rules.
 
 After generation, first run:
 
@@ -464,7 +464,7 @@ zenzic clean assets --dry-run # Preview what would be deleted without deleting
 ```
 
 `zenzic clean assets` respects `excluded_assets`, `excluded_dirs`, and
-`excluded_build_artifacts` from `zenzic.toml` — it will never delete files that match these
+`excluded_build_artifacts` from `.zenzic.toml` — it will never delete files that match these
 patterns.
 
 ---
@@ -693,7 +693,7 @@ inline PR annotations.
 ## Engine override
 
 The `--engine` flag overrides the build engine adapter for a single run without modifying
-`zenzic.toml`. Accepted by `check orphans` and `check all`:
+`.zenzic.toml`. Accepted by `check orphans` and `check all`:
 
 ```bash
 zenzic check orphans --engine mkdocs
@@ -769,7 +769,7 @@ zenzic score --fail-under 80
 ```
 
 Use this when the team has committed to maintaining a defined quality level, regardless of what
-the score was last week. You can also set `fail_under = 80` in `zenzic.toml` to make it
+the score was last week. You can also set `fail_under = 80` in `.zenzic.toml` to make it
 persistent.
 
 ### Soft reporting
@@ -879,59 +879,57 @@ If `--kind` is invalid, the command exits `1` and emits the error to stderr when
 ## Interactive Lab {#lab}
 
 ```bash
-zenzic lab [ACT] [--list]
+zenzic lab [CODE] [--list]
 ```
 
-`zenzic lab` is an interactive showcase that runs bundled documentation examples against
-Zenzic and reports whether each act met its expected outcome.
+`zenzic lab` is an interactive showcase that runs bundled Z-code gallery scenarios against
+Zenzic and reports whether each scenario met its expected outcome.
 
-### Act selection
+### Scenario selection
 
 | Syntax | Behaviour |
 | :--- | :--- |
-| `zenzic lab` | Display the act menu |
-| `zenzic lab 3` | Run a single act |
-| `zenzic lab 11-16` | Run a range of acts (inclusive) |
-| `zenzic lab all` | Run all 17 acts in sequence |
-| `zenzic lab --list` | Print the act index without running |
+| `zenzic lab` | Display the gallery menu |
+| `zenzic lab z101` | Run a single Z-code scenario |
+| `zenzic lab all` | Run all 5 gallery scenarios in sequence |
+| `zenzic lab --list` | Print the gallery index without running |
 
-### Act menu
+### Gallery
 
-Acts are grouped into four thematic sections:
-
-| Section | Icon | Acts | Focus |
-| :--- | :---: | :---: | :--- |
-| OS & Environment Guardrails | 🛡 | 0–3 | Core linting, credential scanner, baseline pass |
-| Structural & SEO Integrity | 🔗 | 4–6 | Single-file, custom dir, transparent proxy |
-| Enterprise Adapters & Migration | 🏢 | 7–10 | MkDocs, Docusaurus, Zensical, Z404 guards |
-| Security Audit Matrix | 🔴 | 11–16 | Adversarial validation, obfuscated creds, stress tests |
+| Z-Code | Title | Expects |
+| :---: | :--- | :---: |
+| `Z101` | Link Integrity | FAIL |
+| `Z201` | Credential Scanner | BREACH |
+| `Z405` | Asset Integrity | FAIL |
+| `Z601` | Brand Obsolescence | FAIL |
+| `Z602` | i18n Parity | FAIL |
 
 ### Outcome labels
 
-Each act declares its expected outcome. After execution, the Zenzic Audit Badge reports
-whether the expectation was met:
+Each scenario declares its expected outcome. After execution, the lab reports whether
+the expectation was met:
 
 | Label | Meaning |
 | :--- | :--- |
 | `PASS ✓` | Expected clean run — zero findings |
 | `EXPECTED FAIL ✓` | Expected errors were found |
 | `BREACH ✓` | Expected credential scanner detection |
-| `FAIL (unexpected)` | Act expected to pass but errors found |
+| `FAIL (unexpected)` | Scenario expected to pass but errors found |
 | `BREACH expected — not triggered` | Expected credential scanner hit was not produced |
 
 ### Examples
 
 ```bash
-# Run the Security Audit Matrix (all 6 adversarial validation acts)
-zenzic lab 11-16
+# Run the credential scanner scenario
+zenzic lab z201
 
-# Run the full tour
+# Run the full gallery
 zenzic lab all
 
-# Run a single act
-zenzic lab 3
+# Run a single Z-code scenario
+zenzic lab z101
 
-# Print the menu without running
+# Print the gallery index without running
 zenzic lab --list
 ```
 

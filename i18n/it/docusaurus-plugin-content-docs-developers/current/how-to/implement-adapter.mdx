@@ -188,10 +188,10 @@ myengine = "my_engine_adapter.adapter:MyEngineAdapter"
 ```
 
 La **chiave** (a sinistra di `=`) diventa il nome del motore che gli utenti
-passano a `--engine` o impostano come `engine` in `zenzic.toml`:
+passano a `--engine` o impostano come `engine` in `.zenzic.toml`:
 
-```toml title="zenzic.toml"
-# Nel zenzic.toml dell'utente
+```toml title=".zenzic.toml"
+# Nel .zenzic.toml dell'utente
 [build_context]
 engine = "myengine"
 ```
@@ -249,7 +249,7 @@ zenzic check all --engine myengine
 
 ## Step 5 — Le Regole Custom sono Indipendenti dal Motore
 
-Le `[[custom_rules]]` in `zenzic.toml` operano sul sorgente Markdown grezzo e
+Le `[[custom_rules]]` in `.zenzic.toml` operano sul sorgente Markdown grezzo e
 sono completamente disaccoppiate dal layer adapter.  Una regola che cerca `DRAFT`
 si attiverà identicamente sia che l'adapter sia MkDocs, Zensical o il tuo
 motore.  Non è richiesto alcun lavoro aggiuntivo per rendere le regole custom

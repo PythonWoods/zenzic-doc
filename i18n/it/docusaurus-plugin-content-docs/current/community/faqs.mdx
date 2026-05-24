@@ -49,10 +49,10 @@ uvx zenzic check all
 
 Oppure installalo nel progetto con `uv add --dev zenzic` (raccomandato) o `pip install zenzic`.
 
-**Devo creare un file `zenzic.toml`?**
+**Devo creare un file `.zenzic.toml`?**
 
 No. Zenzic funziona con configurazione zero — i valori predefiniti coprono la maggior parte dei
-progetti standard senza alcuna configurazione aggiuntiva. Il file `zenzic.toml` è necessario solo
+progetti standard senza alcuna configurazione aggiuntiva. Il file `.zenzic.toml` è necessario solo
 per personalizzare il comportamento, ad esempio per escludere directory, asset o URL esterni specifici.
 
 **Posso usare Zenzic con un progetto non-MkDocs?**
@@ -82,9 +82,9 @@ segnala per tenerti in controllo.
 La verifica dei link esterni viene eseguita solo quando viene passato il flag `--strict` —
 omettere il flag disabilita completamente tutte le richieste di rete. Per escludere
 permanentemente URL specifici senza rinunciare alla modalità strict, aggiungi i loro prefissi
-a `excluded_external_urls` in `zenzic.toml`:
+a `excluded_external_urls` in `.zenzic.toml`:
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 excluded_external_urls = [
     "https://internal.company.com",
     "https://github.com/MyOrg/private-repo",

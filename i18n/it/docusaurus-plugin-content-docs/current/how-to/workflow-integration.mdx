@@ -194,7 +194,7 @@ ZENZIC_EXTRA_ARGS="--exclude-url https://zenzic.dev/" just build
 ```
 
 `ZENZIC_EXTRA_ARGS` è una variabile d'ambiente letta sia da `just verify` che da
-`just build`. Inietta flag nell'invocazione di Zenzic senza modificare `zenzic.toml`
+`just build`. Inietta flag nell'invocazione di Zenzic senza modificare `.zenzic.toml`
 o il justfile — la fonte di verità per la configurazione rimane invariata. Non
 impostata, si espande a vuota e il gate si comporta con piena severità.
 

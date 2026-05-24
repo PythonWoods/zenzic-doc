@@ -113,7 +113,7 @@ Embedding them inside a build hook would degrade them to best-effort checks.
 # Install — one package, no extras
 pip install zenzic
 
-# Detect engine from config files, write zenzic.toml
+# Detect engine from config files, write .zenzic.toml
 zenzic init
 
 # Full audit -- VSM + credential scanner + path traversal guard + link validation
@@ -188,7 +188,7 @@ The Exclusion Zone model extends beyond structural correctness. A codebase or do
 
 Zenzic addresses this through the [`[governance]`](../reference/configuration.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 [governance]
 brand_obsolescence = ["Obsidian"]
 ```
@@ -201,4 +201,4 @@ Zenzic uses **format-aware, per-line suppression** for intentional historical re
 
 - [Architecture Reference](./architecture) — Deep dive into the Adapter Protocol and `BaseAdapter` contract.
 - [Discovery & Exclusion](./discovery) — How Zenzic discovers files before the Adapter is consulted.
-- [Configuration Reference](../reference/configuration-reference) — `[build_context]` engine selection and `zenzic.toml` options.
+- [Configuration Reference](../reference/configuration-reference) — `[build_context]` engine selection and `.zenzic.toml` options.

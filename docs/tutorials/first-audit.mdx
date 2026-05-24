@@ -31,7 +31,7 @@ uvx zenzic check all
 ```
 
 `uvx` fetches Zenzic in an isolated environment and discards it when the command finishes.
-Run this from the directory that contains your `zenzic.toml` (or from the repo root).
+Run this from the directory that contains your `.zenzic.toml` (or from the repo root).
 Zenzic auto-discovers the configuration and activates the correct engine — including
 orphan detection (Z402) when a nav contract is present.
 If a `blog/` directory exists on disk, or `docusaurus.config.ts` declares a blog plugin
@@ -45,13 +45,13 @@ This is the recommended workflow for CI and for trying Zenzic on an unfamiliar r
 
 Before configuring anything, watch Zenzic protect a deliberately broken repo:
 
-**Credential scanner demo** — run act 2 (leaked credential demo):
+**Credential scanner demo** — run the Z201 credential scenario:
 
 ```bash
-uvx zenzic lab 2
+uvx zenzic lab z201
 ```
 
-Zenzic scans the bundled `security_lab` fixture and fires **exit code 2** with the
+Zenzic scans the bundled `z201-credentials` fixture and fires **exit code 2** with the
 Security Breach banner — the non-suppressible alert for a leaked credential:
 
 <ZenzicOutput status="breach" exitCode={2} showFrame
@@ -62,41 +62,41 @@ Security Breach banner — the non-suppressible alert for a leaked credential:
 
 The masked credential, the non-zero exit: this is how Zenzic teaches.
 
-**The Credential Scanner (Zenzic Audit Badge)** — now run act 0:
+**The Credential Scanner (Zenzic Audit Badge)** — now run the Z101 link integrity scenario:
 
 ```bash
-uvx zenzic lab 0
+uvx zenzic lab z101
 ```
 
-The Zenzic Audit Badge: every check green, exit 0. The contrast is the proof —
+The Zenzic Audit Badge: link findings detected, exit 1. The contrast is the proof —
 the same engine that caught the secret confirms that clean documentation is genuinely clean.
 
 :::tip[Interactive Demo — No installation required]
-**Want to see the credential scanner in action?**
+**Want to see Zenzic in action?**
 
 ```bash
 uvx zenzic lab
 ```
 
-Launches the interactive menu of all 17 acts: credential leaks, broken links, orphan pages,
-path traversal, and the Zenzic Audit Badge. Zero install. Zero config. Pure experience.
+Launches the gallery menu of 5 Z-code scenarios: credential leaks, broken links, orphan
+assets, brand obsolescence, and i18n parity. Zero install. Zero config. Pure experience.
 
-→ Pick any act from the menu, or run a specific one: `uvx zenzic lab 2` (credential scanner), `uvx zenzic lab 0` (The Seal).
+→ Pick any scenario from the menu, or run a specific one: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (link integrity).
 :::
 
 ---
 
 ## Step 3 — Initialize your Exclusion Zone {#step-3-init}
 
-When you're ready to commit Zenzic to your project, generate a `zenzic.toml` in one command:
+When you're ready to commit Zenzic to your project, generate a `.zenzic.toml` in one command:
 
 :::info[Workspace required]
 
 Zenzic analyses **workspaces, not arbitrary directories**. It performs an upward traversal from the
-target path to locate a root marker (`.git/` or `zenzic.toml`). If you see:
+target path to locate a root marker (`.git/` or `.zenzic.toml`). If you see:
 
 ```text
-ERROR: Could not locate repo root: no .git directory or zenzic.toml found
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found
 ```
 
 Run `zenzic init` in the root directory of your project to establish the workspace boundary.
@@ -112,7 +112,7 @@ zenzic init
 Zenzic inspects the directory and pre-configures the engine for you:
 
 ```text
-Created zenzic.toml
+Created .zenzic.toml
   Engine pre-set to docusaurus (detected from docusaurus.config.ts).
 
 Edit the file to enable rules, adjust directories, or set a quality threshold.
@@ -185,7 +185,7 @@ This is deterministic traceability — the same guarantee in CI as in local deve
 - **Add a CI gate** — see [CI/CD Integration](../how-to/configure-ci-cd) to ship with confidence
 - **SARIF export** — `zenzic check all --format sarif` for GitHub Code Scanning inline annotations
 - **Strict mode** — add `--strict` to also validate external URLs
-- **Custom rules** — add `[[custom_rules]]` entries to `zenzic.toml` to enforce your own patterns
+- **Custom rules** — add `[[custom_rules]]` entries to `.zenzic.toml` to enforce your own patterns
 - **Finding codes** — see the [Finding Codes reference](../reference/finding-codes) for the full
 
   `Zxxx` diagnostic catalogue

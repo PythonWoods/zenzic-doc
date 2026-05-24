@@ -66,7 +66,7 @@ veri orfani potrebbero non essere rilevati in configurazioni con molti plugin.
 **Risoluzione pianificata:** Un avviso strutturato (annotazione `::warning` in modalità
 CI) quando Zenzic rileva plugin navbar dinamici, indicando che il rilevamento degli
 orfani potrebbe essere incompleto. L'utente può sopprimerlo con
-`dynamic_nav_plugins = true` in `zenzic.toml`.
+`dynamic_nav_plugins = true` in `.zenzic.toml`.
 
 **Stato:** Tracciato. RFC aperta.
 
@@ -185,7 +185,7 @@ devono per default **scansionare tutto, autorizzare le eccezioni esplicitamente*
 **Descrizione:** `zenzic init` andava in crash con un errore di configurazione quando
 invocato in una directory vuota. La funzione `find_repo_root()` non aveva fallback,
 rendendo impossibile inizializzare un progetto che non aveva ancora un marker `.git`
-o `zenzic.toml`.
+o `.zenzic.toml`.
 **Risoluzione:** Parametro `fallback_to_cwd=True` aggiunto a `find_repo_root()`, usato
 esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).
 **Chiuso in:** current release
@@ -268,7 +268,7 @@ non avveniva mai.
 
 3. **Deep-merge della config:** `ZenzicConfig.load()` esegue un merge additivo dei
    `forbidden_patterns` da `.zenzic.local.toml` dopo il caricamento della config
-   primaria (`zenzic.toml` o `[tool.zenzic]`). I duplicati vengono rimossi;
+   primaria (`.zenzic.toml` o `[tool.zenzic]`). I duplicati vengono rimossi;
    l'ordine di inserimento è preservato.
 
 4. **Z204 FORBIDDEN_TERM — Exit 2:** `scan_line_for_forbidden_terms()` in `core/credentials.py`
@@ -285,7 +285,7 @@ non avveniva mai.
 Il Privacy Gate Z204 e il Brand Obsolescence Guard Z601 formano un'architettura a due livelli:
 - **Z204** (`forbidden_patterns` in `.zenzic.local.toml`): exit 2, non sopprimibile.
   Progettato per termini privati che non devono mai apparire in nessun documento pubblicato.
-- **Z601** (`obsolete_names` in `zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore: Z601`.
+- **Z601** (`obsolete_names` in `.zenzic.toml`): exit 1, sopprimibile con `zenzic:ignore: Z601`.
   Progettato per termini di brand obsoleti dove i riferimenti storici nei file CHANGELOG
   sono accettabili.
 

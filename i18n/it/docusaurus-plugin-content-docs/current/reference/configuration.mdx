@@ -1,7 +1,7 @@
 ---
 icon: lucide/sliders-horizontal
 sidebar_label: "Impostazioni Principali"
-description: "Tutti i campi di zenzic.toml: soglie, esclusioni, directory e feature flag."
+description: "Tutti i campi di .zenzic.toml: soglie, esclusioni, directory e feature flag."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,7 +9,7 @@ description: "Tutti i campi di zenzic.toml: soglie, esclusioni, directory e feat
 
 # Impostazioni di Base
 
-Tutti i campi di primo livello in `zenzic.toml` che controllano percorsi, soglie e punteggio.
+Tutti i campi di primo livello in `.zenzic.toml` che controllano percorsi, soglie e punteggio.
 
 ---
 
@@ -20,11 +20,11 @@ Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sor
 | Priorità | Sorgente | Descrizione |
 | :---: | :--- | :--- |
 | **1 (massima)** | **Flag CLI** | `--engine`, `--exclude-dir`, `--strict`, ecc. Sovrascrivono ogni altra sorgente per la singola esecuzione. |
-| 2 | `zenzic.toml` | File standalone alla radice del repository — la configurazione sovrana autorevole |
+| 2 | `.zenzic.toml` | File standalone alla radice del repository — la configurazione sovrana autorevole |
 | 3 | `pyproject.toml` | Tabella `[tool.zenzic]` dentro `pyproject.toml` |
 | 4 (minima) | Valori predefiniti integrati | Default hardcoded quando nessun file di configurazione viene trovato |
 
-**I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `zenzic.toml` per quella singola esecuzione senza modificare alcun file.
+**I flag CLI vincono sempre.** Un flag come `--engine mkdocs` sovrascrive il valore di `engine` in `.zenzic.toml` per quella singola esecuzione senza modificare alcun file.
 
 ---
 
@@ -327,7 +327,7 @@ Il flag CLI `--fail-under` sovrascrive questo valore per una singola esecuzione.
 fail_under = 80   # exit 1 se score < 80
 ```
 
-Per eseguire in modalità osservazionale indipendentemente da ciò che contiene `zenzic.toml`:
+Per eseguire in modalità osservazionale indipendentemente da ciò che contiene `.zenzic.toml`:
 
 ```bash
 zenzic score --fail-under 0
@@ -372,7 +372,7 @@ exit_zero = true
 Il flag CLI `--exit-zero` sovrascrive questo valore per una singola esecuzione.
 
 :::warning[Usa con cautela]
-Impostare `exit_zero = true` in `zenzic.toml` disabilita il quality gate globalmente.
+Impostare `exit_zero = true` in `.zenzic.toml` disabilita il quality gate globalmente.
 Preferisci usare `--exit-zero` come flag CLI temporaneo durante gli sprint di cleanup,
 rimuovendolo una volta che il baseline è pulito.
 :::

@@ -127,7 +127,7 @@ no-internal-hostname = "my_org_rules.rules:NoInternalHostnameRule"
 ```
 
 The entry-point name (`no-internal-hostname`) is the **plugin ID** that users
-reference in `zenzic.toml` (see [Enabling plugins](#config-enabling-plugins) below).
+reference in `.zenzic.toml` (see [Enabling plugins](#config-enabling-plugins) below).
 
 Install your package alongside Zenzic:
 
@@ -162,7 +162,7 @@ Generated structure:
 plugin-scaffold-demo/
     pyproject.toml
     README.md
-    zenzic.toml
+    .zenzic.toml
     docs/
         index.md
     src/
@@ -191,11 +191,11 @@ zenzic check all
 ## Enabling plugins {#config-enabling-plugins}
 
 Core rules (registered under `zenzic.rules` by Zenzic itself) are always
-active.  External plugin rules must be explicitly enabled in `zenzic.toml`
+active.  External plugin rules must be explicitly enabled in `.zenzic.toml`
 under the `plugins` key:
 
-```toml title="zenzic.toml"
-# zenzic.toml
+```toml title=".zenzic.toml"
+# .zenzic.toml
 [build_context]
 engine = "mkdocs"
 
@@ -287,12 +287,12 @@ refuses to start.  Fix the rule before running Zenzic.
 - [ ] `check()` is pure: no I/O, no side effects, same output for same input.
 - [ ] `rule_id` is a stable, unique string (include an org prefix, e.g. `"MYORG-001"`).
 - [ ] Entry-point registered under `zenzic.rules` in `pyproject.toml`.
-- [ ] Plugin ID listed in the project's `zenzic.toml` under `plugins`.
+- [ ] Plugin ID listed in the project's `.zenzic.toml` under `plugins`.
 
 :::info[Next Steps]
  Bridge your rule from implementation to production Zenzic flow:
 
- 1. Register and enable the plugin ID in `zenzic.toml` under `plugins`
+ 1. Register and enable the plugin ID in `.zenzic.toml` under `plugins`
 
      (see [Enabling plugins](#config-enabling-plugins)).
 
