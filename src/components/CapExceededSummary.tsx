@@ -104,7 +104,7 @@ export default function CapExceededSummary({
 
   return (
     <div
-      className={`my-6 overflow-hidden rounded-xl border dark:bg-zinc-900/40 bg-white font-mono shadow-sm ${WRAPPER_BORDER[variant]}`}
+      className={`my-6 overflow-hidden rounded-xl border dark:bg-zinc-900/40 bg-white font-mono shadow-2xl ${WRAPPER_BORDER[variant]}`}
     >
       {/* Header */}
       <div
