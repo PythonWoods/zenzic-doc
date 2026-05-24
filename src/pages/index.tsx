@@ -10,6 +10,7 @@ import Hero from '../components/Homepage/Hero';
 import EngineeringLedger from '../components/Homepage/EngineeringLedger';
 import SecuritySection from '../components/Homepage/SecuritySection';
 import QualityScore from '../components/Homepage/QualityScore';
+import GovernancePreview from '../components/Homepage/GovernancePreview';
 import Quickstart from '../components/Homepage/Quickstart';
 
 export default function Home(): React.JSX.Element {
@@ -53,6 +54,7 @@ export default function Home(): React.JSX.Element {
           <EngineeringLedger />
           <SecuritySection />
           <QualityScore />
+          <GovernancePreview />
           <Quickstart />
         </main>
 

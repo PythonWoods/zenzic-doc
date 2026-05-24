@@ -11,7 +11,7 @@ description: "Configura il comportamento dell'adapter, le impostazioni locale e 
 
 Zenzic usa un **adapter** per ottenere conoscenza specifica del motore — struttura della nav,
 directory i18n e pattern locale — senza importare o eseguire alcun framework di build. Gli adapter
-sono scoperti a runtime tramite Python entry-points.
+sono scoperti a runtime tramite Python entry-points; nessun aggiornamento di Zenzic è necessario per aggiungere supporto di terze parti.
 
 ---
 
@@ -105,8 +105,6 @@ dei file esclusi automaticamente.
 :::
 
 ### Modalità Standalone
-
-Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto:
 
 Quando `StandaloneAdapter` è selezionato, Zenzic non conosce la struttura della nav del progetto.
 In questa modalità:

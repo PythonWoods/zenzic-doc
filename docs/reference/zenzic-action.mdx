@@ -28,6 +28,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `config-file` | *(auto)* | No | Explicit path to a `.zenzic.toml` config file. Auto-discovers `.zenzic.toml` → `.github/.zenzic.toml` when omitted. |
 | `audit` | `false` | No | Sovereign audit mode — bypasses all `zenzic:ignore` inline comments and `governance.per_file_ignores` entries. Reveals the true, unfiltered documentation state. |
 | `diff-base` | *(snapshot)* | No | Path to a JSON baseline file for `zenzic diff` comparison. When set, the action compares the current score against this file instead of the saved `.zenzic-score.json`. Use an artifact from `main` to implement the Zenzic Quality Gate. |
+| `guard-scan` | `false` | No | Run `zenzic guard scan` as a Defense-in-Depth step **before** the main quality gate. Catches hardcoded credentials and forbidden patterns that bypassed pre-commit hooks. Failure is always fatal — not governed by `fail-on-error`. |
 
 ---
 
@@ -39,6 +40,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `findings-count` | Total number of findings reported. Security findings (exit 2/3) force a minimum of 1. |
 | `score` | Documentation Quality Score (0–100). Populated when `format: json` or when `diff-base` is set. Empty string in other modes. |
 | `suppression-debt-pts` | Technical Debt points deducted from the score due to active suppressions. `0` when no suppressions are active or when audit mode is enabled. |
+| `cap-exceeded` | `"true"` when the suppression CAP was exceeded and blocked the build; `"false"` otherwise. |
 
 ---
 

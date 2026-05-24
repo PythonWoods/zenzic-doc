@@ -101,7 +101,6 @@ Zenzic definisce quattro codici di uscita. Il wrapper li propaga **senza rimappa
 | `1` | Finding di documentazione (link rotti, orfani, ref dangling, ecc.) | ✅ tramite `fail-on-error: false` |
 | `2` | **SICUREZZA** — pattern di credenziale rilevato (credential scanner / Z201) | ❌ Mai |
 | `3` | **SICUREZZA** — path traversal verso sistema (path traversal guard / Z202–Z203) | ❌ Mai |
-| `4` | **QUALITÀ** — regressione del punteggio rispetto alla baseline (`zenzic diff`) | ❌ Mai |
 
 Le uscite `2` e `3` terminano il job incondizionatamente. Né `fail-on-error: "false"` né nessun altro input può sopprimerle. Questo è applicato nella logica di uscita del wrapper, non in `action.yml`, quindi non può essere aggirato sovrascrivendo gli input dell'action.
 
@@ -122,6 +121,7 @@ fi
 Questo garantisce che gli step downstream che leggono `findings-count` non vedano mai `"0 finding, exit 2"` — una UX incoerente che implicherebbe che la build è fallita senza motivo.
 
 ---
+
 ## Step Secret Guard {#guard-scan}
 
 Quando `guard-scan: "true"` è impostato, l'action esegue `zenzic guard scan` come step composito standalone **prima** del gate principale. Questo implementa la Defense-in-Depth per i team in cui i contributor possono bypassare i pre-commit hook con `git commit --no-verify`.
@@ -154,13 +154,13 @@ Il wrapper scrive una tabella Markdown strutturata in `$GITHUB_STEP_SUMMARY` per
 | `1` generico | **❌ Finding di Documentazione** | Conteggio finding, Quality Score |
 | `2` | **❌ Security Breach** | Regola Z201, guida all'azione |
 | `3` | **❌ Boundary Breach** | Regole Z202/Z203, guida all'azione |
-| `4` | **❌ Regressione Qualità** | Punteggio, debito di soppressione, link Playbook |
 
 Il riepilogo **CAP Superato** è costruito analizzando l'output SARIF per un risultato con `ruleId: "SUPPRESSION_CAP_EXCEEDED"`. Non è richiesta una seconda invocazione di Zenzic — il SARIF di CAP-exceeded contiene esattamente un risultato con le proprietà di governance incorporate in `properties.governance`.
 
 L'output `cap-exceeded` (`"true"` / `"false"`) è disponibile per gli step a valle per logica condizionale (es. automazione dashboard, etichettatura PR).
 
 ---
+
 ## Root-First Discovery — Configuration Cascade {#cascade}
 
 Il wrapper implementa un'**auto-discovery gerarchica** per il file di configurazione Zenzic. L'ordine di ricerca riflette il posizionamento convenzionale nei repository reali:

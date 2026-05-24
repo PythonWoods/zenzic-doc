@@ -163,9 +163,16 @@ Zenzic is engine-agnostic. It works with MkDocs, Zensical, Docusaurus, or no doc
 
 Every adapter must extend `BaseAdapter`. Key methods:
 
-- **`has_engine_config()`** -- Returns `True` when a build-engine config was found. `StandaloneAdapter` returns `False`. Callers use this to decide whether nav-based checks (orphan detection) can produce meaningful results.
-- **`get_route_info()`** -- The Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag.
-- **`provides_index(directory_path)`** -- **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for the given directory. Called once per directory by `find_missing_directory_indices()` — never inside per-link or per-file hot loops. This is the only `BaseAdapter` method that may perform disk I/O (`Path.exists()`).
+| Method | Description |
+| :--- | :--- |
+| `has_engine_config()` | Guard: returns `True` when the adapter found an engine configuration file. When `False`, nav-dependent checks are skipped. |
+| `get_route_info()` | Metadata-Driven Routing API. Returns all routing metadata in a single call: canonical URL, route status, optional slug, route base path, and proxy flag. |
+| `get_nav_paths()` | Returns the set of `.md` paths declared in the site navigation. |
+| `get_ignored_patterns()` | fnmatch patterns the adapter treats as ignored (e.g. `README.md` for some engines). |
+| `is_locale_dir(name)` | Determines whether a directory is a locale tree. |
+| `resolve_asset(path, docs_root)` | Resolves an asset with i18n fallback. |
+| `resolve_anchor(file, anchor, cache, docs_root)` | Resolves an anchor with i18n fallback. |
+| `provides_index(directory_path)` | **Discovery-phase I/O hook.** Returns `True` when the engine will generate a landing page for this directory. The only protocol method that may perform disk I/O (`Path.exists()`). |
 
 ### `RouteMetadata` {#route-metadata}
 

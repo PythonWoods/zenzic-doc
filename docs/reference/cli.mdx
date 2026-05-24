@@ -404,6 +404,15 @@ brand_obsolescence = ["OldProduct", "LegacyTerm"]
 #       - run: pipx run zenzic check all --strict
 ```
 
+When `suppression_cap_fail_hard = true` and active suppressions exceed the CAP,
+the GitHub Actions job summary renders:
+
+<CapExceededSummary
+  activeSuppressions={43}
+  globalCap={30}
+  remediationUrl="https://zenzic.dev/developers/how-to/release-governance-protocol"
+/>
+
 ### Local Sanctuary (`.zenzic.local.toml`)
 
 `zenzic init` also scaffolds a didactic local overlay used for private
