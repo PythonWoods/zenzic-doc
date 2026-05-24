@@ -608,18 +608,26 @@ in this reference page.
 | Finding | `ruleId` | SARIF `level` |
 | :--- | :---: | :---: |
 | Z101 LINK_BROKEN | `Z101` | `error` |
-| Z102 ANCHOR_MISSING | `Z102` | `warning` |
-| Z103 ORPHAN_LINK | `Z103` | `warning` |
+| Z102 ANCHOR_MISSING | `Z102` | `error` |
+| Z103 ORPHAN_LINK | `Z103` | `error` |
 | Z104 FILE_NOT_FOUND | `Z104` | `error` |
-| Z105 ABSOLUTE_PATH | `Z105` | `warning` |
+| Z105 ABSOLUTE_PATH | `Z105` | `error` |
 | Z106 CIRCULAR_LINK | `Z106` | `note` |
+| Z107 CIRCULAR_ANCHOR | `Z107` | `error` |
+| Z108 EMPTY_LINK_TEXT | `Z108` | `error` |
+| Z111 VIRTUAL_ROUTE_BROKEN | `Z111` | `error` |
+| Z113 AUTHOR_KEY_COLLISION | `Z113` | `error` |
+| Z114 LARGE_PAGINATION_SET | `Z114` | `note` |
 | Z201 CREDENTIAL_SECRET | `Z201` | `error` |
 | Z202 PATH_TRAVERSAL | `Z202` | `error` |
 | Z203 PATH_TRAVERSAL_FATAL | `Z203` | `error` |
-| Z301–Z303 Reference Integrity | `Z301`–`Z303` | `error` / `warning` |
-| Z401–Z404 Structure | `Z401`–`Z404` | `note` / `warning` |
-| Z501–Z503 Content Quality | `Z501`–`Z503` | `warning` / `error` |
-| Z901–Z906 System | `Z901`–`Z906` | `error` / `warning` |
+| Z204 FORBIDDEN_TERM | `Z204` | `error` |
+| Z301–Z303 Reference Integrity | `Z301`–`Z303` | `warning` |
+| Z401–Z406 Structure | `Z401`–`Z406` | `warning` |
+| Z501–Z505 Content Quality | `Z501`–`Z505` | `warning` |
+| Z601–Z602 Governance | `Z601`–`Z602` | `warning` |
+| Z901–Z902 System | `Z901`–`Z902` | `warning` |
+| Z906 NO_FILES_FOUND | `Z906` | `note` |
 
 ### Example SARIF 2.1.0 output
 
@@ -631,20 +639,22 @@ in this reference page.
     {
       "tool": {
         "driver": {
-          "name": "Zenzic",
-          "version": "0.7.1",
+          "name": "zenzic",
+          "version": "0.8.0",
           "informationUri": "https://zenzic.dev",
           "rules": [
             {
               "id": "Z104",
               "name": "FILE_NOT_FOUND",
               "shortDescription": { "text": "File not found" },
+              "defaultConfiguration": { "level": "error" },
               "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z104"
             },
             {
               "id": "Z201",
               "name": "CREDENTIAL_SECRET",
               "shortDescription": { "text": "Credential detected" },
+              "defaultConfiguration": { "level": "error" },
               "helpUri": "https://zenzic.dev/docs/reference/finding-codes#z201"
             }
           ]

@@ -141,3 +141,13 @@ replace = "v{new_version}"
 filename = "static/assets/social/social-card-light.svg"
 search = "v{current_version}"
 replace = "v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "docs/reference/cli.mdx"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/cli.mdx"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
