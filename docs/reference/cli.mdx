@@ -782,7 +782,22 @@ Use this when the team has committed to maintaining a defined quality level, reg
 the score was last week. You can also set `fail_under = 80` in `.zenzic.toml` to make it
 persistent.
 
-### Soft reporting
+### Dynamic quality badge
+
+```bash
+zenzic score --export-shields zenzic-shields.json
+```
+
+Writes a [Shields.io endpoint](https://shields.io/endpoint)-compatible JSON file to disk. Upload
+the file to a GitHub Gist or a `gh-pages` branch to expose it publicly, then embed the dynamic
+badge in your `README.md`:
+
+```markdown
+[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-shields.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
+```
+
+Color logic: `brightgreen` if score ≥ `fail_under` (or ≥ 80 when no threshold is set), `yellow` if
+score ≥ 70, `red` otherwise or if a security override is active.
 
 To surface the score without blocking the pipeline:
 

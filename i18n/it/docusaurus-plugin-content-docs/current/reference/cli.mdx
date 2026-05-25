@@ -791,7 +791,22 @@ Utile quando il team si è impegnato a mantenere un livello di qualità definito
 da quello che era il punteggio la settimana scorsa. Puoi anche impostare `fail_under = 80` in
 `.zenzic.toml` per renderlo persistente.
 
-### Reporting soft
+### Badge di qualità dinamico
+
+```bash
+zenzic score --export-shields zenzic-shields.json
+```
+
+Scrive su disco un file JSON compatibile con l'[endpoint Shields.io](https://shields.io/endpoint).
+Carica il file su un GitHub Gist o un branch `gh-pages` per esporlo pubblicamente, poi incorpora
+il badge dinamico nel tuo `README.md`:
+
+```markdown
+[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-shields.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+```
+
+Logica colore: `brightgreen` se score ≥ `fail_under` (o ≥ 80 se non è impostata nessuna soglia),
+`yellow` se score ≥ 70, `red` altrimenti o se è attivo un security override.
 
 Per rendere visibile il punteggio senza bloccare la pipeline:
 
