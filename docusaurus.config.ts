@@ -94,6 +94,8 @@ const config: Config = {
           admonitions: true,
           onUntruncatedBlogPosts: 'throw',
           onInlineTags: 'throw',
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
           feedOptions: {
             type: ['rss', 'atom'],
             title: 'The Zenzic Blog — Zenzic Engineering Blog',

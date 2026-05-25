@@ -152,30 +152,29 @@ $$
 
 ## Stadio 5 — Suppression Debt {#suppression-debt}
 
-Ogni soppressione attiva è un'assunzione consapevole di responsabilità. Le soppressioni sono allowance-based: fino a `suppression_cap` sono debito autorizzato di governance e non riducono il punteggio. Solo le soppressioni oltre cap generano debito.
+Ogni soppressione attiva è un'assunzione consapevole di responsabilità. Il **modello flat-cost** deduce esattamente **1 punto per soppressione**, indipendentemente da quante soppressioni siano presenti. Non esiste una franchigia gratuita.
 
-La formula del debito è:
+`suppression_cap` (default: 30) è una **soglia di hard-fail**, non un limite di franchigia. Quando `suppression_count > suppression_cap`, `zenzic score` termina con codice 1 immediatamente, prima della valutazione della soglia di punteggio. La formula della penaltà è indipendente dal cap:
 
 $$
-\omega_{\text{debt}} = \max(0,\; n - \text{cap})
+\omega_{\text{debt}} = n
 $$
 
 dove:
 - $n$ = soppressioni attive totali (inline `zenzic:ignore` + voci `per_file_ignores`)
-- $\text{cap}$ = `suppression_cap` da `[governance]` in `.zenzic.toml` (default: 30)
 
 Il punteggio finale è:
 
 $$
-S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - \omega_{\text{debt}}\right)
+S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - n\right)
 $$
 
 ### Riferimento Costo Soppressioni
 
 | Numero soppressioni | Costo per soppressione | Note |
 | :--- | :---: | :--- |
-| $n \leq \text{cap}$ | 0 pt | Allowance gestita (tracciata, non penalizzata) |
-| $n > \text{cap}$ | 1 pt (solo eccesso) | Il debito parte solo oltre il cap configurato |
+| $n \leq \text{cap}$ | 1 pt ciascuna | Postura gestita — ogni soppressione ha un costo |
+| $n > \text{cap}$ | 1 pt ciascuna | Hard-fail: `zenzic score` termina con codice 1 |
 
 :::tip Il Suppression Debt nella CLI
 Esegui `zenzic score` per vedere la postura corrente delle soppressioni:
@@ -212,7 +211,11 @@ Il Suppression Audit e telemetria di governance, non un semplice contatore di fa
 - `[MANAGED DEBT]`: sono presenti soppressioni attive e il progetto resta nel profilo cap sovrano (`suppression_cap <= 30`).
 - `[EXTENDED DEBT]`: sono presenti soppressioni attive con profilo cap esteso (`suppression_cap > 30`).
 
-Queste label descrivono la postura di governance. Sono complementari alla matematica del punteggio e aiutano i revisori a distinguere debito gestito da espansione di policy.
+Queste label descrivono la postura di governance. Sono complementari alla matematica del punteggio e aiutano i revisori a tracciare la crescita delle soppressioni nel tempo.
+
+:::warning Breaking Change — v0.8.0 (ADR-031)
+Prima della v0.8.0, le soppressioni entro `suppression_cap` erano gratuite (modello allowance). Dalla v0.8.0, ogni soppressione deduce 1 punto (modello flat-cost). `suppression_cap` è ora esclusivamente una soglia di hard-fail per l'exit code. I progetti che aggiornano dalla v0.7.x vedranno il loro punteggio massimo raggiungibile ridotto del numero di soppressioni attive.
+:::
 
 ---
 
@@ -224,11 +227,11 @@ $$
 S_{\text{final}} =
 \begin{cases}
 0 & \text{se } \sum_{c \in \mathcal{S}} n_c > 0 \quad \text{(Security Override)} \\[6pt]
-\max\!\left(0,\; S_{\text{gravity}} - \omega_{\text{debt}}\right) & \text{altrimenti}
+\max\!\left(0,\; S_{\text{gravity}} - n\right) & \text{altrimenti}
 \end{cases}
 $$
 
-dove:
+dove $n$ è il conteggio totale delle soppressioni attive e:
 
 $$
 S_{\text{gravity}} =
@@ -261,9 +264,9 @@ $S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
 
 **Stadio 4 — Gravity Cap:** $\text{cat\_pts}_{\text{brand}} = 0$ → $S_{\text{gravity}} = \min(42, 70) = 42$.
 
-**Stadio 5 — Suppression Debt:** $n = 8 \leq 30$ → $\omega_{\text{debt}} = 0$.
+**Stadio 5 — Suppression Debt:** $n = 8$ soppressioni → flat-cost: $\omega_{\text{debt}} = 8$.
 
-$$S_{\text{final}} = \max(0,\; 42 - 0) = \mathbf{42}$$
+$$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
 
 ---
 

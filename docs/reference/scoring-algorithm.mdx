@@ -94,11 +94,14 @@ $$
 | :--- | :--- | ---: | :--- |
 | Z101 | LINK_BROKEN | 8.0 pts | Structural |
 | Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
+| Z103 | ORPHAN_LINK | 2.0 pts | Structural |
 | Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
 | Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
 | Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
 | Z106 | CIRCULAR_LINK | 0.0 pts | Informational (no DQS impact) |
 | Z108 | EMPTY_LINK_TEXT | 1.0 pts | Structural |
+| Z111 | VIRTUAL_ROUTE_BROKEN | 8.0 pts | Structural |
+| Z113 | AUTHOR_KEY_COLLISION | 2.0 pts | Structural |
 | Z301 | DANGLING_REF | 4.0 pts | Navigation |
 | Z302 | DEAD_DEF | 1.0 pts | Navigation |
 | Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
@@ -152,30 +155,29 @@ $$
 
 ## Stage 5 — Suppression Debt {#suppression-debt}
 
-Every active suppression is an acknowledged assumption of responsibility. Suppressions are allowance-based: up to `suppression_cap`, they are governance-authorized and do not reduce the score. Only excess suppressions generate debt.
+Every active suppression is an acknowledged assumption of responsibility. The **flat-cost model** deducts exactly **1 point per suppression**, regardless of how many suppressions are present. There is no free allowance.
 
-The debt formula is:
+`suppression_cap` (default: 30) is a **hard-fail threshold**, not an allowance boundary. When `suppression_count > suppression_cap`, `zenzic score` exits with code 1 immediately, before the score gate is evaluated. The penalty formula is independent of the cap:
 
 $$
-\omega_{\text{debt}} = \max(0,\; n - \text{cap})
+\omega_{\text{debt}} = n
 $$
 
 where:
 - $n$ = total active suppressions (inline `zenzic:ignore` + `per_file_ignores` entries)
-- $\text{cap}$ = `suppression_cap` from `[governance]` in `.zenzic.toml` (default: 30)
 
 The final score is:
 
 $$
-S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - \omega_{\text{debt}}\right)
+S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - n\right)
 $$
 
 ### Suppression Cost Reference
 
 | Suppression count | Cost per suppression | Notes |
 | :--- | :---: | :--- |
-| $n \leq \text{cap}$ | 0 pts | Managed allowance (tracked, not penalized) |
-| $n > \text{cap}$ | 1 pt (excess only) | Debt starts only beyond the configured cap |
+| $n \leq \text{cap}$ | 1 pt each | Managed posture — every suppression costs |
+| $n > \text{cap}$ | 1 pt each | Hard-fail: `zenzic score` exits with code 1 |
 
 :::tip Suppression Debt in the CLI
 Run `zenzic score` to inspect the current suppression posture:
@@ -212,7 +214,11 @@ The Suppression Audit is governance telemetry, not a raw failure counter.
 - `[MANAGED DEBT]`: active suppressions are present and the project remains on sovereign cap profile (`suppression_cap <= 30`).
 - `[EXTENDED DEBT]`: active suppressions are present while using an expanded cap profile (`suppression_cap > 30`).
 
-These labels describe governance posture. They are complementary to score math and help reviewers distinguish managed debt from policy expansion.
+These labels describe governance posture. They are complementary to score math and help reviewers track suppression growth over time.
+
+:::warning Breaking Change — v0.8.0 (ADR-031)
+Prior to v0.8.0, suppressions within `suppression_cap` were free (allowance model). Since v0.8.0, every suppression deducts 1 point (flat-cost model). `suppression_cap` is now exclusively a hard-fail exit threshold. Projects upgrading from v0.7.x will see their maximum achievable score reduced by their active suppression count.
+:::
 
 ---
 
@@ -224,11 +230,11 @@ $$
 S_{\text{final}} =
 \begin{cases}
 0 & \text{if } \sum_{c \in \mathcal{S}} n_c > 0 \quad \text{(Security Override)} \\[6pt]
-\max\!\left(0,\; S_{\text{gravity}} - \omega_{\text{debt}}\right) & \text{otherwise}
+\max\!\left(0,\; S_{\text{gravity}} - n\right) & \text{otherwise}
 \end{cases}
 $$
 
-where:
+where $n$ is the total active suppression count and:
 
 $$
 S_{\text{gravity}} =
@@ -261,9 +267,9 @@ $S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
 
 **Stage 4 — Gravity Cap:** $\text{cat\_pts}_{\text{brand}} = 0$ → $S_{\text{gravity}} = \min(42, 70) = 42$.
 
-**Stage 5 — Suppression Debt:** $n = 8 \leq 30$ → $\omega_{\text{debt}} = 0$.
+**Stage 5 — Suppression Debt:** $n = 8$ suppressions → flat-cost: $\omega_{\text{debt}} = 8$.
 
-$$S_{\text{final}} = \max(0,\; 42 - 0) = \mathbf{42}$$
+$$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
 
 ---
 
