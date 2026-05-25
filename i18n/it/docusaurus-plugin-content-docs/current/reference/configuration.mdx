@@ -459,7 +459,10 @@ configurazione primaria. È la sede canonica degli override macchina e dei patte
 
 Aree di override supportate:
 
-- `forbidden_patterns` top-level
+- `forbidden_patterns` top-level (additivo)
+- `excluded_dirs` top-level (additivo — estende la lista di esclusione globale)
+- `excluded_file_patterns` top-level (additivo — estende le esclusioni glob globali)
+- `[[custom_rules]]` top-level (additivo — estende le regole lint personalizzate globali)
 - `[core]` (incluso `[core].forbidden_patterns`)
 - `[build_context]`
 - `[project_metadata]`
@@ -474,16 +477,34 @@ Aree consigliate solo locali (non condivise):
 
 La semantica di merge è deterministica:
 
-- Per `forbidden_patterns`, il merge è additivo (globale prima, poi aggiunte locali,
-  con deduplica stabile).
+- Per `forbidden_patterns`, `excluded_dirs` e `excluded_file_patterns`, il merge è
+  **additivo** (valori globali prima, poi aggiunte locali, con deduplica stabile). I
+  valori locali non possono mai rimuovere le voci stabilite dalla configurazione condivisa.
+- Per `[[custom_rules]]`, il merge è **additivo con semantica di override per id**: le
+  regole locali con un `id` nuovo vengono aggiunte in coda; una regola locale con lo
+  stesso `id` di una regola globale sostituisce quella singola regola, lasciando intatte
+  tutte le altre regole globali.
+- Per `[governance].brand_obsolescence`, il merge è **additivo**: i termini locali
+  estendono la lista globale di protezione del brand e non possono rimuovere i termini
+  configurati globalmente.
 - Per gli override di sezione (`[core]`, `[build_context]`, `[project_metadata]`,
-  `[governance]`, `[i18n]`), i valori locali sostituiscono i campi condivisi
-  corrispondenti.
-- Le sezioni locali sconosciute vengono preservate nel payload locale parsato e sono
-  disponibili a wrapper o tooling personalizzato.
+  campi scalari di `[governance]`, `[i18n]`), i valori locali sostituiscono i campi
+  condivisi corrispondenti.
 
 ```toml
 # .zenzic.local.toml
+
+# Escludi temporaneamente un sottoalbero work-in-progress solo su questa macchina.
+excluded_dirs = ["docs/wip/"]
+
+# Sopprimi i file di log rumorosi da tutti i controlli localmente.
+excluded_file_patterns = ["*.local.md"]
+
+# Aggiungi una regola lint locale sopra al set condiviso.
+[[custom_rules]]
+id = "ZZ-LOCAL-NOINTERNAL"
+pattern = "internal\\.staging\\.example\\.com"
+message = "L'hostname di staging non deve apparire nella docs (policy locale)."
 
 [core]
 forbidden_patterns = ["internal-codename", "staging-host.example.internal"]

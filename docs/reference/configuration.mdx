@@ -449,6 +449,9 @@ configuration. It is the canonical home for workstation-only overrides and
 Supported override areas include:
 
 - Top-level `forbidden_patterns`
+- Top-level `excluded_dirs` (additive — extends global exclusion list)
+- Top-level `excluded_file_patterns` (additive — extends global glob exclusions)
+- Top-level `[[custom_rules]]` (additive — extends global custom lint rules)
 - `[core]` (including `[core].forbidden_patterns`)
 - `[build_context]`
 - `[project_metadata]`
@@ -463,15 +466,32 @@ Recommended machine-local, non-shared areas include:
 
 Merge behavior is deterministic:
 
-- For `forbidden_patterns`, merge is additive (global first, then local additions,
-  duplicate-stable).
+- For `forbidden_patterns`, `excluded_dirs`, and `excluded_file_patterns`, merge is
+  **additive** (global values first, then local additions, duplicate-stable). Local values
+  can never remove entries established by the shared config.
+- For `[[custom_rules]]`, merge is **additive with per-id override semantics**: local
+  rules with a new `id` are appended; a local rule sharing an `id` with a global rule
+  replaces that single rule while leaving all other global rules intact.
+- For `[governance].brand_obsolescence`, merge is **additive**: local terms extend the
+  global brand-protection list and cannot remove globally-configured terms.
 - For section overrides (`[core]`, `[build_context]`, `[project_metadata]`,
-  `[governance]`, `[i18n]`), local values replace corresponding shared fields.
-- Unknown local sections are preserved in the parsed local payload and are available
-  to wrappers or custom tooling.
+  `[governance]` scalar fields, `[i18n]`), local values replace corresponding shared
+  fields.
 
 ```toml
 # .zenzic.local.toml
+
+# Temporarily exclude a work-in-progress subtree on this machine only.
+excluded_dirs = ["docs/wip/"]
+
+# Suppress noisy log files from all checks locally.
+excluded_file_patterns = ["*.local.md"]
+
+# Add a machine-local lint rule on top of the shared set.
+[[custom_rules]]
+id = "ZZ-LOCAL-NOINTERNAL"
+pattern = "internal\\.staging\\.example\\.com"
+message = "Staging hostname must not appear in docs (local policy)."
 
 [core]
 forbidden_patterns = ["internal-codename", "staging-host.example.internal"]
