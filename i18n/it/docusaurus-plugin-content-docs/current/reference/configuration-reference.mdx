@@ -8,6 +8,12 @@ description: Riferimento completo per .zenzic.toml e pyproject.toml — ogni cam
 
 Zenzic si configura tramite un singolo file TOML. La configurazione e facoltativa: senza file, tutti i valori predefiniti si applicano automaticamente (principio Zero-Config).
 
+:::warning[Annidamento di Sezioni TOML]
+
+La sintassi TOML stabilisce che qualsiasi coppia chiave-valore definita dopo un header di sezione (es. `[build_context]`) appartiene a quella sezione. Le chiavi top-level come `docs_dir`, `placeholder_patterns` o `excluded_dirs` **DEVONO** essere posizionate in cima al file `.zenzic.toml`, prima di qualsiasi dichiarazione `[sezione]`. Altrimenti, verranno silenziosamente ignorate dal parser.
+
+:::
+
 ## Priorita di caricamento {#loading-priority}
 
 Zenzic risolve la configurazione usando una **gerarchia a 4 livelli** — la sorgente più specifica vince:
@@ -144,15 +150,18 @@ zenzic init --pyproject
 ### `docs_dir` {#docs-dir}
 
 ```toml
-# .zenzic.toml
-docs_dir = "docs"
+# docs_dir = "docs"   # default — ometti se i tuoi docs sono in docs/
+docs_dir = "."        # scansiona l'intero repository (es. progetti solo README)
 ```
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
 | `docs_dir` | `string` (percorso) | `"docs"` | Percorso della directory di documentazione relativo alla radice del repository |
 
-Tutti i percorsi interni (link, asset, orfani) vengono risolti a partire da questa directory. Se il progetto usa una directory diversa (ad esempio `content/` o `documentation/`), specificala qui.
+Quando omessa, Zenzic usa `"docs"` come directory predefinita. Imposta a `"."` per
+scansionare l'intera radice del repository (le esclusioni di sistema L1 continuano
+ad applicarsi). Usa qualsiasi altro percorso relativo quando il progetto archivia la
+documentazione in una posizione non standard, come `website/` o `content/`.
 
 ---
 

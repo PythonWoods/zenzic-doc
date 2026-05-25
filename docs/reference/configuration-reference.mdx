@@ -8,6 +8,12 @@ description: Complete reference for .zenzic.toml and pyproject.toml configuratio
 
 Zenzic is configured through a TOML file. Every field has a sensible default, so zero-config usage is fully supported -- but production projects benefit from explicit tuning.
 
+:::warning[TOML Section Nesting]
+
+TOML syntax dictates that any key-value pair defined after a section header (e.g., `[build_context]`) belongs to that section. Top-level keys like `docs_dir`, `placeholder_patterns`, or `excluded_dirs` **MUST** be placed at the very top of `.zenzic.toml`, before any `[section]` is declared. Otherwise, they will be silently ignored by the parser.
+
+:::
+
 ## Config File Priority {#config-priority}
 
 Zenzic resolves configuration using a **4-level hierarchy** — the most specific source wins:
@@ -142,8 +148,14 @@ per_file_ignores = { "docs/legacy/*.md" = ["Z601"] }
 
 Path to the documentation root directory, relative to the repository root.
 
+When omitted, Zenzic defaults to `"docs"`. Set to `"."` to scan the entire
+repository root (L1 system exclusions still apply). Set to any other
+relative path when your project stores documentation in a non-standard
+location such as `website/` or `content/`.
+
 ```toml
-docs_dir = "content"
+# docs_dir = "docs"   # default — omit if your docs live in docs/
+docs_dir = "."        # scan the entire repository (e.g. README-only projects)
 ```
 
 ### `snippet_min_lines` {#snippet-min-lines}
