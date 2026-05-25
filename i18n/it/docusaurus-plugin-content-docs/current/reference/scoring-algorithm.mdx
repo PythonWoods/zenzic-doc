@@ -176,6 +176,25 @@ $$
 | $n \leq \text{cap}$ | 1 pt ciascuna | Postura gestita — ogni soppressione ha un costo |
 | $n > \text{cap}$ | 1 pt ciascuna | Hard-fail: `zenzic score` termina con codice 1 |
 
+:::info Condizione al Contorno — Invariante di Configurazione
+Poiché ogni soppressione deduce 1 punto, il **punteggio massimo raggiungibile** per un repository è:
+
+$$\text{Punteggio Massimo Raggiungibile} = 100 - |F_s|$$
+
+dove $|F_s|$ è il conteggio totale delle soppressioni attive. Configurare `fail_under > 100 - suppression_cap` crea una contraddizione matematica: il gate di punteggio si attiva per il debito da soppressioni *prima* che venga raggiunto il cap di governance. Regola di configurazione sicura:
+
+$$\texttt{fail\_under} \leq 100 - \texttt{suppression\_cap}$$
+:::
+
+:::tip[Architettura Dual-Gate — Vincoli Ortogonali]
+`fail_under` e `suppression_cap` operano come **vincoli ortogonali** valutati indipendentemente dalla pipeline CI. Un'esecuzione della pipeline fallisce se *una delle due* condizioni viene soddisfatta:
+
+- **Score gate:** `score < fail_under` → `zenzic score` termina con codice 1
+- **Governance cap:** `|F_s| > suppression_cap` → `zenzic score` termina con codice 1
+
+Questa architettura dual-gate consente un bounding asimmetrico del debito tecnico. Una **politica ibrida** come `fail_under = 90`, `suppression_cap = 30` impone: "La qualità complessiva non deve mai scendere sotto 90/100, *e* indipendentemente dal punteggio, non più di 30 difetti soppressi sono mai tollerati."
+:::
+
 :::tip Il Suppression Debt nella CLI
 Esegui `zenzic score` per vedere la postura corrente delle soppressioni:
 
@@ -267,6 +286,53 @@ $S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
 **Stadio 5 — Suppression Debt:** $n = 8$ soppressioni → flat-cost: $\omega_{\text{debt}} = 8$.
 
 $$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
+
+---
+
+## Lettura dell'Output CLI {#cli-output}
+
+Eseguendo `zenzic score` viene visualizzato un **Ledger Quality Breakdown** che
+esplicita ogni passo aritmetico: dalle penalità raw per tier al cap applicato,
+all'aggiustamento del Gravity Cap, al debito da soppressioni e al punteggio finale.
+
+```text
+✨ Quality Score: 65/100
+
+╭─ Quality Breakdown ──────────────────────────────────────╮
+│   Category     Issues  Weight  Raw Pts  Applied Pts      │
+├──────────────────────────────────────────────────────────┤
+│ ✓ structural      0      30%      0           0          │
+│ ✓ navigation      0      25%      0           0          │
+│ ✗ content         2      20%     -4          -4          │
+│ ✗ brand          15      25%    -30         -25 (CAPPED) │
+├──────────────────────────────────────────────────────────┤
+│   Σ Subtotal                                71           │
+╰──────────────────────────────────────────────────────────╯
+  ! Technical Debt (6 suppressions)          -6 pts
+  = Final Quality Score                      65 / 100
+```
+
+**Guida alle colonne:**
+
+| Colonna | Significato |
+| :--- | :--- |
+| **Raw Pts** | Deduzione post-escalation prima del cap di categoria, mostrata come valore negativo (o `0`). |
+| **Applied Pts** | Deduzione effettivamente applicata, limitata al massimo del tier. |
+| **(CAPPED)** | La deduzione raw ha superato il cap del tier ed è stata troncata. |
+| **Σ Subtotal** | Somma di tutti i `cat_pts` residui prima del Gravity Cap e del Suppression Debt. |
+
+**Quando scatta il Gravity Cap** (bucket Brand = 0), compare una riga extra tra
+Σ Subtotal e Technical Debt:
+
+```text
+│   Σ Subtotal                                75           │
+╰──────────────────────────────────────────────────────────╯
+  ! Gravity Cap Enforcement (Brand = 0)       -5 pts
+  ! Technical Debt (0 suppressions)            0 pts
+  = Final Quality Score                       70 / 100
+```
+
+L'aritmetica è sempre esplicita: **Σ Subtotal − Gravity Cap − Suppression Debt = Final Score**.
 
 ---
 

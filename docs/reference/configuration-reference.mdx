@@ -514,6 +514,20 @@ Minimum quality score (0--100). If the Zenzic Score falls below this value, `zen
 fail_under = 80
 ```
 
+:::info Mathematical Invariant — Flat-Cost Model
+Every active suppression deducts exactly **1 DQS point** (flat-cost model). The maximum score your project can achieve is therefore:
+
+$$\text{Max Achievable Score} = 100 - |F_s|$$
+
+where $|F_s|$ is the total active suppression count. Configuring `fail_under > 100 - suppression_cap` creates a **mathematical contradiction**: the score gate will trigger due to suppression debt *before* the suppression cap is reached, making the upper slots of your cap budget unreachable.
+
+**Safe configuration rule:** `fail_under` $\leq$ `100 - suppression_cap`.
+:::
+
+:::tip[Designing Hybrid Governance Policies]
+Because `fail_under` and `suppression_cap` act as **orthogonal constraints**, you can design hybrid governance policies for enterprise environments. For example, setting `fail_under = 90` and `suppression_cap = 30` means: "The global repository quality (findings + debt) must never drop below 90/100, **but** regardless of the score, we absolutely refuse to tolerate more than 30 suppressed defects." This prevents teams from hiding massive structural debt even if their active code is otherwise perfect.
+:::
+
 ### `strict` {#strict}
 
 | | |
