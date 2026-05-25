@@ -1,0 +1,163 @@
+---
+icon: lucide/lock
+sidebar_label: "Sovereign Override (ZRT-010)"
+description: "Come ZENZIC_EXTRA_ARGS e .zenzic.toml lavorano insieme per rispettare l'Environmental Invariant (ZRT-010) gestendo i vincoli reali della CI."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Il Sovereign Override: ZENZIC_EXTRA_ARGS e l'Environmental Invariant
+
+Questa guida spiega quando usare `ZENZIC_EXTRA_ARGS` per vincoli runtime della CI rispetto
+a `excluded_external_urls` in `.zenzic.toml` per esclusioni infrastrutturali permanenti —
+e perché la distinzione è fondamentale per il contratto di parità clone-and-run.
+
+---
+
+## L'Environmental Invariant (ZRT-010)
+
+Nell'ecosistema Zenzic applichiamo rigorosamente la **Clone & Run Parity (ZRT-010)**. Uno
+sviluppatore che esegue `just verify` in locale deve ottenere lo stesso esito pass/fail del
+runner CI — non perché gli ambienti siano identici, ma perché le differenze ambientali non
+devono mai alterare il *verdetto sulla qualità*.
+
+`ZENZIC_EXTRA_ARGS` esiste per descrivere i vincoli imposti dalla macchina host, non per
+modificare la policy di qualità. Esempi di vincoli host legittimi:
+
+- Il runner CI opera dietro un firewall e non può raggiungere URL esterni (`--no-external`).
+- La pipeline di sicurezza richiede output SARIF per l'ingestion in un vulnerability tracker
+  (`--format sarif`).
+- Un runner condiviso ha CPU limitata e necessita di concorrenza ridotta (`--workers 2`).
+
+Nessuno di questi cambia se la documentazione è corretta. Uno sviluppatore su una workstation
+senza restrizioni omette questi flag, verifica la stessa documentazione e arriva allo stesso
+pass/fail. Questo è l'invariante.
+
+:::danger Cosa ZRT-010 vieta
+Usare `ZENZIC_EXTRA_ARGS` per sopprimere un URL che non esiste ancora, o per nascondere un
+problema strutturale che lo sviluppatore locale rileverbbe. Questo rompe la parità: la CI
+passerebbe mentre il run locale fallirebbe (o viceversa), rendendo lo score non deterministico.
+:::
+
+---
+
+## Sistema di Esclusione a Due Livelli
+
+Zenzic separa intenzionalmente due tipi di esclusioni:
+
+| Livello | Meccanismo | Committato nel repo | Chi lo controlla |
+| :--- | :--- | :---: | :--- |
+| **Policy di contenuto e infrastruttura** | `excluded_external_urls` in `.zenzic.toml` | ✅ Sì | Maintainer del repo |
+| **Vincolo ambientale runtime** | `ZENZIC_EXTRA_ARGS` nel secret CI | ❌ No | Operatore CI |
+
+Il livello `.zenzic.toml` è la dichiarazione a lungo termine e revisionabile del progetto:
+*"Questi URL sono esclusi per ragioni strutturali documentate."* Il livello `ZENZIC_EXTRA_ARGS`
+è configurazione effimera della macchina che non deve trasportare policy.
+
+---
+
+## Matrice Decisionale
+
+Usa la seguente tabella per decidere quale meccanismo applicare:
+
+| Scenario | Meccanismo corretto | Razionale |
+| :--- | :--- | :--- |
+| URL GitHub restituisce HTTP 429 (rate-limited) dalla CI | `.zenzic.toml` `excluded_external_urls` | Vincolo strutturale permanente; lo sviluppatore su rete senza restrizioni lo skipperebbe comunque |
+| Servizio di terze parti che va sistematicamente in timeout (> 10 s) in tutti gli ambienti | `.zenzic.toml` `excluded_external_urls` | Realtà infrastrutturale, non uno stato transitorio |
+| URL per una pagina non ancora rilasciata (esiste nel branch release, non su main) | `ZENZIC_EXTRA_ARGS --exclude-url` | Transitorio; deve essere rimosso post-deploy |
+| Runner CI dietro firewall, non può raggiungere URL esterni | `ZENZIC_EXTRA_ARGS --no-external` | Vincolo host; lo sviluppatore locale non è dietro al firewall |
+| Output SARIF richiesto dalla pipeline di sicurezza | `ZENZIC_EXTRA_ARGS --format sarif` | Formato di output; nessun impatto sulla qualità |
+| Tuning della concorrenza per runner condiviso | `ZENZIC_EXTRA_ARGS --workers N` | Vincolo di risorse; nessun impatto sulla qualità |
+
+---
+
+## Casi d'Uso Approvati per ZENZIC_EXTRA_ARGS
+
+### Isolamento di Rete
+
+Quando il runner CI non può raggiungere URL esterni (rete air-gapped o con firewall):
+
+```yaml
+# .github/workflows/audit.yml
+env:
+  ZENZIC_EXTRA_ARGS: "--no-external"
+```
+
+Oppure per escludere un singolo URL transitorio mantenendo attivi tutti gli altri check esterni:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: "--exclude-url https://example.com/pagina-prelaunch"
+```
+
+### Security Reporting (SARIF)
+
+Quando la pipeline ingerisce i finding SARIF in GitHub Advanced Security o un vulnerability tracker:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: "--format sarif --output zenzic.sarif"
+```
+
+Carica l'artifact dopo che lo step di audit si completa.
+
+### Tuning della Concorrenza
+
+Quando il runner è resource-constrained e il pool di worker predefinito satura la CPU:
+
+```yaml
+env:
+  ZENZIC_EXTRA_ARGS: "--workers 2"
+```
+
+Valori superiori al default (4) sono validi anche quando il runner ha capacità in eccesso.
+
+---
+
+## 404 Emergency Protocol
+
+Se Zenzic fallisce su un URL esterno pre-launch (HTTP 404), applica un'esclusione runtime chirurgica:
+
+```bash
+# Verifica locale con un'esclusione transitoria
+ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
+```
+
+Nella CI, salva l'esclusione come secret (`secrets.ZENZIC_EXTRA_ARGS`) e iniettala tramite
+`env:` — non hardcodarla mai nel YAML del workflow.
+
+**Regole di lifecycle per ogni esclusione ZENZIC_EXTRA_ARGS:**
+
+1. Escludi solo gli URL pre-launch esatti. Non escludere mai domini ampi senza approvazione
+   esplicita del maintainer.
+2. Aggiungi un commento `# TODO: Remove post-deploy <versione>` nel workflow o nella
+   descrizione del secret, in modo che l'esclusione abbia un trigger di rimozione nominato.
+3. Rimuovi l'esclusione entro un ciclo di release da quando l'URL diventa pubblicamente raggiungibile.
+
+---
+
+## Pattern di Esclusione in .zenzic.toml
+
+Quando un vincolo strutturale è abbastanza permanente da essere committato, documenta il razionale inline:
+
+```toml
+[external_links]
+excluded_external_urls = [
+    # Gli URL dei repo GitHub restituiscono 429 (rate-limited) nella CI — vincolo strutturale, non transitorio.
+    "https://github.com/example/repo",
+    # Facebook debugger va sistematicamente in timeout (> 10 s) dagli ambienti CI.
+    "https://developers.facebook.com/tools/debug/",
+]
+```
+
+Ogni entry deve avere un commento che spiega perché è esclusa. Le entry senza commento
+saranno segnalate in code review.
+
+---
+
+## Vedi Anche
+
+- [Riferimento CLI — `ZENZIC_EXTRA_ARGS`](/docs/reference/cli#zenzic_extra_args) — Inventario completo dei flag
+- [Riferimento Finding Codes](/docs/reference/finding-codes) — Passi di remediation per Z101 e Z111
+- [Release & Governance Protocol](release-governance-protocol) — Flusso di release a quattro gate
