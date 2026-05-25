@@ -49,9 +49,4 @@ fi
 
 echo "Mode: Local Zenzic (${ZENZIC_PATH})"
 
-# Permanent exclusion: contributor-covenant.org is a flaky third-party URL.
-GUARD=(
-  --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
-)
-
-uv run --project "${ZENZIC_PATH}" zenzic check all --strict "${GUARD[@]}" "$@"
+uv run --project "${ZENZIC_PATH}" zenzic check all --strict "$@"

@@ -37,6 +37,9 @@ excluded_external_urls = [
     "https://github.com/PythonWoods/zenzic/tree/main/examples/rules/z108-empty-link",
     # Facebook debugger consistently times out (>10 s) from CI environments.
     "https://developers.facebook.com/tools/debug/",
+    # contributor-covenant.org consistently times out (> 10 s) from CI environments.
+    "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
+    "https://www.contributor-covenant.org",
 ]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.

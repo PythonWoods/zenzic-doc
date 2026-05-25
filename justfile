@@ -88,13 +88,9 @@ build:
 check *args:
     #!/usr/bin/env bash
     set -euo pipefail
-    # Permanent exclusion: contributor-covenant.org is a flaky third-party URL.
-    GUARD=(
-      --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
-    )
 
     if [[ -n "${ZENZIC_BIN:-}" ]]; then
-        ${ZENZIC_BIN} check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        ${ZENZIC_BIN} check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
         exit 0
     fi
 
@@ -124,9 +120,9 @@ check *args:
 
     if [[ -n "$CORE_PATH" ]]; then
         echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
-        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        uv run --project "$CORE_PATH" zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
     elif command -v zenzic >/dev/null 2>&1; then
-        zenzic check all --strict "${GUARD[@]}" ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
     else
         echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
         echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2
