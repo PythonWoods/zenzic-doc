@@ -44,6 +44,11 @@ Every PR touching `docs/`, `blog/`, `src/`, or `i18n/` must satisfy all that app
 - [ ] `just check` (Zenzic self-audit of this documentation portal) passes without new findings.
 - [ ] REUSE/SPDX headers are present on every new file.
 
+### 4. D.I.A. (Documentation Impact Analysis)
+
+- [ ] **D.I.A. (Documentation Impact Analysis):** I have evaluated the impact of this code change on the public documentation.
+  - *If impacted:* [ ] I have opened a PR on `zenzic-doc` OR [ ] I request maintainer assistance to update the docs.
+
 ---
 
 ## Notes for reviewers

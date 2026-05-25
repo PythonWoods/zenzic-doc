@@ -225,6 +225,8 @@ just verify        # all pre-commit hooks + typecheck + build + codes parity (fu
 
 Deve passare con zero errori prima di aprire o aggiornare una PR.
 
+- Eseguire un D.I.A. (Documentation Impact Analysis). Se la PR altera il comportamento della CLI o i contratti API, dichiaratelo esplicitamente nella descrizione. Siete incoraggiati ad aprire una PR corrispondente su zenzic-doc; in caso contrario, i maintainer si occuperanno dell'allineamento prima del rilascio.
+
 ### Hook pre-commit
 
 Il repository applica la qualità automaticamente a ogni `git commit`:

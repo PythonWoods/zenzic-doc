@@ -222,6 +222,8 @@ just verify        # all pre-commit hooks + typecheck + build + codes parity (fu
 
 This must pass with zero errors before you open or update a PR.
 
+- Execute a D.I.A. (Documentation Impact Analysis). If your PR alters CLI behavior or API contracts, explicitly state it in your PR description. You are encouraged to open a matching PR on zenzic-doc, but if you cannot, the maintainers will handle the documentation sync before release.
+
 ### Pre-commit hooks
 
 The repository enforces quality automatically on every `git commit`:
