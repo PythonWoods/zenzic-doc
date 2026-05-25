@@ -80,7 +80,7 @@ zenzic check all
 
 ## Single Entry Point: `iter_markdown_sources` {#iter-markdown-sources}
 
-All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()` or `os.walk()` from scanner, validator, or credential scanner are prohibited by design. This function:
+All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()`, `os.walk()`, or `Path.iterdir()` from scanner, validator, or credential scanner are prohibited by design. This function:
 
 1. Walks the `docs_root` directory using `os.walk()` with **in-place directory pruning** (excluded subtrees are never entered).
 2. Yields only `.md` and `.mdx` files, in deterministic sorted order.
@@ -88,6 +88,12 @@ All modules that need to iterate over documentation source files must call `iter
 4. Delegates all exclusion decisions to the `LayeredExclusionManager`.
 
 The benefit is architectural: when a directory is excluded, it is excluded everywhere -- scanner, validator, credential scanner, and orphan-checker all see the exact same file set. There is no risk of one module "forgetting" to apply an exclusion rule.
+
+The function takes three arguments:
+
+1. `docs_root` -- absolute path to the documentation root.
+2. `config` -- loaded Zenzic configuration (provides `excluded_dirs`).
+3. `exclusion_manager` -- the `LayeredExclusionManager` used for the full 4-level evaluation.
 
 ---
 
@@ -238,9 +244,11 @@ The Privacy Gate (Exclusion Zone) defines a strict boundary where Zenzic's scann
 ## Performance Notes {#performance}
 
 - **Directory pruning** is applied during `os.walk()`, not after. Excluded subtrees (e.g. `node_modules/` with thousands of files) are never entered.
+- For non-Markdown files, `walk_files()` uses the same `os.walk()` engine with in-place pruning. Unlike `Path.rglob("*")`, it never enters excluded trees.
 - File patterns are **pre-compiled** to `re.Pattern` at `LayeredExclusionManager` construction time using `fnmatch.translate()`.
 - VCS patterns with no negation rules use a **combined regex** fast path -- all positive rules are merged into a single compiled regex for O(1) matching per path.
 - The `LayeredExclusionManager` is constructed **once** per CLI invocation and passed by reference through the entire pipeline.
+- A separate hard-prune set is used by `find_unused_assets` for `excluded_asset_dirs`.
 
 ---
 

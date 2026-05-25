@@ -90,6 +90,8 @@ Questo garantisce che:
 - Le estensioni riconosciute come documentazione sorgente siano fissate: `.md` e `.mdx`
 - I link simbolici vengano sempre saltati
 
+Il vantaggio e architetturale: quando una directory viene esclusa, viene esclusa ovunque — scanner, validator, credential scanner e orphan-checker vedono esattamente lo stesso insieme di file. Non esiste il rischio che un modulo "dimentichi" di applicare una regola di esclusione.
+
 La funzione accetta tre argomenti:
 
 1. **`docs_root`** — percorso assoluto alla directory di documentazione
@@ -234,11 +236,12 @@ Il `LayeredExclusionManager` viene costruito una sola volta dalla CLI e passato 
 
 ## Note sulle Prestazioni {#performance}
 
-Per i file non-Markdown (asset, immagini, configurazione), Zenzic fornisce `walk_files`: un iteratore basato su `os.walk` con pruning in-place delle directory.
-
-A differenza di `Path.rglob("*")`, `walk_files` pota gli alberi esclusi (ad esempio `.nox/`, `node_modules/`) senza mai entrare in essi. Questo e cruciale per le performance in repository con migliaia di dipendenze.
-
-Il pruning viene pilotato sia dal `LayeredExclusionManager` (via `should_exclude_dir`) sia da un set aggiuntivo di directory hard-prune (usato da `find_unused_assets` per `excluded_asset_dirs`).
+- **La directory pruning** viene applicata durante `os.walk()`, non dopo. Gli alberi esclusi (ad esempio `node_modules/` con migliaia di file) non vengono mai attraversati.
+- Per i file non-Markdown, `walk_files()` usa lo stesso motore `os.walk()` con pruning in-place. A differenza di `Path.rglob("*")`, non entra mai negli alberi esclusi.
+- I pattern dei file sono **precompilati** in `re.Pattern` al momento della costruzione di `LayeredExclusionManager` usando `fnmatch.translate()`.
+- I pattern VCS senza regole di negazione usano una **fast path con regex combinata** — tutte le regole positive vengono fuse in una singola regex compilata per matching O(1) per percorso.
+- `LayeredExclusionManager` viene costruito **una sola volta** per invocazione CLI e passato per riferimento lungo l'intera pipeline.
+- Un set separato di hard-prune viene usato da `find_unused_assets` per `excluded_asset_dirs`.
 
 ---
 
