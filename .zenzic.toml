@@ -1,66 +1,73 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
-#
-# 🏛️ LOCAL SOVEREIGNTY: keep workstation-only overrides and secrets in
-# `.zenzic.local.toml` (git-ignored). Shared `.zenzic.toml` is team policy only.
+
+# Precedence: .zenzic.toml is shared baseline; .zenzic.local.toml overrides locally.
+# Keep secrets and workstation-only values in .zenzic.local.toml.
+
+# --- PROJECT IDENTITY ---
+# [project]
+# name = "zenzic-doc" # Used for personalized CLI Governance headers
 
 # --- CORE SETTINGS ---
-docs_dir = "docs"
-fail_under = 100
+# ---------------------------------------------------------------------------
+# docs_dir
+# ---------------------------------------------------------------------------
+# The relative path to your documentation root.
+#
+# BEHAVIOR:
+#   - If commented out (default), Zenzic uses Auto-Discovery to find your
+#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
+#   - Set to "." to scan the entire repository (L1 system exclusions apply).
+#
+# DEFAULT: Auto-discovered
+#
+# docs_dir = "docs"
+
 strict = true
+fail_under = 100
+# exit_zero = false
+# respect_vcs_ignore = true
+# validate_same_page_anchors = true
 
-# --- PERIMETER GUARD ---
-# System directories (node_modules, .git, .venv, build, dist, …) and VCS
-# ignore patterns are handled natively by L1/L4 of the exclusion hierarchy.
-# No explicit excluded_dirs needed — Zero-Config.
-
-# --- EXTERNAL VALIDATION ---
+# External URLs excluded from the broken-link check (applies only with --strict)
 excluded_external_urls = []
 
-# --- PROTEZIONE DOGFOODING ---
-# Placeholder checks disabled: the documentation explains placeholder patterns
-# by example, so the checker would produce false positives on pages that
-# describe its own rules.
+# Z204 Privacy Gate — terms that must never appear in published docs.
+# forbidden_patterns = []
+
+# --- PLACEHOLDERS & CODE SNIPPETS (Optional) ---
+# Placeholder checks disabled: the documentation describes placeholder patterns
+# by example, which would cause false positives.
 placeholder_patterns = []
 placeholder_max_words = 0
 
-# --- ENGINE CONTEXT (DOCS) ---
-# Zero-Config:
-#   * `_category_.json` is auto-shielded by DocusaurusAdapter.get_metadata_files()
-#     — no need to declare it under [excluded_assets].
-#   * Multi-instance plugin URL prefixes (`/docs/`, `/developers/`) are
-#     auto-detected by DocusaurusAdapter.get_absolute_url_prefixes()
-#     — no need to declare them under [link_validation].
+# --- ENGINE CONTEXT ---
 [build_context]
-engine = "docusaurus"
-base_url = "/"
+engine         = "docusaurus" # Supported: docusaurus, mkdocs, zensical, standalone
+base_url       = "/"
 default_locale = "en"
-locales = ["it"]
+locales        = ["it"]
 
 # --- BRAND INTEGRITY ---
-# Detect deprecated brand terms in documentation source (Z601).
-# ADR files contain intentional historical references — excluded by pattern.
-# Use [HISTORICAL] inline to suppress intentional references in other files.
 [project_metadata]
 release_name = "Basalt"
 
 [governance]
-# Soglia di Hard-Fail per il debito tecnico. Se il numero totale di soppressioni
-# supera questo valore, la CI fallisce (Exit Code 1). Ogni singola soppressione
-# costa 1 punto di DQS (Flat-Cost Model).
+# ---------------------------------------------------------------------------
+# suppression_cap
+# ---------------------------------------------------------------------------
+# Hard-fail threshold for technical debt.
+#
+# BEHAVIOR:
+#   - If total suppressions > cap: CI fails immediately (Exit Code 1).
+#   - Scoring: Every suppression costs 1 DQS point (Flat-Cost Model).
+#
+# DEFAULT: 30
+#
 suppression_cap = 10
 suppression_cap_fail_hard = true
 
-# Per-file suppression map: silence a rule for specific file globs.
-# WARNING: Every entry increases your Technical Debt Score (1 pt each, flat-cost).
-# Use 'zenzic check --audit' to see all findings including suppressed ones.
-
-# Directory Policy (ADR-084): Strategic exemptions — ZERO suppression debt.
-# Matched findings are silently dropped; --audit shows [POLICY_EXEMPTION] label.
-# Security findings (Z201-Z204) always bypass these policies unconditionally.
-# theatrical brand terms reappear in documentation source.
-# CHANGELOG*.md is excluded by default (historical prose allowed).
-# Use [HISTORICAL] inline to suppress intentional references in other files.
+# Terms that should no longer appear in your documentation.
 brand_obsolescence = [
     "Sentinel",
     "Shield",
@@ -69,18 +76,64 @@ brand_obsolescence = [
     "Quartz",
     "Obsidian",
 ]
+# suppression_cap_scope = "all"  # Options: all, per-file
 i18n_parity = true
 
+# ---------------------------------------------------------------------------
+# per_file_ignores
+# ---------------------------------------------------------------------------
+# Silence a rule for specific file globs.
+#
+# BEHAVIOR: ADDITIVE — each entry adds 1 pt of Technical Debt (flat-cost).
+# IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
+#
+# [governance.per_file_ignores]
+# "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
+# "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
+
+# ---------------------------------------------------------------------------
+# directory_policies
+# ---------------------------------------------------------------------------
+# Strategic exemptions for entire directory trees or specific files.
+#
+# BEHAVIOR: Matched findings are silently dropped — ZERO debt added.
+# IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
+#
+# [governance.directory_policies]
+# "blog/**"                       = ["Z601"]  # historical archive
+# "docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
+
 [governance.directory_policies]
-"blog/**"                         = ["Z601"]  # historical release blog posts — brand refs expected
+"blog/**"                         = ["Z601"]  # historical release blog posts
 "explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
 "it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
 
-# --- Z602 I18N PARITY (EPOCH 5) ---
-# Language-agnostic translation parity gate. Adding ES/FR/JA = edit YAML, no code change.
-# Multi-instance: /docs/* (User) + /developers/* (Dev) declared via extra_sources.
-# ADR-014: blog chronicles remain English-only and are intentionally excluded
-# from translation parity targets.
+# Governance Playbook:
+# https://zenzic.dev/developers/how-to/release-governance-protocol
+
+# --- EXCLUSION ZONES (Full bypass — use sparingly) ---
+# Paths listed here are INVISIBLE to Zenzic: no findings, no audit trail.
+# Prefer [governance.per_file_ignores] for targeted suppression with an audit trail.
+# excluded_dirs = ["legacy/", "third-party/"]
+# excluded_file_patterns = ["*.tmp", "*.log"]
+# excluded_assets = ["favicon.ico"]
+# excluded_asset_dirs = ["theme/"]
+# excluded_build_artifacts = ["pdf/*.pdf"]
+# included_dirs = []
+# included_file_patterns = []
+
+# --- PLUGINS (Optional) ---
+# plugins = []
+
+# --- CUSTOM RULES (Optional) ---
+# Declares project-specific regex-based lint rules applied line-by-line.
+# [[custom_rules]]
+# id       = "ZZ-NOCLICKHERE"
+# pattern  = "(?i)\\bclick here\\b"
+# message  = "Avoid generic link text. Use a meaningful description."
+# severity = "error"
+
+# --- I18N PARITY (Optional) ---
 [i18n]
 enabled = true
 base_lang = "en"
@@ -96,3 +149,18 @@ base_source = "developers"
 
 [i18n.extra_sources.targets]
 it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
+
+# --- GATE 4: CI/CD (GitHub Actions, Optional) ---
+# Add this workflow snippet to .github/workflows/zenzic.yml
+#
+# name: zenzic
+# on: [pull_request, push]
+# jobs:
+#   audit:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.10'
+#       - run: uvx zenzic check all --strict
