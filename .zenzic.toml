@@ -30,7 +30,14 @@ fail_under = 100
 # validate_same_page_anchors = true
 
 # External URLs excluded from the broken-link check (applies only with --strict)
-excluded_external_urls = []
+excluded_external_urls = [
+    # Copilot instructions file not in main branch yet (added in release/v0.8.0).
+    "https://github.com/PythonWoods/zenzic/blob/main/.github/copilot-instructions.md",
+    # Z108 example folder not yet merged to main.
+    "https://github.com/PythonWoods/zenzic/tree/main/examples/rules/z108-empty-link",
+    # Facebook debugger consistently times out (>10 s) from CI environments.
+    "https://developers.facebook.com/tools/debug/",
+]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.
 # forbidden_patterns = []

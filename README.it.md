@@ -17,6 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
 [![Zenzic](https://img.shields.io/badge/Zenzic-v0.7.1-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
+[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_passed-success?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
 ---
