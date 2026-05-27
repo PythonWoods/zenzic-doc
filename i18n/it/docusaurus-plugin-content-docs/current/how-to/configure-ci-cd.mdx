@@ -10,11 +10,7 @@ description: "Workflow GitHub Actions, hook pre-commit e integrazione pipeline C
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Integrazione CI/CD — Pubblica con Fiducia
-
-**Gli errori di documentazione intercettati in CI costano minuti da correggere. Gli stessi errori
-rilevati in produzione costano ore di frustrazione utente, fiducia persa e un hotfix affrettato
-nel momento peggiore. Zenzic è il gate che ti lascia libero il venerdì sera.**
+# Integrazione CI/CD
 
 Zenzic è pronto all'automazione. Il flag `--format json` e l'opzione `--save` espongono output machine-readable che qualsiasi sistema CI/CD può consumare per pilotare badge dinamici, quality gate e rilevamento delle regressioni.
 
@@ -200,7 +196,7 @@ jobs:
 
       - name: Esegui Zenzic
 
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
           version: "0.7.1"          # fissa a una release stabile
           format: sarif             # emetti SARIF per Code Scanning
@@ -245,7 +241,7 @@ o notifiche Slack senza dover rileggere il file SARIF:
       - name: Esegui Zenzic
 
         id: zenzic
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
           version: "0.7.1"
 
@@ -295,7 +291,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Esegui Zenzic e salva il baseline
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
           version: "0.7.1"
           format: json          # genera lo snapshot .zenzic-score.json
@@ -326,7 +322,7 @@ jobs:
         continue-on-error: true   # la prima PR su un nuovo repo non ha ancora un baseline
 
       - name: Zenzic — Quality Gate
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         id: zenzic
         with:
           version: "0.7.1"
@@ -375,7 +371,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Sovereign Audit (soppressioni bypassate)
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
           version: "0.7.1"
           format: sarif
@@ -394,7 +390,7 @@ L'input `guard-scan: "true"` esegue `zenzic guard scan` come step standalone **p
 
 ```yaml title=".github/workflows/zenzic.yml"
       - name: Run Zenzic Documentation Quality Gate
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
           version: "0.7.1"
           guard-scan: "true"   # zenzic guard scan viene eseguito prima di check all
@@ -434,7 +430,7 @@ steps:
 
   - name: 🔄 Aggiorna Gist per Badge
 
-    uses: Schneegans/dynamic-badges-action@current release
+    uses: Schneegans/dynamic-badges-action@<version>
     with:
       auth: ${{ secrets.GIST_SECRET }}
       gistID: ${{ secrets.ZENZIC_GIST_ID }}

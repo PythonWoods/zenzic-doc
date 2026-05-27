@@ -41,31 +41,6 @@ replace = '| Date     | {now:%Y-%m-%d} |'
 regex = true
 
 [[tool.bumpversion.files]]
-filename = "i18n/en/code.json"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-[[tool.bumpversion.files]]
-filename = "i18n/it/code.json"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-[[tool.bumpversion.files]]
-filename = "src/components/Homepage/Hero.tsx"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-[[tool.bumpversion.files]]
-filename = "src/components/Homepage/Quickstart.tsx"
-search = "zenzic {current_version}"
-replace = "zenzic {new_version}"
-
-[[tool.bumpversion.files]]
-filename = "src/pages/index.tsx"
-search = '"softwareVersion": "{current_version}"'
-replace = '"softwareVersion": "{new_version}"'
-
-[[tool.bumpversion.files]]
 filename = "docs/how-to/configure-ci-cd.mdx"
 search = 'version: "{current_version}"'
 replace = 'version: "{new_version}"'
@@ -86,36 +61,11 @@ filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/configure-ci-c
 search = 'version:\s*"?v?{current_version}"?'
 replace = 'version: "{new_version}"'
 regex = true
-
-[[tool.bumpversion.files]]
-filename = "docs/how-to/workflow-integration.mdx"
-search = 'zenzic=={current_version}'
-replace = 'zenzic=={new_version}'
-
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/workflow-integration.mdx"
-search = 'zenzic=={current_version}'
-replace = 'zenzic=={new_version}'
 
 [[tool.bumpversion.files]]
 filename = "i18n/it/docusaurus-plugin-content-docs/current.json"
 search = '"message": "{current_version}"'
 replace = '"message": "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/explanation/the-zenzic-trinity.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/reference/cli.mdx"
-search = '"version": "{current_version}"'
-replace = '"version": "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "developers/governance/exit_strategy.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "README.md"
@@ -143,41 +93,8 @@ search = "v{current_version}"
 replace = "v{new_version}"
 
 [[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/cli.mdx"
-search = '"version": "{current_version}"'
-replace = '"version": "{new_version}"'
-
-[[tool.bumpversion.files]]
 filename = "CITATION.cff"
 search = "version: {current_version}"
 replace = "version: {new_version}"
 
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/explanation/the-zenzic-trinity.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
 
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs-developers/current/governance/exit_strategy.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/reference/zenzic-action.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/reference/zenzic-action.mdx"
-search = '| `version` | `{current_version}` |'
-replace = '| `version` | `{new_version}` |'
-
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/zenzic-action.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/reference/zenzic-action.mdx"
-search = '| `version` | `{current_version}` |'
-replace = '| `version` | `{new_version}` |'
