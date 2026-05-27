@@ -37,7 +37,6 @@ export default function Home(): React.JSX.Element {
             "name": "Zenzic",
             "operatingSystem": "Linux, macOS, Windows",
             "applicationCategory": "DeveloperApplication",
-            "softwareVersion": "0.7.1",
             "description": "High-performance, engine-agnostic, and security-hardened static analysis for Markdown documentation.",
             "url": "https://zenzic.dev",
             "offers": {

@@ -74,8 +74,7 @@ export default function EngineeringLedger(): React.JSX.Element {
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 text-base">
             <Translate id="ledger.sub">
-              These are not aspirations — they are gates. Every release of Zenzic ships only when
-              all three pass.
+              These are not aspirations — they are gates. All three must pass before any change merges.
             </Translate>
           </p>
         </div>
