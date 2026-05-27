@@ -42,11 +42,13 @@ locales        = ["it"]     # nomi delle directory locale non-default
 
 ### `engine`
 
-**Default:** `"mkdocs"`
+**Default:** `"auto"`
 
-Seleziona l'adapter usato per l'estrazione della nav e la risoluzione dei percorsi i18n. I valori
-validi per un'installazione Zenzic standard sono `"mkdocs"` e `"zensical"`. Gli adapter di
-terze parti registrati sotto il gruppo di entry-point `zenzic.adapters` aggiungono i propri valori.
+Seleziona l'adapter usato per l'estrazione della nav e la risoluzione dei percorsi i18n. Con `"auto"` (il
+default), Zenzic analizza la radice del progetto alla ricerca dei file di configurazione noti, nell'ordine:
+`zensical.toml` → `docusaurus.config.ts` → `mkdocs.yml` → `StandaloneAdapter`. I valori
+validi per un'installazione Zenzic standard sono `"auto"`, `"mkdocs"`, `"zensical"`, `"docusaurus"` e
+`"standalone"`. Gli adapter di terze parti registrati sotto il gruppo di entry-point `zenzic.adapters` aggiungono i propri valori.
 
 ### `default_locale`
 

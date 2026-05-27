@@ -42,11 +42,14 @@ locales        = ["it"]     # non-default locale directory names (e.g. docs/it/,
 
 ### `engine`
 
-**Default:** `"mkdocs"`
+**Default:** `"auto"`
 
-Selects the adapter used for nav extraction and i18n path resolution. Valid values for a stock
-Zenzic installation are `"mkdocs"` and `"zensical"`. Third-party adapters registered under the
-`zenzic.adapters` entry-point group add their own values.
+Selects the adapter used for nav extraction and i18n path resolution. When `"auto"` (the
+default), Zenzic probes the project root for known engine config files in priority order:
+`zensical.toml` → `docusaurus.config.ts` → `mkdocs.yml` → `StandaloneAdapter`. Valid values
+for a stock Zenzic installation are `"auto"`, `"mkdocs"`, `"zensical"`, `"docusaurus"`, and
+`"standalone"`. Third-party adapters registered under the `zenzic.adapters` entry-point group
+add their own values.
 
 ### `default_locale`
 

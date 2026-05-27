@@ -77,7 +77,8 @@ Engine selection and report verbosity are independent concerns. Use
 
 ## MkDocs
 
-`MkDocsAdapter` is selected when `engine = "mkdocs"` (or any unrecognised engine string).
+`MkDocsAdapter` is selected when `engine = "mkdocs"`.
+Unrecognised engine strings fall back to `StandaloneAdapter` — no nav awareness.
 It reads `mkdocs.yml` using a permissive YAML loader that silently ignores unknown tags
 (such as MkDocs `!ENV` interpolation), so environment-variable-heavy configs work without
 any preprocessing.
@@ -118,8 +119,9 @@ locales        = ["it", "fr"]   # non-default locale directory names (folder mod
 ```
 
 When `locales` is empty, Zenzic falls back to reading locale information directly from the
-`mkdocs-static-i18n` plugin block in `mkdocs.yml` — zero configuration required for most
-projects.
+`i18n` plugin block in `mkdocs.yml` — zero configuration required for most
+projects. This covers both the community `mkdocs-static-i18n` package and the
+bundled i18n plugin in `mkdocs-material`, since both declare themselves as `i18n:` in `mkdocs.yml`.
 
 ### i18n: Folder Mode
 
