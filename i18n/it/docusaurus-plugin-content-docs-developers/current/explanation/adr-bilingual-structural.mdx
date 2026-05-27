@@ -11,7 +11,7 @@ description: "ADR 008: Parità atomica del filesystem tra l'albero sorgente ingl
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-20 (sprint current release, D045 — Migrazione Diátaxis)
+**Data:** 2026-04-20 (sprint v0.8.x, D045 — Migrazione Diátaxis)
 
 ---
 
@@ -24,7 +24,7 @@ italiane **specchiando il percorso del filesystem inglese**: un utente su
 `/docs/reference/finding-codes` passa a `/it/docs/reference/finding-codes` — e
 Docusaurus serve il file al percorso corrispondente nell'albero `i18n/it/`.
 
-Durante la migrazione Diátaxis current release (D045), 29 file inglesi sono stati rinominati
+Durante la migrazione Diátaxis v0.8.x (D045), 29 file inglesi sono stati rinominati
 e spostati per allinearsi alla struttura a quattro quadranti. Diversi file italiani
 non sono stati spostati atomicamente nello stesso commit. Il risultato: il language
 switcher produceva **errori 404** sulle pagine dove il file inglese era stato

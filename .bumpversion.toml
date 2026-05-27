@@ -96,5 +96,3 @@ replace = "v{new_version}"
 filename = "CITATION.cff"
 search = "version: {current_version}"
 replace = "version: {new_version}"
-
-

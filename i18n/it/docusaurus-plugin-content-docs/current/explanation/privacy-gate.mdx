@@ -81,7 +81,7 @@ L'implementazione di questo impegno è l'**agnosticismo assoluto rispetto al mot
 - Gli adapter di terze parti si installano come pacchetti Python e vengono scoperti a runtime
 
   tramite entry-point. Aggiungere supporto per un nuovo motore (Hugo, Docusaurus, Sphinx) non
-  richiede alcun rilascio di Zenzic.
+  richiede alcuna voce di changelog di Zenzic.
 
 La conseguenza pratica: un progetto che migra da MkDocs a Zensical — o a Hugo, Docusaurus o
 qualsiasi generatore futuro — può eseguire `zenzic check all` continuamente contro entrambe le
@@ -249,7 +249,7 @@ può silenziarli.
 
 ## L'Architettura Headless {#headless-architecture}
 
-Zenzic current release ha introdotto l'**Architettura Headless**: il motore di verifica (`zenzic`) e il
+Zenzic ha introdotto l’**Architettura Headless**: il motore di verifica (`zenzic`) e il
 sito di documentazione (`zenzic-doc`) risiedono in repository separati.
 
 Questa separazione è intenzionale e permanente:

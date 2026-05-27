@@ -27,7 +27,7 @@ follow-through.
 ### Z108 STALE_ALLOWLIST_ENTRY
 
 **Category:** Configuration hygiene
-**Status:** Deferred to future release cycle
+**Status:** Deferred
 **Tracked:** GitHub issue (tracked for future resolution)
 **Related:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
 
@@ -47,14 +47,14 @@ The check is conceptually simple but architecturally expensive:
    no shared state. A "used / unused" determination requires aggregating
    results across **every** scanned file in **every** worker, then
    reconciling at the end of the run. Introducing aggregate state into the
-   validator pass would force a Pillar 3 redesign in a release whose stated
+   validator pass would force a Pillar 3 redesign in a phase whose stated
    goal is *consolidation*, not refactor.
 2. **Wrong category.** Linting the *content* of documentation and linting
    the *configuration* of the linter itself are different problem spaces.
    Mixing them inflates the validator's scope and obscures which findings
    are about user-authored content vs. project setup.
 3. **YAGNI signal absent.** No real-world reports of stale allowlist
-   entries exist yet. The initial public Technical Debt Ledger is the first release that has the feature at
+   entries exist yet. The current Technical Debt Ledger already has the feature at
    all. Adding a hygiene check for a problem that has never been observed
    would be premature.
 
@@ -82,7 +82,7 @@ security check.
 This section will accrue entries as deferred items ship. Each closed entry
 will name the version that resolved it and link to the merged PR.
 
-*(none yet — the initial public Technical Debt Ledger is the first release with a published record.)*
+*(none yet — this is the first public Technical Debt Ledger with a published record.)*
 
 ---
 
@@ -102,7 +102,7 @@ Three commitments govern this page:
    when true; vague hand-waving is not. The reason must be specific enough
    that a future contributor can decide whether the constraint still holds.
 3. **Every deferral has an owner.** Either a target sprint, a target
-   release, or an explicit "indefinitely deferred" with the rationale.
+   phase, or an explicit "indefinitely deferred" with the rationale.
    Ledger entries without owners decay into folklore.
 
 When you contribute a deferral here, you are not admitting weakness — you

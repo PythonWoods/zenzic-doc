@@ -94,11 +94,14 @@ $$
 | :--- | :--- | ---: | :--- |
 | Z101 | LINK_BROKEN | 8.0 pts | Structural |
 | Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
+| Z103 | ORPHAN_LINK | 2.0 pts | Structural |
 | Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
 | Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
 | Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
 | Z106 | CIRCULAR_LINK | 0.0 pts | Informativo (nessun impatto sul DQS) |
 | Z108 | EMPTY_LINK_TEXT | 1.0 pts | Structural |
+| Z111 | VIRTUAL_ROUTE_BROKEN | 8.0 pts | Structural |
+| Z113 | AUTHOR_KEY_COLLISION | 2.0 pts | Structural |
 | Z301 | DANGLING_REF | 4.0 pts | Navigation |
 | Z302 | DEAD_DEF | 1.0 pts | Navigation |
 | Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
@@ -232,8 +235,8 @@ Il Suppression Audit e telemetria di governance, non un semplice contatore di fa
 
 Queste label descrivono la postura di governance. Sono complementari alla matematica del punteggio e aiutano i revisori a tracciare la crescita delle soppressioni nel tempo.
 
-:::warning Breaking Change — v0.8.0 (ADR-031)
-Prima della v0.8.0, le soppressioni entro `suppression_cap` erano gratuite (modello allowance). Dalla v0.8.0, ogni soppressione deduce 1 punto (modello flat-cost). `suppression_cap` è ora esclusivamente una soglia di hard-fail per l'exit code. I progetti che aggiornano dalla v0.7.x vedranno il loro punteggio massimo raggiungibile ridotto del numero di soppressioni attive.
+:::warning Breaking Change
+Le soppressioni entro `suppression_cap` sono allowance-based. Ogni soppressione deduce 1 punto (modello flat-cost). `suppression_cap` è ora esclusivamente una soglia di hard-fail per l'exit code. I progetti con soppressioni attive vedranno il punteggio massimo raggiungibile ridotto del numero di soppressioni.
 :::
 
 ---

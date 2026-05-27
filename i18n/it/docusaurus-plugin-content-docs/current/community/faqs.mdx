@@ -126,7 +126,7 @@ Consigliato nelle pipeline CI per intercettare tutte le categorie di problemi.
 
 **Cos'è il credential scanner (exit code 2)?**
 
-Exit code `2` indica che il check dei riferimenti ha rilevato un pattern che assomiglia a
+Exit code `2` indica che il credential scanner ha rilevato un pattern che assomiglia a
 una credenziale (API key, token, password) in un URL o in un testo. Ruota immediatamente
 la credenziale se ricevi questo codice.
 
@@ -143,7 +143,6 @@ strumento nella pipeline. `markdownlint --fix` (un hook pre-commit comune) rimuo
 definizioni bare `[id]: url` quando si trovano in certe posizioni — dopo blocchi HTML,
 tag `<figure>` o prima del primo heading — senza segnalare quale regola ha scatenato la
 rimozione. La riga semplicemente scompare.
-rimozione. La riga viene rimossa.
 
 **Soluzione:** Usa link inline (`[testo](url)`) invece dei link reference-style
 (`[testo][id]` + `[id]: url` a fondo pagina). I link inline sono immuni a questa classe

@@ -130,9 +130,9 @@ The guard scan uses the same `version` pin as the main check. It reads `forbidde
 
 ```yaml
 - name: Run Zenzic Documentation Quality Gate
-  uses: PythonWoods/zenzic-action@v1
+  uses: PythonWoods/zenzic-action@<version>
   with:
-    version: "0.7.1"
+    version: "<version>"
     guard-scan: "true"   # runs zenzic guard scan before check all
     format: sarif
     upload-sarif: "true"

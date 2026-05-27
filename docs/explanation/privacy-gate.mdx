@@ -59,7 +59,7 @@ that is tightly coupled to a specific build engine creates a dangerous dependenc
 changes, the quality gate breaks, and projects are left without verification during the exact
 window when mistakes are most likely.
 
-Zenzic is designed to be a **Exclusion Zone** — a fixed, stable point that remains valid before,
+Zenzic is designed to be an **Exclusion Zone** — a fixed, stable point that remains valid before,
 during, and after a build engine migration. This is not a coincidental feature; it is the core
 architectural commitment.
 
@@ -77,7 +77,7 @@ The implementation of this commitment is **absolute engine-agnosticism**:
 
 - Third-party adapters install as Python packages and are discovered at runtime via entry-points.
 
-  Adding support for a new engine (Hugo, Docusaurus, Sphinx) requires no Zenzic release.
+  Adding support for a new engine (Hugo, Docusaurus, Sphinx) requires no Zenzic changelog entry.
 
 The practical consequence: a project migrating from MkDocs to Zensical — or to Hugo, Docusaurus,
 or any future generator — can run `zenzic check all` continuously against both configurations

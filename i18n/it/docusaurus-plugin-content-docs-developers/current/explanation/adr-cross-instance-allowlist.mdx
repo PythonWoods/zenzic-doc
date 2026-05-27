@@ -2,7 +2,7 @@
 sidebar_label: "ADR 011: Cross-Instance Allowlist"
 sidebar_position: -1
 unlisted: true
-description: "ADR 011: Perché Zenzic current release preferisce una absolute_path_allowlist dichiarativa alla soppressione silenziosa nei deployment Docusaurus multi-istanza."
+description: "ADR 011: Perché Zenzic v0.8.x preferisce una absolute_path_allowlist dichiarativa alla soppressione silenziosa nei deployment Docusaurus multi-istanza."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -16,13 +16,13 @@ Questa ADR documenta una feature rimossa in **v0.8.0 (EPOCH 7a.1 purge)**. Lo sc
 
 **Stato:** Accettato (Maggio 2026)
 **Decisore:** Tech Lead
-**Data:** 2026-05-03 (current release)
+**Data:** 2026-05-03 (v0.8.x)
 
 ---
 
 ## Contesto
 
-La ristrutturazione documentale di current release ha introdotto un'architettura
+La ristrutturazione documentale di v0.8.x ha introdotto un'architettura
 **Docusaurus multi-istanza**: `/docs/*` (area Utente) e `/developers/*`
 (area Developer) sono serviti da due istanze separate di
 `@docusaurus/plugin-content-docs`. Lo split è una vittoria di
@@ -105,7 +105,7 @@ Questi vincoli sono conseguenze permanenti di ADR-0011:
    intenzionali, non problemi silenziati.
 4. **Le voci dell'allowlist non vengono validate per esistenza.** Z108
    `STALE_ALLOWLIST_ENTRY` (igiene config) è intenzionalmente posticipato a
-   current release per preservare il **Pillar 3: Pure Functions** (nessuno stato
+   v0.8.x per preservare il **Pillar 3: Pure Functions** (nessuno stato
    aggregato cross-worker). Vedi
    [Technical Debt Ledger](../governance/technical-debt.mdx).
 
@@ -167,7 +167,7 @@ Il commento di ignore è **chirurgia**: sopprime un finding emesso su
 una singola riga, lascia un commento di audit nella sorgente, e viene
 rivisto a livello di diff.
 
-**Anti-pattern (vietato dalla current release).** I link cross-plugin non
+**Anti-pattern (vietato dalla v0.8.x).** I link cross-plugin non
 devono mai essere gestiti con `<!-- zenzic:ignore: Z105 -->`. Farlo
 ammetterebbe tacitamente che il routing è "rotto e accettato"; in
 realtà il routing è **corretto per design**, e quella correttezza

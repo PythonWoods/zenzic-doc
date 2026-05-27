@@ -10,7 +10,7 @@ description: "Come i tre repository di Zenzic formano una Trinità dell'Integrit
 
 # La Trinità di Zenzic: Codice, Documentazione e Action
 
-Zenzic current release è molto più di un linter. È un **Sistema di Conoscenza Sovrano** — un ecosistema
+Zenzic è molto più di un linter. È un **Sistema di Conoscenza Sovrano** — un ecosistema
 in cui logica, intenzione ed esecuzione sono permanentemente sincronizzati. Per garantire un vero
 [Exclusion Zone](./privacy-gate.mdx), Zenzic è organizzato in una Trinità dell'Integrità: tre
 repository che formano un ciclo di feedback chiuso, dove ciascuno rafforza gli altri.
@@ -72,10 +72,10 @@ operativo**. Traduce la logica del Core in un perimetro difensivo per le pipelin
 
 ```yaml title=".github/workflows/zenzic.yml"
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
-    version: "0.7.1"
+    version: "<version>"
     format: sarif
     upload-sarif: true
     fail-on-error: true

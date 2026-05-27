@@ -38,8 +38,8 @@ La regola decisionale: **se è una proprietà di una riga, va inline.**
 
 ## Gestione dei Prefissi Cross-Istanza
 
-:::danger[`[link_validation]` rimosso in v0.8.0]
-Lo schema TOML `[link_validation]` — incluso `absolute_path_allowlist` — è stato **rimosso in v0.8.0** (purge EPOCH 7a.1). Un `.zenzic.toml` che dichiara ancora `[link_validation]` genera un errore di validazione TOML all'avvio.
+:::danger[`[link_validation]` rimosso]
+Lo schema TOML `[link_validation]` — incluso `absolute_path_allowlist` — non è supportato e genera un errore di validazione TOML all'avvio. Un `.zenzic.toml` che dichiara ancora `[link_validation]` va aggiornato.
 
 Per i link cross-istanza segnalati da Z105, usa gli ignore inline su ogni riga interessata. Vedi [ADR 011](/developers/explanation/adr-cross-instance-allowlist) per il razionale della rimozione.
 :::

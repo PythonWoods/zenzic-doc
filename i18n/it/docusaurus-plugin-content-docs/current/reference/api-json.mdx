@@ -16,7 +16,7 @@ Output coperti:
 - `zenzic score --format json`
 - `zenzic check all --format json` quando scatta il fail-hard del CAP soppressioni
 
-Lo schema canonico e `zenzic-output.schema.json` nella root del repository `zenzic`.
+Lo schema canonico è `zenzic-output.schema.json` nella root del repository `zenzic`.
 
 ## Campi Soppressione Obbligatori
 
@@ -69,7 +69,9 @@ Valori `debt_status`:
       "weight": 0.3,
       "issues": 0,
       "category_score": 1.0,
-      "contribution": 0.3
+      "contribution": 0.3,
+      "raw_penalty": 0.0,
+      "is_capped": false
     }
   ],
   "suppression_count": 0,

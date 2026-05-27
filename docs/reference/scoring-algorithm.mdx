@@ -235,8 +235,8 @@ The Suppression Audit is governance telemetry, not a raw failure counter.
 
 These labels describe governance posture. They are complementary to score math and help reviewers track suppression growth over time.
 
-:::warning Breaking Change — v0.8.0 (ADR-031)
-Prior to v0.8.0, suppressions within `suppression_cap` were free (allowance model). Since v0.8.0, every suppression deducts 1 point (flat-cost model). `suppression_cap` is now exclusively a hard-fail exit threshold. Projects upgrading from v0.7.x will see their maximum achievable score reduced by their active suppression count.
+:::warning Breaking Change
+Suppressions within `suppression_cap` are allowance-based. Every suppression deducts 1 point (flat-cost model). `suppression_cap` is now exclusively a hard-fail exit threshold. Projects with active suppressions see their maximum achievable score reduced by the suppression count.
 :::
 
 ---

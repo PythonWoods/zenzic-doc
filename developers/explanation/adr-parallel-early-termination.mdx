@@ -23,7 +23,7 @@ in `core/scanner.py`). Each worker executes `_scan_single_file()` independently
 and returns an `IntegrityReport` containing any findings, including `SecurityFinding`
 objects emitted by the credential scanner (Z201/Z202/Z203).
 
-In the implementation prior to current release, the coordinator collected results by
+In the earlier implementation, the coordinator collected results by
 iterating over `futures_map.items()` **in submission order**, calling
 `fut.result(timeout=30)` on each future in turn. This design had two consequences:
 
@@ -76,9 +76,9 @@ When a completed report contains `security_findings`, the coordinator sets
 `_abort = True` and calls `pending_fut.cancel()` on every future still in
 `_pending`. Subsequent iterations discard results silently.
 
-**Behavioural changes in current release:**
+**Behavioural changes after the coordinator redesign:**
 
-| Scenario | Pre-current release | current release |
+| Scenario | Earlier implementation | Redesigned coordinator |
 |---|---|---|
 | No security breach | All files scanned | All files scanned (unchanged) |
 | Security breach in file 1/500 | All 500 files scanned | Breach detected; pending tasks cancelled |
@@ -108,7 +108,8 @@ logic — not analysis logic. The coordinator is the only scope where multiple
 futures are visible simultaneously. No analysis function is aware of the abort
 state.
 
-`_worker()` and `_scan_single_file()` are **unchanged** in current release Given the
+`_worker()` and `_scan_single_file()` are **unchanged** in this design. Given the
+
 same inputs, they produce the same output. They have no dependency on shared
 state. This functional purity is what makes them deterministic in isolation and
 trivially testable.

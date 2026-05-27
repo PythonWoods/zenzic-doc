@@ -21,7 +21,7 @@ We believe that a linter should never be a source of unintended mutations. Any f
 remediation features will be implemented as explicit, interactive utilities
 (e.g. `zenzic fix`), keeping the analysis phase 100% mutation-free.
 
-This document is the formal proof of that promise.
+This document is the formal commitment of that promise.
 
 ---
 
@@ -109,10 +109,10 @@ any other tool configuration. No cascading effects. No shared state.
 ```yaml title=".github/workflows/docs.yml"
 # Delete this block
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
-    version: "0.7.1"
+    version: "<version>"
     format: sarif
     upload-sarif: "true"
 ```

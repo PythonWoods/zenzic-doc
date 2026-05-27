@@ -11,14 +11,14 @@ description: "ADR 004: Suddivisione del modulo CLI monolitico in un package stru
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-15 (sprint current release, D062-B / D063 / D064)
+**Data:** 2026-04-15 (sprint v0.8.x, D062-B / D063 / D064)
 
 ---
 
 ## Contesto
 
 La CLI originale di Zenzic era contenuta in un singolo file: `src/zenzic/cli.py`.
-Nel corso del ciclo di rilascio current series, quel file è cresciuto fino a superare
+Nel corso del ciclo di rilascio v0.8.x series, quel file è cresciuto fino a superare
 le **2.000 righe**, contenendo sei responsabilità concettualmente distinte in
 un unico namespace:
 

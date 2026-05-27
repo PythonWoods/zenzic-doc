@@ -19,7 +19,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 
 | Input | Default | Required | Description |
 | :--- | :--- | :---: | :--- |
-| `version` | `0.7.1` | No | Zenzic version to install (`latest` or an exact pin like `0.7.1`). Pin to a specific release for reproducible CI. |
+| `version` | `<version>` | No | Zenzic version to install (`latest` or an exact version pin). Pin to a specific version for reproducible CI. |
 | `format` | `sarif` | No | Output format: `text`, `json`, or `sarif`. |
 | `sarif-file` | `zenzic-results.sarif` | No | SARIF output path. Must be a **relative** path inside the workspace. Absolute paths and `..` traversal sequences are rejected by the wrapper. |
 | `upload-sarif` | `true` | No | Upload SARIF to GitHub Code Scanning. Requires `security-events: write` permission. |
@@ -135,9 +135,9 @@ Minimum permissions required for the most common configurations:
 The `ZENZIC_EXTRA_ARGS` environment variable passes additional flags directly to the Zenzic CLI without modifying action inputs:
 
 ```yaml
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
   with:
-    version: "0.7.1"
+    version: "<version>"
   env:
     ZENZIC_EXTRA_ARGS: >-
       --exclude-url https://staging.example.com

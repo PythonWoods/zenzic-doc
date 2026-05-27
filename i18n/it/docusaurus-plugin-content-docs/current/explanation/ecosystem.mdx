@@ -12,7 +12,7 @@ description: Zenzic Core e zenzic-doc — l'architettura dell'ecosistema, il pro
 | Componente | Ruolo |
 | :--- | :--- |
 | **Zenzic Core** | Il linter puro, agnostico, Zero-Config. Un solo binario. Ogni motore di documentazione. |
-| **Zenzic-Doc** | Il banco di prova vivente — un sito Docusaurus auto-validante che testa ogni release di Zenzic su sé stesso. |
+| **Zenzic-Doc** | Il banco di prova vivente — un sito Docusaurus auto-validante che testa ogni cambiamento di Zenzic su sé stesso. |
 
 Ogni componente è installabile indipendentemente e non ha dipendenze rigide dagli altri.
 
@@ -92,7 +92,7 @@ mio_motore = "mio_pacchetto.adapter:MioAdapter"
 
 ## Strategia CLI Sovrana {#sovereign-cli}
 
-Zenzic current release non fornisce plugin per motori di build né integrazioni interne.
+Zenzic non fornisce plugin per motori di build né integrazioni interne.
 Questa è una decisione architetturale deliberata, non una funzionalità mancante.
 
 ### Perché nessun plugin per motori
@@ -147,7 +147,7 @@ Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parit
 **Graceful Degradation**:
 
 - **Core Maintainer**: `ZENZIC_PROJECT_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
-- **External Contributor**: core locale assente → `uv run --with zenzic` sulla release PyPI pubblicata.
+- **External Contributor**: core locale assente → `uv run --with zenzic` sul pacchetto PyPI pubblicato.
 
 Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori
 esteri non hanno bisogno di un checkout locale di Zenzic Core.
@@ -186,7 +186,7 @@ mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
 
 ## Integrità del Brand {#brand-integrity}
 
-Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti (codename di release non più in uso) porta un tipo di debito diverso: **debito narrativo**. Una pagina current release che fa ancora riferimento a un codename current series contraddice la cronologia delle versioni che cerca di documentare.
+Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti porta un tipo di debito diverso: **debito narrativo**. Una pagina che fa ancora riferimento a un codename contraddice il contratto che cerca di documentare.
 
 Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
 

@@ -117,9 +117,9 @@ images.
 Leading slashes are stripped, so `"assets/favicon.svg"` and `"/assets/favicon.svg"` are
 equivalent.
 
-:::warning[Breaking change in current release]
+:::warning[Breaking change]
 Prior versions treated each entry as a literal path.
-Starting from current release, every entry is treated as an `fnmatch` pattern.
+Starting from this version, every entry is treated as an `fnmatch` pattern.
 Existing literal paths continue to work — they simply match themselves.
 :::
 
@@ -370,7 +370,7 @@ the baseline is clean.
 
 ## `[governance]` {#governance}
 
-**Type:** TOML section — **Added:** current release
+**Type:** TOML section
 
 Opt-in policy controls for governance-tier findings surfaced by
 `zenzic inspect codes --tier governance`.
@@ -511,7 +511,7 @@ fails with an explicit migration error.
 
 ## `[link_validation]` {#link-validation}
 
-**Type:** TOML section — **Added:** current release
+**Type:** TOML section
 
 Controls how Zenzic's link validator treats absolute URL paths. The default
 behavior — rejecting all absolute paths via `Z105 ABSOLUTE_PATH` — assumes

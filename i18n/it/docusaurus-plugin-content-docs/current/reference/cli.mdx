@@ -227,7 +227,7 @@ zenzic check all --strict --exclude-url https://staging.esempio.com/
 # Sopprime più URL di paradosso CI/CD in una singola invocazione
 zenzic check all --strict \
   --exclude-url https://mio-sito.esempio.com/blog/ \
-  --exclude-url https://github.com/org/repo/releases/tag/current release
+  --exclude-url https://github.com/org/repo/releases/tag/v<version>
 ```
 
 I prefissi runtime vengono **uniti** con le voci `excluded_external_urls` già presenti
@@ -243,7 +243,7 @@ flag tramite una variabile d'ambiente:
 env:
   ZENZIC_EXTRA_ARGS: >-
     --exclude-url https://mio-sito.esempio.com/blog/
-    --exclude-url https://github.com/org/repo/releases/tag/current release
+    --exclude-url https://github.com/org/repo/releases/tag/v<version>
 run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
 ```
 :::
@@ -656,7 +656,7 @@ all'ancora corrispondente in questa pagina di riferimento.
       "tool": {
         "driver": {
           "name": "zenzic",
-          "version": "0.7.1",
+          "version": "<version>",
           "informationUri": "https://zenzic.dev",
           "rules": [
             {

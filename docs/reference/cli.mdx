@@ -222,7 +222,7 @@ zenzic check all --strict --exclude-url https://staging.example.com/
 # Suppress multiple CI/CD paradox URLs in a single invocation
 zenzic check all --strict \
   --exclude-url https://my-site.example.com/blog/ \
-  --exclude-url https://github.com/org/repo/releases/tag/current release
+  --exclude-url https://github.com/org/repo/releases/tag/v<version>
 ```
 
 Runtime prefixes are **merged** with any `excluded_external_urls` entries already present
@@ -237,7 +237,7 @@ scheduled for future publication). Inject the flag via an environment variable:
 env:
   ZENZIC_EXTRA_ARGS: >-
     --exclude-url https://my-site.example.com/blog/
-    --exclude-url https://github.com/org/repo/releases/tag/current release
+    --exclude-url https://github.com/org/repo/releases/tag/v<version>
 run: zenzic check all --strict $ZENZIC_EXTRA_ARGS
 ```
 :::
@@ -650,7 +650,7 @@ in this reference page.
       "tool": {
         "driver": {
           "name": "zenzic",
-          "version": "0.7.1",
+          "version": "<version>",
           "informationUri": "https://zenzic.dev",
           "rules": [
             {

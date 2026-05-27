@@ -1,7 +1,7 @@
 ---
 sidebar_label: "Lacune Architetturali"
 sidebar_position: 5
-description: "Gap architetturali identificati e chiusi in current release, con elementi aperti pianificati per current release"
+description: "Gap architetturali identificati e chiusi in v0.8.x, con elementi aperti pianificati per v0.8.x"
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -11,8 +11,8 @@ description: "Gap architetturali identificati e chiusi in current release, con e
 
 > *"Ciò che non è documentato, non esiste; ciò che è documentato male, è un'imboscata."*
 >
-> Questa pagina traccia i gap chiusi durante il ciclo current release e quelli ancora aperti
-> nella roadmap current release È un documento vivente — aggiornato ad ogni sprint.
+> Questa pagina traccia i gap chiusi e quelli ancora aperti. È un documento
+> vivente, aggiornato ad ogni sprint.
 
 ---
 
@@ -76,13 +76,13 @@ orfani potrebbe essere incompleto. L'utente può sopprimerlo con
 
 :::info[Cos'è l'Integrity Stress Test?]
 
-Prima del rilascio di current release, una suite strutturata di stress test avversariali è stata eseguita sul credential scanner di Zenzic utilizzando tecniche di bypass realistiche. La suite ha individuato quattro vettori di attacco reali. Tutti sono stati chiusi prima del rilascio stabile.
+Prima della pubblicazione, una suite strutturata di stress test avversariali è stata eseguita sul credential scanner di Zenzic utilizzando tecniche di bypass realistiche. La suite ha individuato quattro vettori di attacco reali. Tutti sono stati chiusi prima della pubblicazione.
 
 :::
 
 ### ZRT-001 — Bypass per Normalizzazione Unicode (credential scanner)
 
-**Identificato durante:** Integrity Stress Test (pre-release current release)
+**Identificato durante:** Integrity Stress Test
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** I pattern regex delil credential scanner corrispondevano a forme di credenziali
 ASCII. Un attaccante che controllava un file Markdown poteva inserire un carattere
@@ -99,13 +99,13 @@ normalizzata viene confrontata con i pattern.
 **Lezione:** Il rilevamento di credenziali basato su regex deve normalizzare l'input.
 La superficie di attacco non è il pattern — è la codifica.
 
-**Chiuso in:** sprint current release D038.
+**Chiuso in:** Sprint D038.
 
 ---
 
 ### ZRT-002 — Fuga dal Buffer di Lookback (credential scanner)
 
-**Identificato durante:** Integrity Stress Test (pre-release current release)
+**Identificato durante:** Integrity Stress Test
 **Componente:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Descrizione:** Il buffer di lookback delil credential scanner era usato per rilevare costrutti
 di credenziali multi-riga (es. chiave `password:` su una riga, valore sulla successiva).
@@ -122,13 +122,13 @@ viene svuotato solo ai confini del file — mai a metà file.
 al pattern peggiore. Un buffer informalmente "abbastanza grande" non è una garanzia
 di sicurezza.
 
-**Chiuso in:** sprint current release D039.
+**Chiuso in:** Sprint D039.
 
 ---
 
 ### ZRT-003 — Offuscamento con Entità HTML (credential scanner)
 
-**Identificato durante:** Integrity Stress Test (pre-release current release)
+**Identificato durante:** Integrity Stress Test
 **Componente:** `core/credentials.py`
 **Descrizione:** Lo credential scanner scansionava i byte Markdown grezzi. L'attacco ha
 usato la codifica di entità HTML (`&#103;hp_…` per `ghp_…`) all'interno di blocchi
@@ -145,13 +145,13 @@ venga eseguita.
 passaggio di normalizzazione (solo NFKC) è insufficiente quando il rendering HTML
 fa parte della pipeline dei contenuti.
 
-**Chiuso in:** sprint current release D040.
+**Chiuso in:** Sprint D040.
 
 ---
 
 ### ZRT-004 — Confusione Scope Blocco Delimitato (credential scanner)
 
-**Identificato durante:** Integrity Stress Test (pre-release current release)
+**Identificato durante:** Integrity Stress Test
 **Componente:** `core/credentials.py`, macchina a stati dei blocchi delimitati
 **Descrizione:** Il credential scanner saltava originariamente la scansione all'interno dei blocchi
 delimitati con tripli backtick, ragionando che gli esempi di codice non sono segreti
@@ -173,11 +173,11 @@ I fixture `examples/matrix/adversarial-validation/` dimostrano questo pattern.
 creano falsi negativi in condizioni avversariali. I passaggi critici per la sicurezza
 devono per default **scansionare tutto, autorizzare le eccezioni esplicitamente**.
 
-**Chiuso in:** sprint current release D041.
+**Chiuso in:** Sprint D041.
 
 ---
 
-## Chiusi in Precedenza (Pre-current release)
+## Chiusi in Precedenza
 
 ### ZRT-005 — Bootstrap Paradox
 
@@ -188,7 +188,7 @@ rendendo impossibile inizializzare un progetto che non aveva ancora un marker `.
 o `.zenzic.toml`.
 **Risoluzione:** Parametro `fallback_to_cwd=True` aggiunto a `find_repo_root()`, usato
 esclusivamente dal comando `init`. Vedi [ADR 003](adr-discovery.mdx).
-**Chiuso in:** current release
+**Chiuso in:** Adozione precedente
 
 ---
 
@@ -238,7 +238,7 @@ al modo di failure più comune dopo una ridenominazione.
 - `test_absolute_broken_blog_link_is_detected` — slug sbagliato solleva `FILE_NOT_FOUND`
 - `test_correct_absolute_slug_link_is_clean` — slug corretto non produce errori
 
-**Chiuso in:** current release
+**Chiuso in:** Adozione precedente
 
 ### D100 — Migrazione Privacy Gate: `.zenzic.dev.toml` → `.zenzic.local.toml`
 
@@ -256,7 +256,7 @@ Questo gap creava un falso senso di sicurezza: gli utenti configuravano `forbidd
 aspettandosi che Zenzic bloccasse quei termini dalla documentazione, ma la scansione
 non avveniva mai.
 
-**Risoluzione (Sprint D100 — current release):**
+**Risoluzione (Sprint D100):**
 
 1. **Nuovo file canonico:** `.zenzic.local.toml` sostituisce `.zenzic.dev.toml` come
    configurazione di privacy locale alla macchina e ignorata da git. È un file TOML
@@ -289,4 +289,4 @@ Il Privacy Gate Z204 e il Brand Obsolescence Guard Z601 formano un'architettura 
   Progettato per termini di brand obsoleti dove i riferimenti storici nei file CHANGELOG
   sono accettabili.
 
-**Chiuso in:** current release sprint D100.
+**Chiuso in:** Sprint D100.

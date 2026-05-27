@@ -119,8 +119,8 @@ che analizza più repository in sequenza. Non esiste "context hijacking" — ogn
 
 ## Il Modello di Scoring
 
-Zenzic current release ha introdotto un modello di scoring che **non è retrocompatibile** con le
-baseline di current series.
+Zenzic ha introdotto un modello di scoring che **non è retrocompatibile** con le
+baseline precedenti.
 
 Il modello current series utilizzava un tasso di decadimento uniforme: cinque problemi in qualsiasi
 categoria azzeravano quella categoria indipendentemente dalla severità. Puniva il volume,
@@ -142,7 +142,7 @@ strutturale è perfetta, la navigazione è pulita, e solo la categoria del conte
 degradata — non l'intero progetto. I cap per categoria impediscono al rumore di mascherare
 il segnale.
 
-Se hai un file snapshot current series (`.zenzic-score.json`), Zenzic current release si rifiuterà di
+Se hai un file snapshot (`.zenzic-score.json`), Zenzic si rifiuterà di
 caricarlo e ti chiederà di creare una nuova baseline. Questo è intenzionale. Confrontare
 mele con arance è peggio che non avere alcun confronto.
 

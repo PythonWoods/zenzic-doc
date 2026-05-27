@@ -130,9 +130,9 @@ Lo scan di guardia usa lo stesso pin `version` del check principale. Legge i `fo
 
 ```yaml
 - name: Run Zenzic Documentation Quality Gate
-  uses: PythonWoods/zenzic-action@v1
+  uses: PythonWoods/zenzic-action@<version>
   with:
-    version: "0.7.1"
+    version: "<version>"
     guard-scan: "true"   # esegue zenzic guard scan prima di check all
     format: sarif
     upload-sarif: "true"

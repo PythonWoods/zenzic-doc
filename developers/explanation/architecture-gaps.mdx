@@ -11,8 +11,8 @@ description: "Architecture gaps identified and closed, with open items planned f
 
 > *"What is not documented, does not exist; what is documented poorly, is an ambush."*
 >
-> This page tracks gaps that were closed during the current release cycle and those that
-> remain open for the current release roadmap. It is a living document — updated each sprint.
+> This page tracks gaps that were closed and those that remain open. It is a
+> living document, updated each sprint.
 
 ---
 
@@ -70,15 +70,15 @@ incomplete. The user can suppress it with `dynamic_nav_plugins = true` in `.zenz
 
 :::info[What was the Integrity Stress Test?]
 
-Before the current release release, a structured adversarial stress-test suite was executed against Zenzic's credential scanner
+Before publication, a structured adversarial stress-test suite was executed against Zenzic's credential scanner
 using realistic bypass techniques. The suite found four real attack vectors.
-All were closed before stable release.
+All were closed before publication.
 
 :::
 
 ### ZRT-001 — Unicode Normalization Bypass (credential scanner)
 
-**Identified during:** Integrity Stress Test (current release pre-release)
+**Identified during:** Integrity Stress Test
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's regex patterns matched ASCII credential shapes. An attacker
 controlling a Markdown file could insert a Unicode lookalike character (e.g. `ｇhp_…`
@@ -93,13 +93,13 @@ content is preserved for output; only the normalized copy is matched against.
 **Lesson:** Regex-based credential detection must normalize input. The attack surface
 is not the pattern — it is the encoding.
 
-**Closed in:** current release sprint D038.
+**Closed in:** Sprint D038.
 
 ---
 
 ### ZRT-002 — Lookback Buffer Escape (credential scanner)
 
-**Identified during:** Integrity Stress Test (current release pre-release)
+**Identified during:** Integrity Stress Test
 **Component:** `core/credentials.py`, `scan_lines_with_lookback()`
 **Description:** The credential scanner's lookback buffer was used to detect multi-line credential
 constructs (e.g. a `password:` key on one line, the value on the next). The attack
@@ -115,13 +115,13 @@ file boundaries only — never mid-file.
 **Lesson:** Buffer-based detection requires formal sizing against the worst-case
 pattern. An informal "large enough" buffer is not a security guarantee.
 
-**Closed in:** current release sprint D039.
+**Closed in:** Sprint D039.
 
 ---
 
 ### ZRT-003 — HTML Entity Obfuscation (credential scanner)
 
-**Identified during:** Integrity Stress Test (current release pre-release)
+**Identified during:** Integrity Stress Test
 **Component:** `core/credentials.py`
 **Description:**  The credential scanner scanned raw Markdown bytes. The attack used HTML entity
 encoding (`&#103;hp_…` for `ghp_…`) inside fenced code blocks. The credential scanner's patterns
@@ -135,13 +135,13 @@ codepoints before the regex runs.
 **Lesson:** Multi-encoding defense requires layered normalization. A single normalization
 pass (NFKC only) is insufficient when HTML rendering is part of the content pipeline.
 
-**Closed in:** current release sprint D040.
+**Closed in:** Sprint D040.
 
 ---
 
 ### ZRT-004 — Fenced Block Scope Confusion (credential scanner)
 
-**Identified during:** Integrity Stress Test (current release pre-release)
+**Identified during:** Integrity Stress Test
 **Component:** `core/credentials.py`, fenced block state machine
 **Description:**  The credential scanner originally skipped scanning inside triple-backtick fenced
 blocks, reasoning that code examples are not live secrets. The attack embedded a
@@ -161,11 +161,11 @@ demonstrate this pattern.
 negatives in adversarial conditions. Security-critical passes should default to
 **scan everything, authorize exceptions explicitly**.
 
-**Closed in:** current release sprint D041.
+**Closed in:** Sprint D041.
 
 ---
 
-## Closed Earlier (Pre-current release)
+## Closed Earlier
 
 ### ZRT-005 — Bootstrap Paradox
 
@@ -175,7 +175,7 @@ empty directory. The `find_repo_root()` function had no fallback, making it impo
 to initialize a project that did not yet have a `.git` or `.zenzic.toml` marker.
 **Resolution:** `fallback_to_cwd=True` parameter added to `find_repo_root()`, used
 exclusively by `zenzic init`. See [ADR 003](adr-discovery.mdx).
-**Closed in:** current release
+**Closed in:** Earlier adoption
 
 ---
 
@@ -221,7 +221,7 @@ behaviour change.
 - `test_absolute_broken_blog_link_is_detected` — wrong slug raises `FILE_NOT_FOUND`
 - `test_correct_absolute_slug_link_is_clean` — correct slug produces no error
 
-**Closed in:** current release
+**Closed in:** Earlier adoption
 
 ### D100 — Privacy Gate Migration: `.zenzic.dev.toml` → `.zenzic.local.toml`
 
@@ -237,7 +237,7 @@ document containing a forbidden code-name without any Zenzic warning.
 This gap created a false sense of security: users configured `forbidden_patterns`
 expecting Zenzic to block those terms from documentation, but the scan never happened.
 
-**Resolution (Sprint D100 — current release):**
+**Resolution (Sprint D100):**
 
 1. **New canonical file:** `.zenzic.local.toml` replaces `.zenzic.dev.toml` as the
    machine-local, git-ignored privacy configuration. It is a flat TOML file with a
@@ -268,4 +268,4 @@ The Z204 Privacy Gate and the Z601 Brand Obsolescence Guard form a two-layer arc
   Designed for deprecated brand terms where historical references in CHANGELOG files
   are acceptable.
 
-**Closed in:** current release sprint D100.
+**Closed in:** Sprint D100.

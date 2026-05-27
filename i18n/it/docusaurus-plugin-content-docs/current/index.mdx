@@ -8,9 +8,7 @@ sidebar_label: "Panoramica"
 
 # La tua documentazione, completamente protetta
 
-**Zenzic garantisce sicurezza in build-time e tranquillità operativa — rilevando link rotti,
-credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione
-richiesta per iniziare. Nessun build engine invocato. Nessuna sorpresa il venerdì.**
+**Zenzic rileva link rotti, credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione richiesta per iniziare. Nessun build engine invocato.**
 
 ---
 
@@ -21,7 +19,7 @@ uvx zenzic lab
 ```
 
 `zenzic lab` lancia una vetrina interattiva di ogni scanner in azione: rilevamento credenziali,
-link rotti, pagine orfane, path traversal guard per la protezione da path-traversal. Eseguilo su
+link rotti, pagine orfane, path traversal guard enforcement. Eseguilo su
 fixture preconfezionate e osserva i risultati in tempo reale.
 
 **L'audit completo in un secondo — senza installazione, senza configurazione:**
@@ -34,35 +32,33 @@ uvx zenzic check all .
 
 ---
 
-## Zenzic Dashboard — 100/100
+## Due Strumenti: Check e Score
 
-Ecco come appare il successo:
+**`zenzic check all`** è un gate binario. Emette un exit code deterministico in base ai finding rilevati nello scope analizzato. Exit 0 indica nessun finding rilevato.
 
 <ZenzicOutput status="success" exitCode={0} showFrame />
 
-`100/100` non è una stima. È una **prova matematica** che la tua documentazione
-non ha problemi strutturali, nessuna credenziale esposta, nessun errore di navigazione.
-Qualsiasi punteggio inferiore è un diagnostico preciso e azionabile — non un avviso generico.
+**`zenzic score`** calcola uno score di qualità 0–100 tramite un modello a penalità pesate su quattro categorie: Integrità Strutturale (30%), Navigazione (25%), Brand & Asset (25%), Eccellenza dei Contenuti (20%). Un `100/100` indica zero finding penalizzati nello scope analizzato. Il contenuto escluso non è valutato. Uno score inferiore a `100/100` è un audit superato se soddisfa la soglia `fail_under` configurata.
 
-> **Pronto a raggiungere il 100/100?** Esegui `uvx zenzic score` per vedere dove sei oggi.
+Regola assoluta: qualsiasi finding Z2xx collassa lo score a `0/100` incondizionatamente, indipendentemente da `fail_under`.
+
+→ **[Modello di scoring completo](./explanation/health-metrics)**
 
 ---
 
-i blocchi di codice — prima che qualsiasi altro controllo venga eseguito. Se viene rilevata
-una credenziale:
-## Analisi Deterministica dei Fallimenti: Prima vs Con Zenzic
+## Analisi Deterministica dei Fallimenti: Prima vs Dopo Zenzic
 
-| Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic current release                                                                             |
+| Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic                                                                             |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | ZenzicOutput: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
 | **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica O(1) via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
-| **Leak di Credenziali** | Il linter può non rilevare segreti in YAML/blocchi codice; nessun masking; l’incidente può finire in git. | Credential scanner: scansiona tutto, maschera i segreti, blocca la pipeline (exitCode=2, Z601), mai stampa il segreto completo. |
-| **Codici di Uscita**    | Non standard, ambigui o assenti.                                                                   | Tier: Z1xx (strutturale), Z2xx (contenuto), Z4xx (routing), Z6xx (sicurezza).                 |
+| **Leak di Credenziali** | Il linter può non rilevare segreti in YAML/blocchi codice; nessun masking; l’incidente può finire in git. | Credential scanner: scansiona tutto, maschera i segreti, blocca la pipeline (exitCode=2, Z201), mai stampa il segreto completo. |
+| **Codici di Uscita**    | Non standard, ambigui o assenti.                                                                   | Tier: Z1xx (integrità link), Z2xx (sicurezza), Z4xx (struttura), Z6xx (governance).                 |
 
 **Esempio: ZenzicOutput per una Virtual Route**
 
-<ZenzicOutput status="error" code="Z404" exitCode={1} showFrame>
-docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente (Z404)
+<ZenzicOutput status="error" code="Z111" exitCode={1} showFrame>
+docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente (Z111)
 </ZenzicOutput>
 
 Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
@@ -76,17 +72,17 @@ Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
 | | |
 | :--- | :--- |
 | **[Tutorial →](./tutorials/first-audit)** | Da zero a un audit superato in 3 minuti. |
-| **[How-to →](./how-to/configure-ci-cd)** | Pubblica con fiducia usando GitHub Actions. |
+| **[How-to →](./how-to/configure-ci-cd)** | Integrazione con GitHub Actions per controlli CI/CD automatizzati. |
 | **[Reference →](./reference/cli)** | Ogni flag, ogni codice `Zxxx`, ogni opzione. |
 | **[Explanation →](./explanation/health-metrics)** | Perché 100/100 è l'unico numero che conta. |
 
 ---
 
-## Enterprise Ready — Integrazione Nativa con GitHub
+## Integrazione Nativa con GitHub
 
 ```yaml title=".github/workflows/zenzic.yml"
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
     format: sarif

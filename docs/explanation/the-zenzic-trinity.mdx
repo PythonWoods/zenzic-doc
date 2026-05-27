@@ -72,10 +72,10 @@ CI/CD pipelines.
 
 ```yaml title=".github/workflows/zenzic.yml"
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
-    version: "0.7.1"
+    version: "<version>"
     format: sarif
     upload-sarif: true
     fail-on-error: true

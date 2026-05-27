@@ -5,9 +5,7 @@ sidebar_label: "Your First Audit"
 
 # Your First Audit
 
-**What you'll achieve:** go from zero to a passing Zenzic report in under three minutes —
-and along the way, watch Zenzic catch a leaked credential, flag an orphan page, and hand you
-a 100/100 score. No configuration file required to start.
+**What you'll achieve:** go from zero to a passing Zenzic report in under three minutes. Zenzic detects leaked credentials, orphan pages, and broken links. No configuration file required to start.
 
 :::tip[Prerequisites]
 
@@ -16,8 +14,7 @@ You need [uv](https://docs.astral.sh/uv/) on your `PATH`. Everything else is han
 
 :::info[Why start with the Lab?]
 
-The fastest path to understanding Zenzic is **watching it work**.
-`zenzic lab` runs every scanner against pre-built fixtures: a real security breach and a real clean report — in 60 seconds.
+`zenzic lab` runs every scanner against pre-built fixtures. It covers a security breach scenario and a clean-documentation scenario. Total run time: under 60 seconds.
 :::
 
 ---
@@ -60,7 +57,7 @@ Security Breach banner — the non-suppressible alert for a leaked credential:
   credentialType="aws-access-key"
 />
 
-The masked credential, the non-zero exit: this is how Zenzic teaches.
+The masked credential and non-zero exit code are the expected output of the credential scanner.
 
 **The Credential Scanner (Zenzic Audit Badge)** — now run the Z101 link integrity scenario:
 
@@ -72,14 +69,13 @@ The Zenzic Audit Badge: link findings detected, exit 1. The contrast is the proo
 the same engine that caught the secret confirms that clean documentation is genuinely clean.
 
 :::tip[Interactive Demo — No installation required]
-**Want to see Zenzic in action?**
 
 ```bash
 uvx zenzic lab
 ```
 
 Launches the gallery menu of 5 Z-code scenarios: credential leaks, broken links, orphan
-assets, brand obsolescence, and i18n parity. Zero install. Zero config. Pure experience.
+assets, brand obsolescence, and i18n parity. No installation. No configuration required.
 
 → Pick any scenario from the menu, or run a specific one: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (link integrity).
 :::
@@ -155,8 +151,7 @@ A clean run looks like this — the **Zenzic Audit Badge**:
 
 <ZenzicOutput status="success" exitCode={0} showFrame />
 
-This is not a green CI tick. It is a **mathematical proof** that every link resolves,
-every page is reachable, and no credential is exposed. `100/100` is the only number that counts.
+Exit 0 confirms that every link resolves, every page is reachable, and no credential is exposed within the analyzed scope.
 
 :::note[Deliberate Failure — The Traceability Proof]
 Insert a broken link in any file:
@@ -175,14 +170,14 @@ File path. Line number. Finding code. No finding without a physical origin.
 This is deterministic traceability — the same guarantee in CI as in local development.
 :::
 
-> **Ready to get there?** Run `uvx zenzic score` on your own repo — right now, without installing anything.
+Run `uvx zenzic score` on your own repo to obtain a baseline score without installing anything.
 
 ---
 
 ## What's next? {#next}
 
 - **Measure your score** — run `uvx zenzic score` to get a precise 0–100 baseline for your repo
-- **Add a CI gate** — see [CI/CD Integration](../how-to/configure-ci-cd) to ship with confidence
+- **Add a CI gate** — see [CI/CD Integration](../how-to/configure-ci-cd) for automated quality enforcement
 - **SARIF export** — `zenzic check all --format sarif` for GitHub Code Scanning inline annotations
 - **Strict mode** — add `--strict` to also validate external URLs
 - **Custom rules** — add `[[custom_rules]]` entries to `.zenzic.toml` to enforce your own patterns

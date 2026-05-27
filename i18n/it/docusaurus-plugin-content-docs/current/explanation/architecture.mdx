@@ -133,7 +133,7 @@ Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft
 
 ## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
 
-Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in current release Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
+Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in v0.8.x. Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
 
 ### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
 
@@ -410,7 +410,7 @@ Il path traversal guard scatta anche quando `docs_dir` stesso risolve fuori dall
 
 ## Garanzia DFA — Il Motore RE2 {#dfa-guarantee}
 
-Zenzic current release utilizza esclusivamente un motore **DFA (Deterministic Finite Automaton)** per tutti
+Zenzic utilizza esclusivamente un motore **DFA (Deterministic Finite Automaton)** per tutti
 i pattern regex forniti dall'utente. Questa è un vincolo architetturale rigido, non un'opzione di
 configurazione.
 

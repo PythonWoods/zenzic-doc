@@ -36,8 +36,8 @@ The decision rule: **if it is a property of one line, it belongs inline.**
 
 ## Cross-Instance Prefix Handling
 
-:::danger[`[link_validation]` removed in v0.8.0]
-The `[link_validation]` TOML schema — including `absolute_path_allowlist` — was **removed in v0.8.0** (EPOCH 7a.1 purge). A `.zenzic.toml` that still declares `[link_validation]` raises a TOML validation error at startup.
+:::danger[`[link_validation]` removed]
+The `[link_validation]` TOML schema — including `absolute_path_allowlist` — is unsupported and raises a TOML validation error at startup. A `.zenzic.toml` that still declares `[link_validation]` must be updated.
 
 For cross-instance links that Z105 flags, use inline ignores at each affected line. See [ADR 011](/developers/explanation/adr-cross-instance-allowlist) for the removal rationale.
 :::

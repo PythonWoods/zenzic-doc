@@ -11,7 +11,7 @@ description: Zenzic Core and zenzic-doc — the ecosystem architecture, the Adap
 | Component | Role |
 | :--- | :--- |
 | **Zenzic Core** | The pure, agnostic, Zero-Config linter. One binary. Every documentation engine. |
-| **Zenzic-Doc** | The living test bench — a self-validating Docusaurus site that dogfoods every Zenzic release. |
+| **Zenzic-Doc** | The living test bench — a self-validating Docusaurus site that dogfoods every Zenzic change. |
 
 Each component is independently installable and has no hard dependency on the others.
 
@@ -145,7 +145,7 @@ bidirectional parity is enforced by the `verify-codes-parity` Nox session via **
 Degradation**:
 
 - **Core Maintainer**: `ZENZIC_PROJECT_PATH` set → `uv run --project <path>` against local source.
-- **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI release.
+- **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI package.
 
 Running `just verify` in `zenzic-doc` executes all four gates in sequence. External contributors
 need no local checkout of Zenzic Core.
@@ -184,7 +184,7 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 
 ## Brand Integrity {#brand-integrity}
 
-The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a release codename contradicts the version history it is trying to document.
+The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a codename contradicts the contract it is trying to document.
 
 Zenzic addresses this through the [`[governance]`](../reference/configuration.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
 

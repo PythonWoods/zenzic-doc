@@ -5,8 +5,7 @@ sidebar_label: "Il tuo primo audit"
 
 # Il tuo primo audit
 
-**Cosa farai:** passare da una cartella di file Markdown a un report delZenzic in meno di
-tre minuti — senza file di configurazione per iniziare.
+**Cosa farai:** passare da zero a un report Zenzic in meno di tre minuti. Zenzic rileva credenziali esposte, pagine orfane e link rotti. Nessun file di configurazione richiesto per iniziare.
 
 :::tip[Prerequisiti]
 
@@ -15,8 +14,7 @@ Ti serve [uv](https://docs.astral.sh/uv/) nel `PATH`. Il resto è gestito automa
 
 :::info[Perché iniziare con il Lab?]
 
-Il percorso più veloce per capire Zenzic è **vederlo in azione**.
-`zenzic lab` esegue ogni scanner contro fixture pre-costruite: una vera violazione di sicurezza e un vero report pulito — in 60 secondi.
+`zenzic lab` esegue ogni scanner contro fixture pre-costruite. Copre uno scenario di violazione della sicurezza e uno scenario di documentazione pulita. Tempo di esecuzione totale: meno di 60 secondi.
 :::
 
 ---
@@ -59,7 +57,7 @@ il banner Security Breach — l'allerta non sopprimibile per una credenziale esp
   credentialType="aws-access-key"
 />
 
-La credenziale mascherata, l'exit non-zero: è così che Zenzic insegna.
+La credenziale mascherata e l'exit code non-zero sono l'output atteso del credential scanner.
 
 **Il Credential Scanner (Zenzic Audit Badge)** — ora esegui lo scenario Z101 (integrità dei link):
 
@@ -72,14 +70,13 @@ lo stesso motore che ha rilevato il segreto conferma che la documentazione
 pulita è genuinamente pulita.
 
 :::tip[Demo Interattiva — Nessuna installazione richiesta]
-**Vuoi vedere Zenzic in azione?**
 
 ```bash
 uvx zenzic lab
 ```
 
 Lancia il menu della galleria con 5 scenari Z-code: credenziali esposte, link rotti, asset
-orfani, obsolescenza del brand e parità i18n. Zero installazione. Zero configurazione. Esperienza pura.
+orfani, obsolescenza del brand e parità i18n. Nessuna installazione. Nessuna configurazione richiesta.
 
 → Scegli qualsiasi scenario dal menu, oppure eseguine uno specifico: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (integrità dei link).
 :::
@@ -120,7 +117,7 @@ Run zenzic check all to validate your documentation.
 ```
 
 Il file generato è commentato — ogni opzione è disabilitata con una breve spiegazione.
-Aprilo, decommentate quello che ti serve, lascia il resto.
+Aprilo, decommenta quello che ti serve, lascia il resto.
 
 :::note[Usi pyproject.toml?]
 
@@ -155,8 +152,7 @@ Un'esecuzione pulita si presenta così — il **Zenzic Audit Badge**:
 
 <ZenzicOutput status="success" exitCode={0} showFrame />
 
-Non è solo un segno di spunta verde in CI. È una **prova matematica** che ogni link si risolve,
-ogni pagina è raggiungibile e nessuna credenziale è esposta. `100/100` è l'unico numero che conta.
+Exit 0 conferma che ogni link si risolve, ogni pagina è raggiungibile e nessuna credenziale è esposta nello scope analizzato.
 
 :::note[Rottura Deliberata — La Prova della Tracciabilità]
 Inserisci un link rotto in qualsiasi file:
@@ -175,14 +171,14 @@ File. Riga. Codice. Nessun finding senza un'origine fisica.
 Questa è tracciabilità deterministica — la stessa garanzia in CI come in locale.
 :::
 
-> **Pronto ad arrivarci?** Esegui `uvx zenzic score` sul tuo repository — adesso, senza installare nulla.
+Esegui `uvx zenzic score` sul tuo repository per ottenere una baseline score senza installare nulla.
 
 ---
 
 ## Cosa fare dopo? {#next}
 
 - **Misura il tuo punteggio** — esegui `uvx zenzic score` per ottenere una baseline 0–100 precisa
-- **Aggiungi un gate CI** — vedi [Integrazione CI/CD](../how-to/configure-ci-cd) per pubblicare con fiducia
+- **Aggiungi un gate CI** — vedi [Integrazione CI/CD](../how-to/configure-ci-cd) per l'enforcement automatico della qualità
 - **Export SARIF** — `zenzic check all --format sarif` per le annotazioni inline di GitHub Code Scanning
 - **Strict mode** — aggiungi `--strict` per validare anche gli URL esterni
 - **Regole personalizzate** — aggiungi voci `[[custom_rules]]` a `.zenzic.toml` per i tuoi pattern

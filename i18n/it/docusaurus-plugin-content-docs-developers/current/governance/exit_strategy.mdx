@@ -21,7 +21,7 @@ indesiderate. Eventuali future funzionalità di rimedio saranno implementate com
 esplicite e interattive (es. `zenzic fix`), mantenendo la fase di analisi al 100%
 priva di mutazioni.
 
-Questo documento è la prova formale di quella promessa.
+Questo documento è l'impegno formale di quella promessa.
 
 ---
 
@@ -106,10 +106,10 @@ nessun'altra configurazione di strumenti.
 ```yaml title=".github/workflows/docs.yml"
 # Elimina questo blocco
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
-    version: "0.7.1"
+    version: "<version>"
     format: sarif
     upload-sarif: "true"
 ```

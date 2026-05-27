@@ -118,7 +118,7 @@ immagini di anteprima social.
 Gli slash iniziali vengono rimossi, quindi `"assets/favicon.svg"` e `"/assets/favicon.svg"` sono
 equivalenti.
 
-:::warning[Modifica incompatibile nella current release]
+:::warning[Modifica incompatibile]
 Le versioni precedenti trattavano ogni voce come un percorso letterale.
 Zenzic, ogni voce è trattata come un pattern `fnmatch`.
 I percorsi letterali esistenti continuano a funzionare: corrispondono esattamente a se stessi.
@@ -381,7 +381,7 @@ rimuovendolo una volta che il baseline è pulito.
 
 ## `[governance]` {#governance}
 
-**Tipo:** sezione TOML — **Aggiunto:** current release
+**Tipo:** sezione TOML
 
 Controlli di policy opt-in per i finding di governance-tier esposti da
 `zenzic inspect codes --tier governance`.
@@ -524,7 +524,7 @@ configurazione fallisce con un errore di migrazione esplicito.
 
 ## `[link_validation]` {#link-validation}
 
-**Tipo:** sezione TOML — **Aggiunto:** current release
+**Tipo:** sezione TOML
 
 Controlla come il validator dei link di Zenzic tratta i path URL assoluti.
 Il comportamento predefinito — rifiutare tutti i path assoluti via

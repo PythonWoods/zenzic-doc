@@ -21,7 +21,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 
 | Input | Default | Richiesto | Descrizione |
 | :--- | :--- | :---: | :--- |
-| `version` | `0.7.1` | No | Versione di Zenzic da installare (`latest` o un pin esatto come `0.7.1`). Fissa a una release specifica per CI riproducibile. |
+| `version` | `<version>` | No | Versione di Zenzic da installare (`latest` o un pin di versione esatto). Fissa a una versione specifica per CI riproducibile. |
 | `format` | `sarif` | No | Formato di output: `text`, `json` o `sarif`. |
 | `sarif-file` | `zenzic-results.sarif` | No | Percorso di output SARIF. Deve essere un percorso **relativo** all'interno del workspace. I percorsi assoluti e le sequenze di traversal `..` vengono rifiutati dal wrapper. |
 | `upload-sarif` | `true` | No | Carica il SARIF in GitHub Code Scanning. Richiede il permesso `security-events: write`. |
@@ -147,9 +147,9 @@ La variabile d'ambiente `ZENZIC_EXTRA_ARGS` passa flag aggiuntivi direttamente a
 di Zenzic senza modificare gli input dell'action:
 
 ```yaml
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
   with:
-    version: "0.7.1"
+    version: "<version>"
   env:
     ZENZIC_EXTRA_ARGS: >-
       --exclude-url https://staging.example.com
