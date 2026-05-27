@@ -181,8 +181,10 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'developersSidebar',
+          // type:'doc' links directly to developers/index.mdx regardless of sidebar order.
+          // type:'docSidebar' resolves to first sidebar item → contribute/ (position:1) → /developers/category/contribute.
+          type: 'doc',
+          docId: 'index',
           docsPluginId: 'developers',
           position: 'left',
           label: 'Developers',
