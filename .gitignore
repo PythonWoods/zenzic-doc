@@ -49,3 +49,6 @@ mutmut*
 .pytest_cache/
 .nox/
 .hypothesis/
+
+# VS Code Copilot agent definitions (local-only)
+.github/agents/
