@@ -9,7 +9,6 @@
 import MDXComponents from '@theme-original/MDXComponents';
 import Icon from '@site/src/components/Icon';
 import SecuritySection from '@site/src/components/Homepage/SecuritySection';
-import TerminalWindow from '@site/src/components/TerminalWindow';
 import ZenzicOutput from '@site/src/components/ZenzicOutput';
 import VSMVisualizer from '@site/src/components/VSMVisualizer';
 import CapExceededSummary from '@site/src/components/CapExceededSummary';
@@ -18,7 +17,6 @@ export default {
   ...MDXComponents,
   Icon,
   SecuritySection,
-  TerminalWindow,
   ZenzicOutput,
   VSMVisualizer,
   CapExceededSummary,
