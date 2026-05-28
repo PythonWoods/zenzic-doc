@@ -104,8 +104,8 @@ const DEMO_PHYSICAL: VSMNode[] = [
     label: 'blog/',
     kind: 'dir',
     children: [
-      { label: '2026-05-07-log-v080-basalt.mdx',              url: '/blog/log-v080-basalt',                   kind: 'physical' },
-      { label: '2026-05-10-v080-basalt-namespace-contract.mdx', url: '/blog/v080-namespace-contract', kind: 'physical' },
+      { label: '2026-05-24-log-v080.mdx',              url: '/blog/log-v080',                   kind: 'physical' },
+      { label: '2026-05-24-v080-namespace-contract.mdx', url: '/blog/v080-namespace-contract', kind: 'physical' },
     ],
   },
 ];
@@ -115,31 +115,31 @@ const DEMO_VIRTUAL: VSMNode[] = [
     label: '/blog/tags/',
     kind: 'tag_index',
     url: '/blog/tags/',
-    sourceFiles: ['blog/2026-05-07-log-v080-basalt.mdx', 'blog/2026-05-10-v080-basalt-namespace-contract.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/tags/ci-cd/',
     kind: 'tag',
     url: '/blog/tags/ci-cd/',
-    sourceFiles: ['blog/2026-05-07-log-v080-basalt.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx'],
   },
   {
     label: '/blog/tags/zenzic/',
     kind: 'tag',
     url: '/blog/tags/zenzic/',
-    sourceFiles: ['blog/2026-05-07-log-v080-basalt.mdx', 'blog/2026-05-10-v080-basalt-namespace-contract.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/page/1/',
     kind: 'pagination',
     url: '/blog/page/1/',
-    sourceFiles: ['blog/2026-05-07-log-v080-basalt.mdx', 'blog/2026-05-10-v080-basalt-namespace-contract.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/authors/',
     kind: 'author_index',
     url: '/blog/authors/',
-    sourceFiles: ['blog/2026-05-07-log-v080-basalt.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx'],
   },
 ];
 
