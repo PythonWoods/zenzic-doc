@@ -1,124 +1,156 @@
 ---
 slug: log-v080
-title: "Log: v0.8.0"
-sidebar_label: "📜 Log: v0.8.0"
+title: "Release v0.8.0: The Governance Engine"
+sidebar_label: "Release v0.8.0"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-logs]
 date: 2026-05-24T10:00:00
 description: >-
-  v0.8.0 patch notes in 30 seconds: 4-Gates Standard, Z907 I18N_PARITY,
-  Multi-Root Discovery, Zero-Config Sovereignty, Virtual Routes, breaking changes, migration path.
+  v0.8.0 delivers: Scoring Engine 2.0 with flat-cost suppression debt,
+  Adapter ABC Contract, Strict Mode decoupling, Sovereign Audit, and a
+  stable Z1xx–Z6xx namespace. 1,550 tests. Clean migration path.
 image: /img/social-card.png
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-**TL;DR.** v0.8.0 closes the development arc with
-seven epochs: the **4-Gates Standard**, the language-agnostic
-**Z907 I18N_PARITY** check, **Cross-Instance Sovereignty** now
-Zero-Config, **Multi-Root Discovery**, **Zero-Config
-Sovereignty** with `[link_validation]` removed, and **Virtual
-Routes** with the `zenzic inspect routes` JSON API.
-1,485+ tests. Some breaking changes; clean migration path.
+**TL;DR.** v0.8.0 formalizes the governance layer: a five-tier weighted quality score with flat-cost suppression debt, a stable frozen code namespace, the Adapter ABC Contract replacing ad-hoc method signatures, and Sovereign Audit mode for unfiltered inspection. 1,550 passing tests. Breaking changes are documented below with migration paths.
 
 {/* truncate */}
 
-## Breaking changes
+## Scoring Engine 2.0 — Flat-Cost Suppression Debt
 
-| From (≤ v0.7.x series) | To (v0.8.0 release) | Migration |
-|-----------------|-------------|-----------|
-| Legacy standalone alias | `engine = "standalone"` | normalize in `.zenzic.toml` |
-| MkDocs plugin (in-tree) | external adapter | drop dependency, use Core CLI |
-| `just preflight` | `just verify` | recipe rename — same 4-Gates content |
+v0.8.0 replaces the per-category allowance model with a uniform cost: every inline or per-file `zenzic:ignore` directive costs exactly **1 quality point**, with no free allowance.
+
+The five-tier weight matrix:
+
+| Tier | Codes | Weight |
+|------|-------|--------|
+| Security Gate | Z2xx | — (score collapses to 0) |
+| Structural | Z1xx | 30 pts |
+| Navigation | Z3xx, Z4xx | 25 pts |
+| Content | Z5xx | 20 pts |
+| Governance | Z4xx (Z405, Z406), Z6xx | 25 pts |
+
+The `suppression_cap` key sets a hard-fail threshold enforced at the CLI layer: if the active suppression count exceeds this value, Zenzic exits with code 1 regardless of the computed score.
+
+```toml title=".zenzic.toml"
+[governance]
+fail_under = 85
+suppression_cap = 10
+```
+
+Any Z2xx finding (credential, path traversal, or forbidden term) collapses the score to 0 unconditionally. The Z204 Privacy Gate extends this to project-specific forbidden patterns configured in `.zenzic.local.toml` — local-only enforcement without repository leakage.
+
+## Strict Mode Decoupling
+
+`--strict` and `fail_under` are independent controls with distinct semantics:
+
+- **`--strict`**: elevates all `warning`-severity findings to `error`. Affects exit code; does not change the quality score.
+- **`fail_under`**: a mathematical threshold applied after scoring. If the score falls below the configured floor, exit code 1 is issued regardless of `--strict`.
+
+Both can be combined. `--strict` without `fail_under` enforces a zero-warning policy. `fail_under` without `--strict` enforces a minimum score. Using both is the standard CI configuration for projects under active governance.
+
+## Adapter ABC Contract
+
+`BaseAdapter` is now a strict abstract base class. Two methods with ambiguous semantics have been removed:
+
+| Removed | Replacement |
+|---------|-------------|
+| `adapter.map_url(rel)` | `adapter.get_route_info(rel).canonical_url` |
+| `adapter.classify_route(rel, nav_paths)` | `adapter.get_route_info(rel).status` |
+
+The `find_orphans()` callback parameter `classify_route` is removed; pass `adapter: BaseAdapter | None` instead.
+
+Custom adapters that implement the removed methods must be updated before upgrading. No deprecation shim is provided.
+
+## Auto-Discovery — Deterministic I/O
+
+The `DocusaurusAdapter` resolves all plugin URL prefixes through two pure static-parsing passes over `docusaurus.config.{ts,js,mjs,cjs}` — no subprocess, no `rglob`, no allowlist. Every `@docusaurus/plugin-content-docs` instance is discovered automatically; the VSM boundary expands to include `blog/`, `developers/`, and any additional content root declared in the config.
+
+Blog posts are first-class VSM citizens. Broken links inside `blog/` and cross-tree links from `docs/` to `blog/` are caught by `zenzic check all`. A Reverse-Mapping invariant asserts every `Route.source` traces back to a real file on disk.
+
+## Sovereign Audit Mode
+
+The `--audit` flag bypasses all inline and per-file suppressions:
+
+```bash
+zenzic check all --audit
+```
+
+Suppressed findings surface with a `[POLICY_EXEMPTION]` label. Z2xx findings were never suppressible and are unaffected by `--audit`. This mode is the canonical instrument for governance reviews and release sign-off.
+
+## FROZEN_CODES and Stability Contracts
+
+Three public contracts are stable as of v0.8.0:
+
+- **`FROZEN_CODES`**: finding codes guaranteed not to be renumbered across versions.
+- **`NON_SUPPRESSIBLE_CODES`**: codes that no suppression directive can silence.
+- **`PLUGIN_FORBIDDEN_EXITS`**: exit codes that plugin rules are prohibited from emitting.
+
+Import from `zenzic.core.codes` in integration code and plugin rule authors.
+
+## Namespace Finalization — Z1xx–Z6xx
+
+The finding code namespace is now the stable public API:
+
+| Range | Domain |
+|-------|--------|
+| Z1xx | Link Integrity |
+| Z2xx | Security |
+| Z3xx | Reference Integrity |
+| Z4xx | Structure |
+| Z5xx | Content Quality |
+| Z6xx | Governance (opt-in) |
+
+The legacy migration map (`LEGACY_TO_CODE`) transparently converts old codes on load.
+
+## New Commands
+
+**`zenzic diff`** — compares the quality score of the current tree against a reference branch. Exits with code 4 on score regression:
+
+```bash
+zenzic diff main
+```
+
+**`zenzic explain`** — traces the origin of every active configuration value (Default / Global `.zenzic.toml` / Local override):
+
+```bash
+zenzic explain
+```
+
+**`zenzic guard`** — fast pre-commit credential scanner, independent of a full site analysis:
+
+```bash
+zenzic guard scan path/to/file.mdx
+zenzic guard init   # installs the pre-commit hook
+```
+
+**`zenzic inspect codes`** — live code registry with tier, ownership, and non-suppressibility flag per entry.
+
+## New Finding Codes
+
+| Code | Name | Trigger |
+|------|------|---------|
+| Z108 | EMPTY_LINK_TEXT | Link label is empty or whitespace-only |
+| Z204 | FORBIDDEN_TERM | Project-specific forbidden term (Privacy Gate, local-only config) |
+
+Z106 (CIRCULAR_LINK) is downgraded to `info` severity and no longer penalizes the quality score.
+
+## DFA-Pure Runtime (RE2 Anti-Corruption Layer)
+
+The standard-library `re` module is removed from all production analysis paths. Every pattern match runs through the RE2 layer, which rejects backreferences and lookaheads at load time and guarantees O(n) complexity under adversarial inputs.
+
+## Breaking Changes
+
+| From (≤ v0.7.x) | To (v0.8.0) | Migration |
+|---|---|---|
+| Undocumented standalone alias | `engine = "standalone"` (required) | normalize in `.zenzic.toml` |
+| MkDocs plugin (in-tree) | removed; use Core CLI | remove the dependency |
+| `just preflight` | `just verify` | update local scripts |
 | Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.8.0` |
-| `[link_validation]` TOML schema | *(removed)* | delete the block — URL prefixes auto-detected |
+| `adapter.map_url()` / `classify_route()` | removed | migrate to `get_route_info()` |
+| Legacy Z-codes (Z903/Z904/Z905/Z907) | auto-migrated via `LEGACY_TO_CODE` | no action required |
 
-No silent deprecation shims. Industry-grade only.
-
-## The Safe Port (4-Gates Standard)
-
-A single command runs every quality gate locally:
-
-```bash
-just verify
-```
-
-Sequence: `pre-commit` → `pytest` (with coverage) → `zenzic check all
---strict` → exit-code parity self-test. The same four gates run in CI; what
-passes locally passes in the cloud.
-
-## Z907 I18N_PARITY
-
-Language-agnostic translation parity check. Configure in `.zenzic.toml`:
-
-```toml
-[i18n]
-enabled = true
-default_locale = "en"
-locales = ["en", "it"]
-parity_strict = true
-```
-
-When `parity_strict = true`, every page in `default_locale` must have a
-mirror in every other locale. Missing translations surface as `Z907
-I18N_PARITY` findings.
-
-## Cross-Instance Sovereignty (Zero-Config)
-
-Multi-instance Docusaurus setups (`docs/`, `developers/`, every additional
-`@docusaurus/plugin-content-docs` instance) are now fully supported without
-manual TOML configuration. `DocusaurusAdapter.get_absolute_url_prefixes(repo_root)`
-discovers every plugin's `routeBasePath` via static parsing of
-`docusaurus.config.{ts,js,mjs,cjs}` — zero subprocess, zero allowlist, zero
-duplication.
-
-:::note Historical note
-An earlier draft shipped a manual `[link_validation].absolute_path_allowlist`
-field. That approach was abandoned. The Zero-Config implementation superseded it
-entirely.
-:::
-
-## Multi-Root Discovery
-
-The VSM is no longer bounded by `docs_dir`. The Docusaurus adapter auto-detects
-the `blog/` plugin via two pure-parsing passes (static regex over config, then
-convention fallback). Blog posts are first-class content: broken links inside
-`blog/` and cross-tree links from `docs/` to `blog/` are caught by
-`zenzic check all --strict`. A Reverse-Mapping invariant test asserts every
-blog `Route.source` traces back to a real file on disk.
-
-## Zero-Config Sovereignty
-
-The `[link_validation]` TOML schema is **removed**. `LinkValidationConfig` and
-`absolute_path_allowlist` are gone from the codebase. Configs that still declare
-`[link_validation]` raise a TOML validation error. **Migration:** delete the
-block — `DocusaurusAdapter` discovers plugin URL prefixes automatically.
-
-## Virtual Routes & `zenzic inspect routes`
-
-Engine-generated pages — tag indexes, paginated blog lists, author profiles —
-are now first-class VSM citizens with the Reverse-Mapping Invariant enforced at
-construction time. Three new finding codes:
-
-| Code | Level | Trigger |
-|------|-------|---------|
-| **Z111 VIRTUAL_ROUTE_BROKEN** | Error | docs link targets a tag URL no blog post activates |
-| **Z113 AUTHOR_KEY_COLLISION** | Error | duplicate author keys in `authors.yml` |
-| **Z114 LARGE_PAGINATION_SET** | Info | pagination set exceeds 200 pages |
-
-New CLI command:
-
-```bash
-zenzic inspect routes [--kind physical|virtual|all] [--json]
-```
-
-Exports the complete site map as deterministic JSON with per-route `url`, `kind`,
-`source_files` (repo-relative POSIX), and `digest`. When `--json` is active,
-`stdout` is exclusively valid JSON — no ANSI codes, no banners.
-
-## Migration path
-
-The full migration matrix lives in
-[`RELEASE.md`](https://github.com/PythonWoods/zenzic/blob/main/RELEASE.md#breaking-changes)
-under "Breaking changes". One pass through the table is usually enough.
+Full matrix: [RELEASE.md](https://github.com/PythonWoods/zenzic/blob/main/RELEASE.md#breaking-changes).
