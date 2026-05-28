@@ -19,7 +19,7 @@ consapevole, non una dimenticanza.
 La posizione di Zenzic: un progetto che esegue il linting della
 documentazione altrui deve mantenere uno standard più elevato di onestà
 sulla propria evoluzione. Ogni voce qui sotto nomina ciò che manca, perché
-è stato rinviato e quale sprint si fa carico del seguito.
+è stato rinviato e quale milestone si fa carico del seguito.
 
 ---
 
@@ -30,7 +30,7 @@ sulla propria evoluzione. Ogni voce qui sotto nomina ciò che manca, perché
 **Categoria:** Igiene della configurazione
 **Stato:** Rinviato a v0.8.x
 **Tracciato:** GitHub issue (milestone `v0.8.x`)
-**Correlato:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
+**Correlato:** ADR 011 (rimosso in v0.8.0)
 
 #### Cosa è stato rinviato
 
@@ -82,6 +82,48 @@ indebolire alcun controllo di sicurezza.
 
 ---
 
+### GAP-002 — Supporto Navbar per Plugin Dinamici
+
+**Categoria:** Scope della validazione link
+**Stato:** Rinviato
+**Tracciato:** GitHub issue (RFC aperto)
+**Correlato:** —
+
+#### Cosa è stato rinviato
+
+L'adapter Docusaurus di Zenzic analizza `docusaurus.config.ts` staticamente per
+costruire la Virtual Site Map (VSM). Le voci navbar di tipo `@docusaurus/plugin-*`
+— registrate tramite plugin Docusaurus di prima o terza parte — non vengono
+parsate. Zenzic ricade sul marcare queste route come `REACHABLE`, il che significa:
+
+- Rischio falsi positivi: **basso** — le route generate da plugin raramente risultano rotte.
+- Rischio miss: **non nullo** — orfani reali nascosti dietro voci navbar solo-plugin
+  potrebbero non essere rilevati in configurazioni plugin-heavy.
+
+#### Perché lo abbiamo rinviato
+
+Le voci navbar dei plugin richiedono la valutazione della configurazione JavaScript
+del plugin al momento del parse, il che violerebbe l'invariante **Nessun Sottoprocesso**
+(Pillar 2). Un parser statico senza stato non può recuperare le route registrate da
+plugin senza eseguire il plugin stesso.
+
+#### Cosa faremo
+
+La risoluzione pianificata introduce:
+
+1. Un **avviso strutturato** emesso quando vengono rilevati elementi navbar di plugin,
+   comunicando esplicitamente all'operatore la copertura ridotta.
+2. Una chiave di configurazione `dynamic_nav_plugins = true` in `.zenzic.toml` che
+   abilita il riconoscimento esplicito di questa limitazione, sopprimendo l'avviso.
+
+#### Mitigazione
+
+I progetti Docusaurus plugin-heavy devono assicurarsi che tutte le route generate
+da plugin compaiano anche in almeno una voce di navigazione non-plugin (sidebar,
+navbar header, o link diretto da una pagina). Zenzic audita normalmente quei percorsi.
+
+---
+
 ## Voci Chiuse
 
 Questa sezione accumulerà voci man mano che gli elementi rinviati vengono
@@ -102,15 +144,13 @@ rinviato è rilevante per il proprio caso d'uso.
 
 Tre impegni governano questa pagina:
 
-1. **Ogni rinvio viene nominato.** Nessun backlog silenzioso. Se abbiamo
-   scelto di non rilasciare una capacità discussa in modo significativo
-   durante uno sprint, finisce qui.
+1. **Ogni rinvio viene nominato.** Nessun backlog silenzioso. Una capacità
+   considerata e deliberatamente non rilasciata finisce qui.
 2. **Ogni rinvio ha una ragione.** "Abbiamo finito il tempo" è
    accettabile se vero; vaghi giri di parole no. La ragione deve essere
    sufficientemente specifica perché un futuro contributor possa decidere
    se il vincolo è ancora valido.
-3. **Ogni rinvio ha un proprietario.** Uno sprint target, una release
-   target, oppure un esplicito "rinviato a tempo indeterminato" con
+3. **Ogni rinvio ha un proprietario.** Una release target, oppure un esplicito "rinviato a tempo indeterminato" con
    relativa motivazione. Le voci del registro senza proprietario decadono
    in folklore.
 

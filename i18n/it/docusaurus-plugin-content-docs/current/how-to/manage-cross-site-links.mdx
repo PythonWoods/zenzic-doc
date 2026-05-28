@@ -41,7 +41,7 @@ La regola decisionale: **se è una proprietà di una riga, va inline.**
 :::danger[`[link_validation]` rimosso]
 Lo schema TOML `[link_validation]` — incluso `absolute_path_allowlist` — non è supportato e genera un errore di validazione TOML all'avvio. Un `.zenzic.toml` che dichiara ancora `[link_validation]` va aggiornato.
 
-Per i link cross-istanza segnalati da Z105, usa gli ignore inline su ogni riga interessata. Vedi [ADR 011](/developers/explanation/adr-cross-instance-allowlist) per il razionale della rimozione.
+Per i link cross-istanza segnalati da Z105, usa gli ignore inline su ogni riga interessata.
 :::
 
 ---
@@ -158,5 +158,3 @@ complesso senza appesantire quelli più semplici.
 
 - [Politica di Soppressione](../reference/suppression-policy.mdx) — sintassi
   completa degli ignore inline e regole di ambito.
-- Per il razionale completo di design, vedi
-  [ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

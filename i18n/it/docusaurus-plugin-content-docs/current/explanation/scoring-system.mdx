@@ -1,22 +1,27 @@
 ---
-sidebar_label: "Metriche di Salute"
+sidebar_label: "Sistema di Scoring"
 sidebar_position: 4
-description: "Il Punteggio di Qualità Deterministico — come Zenzic misura, traccia e garantisce la salute della documentazione nel tempo."
+description: "Il Punteggio di Qualità Deterministico — modello concettuale, tabella di penalità, esecuzione del punteggio e pattern CI."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Metriche di Salute
+# Sistema di Scoring — Il Punteggio di Qualità Deterministico
 
 > *"Un Exclusion Zone deve saper dire esattamente quanto è solido il suo molo."*
 
-**Un link rotto degrada l’esperienza utente. Una credenziale esposta richiede una risposta immediata all’incidente. Un punteggio di 97 significa tre finding ancora irrisolti.**
+**Un link rotto degrada l'esperienza utente. Una credenziale esposta richiede una risposta immediata all'incidente. Un punteggio di 97 significa tre finding ancora irrisolti.**
 
-Il Punteggio di Qualità di Zenzic non è una metrica di vanità. È un **valore deterministico da 0 a 100**
-calcolato dal conteggio concreto dei problemi rilevati da ogni controllo. Zero problemi significa
-100/100. Nessun credito parziale, nessun arrotondamento favorevole,
-nessuna sorpresa.
+Il Deterministic Quality Score (DQS) è un **valore da 0 a 100** calcolato dal
+conteggio concreto dei problemi rilevati da ogni controllo. Zero problemi significa
+100/100. Nessun credito parziale, nessun arrotondamento favorevole, nessuna sorpresa.
+Dati gli stessi file sorgente e la stessa versione di Zenzic, il punteggio è identico
+su ogni macchina — nessun campionamento, nessun peso basato sull'età del file, nessuna
+componente soggettiva.
+
+Per le formule esatte e la specifica matematica, consulta il
+[Riferimento Algoritmo di Scoring](../reference/scoring-algorithm.mdx).
 
 ---
 
@@ -54,6 +59,11 @@ codici di finding `Zxxx` che emette.
 [Z403]: ../reference/finding-codes.mdx#z403
 [Z404]: ../reference/finding-codes.mdx#z404
 
+**Come leggere i pesi.** I due pesi maggiori — Strutturale e Governance — riflettono
+il principio di design di Zenzic: la correttezza (link che si risolvono davvero) e la
+fiducia (conformità al brand e ai contratti) contano più della qualità estetica dei
+contenuti.
+
 :::danger[Override di Sicurezza]
 Se viene rilevato un finding di sicurezza — Z201 (credential scanner), Z202 o Z203 (path traversal guard) —
 il Punteggio di Qualità **crolla a 0/100 incondizionatamente**. Una sorgente documentale
@@ -62,11 +72,11 @@ che perde attivamente una credenziale non può ricevere un Punteggio di Qualità
 
 ---
 
-## La Tabella di Penalità Zenzic
+## La Tabella di Penalità
 
 Ogni codice di finding porta una **deduzione fissa in punti** all'interno della sua categoria.
 Le deduzioni si accumulano; una volta che il contributo di una categoria raggiunge zero,
-ulteriori violazioni in quella categoria non hanno ulteriori effetti sul punteggio totale —
+ulteriori violazioni in quella categoria non hanno ulteriori effetti sul punteggio totale —
 questo è il **Category Cap** (Tetto di Categoria).
 
 | Codice | Descrizione | Penalità (pts) | Categoria |
@@ -93,7 +103,25 @@ questo è il **Category Cap** (Tetto di Categoria).
 
 Z106 è una diagnostica di integrità dei link, ma non sottrae punti. Z108 è la nuova penalità strutturale per le etichette di link malformate.
 
-### Invariante del Category Cap
+### Filosofia di Calibrazione delle Penalità
+
+Le penalità sono assegnate a uno di tre livelli, indipendentemente dal bucket di appartenenza:
+
+| Livello | Esempi | Punti |
+|---|---|---|
+| Critico | Z503 (errore snippet) | 10.0 |
+| Alto | Z301, Z402 (link rotto, pagina orfana) | 3.0 – 4.0 |
+| Standard | Z104, Z401, Z403 … | 1.0 – 2.0 |
+
+Una penalità **Critica** (10 pts) segnala che il contenuto è attivamente dannoso per i
+lettori (un esempio di codice non funzionante). Una penalità **Alta** segnala un difetto
+strutturale che il lettore incontrerà direttamente (un link morto, una pagina
+irraggiungibile). Una penalità **Standard** segnala un deficit di qualità che degrada
+l'esperienza nel tempo.
+
+---
+
+## Invariante del Category Cap
 
 Le deduzioni di categoria sono limitate dal peso della categoria:
 
@@ -122,6 +150,19 @@ Il punteggio finale 0–100 è la somma dei contributi di categoria pesati:
 $$
 \text{score} = \left\lfloor \sum_i \max\bigl(0,\ w_i \times 100 - \text{deduzioni}_i\bigr) \right\rceil
 $$
+
+---
+
+## Come Interpretare il Tuo Punteggio
+
+| Punteggio | Interpretazione |
+|---|---|
+| 95 – 100 | Eccellente — finding residui minimi |
+| 80 – 94 | Buono — alcuni finding non critici |
+| 60 – 79 | Discreto — lacune di qualità significative |
+| 40 – 59 | Scarso — problemi sistematici che richiedono attenzione |
+| < 40 | Critico — integrità della documentazione a rischio |
+
 ---
 
 ## Esecuzione del Punteggio
@@ -162,6 +203,22 @@ abbia un baseline con cui confrontarsi.
 
 ---
 
+## Soppressione e Gate di Governance
+
+Esistono due meccanismi che interagiscono diversamente con il punteggio.
+
+**Soppressione (`.zenzic-ignore`)** — rimuove un finding specifico dall'output. Il
+finding soppresso non viene penalizzato. Usa la soppressione solo per eccezioni
+deliberate e documentate.
+
+**Gate di governance** — alcuni codici (Z602 I18N_PARITY) attivano un gate forzato:
+`zenzic check` termina con codice 2 indipendentemente dal DQS. Il DQS stesso non è
+influenzato perché i codici gate sono esclusi dalla matrice di penalità per design. Un
+progetto può ottenere 100 e comunque fallire il gate se è presente una violazione di
+parità delle traduzioni.
+
+---
+
 ## Regressione di Qualità — Z504
 
 Quando `zenzic diff` rileva una diminuzione del punteggio, emette
@@ -176,9 +233,35 @@ comunica *quale commit ha introdotto una regressione*.
 
 ---
 
-## Connessione ai Tre Pilastri
+## La Garanzia Exclusion Zone {#exclusion-zone-guarantee}
 
-Il Punteggio di Qualità è la prova operativa dei [Tre Pilastri](architecture.mdx)
+Quando `zenzic score` restituisce 100/100, è una garanzia formale che:
+
+- Ogni link interno si risolve (zero Z101/Z102/Z103/Z104/Z105)
+- Ogni riferimento ad ancora si risolve (zero Z107)
+- Ogni pagina è raggiungibile da almeno un punto di ingresso di navigazione (zero Z402)
+- Ogni snippet di codice è sintatticamente valido (zero Z503)
+- Non esiste contenuto placeholder (zero Z501)
+- Non esistono blocchi di codice non etichettati (zero Z505)
+- Non esistono asset non utilizzati (zero Z405)
+- Non esistono violazioni del contratto di navigazione (zero Z406)
+- Non esistono riferimenti di brand obsoleti (zero Z601)
+- Il credential scanner non ha trovato credenziali in alcun file (zero Z201 — implicito, azzera il punteggio)
+
+<ZenzicOutput status="success" exitCode={0} />
+
+Questo è il **Zenzic Audit Badge**: lo stato in cui la documentazione è strutturalmente
+completa, pulita nei contenuti e verificata dalla sicurezza.
+
+> **Porta il Sigillo nel tuo README:** una volta raggiunto il 100/100, esegui `zenzic score --save`
+> e aggiungi il badge di punteggio dinamico al tuo progetto. Fai vedere ai contributor
+> lo standard a cui si stanno impegnando. Consulta [Badge Ufficiali](../how-to/add-badges) per le URL dei badge pronte all'uso.
+
+---
+
+## Invarianti di Ingegneria
+
+Il Punteggio di Qualità è la prova operativa dei [Tre Pilastri](why-zenzic.mdx#defence-trinity)
 di Zenzic:
 
 **1. Analizza la Sorgente, Non il Build.**
@@ -201,38 +284,42 @@ per garantire gli invarianti matematici.
 
 ---
 
-## Integrità del Nav Contract — Valutata come Brand & Asset
+## Integrità del Nav Contract — Categorizzata come Brand & Asset
 
-L’audit del CEO ha segnalato una correzione terminologica: quello che gli utenti
-chiamano a volte “Nav Isolation” è formalmente **Integrità del Nav Contract ([Z406])**.
+Quello che gli utenti talvolta chiamano "Nav Isolation" è formalmente **Nav Contract Integrity ([Z406])**.
 
-Z406 si attiva quando un file dichiarato nella configurazione di navigazione del motore
-(es. una voce `nav:` di `mkdocs.yml` o una voce esplicita di `sidebars.ts` in
-Docusaurus) non esiste su disco. Ogni violazione Z406 contribuisce alla categoria **Brand & Assets** (25%) usando
-la stessa penaltà per codice degli altri finding valutati (Z406: 2,0 pts per violazione).
+Z406 scatta quando un file dichiarato nella configurazione di navigazione del motore (es. una voce `nav:` di `mkdocs.yml`
+o una voce esplicita di Docusaurus `sidebars.ts`) non esiste su disco. Ogni violazione Z406
+contribuisce alla categoria **Brand & Asset** (25%) usando la stessa penalità per codice
+degli altri finding con score (Z406: 2,0 pts per violazione).
 
 ---
 
-## Exclusion Zone Guarantee
+## Esempio Pratico
 
-Quando `zenzic score` restituisce 100/100, è una garanzia formale che:
+Supponiamo un progetto con:
 
-- Ogni link interno si risolve (zero Z101/Z102/Z103/Z104/Z105)
-- Ogni riferimento ad ancora si risolve (zero Z107)
-- Ogni pagina è raggiungibile da almeno un punto di accesso di navigazione (zero Z402)
-- Ogni snippet di codice è sintatticamente valido (zero Z503)
-- Non esistono contenuti placeholder (zero Z501)
-- Non esistono blocchi di codice non etichettati (zero Z505)
-- Non esistono asset inutilizzati (zero Z405)
-- Non esistono violazioni del nav contract (zero Z406)
-- Non esistono riferimenti di brand obsoleti (zero Z601)
-- Il credential scanner non ha trovato credenziali in nessun file (zero Z201 — implicito, fa crollare il punteggio a 0)
+- 2 × Z503 SNIPPET_ERROR → 2 × 10.0 = 20.0 pts (al limite — riempie il bucket Content)
+- 1 × Z301 DANGLING_REF → 4.0 pts (Navigation)
+- 1 × Z405 UNUSED_ASSET → 3.0 pts (Brand)
 
-<ZenzicOutput status="success" exitCode={0} />
+```text
+Deduzione Structural = 0
+Deduzione Navigation = min(4.0, 25) = 4.0  → contribuisce 4.0 × (25/25) = 4.0 pesato
+Deduzione Content    = min(20.0, 20) = 20.0 → contribuisce 20.0 × (20/20) = 20.0 pesato
+Deduzione Brand      = min(3.0, 25)  = 3.0  → contribuisce 3.0 × (25/25) = 3.0 pesato
 
-Questo è il **Zenzic Audit Badge**: lo stato in cui la documentazione è strutturalmente
-completa, pulita nel contenuto e verificata per la sicurezza.
+DQS = 100 − (0 + 4.0 + 20.0 + 3.0) = 73
+```
 
-> **Porta il Sigillo nel tuo README:** una volta raggiunto il 100/100, esegui `zenzic score --save`
-> e aggiungi il badge dinamico del punteggio al tuo progetto. Mostra ai contributor lo standard
-> che stanno per rispettare. Vedi [Badge Ufficiali](../how-to/add-badges) per le URL copy-paste.
+I due errori di snippet da soli ridurrebbero il punteggio di 20 punti; correggerli
+recupera il bucket Content nella sua interezza.
+
+---
+
+## Pagine Correlate
+
+- [Riferimento Algoritmo di Scoring](../reference/scoring-algorithm.mdx) — pesi formali,
+  tabella delle penalità e specifica matematica
+- [Codici di Finding](../reference/finding-codes.mdx) — catalogo completo di tutti i Z-code
+- [Policy di Soppressione](../reference/suppression-policy.mdx) — come i finding soppressi incidono sul Punteggio di Qualità

@@ -11,7 +11,7 @@ description: "ADR 004: Suddivisione del modulo CLI monolitico in un package stru
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-15 (sprint v0.8.x, D062-B / D063 / D064)
+**Data:** 2026-04-15 (v0.8.x, D062-B / D063 / D064)
 
 ---
 
@@ -76,7 +76,7 @@ src/zenzic/cli/
 minimale che importa ogni sub-app e la registra sull'applicazione Typer root.
 Non contiene alcuna logica di analisi.
 
-Tre decisioni complementari sono state applicate nello stesso sprint:
+Tre decisioni complementari sono state applicate nella stessa release:
 
 - **D062-B:** `src/zenzic/ui.py` → `src/zenzic/core/ui.py`. Le primitive UI sono
 
@@ -180,7 +180,7 @@ la riorganizzazione interna.
 
 ---
 
-## Decisione Complementare D082 — Decomposizione CLI (Fase 82)
+## Decisione Complementare D082 — Decomposizione CLI
 
 **Stato:** Accettata — v0.8.0
 

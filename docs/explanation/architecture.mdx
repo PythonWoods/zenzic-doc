@@ -582,3 +582,68 @@ The banner always writes to **stdout** (the shared `_shared.console`) so it uses
 is also in `core/`) can import them without looking upward. The CLI layer imports from
 `zenzic.core.ui` directly. The compatibility stub at `src/zenzic/ui.py` re-exports everything
 for any third-party code that was already importing from the old path.
+
+---
+
+## zenzic-doc — Living Test Bench {#living-test-bench}
+
+The Zenzic documentation site (`zenzic-doc`) is not a passive artifact — it is an active
+participant in the quality pipeline. Every commit runs `zenzic check all --strict` against
+itself before it can be pushed (Sovereign Parity, ZRT-010).
+
+Beyond the standard Zenzic audit, `zenzic-doc` enforces a second invariant unique to its
+role as documentation for a linter: every Zxxx finding code present in `docs/` must have a
+registered entry in `src/zenzic/core/codes.py` in the Core package — and vice versa. This
+bidirectional parity is enforced by the `verify-codes-parity` Nox session via **Graceful
+Degradation**:
+
+- **Core Maintainer**: `ZENZIC_PROJECT_PATH` set → `uv run --project <path>` against local source.
+- **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI package.
+
+Running `just verify` in `zenzic-doc` executes all four gates in sequence. External contributors
+need no local checkout of Zenzic Core.
+
+---
+
+## The 4-Gates Standard {#4-gates-standard}
+
+Every repository in the Zenzic ecosystem enforces quality at four progressive checkpoints:
+
+| Gate | Trigger | Tool | What it catches |
+| :--- | :--- | :--- | :--- |
+| **Gate 1 — IDE** | Real-time, on save | Editor extensions (Pylance, ESLint) | Type errors, syntax issues |
+| **Gate 2 — Pre-commit** | `git commit` | `pre-commit` hooks | Lint, credentials, formatting, REUSE |
+| **Gate 3 — Pre-push** | `git push` | `just verify` (via `pre-commit -t pre-push`) | Full validation suite identical to CI |
+| **Gate 4 — Remote CI** | Pull Request / push | GitHub Actions | Identical `just verify` on a clean Ubuntu runner |
+
+Gates 3 and 4 execute the **same command** (`just verify`) — local and remote are never
+allowed to drift. This is the Sovereign Parity principle (ZRT-010).
+
+> For operational setup (installing hooks, workflow YAML), see the
+> [CI/CD Integration guide](../how-to/configure-ci-cd#doc-code-parity).
+
+---
+
+## Choosing the Right Model {#choosing}
+
+| Scenario | Recommended approach |
+| :--- | :--- |
+| CI pipeline for any engine | `zenzic check all` — add a step, no plugin needed |
+| Pre-commit credential gate | `zenzic check references` — registers as a pre-commit hook |
+| Custom engine not yet supported | **Write an Adapter** — ship as a separate package, register via `zenzic.adapters` entry-point |
+| Migrate from MkDocs to Docusaurus | Use `zenzic check all` with `engine = "mkdocs"` on the source, `engine = "docusaurus"` on the target |
+
+---
+
+## Brand Integrity {#brand-integrity}
+
+The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a codename contradicts the contract it is trying to document.
+
+Zenzic addresses this through the [`[governance]`](../reference/configuration-reference.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
+
+```toml title=".zenzic.toml"
+[governance]
+brand_obsolescence = ["Obsidian"]
+```
+
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z6XX -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z6XX */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.

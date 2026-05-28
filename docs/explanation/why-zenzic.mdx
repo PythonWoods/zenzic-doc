@@ -38,6 +38,36 @@ navigation. The source is safe to hand to any build engine.
 
 ---
 
+## The Three Pillars {#three-pillars}
+
+Every design decision in Zenzic follows three rules. When in doubt about an
+implementation choice, these are the tie-breakers. If a line of code violates
+any of these pillars, it is **instant technical debt**.
+
+**1. Lint the source, not the build.**
+Zenzic analyses raw Markdown files under `docs/` and configuration files
+(`mkdocs.yml`, `docusaurus.config.ts`, `zensical.toml`). It never waits for
+an HTML build. Analysis at the source level is faster, generator-agnostic,
+and always reproducible. Where a build engine defines resolution semantics
+(e.g. i18n fallback), Zenzic reads the configuration as plain text and
+emulates the semantics — without importing or executing the engine.
+
+**2. No subprocesses in the core engine.**
+The core library is 100% pure Python. It never calls `subprocess.run` or
+`os.system` to invoke external tools. This guarantees security (zero
+execution of untrusted code), total portability, and extreme speed. Link
+validation is implemented natively with a Markdown link extractor. Zenzic is
+self-contained and testable without installing any documentation generator.
+
+**3. Pure functions first.**
+All validation logic lives in pure functions: no file I/O, no network access,
+no terminal output. I/O happens only at the edges — in CLI wrappers that read
+files from disk. Pure functions carry deterministic behaviour: identical inputs produce identical
+outputs with no shared state. They compose without interference and parallelize without
+race conditions. This is why Zenzic's parallel discovery mode requires no locks.
+
+---
+
 ## The Node.js Tax
 
 Every documentation tool in the JavaScript ecosystem requires Node.js. A documentation
@@ -61,7 +91,7 @@ The Node.js Tax is a debt that compounds. Zenzic refuses to pay it.
 
 ---
 
-## The Defence Trinity
+## The Defence Trinity {#defence-trinity}
 
 Zenzic enforces three non-negotiable lines of defence:
 

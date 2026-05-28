@@ -40,6 +40,37 @@ consegnare a qualsiasi motore di build.
 
 ---
 
+## I Tre Pilastri {#three-pillars}
+
+Ogni decisione di design in Zenzic segue tre regole. Quando c'è dubbio su una
+scelta implementativa, queste sono i criteri di risoluzione. Se una riga di codice
+viola uno qualsiasi di questi pilastri, è **debito tecnico istantaneo**.
+
+**1. Valida il sorgente, non il build.**
+Zenzic analizza i file Markdown grezzi sotto `docs/` e i file di configurazione
+(`mkdocs.yml`, `docusaurus.config.ts`, `zensical.toml`). Non aspetta mai un
+build HTML. L'analisi a livello sorgente è più veloce, agnostica rispetto al
+generatore, e sempre riproducibile. Dove un motore di build definisce la
+semantica di risoluzione (es. fallback i18n), Zenzic legge la configurazione
+come testo e ne emula la semantica — senza importare o eseguire il motore.
+
+**2. Nessun sottoprocesso nel core engine.**
+La libreria core è 100% Python puro. Non chiama mai `subprocess.run` o
+`os.system` per invocare strumenti esterni. Questo garantisce sicurezza (zero
+esecuzione di codice non fidato), portabilità totale e velocità estrema. La
+validazione dei link è implementata nativamente con un estrattore di link
+Markdown. Zenzic è autocontenuto e testabile senza installare alcun
+generatore di documentazione.
+
+**3. Funzioni pure prima di tutto.**
+Tutta la logica di validazione vive in funzioni pure: nessun I/O su file,
+nessun accesso di rete, nessun output su terminale. L'I/O avviene solo ai
+bordi — nei wrapper CLI che leggono file da disco. Le funzioni pure portano comportamento deterministico: input identici producono output
+identici senza stato condiviso. Si compongono senza interferenze e si parallelizzano senza
+race condition. Per questo la modalità di discovery parallela di Zenzic non richiede lock.
+
+---
+
 ## La Tassa Node.js
 
 Ogni strumento di documentazione nell'ecosistema JavaScript richiede Node.js. Un gate
@@ -63,7 +94,7 @@ La Tassa Node.js è un debito che si accumula. Zenzic si rifiuta di pagarla.
 
 ---
 
-## La Trinità della Difesa
+## La Trinità della Difesa {#defence-trinity}
 
 Zenzic applica tre linee di difesa non negoziabili:
 

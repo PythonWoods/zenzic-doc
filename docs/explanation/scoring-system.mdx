@@ -1,21 +1,26 @@
 ---
-sidebar_label: "Health Metrics"
+sidebar_label: "Scoring System"
 sidebar_position: 4
-description: "The Deterministic Quality Score — how Zenzic measures, tracks, and enforces documentation health over time."
+description: "The Deterministic Quality Score — conceptual model, penalty table, running the score, and CI enforcement patterns."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Health Metrics
+# Scoring System — The Deterministic Quality Score
 
 > *"A Exclusion Zone must be able to say exactly how solid its pier is."*
 
 **A broken link degrades user experience. A leaked credential requires immediate incident response. A score of 97 means three findings remain unresolved.**
 
-Zenzic’s Quality Score is not a vanity metric. It is a **deterministic 0–100 value** computed
-from the concrete issue count across every check. Zero issues means 100/100. No partial credit,
-no rounding favors, no surprises.
+The Deterministic Quality Score (DQS) is a **single 0–100 value** computed from the
+concrete issue count across every check. Zero issues means 100/100. No partial credit,
+no rounding favors, no surprises. Given the same source files and the same version of
+Zenzic, the score is identical on every machine — no sampling, no weighting by file
+age, no subjective component.
+
+For exact formulas and the mathematical specification, see the
+[Scoring Algorithm Reference](../reference/scoring-algorithm.mdx).
 
 ---
 
@@ -52,6 +57,10 @@ maps directly to a `zenzic check` sub-command and to the `Zxxx` finding codes it
 [Z403]: ../reference/finding-codes.mdx#z403
 [Z404]: ../reference/finding-codes.mdx#z404
 
+**Reading the weights.** The two largest weights — Structural and Governance — reflect
+Zenzic's design principle: correctness (links that actually resolve) and trust (brand
+and contract compliance) matter more than aesthetic content quality.
+
 :::danger[Security Override]
 If any security finding is detected — Z201 (credential scanner), Z202, or Z203 (path traversal guard) —
 the Quality Score **collapses to 0/100 unconditionally**. A documentation source that
@@ -60,7 +69,7 @@ is actively leaking a credential cannot receive a Quality Score.
 
 ---
 
-## The Zenzic Penalty Table
+## The Penalty Table
 
 Each finding code carries a **fixed point deduction** within its category. Deductions
 accumulate; once a category's contribution reaches zero, additional violations in that
@@ -88,9 +97,26 @@ category have no further effect on the total score — this is the **Category Ca
 | Z106 | Circular Link | 0.0 | Informational |
 | Z108 | Empty Link Text | 1.0 | Structural |
 
-Z106 is a link-integrity diagnostic, but it does not deduct points. Z108 is the new structural penalty for malformed link labels.
+Z106 is a link-integrity diagnostic, but it does not deduct points. Z108 is the structural penalty for malformed link labels.
 
-### Category Cap Invariant
+### Penalty Calibration Philosophy
+
+Penalties are assigned to one of three tiers, independent of which category they sit in:
+
+| Tier | Examples | Points |
+|---|---|---|
+| Critical | Z503 (snippet error) | 10.0 |
+| High | Z301, Z402 (broken link, orphan page) | 3.0 – 4.0 |
+| Standard | Z104, Z401, Z403 … | 1.0 – 2.0 |
+
+A **Critical** penalty (10 pts) signals that the content is actively harmful to readers
+(a broken code example). A **High** penalty signals a structural defect that a reader
+will directly encounter (a dead link, an unreachable page). A **Standard** penalty
+signals a quality deficit that degrades the experience over time.
+
+---
+
+## Category Cap Invariant
 
 Category deductions are bounded by the category's weight:
 
@@ -121,6 +147,18 @@ $$
 
 ---
 
+## Reading Your Score
+
+| Score | Interpretation |
+|---|---|
+| 95 – 100 | Excellent — minimal residual findings |
+| 80 – 94 | Good — some non-critical findings |
+| 60 – 79 | Fair — meaningful quality gaps |
+| 40 – 59 | Poor — systematic issues requiring attention |
+| < 40 | Critical — documentation integrity at risk |
+
+---
+
 ## Running the Score
 
 ```bash
@@ -145,17 +183,29 @@ baseline to compare against.
 
 ```yaml title=".github/workflows/zenzic.yml"
 # On main branch pushes: save the new baseline
-
 - run: zenzic score --save --fail-under 80
 
 # On pull requests: fail if score has dropped
-
 - run: zenzic diff --threshold 0
-
 ```
 
 `zenzic diff` exits 1 if the current score is **lower** than the saved baseline
 (adjusted by `--threshold`). It does not fail if the score is stable or improving.
+
+---
+
+## Suppression and Governance Gates
+
+Two mechanisms interact with the score differently.
+
+**Suppression (`.zenzic-ignore`)** — removes a specific finding from the output. The
+suppressed finding is not penalised. Use suppression only for deliberate, documented
+exceptions.
+
+**Governance gates** — certain codes (Z602 I18N_PARITY) trigger a hard gate: `zenzic
+check` exits with code 2 regardless of the DQS. The DQS itself is not affected because
+gate codes are excluded from the penalty matrix by design. A project can score 100 and
+still fail the gate if a translation parity violation is present.
 
 ---
 
@@ -172,9 +222,35 @@ signal that communicates *which commit introduced a regression*.
 
 ---
 
-## Connection to the Three Pillars
+## The Exclusion Zone Guarantee {#exclusion-zone-guarantee}
 
-The Quality Score is the operational proof of Zenzic's [Three Pillars](architecture.mdx):
+When `zenzic score` returns 100/100, it is a formal guarantee that:
+
+- Every internal link resolves (zero Z101/Z102/Z103/Z104/Z105)
+- Every anchor reference resolves (zero Z107)
+- Every page is reachable from at least one navigation entry point (zero Z402)
+- Every code snippet is syntactically valid (zero Z503)
+- No placeholder content exists (zero Z501)
+- No untagged code blocks exist (zero Z505)
+- No unused assets exist (zero Z405)
+- No nav contract violations exist (zero Z406)
+- No obsolete brand references exist (zero Z601)
+- The credential scanner found no credentials in any file (zero Z201 — implicit, collapses score to 0)
+
+<ZenzicOutput status="success" exitCode={0} />
+
+This is the **Zenzic Audit Badge**: the state where the documentation is structurally
+complete, content-clean, and security-verified.
+
+> **Carry the Seal in your README:** once you reach 100/100, run `zenzic score --save`
+> and add the dynamic score badge to your project. Let contributors see the standard
+> they're committing to. See [Official Badges](../how-to/add-badges) for copy-paste badge URLs.
+
+---
+
+## Engineering Invariants
+
+The Quality Score is the operational proof of Zenzic's [Three Pillars](why-zenzic.mdx#defence-trinity):
 
 **1. Lint the Source, Not the Build.**
 The score is computed from raw Markdown source analysis — never from HTML output
@@ -197,8 +273,7 @@ mathematical invariants.
 
 ## Nav Contract Integrity — Scored as Brand & Assets
 
-The CEO's audit noted a terminological correction: what users sometimes call
-"Nav Isolation" is formally **Nav Contract Integrity ([Z406])**.
+What users sometimes call "Nav Isolation" is formally **Nav Contract Integrity ([Z406])**.
 
 Z406 fires when a file declared in the engine's navigation config (e.g., a `mkdocs.yml`
 `nav:` entry or a Docusaurus `sidebars.ts` explicit entry) does not exist on disk.
@@ -207,26 +282,31 @@ same per-code penalty as other scored findings (Z406: 2.0 pts per violation).
 
 ---
 
-## Exclusion Zone Guarantee
+## Worked Example
 
-When `zenzic score` returns 100/100, it is a formal guarantee that:
+Suppose a project has:
 
-- Every internal link resolves (zero Z101/Z102/Z103/Z104/Z105)
-- Every anchor reference resolves (zero Z107)
-- Every page is reachable from at least one navigation entry point (zero Z402)
-- Every code snippet is syntactically valid (zero Z503)
-- No placeholder content exists (zero Z501)
-- No untagged code blocks exist (zero Z505)
-- No unused assets exist (zero Z405)
-- No nav contract violations exist (zero Z406)
-- No obsolete brand references exist (zero Z601)
-- The credential scanner found no credentials in any file (zero Z201 — implicit, collapses score to 0)
+- 2 × Z503 SNIPPET_ERROR → 2 × 10.0 = 20.0 pts (capped at 20 — fills the Content bucket)
+- 1 × Z301 DANGLING_REF → 4.0 pts (Navigation)
+- 1 × Z405 UNUSED_ASSET → 3.0 pts (Brand)
 
-<ZenzicOutput status="success" exitCode={0} />
+```text
+Structural deduction = 0
+Navigation deduction = min(4.0, 25) = 4.0  → contributes 4.0 × (25/25) = 4.0 weighted
+Content   deduction = min(20.0, 20) = 20.0 → contributes 20.0 × (20/20) = 20.0 weighted
+Brand     deduction = min(3.0, 25)  = 3.0  → contributes 3.0 × (25/25) = 3.0 weighted
 
-This is the **Zenzic Audit Badge**: the state where the documentation is structurally
-complete, content-clean, and security-verified.
+DQS = 100 − (0 + 4.0 + 20.0 + 3.0) = 73
+```
 
-> **Carry the Seal in your README:** once you reach 100/100, run `zenzic score --save`
-> and add the dynamic score badge to your project. Let contributors see the standard
-> they’re committing to. See [Official Badges](../how-to/add-badges) for copy-paste badge URLs.
+The two snippet errors alone reduce the score by 20 points; fixing them recovers
+the Content bucket entirely.
+
+---
+
+## Related
+
+- [Scoring Algorithm Reference](../reference/scoring-algorithm.mdx) — formal weights,
+  penalty table, and mathematical specification
+- [Finding Codes](../reference/finding-codes.mdx) — full catalogue of all Z-codes
+- [Suppression Policy](../reference/suppression-policy.mdx) — how suppressed findings affect the Quality Score

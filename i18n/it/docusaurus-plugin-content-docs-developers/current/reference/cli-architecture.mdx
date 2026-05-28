@@ -19,7 +19,7 @@ Ogni file gestisce un dominio di responsabilità.
 | Modulo | Responsabilità |
 |:-------|:---------------|
 | `_shared.py` | Singleton `console`, singleton `_ui`, `configure_console()` e tutte le utility cross-comando (`_build_exclusion_manager`, `_output_json_findings`, `_render_link_error`, ecc.) |
-| `_check.py` | Sub-app Typer `check_app` + sette comandi `check *`; helper privati re-esportati da `_governance.py`, `_target_resolver.py` e `_command_setup.py` (Fase 82) |
+| `_check.py` | Sub-app Typer `check_app` + sette comandi `check *`; helper privati re-esportati da `_governance.py`, `_target_resolver.py` e `_command_setup.py` |
 | `_command_setup.py` | Factory `setup_command()` — consolida la scoperta del repo root, il caricamento config, la risoluzione del target e la costruzione dell'exclusion manager usati da tutti i comandi check |
 | `_clean.py` | Sub-app Typer `clean_app` + comando `clean assets` |
 | `_config_explain.py` | Comando `explain` + surface di introspezione della genealogia config e delle regole |

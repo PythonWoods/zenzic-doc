@@ -17,7 +17,7 @@ that makes each deferral a conscious design choice, not an oversight.
 
 Zenzic's stance: a project that lints other people's documentation must hold
 itself to a higher standard of honesty about its own evolution. Every entry
-below names what is missing, why it was deferred, and which sprint owns the
+below names what is missing, why it was deferred, and which milestone owns the
 follow-through.
 
 ---
@@ -29,7 +29,7 @@ follow-through.
 **Category:** Configuration hygiene
 **Status:** Deferred
 **Tracked:** GitHub issue (tracked for future resolution)
-**Related:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
+**Related:** ADR 011 (removed in v0.8.0)
 
 #### What was deferred
 
@@ -47,7 +47,7 @@ The check is conceptually simple but architecturally expensive:
    no shared state. A "used / unused" determination requires aggregating
    results across **every** scanned file in **every** worker, then
    reconciling at the end of the run. Introducing aggregate state into the
-   validator pass would force a Pillar 3 redesign in a phase whose stated
+   validator pass would force a Pillar 3 redesign in a release cycle whose stated
    goal is *consolidation*, not refactor.
 2. **Wrong category.** Linting the *content* of documentation and linting
    the *configuration* of the linter itself are different problem spaces.
@@ -77,6 +77,47 @@ security check.
 
 ---
 
+### GAP-002 — Dynamic Navbar Plugin Support
+
+**Category:** Link validation scope
+**Status:** Deferred
+**Tracked:** GitHub issue (RFC open)
+**Related:** —
+
+#### What was deferred
+
+Zenzic's Docusaurus adapter parses `docusaurus.config.ts` statically to build the
+Virtual Site Map (VSM). `@docusaurus/plugin-*` navbar entries — items registered
+through third-party or first-party Docusaurus plugins — are not parsed. Zenzic
+falls back to marking these routes as `REACHABLE`, which means:
+
+- False-positive risk is **low** — plugin-generated routes are rarely broken.
+- Miss risk is **non-zero** — genuine orphans hidden behind plugin-only nav entries
+  may go undetected in plugin-heavy configurations.
+
+#### Why we deferred it
+
+Plugin navbar items require evaluating JavaScript plugin configuration at parse
+time, which would break the **No Subprocesses** invariant (Pillar 2). A stateless
+static parser cannot recover plugin-registered routes without executing the plugin.
+
+#### What we will do
+
+The planned resolution introduces:
+
+1. A **structured warning** emitted when plugin nav items are detected, communicating
+   the reduced coverage explicitly to the operator.
+2. A `dynamic_nav_plugins = true` config key in `.zenzic.toml` that opts the project
+   into explicit acknowledgment of this limitation, suppressing the warning.
+
+#### Mitigation
+
+Plugin-heavy Docusaurus projects should ensure that all plugin-registered routes
+also appear in at least one non-plugin navigation entry (sidebar, header nav, or
+a direct in-page link). Zenzic audits those paths normally.
+
+---
+
 ## Closed Entries
 
 This section will accrue entries as deferred items ship. Each closed entry
@@ -95,14 +136,12 @@ matters to their use case.
 
 Three commitments govern this page:
 
-1. **Every deferral is named.** No silent backlog. If we chose not to ship
-   a capability that was meaningfully discussed during a sprint, it lands
-   here.
+1. **Every deferral is named.** No silent backlog. A capability that was
+   considered and deliberately not shipped lands here.
 2. **Every deferral has a reason.** "We ran out of time" is acceptable
    when true; vague hand-waving is not. The reason must be specific enough
    that a future contributor can decide whether the constraint still holds.
-3. **Every deferral has an owner.** Either a target sprint, a target
-   phase, or an explicit "indefinitely deferred" with the rationale.
+3. **Every deferral has an owner.** Either a target release, or an explicit "indefinitely deferred" with the rationale.
    Ledger entries without owners decay into folklore.
 
 When you contribute a deferral here, you are not admitting weakness — you

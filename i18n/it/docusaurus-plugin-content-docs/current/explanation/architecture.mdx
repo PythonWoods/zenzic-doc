@@ -585,3 +585,68 @@ Il banner scrive sempre su **stdout** (il `_shared.console` condiviso), quindi u
 (anch'esso in `core/`) possa importarli senza guardare verso l'alto. Il layer CLI importa da
 `zenzic.core.ui` direttamente. Lo stub di compatibilità in `src/zenzic/ui.py` riesporta tutto
 per qualsiasi codice di terze parti che importava già dal vecchio percorso.
+
+---
+
+## zenzic-doc — Banco di Prova Vivente {#living-test-bench}
+
+Il sito di documentazione Zenzic (`zenzic-doc`) non è un artefatto passivo — è un
+partecipante attivo nella pipeline di qualità. Ogni commit esegue `zenzic check all --strict`
+contro sé stesso prima di poter essere inviato (Sovereign Parity, ZRT-010).
+
+Oltre all'audit standard di Zenzic, `zenzic-doc` impone un secondo invariante unico al suo
+ruolo di documentazione di un linter: ogni codice di finding Zxxx presente in `docs/` deve
+avere un'entità registrata in `src/zenzic/core/codes.py` nel pacchetto Core — e viceversa.
+Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parity` tramite
+**Graceful Degradation**:
+
+- **Core Maintainer**: `ZENZIC_PROJECT_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
+- **External Contributor**: core locale assente → `uv run --with zenzic` sul pacchetto PyPI pubblicato.
+
+Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori
+esteri non hanno bisogno di un checkout locale di Zenzic Core.
+
+---
+
+## Lo Standard a 4 Cancelli {#4-gates-standard}
+
+Ogni repository dell'ecosistema Zenzic impone la qualità in quattro checkpoint progressivi:
+
+| Cancello | Trigger | Strumento | Cosa rileva |
+| :--- | :--- | :--- | :--- |
+| **Cancello 1 — IDE** | In tempo reale, al salvataggio | Estensioni editor (Pylance, ESLint) | Errori di tipo, problemi sintattici |
+| **Cancello 2 — Pre-commit** | `git commit` | Hook `pre-commit` | Lint, credenziali, formattazione, REUSE |
+| **Cancello 3 — Pre-push** | `git push` | `just verify` (via `pre-commit -t pre-push`) | Suite di validazione completa identica alla CI |
+| **Cancello 4 — CI Remota** | Pull Request / push | GitHub Actions | `just verify` identico su un runner Ubuntu pulito |
+
+I Cancelli 3 e 4 eseguono lo **stesso comando** (`just verify`) — locale e remoto non possono
+mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
+
+> Per la configurazione operativa (installazione hook, YAML del workflow), vedi la
+> [guida CI/CD Integration](../how-to/configure-ci-cd#doc-code-parity).
+
+---
+
+## Scegliere il Modello Giusto {#choosing}
+
+| Scenario | Approccio consigliato |
+| :--- | :--- |
+| Pipeline CI per qualsiasi motore | `zenzic check all` — aggiungi uno step, nessun plugin necessario |
+| Gate pre-commit per le credenziali | `zenzic check references` — si registra come hook pre-commit |
+| Motore custom non supportato | **Scrivi un Adapter** — pubblica come pacchetto separato, registra via entry-point `zenzic.adapters` |
+| Migrazione da MkDocs a Docusaurus | Usa `zenzic check all` con `engine = "mkdocs"` sulla sorgente, `engine = "docusaurus"` sulla destinazione |
+
+---
+
+## Integrità del Brand {#brand-integrity}
+
+Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti porta un tipo di debito diverso: **debito narrativo**. Una pagina che fa ancora riferimento a un codename contraddice il contratto che cerca di documentare.
+
+Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration-reference.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
+
+```toml title=".zenzic.toml"
+[governance]
+brand_obsolescence = ["Obsidian"]
+```
+
+Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore: Z601 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore: Z601 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.

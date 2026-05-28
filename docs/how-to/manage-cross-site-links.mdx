@@ -39,7 +39,7 @@ The decision rule: **if it is a property of one line, it belongs inline.**
 :::danger[`[link_validation]` removed]
 The `[link_validation]` TOML schema — including `absolute_path_allowlist` — is unsupported and raises a TOML validation error at startup. A `.zenzic.toml` that still declares `[link_validation]` must be updated.
 
-For cross-instance links that Z105 flags, use inline ignores at each affected line. See [ADR 011](/developers/explanation/adr-cross-instance-allowlist) for the removal rationale.
+For cross-instance links that Z105 flags, use inline ignores at each affected line.
 :::
 
 ---
@@ -153,5 +153,3 @@ without burdening the simpler ones.
 
 - [Suppression Policy](../reference/suppression-policy.mdx) — full inline-
   ignore syntax and scope rules.
-- For the full design rationale, see
-  [ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).
