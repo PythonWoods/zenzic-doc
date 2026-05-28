@@ -11,11 +11,9 @@ description: >
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-Zenzic emerged as a systems response to a recurring pattern we kept observing across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. We were shipping checks, not guarantees. We were collecting signals, not preserving architecture.
+Zenzic emerged as a systems response to a recurring pattern across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. The pipeline was shipping checks, not guarantees — collecting signals, not preserving architecture.
 
 {/* truncate */}
-
-This engineering chronicle is intentionally published in English under ADR-014 language policy.
 
 This deep dive is for software architects and technical stakeholders who want to understand why architecture matters below the changelog line. The central claim of Zenzic is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
@@ -27,7 +25,7 @@ The initial symptom looked small: architectural decisions became less reliable d
 
 At first glance, this looked like a documentation quality issue. It was not. It was an information scalability issue.
 
-Our internal project specification corpus had grown into a dense operational memory: naming rules, historical exceptions, governance gates, invariants, release constraints, and adapter-level contracts. Human readers can often navigate this through intent and pattern recognition. Automation systems cannot guarantee stable retrieval under long, mixed-priority context.
+The internal project specification corpus had grown into a dense operational memory: naming rules, historical exceptions, governance gates, invariants, release constraints, and adapter-level contracts. Human readers can often navigate this through intent and pattern recognition. Automation systems cannot guarantee stable retrieval under long, mixed-priority context.
 
 The result was a class of subtle regressions:
 
@@ -35,7 +33,7 @@ The result was a class of subtle regressions:
 - Correct code, stale policy semantics.
 - Correct diagnostics, incomplete provenance.
 
-This forced a design decision. Instead of pushing more monolithic text into workflows, we split context into deterministic artifacts that can be requested on demand.
+This forced a design decision. Instead of pushing more monolithic text into workflows, context was split into deterministic artifacts that can be requested on demand.
 
 That decision had two outputs:
 
@@ -134,13 +132,13 @@ Now the error loop becomes actionable:
 
 No Node.js execution is required to get this answer. That is the mathematical core of the Zenzic route model.
 
-## 3) Security and ReDoS: The Incident We Avoided by Design
+## 3) Security and ReDoS: The Incident Avoided by Design
 
 Every documentation scanner eventually faces regex complexity risk. The usual implementation path is Python's standard `re` module. It is convenient, familiar, and dangerous under adversarial patterns because catastrophic backtracking can explode runtime.
 
 In a benign repository this may look harmless. In CI at scale, under untrusted or malformed content, this becomes a denial-of-service vector.
 
-We treated this as a systems boundary problem, not a style refactor.
+The architectural response treated this as a systems boundary problem, not a style refactor.
 
 The Zenzic solution is an **Anti-Corruption Layer (Facade)** around regex operations. Contributors keep a simple internal API. The runtime backend is enforced to use RE2 semantics for linear-time matching where policy requires determinism.
 
@@ -166,13 +164,13 @@ This design gives us three guarantees at once:
 - **Policy enforcement:** unsafe or unsupported patterns fail early at load/validation boundaries.
 - **DX continuity:** contributors use one internal import path, not backend-specific code scattered across modules.
 
-In architectural terms, the facade prevents dependency leakage. The domain model talks to a local contract; backend details stay behind the boundary. That is why we can harden security semantics without destabilizing contributor workflows.
+In architectural terms, the facade prevents dependency leakage. The domain model talks to a local contract; backend details stay behind the boundary. That is why security semantics can be hardened without destabilizing contributor workflows.
 
 ## 4) Four Gates in CI/CD: Security as a Supply Chain, Not a Single Check
 
 Many teams still treat documentation quality as a final build concern. Zenzic models it as a layered gate system where each stage narrows risk before it becomes expensive.
 
-Our gate model has four levels:
+The gate model has four levels:
 
 1. **IDE Gate**
 2. **Pre-Commit Gate**
@@ -196,7 +194,7 @@ verify:
     uvx nox -s verify-codes-parity
 ```
 
-When local and remote run the same orchestration surfaces, policy drift shrinks. We call this **Sovereign Parity**: the same rules, same tooling strata, same exit semantics, regardless of execution location.
+When local and remote run the same orchestration surfaces, policy drift shrinks. This is **Sovereign Parity**: the same rules, same tooling strata, same exit semantics, regardless of execution location.
 
 That matters for governance and auditability. A failed gate must mean the same thing everywhere, or the gate is procedural theater.
 
@@ -204,7 +202,7 @@ That matters for governance and auditability. A failed gate must mean the same t
 
 Before Zenzic, code families existed but ownership semantics were still easy to blur in real contribution flows. A policy rule could be discussed like a core invariant. A plugin rule could be treated like a frozen security guardrail.
 
-ADR-012 formalized the namespace contract to prevent that bleed.
+The namespace contract was formalized to prevent that bleed.
 
 - **Core**: engine invariants.
 - **Governance**: project policy and lifecycle rules.
@@ -217,7 +215,7 @@ Security findings are not suggestions. They are enforcement events.
 
 ## 5.5) Adapter Refactoring: From Protocol Flexibility to ABC Contracts
 
-ADR-078 changed the adapter layer from permissive structural typing to explicit runtime contracts.
+v0.8.0 changed the adapter layer from permissive structural typing to explicit runtime contracts.
 
 In the v0.7 line, adapter compliance relied on a `Protocol` surface plus runtime duck-typing checks. That model was flexible but late-failing: missing capabilities could escape until scan or validation paths were already running.
 
@@ -318,12 +316,3 @@ The system proves a different path:
 - and sovereign parity from local workstation to remote CI.
 
 That is what a zero-config ecosystem looks like when engineering contracts are treated as public infrastructure, not internal folklore.
-
-## Publication Decree and Operational Closure
-
-The Zenzic transition is now formally published as:
-
-> "The Sovereign Transition. Introducing Suppression CAP, Local Sanctuary, and Avion-Grade Governance."
-
-With this decree, the initial rollout closes with CI-green contractual enforcement, Release A
-dashboard archival, and tag publication under sovereign governance semantics.

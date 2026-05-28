@@ -107,6 +107,14 @@ Z101 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
   rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Broken link → 'install.md' (target not found)", severity: 'error' }]}
 />
 
+:::note[Confine Architetturale — Validazione di Frammenti Cross-Page]
+Zenzic valida l’esistenza della **route** verso cui punta un link. Non valida il frammento specifico (`#intestazione`) all’interno di una pagina diversa. Se un link come `/docs/reference/cli#intestazione-specifica` punta a una route valida, Zenzic non emette alcun finding, anche se `#intestazione-specifica` non esiste in quella pagina.
+
+Per gli anchor nella stessa pagina (link della forma `#sezione-in-questa-pagina`), vedere [Z102: ANCHOR_MISSING](#z102).
+
+Per la validazione di frammenti cross-page — verificare che `#intestazione` esista all’interno di un’altra pagina — il generatore di siti statici (es. Docusaurus) esegue questo controllo in fase di build. Eseguire `npm run build` rivelerà gli anchor cross-page non validi che esulano dallo scope del route-graph di Zenzic.
+:::
+
 ### Z102: ANCHOR_MISSING {#z102}
 
 :::info[Quality Score — Structural tier (30%) | −5.0 pts / occorrenza]

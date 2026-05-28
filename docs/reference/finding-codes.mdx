@@ -107,6 +107,14 @@ Z101 counts toward the **Structural** tier of the [Deterministic Quality Score](
   rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Broken link → 'install.md' (target not found)", severity: 'error' }]}
 />
 
+:::note[Architectural Boundary — Cross-Page Fragment Validation]
+Zenzic validates the existence of the **route** a link points to. It does not validate the specific fragment (`#heading`) within a different page. If a link such as `/docs/reference/cli#specific-heading` points to a valid route, Zenzic emits no finding even if `#specific-heading` does not exist on that page.
+
+For same-page anchor links (links of the form `#section-on-this-page`), see [Z102: ANCHOR_MISSING](#z102).
+
+For cross-page fragment validation — verifying that `#heading` exists within another page — the static site generator (e.g., Docusaurus) performs this check at build time. Running `npm run build` will surface broken cross-page anchors that fall outside Zenzic's route-graph scope.
+:::
+
 ### Z102: ANCHOR_MISSING {#z102}
 
 :::info[Quality Score — Structural tier (30%) | −5.0 pts / occurrence]

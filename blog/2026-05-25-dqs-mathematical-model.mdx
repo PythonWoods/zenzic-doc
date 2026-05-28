@@ -1,23 +1,22 @@
 ---
 slug: dqs-mathematical-model
 title: "The DQS Mathematical Model: Flat-Cost Suppressions and Deterministic Gates"
-sidebar_label: "📐 DQS Model"
+sidebar_label: "DQS Mathematical Model"
 authors: [pythonwoods]
 tags: [engineering-logs, governance]
 date: 2026-05-25
 description: >
-  ADR-031 removed the suppression allowance model and introduced flat-cost
-  scoring. Every suppression deducts 1 point. This post documents the gate
-  paradox that prompted the change, the mathematical properties of the new
-  model, and the Fase 3-B mapping gap that closed four missing penalty entries.
+  Zenzic's Documentation Quality Score is a deterministic integer from 0 to 100.
+  This post explains the mathematical model behind it: how findings translate to
+  score deductions, why the flat-cost suppression model prevents governance theater,
+  and how the security override ensures binary safety conditions never blend into
+  the quality gradient.
 image: https://zenzic.dev/assets/social/social-card.png
 ---
 
-The Documentation Quality Score (DQS) is an integer from 0 to 100. Given the same repository state, it always produces the same number. ADR-031 changed two things: it closed a gate paradox where CI-blocking codes had zero DQS weight, and it replaced the allowance-based suppression model with a flat-cost model.
+The Documentation Quality Score (DQS) is an integer from 0 to 100. Given the same repository state, it always produces the same number. v0.8.0 changed two things: it closed a gate paradox where CI-blocking codes had zero DQS weight, and it replaced the allowance-based suppression model with a flat-cost model.
 
 {/* truncate */}
-
-This post is published in English under ADR-014 language policy.
 
 ## The Gate Paradox
 
@@ -33,9 +32,9 @@ Three codes broke that invariant:
 
 The observable consequence: a repository with 50 ORPHAN_LINK findings would fail the CI gate (exit code 1) but report a DQS of 100. The gate and the score were contradicting each other.
 
-ADR-031 established a Single Source of Truth: `CodeDefinition`, a `NamedTuple` that stores `severity`, `penalty`, and `category` for each code in one place. `CODE_SARIF_LEVELS` is now derived from it. Structural registration is impossible without a penalty — the paradox cannot recur.
+v0.8.0 established a single source of truth: `CodeDefinition`, a `NamedTuple` that stores `severity`, `penalty`, and `category` for each code in one place. `CODE_SARIF_LEVELS` is now derived from it. Structural registration is impossible without a penalty — the paradox cannot recur.
 
-The three paradox codes received their penalties in the SSoT migration:
+The three paradox codes received their penalties in the migration:
 
 | Code | Name | Penalty | Category |
 | :--- | :--- | :--- | :--- |
@@ -107,14 +106,11 @@ where $\left| F_s \right|$ is the total suppression count and $\text{DebtCost} =
 
 **Score/gate coupling**: the CI gate threshold (configured via `--fail-under`) and the hard-fail suppression threshold (`suppression_cap`) are now independent. A project with a score of 80 and 29 suppressions (cap = 30) passes both. A project with a score of 95 and 31 suppressions (cap = 30) fails the cap gate regardless of the score.
 
-## Closing the Mapping Gap (v0.8.0 — Fase 3-B)
+## Closing the Mapping Gap
 
-ADR-031 established `CodeDefinition` as the single source of truth. But the SSoT migration
-initially targeted the three paradox codes (Z103, Z111, Z113). A separate audit — Fase 3-B —
-identified four additional codes that the engine could emit (causing Exit 1) while carrying
-a penalty of 0.0 in the penalty table. The same paradox, at a smaller scale.
+The `CodeDefinition` single source of truth was established to prevent gate/score divergence. But the initial migration targeted only the three paradox codes (Z103, Z111, Z113). A subsequent audit identified four additional codes that the engine could emit (causing Exit 1) while carrying a penalty of 0.0 in the penalty table. The same paradox, at a smaller scale.
 
-Three of the four received penalties in the SSoT:
+Three of the four received penalties in the migration:
 
 | Code | Name | Penalty | Category | Notes |
 | :--- | :--- | :--- | :--- | :--- |
@@ -127,8 +123,7 @@ I18N_PARITY acts as a governance gate: it enforces language parity between docum
 trees and triggers Exit 1 when parity fails. Assigning it a DQS penalty would conflate
 two independent quality dimensions (translation completeness vs. link health / content
 quality) into a single number, making the score harder to interpret. A separate ADR is
-required to add Z602 to the DQS formula. For now, it is excluded from the penalty table
-and identified as `FROZEN_CODE` in `CODE_DEFINITIONS`.
+required to add Z602 to the DQS formula. For now, it is excluded from the penalty table and identified as `FROZEN_CODE` in `CODE_DEFINITIONS`.
 
 ## Migration Impact (v0.7.x → v0.8.0)
 

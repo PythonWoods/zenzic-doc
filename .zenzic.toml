@@ -40,6 +40,10 @@ excluded_external_urls = [
     # contributor-covenant.org consistently times out (> 10 s) from CI environments.
     "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
     "https://www.contributor-covenant.org",
+    # Twitter/X card validator and social profiles consistently time out (>10 s) from CI environments.
+    "https://cards-dev.twitter.com/validator",
+    "https://twitter.com",
+    "https://x.com",
 ]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.

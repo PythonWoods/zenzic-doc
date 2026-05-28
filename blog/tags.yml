@@ -91,4 +91,4 @@ engineering-culture:
 architecture:
   label: "Architecture"
   permalink: /architecture
-  description: "🏗️ System design decisions, ADRs, and architectural deep dives."
+  description: "System architecture, design decisions, and structural constraints."
