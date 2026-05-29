@@ -9,14 +9,14 @@ export default function GovernancePreview(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="mb-16 text-center">
+        <div className="max-w-3xl mb-16">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="governance.label">Governance</Translate>
           </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.governance.title">Suppression CAP — Live Preview</Translate>
           </h2>
-          <p className="dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto text-sm leading-relaxed">
+          <p className="dark:text-zinc-500 text-zinc-500 max-w-xl text-sm leading-relaxed">
             <Translate id="homepage.governance.sub">
               When active suppressions exceed the configured CAP, zenzic-action writes this summary
               directly to the GitHub Actions job panel. No log diving required.

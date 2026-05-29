@@ -7,6 +7,7 @@ description: Sei controlli indipendenti per l'integrità della documentazione �
 import {
   GutterTerminal,
   CredentialTerminal,
+  PathTraversalGuardTerminal,
   SummaryTerminal,
   SnippetTerminal,
   OrphanTerminal,
@@ -128,7 +129,7 @@ Il path traversal guard tratta il traversamento host-path come un **evento di si
 Un risultato `PATH_TRAVERSAL_SUSPICIOUS` significa che un file sorgente della documentazione contiene un link il cui target risolto punta a `/etc/passwd`, `/root/`, o un altro path di sistema OS. Questo può indicare una template injection, una toolchain di documentazione compromessa, o un errore dell'autore che rivela dettagli dell'infrastruttura interna. Trattarlo come un incidente di sicurezza bloccante per la build.
 :::
 
-<CredentialTerminal />
+<PathTraversalGuardTerminal />
 
 ### Come funziona il credential scanner {#scanner-how-it-works}
 

@@ -626,6 +626,13 @@ table thead tr {
 .alert pre { padding: 0.75rem 1rem; margin: 0.75rem 0; border-radius: 6px; }
 .alert pre code { padding: 0; border: 0; background: transparent; }
 
+/* zz-figure — canonical wrapper for ThemedImage/iframe inside docs.
+   Replaces ad-hoc inline style={{borderRadius,overflow,margin}}. */
+.zz-figure { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+.zz-figure img,
+.zz-figure iframe { width: 100%; display: block; }
+.zz-figure--centered { max-width: 560px; margin-left: auto; margin-right: auto; }
+
 /* TerminalWindow — macOS-style frame (zero inline styles, zero arbitrary Tailwind values) */
 .zz-terminal-frame {
   max-width: 600px;

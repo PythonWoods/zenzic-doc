@@ -13,7 +13,7 @@ export default function Quickstart(): React.JSX.Element {
       id="quickstart"
       className="py-16 md:py-24"
     >
-      <div className="max-w-4xl mx-auto px-6 text-center">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Label */}
         <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-6 uppercase">
           <Translate id="quickstart.label">Get Started</Translate>
@@ -25,7 +25,7 @@ export default function Quickstart(): React.JSX.Element {
             Quick install: run one command.
           </Translate>
         </h2>
-        <p className="dark:text-zinc-500 text-zinc-500 text-base mb-12">
+        <p className="dark:text-zinc-500 text-zinc-500 text-base mb-12 max-w-2xl">
           <Translate id="quickstart.sub">
             Audit your documentation and return deterministic exit codes for CI.
           </Translate>
@@ -67,7 +67,7 @@ export default function Quickstart(): React.JSX.Element {
         </div>
 
         {/* Action buttons — Left=Light=Primary action, Right=Dark=Secondary action */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 items-start">
           <Link
             to={docsHref}
             className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full dark:bg-zinc-100 dark:text-zinc-950 bg-zinc-900 text-white text-sm font-medium dark:hover:bg-white hover:bg-zinc-800 transition-colors"

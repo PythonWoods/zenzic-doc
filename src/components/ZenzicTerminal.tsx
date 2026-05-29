@@ -121,22 +121,22 @@ export function PathTraversalGuardTerminal(): React.JSX.Element {
         &#x1F6AB; PATH TRAVERSAL GUARD — PATH TRAVERSAL
       </div>
       <div className="flex items-center gap-3 mb-2">
-        <span className="text-rose-500">&#10008;</span>
-        <span className="w-28 text-zinc-500">Finding:</span>
-        <span className="text-rose-300 font-medium">PATH_TRAVERSAL</span>
+        <span className="text-rose-500 flex-shrink-0">&#10008;</span>
+        <span className="w-28 text-zinc-500 flex-shrink-0">Finding:</span>
+        <span className="text-rose-300 font-medium min-w-0 break-all">PATH_TRAVERSAL_SUSPICIOUS</span>
       </div>
       <div className="flex items-center gap-3 mb-2">
-        <span className="text-rose-500">&#10008;</span>
-        <span className="w-28 text-zinc-500">Location:</span>
-        <span className="text-zinc-200">docs/setup.md:18</span>
+        <span className="text-rose-500 flex-shrink-0">&#10008;</span>
+        <span className="w-28 text-zinc-500 flex-shrink-0">Location:</span>
+        <span className="text-zinc-200 min-w-0 break-all">docs/setup.md:18</span>
       </div>
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-rose-500">&#10008;</span>
-        <span className="w-28 text-zinc-500">Target:</span>
-        <span className="bg-rose-500/10 text-rose-200 px-2 py-0.5 rounded-sm">/etc/passwd</span>
+        <span className="text-rose-500 flex-shrink-0">&#10008;</span>
+        <span className="w-28 text-zinc-500 flex-shrink-0">Target:</span>
+        <span className="bg-rose-500/10 text-rose-200 px-2 py-0.5 rounded-sm min-w-0 break-all">/etc/passwd</span>
       </div>
       <div className="flex items-start gap-3 mt-4 pt-4 border-t border-rose-900/20">
-        <span className="w-28 text-zinc-600 pt-0.5">Exit code:</span>
+        <span className="w-28 text-zinc-600 pt-0.5 flex-shrink-0">Exit code:</span>
         <span className="text-rose-400 font-bold">3</span>
       </div>
     </div>

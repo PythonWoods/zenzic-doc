@@ -7,6 +7,7 @@ description: Six independent checks for documentation integrity — from broken 
 import {
   GutterTerminal,
   CredentialTerminal,
+  PathTraversalGuardTerminal,
   SummaryTerminal,
   SnippetTerminal,
   OrphanTerminal,
@@ -128,7 +129,7 @@ The path traversal guard treats host-path traversal as a **security event**, not
 A `PATH_TRAVERSAL_SUSPICIOUS` finding means a documentation source file contains a link whose resolved target points to `/etc/passwd`, `/root/`, or another OS system path. This can indicate a template injection, a compromised documentation toolchain, or an author mistake that reveals internal infrastructure details. Treat it as a build-blocking security incident.
 :::
 
-<CredentialTerminal />
+<PathTraversalGuardTerminal />
 
 ### How the credential scanner works {#scanner-how-it-works}
 

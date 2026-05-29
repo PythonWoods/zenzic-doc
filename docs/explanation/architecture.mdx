@@ -37,14 +37,13 @@ auditable for contributors and downstream users.
 
 The core analysis engine operates as a **Two-Pass Pipeline** over the documentation file set. Each pass has a distinct responsibility; Pass 2 only begins after Pass 1 completes.
 
-<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+<div className="zz-figure">
   <ThemedImage
     alt="Zenzic Two-Pass Analysis Pipeline: File Set → Pass 1 (credential scanner + Content streams) → Pass 2 (Cross-Check) → Pass 3 (Integrity Report) → Quality Report"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
     }}
-    style={{width:'100%'}}
   />
 </div>
 
@@ -107,14 +106,13 @@ The link validator (`validate_links_async`) operates independently with its own 
 
 The Zenzic credential scanner is a credential detection engine integrated into Pass 1. It operates as middleware: every line passes through the credential scanner before any other parser sees it.
 
-<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+<div className="zz-figure zz-figure--centered">
   <ThemedImage
     alt="Zenzic credential scanner normalization algorithm: 8-step pipeline from Raw Line through ZRT-006/007/003 normalization passes to dual raw/normalized scan, deduplication, and SecurityFinding output"
     sources={{
         light: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization-light.svg'),
         dark: useBaseUrl('/assets/brand/svg/zenzic-credential-normalization.svg'),
     }}
-    style={{width:'100%',maxWidth:'560px',margin:'1.5rem auto'}}
   />
 </div>
 
@@ -195,14 +193,13 @@ class RouteMetadata:
 
 The Virtual Site Map is Zenzic's **single source of truth for routing**. It is a pure-data structure (a mapping of `canonical_url` string to `Route` objects) constructed by the `VSMBuilder` by combining adapter knowledge with filesystem discovery.
 
-<div style={{borderRadius:'8px',overflow:'hidden',margin:'1.5rem 0'}}>
+<div className="zz-figure">
   <ThemedImage
     alt="Zenzic Virtual Site Map: projection from physical filesystem files through VSMBuilder and Adapter Protocol to a route catalog with REACHABLE, ORPHAN, and GHOST route statuses"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-vsm-projection-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-vsm-projection.svg'),
     }}
-    style={{width:'100%'}}
   />
 </div>
 

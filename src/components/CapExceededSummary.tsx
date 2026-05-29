@@ -108,7 +108,7 @@ export default function CapExceededSummary({
     >
       {/* Header */}
       <div
-        className={`flex items-center justify-between border-b px-5 py-3 ${WRAPPER_BORDER[variant]} ${HEADER_BG[variant]}`}
+        className={`flex items-center justify-between border-b px-6 py-3 ${WRAPPER_BORDER[variant]} ${HEADER_BG[variant]}`}
       >
         <span className={`text-[13px] font-semibold tracking-wide ${ICON_COLOR[variant]}`}>
           {ICON[variant]}{' '}

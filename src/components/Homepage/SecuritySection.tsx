@@ -8,14 +8,14 @@ export default function SecuritySection(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
       <div className="max-w-[1320px] mx-auto px-6">
-        <div className="max-w-5xl mx-auto mb-12 text-center">
+        <div className="max-w-3xl mb-12">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="scanner.label">Outcome</Translate>
           </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.scanner.title">CI Gate Blocks Regressions Before Merge</Translate>
           </h2>
-          <p className="dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto">
+          <p className="dark:text-zinc-500 text-zinc-500 max-w-xl">
             <Translate id="homepage.scanner.sub">
               Findings are deterministic by file and line. Exit code 1 blocks documentation debt, and the DQS flat-cost model keeps suppression debt explicit.
             </Translate>
@@ -48,7 +48,7 @@ export default function SecuritySection(): React.JSX.Element {
                 <div className="dark:text-zinc-600 text-zinc-400 flex"><span className="w-6 text-right mr-3">15</span>│ <Translate id="scanner.gutter.ctx1">before continuing.</Translate></div>
                 <div className="dark:text-zinc-300 text-zinc-700 flex dark:bg-zinc-800/30 bg-zinc-100 -mx-6 px-6 py-0.5">
                   <span className="w-6 text-right mr-3 text-rose-500 font-bold">16</span>
-                  <span className="text-rose-500 mr-1 font-bold">➡</span> <Translate id="scanner.gutter.line">See the getting started page for details.</Translate>
+                  <span className="text-rose-500 mr-1 font-bold">❱</span> <Translate id="scanner.gutter.line">See the getting started page for details.</Translate>
                 </div>
                 <div className="dark:text-zinc-600 text-zinc-400 flex"><span className="w-6 text-right mr-3">17</span>│ <Translate id="scanner.gutter.ctx2">Then configure your environment.</Translate></div>
               </div>
@@ -74,7 +74,7 @@ export default function SecuritySection(): React.JSX.Element {
                 </div>
                 <div className="flex items-center gap-3 mb-2"><span className="text-rose-500">✘</span><span className="w-24 dark:text-zinc-500 text-zinc-400"><Translate id="scanner.shield.finding">Finding:</Translate></span><span className="dark:text-zinc-200 text-zinc-700">GitHub token detected</span></div>
                 <div className="flex items-center gap-3 mb-2"><span className="text-rose-500">✘</span><span className="w-24 dark:text-zinc-500 text-zinc-400"><Translate id="scanner.shield.location">Location:</Translate></span><span className="dark:text-zinc-200 text-zinc-700">docs/tutorial.md:42</span></div>
-                <div className="flex items-center gap-3 mb-4"><span className="text-rose-500">✘</span><span className="w-24 dark:text-zinc-500 text-zinc-400"><Translate id="scanner.shield.credential">Credential:</Translate></span><span className="bg-rose-500/10 dark:text-rose-200 text-rose-600 px-2 py-0.5 rounded-sm">ghp_************3456</span></div>
+                <div className="flex items-center gap-3 mb-4"><span className="text-rose-500">✘</span><span className="w-24 dark:text-zinc-500 text-zinc-400"><Translate id="scanner.shield.credential">Credential:</Translate></span><span className="bg-rose-500/10 dark:text-rose-200 text-rose-400 px-2 py-0.5 rounded-sm">ghp_************3456</span></div>
                 <div className="flex items-start gap-3 mt-4 pt-4 border-t dark:border-rose-900/20 border-rose-200"><span className="w-24 dark:text-zinc-600 text-zinc-400 pt-0.5"><Translate id="scanner.shield.action">Action:</Translate></span><span className="dark:text-zinc-400 text-zinc-600"><Translate id="scanner.shield.actionVal">Rotate this credential immediately and purge it from the repository history.</Translate></span></div>
               </div>
             </div>
