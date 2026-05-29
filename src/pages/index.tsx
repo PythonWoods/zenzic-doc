@@ -17,7 +17,7 @@ import GovernancePreview from '../components/Homepage/GovernancePreview';
 
 function DiagnosticDivider({label, coord, className}: {label: string; coord: string; className?: string}): React.JSX.Element {
   return (
-    <div className={`zz-divider px-6 py-3 ${className ?? ''}`}>
+    <div className={`zz-divider px-6 py-2 ${className ?? ''}`}>
       <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 text-[10px] font-mono font-semibold tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
         <span>{label}</span>
         <span className="dark:text-zinc-400 text-zinc-600">{coord}</span>
@@ -34,7 +34,7 @@ export default function Home(): React.JSX.Element {
       title="Zenzic — Documentation Quality Gate for CI/CD"
       description="Detect broken links, leaked credentials, and documentation drift before merge."
     >
-      <div data-theme="dark" className="flex flex-col min-h-screen relative w-full">
+      <div data-theme="dark" className="flex flex-col min-h-screen relative w-full dark:bg-zinc-950 bg-white">
         <Head>
           <meta property="og:type" content="website" />
           <meta property="og:title" content="Zenzic — Documentation Quality Gate for CI/CD" />
@@ -62,7 +62,7 @@ export default function Home(): React.JSX.Element {
 
         <main className="zz-audit-grid flex-grow mt-0 pt-0">
           <Hero />
-          <DiagnosticDivider label="// EXECUTION_LAYER" coord="SCAN::A001" className="mt-16" />
+          <DiagnosticDivider label="// EXECUTION_LAYER" coord="SCAN::A001" />
           <Features />
           <DiagnosticDivider label="// FAILURE_TOPOLOGY" coord="SCAN::B014" />
           <SecuritySection />
@@ -71,7 +71,7 @@ export default function Home(): React.JSX.Element {
           <DiagnosticDivider label="// ADAPTER_SURFACE" coord="SCAN::D042" />
           <Quickstart />
           {/* Enterprise Zone — Progressive Disclosure for advanced users */}
-          <section className="dark:bg-zinc-950 bg-white py-16">
+          <section className="py-10">
             <div className="max-w-5xl mx-auto px-6 text-center">
               <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
                 <Translate id="enterprise.section.label">Enterprise</Translate>
@@ -79,6 +79,9 @@ export default function Home(): React.JSX.Element {
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900">
                 <Translate id="homepage.enterprise.title">Enterprise Governance &amp; Scoring</Translate>
               </h2>
+              <p className="mt-4 dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto text-sm leading-relaxed">
+                <Translate id="enterprise.section.sub">Track suppression debt, enforce quality policies, and govern documentation health across teams and repositories.</Translate>
+              </p>
             </div>
           </section>
           <DiagnosticDivider label="// GOVERNANCE_GATE" coord="SCAN::F070" />

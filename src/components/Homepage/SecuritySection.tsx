@@ -6,9 +6,9 @@ import Translate from '@docusaurus/Translate';
 
 export default function SecuritySection(): React.JSX.Element {
   return (
-    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="max-w-[1320px] mx-auto px-6">
-        <div className="max-w-5xl mx-auto mb-24 text-center">
+        <div className="max-w-5xl mx-auto mb-12 text-center">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="scanner.label">Outcome</Translate>
           </p>
@@ -22,7 +22,7 @@ export default function SecuritySection(): React.JSX.Element {
           </p>
         </div>
 
-        <div className="space-y-32">
+        <div className="space-y-16">
           {/* Gutter Reporter */}
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             <div className="lg:col-span-4 lg:max-w-sm">
@@ -57,7 +57,7 @@ export default function SecuritySection(): React.JSX.Element {
 
           {/* Credential Breaches */}
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-            <div className="lg:col-span-4 lg:col-start-8 lg:max-w-sm lg:justify-self-end">
+            <div className="lg:col-span-5 lg:col-start-8 lg:max-w-sm lg:justify-self-end">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
                 <Translate id="scanner.shield.title">Credential leak blocked (exit 2)</Translate>
               </h3>
@@ -67,7 +67,7 @@ export default function SecuritySection(): React.JSX.Element {
                 </Translate>
               </p>
             </div>
-            <div className="lg:col-span-8 lg:col-start-1 w-full lg:row-start-1">
+            <div className="lg:col-span-7 lg:col-start-1 w-full lg:row-start-1">
               <div className="dark:bg-zinc-900/20 bg-rose-50/30 backdrop-blur-md border dark:border-rose-900/30 border-rose-200 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed shadow-2xl">
                 <div className="text-rose-500/90 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b dark:border-rose-900/20 border-rose-200 pb-3">
                   <Translate id="scanner.shield.banner">SECURITY BREACH DETECTED</Translate>

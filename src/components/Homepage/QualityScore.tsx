@@ -39,7 +39,7 @@ function ScoreRow({color, label, value}: {color: 'sky' | 'rose'; label: ReactNod
 
 export default function QualityScore(): React.JSX.Element {
   return (
-    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="max-w-[1180px] mx-auto px-6">
         <div className="mb-12">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">

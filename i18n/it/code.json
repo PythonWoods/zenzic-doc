@@ -586,5 +586,8 @@
   },
   "homepage.enterprise.title": {
     "message": "Governance Enterprise e Scoring"
+  },
+  "enterprise.section.sub": {
+    "message": "Monitora il debito di soppressione, applica le policy di qualità e governa la salute della documentazione tra team e repository."
   }
 }

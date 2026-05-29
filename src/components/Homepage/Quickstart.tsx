@@ -11,7 +11,7 @@ export default function Quickstart(): React.JSX.Element {
   return (
     <section
       id="quickstart"
-      className="dark:bg-zinc-950 bg-white py-24 md:py-32"
+      className="py-16 md:py-24"
     >
       <div className="max-w-4xl mx-auto px-6 text-center">
         {/* Label */}

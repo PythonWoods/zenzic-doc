@@ -56,7 +56,7 @@ function EcosystemRow({
 
 export default function EngineeringLedger(): React.JSX.Element {
   return (
-    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-4 max-w-3xl">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">

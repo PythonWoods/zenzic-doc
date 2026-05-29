@@ -7,7 +7,7 @@ import CapExceededSummary from '@site/src/components/CapExceededSummary';
 
 export default function GovernancePreview(): React.JSX.Element {
   return (
-    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-6">
         <div className="mb-16 text-center">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">

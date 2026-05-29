@@ -69,23 +69,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  top: 0;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
   opacity: 0.75;
-}
-
-/* Hero baseline scan indicator (subtle motion only) */
-.zz-homepage .zz-scanline {
-  background: linear-gradient(90deg, transparent 0%, var(--zenzic-brand) 35%, var(--zenzic-brand) 65%, transparent 100%);
-  opacity: 0.7;
-  animation: zz-home-scanline 5.5s linear infinite;
-}
-
-@keyframes zz-home-scanline {
-  0% {
-    transform: translateX(-130%);
-  }
-  100% {
-    transform: translateX(720%);
-  }
 }

@@ -59,16 +59,6 @@ export default function Hero(): React.JSX.Element {
           </Translate>
         </a>
       </div>
-
-      <div className="mt-10 w-full max-w-3xl">
-        <div className="flex items-center justify-between gap-4 text-[10px] font-mono font-semibold tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
-          <span>{'// hero_baseline'}</span>
-          <span className="dark:text-zinc-400 text-zinc-600">scan::hero_a1</span>
-        </div>
-        <div className="mt-3 relative h-px dark:bg-zinc-700/80 bg-zinc-300/90 overflow-hidden">
-          <span className="zz-scanline absolute -top-[1px] left-0 h-[3px] w-20" />
-        </div>
-      </div>
     </section>
   );
 }

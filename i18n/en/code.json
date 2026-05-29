@@ -92,6 +92,9 @@
     "message": "Stable",
     "description": "Wait release version badge"
   },
+  "enterprise.section.sub": {
+    "message": "Track suppression debt, enforce quality policies, and govern documentation health across teams and repositories."
+  },
   "homepage.hero.title": {
     "message": "The Exclusion Zone",
     "description": "Main hero headline"
