@@ -42,19 +42,9 @@ regex = true
 
 [[tool.bumpversion.files]]
 filename = "docs/how-to/configure-ci-cd.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/how-to/configure-ci-cd.mdx"
 search = 'version:\s*"?v?{current_version}"?'
 replace = 'version: "{new_version}"'
 regex = true
-
-[[tool.bumpversion.files]]
-filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/configure-ci-cd.mdx"
-search = 'version: "{current_version}"'
-replace = 'version: "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "i18n/it/docusaurus-plugin-content-docs/current/how-to/configure-ci-cd.mdx"
