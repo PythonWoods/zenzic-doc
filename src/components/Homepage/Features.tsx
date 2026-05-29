@@ -18,7 +18,7 @@ function ZenzicOutput(): React.JSX.Element {
         <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
         <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
         <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-        <span className="ml-3 text-[11px] dark:text-zinc-500 text-zinc-500 tracking-wide">zenzic check all · v0.7.1</span>
+        <span className="ml-3 text-[11px] dark:text-zinc-500 text-zinc-500 tracking-wide">zenzic check all · v0.8.0</span>
       </div>
 
       {/* Output body */}

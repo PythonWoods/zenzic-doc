@@ -75,7 +75,7 @@ const config: Config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.7.1',
+              label: '0.8.0',
               badge: false,
               banner: 'none',
             },
@@ -239,7 +239,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} PythonWoods · Zenzic v0.7.1 · Engineered with precision by PythonWoods in Italy 🇮🇹`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods · Zenzic v0.8.0 · Engineered with precision by PythonWoods in Italy 🇮🇹`,
     },
     prism: {
       theme: prismThemes.github,

@@ -6,9 +6,9 @@
 
 | Field    | Value      |
 | :------- | :--------- |
-| Version  | v0.7.1     |
+| Version  | v0.8.0     |
 | Codename | Basalt     |
-| Date     | 2026-05-14 |
+| Date     | 2026-05-29 |
 | Status   | Stable     |
 
 ## Release Checklist
@@ -39,11 +39,11 @@ Distribution target: **CDN** — [zenzic.dev](https://zenzic.dev).
 ## Tag & Push
 
 ```bash
-git tag zenzic-doc-v0.7.1
-git push origin release/v0.7.1 --tags
+git tag zenzic-doc-v0.8.0
+git push origin release/v0.8.0 --tags
 ```
 
-- [ ] Create GitHub Release from the tag, using the `## v0.7.1` CHANGELOG section as the release body.
+- [ ] Create GitHub Release from the tag, using the `## v0.8.0` CHANGELOG section as the release body.
 
 ## Changelog Reference
 
