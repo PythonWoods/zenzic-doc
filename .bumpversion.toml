@@ -96,3 +96,23 @@ replace = "v{new_version}"
 filename = "CITATION.cff"
 search = "version: {current_version}"
 replace = "version: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "i18n/en/code.json"
+search = '"message": "v{current_version}"'
+replace = '"message": "v{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "i18n/it/code.json"
+search = '"message": "v{current_version}"'
+replace = '"message": "v{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/components/Homepage/Hero.tsx"
+search = "v{current_version}"
+replace = "v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "src/components/Homepage/Features.tsx"
+search = "v{current_version}"
+replace = "v{new_version}"

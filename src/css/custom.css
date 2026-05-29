@@ -371,22 +371,59 @@ body {
   background: var(--zenzic-border-dark-15);
 }
 
-/* ── Footer ── */
+/* ── Footer (compact enterprise layout) ── */
 .footer {
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.5rem 1rem;
+  --ifm-footer-link-color: inherit;
 }
 
 .footer .container {
   max-width: 1200px;
 }
 
+.footer__links {
+  margin-bottom: 1rem;
+}
+
+.footer__col {
+  margin-bottom: 0;
+}
+
+.footer__title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+  opacity: 0.7;
+}
+
+.footer__item {
+  font-size: 0.8rem;
+  padding: 0.15rem 0;
+}
+
+.footer__link-item {
+  line-height: 1.4;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.footer__link-item:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
 .footer__bottom {
   margin-top: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--zenzic-border-dark-15);
 }
 
 .footer__copyright {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   letter-spacing: 0.01em;
+  opacity: 0.6;
 }
 
 [data-theme='dark'] .footer {
@@ -397,6 +434,10 @@ body {
 [data-theme='light'] .footer {
   background: transparent;
   border-top: 1px solid var(--zenzic-overlay-black-08);
+}
+
+[data-theme='light'] .footer__bottom {
+  border-top-color: var(--zenzic-overlay-black-08);
 }
 
 [data-theme='dark'] .footer__copyright {
@@ -577,14 +618,13 @@ table thead tr {
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: var(--zenzic-shadow-terminal);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: 1.25rem 0;
 }
 
-.zz-terminal-monolith:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--zenzic-shadow-terminal-hover);
-}
+/* Admonition fenced-block coherence — fenced code inside :::info/:::tip/:::danger
+   must not inherit the parent .alert inline-code padding/border. */
+.alert pre { padding: 0.75rem 1rem; margin: 0.75rem 0; border-radius: 6px; }
+.alert pre code { padding: 0; border: 0; background: transparent; }
 
 /* TerminalWindow — macOS-style frame (zero inline styles, zero arbitrary Tailwind values) */
 .zz-terminal-frame {

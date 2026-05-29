@@ -326,9 +326,6 @@
     "message": "Etichette",
     "description": "The title of the tag list page"
   },
-  "homepage.scanner.title": {
-    "message": "Il Gate CI blocca le regressioni prima del merge"
-  },
   "homepage.score.title": {
     "message": "Punteggio di Qualità"
   },
@@ -347,44 +344,39 @@
     "message": "Punto Critico",
     "description": "Pain point section label"
   },
-  "chk01.title": {
-    "message": "Link interrotti"
+  "homepage.metrics.deterministic.label": {
+    "message": "Deterministico",
+    "description": "Metrics strip label — deterministic"
   },
-  "chk01.desc": {
-    "message": "Un link interno rotto diventa un 404 per gli utenti in produzione. Rilevalo prima del merge."
+  "homepage.metrics.subprocesses.label": {
+    "message": "Sottoprocessi",
+    "description": "Metrics strip label — subprocesses"
   },
-  "chk02.title": {
-    "message": "Pagine orfane"
+  "homepage.metrics.re2.label": {
+    "message": "Motore RE2",
+    "description": "Metrics strip label — RE2 engine"
   },
-  "chk02.desc": {
-    "message": "Trova i file <code>.md</code> pubblicati ma irraggiungibili dalla navigazione."
+  "homepage.metrics.gates.label": {
+    "message": "Gate CI nativi",
+    "description": "Metrics strip label — native gates"
   },
-  "chk03.title": {
-    "message": "Snippet non validi"
+  "findings.Z104.title": {
+    "message": "File non trovato"
   },
-  "chk03.desc": {
-    "message": "Compila i blocchi Python per evitare che esempi non validi arrivino ai lettori."
+  "findings.Z201.title": {
+    "message": "Leak credenziali (exit 2)"
   },
-  "chk04.title": {
-    "message": "Stub segnaposto"
+  "findings.Z405.title": {
+    "message": "Asset inutilizzato"
   },
-  "chk04.desc": {
-    "message": "Segnala pagine con segnaposto irrisolti come <code>TODO</code> e <code>WIP</code>."
+  "findings.Z502.title": {
+    "message": "Contenuto troppo breve"
   },
-  "chk05.title": {
-    "message": "Asset inutilizzati"
-  },
-  "chk05.desc": {
-    "message": "Segnala i file in <code>docs/</code> che non sono mai referenziati da alcuna pagina."
-  },
-  "chk06.title": {
-    "message": "Rilevamento leak credenziali"
-  },
-  "chk06.desc": {
-    "message": "Scansiona ogni file per API key e token trapelati. I finding di sicurezza terminano con codice <code>2</code>."
+  "findings.Z601.title": {
+    "message": "Marchio obsoleto"
   },
   "homepage.hero.badge": {
-    "message": "Pronto per CI",
+    "message": "v0.7.1",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
@@ -433,6 +425,9 @@
   },
   "score.nav": {
     "message": "Isolamento navigazione"
+  },
+  "homepage.scanner.title": {
+    "message": "Il Gate CI blocca le regressioni prima del merge"
   },
   "homepage.scanner.sub": {
     "message": "I finding sono deterministici per file e riga. Exit code 1 blocca il debito documentale e il modello DQS flat-cost mantiene esplicito il debito da soppressioni."

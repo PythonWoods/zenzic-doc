@@ -1,151 +1,201 @@
 // SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { ReactNode } from 'react';
+import React from 'react';
+import Link from '@docusaurus/Link';
 import Translate from '@docusaurus/Translate';
-import { VectorGrid } from './Shared';
 
-// ── CHK 0.1 — Broken Links ────────────────────────────────────────────────
-// Two rect-nodes (page.md → guide.md), solid edge, × break marker in
-// --zenzic-error, dashed continuation, coordinate label "→ 404"
-function BrokenLinkGraph(): React.JSX.Element {
+// ZenzicOutput — 1:1 mirror of `zenzic check all` on a fixture containing
+// Z104 (broken link), Z201 (credential), Z405 (unused asset), Z502 (short
+// content), Z601 (brand obsolescence). Markers, brackets, status line and
+// banner are copied verbatim from the real CLI. No fabrication, no styling
+// shortcuts that misrepresent the engine's output.
+function ZenzicOutput(): React.JSX.Element {
   return (
-    <VectorGrid>
-      <rect x="15" y="82" width="58" height="28" strokeWidth="1" fill="none" />
-      <text x="44" y="100" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">page.md</text>
-      <rect x="127" y="82" width="58" height="28" strokeWidth="1" fill="none" />
-      <text x="156" y="100" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">guide.md</text>
-      <line x1="73" y1="96" x2="90" y2="96" strokeWidth="1" />
-      <line x1="93" y1="89" x2="107" y2="103" stroke="var(--zenzic-error)" strokeWidth="1" />
-      <line x1="107" y1="89" x2="93" y2="103" stroke="var(--zenzic-error)" strokeWidth="1" />
-      <line x1="110" y1="96" x2="127" y2="96" stroke="var(--zenzic-error)" strokeWidth="0.75" strokeDasharray="5 4" />
-      <polyline points="122,91 127,96 122,101" stroke="var(--zenzic-error)" strokeWidth="0.75" fill="none" />
-      <text x="94" y="79" fontSize="9" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">→ 404</text>
-      <line x1="73" y1="86" x2="73" y2="106" strokeWidth="0.25" />
-    </VectorGrid>
-  );
-}
-
-// ── CHK 0.2 — Orphan Pages ────────────────────────────────────────────────
-// Directed nav triangle (3 rect-nodes) + isolated circle node with no edges
-function OrphanNodeGraph(): React.JSX.Element {
-  return (
-    <VectorGrid>
-      <rect x="75" y="28" width="50" height="22" strokeWidth="1" fill="none" />
-      <text x="100" y="43" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
-      <rect x="18" y="82" width="58" height="22" strokeWidth="1" fill="none" />
-      <text x="47" y="97" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">section.md</text>
-      <rect x="124" y="82" width="58" height="22" strokeWidth="1" fill="none" />
-      <text x="153" y="97" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">page.md</text>
-      <line x1="90" y1="50" x2="57" y2="82" strokeWidth="0.75" />
-      <polyline points="59,75 57,82 64,79" fill="none" strokeWidth="0.75" />
-      <line x1="110" y1="50" x2="143" y2="82" strokeWidth="0.75" />
-      <polyline points="141,75 143,82 136,79" fill="none" strokeWidth="0.75" />
-      <line x1="76" y1="93" x2="124" y2="93" strokeWidth="0.5" strokeDasharray="5 4" />
-      <circle cx="100" cy="158" r="18" stroke="var(--zenzic-warning)" strokeWidth="1" fill="none" />
-      <text x="100" y="162" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">orphan</text>
-      <text x="100" y="185" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ nav</text>
-    </VectorGrid>
-  );
-}
-
-// ── CHK 0.3 — Invalid Snippets ────────────────────────────────────────────
-// 6 code-line stripes; error line in --zenzic-error; scanline rect in
-// --zenzic-brand sweeping across the error region; label "↯ FAIL"
-function SnippetScanline(): React.JSX.Element {
-  const lines: { y: number; x2: number; err?: boolean }[] = [
-    { y: 40, x2: 150 },
-    { y: 58, x2: 120 },
-    { y: 76, x2: 160 },
-    { y: 94, x2: 135, err: true },
-    { y: 112, x2: 110 },
-    { y: 130, x2: 145 },
-  ];
-  return (
-    <VectorGrid>
-      {lines.map(({ y, x2, err }) => (
-        <line
-          key={y}
-          x1="30" y1={y} x2={x2} y2={y}
-          strokeWidth={err ? 1 : 0.75}
-          stroke={err ? 'var(--zenzic-error)' : 'currentColor'}
-        />
-      ))}
-      <rect x="28" y="86" width="145" height="16" stroke="var(--zenzic-brand)" strokeWidth="1" fill="var(--zenzic-brand)" fillOpacity="0.04" />
-      <text x="168" y="152" textAnchor="end" fontSize="9" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">↯ FAIL</text>
-    </VectorGrid>
-  );
-}
-
-// ── CHK 0.4 — Placeholder Stubs ───────────────────────────────────────────
-// 5 text-line stripes; dashed rect (--zenzic-warning) around stub region;
-// "TODO" label inside; "△" glyph at corner
-function PlaceholderDetect(): React.JSX.Element {
-  return (
-    <VectorGrid>
-      {[50, 70, 90, 110, 130].map(y => (
-        <line key={y} x1="30" y1={y} x2={(y >= 90 && y <= 110) ? 115 : 170} y2={y} strokeWidth="0.75" />
-      ))}
-      <rect x="28" y="82" width="95" height="36" stroke="var(--zenzic-warning)" strokeWidth="1" strokeDasharray="5 4" fill="none" />
-      <text x="50" y="105" fontSize="9" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">TODO</text>
-      <text x="118" y="80" fontSize="11" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">△</text>
-    </VectorGrid>
-  );
-}
-
-// ── CHK 0.5 — Unused Assets ───────────────────────────────────────────────
-// Root page → 2 referenced assets (directed edges); 1 unreferenced asset
-// node in --zenzic-warning with no incoming edge; label "∅ ref"
-function AssetReferenceGraph(): React.JSX.Element {
-  return (
-    <VectorGrid>
-      <rect x="70" y="22" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="100" y="37" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
-      <rect x="15" y="95" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="45" y="110" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">logo.svg</text>
-      <rect x="125" y="95" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="155" y="110" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">arch.png</text>
-      <line x1="85" y1="44" x2="52" y2="95" strokeWidth="0.75" />
-      <polyline points="54,88 52,95 59,91" fill="none" strokeWidth="0.75" />
-      <line x1="115" y1="44" x2="148" y2="95" strokeWidth="0.75" />
-      <polyline points="146,88 148,95 141,91" fill="none" strokeWidth="0.75" />
-      <rect x="55" y="152" width="90" height="22" stroke="var(--zenzic-warning)" strokeWidth="1" fill="none" />
-      <text x="100" y="167" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">img.png</text>
-      <text x="100" y="190" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ ref</text>
-    </VectorGrid>
-  );
-}
-
-// ── CHK 0.6 — Credential Leak ─────────────────────────────────────────────
-// 3 text-block segments; token block bordered in --zenzic-fatal; vertical
-// scanline in --zenzic-brand intercepting the token; labels "→ Z201", "FATAL"
-function CredentialScanline(): React.JSX.Element {
-  return (
-    <VectorGrid>
-      <rect x="18" y="86" width="48" height="26" strokeWidth="0.5" fill="none" />
-      <text x="42" y="103" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">export</text>
-      <rect x="72" y="86" width="76" height="26" stroke="var(--zenzic-fatal)" strokeWidth="1" fill="none" />
-      <text x="110" y="103" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">sk_live_***</text>
-      <rect x="154" y="86" width="28" height="26" strokeWidth="0.5" fill="none" />
-      <text x="168" y="103" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none">=…</text>
-      <line x1="110" y1="72" x2="110" y2="125" stroke="var(--zenzic-brand)" strokeWidth="1" />
-      <line x1="104" y1="72" x2="116" y2="72" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
-      <line x1="104" y1="125" x2="116" y2="125" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
-      <text x="116" y="70" fontSize="9" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">→ Z201</text>
-      <text x="72" y="128" fontSize="9" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">FATAL</text>
-    </VectorGrid>
-  );
-}
-
-function CheckCard({code, visual, title, desc}: {code: string; visual: ReactNode; title: ReactNode; desc: ReactNode}): React.JSX.Element {
-  return (
-    <div className="h-full flex flex-col pt-6 group">
-      <div className="text-[10px] font-mono font-semibold tracking-widest dark:text-zinc-400 text-zinc-500 mb-6 uppercase">CHK {code}</div>
-      <div className="h-48 sm:h-52 md:h-56 w-full flex items-center justify-center mb-6 bg-transparent">{visual}</div>
-      <div className="mt-auto">
-        <h3 className="text-base font-medium leading-snug min-h-[2.5rem] dark:text-zinc-200 text-zinc-800">{title}</h3>
-        <p className="mt-2 dark:text-zinc-500 text-zinc-500 text-sm leading-relaxed">{desc}</p>
+    <div className="dark:bg-zinc-950/80 bg-zinc-50 backdrop-blur-md border dark:border-zinc-800/60 border-zinc-200 rounded-xl shadow-2xl font-mono text-[12px] md:text-[13px] leading-relaxed overflow-hidden">
+      {/* Terminal chrome */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b dark:border-zinc-800/60 border-zinc-200 dark:bg-zinc-900/40 bg-zinc-100/60">
+        <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+        <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+        <span className="ml-3 text-[11px] dark:text-zinc-500 text-zinc-500 tracking-wide">zenzic check all · v0.7.1</span>
       </div>
+
+      {/* Output body */}
+      <div className="px-5 md:px-8 py-6 dark:text-zinc-300 text-zinc-700 space-y-5">
+        {/* Z201 SECURITY BREACH — verbatim structured banner */}
+        <div className="space-y-1">
+          <div className="text-rose-500 font-semibold">✘ SECURITY BREACH DETECTED</div>
+          <div className="pl-2">
+            <div><span className="text-rose-500">✘</span> Finding:    Secret detected (aws-access-key) — rotate immediately.</div>
+            <div><span className="text-rose-500">✘</span> Location:   docs/deploy.md:4</div>
+            <div><span className="text-rose-500">✘</span> Credential: <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm">AKIA************MPLE</span></div>
+          </div>
+          <div className="pt-1 dark:text-zinc-400 text-zinc-600">
+            Action: Rotate this credential immediately and purge it from the repository history.
+          </div>
+        </div>
+
+        {/* Status line — verbatim */}
+        <div className="dark:text-zinc-500 text-zinc-500">standalone • 3 files (2 docs, 1 assets) • 0.0s • 87 files/s</div>
+
+        {/* Z405 — UNUSED_ASSET */}
+        <div>
+          <span className="dark:text-zinc-400 text-zinc-600">docs/assets/unused.png</span>{'  '}
+          <span className="text-amber-500">⚠</span>{'  '}
+          <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z405]</span>{'  '}
+          <span>File not referenced in any documentation page.</span>
+        </div>
+
+        {/* Z502 — SHORT_CONTENT (deploy.md) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/deploy.md:1</span>{'  '}
+            <span className="text-amber-500">⚠</span>{'  '}
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z502]</span>{'  '}
+            <span>Page has only 6 words (minimum 50).</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  ❱  # Deploy
+    2  │
+    3  │  \`\`\`bash`}
+          </pre>
+        </div>
+
+        {/* Z502 — SHORT_CONTENT (index.md) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:1</span>{'  '}
+            <span className="text-amber-500">⚠</span>{'  '}
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z502]</span>{'  '}
+            <span>Page has only 18 words (minimum 50).</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  ❱  # Welcome
+    2  │
+    3  │  See the [intro page](./intro.md) for details.`}
+          </pre>
+        </div>
+
+        {/* Z104 — FILE_NOT_FOUND (link target) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:3:8</span>{'  '}
+            <span className="text-rose-500">✘</span>{'  '}
+            <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm font-medium">[Z104]</span>{'  '}
+            <span>&apos;./intro.md&apos; not found in docs</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  │  # Welcome
+    2  │
+    3  ❱  See the [intro page](./intro.md) for details.
+       │          ^^^^^^^^^^^^^^^^^^^^^^^^
+    4  │
+    5  │  ![architecture](./assets/old-diagram.png)`}
+          </pre>
+        </div>
+
+        {/* Z104 — FILE_NOT_FOUND (image asset) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:5</span>{'  '}
+            <span className="text-rose-500">✘</span>{'  '}
+            <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm font-medium">[Z104]</span>{'  '}
+            <span>&apos;./assets/old-diagram.png&apos; not found in docs</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    3  │  See the [intro page](./intro.md) for details.
+    4  │
+    5  ❱  ![architecture](./assets/old-diagram.png)
+       │  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6  │
+    7  │  This project was migrated from **OldPlatform** in Q1 2026.`}
+          </pre>
+        </div>
+
+        {/* Z601 — BRAND_OBSOLESCENCE */}
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:7:33</span>
+            <span className="text-amber-500">⚠</span>
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z601]</span>
+            <span className="dark:text-zinc-300 text-zinc-700">[Z601] Obsolete or unauthorized brand term &apos;OldPlatform&apos; detected. Use semantic versioning (e.g., &apos;vX.Y.Z&apos;) in active prose, or suppress if this is a historical ledger.</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    5  │  ![architecture](./assets/old-diagram.png)
+    6  │
+    7  ❱  This project was migrated from **OldPlatform** in Q1 2026.
+       │                                   ^^^^^^^^^^^`}
+          </pre>
+        </div>
+
+        {/* Divider + Summary — verbatim */}
+        <div className="dark:text-zinc-700 text-zinc-300 select-none">────────────────────────────────────────────────────────────────────────────────</div>
+        <div className="space-y-1.5">
+          <div>
+            Summary:{'  '}
+            <span className="text-rose-500">✘ 2 errors</span>{'  '}
+            <span className="text-amber-500">⚠ 4 warnings</span>{'  '}
+            <span className="dark:text-zinc-500 text-zinc-500">💡 0 info</span>{'  '}
+            <span className="dark:text-zinc-500 text-zinc-500">• 3 files with findings</span>
+          </div>
+          <div className="text-rose-500 font-semibold tracking-wide">
+            FAILED: Hard errors detected. Exit code 1 is mandatory.
+          </div>
+          <div className="dark:text-zinc-500 text-zinc-500">
+            Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try &apos;zenzic check --help&apos; for options.
+          </div>
+          <div className="dark:text-zinc-500 text-zinc-500">🔒 Suppression Audit: 0/30 (inline: 0, per-file: 0)</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// FindingCodeIndex — anchor links to /docs/reference/finding-codes, one per
+// code actually emitted in the terminal above. Codes match what the CLI
+// prints verbatim; no aspirational entries.
+function FindingCodeIndex(): React.JSX.Element {
+  const codes: { code: string; title: React.ReactNode; href: string }[] = [
+    {
+      code: 'Z104',
+      title: <Translate id="findings.Z104.title">File not found</Translate>,
+      href: '/docs/reference/finding-codes#z104',
+    },
+    {
+      code: 'Z201',
+      title: <Translate id="findings.Z201.title">Credential leak (exit 2)</Translate>,
+      href: '/docs/reference/finding-codes#z201',
+    },
+    {
+      code: 'Z405',
+      title: <Translate id="findings.Z405.title">Unused asset</Translate>,
+      href: '/docs/reference/finding-codes#z405',
+    },
+    {
+      code: 'Z502',
+      title: <Translate id="findings.Z502.title">Short content</Translate>,
+      href: '/docs/reference/finding-codes#z502',
+    },
+    {
+      code: 'Z601',
+      title: <Translate id="findings.Z601.title">Brand obsolescence</Translate>,
+      href: '/docs/reference/finding-codes#z601',
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-10 max-w-5xl mx-auto px-2">
+      {codes.map(({code, title, href}) => (
+        <Link
+          key={code}
+          to={href}
+          className="group flex items-baseline gap-3 text-sm dark:text-zinc-400 text-zinc-600 dark:hover:text-white hover:text-zinc-900 transition-colors"
+        >
+          <span className="font-mono text-[11px] tracking-wider dark:text-zinc-500 text-zinc-500 group-hover:text-indigo-500">{code}</span>
+          <span>{title}</span>
+        </Link>
+      ))}
     </div>
   );
 }
@@ -153,8 +203,8 @@ function CheckCard({code, visual, title, desc}: {code: string; visual: ReactNode
 export default function Features(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-[1200px] mx-auto px-6">
-        <div className="mb-20 max-w-3xl">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="mb-12 max-w-3xl">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="homepage.pain.label" description="Pain point section label">
               Pain Point
@@ -171,54 +221,8 @@ export default function Features(): React.JSX.Element {
             </span>
           </h2>
         </div>
-        <div className="relative">
-          <div className="pointer-events-none absolute inset-0 z-0 hidden md:block" aria-hidden="true">
-            <div className="absolute left-1/2 top-0 bottom-0 border-l dark:border-zinc-700/60 border-zinc-300/80 lg:hidden" />
-            <div className="absolute left-0 right-0 top-1/3 border-t dark:border-zinc-700/60 border-zinc-300/80 lg:hidden" />
-            <div className="absolute left-0 right-0 top-2/3 border-t dark:border-zinc-700/60 border-zinc-300/80 lg:hidden" />
-            <div className="absolute left-1/3 top-0 bottom-0 border-l dark:border-zinc-700/60 border-zinc-300/80 hidden lg:block" />
-            <div className="absolute left-2/3 top-0 bottom-0 border-l dark:border-zinc-700/60 border-zinc-300/80 hidden lg:block" />
-            <div className="absolute left-0 right-0 top-1/2 border-t dark:border-zinc-700/60 border-zinc-300/80 hidden lg:block" />
-          </div>
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 md:gap-y-14">
-            <CheckCard
-              code="0.1"
-              visual={<BrokenLinkGraph />}
-              title={<Translate id="chk01.title">Broken links</Translate>}
-              desc={<Translate id="chk01.desc">A broken internal link becomes a 404 for users in production. Detect it before merge.</Translate>}
-            />
-            <CheckCard
-              code="0.2"
-              visual={<OrphanNodeGraph />}
-              title={<Translate id="chk02.title">Orphan pages</Translate>}
-              desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that are shipped but unreachable from navigation.'}</Translate>}
-            />
-            <CheckCard
-              code="0.3"
-              visual={<SnippetScanline />}
-              title={<Translate id="chk03.title">Invalid snippets</Translate>}
-              desc={<Translate id="chk03.desc">Compiles fenced Python snippets to prevent broken examples from reaching readers.</Translate>}
-            />
-            <CheckCard
-              code="0.4"
-              visual={<PlaceholderDetect />}
-              title={<Translate id="chk04.title">Placeholder stubs</Translate>}
-              desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages with unresolved placeholders like <code>TODO</code> and <code>WIP</code>.'}</Translate>}
-            />
-            <CheckCard
-              code="0.5"
-              visual={<AssetReferenceGraph />}
-              title={<Translate id="chk05.title">Unused assets</Translate>}
-              desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports files in <code>docs/</code> that are never referenced by any page.'}</Translate>}
-            />
-            <CheckCard
-              code="0.6"
-              visual={<CredentialScanline />}
-              title={<Translate id="chk06.title">Credential leak detection</Translate>}
-              desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every file for leaked API keys and tokens. Security findings exit with code <code>2</code>.'}</Translate>}
-            />
-          </div>
-        </div>
+        <ZenzicOutput />
+        <FindingCodeIndex />
       </div>
     </section>
   );

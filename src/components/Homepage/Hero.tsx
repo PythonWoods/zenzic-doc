@@ -14,21 +14,35 @@ export function ZenzicBadge(): React.JSX.Element {
   );
 }
 
+function Metric({value, label}: {value: React.ReactNode; label: React.ReactNode}): React.JSX.Element {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 tabular-nums">
+        {value}
+      </div>
+      <div className="mt-2 text-[11px] font-mono tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
+        {label}
+      </div>
+    </div>
+  );
+}
+
 export default function Hero(): React.JSX.Element {
   const iconUrl = useBaseUrl('/assets/brand/svg/zenzic-icon.svg');
 
   return (
-    <section className="max-w-4xl mx-auto mt-0 px-6 pt-8 md:pt-10 pb-14 md:pb-20 text-center flex flex-col items-center justify-start">
+    <div className="relative dark:bg-zinc-900/40 bg-zinc-50/40 border-b dark:border-zinc-800/60 border-zinc-200">
+      <section className="max-w-5xl mx-auto mt-0 px-6 pt-8 md:pt-10 pb-14 md:pb-20 text-center flex flex-col items-center justify-start">
       {/* Stealth Logo */}
-      <img src={iconUrl} alt="Zenzic Icon" style={{ width: '40px' }} className="mb-8 drop-shadow-sm opacity-60 grayscale contrast-125 hover:opacity-100 hover:grayscale-0 hover:contrast-100 transition-all duration-500 cursor-pointer" />
+      <img src={iconUrl} alt="Zenzic Icon" style={{ width: '56px' }} className="mb-8 drop-shadow-sm opacity-60 grayscale contrast-125 hover:opacity-100 hover:grayscale-0 hover:contrast-100 transition-all duration-500 cursor-pointer" />
 
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
         <ZenzicBadge />
-        <Translate id="homepage.hero.badge" description="Wait release version badge">
-          CI Ready
+        <Translate id="homepage.hero.badge" description="Release version badge">
+          v0.7.1
         </Translate>
       </div>
-      <h1 className="text-4xl sm:text-5xl md:text-[56px] font-semibold tracking-tight dark:text-white text-zinc-900 leading-[1.1] mb-8">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight dark:text-white text-zinc-900 leading-[1.05] mb-8 max-w-4xl">
         <Translate id="homepage.hero.title" description="Main hero headline">
           Documentation Quality Gate
         </Translate>
@@ -44,7 +58,7 @@ export default function Hero(): React.JSX.Element {
           Detect broken links, leaked credentials, and navigation drift before merge.
         </Translate>
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto mb-16 md:mb-20">
         <a
           href="#quickstart"
           className="h-11 px-8 w-full sm:w-auto inline-flex items-center justify-center rounded-full dark:bg-zinc-100 dark:text-zinc-950 bg-zinc-900 text-white text-sm font-medium dark:hover:bg-white hover:bg-zinc-800 transition-all duration-300 hover:-translate-y-0.5"
@@ -59,6 +73,27 @@ export default function Hero(): React.JSX.Element {
           </Translate>
         </a>
       </div>
+
+      {/* Engineering Metrics Strip — anchors abstraction to real engineering data */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 w-full max-w-3xl">
+        <Metric
+          value="100%"
+          label={<Translate id="homepage.metrics.deterministic.label" description="Metrics strip label — deterministic">Deterministic</Translate>}
+        />
+        <Metric
+          value="0"
+          label={<Translate id="homepage.metrics.subprocesses.label" description="Metrics strip label — subprocesses">Subprocesses</Translate>}
+        />
+        <Metric
+          value="O(N)"
+          label={<Translate id="homepage.metrics.re2.label" description="Metrics strip label — RE2 engine">RE2 Engine</Translate>}
+        />
+        <Metric
+          value="CI/CD"
+          label={<Translate id="homepage.metrics.gates.label" description="Metrics strip label — native gates">Native Gates</Translate>}
+        />
+      </div>
     </section>
+    </div>
   );
 }

@@ -48,6 +48,8 @@ excluded_external_urls = [
     "https://x.com",
     # Shields.io applies rate-limiting to CI runners (HTTP 429); prefix covers all badge URLs.
     "https://img.shields.io",
+    # zenzic.dev/developers/* intermittently times out during CI external-link probes.
+    "https://zenzic.dev/developers",
 ]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.

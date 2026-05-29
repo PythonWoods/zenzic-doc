@@ -243,7 +243,7 @@ function TreeNode({ node, depth = 0 }: { node: VSMNode; depth?: number }): React
   return (
     <div>
       <div
-        className={`flex items-center gap-1.5 py-0.5 rounded px-1 ${canExpand ? 'cursor-pointer hover:dark:bg-zinc-800/40 hover:bg-zinc-100/60' : ''}`}
+        className={`flex items-center gap-1.5 py-0.5 rounded-sm px-1.5 ${canExpand ? 'cursor-pointer hover:dark:bg-zinc-800/40 hover:bg-zinc-100/60' : ''}`}
         style={{ paddingLeft: `${indent + 4}px` }}
         onClick={canExpand ? () => setExpanded((v) => !v) : undefined}
         role={canExpand ? 'button' : undefined}
@@ -273,7 +273,7 @@ function TreeNode({ node, depth = 0 }: { node: VSMNode; depth?: number }): React
 
         {/* kind badge */}
         {cfg.badgeText && (
-          <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded font-mono ${cfg.badgeClass}`}>
+          <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-sm font-mono ${cfg.badgeClass}`}>
             {cfg.badgeText}
           </span>
         )}

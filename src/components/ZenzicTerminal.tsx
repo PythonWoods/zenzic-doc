@@ -117,7 +117,7 @@ export function PathTraversalGuardTerminal(): React.JSX.Element {
     <div
       className="zz-terminal-monolith bg-zinc-900/20 backdrop-blur-md border border-rose-900/40 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed"
     >
-      <div className="text-rose-600 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b border-rose-900/30 pb-3">
+      <div className="text-rose-500 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b border-rose-900/30 pb-3">
         &#x1F6AB; PATH TRAVERSAL GUARD — PATH TRAVERSAL
       </div>
       <div className="flex items-center gap-3 mb-2">

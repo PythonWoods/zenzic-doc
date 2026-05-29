@@ -76,7 +76,7 @@ export default function Icon({ name, ...props }: IconProps): React.JSX.Element {
   if (!LucideIcon) {
     // Graceful degradation when the icon is missing from our tree-shaken map
     console.warn(`Icon "${name}" was requested but is not exposed in Icon.tsx. Add it to the tree-shaken mappings.`);
-    return <span className="inline-block w-4 h-4 bg-red-500/20 text-red-500 text-[10px] font-mono leading-none flex items-center justify-center p-1" title={`Missing icon: ${name}`}>X</span>;
+    return <span className="inline-block w-4 h-4 bg-rose-500/10 text-rose-400 text-[10px] font-mono leading-none flex items-center justify-center p-1" title={`Missing icon: ${name}`}>X</span>;
   }
 
   return <LucideIcon className="inline-block align-text-bottom w-[1.15em] h-[1.15em] opacity-80 z-icon" {...props} />;

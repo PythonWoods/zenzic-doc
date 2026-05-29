@@ -268,7 +268,7 @@ function BreachOutput({
         <div className="flex items-start gap-3">
           <span className="text-rose-500 flex-shrink-0 select-none">✘</span>
           <span className="w-24 dark:text-zinc-500 text-zinc-400 flex-shrink-0">Credential:</span>
-          <span className="bg-rose-500/10 dark:text-rose-200 text-rose-700 px-2 py-0.5 rounded-sm">
+          <span className="bg-rose-500/10 dark:text-rose-200 text-rose-400 px-1.5 py-0.5 rounded-sm">
             {masked}
           </span>
         </div>
@@ -325,7 +325,7 @@ function FindingsOutput({
         {rows.map((r, i) => (
           <div key={i} className="flex items-start gap-2">
             {SEVERITY_ICON(r.severity)}
-            <span className="text-cyan-500 dark:text-cyan-400 w-44 flex-shrink-0 truncate">{r.file}</span>
+            <span className="dark:text-zinc-400 text-zinc-600 w-44 flex-shrink-0 truncate">{r.file}</span>
             <span className="dark:text-zinc-500 text-zinc-400 w-14 flex-shrink-0">{r.code}</span>
             <span className="dark:text-zinc-300 text-zinc-700">{r.message}</span>
           </div>

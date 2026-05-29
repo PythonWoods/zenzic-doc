@@ -12,7 +12,7 @@ function SimpleDotIcon({color}: {color: 'sky' | 'rose'}): React.JSX.Element {
 
 function ScoreSubRow({icon, label, value}: {icon: ReactNode; label: ReactNode; value: ReactNode}): React.JSX.Element {
   return (
-    <div className="flex items-center justify-between group px-4 py-2 rounded-lg dark:hover:bg-zinc-800/30 hover:bg-zinc-50 transition-colors">
+    <div className="flex items-center justify-between group px-4 py-2 rounded-md dark:hover:bg-zinc-800/30 hover:bg-zinc-50 transition-colors">
       <div className="flex items-center gap-3">{icon}<span className="text-[13px] dark:text-zinc-400 text-zinc-500">{label}</span></div>
       <span className="text-[13px] dark:text-zinc-600 text-zinc-400 font-mono">{value}</span>
     </div>
@@ -25,7 +25,7 @@ function ScoreRow({color, label, value}: {color: 'sky' | 'rose'; label: ReactNod
     : { ring: 'border-rose-500/30 bg-rose-500/10', dot: 'bg-rose-400' };
 
   return (
-    <div className="flex items-center justify-between group px-4 py-3 rounded-lg dark:hover:bg-zinc-800/30 hover:bg-zinc-50 transition-colors">
+    <div className="flex items-center justify-between group px-4 py-3 rounded-md dark:hover:bg-zinc-800/30 hover:bg-zinc-50 transition-colors">
       <div className="flex items-center gap-3">
         <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${palette.ring}`}>
           <div className={`w-1.5 h-1.5 rounded-full ${palette.dot}`} />
@@ -64,7 +64,7 @@ export default function QualityScore(): React.JSX.Element {
                 <Translate id="homepage.score.overall">Overall Health</Translate>
               </div>
               <div className="text-7xl font-light tracking-tighter dark:text-white text-zinc-900 mb-4">98</div>
-              <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-medium w-max border border-emerald-500/20">
+              <div className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded-sm bg-emerald-500/10 text-emerald-400 text-xs font-medium w-max border border-emerald-500/20">
                 <TrendIcon />+2%
               </div>
             </div>

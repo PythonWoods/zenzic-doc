@@ -15,12 +15,11 @@ import Quickstart from '../components/Homepage/Quickstart';
 import QualityScore from '../components/Homepage/QualityScore';
 import GovernancePreview from '../components/Homepage/GovernancePreview';
 
-function DiagnosticDivider({label, coord, className}: {label: string; coord: string; className?: string}): React.JSX.Element {
+function DiagnosticDivider({label, className}: {label: string; className?: string}): React.JSX.Element {
   return (
     <div className={`zz-divider px-6 py-2 ${className ?? ''}`}>
-      <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 text-[10px] font-mono font-semibold tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
+      <div className="max-w-[1400px] mx-auto text-[10px] font-mono font-semibold tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
         <span>{label}</span>
-        <span className="dark:text-zinc-400 text-zinc-600">{coord}</span>
       </div>
     </div>
   );
@@ -29,7 +28,6 @@ function DiagnosticDivider({label, coord, className}: {label: string; coord: str
 export default function Home(): React.JSX.Element {
   return (
     <Layout
-      noFooter
       wrapperClassName="zz-homepage"
       title="Zenzic — Documentation Quality Gate for CI/CD"
       description="Detect broken links, leaked credentials, and documentation drift before merge."
@@ -62,13 +60,13 @@ export default function Home(): React.JSX.Element {
 
         <main className="zz-audit-grid flex-grow mt-0 pt-0">
           <Hero />
-          <DiagnosticDivider label="// EXECUTION_LAYER" coord="SCAN::A001" />
+          <DiagnosticDivider label="// EXECUTION_LAYER" />
           <Features />
-          <DiagnosticDivider label="// FAILURE_TOPOLOGY" coord="SCAN::B014" />
+          <DiagnosticDivider label="// FAILURE_TOPOLOGY" />
           <SecuritySection />
-          <DiagnosticDivider label="// DIAGNOSTIC_OUTPUT" coord="SCAN::C030" />
+          <DiagnosticDivider label="// DIAGNOSTIC_OUTPUT" />
           <EngineeringLedger />
-          <DiagnosticDivider label="// ADAPTER_SURFACE" coord="SCAN::D042" />
+          <DiagnosticDivider label="// ADAPTER_SURFACE" />
           <Quickstart />
           {/* Enterprise Zone — Progressive Disclosure for advanced users */}
           <section className="py-10">
@@ -84,23 +82,11 @@ export default function Home(): React.JSX.Element {
               </p>
             </div>
           </section>
-          <DiagnosticDivider label="// GOVERNANCE_GATE" coord="SCAN::F070" />
+          <DiagnosticDivider label="// GOVERNANCE_GATE" />
           <QualityScore />
-          <DiagnosticDivider label="// SUPPRESSION_POLICY" coord="SCAN::G089" />
+          <DiagnosticDivider label="// SUPPRESSION_POLICY" />
           <GovernancePreview />
         </main>
-
-        <DiagnosticDivider label="// RUNTIME_FOOTER" coord="SCAN::H0AF" />
-        <footer className="py-12 mt-auto">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] dark:text-zinc-500 text-zinc-400">
-            <p>© 2026 PythonWoods. Apache-2.0 License.</p>
-            <div className="flex items-center gap-4">
-              <span>Python 3.11+</span>
-              <span className="w-1 h-1 rounded-full dark:bg-zinc-700 bg-zinc-300" />
-              <span>Zero runtime dependencies</span>
-            </div>
-          </div>
-        </footer>
       </div>
     </Layout>
   );

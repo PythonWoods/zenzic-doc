@@ -217,14 +217,29 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Feeds',
+          title: 'Project',
           items: [
-            { label: 'RSS', href: '/blog/rss.xml', 'data-noBrokenLinkCheck': true },
-            { label: 'Atom', href: '/blog/atom.xml', 'data-noBrokenLinkCheck': true },
+            { label: 'Documentation', to: '/docs/' },
+            { label: 'Architecture', to: '/docs/explanation/architecture' },
+            { label: 'Roadmap', href: 'https://github.com/PythonWoods/zenzic/blob/main/ROADMAP.md' },
+          ],
+        },
+        {
+          title: 'Resources',
+          items: [
+            { label: 'GitHub', href: 'https://github.com/PythonWoods/zenzic' },
+            { label: 'Blog', to: '/blog' },
+            { label: 'RSS Feed', href: '/blog/rss.xml', 'data-noBrokenLinkCheck': true },
+          ],
+        },
+        {
+          title: 'Legal',
+          items: [
+            { label: 'Apache-2.0 License', href: 'https://github.com/PythonWoods/zenzic/blob/main/LICENSE' },
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} PythonWoods. Zenzic v0.7.1. Apache-2.0 License. · Python 3.11+ · Zero runtime dependencies`,
+      copyright: `© ${new Date().getFullYear()} PythonWoods · Zenzic v0.7.1 · Engineered with precision by PythonWoods in Italy 🇮🇹`,
     },
     prism: {
       theme: prismThemes.github,

@@ -1,95 +1,49 @@
 {
-  "terminal.gutter.finding": {
-    "message": "'intro.md' not reachable from nav"
-  },
-  "terminal.gutter.line15": {
-    "message": "before continuing."
-  },
-  "terminal.gutter.line16": {
-    "message": "See the getting started page for details."
-  },
-  "terminal.gutter.line17": {
-    "message": "Then configure your environment."
-  },
-  "terminal.shield.header": {
-    "message": "SECURITY BREACH DETECTED"
-  },
-  "terminal.shield.label.finding": {
-    "message": "Finding:"
-  },
-  "terminal.shield.value.finding": {
-    "message": "GitHub token detected"
-  },
-  "terminal.shield.label.location": {
-    "message": "Location:"
-  },
-  "terminal.shield.label.credential": {
-    "message": "Credential:"
-  },
-  "terminal.shield.label.action": {
-    "message": "Action:"
-  },
-  "terminal.shield.value.action": {
-    "message": "Rotate this credential immediately and purge it from the repository history."
-  },
-  "terminal.summary.errors": {
-    "message": "✘ 2 errors"
-  },
-  "terminal.summary.warnings": {
-    "message": "⚠ 1 warning"
-  },
-  "terminal.summary.files": {
-    "message": "• 1 file with findings"
-  },
-  "terminal.summary.verdict": {
-    "message": "FAILED: One or more checks failed."
-  },
   "homepage.features.title": {
-    "message": "A new standard for docs.",
+    "message": "Documentation drift is silent.",
     "description": "Features section title"
   },
   "homepage.features.muted": {
-    "message": "Purpose-built engines for structural integrity.",
+    "message": "Teams usually see it after deployment.",
     "description": "Muted part of features title"
   },
-  "chk01.title": {
-    "message": "Broken links"
+  "homepage.pain.label": {
+    "message": "Pain Point",
+    "description": "Pain point section label"
   },
-  "chk01.desc": {
-    "message": "Detects dead internal links, missing anchors, and unreachable URLs before the build runs."
+  "homepage.metrics.deterministic.label": {
+    "message": "Deterministic",
+    "description": "Metrics strip label — deterministic"
   },
-  "chk02.title": {
-    "message": "Orphan pages"
+  "homepage.metrics.subprocesses.label": {
+    "message": "Subprocesses",
+    "description": "Metrics strip label — subprocesses"
   },
-  "chk02.desc": {
-    "message": "Finds <code>.md</code> files that exist on disk but are absent from the site navigation."
+  "homepage.metrics.re2.label": {
+    "message": "RE2 Engine",
+    "description": "Metrics strip label — RE2 engine"
   },
-  "chk03.title": {
-    "message": "Invalid snippets"
+  "homepage.metrics.gates.label": {
+    "message": "Native Gates",
+    "description": "Metrics strip label — native gates"
   },
-  "chk03.desc": {
-    "message": "Compiles every fenced Python block. Catches syntax errors before readers copy-paste code."
+  "findings.Z104.title": {
+    "message": "File not found"
   },
-  "chk04.title": {
-    "message": "Placeholder stubs"
+  "findings.Z201.title": {
+    "message": "Credential leak (exit 2)"
   },
-  "chk04.desc": {
-    "message": "Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>."
+  "findings.Z405.title": {
+    "message": "Unused asset"
   },
-  "chk05.title": {
-    "message": "Unused assets"
+  "findings.Z502.title": {
+    "message": "Short content"
   },
-  "chk05.desc": {
-    "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
-  },
-  "chk06.title": {
-    "message": "credential scanner"
-  },
-  "chk06.desc": {
-    "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
+  "findings.Z601.title": {
+    "message": "Brand obsolescence"
   },
   "homepage.hero.badge": {
-    "message": "Stable",
+    "message": "v0.7.1",
     "description": "Wait release version badge"
   },
   "enterprise.section.sub": {
