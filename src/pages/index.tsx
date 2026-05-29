@@ -15,6 +15,17 @@ import Quickstart from '../components/Homepage/Quickstart';
 import QualityScore from '../components/Homepage/QualityScore';
 import GovernancePreview from '../components/Homepage/GovernancePreview';
 
+function DiagnosticDivider({label, coord, className}: {label: string; coord: string; className?: string}): React.JSX.Element {
+  return (
+    <div className={`zz-divider px-6 py-3 ${className ?? ''}`}>
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 text-[10px] font-mono font-semibold tracking-[0.16em] uppercase dark:text-zinc-500 text-zinc-500">
+        <span>{label}</span>
+        <span className="dark:text-zinc-400 text-zinc-600">{coord}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Home(): React.JSX.Element {
   return (
     <Layout
@@ -49,17 +60,20 @@ export default function Home(): React.JSX.Element {
           })}</script>
         </Head>
 
-        <main className="flex-grow mt-0 pt-0">
+        <main className="zz-audit-grid flex-grow mt-0 pt-0">
           <Hero />
-          <div className="w-full border-t dark:border-zinc-800 border-zinc-200" />
+          <DiagnosticDivider label="// EXECUTION_LAYER" coord="SCAN::A001" className="mt-16" />
           <Features />
+          <DiagnosticDivider label="// FAILURE_TOPOLOGY" coord="SCAN::B014" />
           <SecuritySection />
+          <DiagnosticDivider label="// DIAGNOSTIC_OUTPUT" coord="SCAN::C030" />
           <EngineeringLedger />
+          <DiagnosticDivider label="// ADAPTER_SURFACE" coord="SCAN::D042" />
           <Quickstart />
           {/* Enterprise Zone — Progressive Disclosure for advanced users */}
-          <section className="dark:bg-zinc-950 bg-white py-16 border-t dark:border-zinc-800 border-zinc-200">
+          <section className="dark:bg-zinc-950 bg-white py-16">
             <div className="max-w-5xl mx-auto px-6 text-center">
-              <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+              <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
                 <Translate id="enterprise.section.label">Enterprise</Translate>
               </p>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900">
@@ -67,11 +81,14 @@ export default function Home(): React.JSX.Element {
               </h2>
             </div>
           </section>
+          <DiagnosticDivider label="// GOVERNANCE_GATE" coord="SCAN::F070" />
           <QualityScore />
+          <DiagnosticDivider label="// SUPPRESSION_POLICY" coord="SCAN::G089" />
           <GovernancePreview />
         </main>
 
-        <footer className="py-12 border-t dark:border-zinc-800/60 border-zinc-200 mt-auto">
+        <DiagnosticDivider label="// RUNTIME_FOOTER" coord="SCAN::H0AF" />
+        <footer className="py-12 mt-auto">
           <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] dark:text-zinc-500 text-zinc-400">
             <p>© 2026 PythonWoods. Apache-2.0 License.</p>
             <div className="flex items-center gap-4">

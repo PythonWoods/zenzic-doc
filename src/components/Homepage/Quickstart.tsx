@@ -11,11 +11,11 @@ export default function Quickstart(): React.JSX.Element {
   return (
     <section
       id="quickstart"
-      className="dark:bg-zinc-950 bg-white py-24 md:py-32 border-t dark:border-zinc-800/60 border-zinc-200"
+      className="dark:bg-zinc-950 bg-white py-24 md:py-32"
     >
-      <div className="max-w-3xl mx-auto px-6 text-center">
+      <div className="max-w-4xl mx-auto px-6 text-center">
         {/* Label */}
-        <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-6 uppercase">
+        <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-6 uppercase">
           <Translate id="quickstart.label">Get Started</Translate>
         </p>
 
@@ -32,13 +32,13 @@ export default function Quickstart(): React.JSX.Element {
         </p>
 
         {/* Terminal box */}
-        <div className="rounded-xl overflow-hidden border dark:border-zinc-800/60 border-zinc-200 bg-zinc-900/20 backdrop-blur-md font-mono text-sm text-left mb-10 shadow-xl">
+        <div className="rounded-xl overflow-hidden border dark:border-zinc-800/60 border-zinc-200 bg-zinc-900/20 backdrop-blur-md font-mono text-sm text-left mb-10 shadow-xl md:-mx-8 lg:-mx-16">
           {/* macOS window chrome */}
           <div className="flex items-center gap-2 px-4 py-3 border-b dark:border-zinc-800/40 border-zinc-200">
             <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" aria-hidden="true" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" aria-hidden="true" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" aria-hidden="true" />
-            <span className="ml-2 dark:text-zinc-500 text-zinc-400 text-[11px] tracking-wide">
+            <span className="ml-2 dark:text-zinc-400 text-zinc-500 text-[11px] tracking-wide font-semibold">
               zenzic · quickstart
             </span>
           </div>

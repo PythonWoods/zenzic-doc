@@ -33,3 +33,59 @@
 .zz-homepage {
   scroll-behavior: smooth;
 }
+
+/* Global audit grid used as structural baseline for all homepage sections */
+.zz-homepage .zz-audit-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.zz-homepage .zz-audit-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, var(--ifm-color-emphasis-200) 0.5px, transparent 0.5px),
+    linear-gradient(to right, var(--ifm-color-emphasis-200) 0.5px, transparent 0.5px);
+  background-size: 100% 96px, 96px 100%;
+  opacity: 0.08;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  z-index: 0;
+}
+
+.zz-homepage .zz-audit-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section divider scaffolding for diagnostic layers */
+.zz-homepage .zz-divider {
+  position: relative;
+}
+
+.zz-homepage .zz-divider::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  opacity: 0.75;
+}
+
+/* Hero baseline scan indicator (subtle motion only) */
+.zz-homepage .zz-scanline {
+  background: linear-gradient(90deg, transparent 0%, var(--zenzic-brand) 35%, var(--zenzic-brand) 65%, transparent 100%);
+  opacity: 0.7;
+  animation: zz-home-scanline 5.5s linear infinite;
+}
+
+@keyframes zz-home-scanline {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(720%);
+  }
+}

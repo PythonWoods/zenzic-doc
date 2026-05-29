@@ -39,9 +39,9 @@ function EcosystemRow({
   terminal: React.ReactNode;
 }): React.JSX.Element {
   return (
-    <div className="grid md:grid-cols-2 gap-8 md:gap-16 py-12 border-t dark:border-zinc-800/60 border-zinc-200 items-start">
+    <div className="grid md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-8 md:gap-12 py-12 border-t dark:border-zinc-800/60 border-zinc-200 items-start">
       <div>
-        <span className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 block uppercase">
+        <span className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 block uppercase">
           {index}
         </span>
         <h3 className="text-lg font-semibold dark:text-white text-zinc-900 mb-3 leading-snug">
@@ -49,7 +49,7 @@ function EcosystemRow({
         </h3>
         <p className="dark:text-zinc-500 text-zinc-500 text-sm leading-relaxed">{desc}</p>
       </div>
-      <div>{terminal}</div>
+      <div className="md:-mr-8 lg:-mr-16">{terminal}</div>
     </div>
   );
 }
@@ -59,7 +59,7 @@ export default function EngineeringLedger(): React.JSX.Element {
     <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-4 max-w-3xl">
-          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+          <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="ledger.label">Ecosystem</Translate>
           </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">

@@ -6,10 +6,10 @@ import Translate from '@docusaurus/Translate';
 
 export default function SecuritySection(): React.JSX.Element {
   return (
-    <section className="border-t dark:border-zinc-800 border-zinc-200 dark:bg-zinc-950 bg-white py-24 md:py-32">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="mb-24 text-center">
-          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+      <div className="max-w-[1320px] mx-auto px-6">
+        <div className="max-w-5xl mx-auto mb-24 text-center">
+          <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="scanner.label">Outcome</Translate>
           </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
@@ -24,8 +24,8 @@ export default function SecuritySection(): React.JSX.Element {
 
         <div className="space-y-32">
           {/* Gutter Reporter */}
-          <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-center">
-            <div className="flex-1 md:pr-8">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+            <div className="lg:col-span-4 lg:max-w-sm">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
                 <Translate id="scanner.gutter.title">Deterministic finding context</Translate>
               </h3>
@@ -35,7 +35,7 @@ export default function SecuritySection(): React.JSX.Element {
                 </Translate>
               </p>
             </div>
-            <div className="flex-[1.5] w-full">
+            <div className="lg:col-span-8 w-full lg:translate-x-10 xl:translate-x-16">
               <div className="dark:bg-zinc-900/20 bg-zinc-50 backdrop-blur-md border dark:border-zinc-800/60 border-zinc-200 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed shadow-2xl">
                 <div className="dark:text-zinc-500 text-zinc-400 mb-3 border-b dark:border-zinc-800/40 border-zinc-200 pb-2 font-medium">docs/guide.md</div>
                 <div className="flex gap-3 mb-4">
@@ -56,8 +56,8 @@ export default function SecuritySection(): React.JSX.Element {
           </div>
 
           {/* Credential Breaches */}
-          <div className="flex flex-col md:flex-row-reverse gap-12 lg:gap-20 items-center">
-            <div className="flex-1 md:pl-8">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+            <div className="lg:col-span-4 lg:col-start-8 lg:max-w-sm lg:justify-self-end">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
                 <Translate id="scanner.shield.title">Credential leak blocked (exit 2)</Translate>
               </h3>
@@ -67,7 +67,7 @@ export default function SecuritySection(): React.JSX.Element {
                 </Translate>
               </p>
             </div>
-            <div className="flex-[1.5] w-full">
+            <div className="lg:col-span-8 lg:col-start-1 w-full lg:row-start-1">
               <div className="dark:bg-zinc-900/20 bg-rose-50/30 backdrop-blur-md border dark:border-rose-900/30 border-rose-200 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed shadow-2xl">
                 <div className="text-rose-500/90 text-xs text-center tracking-[0.2em] font-bold mb-4 border-b dark:border-rose-900/20 border-rose-200 pb-3">
                   <Translate id="scanner.shield.banner">SECURITY BREACH DETECTED</Translate>
@@ -81,8 +81,8 @@ export default function SecuritySection(): React.JSX.Element {
           </div>
 
           {/* Severity summary */}
-          <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-center">
-            <div className="flex-1 md:pr-8">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+            <div className="lg:col-span-4 lg:max-w-sm">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
                 <Translate id="scanner.summary.title">Gate result summary</Translate>
               </h3>
@@ -92,7 +92,7 @@ export default function SecuritySection(): React.JSX.Element {
                 </Translate>
               </p>
             </div>
-            <div className="flex-[1.5] w-full">
+            <div className="lg:col-span-8 w-full lg:translate-x-10 xl:translate-x-16">
               <div className="dark:bg-zinc-900/20 bg-zinc-50 backdrop-blur-md border dark:border-zinc-800/60 border-zinc-200 rounded-xl py-5 px-6 font-mono text-[12px] leading-relaxed shadow-2xl">
                 <div className="flex gap-6 mb-4 border-b dark:border-zinc-800/40 border-zinc-200 pb-4">
                   <span className="text-rose-500 font-medium"><Translate id="scanner.summary.errors">✘ 2 errors</Translate></span>

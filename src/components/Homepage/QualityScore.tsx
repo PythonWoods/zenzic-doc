@@ -39,10 +39,10 @@ function ScoreRow({color, label, value}: {color: 'sky' | 'rose'; label: ReactNod
 
 export default function QualityScore(): React.JSX.Element {
   return (
-    <section className="border-t dark:border-zinc-800 border-zinc-200 dark:bg-zinc-950 bg-white py-24 md:py-32">
-      <div className="max-w-[1000px] mx-auto px-6">
+    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
+      <div className="max-w-[1180px] mx-auto px-6">
         <div className="mb-12">
-          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+          <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="score.label">Health Metrics</Translate>
           </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
@@ -54,7 +54,7 @@ export default function QualityScore(): React.JSX.Element {
             </Translate>
           </p>
         </div>
-        <div className="w-full bg-transparent border dark:border-zinc-800/40 border-zinc-200 rounded-xl overflow-hidden flex flex-col md:flex-row">
+        <div className="w-full bg-transparent border dark:border-zinc-800/40 border-zinc-200 rounded-xl overflow-hidden flex flex-col md:flex-row md:translate-x-8 lg:translate-x-12">
           <div className="w-full md:w-72 dark:bg-[#0d0d11]/30 bg-zinc-50/50 backdrop-blur-sm border-b md:border-b-0 md:border-r dark:border-zinc-800/40 border-zinc-200 p-6 flex flex-col">
             <div className="text-[13px] font-medium dark:text-zinc-300 text-zinc-600 mb-8">
               <Translate id="homepage.score.metrics">Metrics</Translate>
