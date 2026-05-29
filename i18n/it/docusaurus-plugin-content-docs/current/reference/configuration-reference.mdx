@@ -171,12 +171,12 @@ documentazione in una posizione non standard, come `website/` o `content/`.
 
 ```toml
 # .zenzic.toml
-excluded_dirs = ["includes", "stylesheets", "overrides", "hooks"]
+excluded_dirs = ["includes", "stylesheets", "overrides"]
 ```
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `excluded_dirs` | `list[string]` | `["includes", "stylesheets", "overrides", "hooks"]` | Directory dentro `docs/` da escludere dai controlli orfani e snippet |
+| `excluded_dirs` | `list[string]` | `["includes", "stylesheets", "overrides"]` | Directory dentro `docs/` da escludere dai controlli orfani e snippet |
 
 Le voci dell'utente vengono **unite** ai System Guardrails (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I System Guardrails includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
 
