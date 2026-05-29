@@ -8,5 +8,5 @@ export function TrendIcon(): React.JSX.Element {
 }
 
 export function VectorGrid({children}: {children: ReactNode}): React.JSX.Element {
-  return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" className="w-full h-full" stroke="currentColor" fill="none" strokeWidth="1" strokeLinejoin="round" strokeLinecap="round">{children}</svg>;
+  return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" className="w-full h-full" stroke="currentColor" fill="none" strokeWidth="0.5" strokeLinejoin="round" strokeLinecap="round">{children}</svg>;
 }
