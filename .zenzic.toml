@@ -36,20 +36,20 @@ excluded_external_urls = [
     # Z108 example folder not yet merged to main.
     "https://github.com/PythonWoods/zenzic/tree/main/examples/rules/z108-empty-link",
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
-    "https://github.com",
+    #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
-    "https://developers.facebook.com/tools/debug/",
+    #"https://developers.facebook.com/tools/debug/",
     # contributor-covenant.org consistently times out (> 10 s) from CI environments.
-    "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
-    "https://www.contributor-covenant.org",
+    #"https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
+    #"https://www.contributor-covenant.org",
     # Twitter/X card validator and social profiles consistently time out (>10 s) from CI environments.
-    "https://cards-dev.twitter.com/validator",
-    "https://twitter.com",
-    "https://x.com",
+    #"https://cards-dev.twitter.com/validator",
+    #"https://twitter.com",
+    #"https://x.com",
     # Shields.io applies rate-limiting to CI runners (HTTP 429); prefix covers all badge URLs.
-    "https://img.shields.io",
+    #"https://img.shields.io",
     # zenzic.dev/developers/* intermittently times out during CI external-link probes.
-    "https://zenzic.dev/developers",
+    #"https://zenzic.dev/developers",
 ]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.
