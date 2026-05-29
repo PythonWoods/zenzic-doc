@@ -440,6 +440,23 @@ body {
   border-top-color: var(--zenzic-overlay-black-08);
 }
 
+/* ── Footer mobile — stack columns vertically on small screens ── */
+@media (max-width: 640px) {
+  .footer__links {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer__col {
+    flex: 1 1 100%;
+    margin-bottom: 0;
+  }
+
+  .footer {
+    padding: 2rem 1.25rem 1.25rem;
+  }
+}
+
 [data-theme='dark'] .footer__copyright {
   color: var(--zenzic-ink-400);
 }
@@ -632,6 +649,29 @@ table thead tr {
 .zz-figure img,
 .zz-figure iframe { width: 100%; display: block; }
 .zz-figure--centered { max-width: 560px; margin-left: auto; margin-right: auto; }
+
+/* zz-gradient-text — animated shimmer for Hero h1 primary line.
+   Uses -webkit-text-fill-color (not color:transparent) for cross-browser gradient text.
+   Palette: white → indigo-300 → white → indigo-200 — Zenzic brand, dark surface only. */
+@keyframes zz-shimmer {
+  0%  { background-position: -200% 0; }
+  to  { background-position:  200% 0; }
+}
+.zz-gradient-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #a5b4fc 30%,
+    #ffffff 55%,
+    #c7d2fe 80%,
+    #ffffff 100%
+  );
+  background-size: 200% 200%;
+  animation: 6s linear infinite zz-shimmer;
+}
 
 /* TerminalWindow — macOS-style frame (zero inline styles, zero arbitrary Tailwind values) */
 .zz-terminal-frame {

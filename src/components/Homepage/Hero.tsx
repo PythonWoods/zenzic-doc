@@ -42,10 +42,12 @@ export default function Hero(): React.JSX.Element {
           v0.7.1
         </Translate>
       </div>
-      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight dark:text-white text-zinc-900 leading-[1.05] mb-8 max-w-4xl">
-        <Translate id="homepage.hero.title" description="Main hero headline">
-          Documentation Quality Gate
-        </Translate>
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-8 max-w-4xl">
+        <span className="zz-gradient-text">
+          <Translate id="homepage.hero.title" description="Main hero headline">
+            Documentation Quality Gate
+          </Translate>
+        </span>
         <br />
         <span className="dark:text-zinc-500 text-zinc-400">
           <Translate id="homepage.hero.titleMuted" description="Muted part of the hero headline">
