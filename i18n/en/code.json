@@ -72,6 +72,9 @@
   "homepage.score.title": {
     "message": "Quality Score"
   },
+  "homepage.score.title.muted": {
+    "message": "Deterministic health check, per commit."
+  },
   "homepage.score.sub": {
     "message": "Track a deterministic score in CI to block regressions. A holistic, elegant view of your documentation health."
   },
@@ -104,6 +107,9 @@
   },
   "homepage.scanner.title": {
     "message": "Zenzic in Action"
+  },
+  "homepage.scanner.title.muted": {
+    "message": "CI gate blocks regressions before merge."
   },
   "homepage.scanner.sub": {
     "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
@@ -208,7 +214,10 @@
     "message": "Get Started"
   },
   "quickstart.heading": {
-    "message": "From zero to documentation integrity in one command."
+    "message": "From zero to documentation integrity"
+  },
+  "quickstart.heading.muted": {
+    "message": "in one command."
   },
   "quickstart.sub": {
     "message": "No configuration required. No account needed. Works on any Markdown project."
@@ -218,6 +227,15 @@
   },
   "quickstart.docs": {
     "message": "Read the full docs →"
+  },
+  "homepage.governance.title": {
+    "message": "Suppression CAP"
+  },
+  "homepage.governance.title.muted": {
+    "message": "— Live Preview"
+  },
+  "homepage.governance.sub": {
+    "message": "When active suppressions exceed the configured CAP, zenzic-action writes this summary directly to the GitHub Actions job panel. No log diving required."
   },
   "theme.ErrorPageContent.title": {
     "message": "This page crashed.",

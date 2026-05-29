@@ -7,13 +7,16 @@ import Translate from '@docusaurus/Translate';
 export default function SecuritySection(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-[1320px] mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         <div className="max-w-3xl mb-12">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="scanner.label">Outcome</Translate>
           </p>
-          <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="homepage.scanner.title">CI Gate Blocks Regressions Before Merge</Translate>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
+            <Translate id="homepage.scanner.title">Zenzic in Action</Translate>{' '}
+            <span className="dark:text-zinc-500 text-zinc-400">
+              <Translate id="homepage.scanner.title.muted">CI gate blocks regressions before merge.</Translate>
+            </span>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 max-w-xl">
             <Translate id="homepage.scanner.sub">

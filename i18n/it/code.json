@@ -329,6 +329,9 @@
   "homepage.score.title": {
     "message": "Punteggio di Qualità"
   },
+  "homepage.score.title.muted": {
+    "message": "Controllo salute deterministico, per commit."
+  },
   "homepage.score.metrics": {
     "message": "Metriche"
   },
@@ -427,7 +430,10 @@
     "message": "Isolamento navigazione"
   },
   "homepage.scanner.title": {
-    "message": "Il Gate CI blocca le regressioni prima del merge"
+    "message": "Zenzic in Azione"
+  },
+  "homepage.scanner.title.muted": {
+    "message": "Il gate CI blocca le regressioni prima del merge."
   },
   "homepage.scanner.sub": {
     "message": "I finding sono deterministici per file e riga. Exit code 1 blocca il debito documentale e il modello DQS flat-cost mantiene esplicito il debito da soppressioni."
@@ -538,7 +544,10 @@
     "message": "Avvio Rapido"
   },
   "quickstart.heading": {
-    "message": "Installazione rapida: esegui un comando."
+    "message": "Installazione rapida:"
+  },
+  "quickstart.heading.muted": {
+    "message": "esegui un comando."
   },
   "quickstart.sub": {
     "message": "Esegui audit della documentazione e ottieni codici di uscita deterministici per CI."
@@ -565,7 +574,10 @@
     "message": "Governance"
   },
   "homepage.governance.title": {
-    "message": "CAP Soppressioni — Anteprima Live"
+    "message": "CAP Soppressioni"
+  },
+  "homepage.governance.title.muted": {
+    "message": "— Anteprima Live"
   },
   "homepage.governance.sub": {
     "message": "Quando le soppressioni attive superano il CAP configurato, zenzic-action scrive questo riepilogo direttamente nel pannello del job di GitHub Actions. Nessun log da scavare."

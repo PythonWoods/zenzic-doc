@@ -40,13 +40,16 @@ function ScoreRow({color, label, value}: {color: 'sky' | 'rose'; label: ReactNod
 export default function QualityScore(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-[1180px] mx-auto px-6">
-        <div className="mb-12">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="mb-12 max-w-3xl">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="score.label">Health Metrics</Translate>
           </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="homepage.score.title">Quality Score</Translate>
+            <Translate id="homepage.score.title">Quality Score</Translate>{' '}
+            <span className="dark:text-zinc-500 text-zinc-400">
+              <Translate id="homepage.score.title.muted">Deterministic health check, per commit.</Translate>
+            </span>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 text-lg max-w-2xl">
             <Translate id="homepage.score.sub">

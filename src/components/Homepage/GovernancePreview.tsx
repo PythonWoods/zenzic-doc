@@ -8,13 +8,16 @@ import CapExceededSummary from '@site/src/components/CapExceededSummary';
 export default function GovernancePreview(): React.JSX.Element {
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         <div className="max-w-3xl mb-16">
           <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
             <Translate id="governance.label">Governance</Translate>
           </p>
-          <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="homepage.governance.title">Suppression CAP — Live Preview</Translate>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
+            <Translate id="homepage.governance.title">Suppression CAP</Translate>{' '}
+            <span className="dark:text-zinc-500 text-zinc-400">
+              <Translate id="homepage.governance.title.muted">— Live Preview</Translate>
+            </span>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 max-w-xl text-sm leading-relaxed">
             <Translate id="homepage.governance.sub">

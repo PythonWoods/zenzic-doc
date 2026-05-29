@@ -13,23 +13,27 @@ export default function Quickstart(): React.JSX.Element {
       id="quickstart"
       className="py-16 md:py-24"
     >
-      <div className="max-w-4xl mx-auto px-6">
-        {/* Label */}
-        <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-6 uppercase">
-          <Translate id="quickstart.label">Get Started</Translate>
-        </p>
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-3xl mb-12">
+          {/* Label */}
+          <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-6 uppercase">
+            <Translate id="quickstart.label">Get Started</Translate>
+          </p>
 
-        {/* Heading — mirrors Paperclip "From zero to autonomous company in one command." */}
-        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
-          <Translate id="quickstart.heading">
-            Quick install: run one command.
-          </Translate>
-        </h2>
-        <p className="dark:text-zinc-500 text-zinc-500 text-base mb-12 max-w-2xl">
-          <Translate id="quickstart.sub">
-            Audit your documentation and return deterministic exit codes for CI.
-          </Translate>
-        </p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
+            <Translate id="quickstart.heading">
+              From zero to documentation integrity
+            </Translate>{' '}
+            <span className="dark:text-zinc-500 text-zinc-400">
+              <Translate id="quickstart.heading.muted">in one command.</Translate>
+            </span>
+          </h2>
+          <p className="dark:text-zinc-500 text-zinc-500 text-base">
+            <Translate id="quickstart.sub">
+              No configuration required. No account needed. Works on any Markdown project.
+            </Translate>
+          </p>
+        </div>
 
         {/* Terminal box */}
         <div className="rounded-xl overflow-hidden border dark:border-zinc-800/60 border-zinc-200 bg-zinc-900/20 backdrop-blur-md font-mono text-sm text-left mb-10 shadow-xl md:-mx-8 lg:-mx-16">

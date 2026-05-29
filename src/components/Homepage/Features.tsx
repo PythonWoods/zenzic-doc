@@ -190,10 +190,11 @@ function FindingCodeIndex(): React.JSX.Element {
         <Link
           key={code}
           to={href}
-          className="group flex items-baseline gap-3 text-sm dark:text-zinc-400 text-zinc-600 dark:hover:text-white hover:text-zinc-900 transition-colors"
+          className="group flex items-center gap-3 text-sm dark:text-zinc-400 text-zinc-600 dark:hover:text-white hover:text-zinc-900 transition-colors"
         >
           <span className="font-mono text-[11px] tracking-wider dark:text-zinc-500 text-zinc-500 group-hover:text-indigo-500">{code}</span>
           <span>{title}</span>
+          <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-indigo-500 text-xs">→</span>
         </Link>
       ))}
     </div>

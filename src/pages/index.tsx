@@ -70,14 +70,14 @@ export default function Home(): React.JSX.Element {
           <Quickstart />
           {/* Enterprise Zone — Progressive Disclosure for advanced users */}
           <section className="py-10">
-            <div className="max-w-5xl mx-auto px-6 text-center">
+            <div className="max-w-5xl mx-auto px-6">
               <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
                 <Translate id="enterprise.section.label">Enterprise</Translate>
               </p>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900">
                 <Translate id="homepage.enterprise.title">Enterprise Governance &amp; Scoring</Translate>
               </h2>
-              <p className="mt-4 dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto text-sm leading-relaxed">
+              <p className="mt-4 dark:text-zinc-500 text-zinc-500 max-w-xl text-sm leading-relaxed">
                 <Translate id="enterprise.section.sub">Track suppression debt, enforce quality policies, and govern documentation health across teams and repositories.</Translate>
               </p>
             </div>
