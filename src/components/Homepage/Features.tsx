@@ -5,27 +5,12 @@ import React, { ReactNode } from 'react';
 import Translate from '@docusaurus/Translate';
 import { VectorGrid } from './Shared';
 
-// ── Shared coordinate grid (Hostile Precision background) ─────────────────
-function Grid(): React.JSX.Element {
-  return (
-    <>
-      {[40, 80, 120, 160].map(y => (
-        <line key={`h${y}`} x1="0" y1={y} x2="200" y2={y} stroke="var(--ifm-color-emphasis-300)" strokeWidth="0.25" />
-      ))}
-      {[40, 80, 120, 160].map(x => (
-        <line key={`v${x}`} x1={x} y1="0" x2={x} y2="200" stroke="var(--ifm-color-emphasis-300)" strokeWidth="0.25" />
-      ))}
-    </>
-  );
-}
-
 // ── CHK 0.1 — Broken Links ────────────────────────────────────────────────
 // Two rect-nodes (page.md → guide.md), solid edge, × break marker in
 // --zenzic-error, dashed continuation, coordinate label "→ 404"
 function BrokenLinkGraph(): React.JSX.Element {
   return (
     <VectorGrid>
-      <Grid />
       <rect x="15" y="82" width="58" height="28" strokeWidth="1" fill="none" />
       <text x="44" y="100" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">page.md</text>
       <rect x="127" y="82" width="58" height="28" strokeWidth="1" fill="none" />
@@ -33,9 +18,9 @@ function BrokenLinkGraph(): React.JSX.Element {
       <line x1="73" y1="96" x2="90" y2="96" strokeWidth="1" />
       <line x1="93" y1="89" x2="107" y2="103" stroke="var(--zenzic-error)" strokeWidth="1" />
       <line x1="107" y1="89" x2="93" y2="103" stroke="var(--zenzic-error)" strokeWidth="1" />
-      <line x1="110" y1="96" x2="127" y2="96" stroke="var(--zenzic-error)" strokeWidth="0.75" strokeDasharray="4 3" />
+      <line x1="110" y1="96" x2="127" y2="96" stroke="var(--zenzic-error)" strokeWidth="0.75" strokeDasharray="5 4" />
       <polyline points="122,91 127,96 122,101" stroke="var(--zenzic-error)" strokeWidth="0.75" fill="none" />
-      <text x="94" y="79" fontSize="7" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">→ 404</text>
+      <text x="94" y="79" fontSize="8" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">→ 404</text>
       <line x1="73" y1="86" x2="73" y2="106" strokeWidth="0.25" />
     </VectorGrid>
   );
@@ -46,21 +31,20 @@ function BrokenLinkGraph(): React.JSX.Element {
 function OrphanNodeGraph(): React.JSX.Element {
   return (
     <VectorGrid>
-      <Grid />
       <rect x="75" y="28" width="50" height="22" strokeWidth="1" fill="none" />
-      <text x="100" y="43" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
+      <text x="100" y="43" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
       <rect x="18" y="82" width="58" height="22" strokeWidth="1" fill="none" />
-      <text x="47" y="97" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">section.md</text>
+      <text x="47" y="97" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">section.md</text>
       <rect x="124" y="82" width="58" height="22" strokeWidth="1" fill="none" />
-      <text x="153" y="97" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">page.md</text>
+      <text x="153" y="97" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">page.md</text>
       <line x1="90" y1="50" x2="57" y2="82" strokeWidth="0.75" />
       <polyline points="59,75 57,82 64,79" fill="none" strokeWidth="0.75" />
       <line x1="110" y1="50" x2="143" y2="82" strokeWidth="0.75" />
       <polyline points="141,75 143,82 136,79" fill="none" strokeWidth="0.75" />
-      <line x1="76" y1="93" x2="124" y2="93" strokeWidth="0.5" strokeDasharray="3 3" />
+      <line x1="76" y1="93" x2="124" y2="93" strokeWidth="0.5" strokeDasharray="5 4" />
       <circle cx="100" cy="158" r="18" stroke="var(--zenzic-warning)" strokeWidth="1" fill="none" />
-      <text x="100" y="162" textAnchor="middle" fontSize="6" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">orphan</text>
-      <text x="100" y="185" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ nav</text>
+      <text x="100" y="162" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">orphan</text>
+      <text x="100" y="185" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ nav</text>
     </VectorGrid>
   );
 }
@@ -79,7 +63,6 @@ function SnippetScanline(): React.JSX.Element {
   ];
   return (
     <VectorGrid>
-      <Grid />
       {lines.map(({ y, x2, err }) => (
         <line
           key={y}
@@ -91,7 +74,7 @@ function SnippetScanline(): React.JSX.Element {
       <rect x="28" y="91" width="145" height="16" stroke="var(--zenzic-brand)" strokeWidth="1" fill="none" />
       <line x1="28" y1="85" x2="28" y2="91" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
       <line x1="173" y1="85" x2="173" y2="91" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
-      <text x="172" y="88" textAnchor="end" fontSize="7" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">↯ FAIL</text>
+      <text x="172" y="88" textAnchor="end" fontSize="8" fontFamily="monospace" fill="var(--zenzic-error)" stroke="none">↯ FAIL</text>
     </VectorGrid>
   );
 }
@@ -102,11 +85,10 @@ function SnippetScanline(): React.JSX.Element {
 function PlaceholderDetect(): React.JSX.Element {
   return (
     <VectorGrid>
-      <Grid />
       {[50, 70, 90, 110, 130].map(y => (
         <line key={y} x1="30" y1={y} x2={(y >= 90 && y <= 110) ? 115 : 170} y2={y} strokeWidth="0.75" />
       ))}
-      <rect x="28" y="82" width="95" height="36" stroke="var(--zenzic-warning)" strokeWidth="1" strokeDasharray="4 3" fill="none" />
+      <rect x="28" y="82" width="95" height="36" stroke="var(--zenzic-warning)" strokeWidth="1" strokeDasharray="5 4" fill="none" />
       <text x="50" y="105" fontSize="9" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">TODO</text>
       <text x="118" y="80" fontSize="11" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">△</text>
     </VectorGrid>
@@ -119,20 +101,19 @@ function PlaceholderDetect(): React.JSX.Element {
 function AssetReferenceGraph(): React.JSX.Element {
   return (
     <VectorGrid>
-      <Grid />
       <rect x="70" y="22" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="100" y="37" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
+      <text x="100" y="37" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">index.md</text>
       <rect x="15" y="95" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="45" y="110" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">logo.svg</text>
+      <text x="45" y="110" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">logo.svg</text>
       <rect x="125" y="95" width="60" height="22" strokeWidth="1" fill="none" />
-      <text x="155" y="110" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">arch.png</text>
+      <text x="155" y="110" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">arch.png</text>
       <line x1="85" y1="44" x2="52" y2="95" strokeWidth="0.75" />
       <polyline points="54,88 52,95 59,91" fill="none" strokeWidth="0.75" />
       <line x1="115" y1="44" x2="148" y2="95" strokeWidth="0.75" />
       <polyline points="146,88 148,95 141,91" fill="none" strokeWidth="0.75" />
       <rect x="55" y="152" width="90" height="22" stroke="var(--zenzic-warning)" strokeWidth="1" fill="none" />
-      <text x="100" y="167" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">img.png</text>
-      <text x="100" y="190" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ ref</text>
+      <text x="100" y="167" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">img.png</text>
+      <text x="100" y="190" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="var(--zenzic-warning)" stroke="none">∅ ref</text>
     </VectorGrid>
   );
 }
@@ -143,18 +124,17 @@ function AssetReferenceGraph(): React.JSX.Element {
 function CredentialScanline(): React.JSX.Element {
   return (
     <VectorGrid>
-      <Grid />
       <rect x="18" y="86" width="48" height="26" strokeWidth="0.5" fill="none" />
-      <text x="42" y="103" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">export</text>
+      <text x="42" y="103" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">export</text>
       <rect x="72" y="86" width="76" height="26" stroke="var(--zenzic-fatal)" strokeWidth="1" fill="none" />
-      <text x="110" y="103" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">sk_live_***</text>
+      <text x="110" y="103" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">sk_live_***</text>
       <rect x="154" y="86" width="28" height="26" strokeWidth="0.5" fill="none" />
-      <text x="168" y="103" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="currentColor" stroke="none">=…</text>
+      <text x="168" y="103" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" stroke="none">=…</text>
       <line x1="110" y1="72" x2="110" y2="125" stroke="var(--zenzic-brand)" strokeWidth="1" />
       <line x1="104" y1="72" x2="116" y2="72" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
       <line x1="104" y1="125" x2="116" y2="125" stroke="var(--zenzic-brand)" strokeWidth="0.75" />
-      <text x="116" y="70" fontSize="7" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">→ Z201</text>
-      <text x="72" y="128" fontSize="7" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">FATAL</text>
+      <text x="116" y="70" fontSize="8" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">→ Z201</text>
+      <text x="72" y="128" fontSize="8" fontFamily="monospace" fill="var(--zenzic-fatal)" stroke="none">FATAL</text>
     </VectorGrid>
   );
 }
@@ -163,7 +143,7 @@ function CheckCard({code, visual, title, desc}: {code: string; visual: ReactNode
   return (
     <div className="border-t dark:border-zinc-800/60 border-zinc-200 pt-6 group">
       <div className="text-[10px] font-mono tracking-widest dark:text-zinc-600 text-zinc-400 mb-8 uppercase">CHK {code}</div>
-      <div className="h-64 w-full flex items-center justify-center mb-8 bg-transparent">{visual}</div>
+      <div className="h-52 sm:h-56 md:h-64 w-full flex items-center justify-center mb-8 bg-transparent">{visual}</div>
       <h3 className="text-base font-medium dark:text-zinc-200 text-zinc-800 mb-3">{title}</h3>
       <p className="dark:text-zinc-500 text-zinc-500 text-sm leading-relaxed">{desc}</p>
     </div>
