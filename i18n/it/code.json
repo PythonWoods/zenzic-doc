@@ -327,7 +327,7 @@
     "description": "The title of the tag list page"
   },
   "homepage.scanner.title": {
-    "message": "Zenzic in Azione"
+    "message": "Il Gate CI blocca le regressioni prima del merge"
   },
   "homepage.score.title": {
     "message": "Punteggio di Qualità"
@@ -336,63 +336,67 @@
     "message": "Metriche"
   },
   "homepage.features.title": {
-    "message": "Un nuovo standard per i documenti.",
+    "message": "Il decadimento documentale e silenzioso.",
     "description": "Features section title"
   },
   "homepage.features.muted": {
-    "message": "Motori dedicati per l'integrità strutturale.",
+    "message": "Di solito i team lo scoprono dopo il deploy.",
     "description": "Muted part of features title"
+  },
+  "homepage.pain.label": {
+    "message": "Punto Critico",
+    "description": "Pain point section label"
   },
   "chk01.title": {
     "message": "Link interrotti"
   },
   "chk01.desc": {
-    "message": "Rileva link interni morti, anchor mancanti e URL irraggiungibili prima che la build parta."
+    "message": "Un link interno rotto diventa un 404 per gli utenti in produzione. Rilevalo prima del merge."
   },
   "chk02.title": {
     "message": "Pagine orfane"
   },
   "chk02.desc": {
-    "message": "Trova i file <code>.md</code> che esistono su disco ma sono assenti dalla navigazione del sito."
+    "message": "Trova i file <code>.md</code> pubblicati ma irraggiungibili dalla navigazione."
   },
   "chk03.title": {
     "message": "Snippet non validi"
   },
   "chk03.desc": {
-    "message": "Compila ogni blocco Python delimitato. Intercetta gli errori di sintassi prima che i lettori copino codice rotto."
+    "message": "Compila i blocchi Python per evitare che esempi non validi arrivino ai lettori."
   },
   "chk04.title": {
     "message": "Stub segnaposto"
   },
   "chk04.desc": {
-    "message": "Segnala le pagine sotto la soglia di conteggio parole o contenenti pattern come <code>TODO</code>, <code>WIP</code>."
+    "message": "Segnala pagine con segnaposto irrisolti come <code>TODO</code> e <code>WIP</code>."
   },
   "chk05.title": {
     "message": "Asset inutilizzati"
   },
   "chk05.desc": {
-    "message": "Segnala immagini e file che esistono in <code>docs/</code> ma non sono mai referenziati da alcuna pagina."
+    "message": "Segnala i file in <code>docs/</code> che non sono mai referenziati da alcuna pagina."
   },
   "chk06.title": {
-    "message": "credential scanner"
+    "message": "Rilevamento leak credenziali"
   },
   "chk06.desc": {
-    "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice <code>2</code> immediatamente."
+    "message": "Scansiona ogni file per API key e token trapelati. I finding di sicurezza terminano con codice <code>2</code>."
   },
   "homepage.hero.badge": {
-    "message": "Stabile",
+    "message": "Pronto per CI",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "Il Exclusion Zone",
+    "message": "Quality Gate Documentale",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
-    "message": "per la Documentazione Markdown.",
+    "message": "per pipeline CI/CD.",
     "description": "Muted part of the hero headline"
   },
   "homepage.hero.subtitle": {
-    "message": "Analisi statica ad alte prestazioni, agnostica rispetto al motore e con sicurezza integrata.",
+    "message": "Rileva link rotti, credenziali trapelate e deriva della navigazione prima del merge.",
     "description": "Hero sub headline"
   },
   "homepage.hero.getStarted": {
@@ -431,16 +435,16 @@
     "message": "Isolamento navigazione"
   },
   "homepage.scanner.sub": {
-    "message": "Ogni rilevamento è associato a file, riga e sorgente. Output strutturato per occhi umani e pipeline di parsing automatizzato."
+    "message": "I finding sono deterministici per file e riga. Exit code 1 blocca il debito documentale e il modello DQS flat-cost mantiene esplicito il debito da soppressioni."
   },
   "scanner.gutter.title": {
-    "message": "Reporter con contesto riga"
+    "message": "Contesto finding deterministico"
   },
   "scanner.gutter.desc": {
-    "message": "Ogni errore mostra la riga sorgente esatta con contesto. Niente scorrimento di log per trovare cosa si è rotto."
+    "message": "Ogni finding mostra il contesto della riga sorgente. Il team puo correggere senza cercare nei log."
   },
   "scanner.gutter.msg": {
-    "message": "'intro.md' non raggiungibile dalla navigazione"
+    "message": "'intro.md' non raggiungibile dalla navigazione (produrrebbe 404)"
   },
   "scanner.gutter.ctx1": {
     "message": "prima di continuare."
@@ -452,10 +456,10 @@
     "message": "Poi configura il tuo ambiente."
   },
   "scanner.shield.title": {
-    "message": "credential scanner"
+    "message": "Leak credenziali bloccato (exit 2)"
   },
   "scanner.shield.desc": {
-    "message": "Scansiona ogni riga — inclusi i blocchi <code>bash</code> e <code>yaml</code> delimitati — per credenziali trapelate. Il codice di uscita <code>2</code> è riservato esclusivamente agli eventi di sicurezza."
+    "message": "Scansiona ogni riga, inclusi i blocchi <code>bash</code> e <code>yaml</code>, per credenziali trapelate. Il codice di uscita <code>2</code> è riservato agli eventi di sicurezza."
   },
   "scanner.shield.banner": {
     "message": "VIOLAZIONE SICUREZZA RILEVATA"
@@ -476,10 +480,10 @@
     "message": "Ruota questa credenziale immediatamente e rimuovila dalla cronologia del repository."
   },
   "scanner.summary.title": {
-    "message": "Riepilogo di gravità"
+    "message": "Riepilogo esito gate"
   },
   "scanner.summary.desc": {
-    "message": "Ogni esecuzione termina con un riepilogo compatto. Sai subito se il controllo ha fallito duramente o ha emesso solo avvisi."
+    "message": "Ogni esecuzione termina con uno stato compatto. Il codice di uscita 1 indica merge bloccato da finding di qualita."
   },
   "scanner.summary.errors": {
     "message": "✘ 2 errori"
@@ -491,52 +495,70 @@
     "message": "• 1 file con rilevamenti"
   },
   "scanner.summary.failed": {
-    "message": "FALLITO: Uno o più controlli hanno fallito."
+    "message": "FALLITO: quality gate ha bloccato il merge (exit code 1)."
   },
   "scanner.label": {
-    "message": "Reporter e Credenziali"
+    "message": "Esito"
   },
   "score.label": {
     "message": "Metriche di Qualità"
   },
   "ledger.label": {
-    "message": "Il Zenzic Engineering Ledger"
+    "message": "Ecosistema"
   },
   "ledger.heading": {
-    "message": "Tre invarianti verificati ad ogni commit."
+    "message": "Esegui lo stesso quality gate su stack documentali diversi."
   },
   "ledger.heading.muted": {
-    "message": "Nessuna eccezione. Nessuna scorciatoia."
+    "message": "Docusaurus, MkDocs, Zensical e repository standalone."
   },
   "ledger.sub": {
-    "message": "Non sono aspirazioni — sono requisiti. Tutti e tre devono passare prima che qualsiasi modifica venga integrata."
+    "message": "Gli adapter normalizzano i controlli di path e topologia per mantenere il comportamento CI deterministico."
   },
   "ledger.01.title": {
-    "message": "Zero Assunzioni ai Confini del Sistema"
+    "message": "Adapter Docusaurus"
   },
   "ledger.01.desc": {
-    "message": "Ogni entry point pubblico valida i propri input al confine. I percorsi interni non contengono controlli difensivi — la forma è garantita dal sistema di tipi, imposta da mypy --strict ad ogni merge."
+    "message": "Valida link interni, anchor e topologia di navigazione partendo dal sorgente Markdown e dalla configurazione Docusaurus."
   },
   "ledger.02.title": {
-    "message": "Analisi Senza Sottoprocessi"
+    "message": "Adapter MkDocs"
   },
   "ledger.02.desc": {
-    "message": "Gli strumenti di livello produzione non eseguono shell durante l’analisi. Nessun subprocess.run(), nessun os.system() nei loop per-item. Zenzic valida il tuo stack documentale senza eseguirlo."
+    "message": "Legge la topologia di navigazione MkDocs e controlla il sorgente Markdown direttamente, senza richiedere una build del sito."
   },
   "ledger.03.title": {
-    "message": "Grafo delle Dipendenze Deterministico"
+    "message": "Adapter Zensical"
   },
   "ledger.03.desc": {
-    "message": "Ogni dipendenza è bloccata in un lockfile, verificata da Dependabot e analizzata per compatibilità SPDX. Nessuna sorpresa transitiva al momento del rilascio. uv lock e reuse lint vengono eseguiti ad ogni commit."
+    "message": "Usa la configurazione zensical per validare vincoli strutturali e di contenuto con reporting deterministico."
+  },
+  "ledger.04.title": {
+    "message": "Repository Markdown Standalone"
+  },
+  "ledger.04.desc": {
+    "message": "Esegue i controlli anche su repository senza framework dedicato, validando direttamente file Markdown e riferimenti interni."
   },
   "quickstart.label": {
-    "message": "Inizia"
+    "message": "Avvio Rapido"
   },
   "quickstart.heading": {
-    "message": "Da zero all’integrità documentale in un solo comando."
+    "message": "Installazione rapida: esegui un comando."
   },
   "quickstart.sub": {
-    "message": "Nessuna configurazione richiesta. Nessun account necessario. Funziona su qualsiasi progetto Markdown."
+    "message": "Esegui audit della documentazione e ottieni codici di uscita deterministici per CI."
+  },
+  "quickstart.ready": {
+    "message": "zenzic · python 3.10+ · pronto"
+  },
+  "quickstart.commandComment": {
+    "message": "# esegui il quality gate documentale"
+  },
+  "quickstart.expectedPass": {
+    "message": "# exit 0: nessun finding bloccante"
+  },
+  "quickstart.expectedFail": {
+    "message": "# exit 1: il quality gate blocca il merge"
   },
   "quickstart.github": {
     "message": "Star su GitHub"
@@ -558,5 +580,11 @@
   },
   "governance.preview.ok": {
     "message": "CAP nei limiti — exit 0"
+  },
+  "enterprise.section.label": {
+    "message": "Enterprise"
+  },
+  "homepage.enterprise.title": {
+    "message": "Governance Enterprise e Scoring"
   }
 }

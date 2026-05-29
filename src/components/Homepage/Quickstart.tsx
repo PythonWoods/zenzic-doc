@@ -22,12 +22,12 @@ export default function Quickstart(): React.JSX.Element {
         {/* Heading — mirrors Paperclip "From zero to autonomous company in one command." */}
         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
           <Translate id="quickstart.heading">
-            From zero to documentation integrity in one command.
+            Quick install: run one command.
           </Translate>
         </h2>
         <p className="dark:text-zinc-500 text-zinc-500 text-base mb-12">
           <Translate id="quickstart.sub">
-            No configuration required. No account needed. Works on any Markdown project.
+            Audit your documentation and return deterministic exit codes for CI.
           </Translate>
         </p>
 
@@ -48,25 +48,20 @@ export default function Quickstart(): React.JSX.Element {
             {/* Shell ready line */}
             <div className="flex items-center gap-2 pb-3 mb-3 border-b dark:border-zinc-800/40 border-zinc-200/50">
               <span className="text-emerald-400 text-[12px]">✓</span>
-              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]">zenzic · python 3.10+ · ready</span>
+              <span className="dark:text-zinc-500 text-zinc-400 text-[12px]"><Translate id="quickstart.ready">zenzic · python 3.10+ · ready</Translate></span>
             </div>
             <p className="dark:text-zinc-600 text-zinc-400 text-[12px]">
-              # explore the interactive lab (9 acts, zero setup)
-            </p>
-            <div className="flex items-center gap-2 pb-4">
-              <span className="dark:text-indigo-400 text-indigo-600 select-none font-semibold">
-                $
-              </span>
-              <span className="dark:text-zinc-200 text-zinc-800">uvx zenzic lab</span>
-            </div>
-            <p className="dark:text-zinc-600 text-zinc-400 text-[12px]">
-              # audit your documentation right now
+              <Translate id="quickstart.commandComment"># run the documentation quality gate</Translate>
             </p>
             <div className="flex items-center gap-2">
               <span className="dark:text-indigo-400 text-indigo-600 select-none font-semibold">
                 $
               </span>
-              <span className="dark:text-zinc-200 text-zinc-800">uvx zenzic check all .</span>
+              <span className="dark:text-zinc-200 text-zinc-800">uvx zenzic check all</span>
+            </div>
+            <div className="mt-4 pt-3 border-t dark:border-zinc-800/40 border-zinc-200/50 space-y-1">
+              <p className="dark:text-zinc-600 text-zinc-400 text-[12px]"><Translate id="quickstart.expectedPass"># exit 0: no blocking findings</Translate></p>
+              <p className="dark:text-zinc-600 text-zinc-400 text-[12px]"><Translate id="quickstart.expectedFail"># exit 1: quality gate blocks merge</Translate></p>
             </div>
           </div>
         </div>

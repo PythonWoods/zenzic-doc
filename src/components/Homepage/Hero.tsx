@@ -25,23 +25,23 @@ export default function Hero(): React.JSX.Element {
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
         <ZenzicBadge />
         <Translate id="homepage.hero.badge" description="Wait release version badge">
-          Stable
+          CI Ready
         </Translate>
       </div>
       <h1 className="text-4xl sm:text-5xl md:text-[56px] font-semibold tracking-tight dark:text-white text-zinc-900 leading-[1.1] mb-8">
         <Translate id="homepage.hero.title" description="Main hero headline">
-          The Exclusion Zone
+          Documentation Quality Gate
         </Translate>
         <br />
         <span className="dark:text-zinc-500 text-zinc-400">
           <Translate id="homepage.hero.titleMuted" description="Muted part of the hero headline">
-            for Markdown Documentation.
+            for CI/CD pipelines.
           </Translate>
         </span>
       </h1>
       <p className="text-lg md:text-xl dark:text-zinc-400 text-zinc-500 max-w-2xl leading-relaxed mb-12">
         <Translate id="homepage.hero.subtitle" description="Hero sub headline">
-          High-performance, engine-agnostic, and security-hardened static analysis.
+          Detect broken links, leaked credentials, and navigation drift before merge.
         </Translate>
       </p>
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto">

@@ -3,8 +3,7 @@
 import React from 'react';
 import Translate from '@docusaurus/Translate';
 
-// ── Minimal terminal box ───────────────────────────────────────────────────
-function LedgerTerminal({
+function EcosystemPanel({
   filename,
   children,
 }: {
@@ -28,8 +27,7 @@ function LedgerTerminal({
   );
 }
 
-// ── One ledger row ─────────────────────────────────────────────────────────
-function LedgerRow({
+function EcosystemRow({
   index,
   title,
   desc,
@@ -56,116 +54,121 @@ function LedgerRow({
   );
 }
 
-// ── The Zenzic Engineering Ledger ───────────────────────────────────────
 export default function EngineeringLedger(): React.JSX.Element {
   return (
     <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-[1200px] mx-auto px-6">
-        {/* Section header */}
         <div className="mb-4 max-w-3xl">
           <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
-            <Translate id="ledger.label">The Zenzic Engineering Ledger</Translate>
+            <Translate id="ledger.label">Ecosystem</Translate>
           </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="ledger.heading">Three invariants enforced on every commit.</Translate>{' '}
+            <Translate id="ledger.heading">Run the same quality gate across documentation stacks.</Translate>{' '}
             <span className="dark:text-zinc-500 text-zinc-400">
-              <Translate id="ledger.heading.muted">No exceptions. No shortcuts.</Translate>
+              <Translate id="ledger.heading.muted">Docusaurus, MkDocs, Zensical, and standalone repositories.</Translate>
             </span>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 text-base">
             <Translate id="ledger.sub">
-              These are not aspirations — they are gates. All three must pass before any change merges.
+              Adapters normalize path and topology checks so CI behavior stays deterministic regardless of generator.
             </Translate>
           </p>
         </div>
 
-        {/* ── 01 — Zero Assumptions ─────────────────────────────────────── */}
-        <LedgerRow
+        <EcosystemRow
           index="01"
           title={
-            <Translate id="ledger.01.title">Zero Assumptions at System Boundaries</Translate>
+            <Translate id="ledger.01.title">Docusaurus Adapter</Translate>
           }
           desc={
             <Translate id="ledger.01.desc">
-              Every public entry point validates its inputs at the boundary. Internal hot paths
-              carry no defensive checks — the shape is guaranteed by the type system, enforced by
-              mypy --strict on every merge.
+              Validates internal links, anchors, and navigation topology from Markdown source and Docusaurus configuration.
             </Translate>
           }
           terminal={
-            <LedgerTerminal filename="pyproject.toml · type enforcement">
+            <EcosystemPanel filename="docusaurus.config.ts · adapter run">
               <pre className="m-0 bg-transparent whitespace-pre">
                 <code>
-                  {`[tool.mypy]
-strict            = true
-warn_return_any   = true
-warn_unreachable  = true
+                  {`# Docusaurus project
+uvx zenzic check all .
 
-# Every public function has a typed signature.
-# Every Any must be justified in a comment.`}
+# Outcome
+# exit 0 -> no blocking findings
+# exit 1 -> quality gate blocks merge`}
                 </code>
               </pre>
-            </LedgerTerminal>
+            </EcosystemPanel>
           }
         />
 
-        {/* ── 02 — Subprocess-Free ──────────────────────────────────────── */}
-        <LedgerRow
+        <EcosystemRow
           index="02"
-          title={<Translate id="ledger.02.title">Subprocess-Free Analysis</Translate>}
+          title={<Translate id="ledger.02.title">MkDocs Adapter</Translate>}
           desc={
             <Translate id="ledger.02.desc">
-              Production-grade tools do not shell out during analysis. No subprocess.run(), no
-              os.system() inside per-item loops. Zenzic validates your documentation stack without
-              executing it.
+              Reads MkDocs navigation topology and checks Markdown source directly, without requiring a site build.
             </Translate>
           }
           terminal={
-            <LedgerTerminal filename="pillar-2 · subprocess boundary">
+            <EcosystemPanel filename="mkdocs.yml · adapter run">
               <pre className="m-0 bg-transparent whitespace-pre">
                 <code>
-                  {`# ✓ ALLOWED — single setup phase
-class ZenzicEngine:
-    def __init__(self, config: Config):
-        self._vsm = build_vsm(config)   # I/O once
+                  {`# MkDocs project
+uvx zenzic check all .
 
-# ✗ BLOCKED — subprocess inside analysis loop
-for page in corpus:
-    subprocess.run([...])  # ← architectural defect`}
+# Same gate semantics as Docusaurus
+# deterministic findings, same exit codes`}
                 </code>
               </pre>
-            </LedgerTerminal>
+            </EcosystemPanel>
           }
         />
 
-        {/* ── 03 — Deterministic Dependency Graph ───────────────────────── */}
-        <LedgerRow
+        <EcosystemRow
           index="03"
           title={
-            <Translate id="ledger.03.title">Deterministic Dependency Graph</Translate>
+            <Translate id="ledger.03.title">Zensical Adapter</Translate>
           }
           desc={
             <Translate id="ledger.03.desc">
-              Every dependency is pinned in a lockfile, audited by Dependabot, and scanned for
-              SPDX licence compatibility. No transitive surprises at release time. uv lock and
-              reuse lint run on every commit.
+              Uses zensical configuration to validate structure and content constraints with deterministic reporting.
             </Translate>
           }
           terminal={
-            <LedgerTerminal filename="reuse · SPDX compliance">
+            <EcosystemPanel filename="zensical.toml · adapter run">
               <pre className="m-0 bg-transparent whitespace-pre">
                 <code>
-                  {`# runs on every commit via pre-commit
-nox -s reuse
+                  {`# Zensical project
+uvx zenzic check all .
 
-✓ SPDX headers present   │ all source files
-✓ Apache-2.0 declared    │ LICENSES/
-✓ Third-party notices    │ NOTICE
-# No dependency ships
-# without a licence audit.`}
+# Output is machine-readable and human-readable
+# for CI and local review`}
                 </code>
               </pre>
-            </LedgerTerminal>
+            </EcosystemPanel>
+          }
+        />
+
+        <EcosystemRow
+          index="04"
+          title={<Translate id="ledger.04.title">Standalone Markdown Repositories</Translate>}
+          desc={
+            <Translate id="ledger.04.desc">
+              Runs on repositories without a framework-specific adapter by validating Markdown files and internal references directly.
+            </Translate>
+          }
+          terminal={
+            <EcosystemPanel filename="standalone repository · adapter run">
+              <pre className="m-0 bg-transparent whitespace-pre">
+                <code>
+                  {`# Plain Markdown repository
+uvx zenzic check all docs/
+
+# Use in CI, pre-commit, or local checks
+# without changing repository structure`}
+                </code>
+              </pre>
+            </EcosystemPanel>
           }
         />
       </div>

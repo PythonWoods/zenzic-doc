@@ -1,173 +1,95 @@
 ---
 sidebar_position: 10
 sidebar_label: "Why Zenzic"
-title: "Why Zenzic — The Safe Harbour Philosophy"
-description: "A declaration of principles. Zenzic does not explain documentation; it defends it. Here is why that distinction matters."
+title: "Why Zenzic — Risk Prevention and Deterministic Quality Gates"
+description: "How Zenzic reduces documentation risk, removes manual QA loops, and enforces deterministic CI/CD quality gates."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Why Zenzic — The Safe Harbour Philosophy
+# Why Zenzic — Risk Prevention and Deterministic Quality Gates
 
-> *"Documentation that is not defended is documentation that will eventually lie."*
-
-This page is not a product pitch. It is a declaration of principles — an explanation of the
-design choices behind Zenzic that may feel controversial, conservative, or even extreme, but
-are deliberate and non-negotiable.
+Zenzic exists to prevent documentation defects from entering the main branch. The objective is
+operational: block regressions before release, reduce security exposure, and keep CI outcomes
+deterministic.
 
 ---
 
-## Documentation as Untrusted Input
+## Business Value
 
-Every documentation system that has ever failed — broken links after a refactor, leaked
-credentials in a public repository, orphaned pages left behind after a rename — failed because
-someone assumed that the documentation was correct.
+### 1. Risk Reduction
 
-Zenzic does not make that assumption.
+Zenzic prevents high-impact documentation failures before deployment:
 
-**Zenzic treats documentation source as untrusted input.** The same discipline that your
-application applies at a network boundary — validate before trusting — is applied here at the
-documentation boundary. A Markdown file is code. A configuration file is code. A link target
-is a claim that must be verified, not believed.
+- broken internal links that become production 404s,
+- leaked credentials in Markdown or code blocks,
+- navigation or topology inconsistencies that hide critical pages.
 
-This is the **Safe Harbour** guarantee: run Zenzic, get a certificate. If the tool exits 0,
-the documentation is structurally sound. Not perfect — but structurally verifiable. There are
-no broken internal links. No leaked credentials. No pages that silently disappeared from the
-navigation. The source is safe to hand to any build engine.
+For public repositories, credential detection (Z2xx) is a direct control against accidental
+secret exposure.
 
----
+### 2. Time Savings
 
-## The Three Pillars {#three-pillars}
+The quality gate automates checks that are often done manually during review.
 
-Every design decision in Zenzic follows three rules. When in doubt about an
-implementation choice, these are the tie-breakers. If a line of code violates
-any of these pillars, it is **instant technical debt**.
+Correct framing: **the automated quality gate prevents documentation debt from entering the main
+branch, removing manual review loops for broken links.**
 
-**1. Lint the source, not the build.**
-Zenzic analyses raw Markdown files under `docs/` and configuration files
-(`mkdocs.yml`, `docusaurus.config.ts`, `zensical.toml`). It never waits for
-an HTML build. Analysis at the source level is faster, generator-agnostic,
-and always reproducible. Where a build engine defines resolution semantics
-(e.g. i18n fallback), Zenzic reads the configuration as plain text and
-emulates the semantics — without importing or executing the engine.
+Teams stop spending review cycles on repetitive defects and can focus on content quality.
 
-**2. No subprocesses in the core engine.**
-The core library is 100% pure Python. It never calls `subprocess.run` or
-`os.system` to invoke external tools. This guarantees security (zero
-execution of untrusted code), total portability, and extreme speed. Link
-validation is implemented natively with a Markdown link extractor. Zenzic is
-self-contained and testable without installing any documentation generator.
+### 3. Reliability
 
-**3. Pure functions first.**
-All validation logic lives in pure functions: no file I/O, no network access,
-no terminal output. I/O happens only at the edges — in CLI wrappers that read
-files from disk. Pure functions carry deterministic behaviour: identical inputs produce identical
-outputs with no shared state. They compose without interference and parallelize without
-race conditions. This is why Zenzic's parallel discovery mode requires no locks.
+Reliability means repeatable outcomes from identical inputs. Zenzic enforces deterministic
+analysis and deterministic exit codes so CI behavior is stable across runs and environments.
 
 ---
 
-## The Node.js Tax
+## Defence Trinity {#defence-trinity}
 
-Every documentation tool in the JavaScript ecosystem requires Node.js. A documentation
-quality gate should not need to provision a multi-gigabyte runtime just to check whether a
-link target exists.
+### Link Integrity (Z1xx)
 
-Zenzic is **100% pure Python**. Zero subprocess calls. Zero Node.js. Zero npm. One
-`uvx zenzic check all` and you are done — on Linux, macOS, and Windows, with Python 3.10
-through 3.14.
+Internal links, anchors, and route references are validated before build. This prevents runtime
+navigation failures from reaching users.
 
-This is not a coincidence. It is **RULE R08** — the Zero Subprocess Law — enshrined as an
-architectural invariant. It means:
+### Credential Leak Prevention (Z2xx) {#credential-scanner}
 
-- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — no Python pre-install step, no
-  cached wheel to manage. One line added to any workflow.
-- **Pre-commit:** Add `zenzic-verify` to `.pre-commit-config.yaml`. The hook runs on staged files;
-  zero side effects to the working tree.
-- **Any CI runner:** Requires `bash` ≥5 and `python3` ≥3.10 in `PATH`. No other runtime. No Node.js.
+The scanner checks each file for known credential patterns. Security findings are fail-closed and
+immediately stop the pipeline.
 
-The Node.js Tax is a debt that compounds. Zenzic refuses to pay it.
+### Path and Topology Safety (Z202/Z203) {#path-traversal-guard}
+
+Path traversal and unsafe path resolution are blocked. Configuration cannot escape repository
+boundaries during analysis.
 
 ---
 
-## The Defence Trinity {#defence-trinity}
+## Deterministic Execution Model {#three-pillars}
 
-Zenzic enforces three non-negotiable lines of defence:
+Zenzic applies three engineering rules to keep results predictable:
 
-### 1. Link Integrity (Z1xx)
+1. **Lint source, not build output.**
+2. **No subprocesses in the core analysis loop.**
+3. **Pure-function-first validation and scoring.**
 
-The web of references that connects a documentation site is its structural skeleton. A broken
-link is not a cosmetic bug — it is a broken contract with the reader. Zenzic validates every
-internal link, every anchor reference, every cross-locale path. It builds a **Virtual Site
-Map** (VSM) in memory — a projection of the final site — and verifies ghost routes that would
-only break at runtime.
-
-### 2. Credential Scanner (Z201) {#credential-scanner}
-
-Credentials in documentation kill companies. An AWS access key, a GitHub token, a private
-API key — any of these committed to a public repository triggers a breach that no `git history
---rewrite` can fully undo. The credential scanner scans every byte of every file, including YAML
-frontmatter (where secrets frequently hide), before any other check runs.
-
-**Exit code 2 is never suppressible.** Not by `--exit-zero`. Not by `fail-on-error: false`.
-Not by `zenzic:ignore`. A leaking credential is a hard stop.
-
-### 3. Path Traversal Guard (Z202/Z203) {#path-traversal-guard}
-
-Path traversal in documentation configurations is a class of attack that most teams never
-imagine exists. A `docs_dir: "../../etc"` in a configuration file is not an accident — it is
-a jailbreak. The path traversal guard closes this vector unconditionally.
-
-**Exit code 3 is never suppressible.** Full stop.
+This model keeps the same repository state tied to the same finding set and the same gate result.
 
 ---
 
-## Sovereign Root
+## CI Gate Semantics
 
-Documentation does not live in isolation. A monorepo may contain three services, each with
-its own documentation root, each with its own `.zenzic.toml`. Zenzic respects this.
+- **Exit 0**: no blocking findings.
+- **Exit 1**: quality findings block merge.
+- **Exit 2**: credential/security finding.
+- **Exit 3**: path traversal guard violation.
 
-**The configuration follows the target, not the caller.** When you run
-`zenzic check all /path/to/project-B`, Zenzic loads project-B's configuration — not the
-configuration of the directory you are standing in. This is **ADR-009 — Path Sovereignty**:
-`find_repo_root(search_from=target)` ensures that the analysis is always anchored to the
-repository that owns the target.
-
-This invariant makes Zenzic safe to run from a CI orchestration script that analyses multiple
-repositories in sequence. There is no "context hijacking" — each analysis is fully sovereign.
+The DQS flat-cost model keeps suppression debt explicit: each suppression contributes a fixed
+penalty, so score movement is predictable and reviewable.
 
 ---
 
-## The Scoring Model
+## Use Cases
 
-Zenzic introduced a scoring model that is **not backward-compatible** with earlier
-baselines.
-
-The current series model used a uniform decay rate: five issues in any category zeroed that
-category regardless of severity. It punished volume, not severity. A single broken link and
-fifty broken links produced proportionally different — but not meaningfully different — scores.
-
-The **Zenzic Penalty Scorer** (D092) replaces this with a per-code penalty table:
-
-| Category | Weight | Example codes |
-|---|---|---|
-| Structural Integrity | 30 pts | Z101, Z102, Z104, Z105, Z107 |
-| Content Excellence | 20 pts | Z403, Z501, Z502, Z503, Z505 |
-| Navigation | 25 pts | Z301, Z302, Z303, Z401, Z402 |
-| Brand & Assets | 25 pts | Z404, Z405, Z406, Z601 |
-
-A score of 70/100 with 1000 untagged code blocks (Z505) means: structural integrity is
-perfect, navigation is clean, and only the content category is degraded — not the whole
-project. Category caps prevent noise from masking signal.
-
-If you have a score snapshot file (`.zenzic-score.json`), Zenzic will refuse to
-load it and ask you to create a new baseline. This is intentional. Comparing apples to
-oranges is worse than having no comparison at all.
-
-Run `zenzic score --save` once to establish a Zenzic baseline.
-
----
-
-*Zenzic is built and maintained in Italy 🇮🇹 — with the conviction that documentation
-quality is not optional.*
+- **B2B monorepo maintenance**: enforce consistent doc quality across multiple services.
+- **API portal validation**: prevent broken route references and hidden navigation regressions.
+- **Docs-as-code CI pipelines**: block regressions early with deterministic gate behavior.

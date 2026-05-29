@@ -45,13 +45,18 @@ export default function Features(): React.JSX.Element {
     <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-20 max-w-3xl">
+          <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
+            <Translate id="homepage.pain.label" description="Pain point section label">
+              Pain Point
+            </Translate>
+          </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.features.title" description="Features section title">
-              A new standard for docs.
+              Documentation drift is silent.
             </Translate>{' '}
             <span className="dark:text-zinc-500 text-zinc-400">
               <Translate id="homepage.features.muted" description="Muted part of features title">
-                Purpose-built engines for structural integrity.
+                Teams usually see it after deployment.
               </Translate>
             </span>
           </h2>
@@ -61,37 +66,37 @@ export default function Features(): React.JSX.Element {
             code="0.1"
             visual={<BrokenLinksIso />}
             title={<Translate id="chk01.title">Broken links</Translate>}
-            desc={<Translate id="chk01.desc">Detects dead internal links, missing anchors, and unreachable URLs before the build runs.</Translate>}
+            desc={<Translate id="chk01.desc">A broken internal link becomes a 404 for users in production. Detect it before merge.</Translate>}
           />
           <CheckCard
             code="0.2"
             visual={<OrphanIso />}
             title={<Translate id="chk02.title">Orphan pages</Translate>}
-            desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that exist on disk but are absent from the site navigation.'}</Translate>}
+            desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that are shipped but unreachable from navigation.'}</Translate>}
           />
           <CheckCard
             code="0.3"
             visual={<SnippetIso />}
             title={<Translate id="chk03.title">Invalid snippets</Translate>}
-            desc={<Translate id="chk03.desc">Compiles every fenced Python block. Catches syntax errors before readers copy-paste code.</Translate>}
+            desc={<Translate id="chk03.desc">Compiles fenced Python snippets to prevent broken examples from reaching readers.</Translate>}
           />
           <CheckCard
             code="0.4"
             visual={<PlaceholderIso />}
             title={<Translate id="chk04.title">Placeholder stubs</Translate>}
-            desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>.'}</Translate>}
+            desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages with unresolved placeholders like <code>TODO</code> and <code>WIP</code>.'}</Translate>}
           />
           <CheckCard
             code="0.5"
             visual={<AssetsIso />}
             title={<Translate id="chk05.title">Unused assets</Translate>}
-            desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports images and files that exist in <code>docs/</code> but are never referenced by any page.'}</Translate>}
+            desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports files in <code>docs/</code> that are never referenced by any page.'}</Translate>}
           />
           <CheckCard
             code="0.6"
             visual={<CredentialIcon />}
-            title={<Translate id="chk06.title">credential scanner</Translate>}
-            desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately.'}</Translate>}
+            title={<Translate id="chk06.title">Credential leak detection</Translate>}
+            desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every file for leaked API keys and tokens. Security findings exit with code <code>2</code>.'}</Translate>}
           />
         </div>
       </div>

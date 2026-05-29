@@ -10,14 +10,14 @@ export default function SecuritySection(): React.JSX.Element {
       <div className="max-w-5xl mx-auto px-6">
         <div className="mb-24 text-center">
           <p className="text-[11px] font-mono tracking-[0.18em] dark:text-zinc-600 text-zinc-400 mb-4 uppercase">
-            <Translate id="scanner.label">Reporter &amp; Credentials</Translate>
+            <Translate id="scanner.label">Outcome</Translate>
           </p>
           <h2 className="text-3xl font-medium tracking-tight dark:text-white text-zinc-900 mb-4">
-            <Translate id="homepage.scanner.title">Zenzic in Action</Translate>
+            <Translate id="homepage.scanner.title">CI Gate Blocks Regressions Before Merge</Translate>
           </h2>
           <p className="dark:text-zinc-500 text-zinc-500 max-w-xl mx-auto">
             <Translate id="homepage.scanner.sub">
-              Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike.
+              Findings are deterministic by file and line. Exit code 1 blocks documentation debt, and the DQS flat-cost model keeps suppression debt explicit.
             </Translate>
           </p>
         </div>
@@ -27,11 +27,11 @@ export default function SecuritySection(): React.JSX.Element {
           <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-center">
             <div className="flex-1 md:pr-8">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
-                <Translate id="scanner.gutter.title">Gutter reporter</Translate>
+                <Translate id="scanner.gutter.title">Deterministic finding context</Translate>
               </h3>
               <p className="dark:text-zinc-400 text-zinc-500 leading-relaxed text-sm">
                 <Translate id="scanner.gutter.desc">
-                  Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke.
+                  Each finding shows exact source line context. Teams can fix the issue without hunting through logs.
                 </Translate>
               </p>
             </div>
@@ -42,7 +42,7 @@ export default function SecuritySection(): React.JSX.Element {
                   <span className="text-rose-500">✘</span>
                   <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm">[FILE_NOT_FOUND]</span>
                   <span className="dark:text-zinc-300 text-zinc-700">
-                    <Translate id="scanner.gutter.msg">&apos;intro.md&apos; not reachable from nav</Translate>
+                    <Translate id="scanner.gutter.msg">&apos;intro.md&apos; not reachable from nav (would return 404)</Translate>
                   </span>
                 </div>
                 <div className="dark:text-zinc-600 text-zinc-400 flex"><span className="w-6 text-right mr-3">15</span>│ <Translate id="scanner.gutter.ctx1">before continuing.</Translate></div>
@@ -59,11 +59,11 @@ export default function SecuritySection(): React.JSX.Element {
           <div className="flex flex-col md:flex-row-reverse gap-12 lg:gap-20 items-center">
             <div className="flex-1 md:pl-8">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
-                <Translate id="scanner.shield.title">credential scanner</Translate>
+                <Translate id="scanner.shield.title">Credential leak blocked (exit 2)</Translate>
               </h3>
               <p className="dark:text-zinc-400 text-zinc-500 leading-relaxed text-sm">
                 <Translate id="scanner.shield.desc" values={{ code1: (str: string) => <code>{str}</code>, code2: (str: string) => <code>{str}</code>, code3: (str: string) => <code>{str}</code> }}>
-                  {'Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events.'}
+                  {'Scans every line, including fenced <code>bash</code> and <code>yaml</code> blocks, for leaked credentials. Exit code <code>2</code> is reserved for security events.'}
                 </Translate>
               </p>
             </div>
@@ -84,11 +84,11 @@ export default function SecuritySection(): React.JSX.Element {
           <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-center">
             <div className="flex-1 md:pr-8">
               <h3 className="text-xl font-medium dark:text-white text-zinc-900 mb-3">
-                <Translate id="scanner.summary.title">Severity summary</Translate>
+                <Translate id="scanner.summary.title">Gate result summary</Translate>
               </h3>
               <p className="dark:text-zinc-400 text-zinc-500 leading-relaxed text-sm">
                 <Translate id="scanner.summary.desc">
-                  Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings.
+                  Every run ends with a compact status. Exit code 1 indicates a blocked merge due to quality findings.
                 </Translate>
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function SecuritySection(): React.JSX.Element {
                   <span className="text-amber-500 font-medium"><Translate id="scanner.summary.warnings">⚠ 1 warning</Translate></span>
                   <span className="dark:text-zinc-500 text-zinc-400"><Translate id="scanner.summary.files">• 1 file with findings</Translate></span>
                 </div>
-                <div className="text-rose-500 font-bold tracking-wide"><Translate id="scanner.summary.failed">FAILED: One or more checks failed.</Translate></div>
+                <div className="text-rose-500 font-bold tracking-wide"><Translate id="scanner.summary.failed">FAILED: Quality gate blocked merge (exit code 1).</Translate></div>
               </div>
             </div>
           </div>
