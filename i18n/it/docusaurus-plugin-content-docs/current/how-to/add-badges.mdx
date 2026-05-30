@@ -89,17 +89,26 @@ Inserisci un marcatore `<!-- zenzic:badge -->` in ciascun file elencato.
 
 ## Integrazione CI/CD
 
-Aggiungi questi step al tuo workflow per **far fallire la pipeline** se uno sviluppatore dimentica di aggiornare il badge in locale prima del push:
+Usa `zenzic score --check-stamp` per **far fallire la pipeline** se il badge non è aggiornato — senza git, senza bash, senza nomi di file hardcodati.
 
 ```yaml title=".github/workflows/ci.yml"
-- name: Stamp badge
-  run: uvx zenzic score --stamp
-
 - name: Verifica freshness del badge
-  run: git diff --exit-code README.md
+  run: uvx zenzic score --check-stamp
 ```
 
-Lo step `git diff --exit-code` garantisce che l'URL del badge nel repository rifletta il punteggio corrente. Se uno sviluppatore dimentica di eseguire `--stamp` prima del push, la CI lo rileva.
+`--check-stamp` legge `badge_stamp_files` dal tuo `.zenzic.toml`, calcola l'URL Shields.io atteso per il punteggio corrente, ed esce con codice 1 se qualsiasi file configurato contiene un URL di badge non aggiornato. Il messaggio di errore indica il file obsoleto e dice allo sviluppatore esattamente cosa fare:
+
+```text
+FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+```
+
+> **zenzic-action esegue questo automaticamente.** Quando usi `pythonwoods/zenzic-action`, il controllo di freshness del badge viene eseguito per default dopo `check all`. Puoi disabilitarlo con `check-stamp: 'false'`.
+
+```yaml title=".github/workflows/zenzic.yml (esempio opt-out)"
+- uses: pythonwoods/zenzic-action@v1
+  with:
+    check-stamp: 'false'
+```
 
 ---
 
