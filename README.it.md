@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
 [![Zenzic](https://img.shields.io/badge/Zenzic-v0.8.0-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
 [![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_passed-success?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
+[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-badge.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
 ---

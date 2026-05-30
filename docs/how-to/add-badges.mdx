@@ -1,131 +1,169 @@
 ---
 icon: lucide/award
 sidebar_label: "Official Badges"
-description: "Display Zenzic audit status and quality scores as badges in your README."
+description: "Add CI status and DQS Score badges to your README using Dual-Badge Telemetry."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Official Badges & CI/CD Integration
+# Official Badges — Dual-Badge Telemetry
 
-Zenzic provides two official badge types. Add them to your project’s `README.md` to signal documentation integrity to contributors and users.
+Zenzic exposes **two orthogonal signals** in your README. Each has a distinct source of truth and a distinct audience:
 
----
-
-## ✅ Zenzic Audit Badge (Binary Status)
-
-![Zenzic Audit badge](../assets/brand/svg/zenzic-badge-audit.svg)
-
-Use this badge to certify that your documentation has passed Zenzic's full integrity check: structural links, credential scanner (Z201–Z204), and path traversal guard (Z202–Z203). It is a binary gate: **audit: passed** or **audit: failed**.
-
-### Copy-paste Markdown
-
-**Passing (green):**
-
-```markdown title="README.md"
-[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_passed-success?style=flat-square)](https://zenzic.dev/docs/how-to/add-badges/)
-```
-
-**Failing (red):**
-
-```markdown title="README.md"
-[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_failed-critical?style=flat-square)](https://zenzic.dev/docs/how-to/add-badges/)
-```
-
-### Recommended CI step
-
-```yaml title=".github/workflows/zenzic.yml"
-- name: Audit documentation (Zenzic)
-  run: uvx zenzic check all --strict
-```
-
-Place the `audit: passed` URL in your README. If this step fails in CI, manually swap the badge to `audit: failed` — or automate it via [dynamic-badges-action](https://github.com/Schneegans/dynamic-badges-action) (see [CI/CD Integration](./configure-ci-cd.mdx)).
-
-> **Why “audit”?** The badge certifies that the documentation corpus has passed deterministic structural integrity and security checks — not a stylistic review. `audit: passed` maps directly to `zenzic check all --strict` exit code 0.
+| Badge | Source | Signal | Visibility |
+|-------|--------|--------|-----------|
+| **CI Status** | GitHub Actions (native) | Pass/Fail in real time | Always public on main |
+| **DQS Score** | `zenzic score --stamp` | Quality of accepted code (0–100) | Crystallized in each commit |
 
 ---
 
-## 💯 Zenzic Score (Improvement Metric)
+## Badge 1 — CI Status (GitHub Actions)
 
-![Zenzic Score badge](../assets/brand/svg/zenzic-badge-score.svg)
+The CI status badge is generated natively by GitHub Actions. No Zenzic configuration is required.
 
-Use this badge to expose the live quality score (0–100) of your documentation. Ideal for established projects adopting Zenzic progressively: a green build can still show a non-perfect score, encouraging continuous improvement without blocking the workflow.
-
-### Copy-paste Markdown
+Copy this snippet into your README, replacing `<owner>` and `<repo>`:
 
 ```markdown title="README.md"
-[![Zenzic Score](https://img.shields.io/badge/zenzic_score-100%2F100-4f46e5?style=flat-square)](https://zenzic.dev/docs/how-to/add-badges/)
+[![CI](https://github.com/<owner>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<owner>/<repo>/actions/workflows/ci.yml)
 ```
 
-### Using `--fail-under` for progressive adoption
+This badge reflects the build status of the **default branch** in real time. If your Zenzic workflow is in a different file, adjust `ci.yml` accordingly.
+
+> **Why GitHub Actions instead of a Zenzic badge?** The CI status badge is the only artifact that can show a **red (failing) state publicly on main**. A `--stamp` badge cannot reach main when the CI blocks the push — so the CI badge is the authoritative source for pass/fail visibility.
+
+---
+
+## Badge 2 — DQS Score (`zenzic score --stamp`)
+
+`zenzic score --stamp` writes the current Documentation Quality Score directly into your README as a Shields.io badge — no Gist, no PAT tokens, no external dependencies.
+
+### Setup
+
+**Step 1.** Add the `<!-- zenzic:badge -->` marker to your README, followed on the next line by any Shields.io badge as a placeholder:
+
+```markdown title="README.md"
+<!-- zenzic:badge -->
+[![Zenzic Score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-100_%2F_100-4f46e5?style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
+```
+
+**Step 2.** Run `zenzic score --stamp`. The badge URL on the line immediately after the marker is replaced with the current score and the appropriate brand color.
 
 ```bash
-# Green CI at 72/100 — build passes, score is visible
-zenzic score --fail-under=70
-
-# Red CI at 72/100 — floor not met
-zenzic score --fail-under=80
+zenzic score --stamp
+# Badge stamped → README.md
 ```
 
-The `--fail-under` flag decouples the exit code from the score value. Teams can start at a realistic floor (e.g. 60) and raise it sprint by sprint.
+The `--stamp` option always updates the badge **before** applying exit-code checks (fail_under, suppression_cap). This ensures the badge reflects the actual score even when the build fails.
+
+### Badge Colors
+
+| Color | Hex | Condition |
+|-------|-----|-----------|
+| Indigo | `4f46e5` | Score = 100 |
+| Amber | `f59e0b` | Score ≥ `fail_under` (passing) |
+| Red | `ef4444` | Score < `fail_under` or security override |
+
+### The Red Badge as a Local Signal
+
+When `zenzic score --stamp` runs locally and the score is below `fail_under`, the badge in your README turns red. This is **immediate, unambiguous feedback** — visible before you even attempt a push. You do not need to wait for CI to tell you the build is broken; the red badge in your editor is the signal.
+
+A red badge will never appear on the public main branch: the CI blocks the push (Exit Code 1), so only indigo or amber badges reach main. The red badge exists precisely to warn you *before* that happens.
+
+### Time-Traveling Badges
+
+Because the URL is written inline into the commit, every historical commit shows the score that was computed at that point in time — not the current score. Older commits display their own score, not today's. This is the core advantage over Gist-based dynamic endpoints.
+
+### Multi-file stamping (`badge_stamp_files`)
+
+By default, `--stamp` updates only `README.md`. To update additional files (e.g. `README.it.md` for multilingual projects), add `badge_stamp_files` to `[project_metadata]` in `.zenzic.toml`:
+
+```toml title=".zenzic.toml"
+[project_metadata]
+badge_stamp_files = ["README.md", "README.it.md"]
+```
+
+Place a `<!-- zenzic:badge -->` marker in each listed file.
 
 ---
 
-## 📊 Live Score Badge via JSON
+## CI/CD Integration
 
-`zenzic score --save` writes `.zenzic-score.json` at the repo root:
+Add these two steps to your workflow to **fail the pipeline** if a developer forgets to update the badge locally before pushing:
 
-```text
-{"project": "zenzic", "score": 100, "threshold": 0, "status": "success", "timestamp": "...", "categories": [...]}
+```yaml title=".github/workflows/ci.yml"
+- name: Stamp badge
+  run: uvx zenzic score --stamp
+
+- name: Verify badge freshness
+  run: git diff --exit-code README.md
 ```
 
-This file is the machine-readable bridge to dynamic Shields.io badges.
+The `git diff --exit-code` step ensures the badge URL in the repository reflects the current score. If a developer forgets to run `--stamp` before pushing, the CI catches it.
 
-### Automate with GitHub Actions
+---
 
-The following two steps save the score and push it to a [GitHub Gist](https://gist.github.com) that Shields.io reads on every request:
+## Automating the Score Badge in CI/CD
 
-```yaml title=".github/workflows/zenzic-score.yml"
+Running `zenzic score --stamp` locally before every push works well for solo developers. Teams using GitHub Actions can automate it so the badge is always in sync — without relying on each contributor to remember the step.
 
-- name: Compute Zenzic Score
+### Why this requires `contents: write`
 
-  run: |
-    uvx zenzic score --save
-    echo "SCORE=$(uvx zenzic score --format json | python3 -c \
-      'import sys,json; print(json.load(sys.stdin)["score"])')" >> "$GITHUB_ENV"
+`--stamp` modifies a file on disk (`README.md`). To persist that change to the repository from a GitHub Actions runner, the workflow must commit and push the file back. This requires the `contents: write` permission.
 
+### Full workflow snippet
+
+The pattern below runs the Zenzic action first (the audit gate), then stamps the badge regardless of the audit result (`if: always()`), and commits only if the badge URL actually changed:
+
+```yaml title=".github/workflows/zenzic.yml"
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to commit the updated badge
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Zenzic Action
+        uses: pythonwoods/zenzic-action@v1
+
+      - name: Update Score Badge
+        if: always()  # Run even if the audit fails
+        run: |
+          uvx zenzic score --stamp
+
+          # Commit only if the badge changed
+          if [[ -n $(git status -s README.md) ]]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore(docs): update Zenzic score badge"
+            git push
+          fi
+```
+
+### Key design decisions
+
+**`if: always()`** — The badge must be stamped even when the audit fails, so the red badge appears in the repository (on the PR branch) and contributors see the degraded score immediately.
+
+**`git status -s README.md`** — Skips the commit when the score has not changed since the last run. Avoids noisy "chore" commits on every push.
+
+**`contents: write` scoped to the job** — The permission is declared at the job level, not the workflow level, to limit blast radius. Only this job can write to the repository.
+
+### Multi-file stamping
+
+If `badge_stamp_files` includes more than `README.md`, expand the `git add` and `git status` check accordingly:
+
+```yaml
 - name: Update Score Badge
-
-  uses: Schneegans/dynamic-badges-action@<version>
-  with:
-    auth: ${{ secrets.GIST_SECRET }}
-    gistID: <your-gist-id>
-    filename: zenzic-score.json
-    label: "zenzic score"
-    message: "${{ env.SCORE }} / 100"
-    color: ${{ env.SCORE == '100' && '4f46e5' || env.SCORE >= '80' && 'f59e0b' || 'ef4444' }}
+  if: always()
+  run: |
+    uvx zenzic score --stamp
+    if [[ -n $(git status -s README.md README.it.md) ]]; then
+      git config --global user.name "github-actions[bot]"
+      git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      git add README.md README.it.md
+      git commit -m "chore(docs): update Zenzic score badge"
+      git push
+    fi
 ```
-
-Then reference the dynamic endpoint in your README:
-
-```markdown title="README.md"
-[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/<user>/<gist-id>/raw/zenzic-score.json)](https://github.com/PythonWoods/zenzic)
-```
-
-**Setup:** create a Gist, generate a Personal Access Token with `gist` scope, save it as `GIST_SECRET` in your repo secrets, and replace `<your-gist-id>`. See [CI/CD Integration](./configure-ci-cd.mdx) for the complete workflow.
-
----
-
-## 🎨 Offline / Enterprise Badges
-
-Projects in air-gapped or enterprise environments that cannot call `img.shields.io` can embed the official static SVG assets from the Brand Kit directly:
-
-| File | Description |
-|---|---|
-| `zenzic-badge-audit.svg` | Static “audit: passed” badge |
-| `zenzic-badge-score.svg` | Static “100 / 100” score badge |
-
-**Note:** `brand-kit.zip` is a build artifact. It is not stored in the repository — download it
-from the [GitHub Releases](https://github.com/PythonWoods/zenzic/releases/latest) page, or
-generate it locally with `nox -s build`.

@@ -733,6 +733,7 @@ Individual checks answer a binary question: pass or fail. `zenzic score` answers
 ```bash
 zenzic score                   # Compute 0–100 quality score
 zenzic score --save            # Compute and persist snapshot to .zenzic-score.json
+zenzic score --stamp           # Update <!-- zenzic:badge --> in badge_stamp_files
 zenzic score --fail-under 80   # Exit 1 if score is below threshold
 zenzic score --format json     # Machine-readable score report
 zenzic score [PATH]            # Score a remote project (sovereign root)
@@ -782,22 +783,26 @@ Use this when the team has committed to maintaining a defined quality level, reg
 the score was last week. You can also set `fail_under = 80` in `.zenzic.toml` to make it
 persistent.
 
-### Dynamic quality badge
+### Inline badge stamping
 
 ```bash
-zenzic score --export-shields zenzic-shields.json
+zenzic score --stamp
 ```
 
-Writes a [Shields.io endpoint](https://shields.io/endpoint)-compatible JSON file to disk. Upload
-the file to a GitHub Gist or a `gh-pages` branch to expose it publicly, then embed the dynamic
-badge in your `README.md`:
+Updates the `<!-- zenzic:badge -->` marker in all files listed in `badge_stamp_files` (default: `README.md`).
+The Shields.io badge URL on the line immediately following the marker is replaced with the current
+score and the brand color:
 
-```markdown
-[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-shields.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
-```
+| Color | Hex | Condition |
+| :--- | :--- | :--- |
+| Indigo | `4f46e5` | Score = 100 |
+| Amber | `f59e0b` | Score ≥ `fail_under` (passing) |
+| Red | `ef4444` | Score < `fail_under` or security override |
 
-Color logic: `brightgreen` if score ≥ `fail_under` (or ≥ 80 when no threshold is set), `yellow` if
-score ≥ 70, `red` otherwise or if a security override is active.
+The stamp always runs **before** exit-code checks, so the badge reflects the actual score even when
+the build fails. When the score is below `fail_under` locally, the red badge is immediate feedback
+before the push — it will never appear on main because the CI blocks the commit.
+See [Official Badges](/docs/how-to/add-badges) for setup and the full CI/CD snippet.
 
 To surface the score without blocking the pipeline:
 

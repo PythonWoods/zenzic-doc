@@ -794,7 +794,7 @@ da quello che era il punteggio la settimana scorsa. Puoi anche impostare `fail_u
 ### Badge di qualità dinamico
 
 ```bash
-zenzic score --export-shields zenzic-shields.json
+zenzic score --export-shields zenzic-badge.json
 ```
 
 Scrive su disco un file JSON compatibile con l'[endpoint Shields.io](https://shields.io/endpoint).
@@ -802,7 +802,7 @@ Carica il file su un GitHub Gist o un branch `gh-pages` per esporlo pubblicament
 il badge dinamico nel tuo `README.md`:
 
 ```markdown
-[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-shields.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-badge.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
 ```
 
 Logica colore: `brightgreen` se score ≥ `fail_under` (o ≥ 80 se non è impostata nessuna soglia),
