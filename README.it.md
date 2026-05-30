@@ -13,13 +13,13 @@ SPDX-License-Identifier: Apache-2.0
 
 # Guida per Sviluppatori zenzic-doc
 
-[![Docs CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
+[![CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
+<!-- zenzic:badge -->
+[![zenzic-score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-99_%2F_100-ef4444?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+[![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
 [![Zenzic](https://img.shields.io/badge/Zenzic-v0.8.0-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
-[![Zenzic Audit](https://img.shields.io/badge/zenzic-audit:_passed-success?style=flat-square)](https://zenzic.dev/it/docs/how-to/add-badges/)
-[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-badge.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
-[![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 
 ---
 
