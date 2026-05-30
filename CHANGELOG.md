@@ -11,6 +11,8 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-05-30
+
 ### Added
 
 - **ADR-013 added to the developer ADR vault (EN/IT):** Regex ACL and RE2
