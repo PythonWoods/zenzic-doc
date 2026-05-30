@@ -4,7 +4,7 @@ title: "Release v0.8.0: The Governance Engine"
 sidebar_label: "Release v0.8.0"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-logs]
-date: 2026-05-24T10:00:00
+date: 2026-05-30T10:00:00
 description: >-
   v0.8.0 delivers: Scoring Engine 2.0 with flat-cost suppression debt,
   Adapter ABC Contract, Strict Mode decoupling, Sovereign Audit, and a
@@ -142,6 +142,28 @@ zenzic guard init   # installs the pre-commit hook
 ```
 
 **`zenzic inspect codes`** — live code registry with tier, ownership, and non-suppressibility flag per entry.
+
+## Native Telemetry Validation
+
+Documentation quality badges are a commitment: when `zenzic score --stamp` writes an indigo `100/100` badge into a commit, that number must reflect the actual score at that point in time. The reliability of that commitment depends on developers remembering to run `--stamp` before every push — a friction point that scales poorly across teams.
+
+Before v0.8.0, the only CI enforcement mechanism was a hand-written bash gate:
+
+```bash
+git diff HEAD --quiet README.md || exit 1
+```
+
+This pattern hardcoded filenames, required `git` and `bash`, and produced no actionable output on failure. It also violated the Zero-Config Default pillar: using `--stamp` silently required a corresponding CI gate that no Zenzic command surfaced or documented.
+
+`zenzic score --check-stamp` eradicates the need for external gates. It reads `badge_stamp_files` from `.zenzic.toml`, computes the expected Shields.io URL for the current score, and exits 1 with a precise remediation message if any configured file contains a stale badge URL:
+
+```text
+FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+```
+
+If the `<!-- zenzic:badge -->` marker is absent from a file, `--check-stamp` passes silently. Users who do not use badges pay zero configuration cost. Users who opt into badge stamping receive automatic CI enforcement without writing a single line of workflow YAML — `zenzic-action` runs `--check-stamp` by default after `check all`.
+
+The architectural rationale is documented in [ADR 015: Native Telemetry Validation](/developers/explanation/adr-native-telemetry).
 
 ## New Finding Codes
 
