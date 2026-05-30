@@ -13,24 +13,19 @@ Zenzic exposes **two orthogonal signals** in your README. Each has a distinct so
 
 | Badge | Source | Signal | Visibility |
 |-------|--------|--------|-----------|
-| **CI Status** | GitHub Actions (native) | Pass/Fail in real time | Always public on main |
+| **Audit Badge** | `zenzic score --stamp` | Deterministic pass/fail governance signal | Crystallized in each commit |
 | **DQS Score** | `zenzic score --stamp` | Quality of accepted code (0–100) | Crystallized in each commit |
 
 ---
 
-## Badge 1 — CI Status (GitHub Actions)
+## Badge 1 — Audit Status (`zenzic score --stamp`)
 
-The CI status badge is generated natively by GitHub Actions. No Zenzic configuration is required.
+`zenzic score --stamp` also writes a deterministic governance badge (`passing` or `failing`).
+The audit badge is based on the same score run and resolves pass/fail from policy conditions:
 
-Copy this snippet into your README, replacing `<owner>` and `<repo>`:
-
-```markdown title="README.md"
-[![CI](https://github.com/<owner>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<owner>/<repo>/actions/workflows/ci.yml)
-```
-
-This badge reflects the build status of the **default branch** in real time. If your Zenzic workflow is in a different file, adjust `ci.yml` accordingly.
-
-> **Why GitHub Actions instead of a Zenzic badge?** The CI status badge is the only artifact that can show a **red (failing) state publicly on main**. A `--stamp` badge cannot reach main when the CI blocks the push — so the CI badge is the authoritative source for pass/fail visibility.
+- no security override
+- score >= `fail_under`
+- suppressions <= `suppression_cap`
 
 ---
 
@@ -40,21 +35,23 @@ This badge reflects the build status of the **default branch** in real time. If 
 
 ### Setup
 
-**Step 1.** Add the `<!-- zenzic:badge -->` marker to your README, followed on the next line by any Shields.io badge as a placeholder:
+**Step 1.** Add both marker lines to your README. Each marker must be immediately followed by a Shields.io badge placeholder:
 
 ```markdown title="README.md"
-<!-- zenzic:badge -->
+<!-- zenzic:audit-badge -->
+[![Zenzic Audit](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
+<!-- zenzic:score-badge -->
 [![Zenzic Score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-100_%2F_100-4f46e5?style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
 ```
 
-**Step 2.** Run `zenzic score --stamp`. The badge URL on the line immediately after the marker is replaced with the current score and the appropriate brand color.
+**Step 2.** Run `zenzic score --stamp`. Both badge URLs are replaced in place.
 
 ```bash
 zenzic score --stamp
 # Badge stamped → README.md
 ```
 
-The `--stamp` option always updates the badge **before** applying exit-code checks (fail_under, suppression_cap). This ensures the badge reflects the actual score even when the build fails.
+The `--stamp` option always updates badges **before** applying exit-code checks (fail_under, suppression_cap). This ensures telemetry reflects the actual run even when the build fails.
 
 ### Badge Colors
 
@@ -83,7 +80,7 @@ By default, `--stamp` updates only `README.md`. To update additional files (e.g.
 badge_stamp_files = ["README.md", "README.it.md"]
 ```
 
-Place a `<!-- zenzic:badge -->` marker in each listed file.
+Place both markers (`<!-- zenzic:audit-badge -->` and `<!-- zenzic:score-badge -->`) in each listed file.
 
 ---
 
@@ -96,10 +93,10 @@ Use `zenzic score --check-stamp` to **fail the pipeline** if the badge is stale 
   run: uvx zenzic score --check-stamp
 ```
 
-`--check-stamp` reads `badge_stamp_files` from your `.zenzic.toml`, computes the expected Shields.io URL for the current score, and exits 1 if any configured file contains a stale badge URL. The error message names the stale file and tells the developer exactly what to do:
+`--check-stamp` reads `badge_stamp_files` from your `.zenzic.toml`, computes the expected Shields.io URLs for both badges, and exits 1 if any configured file contains stale telemetry. The error message names the stale file and badge type:
 
 ```text
-FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+[FAILED] Badge (score) in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
 ```
 
 > **zenzic-action runs this automatically.** When you use `pythonwoods/zenzic-action`, the badge freshness check runs by default after `check all`. You can opt out with `check-stamp: 'false'`.

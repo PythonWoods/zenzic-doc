@@ -52,7 +52,7 @@ Questo pattern aveva quattro difetti strutturali:
 > ed esce con codice 1 con un messaggio di errore preciso e actionable se qualsiasi file
 > configurato contiene un URL badge obsoleto.
 
-L'invariante: se il marcatore `<!-- zenzic:badge -->` è assente da un file, `--check-stamp`
+L'invariante: se entrambi i marcatori (`<!-- zenzic:audit-badge -->`, `<!-- zenzic:score-badge -->`) sono assenti da un file, `--check-stamp`
 restituisce True (pass). Il gate si attiva solo quando l'utente ha esplicitamente optato per
 il badge stamping. Nessuna configurazione di opt-out è richiesta agli utenti che non usano i badge.
 
@@ -84,8 +84,8 @@ freshness a quel file. Nessuna modifica agli script CI, nessuna aggiunta di
 
 ### 3. Implementazione git-agnostic
 
-`_check_stamp_file(path, expected_url)` legge il file da disco, localizza il marcatore
-`<!-- zenzic:badge -->` usando lo stesso parser di `_stamp_file()`, estrae l'URL badge tramite
+`_check_stamp_file(path, marker, expected_url)` legge il file da disco, localizza il marcatore
+richiesto usando lo stesso parser di `_stamp_file()`, estrae l'URL badge tramite
 `_SHIELDS_URL_RE`, e lo confronta con l'URL atteso. Nessun sottoprocesso, nessun `git diff`,
 nessuna dipendenza dalla shell. Il gate funziona in qualsiasi ambiente dove Python e il
 checkout del repository sono presenti.
@@ -96,7 +96,7 @@ Quando `--check-stamp` rileva un badge obsoleto, l'errore nomina il file specifi
 il passo di remediation esatto:
 
 ```text
-FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+[FAILED] Badge (score) in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
 ```
 
 L'utente riceve un'azione completa: il problema, il file e la soluzione — senza leggere
@@ -106,9 +106,9 @@ la documentazione.
 
 ## Invarianti
 
-- `_check_stamp_file(path, expected_url)` restituisce **True (pass)** quando:
+- `_check_stamp_file(path, marker, expected_url)` restituisce **True (pass)** quando:
   - Il file non esiste.
-  - Il marcatore `<!-- zenzic:badge -->` è assente.
+  - Il marcatore target è assente.
   - Il marcatore è presente ma non segue alcun URL badge Shields.io.
   - L'URL badge corrisponde esattamente a `expected_url`.
 - `_check_stamp_file` restituisce **False (stale)** solo quando il marcatore è presente e l'URL

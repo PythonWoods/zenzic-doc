@@ -740,6 +740,7 @@ nel tempo?*
 ```bash
 zenzic score                   # Calcola punteggio 0–100
 zenzic score --save            # Calcola e persiste snapshot in .zenzic-score.json
+zenzic score --stamp           # Aggiorna marker audit+score in badge_stamp_files
 zenzic score --fail-under 80   # Esce con 1 se il punteggio è sotto la soglia
 zenzic score --format json     # Report punteggio machine-readable
 zenzic score [PATH]            # Punteggio di un progetto remoto (sovereign root)
@@ -791,22 +792,24 @@ Utile quando il team si è impegnato a mantenere un livello di qualità definito
 da quello che era il punteggio la settimana scorsa. Puoi anche impostare `fail_under = 80` in
 `.zenzic.toml` per renderlo persistente.
 
-### Badge di qualità dinamico
+### Stamping badge inline
 
 ```bash
-zenzic score --export-shields zenzic-badge.json
+zenzic score --stamp
 ```
 
-Scrive su disco un file JSON compatibile con l'[endpoint Shields.io](https://shields.io/endpoint).
-Carica il file su un GitHub Gist o un branch `gh-pages` per esporlo pubblicamente, poi incorpora
-il badge dinamico nel tuo `README.md`:
+Aggiorna entrambi i marker in tutti i file elencati in `badge_stamp_files` (default: `README.md`):
 
-```markdown
-[![Zenzic Score](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/PythonWoods-Dev/7a26bc9e0a919beded93b6c5cd055bf9/raw/zenzic-badge.json&cacheSeconds=3600&style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+- `<!-- zenzic:audit-badge -->` -> badge governance deterministico `passing` / `failing`
+- `<!-- zenzic:score-badge -->` -> badge numerico score (`0..100`) con colore brand
+
+L'URL Shields.io sulla riga immediatamente successiva a ciascun marker viene sostituito in-place.
+
+Per verificare in CI che i badge siano aggiornati:
+
+```bash
+zenzic score --check-stamp
 ```
-
-Logica colore: `brightgreen` se score ≥ `fail_under` (o ≥ 80 se non è impostata nessuna soglia),
-`yellow` se score ≥ 70, `red` altrimenti o se è attivo un security override.
 
 Per rendere visibile il punteggio senza bloccare la pipeline:
 

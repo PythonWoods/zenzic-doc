@@ -581,7 +581,7 @@ release_name = "Basalt"
 | **Default** | `["README.md"]` |
 | **Section** | `[project_metadata]` |
 
-Files updated by `zenzic score --stamp`. Each file must contain a `<!-- zenzic:badge -->` HTML comment marker; the Shields.io badge URL on the line immediately following the marker is replaced with the current score URL and brand color (indigo `4f46e5` for 100, amber `f59e0b` for passing, red `ef4444` for fail or security override).
+Files updated by `zenzic score --stamp`. Each file must contain one or both HTML comment markers: `<!-- zenzic:audit-badge -->` and `<!-- zenzic:score-badge -->`. The Shields.io badge URL on the line immediately following each marker is replaced in place with deterministic audit and score telemetry.
 
 The stamp runs **before** exit-code checks, so the badge always reflects the actual score — including a red badge in local development, which is immediate feedback that the commit will be rejected by CI.
 
@@ -590,7 +590,7 @@ The stamp runs **before** exit-code checks, so the badge always reflects the act
 badge_stamp_files = ["README.md", "README.it.md"]
 ```
 
-Add a `<!-- zenzic:badge -->` marker to each listed file, followed on the next line by any Shields.io badge as a placeholder. See [Official Badges](/docs/how-to/add-badges) for the complete setup guide.
+Add one or both markers to each listed file, followed on the next line by any Shields.io badge as a placeholder. See [Official Badges](/docs/how-to/add-badges) for the complete setup guide.
 
 ---
 

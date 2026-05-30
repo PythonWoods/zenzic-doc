@@ -52,7 +52,7 @@ This pattern had four structural defects:
 > and exits 1 with a precise, actionable error message if any configured file contains a stale
 > badge URL.
 
-The invariant: if the `<!-- zenzic:badge -->` marker is absent from a file, `--check-stamp`
+The invariant: if both markers (`<!-- zenzic:audit-badge -->`, `<!-- zenzic:score-badge -->`) are absent from a file, `--check-stamp`
 returns True (pass). The gate activates only when the user has explicitly opted into badge
 stamping. No opt-out configuration is required from users who do not use badges.
 
@@ -83,7 +83,7 @@ to that file. No CI script edits, no `git diff README.it.md` additions.
 
 ### 3. Git-agnostic implementation
 
-`_check_stamp_file(path, expected_url)` reads the file from disk, locates the `<!-- zenzic:badge -->`
+`_check_stamp_file(path, marker, expected_url)` reads the file from disk, locates the requested
 marker using the same parser as `_stamp_file()`, extracts the badge URL via `_SHIELDS_URL_RE`,
 and compares it to the expected URL. No subprocess, no `git diff`, no shell dependency.
 The gate works in any environment where Python and the repository checkout are present.
@@ -94,7 +94,7 @@ When `--check-stamp` detects a stale badge, the error names the specific file an
 the exact remediation step:
 
 ```text
-FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+[FAILED] Badge (score) in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
 ```
 
 The user receives a complete action: the problem, the file, and the fix — without reading
@@ -104,9 +104,9 @@ documentation.
 
 ## Invariants
 
-- `_check_stamp_file(path, expected_url)` returns **True (pass)** when:
+- `_check_stamp_file(path, marker, expected_url)` returns **True (pass)** when:
   - The file does not exist.
-  - The `<!-- zenzic:badge -->` marker is absent.
+  - The target marker is absent.
   - The marker is present but no Shields.io badge URL follows.
   - The badge URL matches `expected_url` exactly.
 - `_check_stamp_file` returns **False (stale)** only when the marker is present and the badge

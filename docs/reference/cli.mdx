@@ -733,7 +733,7 @@ Individual checks answer a binary question: pass or fail. `zenzic score` answers
 ```bash
 zenzic score                   # Compute 0–100 quality score
 zenzic score --save            # Compute and persist snapshot to .zenzic-score.json
-zenzic score --stamp           # Update <!-- zenzic:badge --> in badge_stamp_files
+zenzic score --stamp           # Update audit+score markers in badge_stamp_files
 zenzic score --fail-under 80   # Exit 1 if score is below threshold
 zenzic score --format json     # Machine-readable score report
 zenzic score [PATH]            # Score a remote project (sovereign root)
@@ -789,9 +789,12 @@ persistent.
 zenzic score --stamp
 ```
 
-Updates the `<!-- zenzic:badge -->` marker in all files listed in `badge_stamp_files` (default: `README.md`).
-The Shields.io badge URL on the line immediately following the marker is replaced with the current
-score and the brand color:
+Updates both marker types in all files listed in `badge_stamp_files` (default: `README.md`):
+
+- `<!-- zenzic:audit-badge -->` → deterministic `passing` / `failing` governance badge
+- `<!-- zenzic:score-badge -->` → numeric score badge (`0..100`) with brand color
+
+The Shields.io badge URL on the line immediately following each marker is replaced in place.
 
 | Color | Hex | Condition |
 | :--- | :--- | :--- |
