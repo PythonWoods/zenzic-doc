@@ -4,11 +4,13 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-nav-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="static/assets/brand/svg/zenzic-nav-light.svg">
-    <img src="static/assets/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
-  </picture>
+  <a href="https://zenzic.dev/it">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-nav-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="static/assets/brand/svg/zenzic-nav-light.svg">
+      <img src="static/assets/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
+    </picture>
+  </a>
 </div>
 
 # Guida per Sviluppatori zenzic-doc
