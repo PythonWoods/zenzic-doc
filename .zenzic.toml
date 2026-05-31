@@ -35,6 +35,8 @@ excluded_external_urls = [
     "https://github.com/PythonWoods/zenzic/blob/main/.github/copilot-instructions.md",
     # Z108 example folder not yet merged to main.
     "https://github.com/PythonWoods/zenzic/tree/main/examples/rules/z108-empty-link",
+    # REUSE specification endpoint intermittently times out from CI/local runners.
+    "https://reuse.software/spec/",
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
     #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
