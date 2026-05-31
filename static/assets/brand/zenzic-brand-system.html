@@ -3,30 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zenzic · Brand System · v0.7.1a1 · Obsidian Maturity</title>
+  <title>Zenzic · Brand System · v0.9.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;1,300&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --obsidian:  #09090b;  /* Obsidian Lead — canonical zenzic.dev background */
+      --canvas:  #09090b;  /* Slate Lead — canonical zenzic.dev background */
       --slate:     #0f0f13;  /* surface-color — matches --ifm-background-surface-color */
       --surface:   #111118;
       --border:    #1e1e27;
       --lead:      #E2E8F0;
       --muted:     #8B8FA8;
       --rule:      rgba(255,255,255,0.07);
-      --indigo:    #4338ca;  /* light-mode UI indigo — indigo-700 (WCAG AAA 7.4:1) */
-      --indigo-dark: #a5b4fc; /* dark-mode UI indigo — indigo-300 (WCAG AAA 8.9:1) */
+      --indigo:    #4338ca;  /* light-mode UI indigo — indigo-700 (WCAG AAA 7.9:1) */
+      --indigo-dark: #a8b3fb; /* dark-mode UI indigo — brand-300 (WCAG AAA 9.9:1) */
       --cyan:      #38bdf8;
       --blood:     #FF3B30;
       --magenta:   #FF2D73;
+      --canvas-light: #F1F5F9;
+      --accent-cyan-soft: #06b6d4;
+      --notice-bg: #09090b;
+      --code-bg: #0c0c10;
+      --muted-strong: #a1a1aa;
+      --ink-300: #d4d4d8;
+      --rule-soft: rgba(255,255,255,0.04);
+      --rule-subtle: rgba(255,255,255,0.06);
+      --brand-border-20: rgba(79,70,229,0.2);
+      --drop-shadow-strong: 0 8px 40px rgba(0,0,0,0.5);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--obsidian);
+      background: var(--canvas);
       color: var(--lead);
       font-family: 'IBM Plex Mono', monospace;
       font-size: 13px;
@@ -111,8 +121,8 @@
     .logo-row   { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
     .logo-variant { display: flex; flex-direction: column; gap: 0; }
 
-    .mark-dark  { background: var(--obsidian); border: 1px solid var(--border); }
-    .mark-light { background: #F1F5F9; }
+    .mark-dark  { background: var(--canvas); border: 1px solid var(--border); }
+    .mark-light { background: var(--canvas-light); }
 
     /* ── Palette ── */
     .palette { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -120,7 +130,7 @@
     .swatch-block {
       width: 72px; height: 72px;
       border-radius: 3px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--rule-subtle);
       margin-bottom: 7px;
     }
     .swatch-name { font-size: 8.5px; color: var(--muted); line-height: 1.5; }
@@ -133,7 +143,7 @@
       border: 1px solid var(--border);
       border-radius: 3px;
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      box-shadow: var(--drop-shadow-strong);
     }
 
     /* ── Two-col ── */
@@ -155,7 +165,7 @@
   <!-- ══════════════════════════════════════
        DOCUMENT HEADER
   ══════════════════════════════════════ -->
-  <p class="page-title">Zenzic &middot; Brand System &middot; v0.7.1a1 &middot; Obsidian Maturity</p>
+  <p class="page-title">Zenzic &middot; Brand System &middot; v0.9.0</p>
 
 
   <!-- ══════════════════════════════════════
@@ -304,7 +314,7 @@
       <div class="logo-variant" style="flex:1;min-width:300px">
 
         <!-- Dark -->
-        <div style="background:var(--obsidian);padding:20px 24px;border-radius:3px;border:1px solid var(--border);display:flex;align-items:center;gap:16px">
+        <div style="background:var(--canvas);padding:20px 24px;border-radius:3px;border:1px solid var(--border);display:flex;align-items:center;gap:16px">
           <svg width="36" height="36" viewBox="0 0 200 200" fill="none">
             <defs>
               <clipPath id="br-wm-d"><rect x="103" y="103" width="97" height="97" rx="10"/></clipPath>
@@ -365,7 +375,7 @@
         <div>
           <p style="color:var(--lead);font-weight:600;margin-bottom:6px">Dark background</p>
           <ul style="list-style:none;padding:0">
-            <li>&#10003;&nbsp; Background: <code>#09090b</code> (Obsidian Lead) or deeper</li>
+            <li>&#10003;&nbsp; Background: <code>#09090b</code> (Slate Lead) or deeper</li>
             <li>&#10003;&nbsp; Wordmark text: <code>#F8FAFC</code> near-white</li>
             <li>&#10003;&nbsp; Tagline: <code>#38bdf8</code> Harbor Cyan</li>
             <li>&#10003;&nbsp; Minimum clear space: 1× artifact width on all sides</li>
@@ -402,7 +412,7 @@
           </mask>
         </defs>
 
-        <!-- Background: Obsidian Lead — canonical zenzic.dev background -->
+        <!-- Background: Slate Lead — canonical zenzic.dev background -->
         <rect x="0" y="0" width="1200" height="630" fill="#09090b"/>
 
         <!-- Subtle grid -->
@@ -437,7 +447,7 @@
         <!-- Wordmark -->
         <text x="600" y="442" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="82" fill="#f8fafc" text-anchor="middle" letter-spacing="-2">Zenzic</text>
         <text x="600" y="492" font-family="ui-monospace,SFMono-Regular,monospace" font-weight="600" font-size="21" fill="#94a3b8" text-anchor="middle" letter-spacing="2">THE SAFE HARBOR FOR MARKDOWN DOCUMENTATION</text>
-        <text x="600" y="534" font-family="ui-monospace,SFMono-Regular,monospace" font-weight="500" font-size="16" fill="#38bdf8" text-anchor="middle" letter-spacing="4">v0.7.1a1 &middot; OBSIDIAN MATURITY</text>
+        <text x="600" y="534" font-family="ui-monospace,SFMono-Regular,monospace" font-weight="500" font-size="16" fill="#38bdf8" text-anchor="middle" letter-spacing="4">v0.9.0</text>
       </svg>
     </div>
   </div>
@@ -451,7 +461,7 @@
     <!-- Left: Palette -->
     <div>
       <span class="section-title">Sentinel Palette</span>
-      <p class="label" style="margin-bottom:8px;color:#a5b4fc">Palette v0.7.1a1 — Obsidian Maturity Edition &nbsp;·&nbsp; Bimodal Indigo: Light #4338ca (AAA 7.4:1) · Dark #a5b4fc (AAA 8.9:1)</p>
+      <p class="label" style="margin-bottom:8px;color:#a8b3fb">Palette v0.9.0 — Bimodal Indigo: Light #4338ca (AAA 7.9:1) · Dark #a8b3fb (AAA 9.9:1)</p>
 
       <!-- Identity colors (from logomark) -->
       <p class="label" style="margin-bottom:12px">Identity</p>
@@ -495,7 +505,7 @@
 
         <div class="swatch">
           <div class="swatch-block" style="background:#09090b;border-color:rgba(255,255,255,0.14)"></div>
-          <div class="swatch-name">Obsidian&nbsp;Lead<br>#09090b</div>
+          <div class="swatch-name">Slate&nbsp;Lead<br>#09090b</div>
           <div class="swatch-role">Primary BG</div>
         </div>
 
@@ -541,7 +551,7 @@
       <!-- Code / UI: JetBrains Mono -->
       <div style="margin-top:22px">
         <p style="font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">Code / UI &middot; JetBrains Mono</p>
-        <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lead);line-height:2">SENTINEL &middot; SHIELD &middot; HARBOR<br><span style="color:var(--cyan)">uvx zenzic check all ./docs</span><br><span style="color:var(--muted)">v0.7.1a1 &middot; obsidian maturity &middot; exit 0</span></p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lead);line-height:2">SENTINEL &middot; SHIELD &middot; HARBOR<br><span style="color:var(--cyan)">uvx zenzic check all ./docs</span><br><span style="color:var(--muted)">v0.9.0 &middot; exit 0</span></p>
       </div>
 
       <!-- Scale -->
@@ -560,13 +570,13 @@
 
 
   <!-- ══════════════════════════════════════
-       OBSIDIAN PALETTE — CLI SEMANTIC COLORS
+       ZENZIC PALETTE — CLI SEMANTIC COLORS
        The sole source of truth for every
        colour emitted to stdout / stderr.
   ══════════════════════════════════════ -->
   <div class="card">
-    <span class="section-title">ObsidianPalette &mdash; CLI Semantic Color System</span>
-    <span class="label">zenzic.core.ui.ObsidianPalette &middot; sole source of truth for stdout / stderr color &middot; private hex, public semantics</span>
+    <span class="section-title">ZenzicPalette &mdash; CLI Semantic Color System</span>
+    <span class="label">zenzic.core.ui.ZenzicPalette &middot; sole source of truth for stdout / stderr color &middot; private hex, public semantics</span>
 
     <div class="palette" style="margin-bottom:32px">
 
@@ -630,7 +640,7 @@
           <td style="padding:6px 8px"><span style="color:#10b981;font-weight:600">SUCCESS</span></td>
           <td style="padding:6px 8px">_EMERALD</td>
           <td style="padding:6px 8px">#10b981</td>
-          <td style="padding:6px 8px">Clean check, ✨ Obsidian Seal, pass findings</td>
+          <td style="padding:6px 8px">Clean check, ✨ Zenzic Seal, pass findings</td>
           <td style="padding:6px 8px">0</td>
         </tr>
         <tr style="border-bottom:1px solid var(--rule)">
@@ -666,7 +676,7 @@
 
     <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:14px;line-height:1.8">
       <strong style="color:var(--lead)">Law:</strong> External code must reference semantic names only
-      (<code>ObsidianPalette.BRAND</code>, <code>.SUCCESS</code>, &hellip;).
+      (<code>ZenzicPalette.BRAND</code>, <code>.SUCCESS</code>, &hellip;).
       Private hex constants (<code>_INDIGO</code>, <code>_BLOOD</code>, &hellip;) are internal implementation details.
       *WARNING exits as 1 under <code>--strict</code>.
     </p>
@@ -675,12 +685,12 @@
 
   <!-- ══════════════════════════════════════
        ARCHITECTURE OF COLOR
-       ObsidianPalette as the single contract
+       ZenzicPalette as the single contract
        between the CLI and the terminal.
   ══════════════════════════════════════ -->
   <div class="card">
     <span class="section-title">The Architecture of Color</span>
-    <span class="label">Every pixel of CLI output is governed by ObsidianPalette — the single authoritative color contract</span>
+    <span class="label">Every pixel of CLI output is governed by ZenzicPalette — the single authoritative color contract</span>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
 
@@ -688,7 +698,7 @@
         <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:16px">
           Every character of color that Zenzic emits to <strong style="color:var(--lead)">stdout</strong>
           and <strong style="color:var(--lead)">stderr</strong> flows through a single class:
-          <code>zenzic.core.ui.ObsidianPalette</code>.
+          <code>zenzic.core.ui.ZenzicPalette</code>.
           No hex value is hardcoded outside of that class &mdash; not in report templates, not in
           scanner output, not in the Sentinel banner.
         </p>
@@ -703,8 +713,8 @@
       <div>
         <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px">CLI Output &mdash; Color Mapping</p>
         <div style="background:#09090b;border:1px solid var(--border);border-radius:3px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.1">
-          <span style="color:#4f46e5">&#9646; ZENZIC SENTINEL v0.7.1a1</span><br>
-          <span style="color:#10b981">&#10024; Obsidian Seal: All checks passed.</span><br>
+          <span style="color:#4f46e5">&#9646; ZENZIC SENTINEL v0.9.0</span><br>
+          <span style="color:#10b981">&#10024; Zenzic Seal: All checks passed.</span><br>
           <span style="color:#f59e0b">&#9888;  WARNING  docs/guide.md:14</span><br>
           <span style="color:#f43f5e">&#10007;  ERROR    docs/api.md:88</span><br>
           <span style="color:#64748b">    23 files &middot; 0.8 s &middot; exit 1</span><br>
@@ -726,7 +736,7 @@
       <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9">
         <strong style="color:var(--lead)">For plugin and extension builders:</strong>
         If your rule emits a finding, the Zenzic engine maps severity to color automatically via
-        <code>ObsidianPalette</code>. You supply the semantic severity
+        <code>ZenzicPalette</code>. You supply the semantic severity
         (<code>"error"</code>, <code>"warning"</code>, <code>"info"</code>);
         the color contract is enforced for you. Never hardcode ANSI codes in a plugin.
       </p>
@@ -747,7 +757,7 @@
     </p>
 
     <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:14px">
-      <code style="color:#f87171">ObsidianPalette.FATAL</code> &nbsp;(<code>#8b0000</code>)&nbsp;
+      <code style="color:#f87171">ZenzicPalette.FATAL</code> &nbsp;(<code>#8b0000</code>)&nbsp;
       is emitted only by two scanner families inside the Zenzic core:
     </p>
 
@@ -772,7 +782,7 @@
       <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin:0">
         <strong style="color:#f87171">Design invariant for builders:</strong>
         If you build a tool or plugin for Zenzic and need to signal a security event,
-        use <code>ObsidianPalette.FATAL</code>. If you use it for anything else, you are
+        use <code>ZenzicPalette.FATAL</code>. If you use it for anything else, you are
         violating the semantic contract of the Sentinel color system.
         <em>One color. One meaning. Non-negotiable.</em>
       </p>
@@ -781,12 +791,12 @@
 
 
   <!-- ══════════════════════════════════════
-       OBSIDIANWEBPALETTE — CLI vs WEB
+       ZENZICWEBPALETTE — CLI vs WEB
        Comparison table: CLI terminal values
        vs WCAG-calibrated web light/dark.
   ══════════════════════════════════════ -->
   <div class="card">
-    <span class="section-title">ObsidianWebPalette &mdash; CLI vs Web</span>
+    <span class="section-title">ZenzicWebPalette &mdash; CLI vs Web</span>
     <span class="label">--zenzic-* in src/css/custom.css &middot; light: WCAG-calibrated &middot; dark: exact CLI match</span>
 
     <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:24px">
@@ -807,7 +817,7 @@
       </thead>
       <tbody>
         <!-- BRAND -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#4f46e5;font-weight:600">BRAND</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-brand</code></td>
           <td style="padding:10px 12px"><span style="background:#4f46e5;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#4f46e5</span></td>
@@ -816,7 +826,7 @@
           <td style="padding:10px 12px;color:var(--muted);font-size:10px">Exact match &mdash; AA on all surfaces</td>
         </tr>
         <!-- SUCCESS -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#10b981;font-weight:600">SUCCESS</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-success</code></td>
           <td style="padding:10px 12px"><span style="background:#10b981;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#10b981</span></td>
@@ -825,7 +835,7 @@
           <td style="padding:10px 12px;color:var(--muted);font-size:10px">Light: Emerald-600 for WCAG AA</td>
         </tr>
         <!-- WARNING -->
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <tr style="border-bottom:1px solid var(--rule-soft)">
           <td style="padding:10px 12px"><span style="color:#f59e0b;font-weight:600">WARNING</span></td>
           <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-warning</code></td>
           <td style="padding:10px 12px"><span style="background:#f59e0b;color:#000;border-radius:2px;padding:2px 7px;font-size:10px">#f59e0b</span></td>
@@ -858,7 +868,7 @@
           <td style="padding:10px 12px"><span style="background:#8b0000;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#8b0000</span></td>
           <td style="padding:10px 12px"><span style="background:#991b1b;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#991b1b</span></td>
           <td style="padding:10px 12px"><span style="background:#8b0000;color:#fff;border-radius:2px;padding:2px 7px;font-size:10px">#8b0000</span></td>
-          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Follows <code>--obsidian-blood</code> &mdash; security-only</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Follows <code>--zenzic-fatal</code> &mdash; security-only</td>
         </tr>
       </tbody>
     </table>
@@ -885,9 +895,9 @@
 
       <div class="badge-item">
         <a href="https://github.com/PythonWoods/zenzic" style="display:block">
-          <img src="svg/zenzic-badge-shield.svg" alt="Zenzic Shield badge" width="135" height="20" style="display:block">
+          <img src="svg/zenzic-badge-audit.svg" alt="Zenzic Audit badge" width="135" height="20" style="display:block">
         </a>
-        <span class="label-inline">Shield &middot; Binary gate: passing / failing</span>
+        <span class="label-inline">Audit &middot; Binary gate: passing / failing</span>
       </div>
 
       <div class="badge-item">
@@ -966,27 +976,27 @@
 
       <!-- Dark Mode Panel -->
       <div style="background:#09090b;border:1px solid #1e1e27;border-radius:8px;padding:24px">
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#4f46e5;margin-bottom:18px">Dark Mode — Obsidian Lead</p>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#4f46e5;margin-bottom:18px">Dark Mode — Slate Lead</p>
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:36px;height:36px;border-radius:4px;background:#4f46e5;flex-shrink:0"></div>
+            <div style="width:36px;height:36px;border-radius:4px;background:#808af0;flex-shrink:0"></div>
             <div>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Indigo Vibrante</strong> &mdash; #4f46e5</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--ifm-color-primary · Ratio ~5.2:1 on #09090b</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Indigo Vibrante</strong> &mdash; #808af0</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--ifm-color-primary (--zenzic-brand-400) · Ratio 6.4:1 on #09090b</p>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:36px;height:36px;border-radius:4px;background:#06b6d4;flex-shrink:0"></div>
+            <div style="width:36px;height:36px;border-radius:4px;background:#3ab3c4;flex-shrink:0"></div>
             <div>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Cyan Elettrico</strong> &mdash; #06b6d4</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--obsidian-accent · Ratio ~6.8:1 on #09090b</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Cyan Elettrico</strong> &mdash; #3ab3c4</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--zenzic-accent · Ratio 8.0:1 on #09090b</p>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
             <div style="width:36px;height:36px;border-radius:4px;background:#8b0000;flex-shrink:0"></div>
             <div>
               <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e4e4e7;margin-bottom:2px"><strong>Sangue Profondo</strong> &mdash; #8b0000</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--obsidian-blood · Blood Sentinel &amp; Security</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#71717a">--zenzic-fatal-deep · Blood Sentinel &amp; Security</p>
             </div>
           </div>
         </div>
@@ -997,24 +1007,24 @@
         <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#3730a3;margin-bottom:18px">Light Mode — White Surface</p>
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:36px;height:36px;border-radius:4px;background:#3730a3;flex-shrink:0"></div>
+            <div style="width:36px;height:36px;border-radius:4px;background:#4338ca;flex-shrink:0"></div>
             <div>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Indigo Inchiostro</strong> &mdash; #3730a3</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--ifm-color-primary [light] · Ratio ~7.9:1 on #fff</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Indigo Inchiostro</strong> &mdash; #4338ca</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--ifm-color-primary (--zenzic-brand-700) · Ratio 7.9:1 on #fff</p>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
             <div style="width:36px;height:36px;border-radius:4px;background:#0891b2;flex-shrink:0"></div>
             <div>
               <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Cyan Profondo</strong> &mdash; #0891b2</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--obsidian-accent [light] · Ratio ~4.6:1 on #fff</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--zenzic-accent · Ratio 3.7:1 on #fff</p>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
             <div style="width:36px;height:36px;border-radius:4px;background:#991b1b;flex-shrink:0"></div>
             <div>
               <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1e293b;margin-bottom:2px"><strong>Rosso Mattone</strong> &mdash; #991b1b</p>
-              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--obsidian-blood [light] · Ratio ~7.1:1 on #fff</p>
+              <p style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#64748b">--zenzic-fatal-deep · Ratio 8.3:1 on #fff</p>
             </div>
           </div>
           <!-- Zinc typography scale -->
@@ -1075,24 +1085,24 @@
         </tr>
         <tr style="border-bottom:1px solid var(--rule)">
           <td style="padding:6px 8px"><code>--ifm-color-primary</code></td>
-          <td style="padding:6px 8px"><span style="color:#818cf8">#818cf8</span></td>
-          <td style="padding:6px 8px"><span style="color:#3730a3">#3730a3</span></td>
+          <td style="padding:6px 8px"><span style="color:#808af0">#808af0</span></td>
+          <td style="padding:6px 8px"><span style="color:#4338ca">#4338ca</span></td>
           <td style="padding:6px 8px">Links, active states, sidebar</td>
         </tr>
         <tr style="border-bottom:1px solid var(--rule)">
-          <td style="padding:6px 8px"><code>--obsidian-accent</code></td>
-          <td style="padding:6px 8px"><span style="color:#06b6d4">#06b6d4</span></td>
+          <td style="padding:6px 8px"><code>--zenzic-accent</code></td>
+          <td style="padding:6px 8px"><span style="color:#3ab3c4">#3ab3c4</span></td>
           <td style="padding:6px 8px"><span style="color:#0891b2">#0891b2</span></td>
           <td style="padding:6px 8px">Hover states, archive cards, sidebar links</td>
         </tr>
         <tr style="border-bottom:1px solid var(--rule)">
-          <td style="padding:6px 8px"><code>--obsidian-author-signature</code></td>
+          <td style="padding:6px 8px"><code>--zenzic-author-signature</code></td>
           <td style="padding:6px 8px"><span style="color:#818cf8">—</span></td>
           <td style="padding:6px 8px"><span style="color:#3730a3">#3730a3</span></td>
           <td style="padding:6px 8px">The Author's Signature — reserved for human identity</td>
         </tr>
         <tr>
-          <td style="padding:6px 8px"><code>--obsidian-blood</code></td>
+          <td style="padding:6px 8px"><code>--zenzic-fatal</code></td>
           <td style="padding:6px 8px"><span style="color:#f87171">#8b0000</span></td>
           <td style="padding:6px 8px"><span style="color:#991b1b">#991b1b</span></td>
           <td style="padding:6px 8px">Blood Sentinel, security findings, Shield</td>
@@ -1110,7 +1120,7 @@
       </p>
       <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin-bottom:0">
         <strong style="color:#818cf8">Indigo is the soul</strong> — the author's mark on the machine.
-        Reserved exclusively for <code>--obsidian-author-signature</code> on the creator's name.
+        Reserved exclusively for <code>--zenzic-author-signature</code> on the creator's name.
         In a field of Zinc, a single Indigo node draws the eye to its origin.
         <em>One colour. One meaning. Non-negotiable.</em>
       </p>
@@ -1118,7 +1128,7 @@
 
     <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:16px;line-height:1.8">
       <strong style="color:var(--lead)">Law:</strong> Never use hardcoded accent hex values in component styles.
-      Always consume <code>var(--obsidian-accent)</code>, <code>var(--obsidian-blood)</code>, and <code>var(--obsidian-author-signature)</code>.
+      Always consume <code>var(--zenzic-accent)</code>, <code>var(--zenzic-fatal)</code>, and <code>var(--zenzic-author-signature)</code>.
       Theme adaptation is free. Hardcoding is a regression.
     </p>
 
@@ -1173,13 +1183,87 @@
       </tbody>
     </table>
 
-    <div style="padding:14px 16px;background:#09090b;border:1px solid var(--border);border-left:3px solid #06b6d4;border-radius:3px">
-      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;line-height:1.9;margin:0">
+    <div style="padding:14px 16px;background:var(--notice-bg);border:1px solid var(--border);border-left:3px solid var(--accent-cyan-soft);border-radius:3px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted-strong);line-height:1.9;margin:0">
         <strong style="color:var(--lead)">Law:</strong> No <code>&lt;img&gt;</code> or <code>&lt;Image&gt;</code> component may be
         merged without explicit <code>width</code> and <code>height</code> attributes (or <code>aspect-ratio</code> CSS on
         fluid containers). PRs that introduce dimensionless images are rejected by the visual hardening protocol (D110).
       </p>
     </div>
+  </div>
+
+  <!-- ── SECTION: React Components Palette Contract ── -->
+  <div style="border-top:1px solid var(--rule);padding-top:36px;margin-bottom:36px">
+    <p class="page-title" style="color:var(--muted);margin-bottom:28px">§ 10 &mdash; React Components Palette Contract</p>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;max-width:860px;margin-bottom:22px">
+      Every visual React component must consume palette values via CSS custom properties in
+      <code>src/css/custom.css</code>. Direct hex usage inside JSX/TSX styles is forbidden. The runtime
+      source of truth is the <code>--zenzic-*</code> token family and the semantic bridges bound to Docusaurus
+      variables (<code>--ifm-*</code>).
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:24px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">React Surface</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Approved Variables</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Usage</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-size:9px;font-weight:600">Policy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Primary action buttons</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-brand</code>, <code>--zenzic-brand-soft</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">CTA, nav actions, highlighted links</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">No direct brand hex values in component code</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Status indicators</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-success</code>, <code>--zenzic-warning</code>, <code>--zenzic-error</code>, <code>--zenzic-fatal</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Badges, warnings, diagnostics panels</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Semantic mapping must match finding severity</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--rule-soft)">
+          <td style="padding:10px 12px;color:var(--lead)">Text hierarchy</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-ink-100</code>, <code>--zenzic-ink-200</code>, <code>--zenzic-ink-400</code>, <code>--zenzic-ink-700</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Headings, body copy, metadata</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">Use token-based contrast tiers only</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;color:var(--lead)">Surface and borders</td>
+          <td style="padding:10px 12px;color:var(--muted)"><code>--zenzic-slate-900</code>, <code>--zenzic-slate-800</code>, <code>--zenzic-border-dark-30</code></td>
+          <td style="padding:10px 12px;color:var(--muted)">Cards, containers, separators</td>
+          <td style="padding:10px 12px;color:var(--muted);font-size:10px">No opaque hardcoded overlays in TSX</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="padding:14px 16px;background:var(--notice-bg);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:3px;margin-bottom:18px">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted-strong);line-height:1.9;margin:0">
+        <strong style="color:var(--lead)">Implementation snippet (React):</strong>
+      </p>
+      <pre style="margin-top:10px;background:var(--code-bg);border:1px solid var(--brand-border-20);border-radius:6px;padding:10px;overflow:auto"><code style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-300)">export function AuditBadge(): React.JSX.Element {
+  return (
+    &lt;span
+      style={{
+        backgroundColor: 'var(--zenzic-brand)',
+        color: 'var(--zenzic-ink-100)',
+        border: '1px solid var(--zenzic-border-brand-35)',
+      }}
+    &gt;
+      audit: passed
+    &lt;/span&gt;
+  );
+}</code></pre>
+    </div>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);line-height:1.8">
+      <strong style="color:var(--lead)">Enforcement:</strong> UI pull requests are rejected if JSX inline styles,
+      CSS modules, or component-scoped styles introduce raw hex values instead of <code>--zenzic-*</code> tokens.
+      The brand specification and runtime CSS must remain isomorphic.
+    </p>
   </div>
 
   <!-- footer rule -->

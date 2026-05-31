@@ -1,0 +1,81 @@
+---
+icon: lucide/shield
+sidebar_label: "Z204 — Forbidden Terms"
+sidebar_position: 3
+description: "Z204 FORBIDDEN_TERM — project-specific banned patterns enforced via .zenzic.local.toml. Exit 2 non-suppressible."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Z204 — Forbidden Term
+
+Z204 `FORBIDDEN_TERM` fires when a documentation file contains a string that the project
+has declared permanently off-limits via `.zenzic.local.toml`.
+
+This is not spell-checking. This is a **non-negotiable gate**: a term in the forbidden list
+is treated as a security-class finding. Exit 2. Non-suppressible.
+
+---
+
+## What Z204 Catches
+
+| Scenario | Example | Why it matters |
+| :--- | :--- | :--- |
+| Internal codenames | `"Project Obsidian"` | Codenames must never appear in public docs |{/* zenzic:ignore: Z601 */}
+| Deprecated product names | `"Zenzic Legacy"` | Creates user confusion after a rename |
+| Legal exposure terms | `"ACME Corp"` | NDA or trademark violation in public content |
+| Sensitive internal URLs | `"internal.corp.example.com"` | Infrastructure disclosure |
+
+---
+
+## Configuration
+
+Declare forbidden terms in `.zenzic.local.toml`:
+
+```toml title=".zenzic.local.toml"
+[core]
+forbidden_patterns = [
+    "Project Obsidian",           # internal codename
+    "internal.corp.example.com",  # infrastructure URL
+    "acme-access-key",            # vendor-specific key prefix
+]
+```
+
+`.zenzic.local.toml` is the **Local Sanctuary** — project-specific overrides that are never
+committed to the shared `.zenzic.toml`. It extends, never overrides, the shared config.
+
+---
+
+## Difference from Z201 (Credential Scanner)
+
+| Property | Z201 LEAKED_CREDENTIAL | Z204 FORBIDDEN_TERM |
+| :--- | :--- | :--- |
+| Pattern source | Built-in entropy heuristics + known formats | Your `.zenzic.local.toml` |
+| Suppressible? | **No** (Exit 2, always) | **No** (Exit 2, always) |
+| Scope | Any credential-shaped string | Exact strings you declare |
+| False-positive risk | Low (multi-pass normalization) | Zero — you own the list |
+
+---
+
+## Exit Behavior
+
+Z204 is a **policy-violation finding** (security-class severity):
+
+- Exits with **code 2** immediately
+- Not suppressed by `--exit-zero` or `exit_zero = true` in `.zenzic.toml`
+- Not suppressed by `.zenzic-ignore`
+- Not influenced by `fail_under` threshold
+
+The CLI banner reads **`POLICY VIOLATION DETECTED`** (distinct from Z201’s `SECURITY BREACH DETECTED`) to signal governance enforcement rather than credential incident response.
+
+When Z204 fires, the CI pipeline halts. The term must be removed or the finding
+investigated — there is no bypass mechanism.
+
+---
+
+## Related
+
+- [Credential Scanner (Z201)](../reference/finding-codes.mdx#z201) — Built-in secret detection
+- [Configuration Reference](../reference/configuration-reference.mdx) — `.zenzic.local.toml` Local Sanctuary
+- [Suppression Policy](../reference/suppression-policy.mdx) — What can and cannot be suppressed

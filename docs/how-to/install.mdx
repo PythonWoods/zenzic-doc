@@ -18,29 +18,26 @@ in local development, as a pre-commit hook, in CI pipelines, or for one-off audi
 
 ## Canonical examples
 
-The repository ships maintained fixtures that mirror the documented contracts:
+The repository ships maintained Z-code gallery fixtures that mirror the documented contracts:
 
-- `examples/mkdocs-basic/` — MkDocs 1.6 baseline (nested nav, external nav link,
-
-  tolerant YAML tags like `!ENV` and `!relative`).
-
-- `examples/i18n-standard/` — strict bilingual gold standard.
-- `examples/zensical-basic/` — Zensical v0.0.31+ baseline (`[project].nav`).
-- `examples/broken-docs/` — intentional failures (exit 1).
-- `examples/security_lab/` — security fixture (Shield exit 2, Blood Sentinel exit 3).
+- `examples/z101-broken-links/` — link integrity fixture (Z101 LINK_BROKEN, exit 1).
+- `examples/z201-credentials/` — credential scanner fixture (Z201 CREDENTIAL_SECRET, exit 2).
+- `examples/z405-unused-assets/` — unreferenced asset fixture (Z405, exit 1).
+- `examples/z601-brand-obsolescence/` — brand obsolescence fixture (Z601, exit 1).
+- `examples/z602-i18n-parity/` — i18n parity fixture (Z602, exit 1).
 
 :::tip[Just want to run it now?]
 
 ```bash
-uvx zenzic lab      # explore all 9 built-in examples — zero setup
+uvx zenzic lab      # explore all 5 Z-code gallery scenarios — zero setup
 uvx zenzic check all  # protect your own documentation
 ```
 
-Curious how Zenzic handles Docusaurus v3 versioning or the Zensical transparent proxy?
-Launch `zenzic lab` and watch the Sentinel in action across every supported engine.
+Curious how Zenzic handles credential detection or i18n parity gaps?
+Launch `zenzic lab` and watch Zenzic in action across every Z-code gallery scenario.
 :::
 
-import { SummaryTerminal } from '@site/src/components/SentinelTerminal';
+import { SummaryTerminal } from '@site/src/components/ZenzicTerminal';
 
 <SummaryTerminal />
 
@@ -109,7 +106,7 @@ Install into a dedicated virtual environment, then add the `bin/` directory to y
 
 ```bash
 uv add --dev zenzic
-uv run zenzic check all
+uvx zenzic check all
 ```
 
 Installs Zenzic into the project's virtual environment and pins the version in `uv.lock`.
@@ -158,7 +155,7 @@ The standard workflow for adopting Zenzic in a project:
 
 ### 1. Init — scaffold a configuration file {#init}
 
-Bootstrap a `zenzic.toml` with a single command. Zenzic identifies the documentation engine
+Bootstrap a `.zenzic.toml` with a single command. Zenzic identifies the documentation engine
 from its configuration files and pre-populates `[build_context]` accordingly:
 
 ```bash
@@ -168,7 +165,7 @@ zenzic init
 **Example output when `mkdocs.yml` is present:**
 
 ```text
-Created zenzic.toml
+Created .zenzic.toml
   Engine pre-set to mkdocs (detected from mkdocs.yml).
 
 Edit the file to enable rules, adjust directories, or set a quality threshold.
@@ -179,12 +176,12 @@ If no engine config file is found, `zenzic init` produces an engine-agnostic sca
 mode). In either case, all settings are commented out by default — uncomment and adjust only the
 fields you need.
 
-Run Zenzic without a `zenzic.toml` and it falls back to built-in defaults, printing a Helpful
+Run Zenzic without a `.zenzic.toml` and it falls back to built-in defaults, printing a Helpful
 Hint panel that suggests `zenzic init`:
 
 ```text
 ╭─ 💡 Zenzic Tip ─────────────────────────────────────────────────────╮
-│ Using built-in defaults — no zenzic.toml found.                      │
+│ Using built-in defaults — no .zenzic.toml found.                      │
 │ Run zenzic init to create a project configuration file.              │
 │ Customise docs directory, excluded paths, engine adapter, and rules. │
 ╰──────────────────────────────────────────────────────────────────────╯
@@ -192,10 +189,10 @@ Hint panel that suggests `zenzic init`:
 
 ### 2. Config — tune to your project {#config}
 
-Edit the generated `zenzic.toml` to suppress noise and set thresholds appropriate to your project:
+Edit the generated `.zenzic.toml` to suppress noise and set thresholds appropriate to your project:
 
 ```toml
-# zenzic.toml — place at the repository root
+# .zenzic.toml — place at the repository root
 excluded_assets = [
 "assets/favicon.svg",      # referenced by mkdocs.yml, not by any .md page
 "assets/social-preview.png",
@@ -274,5 +271,5 @@ zenzic check all --engine mkdocs        # force MkDocs adapter
 **Next steps:**
 
 - [CLI Commands reference](../reference/cli.mdx) — every command, flag, and exit code
-- [Advanced features](../reference/advanced-features.mdx) — Reference integrity, Shield, programmatic usage
+- [Advanced features](../reference/advanced-features.mdx) — Reference integrity, credential scanner, programmatic usage
 - [CI/CD Integration](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hooks, baseline management

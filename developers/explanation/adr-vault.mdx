@@ -17,37 +17,42 @@ the Zenzic project. Each ADR documents a major technical decision: its context
 (why the problem existed), its decision (what was chosen), and its invariants
 (what must never change as a consequence).
 
+For day-to-day contribution flow, release checks, and governance enforcement,
+follow the operational runbook instead:
+
+- [Developer Release and Governance Protocol](../how-to/release-governance-protocol.mdx)
+
 ADRs are the **immutable memory** of the project. They explain not only what
-Zenzic does, but why — so that future contributors can extend the system without
-unknowingly violating the constraints that make it trustworthy.
+Zenzic does, but why. Operational behavior at commit and push time is governed
+by the Developer Release and Governance Protocol.
 
 ---
 
 ## Genesis Decisions
 
-These ADRs were established before the first public release. They define the
+These ADRs were established before public publication. They define the
 philosophical and technical foundations on which all subsequent decisions rest.
 
-| ADR | Title | Sprint |
-|-----|-------|--------|
-| [ADR 001](./adr-lint-source.mdx) | Lint the Source, Not the Build | Genesis (pre-v0.1.0) |
-| [ADR 002](./adr-zero-subprocesses.mdx) | Zero Subprocesses Policy | Genesis (pre-v0.1.0) |
+| ADR | Title |
+|-----|-------|
+| [ADR 001](./adr-lint-source.mdx) | Lint the Source, Not the Build |
+| ADR 002 | Zero Subprocesses Policy *(Maintainer Only)* |
 
 ---
 
 ## Core Architecture Decisions
 
-These ADRs document the structural decisions made during the active development
-of Zenzic v0.6.x and v0.7.0.
+These ADRs document the structural decisions made during active development.
 
-| ADR | Title | Sprint |
-|-----|-------|--------|
-| [ADR 003](./adr-discovery.mdx) | Root Discovery Protocol | D036 / ZRT-005 |
-| [ADR 004](./adr-decentralized-cli.mdx) | Decentralized CLI Package | D062-B / D064 |
-| [ADR 005](./adr-agnostic-universalism.mdx) | Z404 Agnostic Universalism | D087 |
-| [ADR 007](./adr-sovereign-sandbox.mdx) | Sovereign Sandbox | D043 |
-| [ADR 008](./adr-bilingual-structural.mdx) | Bilingual Structural Invariant | D045 |
-| [ADR 009](./adr-path-sovereignty.mdx) | Path Sovereignty | CEO-052 |
+| ADR | Title |
+|-----|-------|
+| [ADR 003](./adr-discovery.mdx) | Root Discovery Protocol |
+| [ADR 004](./adr-decentralized-cli.mdx) | Decentralized CLI Package |
+| [ADR 005](./adr-agnostic-universalism.mdx) | Z404 Agnostic Universalism |
+| [ADR 007](./adr-agnostic-universalism.mdx) | Sovereign Sandbox *(Maintainer Only)* |
+| [ADR 008](./adr-bilingual-structural.mdx) | Bilingual Structural Invariant |
+| [ADR 009](./adr-path-sovereignty.mdx) | Path Sovereignty |
+| [ADR 013](./adr-regex-acl.mdx) | The Regex Anti-Corruption Layer (ReDoS Protection) |
 
 ---
 
@@ -57,10 +62,9 @@ These ADRs document architectural decisions specific to this documentation site
 (`zenzic.dev`) — choices about how the Docusaurus site is built, localized, and
 maintained.
 
-| ADR | Title | Sprint |
-|-----|-------|--------|
-| [ADR 006](./adr-unified-perimeter.mdx) | Unified Perimeter (Storage + Blog) | CEO 051 |
-| [ADR 011](./adr-cross-instance-allowlist.mdx) | Cross-Instance Absolute Path Allowlist | EPOCH 5 (v0.7.0) |
+| ADR | Title |
+|-----|-------|
+| [ADR 006](./adr-unified-perimeter.mdx) | Unified Scan Scope (Storage + Blog) |
 
 ---
 
@@ -106,10 +110,9 @@ contributors or resolves a structural tension — it must be recorded here.
 
 2. Create the Italian mirror at the corresponding path in `i18n/it/`.
 3. Add both files to the table above in the appropriate section.
-4. Record the decision in the `[ADR]` section of the relevant Zenzic Ledger
+4. Record the decision in the `[ADR]` section of the relevant repository
 
-   (`.github/copilot-instructions.md`) in the repository where the decision
-   was implemented.
+  governance log in the repository where the decision was implemented.
 
 The ADR is permanent once published. To amend a decision, add a new ADR that
 references the original and documents the amendment — never rewrite history.

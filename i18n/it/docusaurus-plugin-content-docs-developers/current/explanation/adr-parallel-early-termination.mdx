@@ -9,7 +9,7 @@ description: "ADR 020: Perché Zenzic usa wait(FIRST_COMPLETED) per la raccolta 
 
 # ADR 020: Completezza Audit Parallelo vs. Fail-Fast
 
-**Stato:** Attivo (v0.7.0 "Quartz Maturity")
+**Stato:** Attivo (v0.8.x)
 **Decisore:** Architecture Lead
 **Data:** 2026-05-02
 
@@ -22,9 +22,9 @@ parallelo quando un repository contiene 50 o più file Markdown
 (`ADAPTIVE_PARALLEL_THRESHOLD` in `core/scanner.py`). Ogni worker esegue
 `_scan_single_file()` in modo indipendente e restituisce un `IntegrityReport`
 contenente eventuali findings, inclusi gli oggetti `SecurityFinding` emessi dallo
-Shield (Z201/Z202/Z203).
+credential scanner (Z201/Z202/Z203).
 
-Nell'implementazione precedente alla v0.7.0, il coordinatore raccoglieva i
+Nell'implementazione precedente, il coordinatore raccoglieva i
 risultati iterando su `futures_map.items()` **nell'ordine di submission**,
 chiamando `fut.result(timeout=30)` su ogni future in sequenza. Questo design
 aveva due conseguenze:
@@ -52,7 +52,7 @@ funzione pura.
 **`concurrent.futures.as_completed()`** — un iteratore che restituisce i future
 nell'ordine di completamento. **Valutato e sostituito.** `as_completed()` non
 fornisce garanzie di timeout per batch. Un worker finale in deadlock bloccherebbe
-il generatore indefinitamente. La protezione ZRT-002 (Z009 per i worker in
+il generatore indefinitamente. La protezione ZRT-002 (Z902 per i worker in
 deadlock) non può essere preservata senza introdurre un meccanismo di timeout
 per-future separato che vanifica il vantaggio di semplicità di `as_completed()`.
 
@@ -60,7 +60,7 @@ per-future separato che vanifica il vantaggio di semplicità di `as_completed()`
 
 ## Decisione
 
-> **Dalla v0.7.0, il coordinatore parallelo usa `concurrent.futures.wait()` con
+> **Il coordinatore parallelo usa `concurrent.futures.wait()` con
 > `return_when=FIRST_COMPLETED` e un flag locale `_abort`. Al primo
 > `SecurityFinding` nel risultato di un worker completato, tutti i task ancora
 > in coda (`PENDING`) vengono cancellati immediatamente. Il deadlock guard
@@ -81,13 +81,13 @@ Quando un report completato contiene `security_findings`, il coordinatore impost
 `_abort = True` e chiama `pending_fut.cancel()` su ogni future ancora in
 `_pending`. Le iterazioni successive scartano i risultati silenziosamente.
 
-**Cambiamenti comportamentali nella v0.7.0:**
+**Cambiamenti comportamentali dopo il redesign del coordinatore:**
 
-| Scenario | Pre-v0.7.0 | v0.7.0 |
+| Scenario | Implementazione precedente | Coordinatore ridisegnato |
 |---|---|---|
 | Nessuna violazione di sicurezza | Tutti i file scansionati | Tutti i file scansionati (invariato) |
 | Violazione nel file 1/500 | Tutti i 500 file scansionati | Violazione rilevata; task pendenti cancellati |
-| Worker in deadlock | Z009 dopo 30 s per-worker | Z009 se nessun worker completa in 30 s |
+| Worker in deadlock | Z902 dopo 30 s per-worker | Z902 se nessun worker completa in 30 s |
 | Ordine dei risultati | Ordine di submission → ordinato | Ordine di completamento → ordinato |
 
 **Semantica di cancellazione:** `future.cancel()` opera solo sui task non ancora
@@ -98,7 +98,7 @@ scartati (non aggiunti al report). Il fail-fast è quindi una
 
 **Preservazione ZRT-002:** Se `concurrent.futures.wait()` restituisce un insieme
 `done` vuoto (nessun worker ha completato entro `_WORKER_TIMEOUT_S` secondi),
-tutti i future pendenti vengono cancellati e un finding Z009 viene emesso per
+tutti i future pendenti vengono cancellati e un finding Z902 viene emesso per
 ogni file bloccato. Questo protegge da pattern ReDoS in `[[custom_rules]]` che
 bypassano il canary di avvio (`_assert_regex_canary()`).
 
@@ -113,7 +113,8 @@ orchestrazione — non logica di analisi. Il coordinatore è l'unico scope dove
 più future sono visibili simultaneamente. Nessuna funzione di analisi è a
 conoscenza dello stato di abort.
 
-`_worker()` e `_scan_single_file()` sono **invariati** nella v0.7.0. A parità
+`_worker()` e `_scan_single_file()` sono **invariati** in questo design. A parità
+
 di input, producono lo stesso output. Non hanno dipendenze da stato condiviso.
 Questa purezza funzionale è ciò che li rende deterministici in isolamento e
 facilmente testabili.
@@ -140,7 +141,7 @@ prima dell'abort.
 ZRT-002. Con `as_completed()`, un worker finale in deadlock fa bloccare il
 generatore indefinitamente senza modo di imporre un timeout per batch pendente.
 Con `wait(timeout=_WORKER_TIMEOUT_S)`, un insieme `done` vuoto dopo 30 secondi
-attiva incondizionatamente il guard Z009 — senza meccanismi aggiuntivi.
+attiva incondizionatamente il guard Z902 — senza meccanismi aggiuntivi.
 
 ---
 
@@ -154,7 +155,7 @@ attiva incondizionatamente il guard Z009 — senza meccanismi aggiuntivi.
 - I risultati sono sempre ordinati per `file_path` prima di essere restituiti.
   L'ordine di completamento da `wait()` non è mai l'ordine di output finale.
 - Deadlock guard ZRT-002: se nessun future completa entro `_WORKER_TIMEOUT_S`
-  secondi, tutti i future rimanenti vengono cancellati e un finding Z009 viene
+  secondi, tutti i future rimanenti vengono cancellati e un finding Z902 viene
   emesso per ogni file bloccato.
 
 ---

@@ -6,12 +6,12 @@ description: Sei controlli indipendenti per l'integrità della documentazione �
 
 import {
   GutterTerminal,
-  ShieldTerminal,
+  CredentialTerminal,
+  PathTraversalGuardTerminal,
   SummaryTerminal,
-  BloodSentinel,
   SnippetTerminal,
   OrphanTerminal,
-} from '@site/src/components/SentinelTerminal';
+} from '@site/src/components/ZenzicTerminal';
 
 ## Riferimento Controlli {#checks-reference}
 
@@ -19,16 +19,16 @@ Zenzic esegue **sei controlli indipendenti**. Ciascuno affronta una categoria di
 
 | Controllo | CLI | Cosa individua |
 | :--- | :--- | :--- |
-| [Controllo Link](#links) | `zenzic check links` | Link interni rotti, ancore morte, URL irraggiungibili |
-| [Orfani](#orphans) | `zenzic check orphans` | File `.md` presenti su disco ma assenti dalla navigazione |
-| [Snippet](#snippets) | `zenzic check snippets` | Errori di sintassi Python/YAML/JSON/TOML nei blocchi di codice |
-| [Segnaposto](#placeholders) | `zenzic check placeholders` | Pagine stub con basso conteggio parole o pattern `TODO` |
-| [Asset](#assets) | `zenzic check assets` | Media mai referenziati da alcuna pagina |
-| [Riferimenti](#references) | `zenzic check references` | Ref-link pendenti, definizioni morte, credenziali esposte |
+| [Controllo Link](#check-links) | `zenzic check links` | Link interni rotti, ancore morte, URL irraggiungibili |
+| [Orfani](#check-orphans) | `zenzic check orphans` | File `.md` presenti su disco ma assenti dalla navigazione |
+| [Snippet](#check-snippets) | `zenzic check snippets` | Errori di sintassi Python/YAML/JSON/TOML nei blocchi di codice |
+| [Segnaposto](#check-placeholders) | `zenzic check placeholders` | Pagine stub con basso conteggio parole o pattern `TODO` |
+| [Asset](#check-assets) | `zenzic check assets` | Media mai referenziati da alcuna pagina |
+| [Riferimenti](#check-references) | `zenzic check references` | Ref-link pendenti, definizioni morte, credenziali esposte |
 
 ---
 
-## Link {#links}
+## Link {#check-links}
 
 **CLI:** `zenzic check links [--strict]`
 
@@ -54,13 +54,13 @@ Ogni route porta uno stato che indica a Zenzic come trattare i link che vi punta
 | Stato | Significato | Risultato link |
 | :--- | :--- | :--- |
 | `REACHABLE` | La pagina è elencata nella navigazione o è una route di localizzazione | Valido |
-| `ORPHAN_BUT_EXISTING` | Il file esiste su disco ma non nella navigazione del sito | Avviso Z002 |
-| `IGNORED` | Escluso dalla configurazione (es. file README, directory private) | Errore Z001 |
-| `CONFLICT` | Due file sorgente producono lo stesso URL canonico | Errore Z001 |
+| `ORPHAN_BUT_EXISTING` | Il file esiste su disco ma non nella navigazione del sito | Avviso Z103 |
+| `IGNORED` | Escluso dalla configurazione (es. file README, directory private) | Errore Z101 |
+| `CONFLICT` | Due file sorgente producono lo stesso URL canonico | Errore Z101 |
 
-**Perché è importante:** Un file può esistere nel filesystem ed essere comunque `IGNORED` nella VSM. Un URL può essere `REACHABLE` nella VSM senza avere un file corrispondente su disco (ad esempio, le route indice delle localizzazioni). La VSM è l'autorità — Zenzic verifica la raggiungibilità, non la semplice esistenza del file.
+**Perché è importante:** Un file può esistere nel filesystem ed essere comunque `IGNORED` nella VSM. Un URL può essere `REACHABLE` nella VSM senza avere un file corrispondente su disco (ad esempio, le route indice delle localizzazioni). La VSM è l'autorità — Zenzic verifica la raggiungibilità, non la sola esistenza del file.
 
-Questo design fa sì che `zenzic check links` individui problemi che un semplice controllo di esistenza del file non coglierebbe: pagine rimosse dalla navigazione, route in conflitto e contenuti orfani che i lettori non possono scoprire navigando normalmente.
+Questo design fa sì che `zenzic check links` individui problemi che un controllo diretto di esistenza del file non coglierebbe: pagine rimosse dalla navigazione, route in conflitto e contenuti orfani che i lettori non possono scoprire navigando normalmente.
 
 ### Livello 1 — link interni (sempre verificati)
 
@@ -88,7 +88,7 @@ I server che restituiscono `401`, `403` o `429` sono trattati come raggiungibili
 Di default, link come `[testo](#sezione)` che puntano a un heading nello stesso file non vengono validati. Per abilitare:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 validate_same_page_anchors = true
 ```
 
@@ -98,11 +98,11 @@ validate_same_page_anchors = true
 
 | Codice | Severità | Significato |
 | :--- | :---: | :--- |
-| `Z001` | errore | **Link rotto** — il target non esiste nella VSM |
-| `Z002` | avviso | **Link orfano** — il target esiste su disco ma non nella navigazione del sito |
+| `Z101` | errore | **Link rotto** — il target non esiste nella VSM |
+| `Z103` | avviso | **Link orfano** — il target esiste su disco ma non nella navigazione del sito |
 | `ABSOLUTE_PATH` | errore | **Percorso assoluto** — il link usa un percorso site-absolute (`/docs/pagina`) invece di un percorso relativo (`../pagina`) |
 
-`Z001` blocca sempre la pipeline (exit code 1). `Z002` è un avviso — appare nel report ma non fa fallire la CI a meno che non venga passato `--strict`. `ABSOLUTE_PATH` è un errore perché i percorsi assoluti compromettono la portabilità quando il sito è ospitato in una sottodirectory.
+`Z101` blocca sempre la pipeline (exit code 1). `Z103` è un avviso — appare nel report ma non fa fallire la CI a meno che non venga passato `--strict`. `ABSOLUTE_PATH` è un errore perché i percorsi assoluti compromettono la portabilità quando il sito è ospitato in una sottodirectory.
 
 :::note[Coerenza Fisica — perché i percorsi relativi contano]
 
@@ -112,76 +112,80 @@ Alcuni build engine (es. Docusaurus) permettono override `slug` nel frontmatter 
 
 :::
 
-**Output Sentinel — reporter gutter:**
+**Output Zenzic — reporter gutter:**
 
 <GutterTerminal />
 
-### Blood Sentinel — traversamento path di sistema {#blood-sentinel}
+### Path Traversal Guard — traversamento path di sistema {#path-traversal-guard}
 
-Blood Sentinel tratta il traversamento host-path come un **evento di sicurezza**, non come routine di igiene dei link. Se un link esce da `docs/` e si risolve verso path di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emette `PATH_TRAVERSAL_SUSPICIOUS` ed esce con codice **3**.
+Il path traversal guard tratta il traversamento host-path come un **evento di sicurezza**, non come routine di igiene dei link. Se un link esce da `docs/` e si risolve verso path di sistema operativo (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emette `PATH_TRAVERSAL_SUSPICIOUS` ed esce con codice **3**.
 
 | Codice | Severità | Exit code | Significato |
 | :--- | :---: | :---: | :--- |
 | `PATH_TRAVERSAL_SUSPICIOUS` | incidente_sicurezza | **3** | L'href punta a una directory di sistema OS |
 | `PATH_TRAVERSAL` | errore | 1 | L'href esce da `docs/` verso un percorso non di sistema |
 
-:::danger[Exit Code 3 — Blood Sentinel]
+::::danger[Exit Code 3 — Path Traversal Guard]
 Un risultato `PATH_TRAVERSAL_SUSPICIOUS` significa che un file sorgente della documentazione contiene un link il cui target risolto punta a `/etc/passwd`, `/root/`, o un altro path di sistema OS. Questo può indicare una template injection, una toolchain di documentazione compromessa, o un errore dell'autore che rivela dettagli dell'infrastruttura interna. Trattarlo come un incidente di sicurezza bloccante per la build.
 :::
 
-<BloodSentinel />
+<PathTraversalGuardTerminal />
 
-### Come funziona lo Shield {#shield-how-it-works}
+### Come funziona il credential scanner {#scanner-how-it-works}
 
-Lo Zenzic Shield utilizza un'**architettura a doppio flusso** per garantire che nessuna parte di un file sfugga alla scansione delle credenziali.
+Lo credential scanner utilizza un'**architettura a doppio flusso** per garantire che nessuna parte di un file sfugga alla scansione delle credenziali.
 
 Quando il Reference Scanner elabora un file, crea due flussi indipendenti:
 
 ```mermaid
 flowchart LR
     classDef file    fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e2e8f0
-    classDef shield  fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
+    classDef credentials fill:#0f172a,stroke:#ef4444,stroke-width:2px,color:#e2e8f0
     classDef content fill:#0f172a,stroke:#7c3aed,stroke-width:2px,color:#e2e8f0
 
     disk["📄 File su disco"]:::file
 
     subgraph RS ["Reference Scanner"]
-        SH["🛡️ Flusso SHIELD\nVede TUTTE le righe\n(incl. frontmatter YAML)"]:::shield
+        CRED["🛡️ Flusso CREDENTIAL SCANNER\nVede TUTTE le righe\n(incl. frontmatter YAML)"]:::credentials
         CT["📝 Flusso CONTENUTI\nSalta frontmatter + blocchi codice\n(analizza riferimenti e immagini)"]:::content
     end
 
-    disk --> SH
+    disk --> CRED
     disk --> CT
 ```
 
-I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti deve saltare il frontmatter YAML per evitare di interpretare metadati come `author: Jane Doe` come una definizione reference rotta. Il flusso Shield deve vedere il frontmatter perché una chiave come `aws_key: AKIA...` nascosta nei metadati YAML è un segreto reale che deve essere intercettato. I flussi non condividono mai una sorgente dati — unirli creerebbe un punto cieco.
+I due flussi hanno regole di filtraggio opposte per design. Il flusso Contenuti deve saltare il frontmatter YAML per evitare di interpretare metadati come `author: Jane Doe` come una definizione reference rotta. Il flusso credential scanner deve vedere il frontmatter perché una chiave come `aws_key: AKIA...` nascosta nei metadati YAML è un segreto reale che deve essere intercettato. I flussi non condividono mai una sorgente dati — unirli creerebbe un punto cieco.
 
-**Normalizzatore Pre-Scansione.** Prima di eseguire i pattern di rilevamento, lo Shield normalizza ogni riga per contrastare l'offuscamento. I backtick di codice inline vengono rimossi, gli operatori di concatenazione eliminati e i caratteri pipe delle tabelle collassati. Questo significa che un segreto spezzato tra colonne di una tabella Markdown — come una chiave AWS divisa in `` `AKIA` + `suffisso` `` — viene riassemblato prima della scansione. Vengono verificate sia la forma grezza che quella normalizzata, e un set di deduplicazione previene le doppie segnalazioni.
+**Normalizzatore Pre-Scansione.** Prima di eseguire i pattern di rilevamento, il credential scanner normalizza ogni riga per contrastare l'offuscamento. I backtick di codice inline vengono rimossi, gli operatori di concatenazione eliminati e i caratteri pipe delle tabelle collassati. Questo significa che un segreto spezzato tra colonne di una tabella Markdown — come una chiave AWS divisa in `` `AKIA` + `suffisso` `` — viene riassemblato prima della scansione. Vengono verificate sia la forma grezza che quella normalizzata, e un set di deduplicazione previene le doppie segnalazioni.
 
-**Protezione ReDoS.** Se aggiungi pattern regex personalizzati tramite `[[custom_rules]]` in `zenzic.toml`, Zenzic sottopone ogni pattern a uno stress test con un canary di 100 ms prima che venga eseguito sui tuoi file. I pattern che presentano backtracking catastrofico vengono rifiutati all'avvio con un errore chiaro. Come seconda rete di sicurezza, ogni processo worker ha un timeout di 30 secondi — se un pattern riesce comunque a bloccarsi a runtime, il file interessato riceve un risultato `Z009: ANALYSIS_TIMEOUT` invece di bloccare la tua pipeline CI indefinitamente.
+**Protezione ReDoS.** I pattern regex personalizzati dichiarati in `[[custom_rules]]` vengono compilati tramite gate di compatibilità RE2 al caricamento. I costrutti non supportati (per esempio backreference o lookaround) vengono rifiutati prima che inizi qualsiasi scansione. Separatamente, il watchdog dei worker paralleli continua a emettere `Z902: RULE_TIMEOUT` se un worker si blocca a runtime per uno stall sistemico (per esempio I/O o starvation del coordinatore) e non per un canary regex con backtracking.
 
 ### Link circolari
 
+La documentazione è un **Knowledge Graph** — una rete densamente interconnessa dove i link incrociati tra pagine sono attesi e desiderabili. Se un Tutorial linka una pagina di Reference per i dettagli tecnici, è naturale e benefico che quella pagina di Reference linki a sua volta il Tutorial come esempio di implementazione. I pattern di link circolari sono quindi dati strutturali, non difetti.
+
 Il rilevamento dei cicli viene calcolato una sola volta con DFS iterativo durante la costruzione del resolver (Fase 1.5, Θ(V+E)). Ogni lookup di appartenenza in Fase 2 contro il registro dei cicli è O(1).
+
+**Perché il motore calcola i cicli.** Il traversal DFS è un requisito meccanico del costruttore della Virtual Site Map: senza identificare i cicli, la scansione ricorsiva del grafo andrebbe in loop infinito. Il rilevamento è necessario per far terminare il resolver — non è attivato da una preoccupazione di qualità.
 
 | Codice | Severità | Exit code | Significato |
 | :--- | :---: | :---: | :--- |
 | `CIRCULAR_LINK` | info | — | Il target risolto è membro di un ciclo di link |
 
-:::info[Risultato livello info — soppresso di default]
+:::info[Telemetria topologica — soppressa di default]
 
-I risultati `CIRCULAR_LINK` sono nascosti dall'output standard. Usa `--show-info` per visualizzarli:
+I risultati `CIRCULAR_LINK` sono nascosti dall'output standard perché non sono violazioni. Usa `--show-info` per esporli come metriche strutturali:
 
 ```bash
 zenzic check all --show-info
 ```
 
-Non influenzano mai gli exit code, né in modalità normale né in modalità `--strict`.
+Non influenzano mai gli exit code, né in modalità normale né in modalità `--strict`. Una densità ciclica anomalmente elevata su una singola pagina può essere un segnale di Information Architecture da valutare — ma quel giudizio spetta all'ingegnere, non all'analizzatore.
 :::
 
 ---
 
-## Orfani {#orphans}
+## Orfani {#check-orphans}
 
 **CLI:** `zenzic check orphans`
 
@@ -196,7 +200,7 @@ Una pagina orfana esiste su disco ma non è elencata nella navigazione del sito.
 
 ---
 
-## Snippet {#snippets}
+## Snippet {#check-snippets}
 
 **CLI:** `zenzic check snippets`
 
@@ -211,7 +215,7 @@ Gli esempi di codice nella documentazione vengono testati con meno rigore rispet
 | `json` | `json.loads()` | Sintassi JSON |
 | `toml` | `tomllib.loads()` (stdlib 3.11+) | Sintassi TOML v1.0 |
 
-I blocchi con qualsiasi altro tag linguaggio (`bash`, `javascript`, `mermaid`, ecc.) sono trattati come testo puro e non vengono verificati sintatticamente. Tuttavia, **ogni blocco di codice è comunque scansionato dallo Zenzic Shield** per pattern di credenziali.
+I blocchi con qualsiasi altro tag linguaggio (`bash`, `javascript`, `mermaid`, ecc.) sono trattati come testo puro e non vengono verificati sintatticamente. Tuttavia, **ogni blocco di codice è comunque scansionato dallo credential scanner** per pattern di credenziali.
 
 ### Cosa individua
 
@@ -224,10 +228,10 @@ I blocchi con qualsiasi altro tag linguaggio (`bash`, `javascript`, `mermaid`, e
 
 :::tip[Configurazione]
 
-Usa `snippet_min_lines` in `zenzic.toml` per saltare i blocchi brevi. Il default di `1` controlla tutto. Impostalo a `3` o superiore per ignorare gli stub di import.
+Usa `snippet_min_lines` in `.zenzic.toml` per saltare i blocchi brevi. Il default di `1` controlla tutto. Impostalo a `3` o superiore per ignorare gli stub di import.
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 snippet_min_lines = 3
 ```
 
@@ -235,7 +239,7 @@ snippet_min_lines = 3
 
 ---
 
-## Segnaposto {#placeholders}
+## Segnaposto {#check-placeholders}
 
 **CLI:** `zenzic check placeholders`
 
@@ -254,7 +258,7 @@ Entrambi i segnali sono indipendenti. Una pagina può attivarne uno, entrambi o 
 :::tip[Configurazione]
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 placeholder_max_words = 100
 placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
 ```
@@ -263,7 +267,7 @@ placeholder_patterns = ["coming soon", "wip", "fixme", "tbd", "draft"]
 
 ---
 
-## Asset {#assets}
+## Asset {#check-assets}
 
 **CLI:**
 
@@ -286,21 +290,21 @@ Un asset è considerato **usato** se appare come link immagine Markdown (`![alt]
 
 ---
 
-## Riferimenti {#references}
+## Riferimenti {#check-references}
 
 **CLI:** `zenzic check references`
 
-Il controllo di sicurezza e integrità dei link per i [link in stile reference di Markdown](https://spec.commonmark.org/0.31.2/#link-reference-definitions). Funge anche da superficie primaria per lo **Zenzic Shield**.
+Il controllo di sicurezza e integrità dei link per i [link in stile reference di Markdown](https://spec.commonmark.org/0.31.2/#link-reference-definitions). Funge anche da superficie primaria per lo **credential scanner**.
 
 ### Pipeline Reference a Tre Passaggi
 
 | Passaggio | Nome | Cosa succede |
 | :---: | :--- | :--- |
-| 1 | **Raccolta** | Processa ogni riga; registra le definizioni `[id]: url`; esegue Shield su ogni URL e riga |
+| 1 | **Raccolta** | Processa ogni riga; registra le definizioni `[id]: url`; esegue credential scanner su ogni URL e riga |
 | 2 | **Verifica Incrociata** | Risolve ogni utilizzo `[testo][id]` contro la `ReferenceMap` completa; segnala gli ID non risolvibili |
 | 3 | **Report Integrità** | Calcola il punteggio di integrità per file; aggiunge avvisi su Definizioni Morte e alt-text |
 
-Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati Shield.
+Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati credential scanner.
 
 ### Codici di violazione riferimenti
 
@@ -310,11 +314,11 @@ Il Passaggio 2 inizia solo quando il Passaggio 1 si completa senza risultati Shi
 | `DEAD_DEF` | avviso | 0 / 1 `--strict` | `[id]: url` definito ma mai referenziato |
 | `DUPLICATE_DEF` | avviso | 0 / 1 `--strict` | Stesso `id` definito due volte; il primo vince |
 | `MISSING_ALT` | avviso | 0 / 1 `--strict` | Immagine con alt text vuoto o assente |
-| Corrispondenza pattern Shield | violazione_sicurezza | **2** | Credenziale rilevata in qualsiasi riga o URL |
+| Corrispondenza pattern credential scanner | violazione_sicurezza | **2** | Credenziale rilevata in qualsiasi riga o URL |
 
-### Zenzic Shield — rilevamento credenziali
+### credential scanner — rilevamento credenziali
 
-Lo Shield scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse le righe dentro blocchi di codice.
+Lo credential scanner scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse le righe dentro blocchi di codice.
 
 **Famiglie di pattern rilevati:**
 
@@ -330,13 +334,13 @@ Lo Shield scansiona **ogni riga di ogni file** durante il Passaggio 1, incluse l
 | `hex-encoded-payload` | Sequenze di byte hex-encoded (3+ escape `\xNN` consecutivi) |
 | `gitlab-pat` | GitLab Personal Access Token (`glpat-…`) |
 
-**Exit Code 2** è riservato agli eventi Shield. Non viene mai soppresso da `--exit-zero` o `exit_zero = true` in `zenzic.toml`.
+**Exit Code 2** è riservato agli eventi credential scanner. Non viene mai soppresso da `--exit-zero` o `exit_zero = true` in `.zenzic.toml`.
 
 :::danger[Se ricevi exit code 2]
 
 Ruota la credenziale esposta immediatamente, poi rimuovi o sostituisci la riga incriminata. Non committare il segreto nella cronologia del repository.
 :::
 
-<ShieldTerminal />
+<CredentialTerminal />
 
 <SummaryTerminal />

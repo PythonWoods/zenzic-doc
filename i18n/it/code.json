@@ -326,522 +326,275 @@
     "message": "Etichette",
     "description": "The title of the tag list page"
   },
-  "GUARD YOUR DOCS.": {
-    "message": "GUARD YOUR DOCS."
-  },
-  "homepage.badge.version": {
-    "message": "v0.5.0a5 Rilasciato"
-  },
-  "homepage.meta.title": {
-    "message": "Zenzic - Linter ad alte prestazioni per documentazione"
-  },
-  "homepage.meta.description": {
-    "message": "Linter indipendente dal motore e scudo di sicurezza per documentazione Markdown, livello engineering."
-  },
-  "homepage.nav.docs": {
-    "message": "Documentazione"
-  },
-  "homepage.nav.github": {
-    "message": "GitHub"
-  },
-  "homepage.nav.brand": {
-    "message": "Zenzic"
-  },
-  "homepage.nav.pythonwoods": {
-    "message": "PythonWoods"
-  },
-  "homepage.title.line1": {
-    "message": "Linter ad alte prestazioni"
-  },
-  "homepage.title.line2": {
-    "message": "per Markdown."
-  },
-  "homepage.tagline": {
-    "message": "Intercetta link interrotti, pagine orfane e credenziali trapelate — prima dei tuoi utenti. Engineering-grade e indipendente dal motore."
-  },
-  "homepage.cta.get-started": {
-    "message": "Inizia ora"
-  },
-  "homepage.cta.github": {
-    "message": "Vedi su GitHub"
-  },
-  "homepage.checks.heading.main": {
-    "message": "Un nuovo standard per i documenti."
-  },
-  "homepage.checks.heading.sub": {
-    "message": "Motori dedicati per l'integrità strutturale."
-  },
-  "homepage.check.links.title": {
-    "message": "Link interrotti"
-  },
-  "homepage.check.links.code": {
-    "message": "CHK 0.1"
-  },
-  "homepage.check.links.desc": {
-    "message": "Rileva link interni morti, anchor mancanti e URL irraggiungibili prima che la build parta."
-  },
-  "homepage.check.orphans.title": {
-    "message": "Pagine orfane"
-  },
-  "homepage.check.orphans.code": {
-    "message": "CHK 0.2"
-  },
-  "homepage.check.orphans.desc.before": {
-    "message": "Trova i file "
-  },
-  "homepage.check.orphans.desc.code": {
-    "message": ".md"
-  },
-  "homepage.check.orphans.desc.after": {
-    "message": " che esistono su disco ma sono assenti dalla navigazione del sito."
-  },
-  "homepage.check.orphans.desc": {
-    "message": "Trova i file .md che esistono su disco ma sono assenti dalla navigazione del sito."
-  },
-  "homepage.check.snippets.title": {
-    "message": "Snippet non validi"
-  },
-  "homepage.check.snippets.code": {
-    "message": "CHK 0.3"
-  },
-  "homepage.check.snippets.desc": {
-    "message": "Compila ogni blocco Python delimitato. Intercetta gli errori di sintassi prima che i lettori copino codice rotto."
-  },
-  "homepage.check.placeholders.title": {
-    "message": "Stub segnaposto"
-  },
-  "homepage.check.placeholders.code": {
-    "message": "CHK 0.4"
-  },
-  "homepage.check.placeholders.desc.before": {
-    "message": "Segnala le pagine sotto una soglia di conteggio parole o contenenti pattern come "
-  },
-  "homepage.check.placeholders.desc.todo": {
-    "message": "TODO"
-  },
-  "homepage.check.placeholders.desc.wip": {
-    "message": "WIP"
-  },
-  "homepage.check.placeholders.desc.after": {
-    "message": "."
-  },
-  "homepage.check.placeholders.desc": {
-    "message": "Segnala le pagine sotto una soglia di conteggio parole o contenenti pattern come TODO, WIP."
-  },
-  "homepage.check.assets.title": {
-    "message": "Asset inutilizzati"
-  },
-  "homepage.check.assets.code": {
-    "message": "CHK 0.5"
-  },
-  "homepage.check.assets.desc.before": {
-    "message": "Segnala immagini e file che esistono in "
-  },
-  "homepage.check.assets.desc.code": {
-    "message": "docs/"
-  },
-  "homepage.check.assets.desc.after": {
-    "message": " ma non sono mai referenziati da alcuna pagina."
-  },
-  "homepage.check.assets.desc": {
-    "message": "Segnala immagini e file che esistono in docs/ ma non sono mai referenziati."
-  },
-  "homepage.check.shield.title": {
-    "message": "Zenzic Shield"
-  },
-  "homepage.check.shield.code": {
-    "message": "CHK 0.6"
-  },
-  "homepage.check.shield.desc.before": {
-    "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice "
-  },
-  "homepage.check.shield.desc.code": {
-    "message": "2"
-  },
-  "homepage.check.shield.desc.after": {
-    "message": " immediatamente."
-  },
-  "homepage.check.shield.desc": {
-    "message": "Scansiona ogni URL per credenziali trapelate — API key, token. Esce con codice 2 immediatamente."
-  },
-  "homepage.sentinel.title": {
-    "message": "Sentinella in Azione"
-  },
-  "homepage.sentinel.subtitle": {
-    "message": "Ogni rilevamento è associato a file, riga e sorgente. Output strutturato per occhi umani e pipeline CI."
-  },
-  "homepage.sentinel.gutter.title": {
-    "message": "Reporter con contesto"
-  },
-  "homepage.sentinel.gutter.desc": {
-    "message": "Ogni errore mostra la riga sorgente esatta con contesto di contorno. Niente scorrimento di log."
-  },
-  "homepage.sentinel.shield.title": {
-    "message": "Zenzic Shield"
-  },
-  "homepage.sentinel.shield.desc.before": {
-    "message": "Scansiona ogni riga — inclusi i blocchi delimitati "
-  },
-  "homepage.sentinel.shield.desc.bash": {
-    "message": "bash"
-  },
-  "homepage.sentinel.shield.desc.middle": {
-    "message": "e "
-  },
-  "homepage.sentinel.shield.desc.yaml": {
-    "message": "yaml"
-  },
-  "homepage.sentinel.shield.desc.after": {
-    "message": " — per credenziali trapelate. Il codice di uscita "
-  },
-  "homepage.sentinel.shield.desc.code": {
-    "message": "2"
-  },
-  "homepage.sentinel.shield.desc.tail": {
-    "message": " è riservato esclusivamente agli eventi di sicurezza."
-  },
-  "homepage.sentinel.shield.desc": {
-    "message": "Scansiona ogni riga — inclusi blocchi bash e yaml delimitati — per credenziali trapelate. Il codice di uscita 2 è riservato agli eventi di sicurezza."
-  },
-  "homepage.sentinel.summary.title": {
-    "message": "Riepilogo di gravità"
-  },
-  "homepage.sentinel.summary.desc": {
-    "message": "Ogni esecuzione termina con un riepilogo compatto. Sai subito se il controllo è fallito o ha emesso solo avvisi."
-  },
   "homepage.score.title": {
     "message": "Punteggio di Qualità"
   },
-  "homepage.score.desc": {
-    "message": "Monitora un punteggio deterministico in CI per bloccare le regressioni. Una visione olistica ed elegante della salute della tua documentazione."
+  "homepage.score.title.muted": {
+    "message": "Controllo salute deterministico, per commit."
   },
   "homepage.score.metrics": {
     "message": "Metriche"
   },
-  "homepage.score.overall-health": {
-    "message": "Salute Complessiva"
-  },
-  "homepage.score.value": {
-    "message": "98"
-  },
-  "homepage.score.delta": {
-    "message": "+2%"
-  },
-  "homepage.score.ci-command": {
-    "message": "Comando CI"
-  },
-  "homepage.score.ci-command.value": {
-    "message": "zenzic score --save"
-  },
-  "homepage.score.category.links": {
-    "message": "Salute Link Interni"
-  },
-  "homepage.score.category.links.value": {
-    "message": "99"
-  },
-  "homepage.score.anchor-stability": {
-    "message": "Stabilità anchor"
-  },
-  "homepage.score.anchor-stability.value": {
-    "message": "28"
-  },
-  "homepage.score.external-refs": {
-    "message": "Riferimenti esterni"
-  },
-  "homepage.score.external-refs.value": {
-    "message": "16"
-  },
-  "homepage.score.category.orphans": {
-    "message": "Rilevamento Orfani"
-  },
-  "homepage.score.category.orphans.value": {
-    "message": "21"
-  },
-  "homepage.score.unused-assets": {
-    "message": "Asset inutilizzati"
-  },
-  "homepage.score.unused-assets.value": {
-    "message": "12"
-  },
-  "homepage.score.nav-isolation": {
-    "message": "Isolamento navigazione"
-  },
-  "homepage.score.nav-isolation.value": {
-    "message": "9"
-  },
-  "homepage.footer.license": {
-    "message": "© 2026 PythonWoods. Licenza Apache-2.0."
-  },
-  "homepage.footer.python-version": {
-    "message": "Python 3.11+"
-  },
-  "homepage.footer.runtime": {
-    "message": "Zero dipendenze runtime"
-  },
-  "homepage.terminal.gutter.file": {
-    "message": "docs/guide.md"
-  },
-  "homepage.terminal.gutter.tag": {
-    "message": "[FILE_NOT_FOUND]"
-  },
-  "homepage.terminal.shield.locationValue": {
-    "message": "docs/tutorial.md:42"
-  },
-  "homepage.terminal.shield.credentialValue": {
-    "message": "ghp_************3456"
-  },
-  "terminal.gutter.finding": {
-    "message": "'intro.md' non raggiungibile dalla nav"
-  },
-  "terminal.gutter.line15": {
-    "message": "prima di continuare."
-  },
-  "terminal.gutter.line16": {
-    "message": "Consulta la pagina introduttiva per i dettagli."
-  },
-  "terminal.gutter.line17": {
-    "message": "Poi configura il tuo ambiente."
-  },
-  "terminal.shield.header": {
-    "message": "VIOLAZIONE SICUREZZA RILEVATA"
-  },
-  "terminal.shield.label.finding": {
-    "message": "Trovato:"
-  },
-  "terminal.shield.value.finding": {
-    "message": "Token GitHub rilevato"
-  },
-  "terminal.shield.label.location": {
-    "message": "Posizione:"
-  },
-  "terminal.shield.label.credential": {
-    "message": "Credenziale:"
-  },
-  "terminal.shield.label.action": {
-    "message": "Azione:"
-  },
-  "terminal.shield.value.action": {
-    "message": "Ruota questa credenziale immediatamente e rimuovila dalla cronologia del repository."
-  },
-  "terminal.summary.errors": {
-    "message": "✘ 2 errori"
-  },
-  "terminal.summary.warnings": {
-    "message": "⚠ 1 avviso"
-  },
-  "terminal.summary.files": {
-    "message": "• 1 file con rilevamenti"
-  },
-  "terminal.summary.verdict": {
-    "message": "FALLITO: Uno o più controlli hanno fallito."
-  },
   "homepage.features.title": {
-    "message": "A new standard for docs.",
+    "message": "Il decadimento documentale e silenzioso.",
     "description": "Features section title"
   },
   "homepage.features.muted": {
-    "message": "Purpose-built engines for structural integrity.",
+    "message": "Di solito i team lo scoprono dopo il deploy.",
     "description": "Muted part of features title"
   },
-  "chk01.title": {
-    "message": "Broken links"
+  "homepage.pain.label": {
+    "message": "Punto Critico",
+    "description": "Pain point section label"
   },
-  "chk01.desc": {
-    "message": "Detects dead internal links, missing anchors, and unreachable URLs before the build runs."
+  "homepage.metrics.deterministic.label": {
+    "message": "Deterministico",
+    "description": "Metrics strip label — deterministic"
   },
-  "chk02.title": {
-    "message": "Orphan pages"
+  "homepage.metrics.subprocesses.label": {
+    "message": "Sottoprocessi",
+    "description": "Metrics strip label — subprocesses"
   },
-  "chk02.desc": {
-    "message": "Finds <code>.md</code> files that exist on disk but are absent from the site navigation."
+  "homepage.metrics.re2.label": {
+    "message": "Motore RE2",
+    "description": "Metrics strip label — RE2 engine"
   },
-  "chk03.title": {
-    "message": "Invalid snippets"
+  "homepage.metrics.gates.label": {
+    "message": "Gate CI nativi",
+    "description": "Metrics strip label — native gates"
   },
-  "chk03.desc": {
-    "message": "Compiles every fenced Python block. Catches syntax errors before readers copy-paste code."
+  "findings.Z104.title": {
+    "message": "File non trovato"
   },
-  "chk04.title": {
-    "message": "Placeholder stubs"
+  "findings.Z201.title": {
+    "message": "Leak credenziali (exit 2)"
   },
-  "chk04.desc": {
-    "message": "Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>."
+  "findings.Z405.title": {
+    "message": "Asset inutilizzato"
   },
-  "chk05.title": {
-    "message": "Unused assets"
+  "findings.Z502.title": {
+    "message": "Contenuto troppo breve"
   },
-  "chk05.desc": {
-    "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
-  },
-  "chk06.title": {
-    "message": "Zenzic Shield"
-  },
-  "chk06.desc": {
-    "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
+  "findings.Z601.title": {
+    "message": "Marchio obsoleto"
   },
   "homepage.hero.badge": {
-    "message": "v0.7.1 \"Quartz Maturity\" Stable",
+    "message": "v0.9.0",
     "description": "Wait release version badge"
   },
   "homepage.hero.title": {
-    "message": "Il Safe Harbor",
+    "message": "Quality Gate Documentale",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
-    "message": "per la Documentazione Markdown.",
+    "message": "per pipeline CI/CD.",
     "description": "Muted part of the hero headline"
   },
   "homepage.hero.subtitle": {
-    "message": "Analisi statica ad alte prestazioni, agnostica rispetto al motore e con sicurezza integrata.",
+    "message": "Rileva link rotti, credenziali trapelate e deriva della navigazione prima del merge.",
     "description": "Hero sub headline"
   },
   "homepage.hero.getStarted": {
-    "message": "Get started",
+    "message": "Inizia",
     "description": "Get started button"
   },
   "homepage.hero.viewOnGithub": {
-    "message": "View on GitHub",
+    "message": "Vedi su GitHub",
     "description": "View on GitHub button"
   },
   "homepage.score.sub": {
-    "message": "Track a deterministic score in CI to block regressions. A holistic, elegant view of your documentation health."
+    "message": "Monitora un punteggio deterministico in CI per bloccare le regressioni. Una visione olistica ed elegante della salute della tua documentazione."
   },
   "homepage.score.overall": {
-    "message": "Overall Health"
+    "message": "Salute Complessiva"
   },
   "homepage.score.ciLabel": {
-    "message": "CI Command"
+    "message": "Comando CI"
   },
   "score.linksHealth": {
-    "message": "Internal Links Health"
+    "message": "Salute Link Interni"
   },
   "score.anchor": {
-    "message": "Anchor stability"
+    "message": "Stabilità anchor"
   },
   "score.external": {
-    "message": "External references"
+    "message": "Riferimenti esterni"
   },
   "score.orphan": {
-    "message": "Orphan Detection"
+    "message": "Rilevamento Orfani"
   },
   "score.unused": {
-    "message": "Unused Assets"
+    "message": "Asset inutilizzati"
   },
   "score.nav": {
-    "message": "Nav Isolation"
+    "message": "Isolamento navigazione"
   },
-  "homepage.sentinel.sub": {
-    "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
+  "homepage.scanner.title": {
+    "message": "Zenzic in Azione"
   },
-  "sentinel.gutter.title": {
-    "message": "Gutter reporter"
+  "homepage.scanner.title.muted": {
+    "message": "Il gate CI blocca le regressioni prima del merge."
   },
-  "sentinel.gutter.desc": {
-    "message": "Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke."
+  "homepage.scanner.sub": {
+    "message": "I finding sono deterministici per file e riga. Exit code 1 blocca il debito documentale e il modello DQS flat-cost mantiene esplicito il debito da soppressioni."
   },
-  "sentinel.gutter.msg": {
-    "message": "'intro.md' not reachable from nav"
+  "scanner.gutter.title": {
+    "message": "Contesto finding deterministico"
   },
-  "sentinel.gutter.ctx1": {
-    "message": "before continuing."
+  "scanner.gutter.desc": {
+    "message": "Ogni finding mostra il contesto della riga sorgente. Il team puo correggere senza cercare nei log."
   },
-  "sentinel.gutter.line": {
-    "message": "See the getting started page for details."
+  "scanner.gutter.msg": {
+    "message": "'intro.md' non raggiungibile dalla navigazione (produrrebbe 404)"
   },
-  "sentinel.gutter.ctx2": {
-    "message": "Then configure your environment."
+  "scanner.gutter.ctx1": {
+    "message": "prima di continuare."
   },
-  "sentinel.shield.title": {
-    "message": "Zenzic Shield"
+  "scanner.gutter.line": {
+    "message": "Consulta la pagina di avvio per i dettagli."
   },
-  "sentinel.shield.desc": {
-    "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
+  "scanner.gutter.ctx2": {
+    "message": "Poi configura il tuo ambiente."
   },
-  "sentinel.shield.banner": {
-    "message": "SECURITY BREACH DETECTED"
+  "scanner.shield.title": {
+    "message": "Leak credenziali bloccato (exit 2)"
   },
-  "sentinel.shield.finding": {
-    "message": "Finding:"
+  "scanner.shield.desc": {
+    "message": "Scansiona ogni riga, inclusi i blocchi <code>bash</code> e <code>yaml</code>, per credenziali trapelate. Il codice di uscita <code>2</code> è riservato agli eventi di sicurezza."
   },
-  "sentinel.shield.location": {
-    "message": "Location:"
+  "scanner.shield.banner": {
+    "message": "VIOLAZIONE SICUREZZA RILEVATA"
   },
-  "sentinel.shield.credential": {
-    "message": "Credential:"
+  "scanner.shield.finding": {
+    "message": "Trovato:"
   },
-  "sentinel.shield.action": {
-    "message": "Action:"
+  "scanner.shield.location": {
+    "message": "Posizione:"
   },
-  "sentinel.shield.actionVal": {
-    "message": "Rotate this credential immediately and purge it from the repository history."
+  "scanner.shield.credential": {
+    "message": "Credenziale:"
   },
-  "sentinel.summary.title": {
-    "message": "Severity summary"
+  "scanner.shield.action": {
+    "message": "Azione:"
   },
-  "sentinel.summary.desc": {
-    "message": "Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings."
+  "scanner.shield.actionVal": {
+    "message": "Ruota questa credenziale immediatamente e rimuovila dalla cronologia del repository."
   },
-  "sentinel.summary.errors": {
-    "message": "✘ 2 errors"
+  "scanner.summary.title": {
+    "message": "Riepilogo esito gate"
   },
-  "sentinel.summary.warnings": {
-    "message": "⚠ 1 warning"
+  "scanner.summary.desc": {
+    "message": "Ogni esecuzione termina con uno stato compatto. Il codice di uscita 1 indica merge bloccato da finding di qualita."
   },
-  "sentinel.summary.files": {
-    "message": "• 1 file with findings"
+  "scanner.summary.errors": {
+    "message": "✘ 2 errori"
   },
-  "sentinel.summary.failed": {
-    "message": "FAILED: One or more checks failed."
+  "scanner.summary.warnings": {
+    "message": "⚠ 1 avviso"
   },
-  "sentinel.label": {
-    "message": "Reporter & Shield"
+  "scanner.summary.files": {
+    "message": "• 1 file con rilevamenti"
+  },
+  "scanner.summary.failed": {
+    "message": "FALLITO: quality gate ha bloccato il merge (exit code 1)."
+  },
+  "scanner.label": {
+    "message": "Esito"
   },
   "score.label": {
     "message": "Metriche di Qualità"
   },
   "ledger.label": {
-    "message": "Il Zenzic Engineering Ledger"
+    "message": "Ecosistema"
   },
   "ledger.heading": {
-    "message": "Tre invarianti verificati ad ogni commit."
+    "message": "Esegui lo stesso quality gate su stack documentali diversi."
   },
   "ledger.heading.muted": {
-    "message": "Nessuna eccezione. Nessuna scorciatoia."
+    "message": "Docusaurus, MkDocs, Zensical e repository standalone."
   },
   "ledger.sub": {
-    "message": "Non sono aspirazioni — sono requisiti. Zenzic viene rilasciato solo quando tutti e tre passano."
+    "message": "Gli adapter normalizzano i controlli di path e topologia per mantenere il comportamento CI deterministico."
   },
   "ledger.01.title": {
-    "message": "Zero Assunzioni ai Confini del Sistema"
+    "message": "Adapter Docusaurus"
   },
   "ledger.01.desc": {
-    "message": "Ogni entry point pubblico valida i propri input al confine. I percorsi interni non contengono controlli difensivi — la forma è garantita dal sistema di tipi, imposta da mypy --strict ad ogni merge."
+    "message": "Valida link interni, anchor e topologia di navigazione partendo dal sorgente Markdown e dalla configurazione Docusaurus."
   },
   "ledger.02.title": {
-    "message": "Analisi Senza Sottoprocessi"
+    "message": "Adapter MkDocs"
   },
   "ledger.02.desc": {
-    "message": "Gli strumenti di livello produzione non eseguono shell durante l’analisi. Nessun subprocess.run(), nessun os.system() nei loop per-item. Zenzic valida il tuo stack documentale senza eseguirlo."
+    "message": "Legge la topologia di navigazione MkDocs e controlla il sorgente Markdown direttamente, senza richiedere una build del sito."
   },
   "ledger.03.title": {
-    "message": "Grafo delle Dipendenze Deterministico"
+    "message": "Adapter Zensical"
   },
   "ledger.03.desc": {
-    "message": "Ogni dipendenza è bloccata in un lockfile, verificata da Dependabot e analizzata per compatibilità SPDX. Nessuna sorpresa transitiva al momento del rilascio. uv lock e reuse lint vengono eseguiti ad ogni commit."
+    "message": "Usa la configurazione zensical per validare vincoli strutturali e di contenuto con reporting deterministico."
+  },
+  "ledger.04.title": {
+    "message": "Repository Markdown Standalone"
+  },
+  "ledger.04.desc": {
+    "message": "Esegue i controlli anche su repository senza framework dedicato, validando direttamente file Markdown e riferimenti interni."
   },
   "quickstart.label": {
-    "message": "Inizia"
+    "message": "Avvio Rapido"
   },
   "quickstart.heading": {
-    "message": "Da zero all’integrità documentale in un solo comando."
+    "message": "Installazione rapida:"
+  },
+  "quickstart.heading.muted": {
+    "message": "esegui un comando."
   },
   "quickstart.sub": {
-    "message": "Nessuna configurazione richiesta. Nessun account necessario. Funziona su qualsiasi progetto Markdown."
+    "message": "Esegui audit della documentazione e ottieni codici di uscita deterministici per CI."
+  },
+  "quickstart.ready": {
+    "message": "zenzic · python 3.10+ · pronto"
+  },
+  "quickstart.commandComment": {
+    "message": "# esegui il quality gate documentale"
+  },
+  "quickstart.expectedPass": {
+    "message": "# exit 0: nessun finding bloccante"
+  },
+  "quickstart.expectedFail": {
+    "message": "# exit 1: il quality gate blocca il merge"
   },
   "quickstart.github": {
     "message": "Star su GitHub"
   },
   "quickstart.docs": {
     "message": "Leggi la documentazione completa →"
+  },
+  "governance.label": {
+    "message": "Governance"
+  },
+  "homepage.governance.title": {
+    "message": "CAP Soppressioni"
+  },
+  "homepage.governance.title.muted": {
+    "message": "— Anteprima Live"
+  },
+  "homepage.governance.sub": {
+    "message": "Quando le soppressioni attive superano il CAP configurato, zenzic-action scrive questo riepilogo direttamente nel pannello del job di GitHub Actions. Nessun log da scavare."
+  },
+  "governance.preview.breach": {
+    "message": "CAP superato — exit 1"
+  },
+  "governance.preview.ok": {
+    "message": "CAP nei limiti — exit 0"
+  },
+  "enterprise.section.label": {
+    "message": "Enterprise"
+  },
+  "homepage.enterprise.title": {
+    "message": "Governance Enterprise e Scoring"
+  },
+  "enterprise.section.sub": {
+    "message": "Monitora il debito di soppressione, applica le policy di qualità e governa la salute della documentazione tra team e repository."
   }
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Swizzled BlogArchivePage — D107: The Sentinel Archive Reconstruction
+ * Swizzled BlogArchivePage — D107: Zenzic Archive Reconstruction
  *
  * Replaces the default bullet-list archive with a card-based catalogue.
  * Each card shows: post title (link), date chip, and description excerpt.
@@ -103,7 +103,7 @@ export default function BlogArchivePage({archive}: Props): React.JSX.Element {
               The Zenzic Blog
             </Heading>
             <p className="archive-hero__subtitle">
-              Engineering insights, security chronicles, and the evolution of
+              Engineering insights, security post-mortems, and the evolution of
               Zenzic — indexed by year.
             </p>
           </div>

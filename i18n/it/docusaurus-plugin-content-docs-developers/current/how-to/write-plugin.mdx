@@ -131,7 +131,7 @@ no-internal-hostname = "my_org_rules.rules:NoInternalHostnameRule"
 ```
 
 Il nome dell'entry-point (`no-internal-hostname`) è il **plugin ID** che gli
-utenti referenziano in `zenzic.toml` (vedi [Abilitare i plugin](#enabling-plugins)
+utenti referenziano in `.zenzic.toml` (vedi [Abilitare i plugin](#enabling-plugins)
 qui sotto).
 
 Installa il tuo pacchetto insieme a Zenzic:
@@ -148,7 +148,7 @@ zenzic inspect capabilities
 # Core Scanners  (built-in)
 # …
 # Extensible Rules  (plugin system)
-#   broken-links          Z001       (core)          zenzic.core.rules.VSMBrokenLinkRule
+#   broken-links          Z101       (core)          zenzic.core.rules.VSMBrokenLinkRule
 #   no-internal-hostname  MYORG-001  (my-org-rules)  my_org_rules.rules.NoInternalHostnameRule
 ```
 
@@ -168,7 +168,7 @@ Struttura generata:
 plugin-scaffold-demo/
     pyproject.toml
     README.md
-    zenzic.toml
+    .zenzic.toml
     docs/
         index.md
     src/
@@ -198,10 +198,10 @@ zenzic check all
 
 Le regole core (registrate sotto `zenzic.rules` da Zenzic stesso) sono sempre
 attive. Le regole plugin esterne devono essere esplicitamente abilitate in
-`zenzic.toml` sotto la chiave `plugins`:
+`.zenzic.toml` sotto la chiave `plugins`:
 
-```toml title="zenzic.toml"
-# zenzic.toml
+```toml title=".zenzic.toml"
+# .zenzic.toml
 [build_context]
 engine = "mkdocs"
 
@@ -210,7 +210,7 @@ plugins = ["no-internal-hostname"]
 
 Solo i plugin elencati qui verranno caricati. L'installazione di un pacchetto
 che registra regole sotto `zenzic.rules` senza elencarlo in `plugins` non ha
-effetto — questo è il comportamento intenzionale del **Safe Harbor**: sai sempre
+effetto — questo è il comportamento intenzionale del **Exclusion Zone**: sai sempre
 esattamente quali regole sono attive nel tuo progetto.
 
 ---
@@ -294,12 +294,12 @@ Zenzic.
 - [ ] `check()` è pura: nessun I/O, nessun effetto collaterale, stesso output per stesso input.
 - [ ] `rule_id` è una stringa stabile e univoca (includi un prefisso org, es. `"MYORG-001"`).
 - [ ] Entry-point registrato sotto `zenzic.rules` nel `pyproject.toml`.
-- [ ] Plugin ID elencato nel `zenzic.toml` del progetto sotto `plugins`.
+- [ ] Plugin ID elencato nel `.zenzic.toml` del progetto sotto `plugins`.
 
 :::info[Passaggi Successivi]
- Collega la regola dal codice al flusso Sentinel in produzione:
+ Collega la regola dal codice al flusso Zenzic in produzione:
 
- 1. Registra e abilita il plugin ID nel `zenzic.toml` sotto `plugins`
+ 1. Registra e abilita il plugin ID nel `.zenzic.toml` sotto `plugins`
 
      (vedi [Abilitare i plugin](#enabling-plugins)).
 

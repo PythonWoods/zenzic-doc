@@ -44,7 +44,7 @@ npm ci
 Install the pre-commit hooks (run once after cloning):
 
 ```bash
-uvx pre-commit install               # commit-stage: hygiene + typecheck + zenzic sentinel
+uvx pre-commit install               # commit-stage: hygiene + typecheck + zenzic
 uvx pre-commit install -t pre-push   # pre-push: 🛡️ Final Guard runs `just verify`
 ```
 
@@ -77,7 +77,7 @@ i18n/
 blog/                 ← Zenzic Blog engineering posts
 src/
   components/         ← React components (Icon, Homepage sections)
-  css/custom.css      ← Obsidian visual system (do not edit without CEO approval)
+  css/custom.css      ← design system (do not edit without CEO approval)
 static/               ← Static files served verbatim
 ```
 
@@ -111,7 +111,7 @@ sidebar_label: Short Label
 ```
 
 **Do not add `slug:` frontmatter.** URLs must mirror the filesystem path exactly
-(Slug Law — see [copilot-instructions.md](.github/copilot-instructions.md)).
+(Slug Law — see [Governance docs](developers/governance/index.mdx)).
 
 ### Icons
 
@@ -194,7 +194,7 @@ This allows you to perform global searches across all repositories simultaneousl
 
 ## 404 Emergency Protocol (Sovereign Override)
 
-If Sentinel fails on a pre-launch external URL (HTTP 404), do not disable external checks globally.
+If Zenzic fails on a pre-launch external URL (HTTP 404), do not disable external checks globally.
 Apply a surgical runtime exclusion with `ZENZIC_EXTRA_ARGS`:
 
 ```bash
@@ -204,7 +204,9 @@ ZENZIC_EXTRA_ARGS="--exclude-url https://example.com/prelaunch" just verify
 Rules:
 
 1. Exclude only the exact pre-launch URL(s), never broad domains unless explicitly approved.
-2. Keep exclusions in CI runtime env only; do not hardcode them in `zenzic.toml`.
+2. Use `ZENZIC_EXTRA_ARGS` for **transient** pre-launch URLs only. For **permanent** structural
+   constraints (e.g. rate-limited infrastructure, consistently timing-out third-party services),
+   use `excluded_external_urls` in `.zenzic.toml` with an inline comment explaining the rationale.
 3. Remove each exclusion as soon as the URL is publicly reachable.
 
 For full architecture and lifecycle policy, see
@@ -217,10 +219,12 @@ For full architecture and lifecycle policy, see
 Run the full local gate:
 
 ```bash
-just verify        # all pre-commit hooks + typecheck + build + codes parity (full local gate)
+just verify        # lint-all + build + codes parity + strict audit + score stamp + freshness gate
 ```
 
 This must pass with zero errors before you open or update a PR.
+
+- Execute a D.I.A. (Documentation Impact Analysis). If your PR alters CLI behavior or API contracts, explicitly state it in your PR description. You are encouraged to open a matching PR on zenzic-doc, but if you cannot, the maintainers will handle the documentation sync before release.
 
 ### Pre-commit hooks
 
@@ -232,10 +236,37 @@ The repository enforces quality automatically on every `git commit`:
 | end-of-file-fixer | Files end with a newline |
 | check-yaml / check-json / check-toml | Valid structured data |
 | TypeScript Typecheck | `tsc --noEmit` must pass |
-| Zenzic Sentinel | `zenzic check all` must exit 0 |
+| Zenzic | `zenzic check all` must exit 0 |
 | REUSE/SPDX | All files have licence information |
 
 If a hook fails, fix the reported issue and retry the commit.
+
+### Immutable Pre-Commit Hooks (ADR-089) — Maintainer Only
+
+All `rev:` keys in `.pre-commit-config.yaml` must point to a **40-char commit
+hash**, never to a semantic tag (`v1.2.3`). Git tags are mutable: an upstream
+maintainer (or an attacker) can move a tag silently, poisoning the local
+Gate 2 without any diff in this repository.
+
+This is an **internal CI policy for the zenzic-doc project**, not a public
+Zenzic linter rule. Enforcement: `just check-pinning` (dependency of
+`just verify`); violations raise `[ADR-089] FATAL` at pre-push.
+
+The local exposure window is smaller than the GHA one because `pre-commit`
+freezes hook repos in `~/.cache/pre-commit/` until the user runs `autoupdate`
+or `clean`; GitHub Actions instead re-resolves the ref on every run. Pinning
+is still mandatory locally for new-clone safety and parity with the remote
+ADR-089 enforcement.
+
+**Updating pinned hooks.** Never run plain `pre-commit autoupdate` — it
+rewrites SHAs back to mutable tags. Always use:
+
+```bash
+uvx pre-commit autoupdate --freeze
+```
+
+This preserves the `# vX.Y.Z` annotation comment. Commit the diff and
+re-verify with `just check-pinning`.
 
 ---
 

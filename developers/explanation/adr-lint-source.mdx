@@ -11,7 +11,7 @@ description: "ADR 001: The Genesis Decision — why Zenzic analyzes raw Markdown
 
 **Status:** Active (Genesis Decision)
 **Decider:** Architecture Lead
-**Date:** 2026-01-01 (founding principle, pre-v0.1.0)
+**Date:** 2026-01-01 (founding principle, pre-v0.8.x)
 
 ---
 
@@ -142,13 +142,12 @@ structural errors in routes that the author planned but hasn't yet published.
 
 ## Consequences
 
-- Zenzic's analysis performance is **content-dependent**. Measured against
-
-  the real `zenzic-doc` project (59 MDX pages with JSX, frontmatter, and
-  tables): ~420 ms of pure analysis time on a warm Python process.
-  Simple Markdown projects with minimal frontmatter and no JSX can scan
-  200 files in ~100 ms. End-to-end wall time on a cold `uvx` invocation
-  adds ~2–8 s of Python interpreter startup on top of analysis time.
+- Zenzic's analysis complexity is **$O(N)$** in the number of files and links
+  scanned. All pattern matching runs on the RE2 DFA engine — linear time,
+  immune to catastrophic backtracking. There is no process startup overhead,
+  no dependency installation, and no partial build to execute. The dominant
+  cost is Python interpreter startup on cold `uvx` invocations; subsequent
+  runs in the same process or with a warm bytecode cache are faster.
   Run `python scripts/benchmark.py --repo <path>` to measure your own project.
 
 - Zenzic can be placed as the **first step** in any CI pipeline, before

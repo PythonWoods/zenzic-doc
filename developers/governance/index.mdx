@@ -10,7 +10,7 @@ sidebar_label: "Overview"
 > *"Stability is not the enemy of progress. It is its precondition."*
 
 This section is not documentation for bureaucrats. It is the **Engineering of
-Stability** — a formal contract that protects the Three Pillars of the Safe Harbor
+Stability** — a formal contract that protects the Three Pillars of the Privacy Gate
 from erosion by convenience, urgency, or well-intentioned shortcuts.
 
 ---
@@ -27,7 +27,7 @@ Every governance document in this section exists to defend one invariant:
 | **III** | Pure Functions First | Impure functions in hot-path loops are invisible failure modes. Determinism is the foundation of the trust model. Every finding must be reproducible. |
 
 These are not design preferences. They are load-bearing walls. When the Three Pillars
-hold, the Safe Harbor holds.
+hold, the Privacy Gate holds.
 
 ---
 
@@ -35,7 +35,6 @@ hold, the Safe Harbor holds.
 
 | Document | Purpose |
 | :--- | :--- |
-| [Adversarial AI Model](./adversarial_ai) | How AI is used as Red Team to attack the Three Pillars — not as a co-author. |
 | [The Sovereignty Oath](./exit_strategy) | Proof that Zenzic is a tool, not a master. Zero Residue. Reversible in 30 seconds. |
 | [Evolution Policy](./evolution_policy) | The formal process for evolving — or protecting — the Three Pillars. |
 | [License Compliance](./licensing) | Apache-2.0 + REUSE 3.3. Every file carries the cryptographic signature of its license. |
@@ -48,22 +47,22 @@ Governance documents are not written for today. They are written for the enginee
 who will maintain Zenzic in 2030, under pressures that do not yet exist, facing
 architectural temptations that have not yet been named.
 
-The [Zenzic Ledger](https://github.com/PythonWoods/zenzic/blob/main/.github/copilot-instructions.md)
+The [ADR Vault](../explanation/adr-vault)
 is the operational memory of the project. This Governance section is its
 **constitutional layer** — the principles the Ledger itself cannot override.
 
-> *Saga VI: The Governance of Quartz — [read the chronicle](https://zenzic.dev/blog/governance-of-quartz)*
+
 
 ---
 
 ## Abstract
 
 Zenzic's governance system is designed around a single guarantee: that the rules of the
-Safe Harbor do not change silently mid-voyage.
+Privacy Gate do not change silently mid-voyage.
 
 The Three Pillars — *Lint the Source*, *Zero Subprocesses*, *Pure Functions First* —
 are Constitutional Laws, not architectural preferences. Changing any Pillar requires a
-Major version increment, a 30-day public impact period, an adversarial AI session (Type A),
+Major version increment, a 30-day public impact period, a formal stress-test review,
 and a 2/3 consensus of Core Maintainers.
 
 Zenzic's governance is built on three axes:
@@ -71,10 +70,9 @@ Zenzic's governance is built on three axes:
 | Axis | Document | Guarantee |
 | :--- | :--- | :--- |
 | **Liberty** | [The Sovereignty Oath](./exit_strategy) | Removed in 30 seconds. Zero residue. Core is read-only. |
-| **Pressure** | [Adversarial AI Model](./adversarial_ai) | AI attacks the Pillars; humans ratify. AI does not decide. |
 | **Duration** | [Evolution Policy](./evolution_policy) | No Pillar changes without a public constitutional process. |
 
-This section is the **sentinel's constitution** — the constraints that protect Zenzic's
+This section is the **governance constitution** — the constraints that protect Zenzic's
 own structure from erosion by convenience, urgency, and well-intentioned shortcuts.
 
 *"Do not trust us. Trust the system we built to protect you."*

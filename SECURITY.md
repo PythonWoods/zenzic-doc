@@ -37,7 +37,7 @@ We will acknowledge your report within **72 hours** and aim to release a patch w
 | Area | Description |
 |------|-------------|
 | **npm dependency CVE** | A known CVE in a runtime dependency (`docusaurus`, `react`, `tailwindcss`, etc.) that affects the built site or the build pipeline |
-| **Zenzic Sentinel bypass in docs** | A crafted file in `docs/` or `blog/` that causes `zenzic check all` to pass despite containing a credential pattern (Z201) |
+| **Zenzic Scanner bypass in docs** | A crafted file in `docs/` or `blog/` that causes `zenzic check all` to pass despite containing a credential pattern (Z201) |
 | **Build pipeline code execution** | A crafted MDX file, config, or plugin that causes arbitrary code execution during `npm run build` |
 | **Pre-commit hook bypass** | Any method that allows a commit to bypass the Shield, TypeScript, or REUSE pre-commit hooks |
 | **Static asset exposure** | A file committed to `static/` that inadvertently exposes credentials or sensitive configuration |
@@ -71,7 +71,7 @@ The attack surface is limited to:
 
   exploit a Docusaurus or remark plugin vulnerability. Keep dependencies up to date.
 
-- **Pre-commit hooks** — the Zenzic Sentinel scans all source files for credential patterns
+- **Pre-commit hooks** — the Zenzic Scanner scans all source files for credential patterns
 
   before every commit. The Shield (exit code 2 on Z201) is the last line of defence before
   content reaches the public site.

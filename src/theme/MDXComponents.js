@@ -8,16 +8,16 @@
 
 import MDXComponents from '@theme-original/MDXComponents';
 import Icon from '@site/src/components/Icon';
-import SentinelSection from '@site/src/components/Homepage/SentinelSection';
-import TerminalWindow from '@site/src/components/TerminalWindow';
-import SentinelOutput from '@site/src/components/SentinelOutput';
+import SecuritySection from '@site/src/components/Homepage/SecuritySection';
+import ZenzicOutput from '@site/src/components/ZenzicOutput';
 import VSMVisualizer from '@site/src/components/VSMVisualizer';
+import CapExceededSummary from '@site/src/components/CapExceededSummary';
 
 export default {
   ...MDXComponents,
   Icon,
-  SentinelSection,
-  TerminalWindow,
-  SentinelOutput,
+  SecuritySection,
+  ZenzicOutput,
   VSMVisualizer,
+  CapExceededSummary,
 };

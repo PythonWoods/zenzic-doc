@@ -1,7 +1,7 @@
 ---
 icon: lucide/regex
 sidebar_label: "Custom Rules DSL"
-description: "Define project-specific lint rules in zenzic.toml using the Custom Rules DSL."
+description: "Define project-specific lint rules in .zenzic.toml using the Custom Rules DSL."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,7 +9,7 @@ description: "Define project-specific lint rules in zenzic.toml using the Custom
 
 # Custom Rules DSL
 
-`[[custom_rules]]` lets you declare project-specific lint rules directly in `zenzic.toml`. Each
+`[[custom_rules]]` lets you declare project-specific lint rules directly in `.zenzic.toml`. Each
 rule applies a regular expression line-by-line to every `.md` file and produces a finding when
 the pattern matches. No Python is required — the DSL is pure TOML.
 
@@ -65,8 +65,10 @@ surfaced in the report but do not affect the exit code unless `--strict` is pass
 When a custom rule fires, Zenzic prints the finding with a visual snippet showing the offending
 line:
 
-<SentinelOutput
-  variant="findings"
+<ZenzicOutput
+  status="error"
+  code="ZZ-NODRAFT"
+  exitCode={1}
   compact
   rows={[{ code: 'ZZ-NODRAFT', file: 'docs/guide/install.md:14', message: 'Remove DRAFT marker before publishing.', severity: 'error' }]}
 />
@@ -100,7 +102,7 @@ offending pattern and the regex error message.
 ## TOML placement
 
 Place all `[[custom_rules]]` blocks **before** the `[build_context]` section. `[build_context]`
-must be the last section in `zenzic.toml` — TOML table headers apply to all subsequent keys, so
+must be the last section in `.zenzic.toml` — TOML table headers apply to all subsequent keys, so
 any top-level field written after `[build_context]` would silently become a `build_context` sub-key.
 
 ```toml

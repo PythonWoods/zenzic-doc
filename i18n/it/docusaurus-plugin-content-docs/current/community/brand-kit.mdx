@@ -9,7 +9,7 @@ description: "Loghi, colori e linee guida per l'uso del marchio Zenzic."
 
 # Ecosistema Brand
 
-Benvenuti nell'Ecosistema Brand di Zenzic. Più che una semplice guida di stile, questa è la costituzione di come Zenzic si presenta all'interno delle community open-source, nelle integrazioni CI/CD e negli scenari di deployment aziendali.
+L'Ecosistema Brand di Zenzic definisce come Zenzic è rappresentato nelle community open-source, nelle integrazioni CI/CD e negli scenari di documentazione.
 
 ## La Nostra Postura
 
@@ -17,7 +17,7 @@ Zenzic è un'entità autorevole, silenziosa e rigorosa. Il nostro branding rifle
 
 * **Precisione chirurgica:** Preferiamo un linguaggio tecnico ed esatto, rigettando sterili frasi fatte di marketing.
 * **Rumore zero:** Proprio come Zenzic restituisce silenziosamente codice di uscita `0` quando un test passa, la nostra comunicazione visiva e scritta evita qualsiasi ingombro non necessario.
-* **Tono deterministico:** Zenzic non "presume". Zenzic *dimostra*.
+* **Tono deterministico:** Il comportamento è espresso in termini precisi e verificabili.
 
 ## Il Lessico Zenzic
 
@@ -25,8 +25,8 @@ La coerenza è il fondamento della qualità. Quando si scrive di Zenzic su quals
 
 * **Zenzic**: La suite software. Scritto sempre con la Z maiuscola.
 * **`zenzic`**: Il comando CLI. Sempre minuscolo e formattato rigorosamente come codice inline.
-* **Lo Zenzic Shield**: Il nostro rivoluzionario motore di scansione di sicurezza. Sempre maiuscolo.
-* **Controllo d'Integrità dei Riferimenti**: Il nostro algoritmo di validazione deterministico di punta.
+* **Il credential scanner**: Il motore di scansione di sicurezza. Sempre maiuscolo.
+* **Controllo d'Integrità dei Riferimenti**: Il nostro algoritmo primario di validazione deterministica.
 
 *Cosa NON siamo:* Zenzic è una suite per la qualità totalmente engine-agnostic. Non riferitevi mai a Zenzic limitandovi a chiamarlo "un plugin", una "utility MkDocs" o un "visualizzatore Markdown".
 
@@ -38,7 +38,7 @@ La nostra iconografia eredita direttamente questo retaggio. L'artefatto visivo d
 
 Quando disponi i nostri loghi o elementi visivi in presentazioni fisiche o documentazioni:
 
-* Lascia che l'artefatto abbia grande margine di respiro (spazio bianco isolato). Non affollarlo di testo.
+* Lascia che l’artefatto abbia un adeguato margine di spazio. Non affollarlo di testo.
 * Mantieni confini netti e ad alto contrasto (flat).
 * Evita inclinazioni, rotazioni arbitrarie o l'applicazione di sfocature e ombre morbide che ne compromettano la spigolatura geometrica.
 
@@ -49,8 +49,8 @@ che non possono raggiungere `img.shields.io`:
 
 | Badge | Anteprima | Utilizzo |
 |---|---|---|
-| Shield | ![Zenzic Shield](../assets/brand/svg/zenzic-badge-shield.svg) | Gate binario: passing / failing |
-| Score | ![Zenzic Score](../assets/brand/svg/zenzic-badge-score.svg) | Metrica di qualità: 0–100 |
+| Audit Badge | ![Zenzic Audit](@site/static/assets/brand/svg/zenzic-badge-audit.svg) | Gate binario: passing / failing |
+| Score | ![Zenzic Score](@site/static/assets/brand/svg/zenzic-badge-score.svg) | Metrica di qualità: 0–100 |
 
 Per i varianti dinamici Shields.io e il wiring CI/CD, vedi la [guida ai Badge](../how-to/add-badges.mdx).
 
@@ -60,29 +60,30 @@ Zenzic adatta la propria frequenza visiva all'ambiente luminoso dell'ingegnere. 
 
 | Modalità | Token | Hex | Contrast Ratio | Livello WCAG |
 |---------|-------|-----|---------------|-------------|
-| Light | `indigo-700` | `#4338ca` | 7,4:1 su bianco | AAA |
-| Dark | `indigo-300` | `#a5b4fc` | 8,9:1 su `#09090b` | AAA |
+| Light | `indigo-700` | `#4338ca` | 7,9:1 su bianco | AAA |
+| Dark | `indigo-300` | `#a8b3fb` | 9,9:1 su `#09090b` | AAA |
 | Bordi (Light) | `indigo-200` | `#c7d2fe` | strutturale | — |
 | Bordi (Dark) | `indigo-500/20` | `#6366f1` al 20% | strutturale | — |
 
-**Filosofia:** L'Indaco di Zenzic non è una scelta decorativa — è un segnale semantico. In Light Mode porta l'autorità dell'inchiostro ingegneristico. In Dark Mode irradia dolcemente, come l'indicatore di una sala controllo: sempre presente, mai aggressivo. Il layer `backdrop-blur` sotto ogni pannello `SentinelOutput` smorza ulteriormente il riflesso del bordo, prevenendo l'effetto “neon” sulle superfici dark.
+**Specifiche d'Uso:** Il colore Indaco di Zenzic è un indicatore semantico riservato ai componenti strutturali (es. Navbar, Footer, Scanner Output). In Light Mode garantisce un rapporto di contrasto >4.5:1 per il testo primario. In Dark Mode, il livello di contrasto è ricalibrato per la leggibilità prolungata. Il layer `backdrop-blur` sotto i pannelli `ZenzicOutput` riduce l'intensità del bordo per prevenire l'affaticamento visivo (WCAG 2.1 AA compliance).
 
 ## Riferimento al Brand System
 
-Il documento interattivo Brand System mostra l'intera Sentinel Palette, le varianti del logomark,
+Il documento interattivo Brand System mostra l'intera Color Palette, le varianti del logomark,
 la social card, i campioni tipografici e le norme d'uso in un'unica pagina formattata con precisione:
 
 [Apri il Brand System &rarr;](pathname:///assets/brand/zenzic-brand-system.html)
 
 ## Download
 
-Il pacchetto completo degli asset brand di Zenzic (SVG + PNG) viene allegato automaticamente ad ogni release come `brand-kit.zip`.
-Scaricalo dalla pagina [GitHub Releases](https://github.com/PythonWoods/zenzic/releases/latest).
+Il pacchetto completo degli asset brand di Zenzic (SVG + PNG) viene allegato automaticamente ad ogni release GitHub come `brand-kit.zip`.
+Scaricalo dalla pagina stabile [GitHub Releases](https://github.com/PythonWoods/zenzic/releases),
+poi apri l'ultima release e preleva `brand-kit.zip` dalla sezione Assets.
 
 ## Protocolli di Integrazione
 
 Se stai sviluppando integrazioni di terze parti, action CI/CD o pubblicando paper accademici che incorporano Zenzic come analizzatore sintattico, diventi orgogliosamente parte integrante di questo ecosistema.
 
 1. **GitHub Actions & Badge:** Usa i badge ufficiali di Zenzic nei README per dimostrare che il tuo progetto mantiene uno Zenzic Quality Score di 100/100 sulle proprie documentazioni.
-2. **Richieste Stampa:** Per richieste di asset vettoriali brandizzati ad alta definizione, interviste sulle architetture di analisi statica o eep-dive tecnici, inoltra sempre a `brand@pythonwoods.dev`.
+2. **Richieste Stampa:** Per richieste di asset vettoriali brandizzati ad alta definizione, interviste sulle architetture di analisi statica o deep-dive tecnici, inoltra sempre a `brand@pythonwoods.dev`.
 3. **Allineamenti Ecosistemici:** Assicurati sempre che qualsiasi associazione grafica con Zenzic implichi rigorosamente "integrazione strategica", senza mai suggerire un rapporto di dipendenza o ownership. Zenzic rimarrà permanentemente Open Source, libero e universalmente adattabile.

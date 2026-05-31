@@ -1,99 +1,229 @@
 // SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { ReactNode } from 'react';
+import React from 'react';
+import Link from '@docusaurus/Link';
 import Translate from '@docusaurus/Translate';
-import { Iso } from './Shared';
 
-function BrokenLinksIso(): React.JSX.Element {
-  return <Iso><path d="M100 40 L140 60 L100 80 L60 60 Z" /><path d="M140 60 L140 80 L100 100 L100 80 Z" /><path d="M60 60 L100 80 L100 100 L60 80 Z" /><path d="M100 120 L140 140 L100 160 L60 140 Z" /><path d="M140 140 L140 160 L100 180 L100 160 Z" /><path d="M60 140 L100 160 L100 180 L60 160 Z" /><path d="M100 100 L100 105" strokeDasharray="2 2" stroke="#f43f5e" strokeWidth="1.5" /><path d="M100 115 L100 120" strokeDasharray="2 2" stroke="#f43f5e" strokeWidth="1.5" /><path d="M80 90 L80 95" strokeDasharray="2 2" stroke="#f43f5e" strokeWidth="1.5" /><path d="M120 90 L120 95" strokeDasharray="2 2" stroke="#f43f5e" strokeWidth="1.5" /></Iso>;
-}
-
-function OrphanIso(): React.JSX.Element {
-  return <Iso><path d="M80 60 L110 75 L80 90 L50 75 Z" /><path d="M110 75 L110 115 L80 130 L80 90 Z" /><path d="M50 75 L80 90 L80 130 L50 115 Z" /><path d="M115 80 L145 95 L115 110 L85 95 Z" /><path d="M145 95 L145 135 L115 150 L115 110 Z" /><path d="M140 30 L160 40 L140 50 L120 40 Z" stroke="#f59e0b" strokeWidth="1" /><path d="M160 40 L160 60 L140 70 L140 50 Z" stroke="#f59e0b" strokeWidth="1" /><path d="M120 40 L140 50 L140 70 L120 60 Z" stroke="#f59e0b" strokeWidth="1" /><path d="M130 80 L140 65" strokeDasharray="2 3" stroke="#f59e0b" /></Iso>;
-}
-
-function SnippetIso(): React.JSX.Element {
-  return <Iso><path d="M50 90 L150 40 L150 120 L50 170 Z" /><path d="M60 100 L110 75" /><path d="M60 115 L140 75" /><path d="M60 130 L100 110" /><path d="M60 145 L130 110" /><path d="M90 125 L120 110" stroke="#f43f5e" strokeWidth="2" /></Iso>;
-}
-
-function PlaceholderIso(): React.JSX.Element {
-  return <Iso><path d="M60 150 L140 110 L140 30 L60 70 Z" /><path d="M75 85 L125 60" /><path d="M75 100 L115 80" /><path d="M75 115 L125 90 L125 105 L75 130 Z" strokeDasharray="2 3" stroke="#f59e0b" strokeWidth="1.5" /></Iso>;
-}
-
-function AssetsIso(): React.JSX.Element {
-  return <Iso><path d="M50 70 L100 45 L150 70 L100 95 Z" /><path d="M50 90 L100 115 L150 90" /><path d="M50 110 L100 135 L150 110" /><path d="M50 150 L100 125 L150 150 L100 175 Z" strokeDasharray="3 3" stroke="#38bdf8" strokeWidth="1" /><ellipse cx="100" cy="70" rx="20" ry="10" stroke="#38bdf8" strokeWidth="1" /></Iso>;
-}
-
-function ShieldIso(): React.JSX.Element {
-  return <Iso><path d="M100 160 L60 130 L60 80 L100 60 L140 80 L140 130 Z" /><path d="M100 90 A 10 5 0 1 0 100 110" stroke="#10b981" strokeWidth="1.5" /><path d="M96 110 L96 125 L104 125 L104 110" stroke="#10b981" strokeWidth="1.5" /><path d="M60 80 L100 100 L140 80" /><path d="M100 100 L100 160" /></Iso>;
-}
-
-function CheckCard({code, visual, title, desc}: {code: string; visual: ReactNode; title: ReactNode; desc: ReactNode}): React.JSX.Element {
+// ZenzicOutput — 1:1 mirror of `zenzic check all` on a fixture containing
+// Z104 (broken link), Z201 (credential), Z405 (unused asset), Z502 (short
+// content), Z601 (brand obsolescence). Markers, brackets, status line and
+// banner are copied verbatim from the real CLI. No fabrication, no styling
+// shortcuts that misrepresent the engine's output.
+function ZenzicOutput(): React.JSX.Element {
   return (
-    <div className="border-t dark:border-zinc-800/60 border-zinc-200 pt-6 group">
-      <div className="text-[10px] font-mono tracking-widest dark:text-zinc-600 text-zinc-400 mb-8 uppercase">CHK {code}</div>
-      <div className="h-48 w-full flex items-center justify-center mb-8 bg-transparent">{visual}</div>
-      <h3 className="text-base font-medium dark:text-zinc-200 text-zinc-800 mb-3">{title}</h3>
-      <p className="dark:text-zinc-500 text-zinc-500 text-sm leading-relaxed">{desc}</p>
+    <div className="dark:bg-zinc-950/80 bg-zinc-50 backdrop-blur-md border dark:border-zinc-800/60 border-zinc-200 rounded-xl shadow-2xl font-mono text-[12px] md:text-[13px] leading-relaxed overflow-hidden">
+      {/* Terminal chrome */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b dark:border-zinc-800/60 border-zinc-200 dark:bg-zinc-900/40 bg-zinc-100/60">
+        <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+        <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+        <span className="ml-3 text-[11px] dark:text-zinc-500 text-zinc-500 tracking-wide">zenzic check all · v0.9.0</span>
+      </div>
+
+      {/* Output body */}
+      <div className="px-5 md:px-8 py-6 dark:text-zinc-300 text-zinc-700 space-y-5">
+        {/* Z201 SECURITY BREACH — verbatim structured banner */}
+        <div className="space-y-1">
+          <div className="text-rose-500 font-semibold">✘ SECURITY BREACH DETECTED</div>
+          <div className="pl-2">
+            <div><span className="text-rose-500">✘</span> Finding:    Secret detected (aws-access-key) — rotate immediately.</div>
+            <div><span className="text-rose-500">✘</span> Location:   docs/deploy.md:4</div>
+            <div><span className="text-rose-500">✘</span> Credential: <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm">AKIA************MPLE</span></div>
+          </div>
+          <div className="pt-1 dark:text-zinc-400 text-zinc-600">
+            Action: Rotate this credential immediately and purge it from the repository history.
+          </div>
+        </div>
+
+        {/* Status line — verbatim */}
+        <div className="dark:text-zinc-500 text-zinc-500">standalone • 3 files (2 docs, 1 assets) • 0.0s • 87 files/s</div>
+
+        {/* Z405 — UNUSED_ASSET */}
+        <div>
+          <span className="dark:text-zinc-400 text-zinc-600">docs/assets/unused.png</span>{'  '}
+          <span className="text-amber-500">⚠</span>{'  '}
+          <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z405]</span>{'  '}
+          <span>File not referenced in any documentation page.</span>
+        </div>
+
+        {/* Z502 — SHORT_CONTENT (deploy.md) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/deploy.md:1</span>{'  '}
+            <span className="text-amber-500">⚠</span>{'  '}
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z502]</span>{'  '}
+            <span>Page has only 6 words (minimum 50).</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  ❱  # Deploy
+    2  │
+    3  │  \`\`\`bash`}
+          </pre>
+        </div>
+
+        {/* Z502 — SHORT_CONTENT (index.md) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:1</span>{'  '}
+            <span className="text-amber-500">⚠</span>{'  '}
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z502]</span>{'  '}
+            <span>Page has only 18 words (minimum 50).</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  ❱  # Welcome
+    2  │
+    3  │  See the [intro page](./intro.md) for details.`}
+          </pre>
+        </div>
+
+        {/* Z104 — FILE_NOT_FOUND (link target) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:3:8</span>{'  '}
+            <span className="text-rose-500">✘</span>{'  '}
+            <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm font-medium">[Z104]</span>{'  '}
+            <span>&apos;./intro.md&apos; not found in docs</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    1  │  # Welcome
+    2  │
+    3  ❱  See the [intro page](./intro.md) for details.
+       │          ^^^^^^^^^^^^^^^^^^^^^^^^
+    4  │
+    5  │  ![architecture](./assets/old-diagram.png)`}
+          </pre>
+        </div>
+
+        {/* Z104 — FILE_NOT_FOUND (image asset) */}
+        <div className="space-y-1">
+          <div>
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:5</span>{'  '}
+            <span className="text-rose-500">✘</span>{'  '}
+            <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded-sm font-medium">[Z104]</span>{'  '}
+            <span>&apos;./assets/old-diagram.png&apos; not found in docs</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    3  │  See the [intro page](./intro.md) for details.
+    4  │
+    5  ❱  ![architecture](./assets/old-diagram.png)
+       │  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6  │
+    7  │  This project was migrated from **OldPlatform** in Q1 2026.`}
+          </pre>
+        </div>
+
+        {/* Z601 — BRAND_OBSOLESCENCE */}
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <span className="dark:text-zinc-400 text-zinc-600">docs/index.md:7:33</span>
+            <span className="text-amber-500">⚠</span>
+            <span className="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded-sm font-medium">[Z601]</span>
+            <span className="dark:text-zinc-300 text-zinc-700">[Z601] Obsolete or unauthorized brand term &apos;OldPlatform&apos; detected. Use semantic versioning (e.g., &apos;vX.Y.Z&apos;) in active prose, or suppress if this is a historical ledger.</span>
+          </div>
+          <pre className="dark:bg-zinc-900/40 bg-white border dark:border-zinc-800/40 border-zinc-200 rounded-md px-3 py-2 dark:text-zinc-400 text-zinc-600 whitespace-pre overflow-x-auto">
+{`    5  │  ![architecture](./assets/old-diagram.png)
+    6  │
+    7  ❱  This project was migrated from **OldPlatform** in Q1 2026.
+       │                                   ^^^^^^^^^^^`}
+          </pre>
+        </div>
+
+        {/* Divider + Summary — verbatim */}
+        <div className="dark:text-zinc-700 text-zinc-300 select-none">────────────────────────────────────────────────────────────────────────────────</div>
+        <div className="space-y-1.5">
+          <div>
+            Summary:{'  '}
+            <span className="text-rose-500">✘ 2 errors</span>{'  '}
+            <span className="text-amber-500">⚠ 4 warnings</span>{'  '}
+            <span className="dark:text-zinc-500 text-zinc-500">💡 0 info</span>{'  '}
+            <span className="dark:text-zinc-500 text-zinc-500">• 3 files with findings</span>
+          </div>
+          <div className="text-rose-500 font-semibold tracking-wide">
+            FAILED: Hard errors detected. Exit code 1 is mandatory.
+          </div>
+          <div className="dark:text-zinc-500 text-zinc-500">
+            Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try &apos;zenzic check --help&apos; for options.
+          </div>
+          <div className="dark:text-zinc-500 text-zinc-500">🔒 Suppression Audit: 0/30 (inline: 0, per-file: 0)</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// FindingCodeIndex — anchor links to /docs/reference/finding-codes, one per
+// code actually emitted in the terminal above. Codes match what the CLI
+// prints verbatim; no aspirational entries.
+function FindingCodeIndex(): React.JSX.Element {
+  const codes: { code: string; title: React.ReactNode; href: string }[] = [
+    {
+      code: 'Z104',
+      title: <Translate id="findings.Z104.title">File not found</Translate>,
+      href: '/docs/reference/finding-codes#z104',
+    },
+    {
+      code: 'Z201',
+      title: <Translate id="findings.Z201.title">Credential leak (exit 2)</Translate>,
+      href: '/docs/reference/finding-codes#z201',
+    },
+    {
+      code: 'Z405',
+      title: <Translate id="findings.Z405.title">Unused asset</Translate>,
+      href: '/docs/reference/finding-codes#z405',
+    },
+    {
+      code: 'Z502',
+      title: <Translate id="findings.Z502.title">Short content</Translate>,
+      href: '/docs/reference/finding-codes#z502',
+    },
+    {
+      code: 'Z601',
+      title: <Translate id="findings.Z601.title">Brand obsolescence</Translate>,
+      href: '/docs/reference/finding-codes#z601',
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-10 max-w-5xl mx-auto px-2">
+      {codes.map(({code, title, href}) => (
+        <Link
+          key={code}
+          to={href}
+          className="group flex items-center gap-3 text-sm dark:text-zinc-400 text-zinc-600 dark:hover:text-white hover:text-zinc-900 transition-colors"
+        >
+          <span className="font-mono text-[11px] tracking-wider dark:text-zinc-500 text-zinc-500 group-hover:text-indigo-500">{code}</span>
+          <span>{title}</span>
+          <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-indigo-500 text-xs">→</span>
+        </Link>
+      ))}
     </div>
   );
 }
 
 export default function Features(): React.JSX.Element {
   return (
-    <section className="dark:bg-zinc-950 bg-white py-24 md:py-32">
-      <div className="max-w-[1200px] mx-auto px-6">
-        <div className="mb-20 max-w-3xl">
+    <section className="py-16 md:py-24">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="mb-12 max-w-3xl">
+          <p className="text-[11px] font-mono font-semibold tracking-[0.18em] dark:text-zinc-400 text-zinc-500 mb-4 uppercase">
+            <Translate id="homepage.pain.label" description="Pain point section label">
+              Pain Point
+            </Translate>
+          </p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight dark:text-white text-zinc-900 mb-4">
             <Translate id="homepage.features.title" description="Features section title">
-              A new standard for docs.
+              Documentation drift is silent.
             </Translate>{' '}
             <span className="dark:text-zinc-500 text-zinc-400">
               <Translate id="homepage.features.muted" description="Muted part of features title">
-                Purpose-built engines for structural integrity.
+                Teams usually see it after deployment.
               </Translate>
             </span>
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
-          <CheckCard
-            code="0.1"
-            visual={<BrokenLinksIso />}
-            title={<Translate id="chk01.title">Broken links</Translate>}
-            desc={<Translate id="chk01.desc">Detects dead internal links, missing anchors, and unreachable URLs before the build runs.</Translate>}
-          />
-          <CheckCard
-            code="0.2"
-            visual={<OrphanIso />}
-            title={<Translate id="chk02.title">Orphan pages</Translate>}
-            desc={<Translate id="chk02.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Finds <code>.md</code> files that exist on disk but are absent from the site navigation.'}</Translate>}
-          />
-          <CheckCard
-            code="0.3"
-            visual={<SnippetIso />}
-            title={<Translate id="chk03.title">Invalid snippets</Translate>}
-            desc={<Translate id="chk03.desc">Compiles every fenced Python block. Catches syntax errors before readers copy-paste code.</Translate>}
-          />
-          <CheckCard
-            code="0.4"
-            visual={<PlaceholderIso />}
-            title={<Translate id="chk04.title">Placeholder stubs</Translate>}
-            desc={<Translate id="chk04.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>.'}</Translate>}
-          />
-          <CheckCard
-            code="0.5"
-            visual={<AssetsIso />}
-            title={<Translate id="chk05.title">Unused assets</Translate>}
-            desc={<Translate id="chk05.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Reports images and files that exist in <code>docs/</code> but are never referenced by any page.'}</Translate>}
-          />
-          <CheckCard
-            code="0.6"
-            visual={<ShieldIso />}
-            title={<Translate id="chk06.title">Zenzic Shield</Translate>}
-            desc={<Translate id="chk06.desc" values={{ code: (str: string) => <code>{str}</code> }}>{'Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately.'}</Translate>}
-          />
-        </div>
+        <ZenzicOutput />
+        <FindingCodeIndex />
       </div>
     </section>
   );

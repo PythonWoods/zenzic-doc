@@ -11,7 +11,7 @@ description: "ADR 008: Atomic filesystem parity between the English source tree 
 
 **Status:** Active
 **Decider:** Architecture Lead
-**Date:** 2026-04-20 (v0.7.0 sprint, D045 — Diátaxis Migration)
+**Date:** 2026-04-20 (D045 — Diátaxis Migration)
 
 ---
 
@@ -24,7 +24,7 @@ by **mirroring the English filesystem path**: a user on
 `/docs/reference/finding-codes` switches to `/it/docs/reference/finding-codes` —
 and Docusaurus serves the file at the corresponding path in the `i18n/it/` tree.
 
-During the v0.7.0 Diátaxis migration (D045), 29 English files were renamed and
+During the Diátaxis migration, 29 English files were renamed and
 moved to align with the four-quadrant structure. Several Italian files were not
 moved atomically in the same commit. The result: the language switcher produced
 **404 errors** on pages where the English file had been moved but the Italian
@@ -100,7 +100,7 @@ produce a 404 on the Italian language switcher.
 ### 1. Italian is a First-Class Citizen
 
 The Italian documentation is not a secondary asset or a "nice to have". It is
-part of the Safe Harbor contract. A link that works in English but 404s in
+part of the Privacy Gate contract. A link that works in English but 404s in
 Italian is a **structural failure** of the documentation system — equivalent to
 a broken internal link in the English tree.
 
@@ -113,7 +113,7 @@ There is no build-time backstop.
 ### 3. Git History Coherence
 
 An atomic commit that moves both EN and IT files creates a **coherent history
-unit**: the rename is a single, reversible operation. Split commits create
+unit**: the rename is a single, reversible step. Split commits create
 history noise and make bisect unreliable when investigating regressions.
 
 ---
@@ -149,5 +149,5 @@ history noise and make bisect unreliable when investigating regressions.
 
 - The symmetry invariant applies to **directory structure** only. Italian
 
-  *content* may lag behind English during active sprints, as long as the file
+  *content* may lag behind English during active development cycles, as long as the file
   is present (even as a stub). A 404 is worse than a stale translation.

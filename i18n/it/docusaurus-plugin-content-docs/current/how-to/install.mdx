@@ -18,26 +18,23 @@ Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tant
 
 ## Esempi canonici
 
-Il repository include fixture mantenuti e allineati ai contratti documentati:
+Il repository include fixture Z-code mantenuti e allineati ai contratti documentati:
 
-- `examples/mkdocs-basic/` — baseline MkDocs 1.6 (nav annidata, link nav esterno,
-
-  tag YAML tolleranti come `!ENV` e `!relative`).
-
-- `examples/i18n-standard/` — gold standard bilingue in strict mode.
-- `examples/zensical-basic/` — baseline Zensical v0.0.31+ (`[project].nav`).
-- `examples/broken-docs/` — errori intenzionali (exit 1).
-- `examples/security_lab/` — fixture sicurezza (Shield exit 2, Blood Sentinel exit 3).
+- `examples/z101-broken-links/` — fixture integrità link (Z101 LINK_BROKEN, exit 1).
+- `examples/z201-credentials/` — fixture credential scanner (Z201 CREDENTIAL_SECRET, exit 2).
+- `examples/z405-unused-assets/` — fixture asset non referenziato (Z405, exit 1).
+- `examples/z601-brand-obsolescence/` — fixture obsolescenza brand (Z601, exit 1).
+- `examples/z602-i18n-parity/` — fixture parità i18n (Z602, exit 1).
 
 :::tip[Vuoi eseguirlo subito?]
 
 ```bash
-uvx zenzic lab      # esplora tutti i 9 esempi inclusi — zero setup
+uvx zenzic lab      # esplora tutti i 5 scenari Z-code — zero setup
 uvx zenzic check all  # proteggi la tua documentazione
 ```
 
-Vuoi vedere come Zenzic gestisce Docusaurus v3 o il proxy di Zensical?
-Lancia `zenzic lab` e guarda la Sentinel in azione su ogni engine supportato.
+Vuoi vedere come Zenzic rileva credenziali o gap di parità i18n?
+Lancia `zenzic lab` e guarda Zenzic in azione su ogni scenario Z-code della galleria.
 :::
 
 ---
@@ -105,7 +102,7 @@ Installa in un virtual environment dedicato, poi aggiungi la directory `bin/` al
 
 ```bash
 uv add --dev zenzic
-uv run zenzic check all
+uvx zenzic check all
 ```
 
 Installa Zenzic nel virtual environment del progetto e fissa la versione in `uv.lock`.
@@ -130,7 +127,7 @@ Pattern standard da dipendenza dev con virtual environment locale al progetto.
 ### Solo analisi statica — nessun runtime di build richiesto {#lean-agnostic}
 
 Zenzic legge i file di configurazione (`mkdocs.yml`, `zensical.toml`, `pyproject.toml`) come
-testo semplice. **Non esegue** il motore di build né i suoi plugin.
+testo statico. **Non esegue** il motore di build né i suoi plugin.
 
 **Non installare** MkDocs, Material for MkDocs o alcun plugin di build nell'ambiente di
 linting. Non servono. L'ambiente di linting ha una sola dipendenza: `zenzic`.
@@ -154,7 +151,7 @@ Il workflow standard per adottare Zenzic in un progetto:
 
 ### 1. Init — scaffolding del file di configurazione {#init}
 
-Crea un `zenzic.toml` con un singolo comando. Zenzic identifica il motore di
+Crea un `.zenzic.toml` con un singolo comando. Zenzic identifica il motore di
 documentazione dai file di configurazione presenti e preimposta `[build_context]` di conseguenza:
 
 ```bash
@@ -164,7 +161,7 @@ zenzic init
 **Esempio di output quando è presente `mkdocs.yml`:**
 
 ```text
-Created zenzic.toml
+Created .zenzic.toml
   Engine pre-set to mkdocs (detected from mkdocs.yml).
 
 Edit the file to enable rules, adjust directories, or set a quality threshold.
@@ -175,12 +172,12 @@ Se non viene rilevato alcun file di configurazione engine, `zenzic init` produce
 engine-agnostico (modalità Standalone). In entrambi i casi, tutte le impostazioni sono commentate
 per default — decommenta e modifica solo i campi di cui hai bisogno.
 
-Eseguendo Zenzic senza un `zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
+Eseguendo Zenzic senza un `.zenzic.toml`, Zenzic utilizza i valori predefiniti e mostra un
 pannello Helpful Hint che suggerisce `zenzic init`:
 
 ```text
 ╭─ 💡 Zenzic Tip ─────────────────────────────────────────────────────╮
-│ Using built-in defaults — no zenzic.toml found.                      │
+│ Using built-in defaults — no .zenzic.toml found.                      │
 │ Run zenzic init to create a project configuration file.              │
 │ Customise docs directory, excluded paths, engine adapter, and rules. │
 ╰──────────────────────────────────────────────────────────────────────╯
@@ -188,10 +185,10 @@ pannello Helpful Hint che suggerisce `zenzic init`:
 
 ### 2. Config — personalizza per il tuo progetto {#config}
 
-Modifica il `zenzic.toml` generato per silenziare il rumore e impostare soglie appropriate:
+Modifica il `.zenzic.toml` generato per silenziare il rumore e impostare soglie appropriate:
 
 ```toml
-# zenzic.toml — nella root del repository
+# .zenzic.toml — nella root del repository
 excluded_assets = [
 "assets/favicon.svg",      # referenziato da mkdocs.yml, non da nessuna pagina .md
 "assets/social-preview.png",
@@ -242,10 +239,11 @@ repository, Zenzic carica l'**adapter** corrispondente che fornisce:
 
   segnalati come orfani.
 
-### Modalità Standalone {#standalone-mode}
+- **Ghost Route** — quando `mkdocs-material` con `reconfigure_material: true` genera entry point
+  locale (es. `/it/`) al momento della build, quelle pagine non appaiono mai in `nav:`. Zenzic
+  le contrassegna come `REACHABLE` automaticamente nella [Virtual Site Map](../reference/checks#vsm-how-it-works)
+  senza richiedere alcuna lista di esclusione manuale.
 
-Quando non viene trovata alcuna configurazione del motore di build, Zenzic ricade su
-`StandaloneAdapter`. In questa modalità:
 
 - **Il controllo orfani viene saltato.** Senza una dichiarazione di nav, ogni file sembrerebbe
 
@@ -273,5 +271,5 @@ zenzic check all --engine mkdocs        # forza l'adapter MkDocs
 **Prossimi passi:**
 
 - [Riferimento comandi CLI](../reference/cli.mdx) — ogni comando, flag e codice di uscita
-- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, Shield, utilizzo programmatico
+- [Funzionalità avanzate](../reference/advanced-features.mdx) — integrità dei riferimenti, credential scanner, utilizzo programmatico
 - [Integrazione CI/CD](./configure-ci-cd.mdx) — GitHub Actions, pre-commit hook, gestione del baseline

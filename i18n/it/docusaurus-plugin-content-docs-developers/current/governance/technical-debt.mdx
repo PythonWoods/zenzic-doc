@@ -1,7 +1,7 @@
 ---
 sidebar_label: "Registro del Debito Tecnico"
 sidebar_position: 50
-description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha scelto di NON rilasciare nella v0.7.0 — e il ragionamento ingegneristico che rende ogni rinvio una caratteristica, non una dimenticanza."
+description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha scelto di NON rilasciare nella v0.8.x — e il ragionamento ingegneristico che rende ogni rinvio una caratteristica, non una dimenticanza."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -12,25 +12,25 @@ description: "L'elenco deliberato e dichiarato delle capacità che Zenzic ha sce
 > *"Il debito nascosto corrompe la fiducia. Il debito dichiarato è ingegneria."*
 
 Questa pagina è l'**elenco pubblico e deliberato** delle capacità che Zenzic
-ha scelto di **non** rilasciare nella v0.7.0 "Quartz Maturity" — e il
+ha scelto di **non** rilasciare nella v0.8.x — e il
 ragionamento ingegneristico che rende ogni rinvio una scelta progettuale
 consapevole, non una dimenticanza.
 
 La posizione di Zenzic: un progetto che esegue il linting della
 documentazione altrui deve mantenere uno standard più elevato di onestà
 sulla propria evoluzione. Ogni voce qui sotto nomina ciò che manca, perché
-è stato rinviato e quale sprint si fa carico del seguito.
+è stato rinviato e quale milestone si fa carico del seguito.
 
 ---
 
-## Voci Aperte (v0.7.0 → v0.8.0)
+## Voci Aperte
 
 ### Z108 STALE_ALLOWLIST_ENTRY
 
 **Categoria:** Igiene della configurazione
-**Stato:** Rinviato a v0.8.0 "Basalt"
-**Tracciato:** GitHub issue (milestone `v0.8.0`)
-**Correlato:** [ADR 011: Cross-Instance Allowlist](../explanation/adr-cross-instance-allowlist.mdx)
+**Stato:** Rinviato a v0.8.x
+**Tracciato:** GitHub issue (milestone `v0.8.x`)
+**Correlato:** ADR 011 (rimosso in v0.8.0)
 
 #### Cosa è stato rinviato
 
@@ -41,9 +41,9 @@ diventata **obsoleta** e può essere rimossa in sicurezza.
 
 #### Perché lo abbiamo rinviato
 
-Il controllo è concettualmente semplice ma architetturalmente costoso:
+Il controllo è concettualmente diretto ma architetturalmente costoso:
 
-1. **Violazione del Pillar 3.** Z907 e Z105 sono funzioni pure per-link /
+1. **Violazione del Pillar 3.** Z602 e Z105 sono funzioni pure per-link /
    per-file — decidono indipendentemente in ogni worker `pytest-xdist`
    senza stato condiviso. Una determinazione di "usato / non usato"
    richiede l'aggregazione dei risultati su **tutti** i file scansionati
@@ -57,28 +57,70 @@ Il controllo è concettualmente semplice ma architetturalmente costoso:
    validator e oscura quali rilevamenti riguardano contenuto utente vs.
    setup di progetto.
 3. **Segnale YAGNI assente.** Non esistono ancora segnalazioni reali di
-   voci di allowlist obsolete. La v0.7.0 è la prima release che possiede
+   voci di allowlist obsolete. La v0.8.x è la prima release che possiede
    la funzionalità in assoluto. Aggiungere un controllo di igiene per un
    problema mai osservato sarebbe prematuro.
 
-#### Cosa faremo nella v0.8.0
+#### Cosa faremo nella
 
-La sede naturale di questo controllo è un comando separato — nome
-proposto `zenzic inspect config` — che audita i file di configurazione
-end-to-end: voci di allowlist non referenziate, pattern `excluded_dirs`
+La sede naturale di questo controllo è una superficie dedicata di audit
+configurazione all'interno della famiglia di introspezione esistente
+(oggi: `zenzic config explain`): voci di allowlist non referenziate, pattern `excluded_dirs`
 contraddittori, chiavi deprecate, ecc. Questo separa il **lint dei
 contenuti** (pass del validator) dall'**audit della configurazione**
 (pass dell'inspector) e mantiene puri entrambi i pass.
 
-#### Mitigazione nella v0.7.0
+#### Mitigazione nella
 
-`zenzic.toml` è piccolo, versionato e revisionato in code-review ad ogni
+`.zenzic.toml` è piccolo, versionato e revisionato in code-review ad ogni
 PR. Una voce di allowlist obsoleta è una preoccupazione di code-review
-nella v0.7.0, promossa a preoccupazione di tooling nella v0.8.0. La
+nella v0.8.x, promossa a preoccupazione di tooling nella v0.8.x La
 finestra di rischio è limitata: una voce obsoleta può al massimo silenziare
 un rilevamento Z105 legittimo per un prefisso che non necessita più di
 essere silenziato — non può creare falsi positivi, far trapelare dati o
 indebolire alcun controllo di sicurezza.
+
+---
+
+### GAP-002 — Supporto Navbar per Plugin Dinamici
+
+**Categoria:** Scope della validazione link
+**Stato:** Rinviato
+**Tracciato:** GitHub issue (RFC aperto)
+**Correlato:** —
+
+#### Cosa è stato rinviato
+
+L'adapter Docusaurus di Zenzic analizza `docusaurus.config.ts` staticamente per
+costruire la Virtual Site Map (VSM). Le voci navbar di tipo `@docusaurus/plugin-*`
+— registrate tramite plugin Docusaurus di prima o terza parte — non vengono
+parsate. Zenzic ricade sul marcare queste route come `REACHABLE`, il che significa:
+
+- Rischio falsi positivi: **basso** — le route generate da plugin raramente risultano rotte.
+- Rischio miss: **non nullo** — orfani reali nascosti dietro voci navbar solo-plugin
+  potrebbero non essere rilevati in configurazioni plugin-heavy.
+
+#### Perché lo abbiamo rinviato
+
+Le voci navbar dei plugin richiedono la valutazione della configurazione JavaScript
+del plugin al momento del parse, il che violerebbe l'invariante **Nessun Sottoprocesso**
+(Pillar 2). Un parser statico senza stato non può recuperare le route registrate da
+plugin senza eseguire il plugin stesso.
+
+#### Cosa faremo
+
+La risoluzione pianificata introduce:
+
+1. Un **avviso strutturato** emesso quando vengono rilevati elementi navbar di plugin,
+   comunicando esplicitamente all'operatore la copertura ridotta.
+2. Una chiave di configurazione `dynamic_nav_plugins = true` in `.zenzic.toml` che
+   abilita il riconoscimento esplicito di questa limitazione, sopprimendo l'avviso.
+
+#### Mitigazione
+
+I progetti Docusaurus plugin-heavy devono assicurarsi che tutte le route generate
+da plugin compaiano anche in almeno una voce di navigazione non-plugin (sidebar,
+navbar header, o link diretto da una pagina). Zenzic audita normalmente quei percorsi.
 
 ---
 
@@ -88,7 +130,7 @@ Questa sezione accumulerà voci man mano che gli elementi rinviati vengono
 rilasciati. Ogni voce chiusa nominerà la versione che l'ha risolta e
 collegherà la PR mergiata.
 
-*(nessuna ancora — la v0.7.0 è la prima release con un Registro del Debito
+*(nessuna ancora — la v0.8.x è la prima release con un Registro del Debito
 Tecnico pubblico.)*
 
 ---
@@ -102,15 +144,13 @@ rinviato è rilevante per il proprio caso d'uso.
 
 Tre impegni governano questa pagina:
 
-1. **Ogni rinvio viene nominato.** Nessun backlog silenzioso. Se abbiamo
-   scelto di non rilasciare una capacità discussa in modo significativo
-   durante uno sprint, finisce qui.
+1. **Ogni rinvio viene nominato.** Nessun backlog silenzioso. Una capacità
+   considerata e deliberatamente non rilasciata finisce qui.
 2. **Ogni rinvio ha una ragione.** "Abbiamo finito il tempo" è
    accettabile se vero; vaghi giri di parole no. La ragione deve essere
    sufficientemente specifica perché un futuro contributor possa decidere
    se il vincolo è ancora valido.
-3. **Ogni rinvio ha un proprietario.** Uno sprint target, una release
-   target, oppure un esplicito "rinviato a tempo indeterminato" con
+3. **Ogni rinvio ha un proprietario.** Una release target, oppure un esplicito "rinviato a tempo indeterminato" con
    relativa motivazione. Le voci del registro senza proprietario decadono
    in folklore.
 

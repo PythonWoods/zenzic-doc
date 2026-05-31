@@ -11,7 +11,7 @@ description: "ADR 009: The configuration follows the target, not the caller — 
 
 **Status:** Active
 **Decider:** Architecture Lead
-**Date:** 2026-04-12 (v0.7.0 sprint, CEO-052)
+**Date:** 2026-04-12 (CEO-052)
 
 ---
 
@@ -31,7 +31,7 @@ zenzic check all /home/user/another-project/docs
 ```
 
 In this case, `find_repo_root()` would walk upward from `/home/user/my-tools`,
-find *that* repository's `zenzic.toml`, and load *that* repository's
+find *that* repository's `.zenzic.toml`, and load *that* repository's
 configuration — including its `engine`, `docs_dir`, `excluded_dirs`, and custom
 rules. The analysis target was `another-project`, but the configuration applied
 was from `my-tools`. This is **Context Hijacking**.
@@ -54,7 +54,7 @@ def find_repo_root(
 ) -> Path:
     start = search_from or Path.cwd()
     for parent in [start, *start.parents]:
-        if (parent / ".git").exists() or (parent / "zenzic.toml").exists():
+        if (parent / ".git").exists() or (parent / ".zenzic.toml").exists():
             return parent
     if fallback_to_cwd:
         return Path.cwd()
@@ -63,7 +63,7 @@ def find_repo_root(
 
 `_apply_target()` in `cli/_check.py` orchestrates the recalibration: after
 deriving `docs_root` from the user-provided target, it calls
-`find_repo_root(search_from=docs_root)` to load the correct `zenzic.toml`,
+`find_repo_root(search_from=docs_root)` to load the correct `.zenzic.toml`,
 then re-derives `docs_dir` from the target repo's configuration.
 
 ---
@@ -93,7 +93,7 @@ else:
 ### 1. The Principle of Contextual Integrity
 
 A configuration file belongs to the project it lives in. Loading a foreign
-`zenzic.toml` because of a coincidence of working directory is a **configuration
+`.zenzic.toml` because of a coincidence of working directory is a **configuration
 supply chain vulnerability** — the analysis is secretly governed by rules the
 user did not intend to apply.
 
@@ -106,7 +106,7 @@ project-specific rules, regardless of the runner's `$PWD`.
 
 ### 3. Symmetry with ADR-007
 
-ADR-007 (Sovereign Sandbox) established that the **perimeter** follows the
+ADR-007 (Sovereign Sandbox) established that the **scan scope** follows the
 target. ADR-009 completes the picture: the **configuration** also follows the
 target. Together they guarantee that every aspect of an analysis — what is
 scanned, what rules apply, and what escapes are forbidden — is determined solely

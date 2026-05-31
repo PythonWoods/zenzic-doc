@@ -1,7 +1,7 @@
 ---
-icon: lucide/shield-check
+icon: lucide/settings-2
 sidebar_label: "Advanced Features"
-description: "Reference integrity, Shield credential detection, and programmatic usage."
+description: "Reference integrity, credential scanner detection, and programmatic usage."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -9,12 +9,12 @@ description: "Reference integrity, Shield credential detection, and programmatic
 
 # Advanced Features
 
-Deep reference for the Three-Pass Pipeline, Zenzic Shield, accessibility checks, and
+Deep reference for the Three-Pass Pipeline, credential scanner, accessibility checks, and
 programmatic usage from Python.
 
 ---
 
-## Reference integrity (v0.2.0) {#reference-integrity-v020}
+## Reference integrity {#reference-integrity-v020}
 
 `zenzic check references` runs the **Three-Pass Reference Pipeline** — the core engine behind
 every reference-quality and security check Zenzic performs.
@@ -27,11 +27,11 @@ before its definition. Zenzic solves this with a deliberate three-pass structure
 
 | Pass | Name | What happens |
 | :---: | :--- | :--- |
-| 1 | **Harvest** | Stream the file line-by-line; record all `[id]: url` definitions into a `ReferenceMap`; run the Shield on every URL and line |
+| 1 | **Harvest** | Stream the file line-by-line; record all `[id]: url` definitions into a `ReferenceMap`; run the credential scanner on every URL and line |
 | 2 | **Cross-Check** | Re-stream the file; for every `[text][id]` usage, look up `id` in the now-complete `ReferenceMap`; flag missing IDs as **Dangling References** |
 | 3 | **Integrity Report** | Compute the integrity score; append **Dead Definitions**, duplicate-ID warnings, and alt-text warnings to the findings list |
 
-Pass 2 only begins when Pass 1 completes without security findings. If the Shield fires during
+Pass 2 only begins when Pass 1 completes without security findings. If the credential scanner fires during
 harvesting, Zenzic exits immediately with code 2 — no reference resolution occurs on files that
 contain leaked credentials.
 
@@ -63,10 +63,10 @@ boilerplate.
 
 ---
 
-## Zenzic Shield
+## credential scanner
 
-The Shield runs **inside Pass 1** — every URL extracted from a reference definition is scanned
-the moment the harvester encounters it, before any other processing continues. The Shield also
+The credential scanner runs **inside Pass 1** — every URL extracted from a reference definition is scanned
+the moment the harvester encounters it, before any other processing continues. The credential scanner also
 applies a defence-in-depth pass to non-definition lines to catch secrets in plain prose.
 
 ### Detected credential patterns
@@ -82,21 +82,21 @@ applies a defence-in-depth pass to non-definition lines to catch secrets in plai
 | `private-key` | `-----BEGIN [A-Z ]+ PRIVATE KEY-----` | PEM private keys (RSA, EC, etc.) |
 | `hex-encoded-payload` | `(?:\\x[0-9a-fA-F]{2}){3,}` | Detects obfuscation attempts that hide payloads or credentials via hex escapes. This technique is commonly used to evade naive string linters and is treated as a critical source-transparency violation. |
 
-### Shield behaviour {#shield-behaviour}
+### credential scanner behaviour {#credential-scanner-behaviour}
 
 - **Every line is scanned** — including lines inside fenced code blocks (labelled or unlabelled).
 
   A credential committed in a `bash` example is still a committed credential.
 
-- Detection is **non-suppressible** — `--exit-zero`, `exit_zero = true` in `zenzic.toml`, and
+- Detection is **non-suppressible** — `--exit-zero`, `exit_zero = true` in `.zenzic.toml`, and
 
-  `--strict` have no effect on Shield findings.
+  `--strict` have no effect on credential scanner findings.
 
-- Exit code 2 is reserved **exclusively** for Shield events. It is never used for ordinary check
+- Exit code 2 is reserved **exclusively** for credential scanner events. It is never used for ordinary check
 
   failures.
 
-- Exit code 3 is reserved for **Blood Sentinel** events — links that resolve to OS system
+- Exit code 3 is reserved for **path traversal guard** events — links that resolve to OS system
 
   directories. Like exit code 2, it is never suppressed.
 
@@ -104,7 +104,7 @@ applies a defence-in-depth pass to non-definition lines to catch secrets in plai
 
   that may contain leaked credentials.
 
-- **Code block link isolation** — while the Shield scans inside fenced blocks, the link and
+- **Code block link isolation** — while the credential scanner scans inside fenced blocks, the link and
 
   reference validators do not. Example URLs inside code blocks (e.g. `https://api.example.com`)
   never produce false-positive link errors.
@@ -114,10 +114,10 @@ Treat it as a build-blocking security incident. Rotate the exposed credential im
 then remove or replace the offending reference URL. Do not commit the secret into history.
 :::
 
-:::note[See the Shield in action]
+:::note[See the credential scanner in action]
 The repository ships `examples/safety_demonstration.md` — an intentional test fixture
 containing a circular link and a hex-encoded payload. Run `zenzic check all` against it
-to observe a live Shield breach and a `CIRCULAR_LINK` info finding.
+to observe a live credential scanner finding and a `CIRCULAR_LINK` info finding.
 :::
 
 ---
@@ -127,7 +127,7 @@ to observe a live Shield breach and a `CIRCULAR_LINK` info finding.
 Zenzic applies different scanning rules to prose and code blocks because the two contexts have
 different risk profiles:
 
-| Content location | Shield (secrets) | Snippet syntax | Link / ref validation |
+| Content location | credential scanner (secrets) | Snippet syntax | Link / ref validation |
 | :--- | :---: | :---: | :---: |
 | Prose and reference definitions | ✓ | — | ✓ |
 | Fenced block — supported language (`python`, `yaml`, `json`, `toml`) | ✓ | ✓ | — |
@@ -179,7 +179,7 @@ from zenzic.core.scanner import ReferenceScanner
 
 scanner = ReferenceScanner(Path("docs/guide.md"))
 
-# Pass 1 — harvest definitions; collect Shield findings
+# Pass 1 — harvest definitions; collect credential scanner findings
 security_findings = []
 for lineno, event_type, data in scanner.harvest():
     if event_type == "SECRET":
@@ -206,13 +206,16 @@ validate external URLs:
 ```python
 from pathlib import Path
 from zenzic.core.scanner import scan_docs_references
+from zenzic.core.exclusion import LayeredExclusionManager
 from zenzic.models.config import ZenzicConfig
 
 config, _ = ZenzicConfig.load(Path("."))
+exclusion_mgr = LayeredExclusionManager(config)
 
 reports, link_errors = scan_docs_references(
     Path("."),
-    config,
+    exclusion_mgr,
+    config=config,
     validate_links=True,   # set False to skip HTTP validation
 )
 
@@ -229,7 +232,7 @@ for error in link_errors:
 `scan_docs_references` deduplicates external URLs across the entire docs tree before
 firing HTTP requests — 50 files linking to the same URL result in exactly one HEAD request.
 
-### Hybrid Adaptive Engine — v0.5.0a1
+### Hybrid Adaptive Engine
 
 `scan_docs_references` is the single unified entry point for all scan modes.
 It selects sequential or parallel execution **automatically** based on the
@@ -248,18 +251,23 @@ break-even point where parallelism pays for its own startup cost.
 ```python
 from pathlib import Path
 from zenzic.core.scanner import scan_docs_references
+from zenzic.core.exclusion import LayeredExclusionManager
+from zenzic.models.config import ZenzicConfig
+
+config, _ = ZenzicConfig.load(Path("."))
+exclusion_mgr = LayeredExclusionManager(config)
 
 # Default: sequential (workers=1, zero overhead)
-reports, _ = scan_docs_references(Path("."))
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config)
 
 # Explicit parallel: 4 workers, auto-activates only if ≥ 50 files
-reports, _ = scan_docs_references(Path("."), workers=4)
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config, workers=4)
 
 # Fully automatic: ProcessPoolExecutor picks worker count from os.cpu_count()
-reports, _ = scan_docs_references(Path("."), workers=None)
+reports, _ = scan_docs_references(Path("."), exclusion_mgr, config=config, workers=None)
 
 # With external link validation (works in both sequential and parallel mode)
-reports, link_errors = scan_docs_references(Path("."), validate_links=True, workers=None)
+reports, link_errors = scan_docs_references(Path("."), exclusion_mgr, config=config, validate_links=True, workers=None)
 ```
 
 **Determinism guarantee:** results are always sorted by `file_path` regardless
@@ -307,7 +315,7 @@ This exclusion is applied consistently in both Pass 1 and Pass 2.
 
 ---
 
-## Nav-Aware Linking (v0.4.0rc4)
+## Nav-Aware Linking
 
 Zenzic does not only check whether a linked file exists on disk — it checks whether that
 file is **reachable** through the site navigation.  This catches an entire class of

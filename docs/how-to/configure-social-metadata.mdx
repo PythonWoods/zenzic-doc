@@ -35,7 +35,7 @@ const config: Config = {
       { name: 'twitter:site',    content: '@PythonWoods' },
       { name: 'twitter:creator', content: '@PythonWoods' },
       { name: 'twitter:image:alt',
-        content: 'Zenzic — The Safe Harbor for Markdown Documentation' },
+        content: 'Zenzic — The Exclusion Zone for Markdown Documentation' },
       { name: 'theme-color',     content: '#4f46e5' },
       { property: 'og:image',        content: 'https://zenzic.dev/assets/social/social-card.png' },
       { property: 'og:image:width',  content: '1200' },
@@ -66,7 +66,7 @@ Any page can override the global defaults by adding fields to its frontmatter:
 ```mdx title="docs/explanation/architecture.mdx"
 ---
 title: "Architecture — How Zenzic Works"
-description: "Deep dive into the Two-Pass Pipeline, VSM, and Blood Sentinel."
+description: "Deep dive into the Two-Pass Pipeline, VSM, and path traversal guard."
 image: /assets/social/social-card.png
 keywords: [zenzic, architecture, vsm, pipeline, documentation linter]
 ---
@@ -107,7 +107,7 @@ to `static/assets/social/` and reference it in the post's frontmatter:
 
 ```mdx
 ---
-title: "Zenzic v0.7.0 — Quartz Maturity"
+title: "Zenzic Documentation Security Platform"
 image: /assets/social/social-card.png
 ---
 ```
@@ -136,17 +136,17 @@ deployed site, not the local dev URL.
 
 ---
 
-## Zenzic Sentinel & Social Assets
+## Zenzic & Social Assets
 
 Zenzic does not validate external social URLs, but it **does** detect unused
 static assets. If you add a custom social card PNG and never reference it in
 frontmatter or `themeConfig`, Zenzic will flag it as an unused asset on the
 next `zenzic check all` run.
 
-Exclude intentional source-only files in `zenzic.toml`:
+Exclude intentional source-only files in `.zenzic.toml`:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 excluded_assets = [
     "**/_category_.json",
     "assets/social/*.svg",   # SVG sources — not served as OG images

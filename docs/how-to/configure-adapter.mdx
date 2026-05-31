@@ -17,7 +17,7 @@ at runtime via Python entry-points; no Zenzic update is required to add third-pa
 
 ## `[build_context]`
 
-**Type:** table — **Default:** `engine = "mkdocs"`, `default_locale = "en"`, `locales = []`,
+**Type:** table — **Default:** `engine = "auto"`, `default_locale = "en"`, `locales = []`,
 `fallback_to_default = true`
 
 Engine and i18n context for locale-aware path resolution. This section is required only for
@@ -30,23 +30,26 @@ directly from `mkdocs.yml` — including `docs_structure`, `fallback_to_default`
 
 ```toml
 [build_context]
-engine         = "mkdocs"   # "mkdocs" or "zensical"
+engine         = "auto"     # "auto" (default), "mkdocs", "zensical", "docusaurus"
 default_locale = "en"       # ISO 639-1 code of the default locale
 locales        = ["it"]     # non-default locale directory names (e.g. docs/it/, docs/fr/)
 # fallback_to_default = true
 ```
 
-> **TOML ordering:** `[build_context]` must be the **last** section in `zenzic.toml`. TOML table
+> **TOML ordering:** `[build_context]` must be the **last** section in `.zenzic.toml`. TOML table
 > headers apply to all subsequent keys; placing `[build_context]` before top-level fields silently
 > moves them into the sub-table.
 
 ### `engine`
 
-**Default:** `"mkdocs"`
+**Default:** `"auto"`
 
-Selects the adapter used for nav extraction and i18n path resolution. Valid values for a stock
-Zenzic installation are `"mkdocs"` and `"zensical"`. Third-party adapters registered under the
-`zenzic.adapters` entry-point group add their own values.
+Selects the adapter used for nav extraction and i18n path resolution. When `"auto"` (the
+default), Zenzic probes the project root for known engine config files in priority order:
+`zensical.toml` → `docusaurus.config.ts` → `mkdocs.yml` → `StandaloneAdapter`. Valid values
+for a stock Zenzic installation are `"auto"`, `"mkdocs"`, `"zensical"`, `"docusaurus"`, and
+`"standalone"`. Third-party adapters registered under the `zenzic.adapters` entry-point group
+add their own values.
 
 ### `default_locale`
 
@@ -87,7 +90,8 @@ Zenzic deterministically resolves the correct adapter from `build_context.engine
 
 | `build_context.engine` | Config file present | Adapter selected |
 | :--- | :--- | :--- |
-| `"mkdocs"` (default) | `mkdocs.yml` found | `MkDocsAdapter` — reads nav and i18n from `mkdocs.yml` |
+| `"auto"` **(default)** | — | `discover_engine()` probes for manifests; see Auto-Discovery priority above |
+| `"mkdocs"` | `mkdocs.yml` found | `MkDocsAdapter` — reads nav and i18n from `mkdocs.yml` |
 | `"mkdocs"` | `mkdocs.yml` absent, no locales | `StandaloneAdapter` — no nav awareness |
 | `"zensical"` | `zensical.toml` found | `ZensicalAdapter` — reads nav from `zensical.toml` |
 | `"zensical"` | `zensical.toml` absent, `mkdocs.yml` found | `ZensicalAdapter` — **Transparent Proxy** using `mkdocs.yml` |
@@ -95,9 +99,9 @@ Zenzic deterministically resolves the correct adapter from `build_context.engine
 | any unknown string | — | `StandaloneAdapter` — no registered adapter for this engine |
 
 :::tip[Engine config files are automatically excluded]
-Each adapter shields its engine configuration file from the unused-assets check (Z903). You do
+Each adapter protects its engine configuration file from the unused-assets check (Z405). You do
 **not** need to add `docusaurus.config.ts`, `mkdocs.yml`, or `zensical.toml` to `excluded_assets`
-in `zenzic.toml`. See [System Guardrails](../reference/configuration.mdx#system-guardrails) for the
+in `.zenzic.toml`. See [System Guardrails](../reference/configuration-reference.mdx#excluded-dirs) for the
 full list of automatically excluded files.
 :::
 
@@ -120,7 +124,7 @@ declare navigation dynamically at build time.
 ## `--engine` flag (one-off override)
 
 The `--engine` flag on `zenzic check orphans` and `zenzic check all` overrides
-`build_context.engine` for a single run without touching `zenzic.toml`:
+`build_context.engine` for a single run without touching `.zenzic.toml`:
 
 ```bash
 zenzic check orphans --engine zensical
@@ -143,22 +147,23 @@ Install a third-party adapter or choose from the list above.
 Some repositories carry both `mkdocs.yml` and `zensical.toml` during a transition — one
 build test-running Zensical while the other keeps serving production on MkDocs.
 
-Zenzic does **not** auto-detect which file is present.  The active adapter is always
-determined by `build_context.engine` in `zenzic.toml`:  if `engine = "mkdocs"` is
-declared, Zenzic reads `mkdocs.yml` even when `zensical.toml` also exists, and vice versa.
+When `engine` is explicitly declared in `.zenzic.toml`, Zenzic uses that adapter — even when
+another engine's config file is also present.  `engine = "mkdocs"` always reads `mkdocs.yml`
+even if `zensical.toml` exists, and vice versa.
 
-If `build_context` is absent from `zenzic.toml`, the default is `engine = "mkdocs"`, so
-`MkDocsAdapter` is used regardless of whether `zensical.toml` is present.  This is the
-safe default — it never silently switches engines.
+If `engine` is omitted (or `build_context` is absent entirely), the default is `engine = "auto"`.
+Zenzic then uses Auto-Discovery: it inspects the project root for known manifests and mounts
+the correct adapter automatically.
 
-:::warning[Ambiguity is explicit, not silent]
-Zenzic will not choose for you.  When both config files exist and you have not set
-`engine = "zensical"`, you are running with the MkDocs adapter.  This is intentional:
-**engine identity must be a deliberate declaration**, not an inference.
+:::info[Auto-Discovery priority order]
+1. `zensical.toml` → `ZensicalAdapter`
+2. `docusaurus.config.ts` / `docusaurus.config.js` → `DocusaurusAdapter`
+3. `mkdocs.yml` → `MkDocsAdapter`
+4. No manifest found → `StandaloneAdapter`
 :::
 
 ```toml
-# zenzic.toml — explicit engine declaration required
+# .zenzic.toml — explicit engine declaration required
 [build_context]
 engine = "zensical"   # ← this line is what activates ZensicalAdapter
 ```
@@ -167,8 +172,8 @@ engine = "zensical"   # ← this line is what activates ZensicalAdapter
 
 ## `ZensicalAdapter` — nav format reference
 
-`ZensicalAdapter` reads all navigation from `[project].nav` in `zensical.toml`
-(Zensical v0.0.31+).  Three nav entry forms are supported and freely mixable:
+`ZensicalAdapter` reads all navigation from `[project].nav` in `zensical.toml`.
+Three nav entry forms are supported and freely mixable:
 
 ```toml
 [project]
@@ -195,7 +200,7 @@ is classified `REACHABLE` — Zensical's default filesystem-based routing applie
 
 **`use_directory_urls`:** Zensical defaults to directory-style URLs (`/page/`).  Set
 `use_directory_urls = false` under `[project]` to switch to flat URLs (`/page.html`).  The
-adapter reads this flag and adjusts `map_url()` accordingly.
+adapter reads this flag and adjusts `get_route_info()` routing accordingly.
 
 ```toml
 [project]

@@ -1,0 +1,91 @@
+---
+sidebar_label: "Profilo Assurance Supply Chain"
+description: "Baseline immediata di assurance avanzata per i repository della famiglia zenzic, con controlli enforceable e auditabili."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Profilo Assurance Supply Chain
+
+Questo profilo definisce la baseline immediata di assurance avanzata per i
+repository della famiglia zenzic (`zenzic`, `zenzic-doc`, `zenzic-action`).
+
+E progettato per essere enforceable con gate locali di repository, riproducibile
+in CI e auditabile dai log.
+
+---
+
+## 1) Livello Target
+
+- Target operativo: baseline di assurance avanzata subito.
+- Ambito: integrita del sorgente, verifica deterministica, percorsi fail-closed
+  e controlli di parita cross-repository.
+- Regola: vietato il downgrade silenzioso da hard gate a warning advisory.
+
+---
+
+## 2) Controlli Obbligatori (Baseline Corrente)
+
+| Controllo | Comportamento richiesto | Punto di enforcement |
+|---|---|---|
+| Entry-point unico di verifica | Locale e CI devono convergere su `just verify` | `justfile` + workflow CI |
+| Risoluzione core sovrana | `ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic`, fail-closed | `justfile`, `noxfile.py`, CI |
+| Override branch governato | `ZENZIC_CORE_REF` richiede ticket/reason/approver/expiry | workflow self-check `zenzic-action` |
+| Guard lessicale di confine | Termini proibiti bloccati nei path governati | `scripts/enforce-radical-unawareness.sh` + pre-commit |
+| Guard anti-drift del contratto pubblico | Marker obbligatori sempre presenti; le recipe release non devono creare tag automatici | recipe `release-contracts` |
+| Igiene provenienza licensing | Verifica SPDX/REUSE obbligatoria | pre-commit `reuse` + CI |
+
+---
+
+## 3) Comandi Audit (Runbook Operatore)
+
+Eseguire dalla root del repository, salvo nota diversa.
+
+```bash
+just release-contracts
+just verify
+```
+
+Policy tagging: i tag vengono creati e pushati manualmente dopo il merge; le recipe release non devono creare tag.
+
+Guard lessicale (policy-as-code):
+
+```bash
+bash scripts/enforce-radical-unawareness.sh
+```
+
+Contratto parita docs (in `zenzic-doc`):
+
+```bash
+uvx nox -s verify-codes-parity
+```
+
+Check provenienza licensing:
+
+```bash
+uvx reuse lint
+```
+
+---
+
+## 4) Requisiti di Evidenza
+
+Una release candidate e considerata conforme solo se:
+
+1. `just verify` termina con exit 0 sia in gate locale sia in CI.
+2. L'override branch (se usato) emette metadati governati nel CI summary.
+3. Il guard lessicale emette pass con zero riferimenti proibiti.
+4. Nessun guard di policy e bypassato tramite fallback.
+
+---
+
+## 5) Prossimo Livello di Hardening
+
+Questa baseline e il profilo industriale minimo ora in vigore.
+
+Prossimo livello pianificato:
+
+- espansione attestazioni dipendenze workflow,
+- enforcement piu stringente della policy di pinning workflow,
+- export periodico delle evidenze per review governance trimestrale.

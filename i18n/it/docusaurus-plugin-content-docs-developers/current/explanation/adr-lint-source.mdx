@@ -11,7 +11,7 @@ description: "ADR 001: La Decisione Genesi — perché Zenzic analizza i sorgent
 
 **Stato:** Attivo (Decisione Genesi)
 **Decisore:** Architecture Lead
-**Data:** 2026-01-01 (principio fondante, pre-v0.1.0)
+**Data:** 2026-01-01 (principio fondante, pre-v0.8.x)
 
 ---
 
@@ -151,15 +151,15 @@ errori strutturali in route che l'autore ha pianificato ma non ha ancora pubblic
 
 ## Conseguenze
 
-- Le prestazioni di analisi di Zenzic sono **dipendenti dal contenuto**.
-
-  Misurato sul progetto reale `zenzic-doc` (59 pagine MDX con JSX,
-  frontmatter e tabelle): ~420 ms di analisi pura su processo Python già
-  avviato. Progetti Markdown semplici con frontmatter minimo e senza JSX
-  completano 200 file in ~100 ms. Il tempo totale a muro con un'invocazione
-  `uvx` a freddo aggiunge ~2–8 s di avvio dell'interprete Python al tempo
-  di analisi. Esegui `python scripts/benchmark.py --repo <percorso>` per
-  misurare il tuo progetto.
+- La complessità dell'analisi di Zenzic è **$O(N)$** rispetto al numero di
+  file e link scansionati. Tutto il pattern matching gira sul motore RE2 DFA
+  — tempo lineare, immune al backtracking catastrofico. Non c'è overhead di
+  avvio del processo, nessuna installazione di dipendenze, nessuna build
+  parziale da eseguire. Il costo dominante è l'avvio dell'interprete Python
+  su invocazioni `uvx` a freddo; le esecuzioni successive nello stesso
+  processo o con bytecode cache caldo sono più rapide.
+  Esegui `python scripts/benchmark.py --repo <percorso>` per misurare il tuo
+  progetto.
 
 - Zenzic può essere posizionato come **primo step** in qualsiasi pipeline CI,
 

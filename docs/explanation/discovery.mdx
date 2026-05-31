@@ -10,25 +10,90 @@ Every Zenzic check -- links, orphans, snippets, placeholders, assets, references
 
 ---
 
+## The Authority of Root {#root-authority}
+
+Before Zenzic can discover, exclude, or scan a single file, it must answer one question:
+**where does this project begin?**
+
+Zenzic is a workspace-scoped tool. It does not analyse arbitrary directories; it analyses
+**defined projects**. To establish the project boundary, Zenzic performs an **upward traversal**
+from the target path, searching for a recognised root marker.
+
+### Root Markers {#root-markers}
+
+Two markers are authorised (first match wins):
+
+| Marker | Description |
+| :--- | :--- |
+| `.git/` | Universal VCS marker — present in any Git-tracked repository |
+| `.zenzic.toml` | Zenzic's own configuration file — the explicit governance contract |
+
+Both are intentionally engine-neutral: `mkdocs.yml`, `docusaurus.config.ts`, and similar
+build-engine files are not root markers. The Core must remain independent of any specific
+documentation framework.
+
+### Why a Root Marker is Mandatory {#why-mandatory}
+
+Without a root marker (VCS or configuration), Zenzic cannot establish the project's **Sovereignty Perimeter**. This is required for four independent reasons:
+
+- **Resolve relative paths** — every finding is expressed as a path relative to the root. Without a fixed anchor, file locations are ambiguous and non-reproducible across machines.
+- **Map the workspace into the VSM** — Zenzic always builds a Virtual Site Map, regardless of adapter. In engine mode (Docusaurus, MkDocs), the VSM includes ghost routes, slug transformations, and virtual pages. In Standalone Mode, the VSM is a 1:1 projection of the filesystem. In both cases, the root defines the zero-point for canonicalising every internal reference — so that `index.md` at the root is unambiguously distinct from `index.md` in a subdirectory.
+- **Apply `directory_policies`** — governance contracts match paths via glob patterns relative to the workspace root. Without a defined root, exemption rules are non-deterministic and cannot be applied consistently.
+- **Prevent Massive Indexing** — without an explicit boundary, the engine could accidentally scan the entire host filesystem, producing incoherent results and risking information leakage.
+
+The absence of a root marker produces this error:
+
+```text
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found in any
+ancestor of /path/to/target. Run Zenzic from inside the repository.
+```
+
+This is not a configuration error. It is a **safety guarantee**: the Quality Gate halts
+an out-of-bounds scan before it begins.
+
+### Resolution Options {#root-resolution}
+
+To allow Zenzic to analyse a directory, satisfy one of the following:
+
+**Option A — Initialise Zenzic** (creates a `.zenzic.toml` root marker):
+
+```bash
+cd /path/to/target
+zenzic init
+```
+
+**Option B — Initialise a Git repository** (creates a `.git/` root marker):
+
+```bash
+cd /path/to/target
+git init
+```
+
+**Option C — Run from inside an existing project** (the upward traversal will find the marker automatically):
+
+```bash
+# From anywhere inside a project that already has .git/ or .zenzic.toml
+zenzic check all
+```
+
+---
+
 ## Single Entry Point: `iter_markdown_sources` {#iter-markdown-sources}
 
-All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()` or `os.walk()` from scanner, validator, or Shield code are prohibited by design. This function:
+All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()`, `os.walk()`, or `Path.iterdir()` from scanner, validator, or credential scanner are prohibited by design. This function:
 
 1. Walks the `docs_root` directory using `os.walk()` with **in-place directory pruning** (excluded subtrees are never entered).
 2. Yields only `.md` and `.mdx` files, in deterministic sorted order.
 3. Skips symbolic links.
 4. Delegates all exclusion decisions to the `LayeredExclusionManager`.
 
-```python
-# Every module uses the same function
-from zenzic.core.discovery import iter_markdown_sources
+The benefit is architectural: when a directory is excluded, it is excluded everywhere -- scanner, validator, credential scanner, and orphan-checker all see the exact same file set. There is no risk of one module "forgetting" to apply an exclusion rule.
 
-for md_file in iter_markdown_sources(docs_root, config, exclusion_manager):
-    content = md_file.read_text(encoding="utf-8")
-    # ... process file
-```
+The function takes three arguments:
 
-The benefit is architectural: when a directory is excluded, it is excluded everywhere -- scanner, validator, Shield, and orphan-checker all see the exact same file set. There is no risk of one module "forgetting" to apply an exclusion rule.
+1. `docs_root` -- absolute path to the documentation root.
+2. `config` -- loaded Zenzic configuration (provides `excluded_dirs`).
+3. `exclusion_manager` -- the `LayeredExclusionManager` used for the full 4-level evaluation.
 
 ---
 
@@ -54,19 +119,19 @@ flowchart TD
     L4 -->|No CLI override| INCLUDED[INCLUDED - Default]
 
     style EXCLUDED_L1 fill:#ef4444,color:#fff
-    style EXCLUDED_VCS fill:#f97316,color:#fff
-    style EXCLUDED_L3 fill:#f97316,color:#fff
-    style EXCLUDED_L4 fill:#f97316,color:#fff
-    style INCLUDED_L2 fill:#22c55e,color:#fff
-    style INCLUDED_L4 fill:#22c55e,color:#fff
-    style INCLUDED fill:#22c55e,color:#fff
+    style EXCLUDED_VCS fill:#f59e0b,color:#fff
+    style EXCLUDED_L3 fill:#f59e0b,color:#fff
+    style EXCLUDED_L4 fill:#f59e0b,color:#fff
+    style INCLUDED_L2 fill:#10b981,color:#fff
+    style INCLUDED_L4 fill:#10b981,color:#fff
+    style INCLUDED fill:#10b981,color:#fff
 ```
 
 | Level | Name | Source | Mutable? |
 | :---: | :--- | :--- | :---: |
 | **L1** | System Guardrails | Hardcoded in `SYSTEM_EXCLUDED_DIRS` | No |
 | **L2** | Forced Inclusions + VCS | `included_dirs`, `included_file_patterns`, `.gitignore` | Yes (config) |
-| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` | Yes (config) |
+| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` | Yes (config) |
 | **L4** | CLI Overrides | `--exclude-dir`, `--include-dir` flags | Yes (per-run) |
 
 ### L1 -- System Guardrails {#l1-system-guardrails}
@@ -101,7 +166,7 @@ included_file_patterns = ["api.generated.md"]
 
 ### L3 -- Config Exclusions {#l3-config-exclusions}
 
-Config-level exclusions from `zenzic.toml` or `pyproject.toml`:
+Config-level exclusions from `.zenzic.toml` or `pyproject.toml`:
 
 - `excluded_dirs` -- directory names inside `docs/` to skip
 - `excluded_file_patterns` -- filename glob patterns to skip
@@ -109,7 +174,7 @@ Config-level exclusions from `zenzic.toml` or `pyproject.toml`:
 These are additive to L1 but subordinate to L2 forced inclusions.
 
 ```toml
-excluded_dirs = ["includes", "stylesheets", "overrides", "hooks"]
+excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
 ```
 
@@ -127,43 +192,6 @@ zenzic check all --include-dir generated-api
 
 CLI `--include-dir` cannot override System Guardrails -- attempting to include `.git` or `.venv` via CLI is silently ignored.
 
----
-
-## Resolution Order {#resolution-order}
-
-### Directory Exclusion (`should_exclude_dir`)
-
-For each directory encountered during the walk:
-
-```text
-
-1. Is it in SYSTEM_EXCLUDED_DIRS?      --> EXCLUDED (L1, immutable)
-2. Is it in config included_dirs?       --> INCLUDED (L2 forced)
-3. Is it in CLI --exclude-dir?          --> EXCLUDED (L4)
-4. Is it in CLI --include-dir?          --> INCLUDED (L4)
-5. Is it matched by VCS .gitignore?     --> EXCLUDED (L2-VCS, if enabled)
-6. Is it in config excluded_dirs?       --> EXCLUDED (L3)
-7. Default                              --> INCLUDED
-
-```
-
-### File Exclusion (`should_exclude_file`)
-
-For each file that passes directory filtering:
-
-```text
-
-1. Is any parent dir in SYSTEM_EXCLUDED_DIRS?  --> EXCLUDED (L1)
-2. Does filename match included_file_patterns? --> INCLUDED (L2 forced)
-3. Is any parent dir in config included_dirs?  --> INCLUDED (L2 forced)
-4. Is any parent dir in CLI --exclude-dir?     --> EXCLUDED (L4)
-5. Is any parent dir in CLI --include-dir?     --> INCLUDED (L4)
-6. Is it matched by VCS .gitignore?            --> EXCLUDED (L2-VCS, if enabled)
-7. Does filename match excluded_file_patterns? --> EXCLUDED (L3)
-8. Is any parent dir in config excluded_dirs?  --> EXCLUDED (L3)
-9. Default                                     --> INCLUDED
-
-```
 
 ---
 
@@ -182,13 +210,7 @@ Zenzic loads `.gitignore` patterns from two locations:
 1. **Repository root** `.gitignore` -- typically excludes `site/`, `build/`, `dist/`, etc.
 2. **Docs directory** `.gitignore` (if it exists and differs from the repo root) -- may exclude generated or temporary files within `docs/`.
 
-The VCS ignore parser implements the full gitignore specification:
-
-- Last matching rule wins (negation via `!` can re-include)
-- Trailing `/` restricts a rule to directories only
-- Leading `/` anchors a rule to the base directory
-- `*` matches everything except `/`
-- `**` matches everything including `/`
+The VCS ignore parser implements the full gitignore specification, including negation (`!`), path anchoring, and glob wildcards.
 
 ### Interaction with Forced Inclusions
 
@@ -203,9 +225,9 @@ included_file_patterns = ["api.generated.md"]
 
 ---
 
-## Safe Harbor Philosophy {#safe-harbor}
+## Exclusion Zone Philosophy {#privacy-gate}
 
-The Layered Exclusion model implements the **Safe Harbor** principle: Zenzic creates a protected scanning environment where the file set is deterministic, reproducible, and fully controlled by the project maintainer.
+The Layered Exclusion model implements the **Exclusion Zone** principle: Zenzic creates a protected scanning environment where the file set is deterministic, reproducible, and fully controlled by the project maintainer.
 
 The philosophy has three tenets:
 
@@ -215,105 +237,61 @@ The philosophy has three tenets:
 
 3. **Explicit override** -- Every inclusion and exclusion is traceable to a specific configuration line or CLI flag. There are no hidden heuristics or "smart" detection that could surprise a user.
 
-The name references the concept of a safe harbor in admiralty law: a defined boundary within which rules are clear and protection is guaranteed.
+The Privacy Gate (Exclusion Zone) defines a strict boundary where Zenzic's scanners are intentionally inhibited to protect sensitive metadata or intentional security-testing patterns.
 
 ---
 
 ## Performance Notes {#performance}
 
 - **Directory pruning** is applied during `os.walk()`, not after. Excluded subtrees (e.g. `node_modules/` with thousands of files) are never entered.
+- For non-Markdown files, `walk_files()` uses the same `os.walk()` engine with in-place pruning. Unlike `Path.rglob("*")`, it never enters excluded trees.
 - File patterns are **pre-compiled** to `re.Pattern` at `LayeredExclusionManager` construction time using `fnmatch.translate()`.
 - VCS patterns with no negation rules use a **combined regex** fast path -- all positive rules are merged into a single compiled regex for O(1) matching per path.
 - The `LayeredExclusionManager` is constructed **once** per CLI invocation and passed by reference through the entire pipeline.
+- A separate hard-prune set is used by `find_unused_assets` for `excluded_asset_dirs`.
 
 ---
 
-## Multi-Root Discovery (EPOCH 7a) {#multi-root}
+## Multi-Root Discovery {#multi-root}
 
-`docs_dir` is the canonical source root, but modern static-site generators routinely manage **content trees that live outside `docs/`**. The textbook case is the Docusaurus `blog/` directory: it is materialised as live URLs at build time, yet a pre-EPOCH-7a Zenzic scan would never see the files inside it. The Virtual Site Map ingested only files under `docs_root`, so broken links inside (or pointing to) blog posts slipped past `zenzic check all` and only surfaced when `docusaurus build` failed downstream. We call this failure mode **VSM Blindness**.
+`docs_dir` is the canonical source root, but modern static-site generators routinely manage **content trees that live outside `docs/`**. The textbook case is the Docusaurus `blog/` directory: it is materialised as live URLs at build time, yet a pre-current series Zenzic scan would never see the files inside it. The Virtual Site Map ingested only files under `docs_root`, so broken links inside (or pointing to) blog posts slipped past `zenzic check all` and only surfaced when `docusaurus build` failed downstream. We call this failure mode **VSM Blindness**.
 
-Multi-Root Discovery cures the blindness by letting the active adapter declare additional content roots:
-
-```python
-# zenzic.core.adapters._base
-@dataclass(frozen=True, slots=True)
-class ContentRoot:
-    path: Path        # absolute, e.g. <repo>/blog
-    url_prefix: str   # e.g. 'blog' (or '' for root-served content)
-    label: str        # diagnostic, e.g. 'docusaurus-blog'
-```
-
-Adapters opt in by implementing the optional `get_extra_content_roots(repo_root) -> list[ContentRoot]` method. The Core discovers it via `hasattr()` (mirroring the pre-existing `get_locale_source_roots` convention) so adapters that have nothing to declare need no stub -- the addition is **non-breaking** for third-party adapters built against the v0.7.0 Protocol.
-
-When an adapter does return content roots, four pipeline stages cooperate to admit the files as first-class content:
-
-1. **Discovery** -- `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` walks each root with `walk_files` (same `os.walk` engine, same exclusion manager) and yields `(abs_path, logical_rel)` pairs where `logical_rel` carries the URL prefix as its first segment (e.g. `Path('blog/2026-04-12-foo.mdx')`).
-2. **VSM** -- `build_vsm` resolves every file's logical `rel` from `docs_root` *or* a matched extra root, then dispatches to the adapter's `get_route_info(rel)`. The prefix injection lets a single adapter call disambiguate without a second dispatch.
-3. **Validator** -- the link checker loads extra-root files into `md_contents`, extends `_allowed_roots` so cross-tree relative links resolve under the Shield, and feeds the prefixed `rel` into "Did you mean?" suggestions.
-4. **Scanner** -- `find_unused_assets` and `find_placeholders` iterate extra roots when collecting reference sets, so an asset cited only from a blog post is not reported as Z903 (Unused Asset).
+Multi-Root Discovery cures the blindness by letting the active adapter declare additional content roots — each carrying a physical path, a URL prefix, and a diagnostic label. When extra content roots are declared, all pipeline stages treat those files as first-class content alongside the primary `docs/` tree.
 
 ### Auto-discovery without `subprocess` {#auto-discovery}
 
 Adapter implementations honour the **Zero Subprocess** invariant. The Docusaurus adapter detects the blog plugin in two passes, both pure parsing:
 
-1. Static regex parse of `docusaurus.config.{ts,js,mjs,cjs}` for a `blog: { path, routeBasePath }` block (or a sentinel `blog: false` to opt out).
+1. Static regex parse of `docusaurus.config.{ts,js,mjs,cjs}` for a `blog: { path, routeBasePath }` block (or a `blog: false` flag to opt out).
 2. Convention fallback: when the config does not pin the blog plugin and `<repo>/blog` exists on disk, assume the default plugin layout (`path = 'blog'`, `routeBasePath = 'blog'`).
 
 No Node.js process is ever spawned -- the config is read as **data**, not executed as code. Pillar 2 (Engine Sovereignty) is preserved.
 
 ### Traceability invariant {#traceability}
 
-Every entry in the VSM, including those produced by an extra content root, carries a `Route.source` that resolves back to a real file on disk. The regression suite (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserts `(repo_root / route.source).is_file()` for every blog route, locking the contract that EPOCH 7b virtual routes (tags, pagination, authors) will inherit: a route with no physical origin would be a validator screaming `error` without ever saying `where`.
+Every entry in the VSM, including those produced by an extra content root, carries a `Route.source` that resolves back to a real file on disk. A route with no physical origin would be a validator screaming `error` without ever saying `where`.
 
 ### Reverse-Mapping Invariant & Virtual Routes {#reverse-mapping}
 
-Multi-Root Discovery (EPOCH 7a) solved **VSM Blindness** for physical files outside
-`docs/`. EPOCH 7b extends the guarantee to **engine-generated pages**: Docusaurus renders
+Multi-Root Discovery (current series) solved **VSM Blindness** for physical files outside
+`docs/`. current series extends the guarantee to **engine-generated pages**: Docusaurus renders
 URLs — tag pages, paginated indexes, author profiles — that have no physical Markdown
 counterpart. These routes exist only in the build output, never on disk.
 
-The invariant is formalised in the `VirtualRoute` dataclass:
-
-```python
-from zenzic.core.adapters import VirtualRoute
-
-route = VirtualRoute(
-    url="/blog/tags/python/",
-    kind="tag",
-    label="tag:python",
-    source_files=frozenset({"blog/2026-04-12-post.md"}),
-)
-# Attempting to create a VirtualRoute with source_files=frozenset() raises ValueError:
-# "VirtualRoute '/blog/tags/ghost/': source_files is empty —
-#  Reverse-Mapping Invariant violated"
-```
-
-The invariant is enforced at **three layers**:
-
-| Layer | Where | Guard |
-| :---  | :---  | :---- |
-| **1 — Constructor** | `VirtualRoute.__post_init__` | Raises `ValueError` immediately |
-| **2 — Builder** | `build_vsm()` | Defensive `_log.error` + `continue` skip |
-| **3 — Tests** | `TestReverseMappingInvariant` | Asserts the `ValueError` contract |
-
-Adapters opt in by implementing the optional `get_virtual_routes(md_contents) ->
-list[VirtualRoute]` method (same `hasattr` discovery pattern as
-`get_extra_content_roots`). `build_vsm()` calls it immediately after the physical route
-loop, before `_detect_collisions()`, so virtual routes participate in collision detection
-on equal footing with physical routes.
+The invariant guarantees that every engine-generated URL traces back to at least one source file. Adapters opt in by implementing the optional `get_virtual_routes()` method; virtual routes participate in collision detection on equal footing with physical routes.
 
 ### Engine support matrix {#engine-support}
 
 | Engine          | Implements `get_extra_content_roots` | Status                                                                |
 |-----------------|--------------------------------------|------------------------------------------------------------------------|
 | Docusaurus      | Yes                                  | Auto-discovers `blog/` from config or convention.                      |
-| MkDocs (Material) | No                                  | Opt-in deferred until `material/blog` plugin enters the v0.7 scope.   |
+| MkDocs (Material) | No                                  | Opt-in deferred until `material/blog` plugin becomes available.   |
 | Zensical        | No                                   | Architecture is identical -- enabled when an out-of-tree plugin ships. |
 | Standalone      | No                                   | No plugins; `docs_root` is the entire content surface.                 |
 
 ### Exporting the site map: `inspect routes` {#inspect-routes}
 
-EPOCH 7b ships a first-class CLI command that exposes the VSM to external consumers:
+current series ships a first-class CLI command that exposes the VSM to external consumers:
 
 ```shell
 zenzic inspect routes --json
@@ -321,7 +299,7 @@ zenzic inspect routes --json
 
 This feature exports the complete site map in a deterministic JSON format. It is
 designed to be consumed by external tools: custom Bash scripts, CI/CD dashboards, or
-Artificial Intelligence agents that require architectural context.
+specialized tools that require architectural context.
 
 Every record in the JSON output carries four fields: `url`, `kind` (`physical` or
 `virtual`), `source_files` (a sorted array of repo-relative paths that *cause* the

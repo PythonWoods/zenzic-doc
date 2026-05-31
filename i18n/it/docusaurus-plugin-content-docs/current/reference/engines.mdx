@@ -9,7 +9,7 @@ description: "Come Zenzic scopre e carica gli adapter dei motori di documentazio
 
 # Guida alla Configurazione dei Motori
 
-Zenzic è **agnostico** — funziona con MkDocs, Zensical o una semplice cartella di file
+Zenzic è **agnostico** — funziona con MkDocs, Zensical o una cartella standard di file
 Markdown senza richiedere l'installazione di alcun framework di build. È anche **opinato**:
 quando dichiari un motore, devi dimostrarlo. Questa guida spiega come configurare Zenzic
 per ogni motore supportato e quali sono le regole.
@@ -51,11 +51,11 @@ per qualsiasi SSG.
 
 ## Scegliere un motore
 
-La sezione `[build_context]` in `zenzic.toml` indica a Zenzic quale motore utilizza il tuo
+La sezione `[build_context]` in `.zenzic.toml` indica a Zenzic quale motore utilizza il tuo
 progetto:
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "mkdocs"   # oppure "zensical" o "docusaurus"
 ```
@@ -67,7 +67,7 @@ Se `[build_context]` è assente, Zenzic individua deterministicamente il motore:
 - nessuna configurazione presente, nessun locale dichiarato → `StandaloneAdapter` (controllo orphan disabilitato)
 
 :::info[Ponte CLI — Controlli signal-to-noise]
-Selezione engine e verbosità Sentinel sono aspetti separati. Usa
+Selezione engine e verbosità report sono aspetti separati. Usa
 [Comandi CLI: Flag globali](./cli.mdx#global-flags) per calibrare la policy per run:
 
 1. `--strict` per elevare warning e imporre validazione URL esterni.
@@ -81,8 +81,9 @@ Selezione engine e verbosità Sentinel sono aspetti separati. Usa
 
 ## MkDocs
 
-`MkDocsAdapter` viene selezionato quando `engine = "mkdocs"` (o qualsiasi stringa motore
-non riconosciuta). Legge `mkdocs.yml` usando un loader YAML permissivo che ignora
+`MkDocsAdapter` viene selezionato quando `engine = "mkdocs"`.
+Le stringhe motore non riconosciute ricadono su `StandaloneAdapter` — nessuna consapevolezza nav.
+Legge `mkdocs.yml` usando un loader YAML permissivo che ignora
 silenziosamente i tag sconosciuti (come l'interpolazione `!ENV` di MkDocs), quindi le
 configurazioni con molte variabili d'ambiente funzionano senza alcuna pre-elaborazione.
 
@@ -107,13 +108,13 @@ build di MkDocs. Questo significa:
   valutato. I link all'interno di espressioni macro non vengono validati.
 
 Per progetti che dipendono fortemente dalla generazione dinamica della nav, aggiungi i
-percorsi generati dai plugin a `excluded_dirs` in `zenzic.toml` per sopprimere i falsi
+percorsi generati dai plugin a `excluded_dirs` in `.zenzic.toml` per sopprimere i falsi
 positivi sugli orfani finché non sarà disponibile un adapter nativo.
 
 ### Configurazione minima
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -123,8 +124,10 @@ locales        = ["it", "fr"]   # nomi delle directory locale non predefinite (f
 ```
 
 Quando `locales` è vuoto, Zenzic si ricade a leggere le informazioni sui locale direttamente
-dal blocco del plugin `mkdocs-static-i18n` in `mkdocs.yml` — zero configurazione richiesta
-per la maggior parte dei progetti.
+dal blocco del plugin `i18n` in `mkdocs.yml` — zero configurazione richiesta
+per la maggior parte dei progetti. Questo comprende sia il pacchetto community
+`mkdocs-static-i18n` che il plugin i18n integrato in `mkdocs-material`, poiché entrambi
+si dichiarano come `i18n:` in `mkdocs.yml`.
 
 ### i18n: Folder Mode
 
@@ -215,7 +218,7 @@ né richiesto.
 ### Native Enforcement
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 [build_context]
 engine = "zensical"
 ```
@@ -228,10 +231,10 @@ automaticamente la configurazione MkDocs come ponte — senza alcuna configurazi
 
 Questo significa che puoi adottare Zenzic con l'engine Zensical **dal primo giorno di migrazione**,
 prima di scrivere una singola riga di `zensical.toml`. Quando il ponte si attiva, il banner
-Sentinel ti notifica:
+Zenzic notifica:
 
 ```text
-SENTINEL: Zensical engine active via mkdocs.yml compatibility bridge.
+NOTICE: Zensical engine active via mkdocs.yml compatibility bridge.
 ```
 
 **Cosa legge il ponte da `mkdocs.yml`:**
@@ -287,7 +290,7 @@ Il risultato:
 - **Nav generata da plugin** — I plugin Zensical che modificano la nav a runtime non vengono
 
   valutati. Le pagine incluse solo da tali plugin potrebbero essere segnalate come orphan. Aggiungi
-  i loro percorsi a `excluded_dirs` in `zenzic.toml` per sopprimere i report falsi.
+  i loro percorsi a `excluded_dirs` in `.zenzic.toml` per sopprimere i report falsi.
 
 - **Contenuto dinamico** — `zensical.toml` viene analizzato come TOML statico. Le espressioni
 
@@ -295,7 +298,7 @@ Il risultato:
 
 - **Scope di rilevamento** — `ZensicalAdapter` cerca `zensical.toml` (o il ponte MkDocs) solo
 
-  nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `zenzic.toml`.
+  nella root del progetto. I layout workspace nidificati richiedono un `docs_dir` esplicito in `.zenzic.toml`.
 
 ---
 
@@ -303,7 +306,7 @@ Il risultato:
 
 `DocusaurusAdapter` viene selezionato quando `engine = "docusaurus"` o quando
 `docusaurus.config.ts` (o `.js`) viene rilevato nella root del progetto. Legge la
-configurazione di Docusaurus come **testo semplice** usando pattern matching — nessun
+configurazione di Docusaurus come **testo statico** usando pattern matching — nessun
 runtime Node.js, nessun `npm install`, nessuna valutazione JavaScript.
 
 ### Analisi solo-sorgente
@@ -326,7 +329,7 @@ codice Node.js. Il `DocusaurusAdapter` invece:
 ### Configurazione minima
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 docs_dir = "docs"
 
 [build_context]
@@ -371,7 +374,7 @@ Una volta scoperto, l'albero del blog è trattato da `zenzic check all` come con
 
 - I link rotti **all'interno** di un post del blog vengono catturati (prima il file era silenziosamente ignorato).
 - I link rotti **da `docs/` verso un post** (o viceversa) vengono catturati.
-- Gli asset referenziati **solo** da un post non producono più Z903 (Asset Inutilizzato).
+- Gli asset referenziati **solo** da un post non producono più Z405 (Asset Inutilizzato).
 - I prefissi data nei nomi file (`YYYY-MM-DD-slug.md`) e gli override `slug:` nel frontmatter sono onorati esattamente come fa `docusaurus build`.
 
 Per disattivare, imposta `blog: false` in `docusaurus.config.ts`. Per usare un layout custom, dichiaralo esplicitamente nello stesso file — Zenzic lo rileverà.
@@ -423,8 +426,8 @@ di rotta senza un cambiamento di schema breaking.
 :::tip[Connessione a tool esterni]
 Il comando `zenzic inspect routes` è ora disponibile. Questa funzionalità esporta la
 mappa completa del sito in formato JSON deterministico. È progettata per essere
-consumata da tool esterni: script Bash custom, dashboard di CI/CD, o agenti di
-Intelligenza Artificiale che necessitano di contesto architetturale.
+consumata da tool esterni: script Bash custom, dashboard di CI/CD, o tool
+specializzati che necessitano di contesto architetturale.
 :::
 
 ### Layout i18n
@@ -470,6 +473,42 @@ della directory genitore quando il suo nome (case-insensitive) è:
 Questo evita che Zenzic segnali link rotti quando gli autori usano una di queste tre
 convenzioni per creare pagine di atterraggio di categoria.
 
+### Navigazione Unificata Discovery {#docusaurus-unified-nav}
+
+**In Docusaurus, tutti i file in `docs/` sono instradati dal plugin docs** — il routing
+è guidato dal file system, non dalla sidebar. Sidebar, navbar e footer controllano solo
+la *UX di scoperta*: se un utente riesce effettivamente a trovare e cliccare una pagina.
+
+Zenzic applica la **Legge di Scoperta UX**: un file è considerato `REACHABLE` se appare
+in qualsiasi superficie di navigazione dell'interfaccia. Un file assente da tutte le
+superfici è un orfano — ha un URL, ma nessun percorso utente conduce a esso.
+
+`DocusaurusAdapter` aggrega tre sorgenti di navigazione staticamente (senza Node.js):
+
+| Sorgente | Posizione configurazione | Metodo |
+| :--- | :--- | :--- |
+| **Sidebar** | `sidebars.ts` / `sidebars.js` | Voci `type: 'doc'` e ID stringa bare |
+| **Navbar** | `docusaurus.config.ts` → `themeConfig.navbar.items` | Path URL `to:` e attributi `docId:` |
+| **Footer** | `docusaurus.config.ts` → `themeConfig.footer.links` | Path URL `to:` |
+
+Un file è `ORPHAN_BUT_EXISTING` solo se è assente da **tutte e tre** le sorgenti:
+
+```text
+docs/changelog.mdx  → linkato dalla navbar (to: '/docs/changelog')  → REACHABLE ✓
+docs/about.mdx      → linkato dal footer (to: '/docs/about')        → REACHABLE ✓
+docs/secret.mdx     → assente da sidebar, navbar e footer           → ORPHAN_BUT_EXISTING ✗
+```
+
+:::note[Sidebar autogenerata]
+Quando `sidebars.ts` contiene `type: 'autogenerated'`, Docusaurus mostra tutti i documenti
+nella sidebar automaticamente. Zenzic lo rileva e marca **tutti i file** come `REACHABLE` —
+nessun report orfano viene emesso indipendentemente dal contenuto di navbar o footer.
+:::
+
+I path URL `to:` vengono risolti rimuovendo i prefissi `baseUrl` e `routeBasePath`,
+poi cercando su disco `.md` / `.mdx`. I link non-doc (es. `/blog/`, URL esterni)
+non corrispondono mai a un file e vengono ignorati silenziosamente — nessun falso positivo.
+
 ### Risoluzione alias `@site/`
 
 I progetti Docusaurus usano frequentemente l'alias `@site/` nei link per referenziare file
@@ -487,7 +526,7 @@ questi link senza generare falsi positivi di errore **PathTraversal**.
 
 :::note
 Per abilitare la risoluzione completa di `@site/`, imposta `repo_root` nella sezione
-`[build_context]` del tuo `zenzic.toml`, oppure esegui `zenzic check` dalla root del
+`[build_context]` del tuo `.zenzic.toml`, oppure esegui `zenzic check` dalla root del
 progetto affinché Zenzic possa rilevarlo automaticamente.
 :::
 
@@ -535,7 +574,7 @@ Docusaurus a un altro motore, Zenzic segnalerà ogni link `pathname:///` come er
   modulo o importano da moduli esterni potrebbero non essere analizzate completamente.
 
 Per i casi di sidebar dinamiche, aggiungi i percorsi generati a `excluded_dirs` in
-`zenzic.toml`.
+`.zenzic.toml`.
 
 ---
 
@@ -574,7 +613,7 @@ qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
 
 ### Quando usare Standalone
 
-- **Repository Markdown statici** — wiki, ADR log, documentazione in testo semplice senza
+- **Repository Markdown statici** — wiki, ADR log, documentazione in testo statico senza
 
   pipeline di build.
 
@@ -589,7 +628,7 @@ qualsiasi progetto basato su Markdown che non utilizza un SSG supportato.
 ### Configurazione minimale
 
 ```toml
-# zenzic.toml — minimo richiesto per standalone
+# .zenzic.toml — minimo richiesto per standalone
 docs_dir = "docs"
 ```
 
@@ -617,4 +656,4 @@ di riferimento con cui confrontarsi. Il rilevamento orphan richiede una dichiara
 `nav:`, Zensical `[nav]`, o Docusaurus `sidebars.ts`.
 
 Per progetti con localizzazione senza un engine supportato, aggiungi i nomi delle directory
-locale a `excluded_dirs` in `zenzic.toml` per evitare falsi report orphan.
+locale a `excluded_dirs` in `.zenzic.toml` per evitare falsi report orphan.

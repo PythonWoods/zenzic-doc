@@ -1,79 +1,43 @@
 ---
 sidebar_position: 8
-sidebar_label: "The Mineral Path"
-title: "The Mineral Path: Release Philosophy"
-description: "Zenzic releases follow the Mineral Path — a naming tradition that selects geological materials representing precision, transparency, and structural durability."
+sidebar_label: "Release Codenames"
+title: "Release Codenames"
+description: "Mapping of Zenzic SemVer versions to their official release codenames and engineering focus areas."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# The Mineral Path
+# Release Codenames
 
-Zenzic releases follow the **Mineral Path** — a naming tradition that selects geological materials
-representing precision, transparency, and structural durability. Each version name is not decorative:
-it carries a material metaphor for the engineering work done in that cycle.
+Each Zenzic release cycle is assigned a codename derived from a geological mineral.
+Codenames are always in English, are never translated, and serve as stable architectural
+bookmarks in documentation, changelogs, and migration guides.
 
-## The Philosophy
+## Codename Registry
 
-Documentation tooling is infrastructure. Infrastructure must be:
+| Version | Codename | Key Properties | Engineering Focus |
+|---------|----------|----------------|-------------------|
+| **v0.6.x** | **Obsidian** | Volcanic glass — formed under extreme pressure, exceptionally sharp edge | Credential scanner (Z2xx), path traversal guard, first SARIF output, Exclusion Zone model |
+| **v0.7.x** | **Quartz** | Piezoelectric — precise, self-oscillating, frequency standard | Finding codes (`Zxxx`), exit code contract, Virtual Site Map, SARIF platform compatibility |
+| **v0.8.x** | **Basalt** | Dense volcanic rock — high-tensile structural reinforcement | Plugin SDK, adapter protocol stabilisation, performance at scale |
+| **v0.9.x** | **Graphite** | Highly conductive — enables current between systems | Third-party integrations, public API, ecosystem expansion |
+| **v1.0.0** | **Diamond** | Hardest natural material — maximum structural integrity | Long-Term Support, stability guarantees, full API maturity |
+| **v1.1.x** | **Corundum** | Hardness 9 — highly resistant to abrasion | Advanced rule customization, ecosystem hardening |
+| **v1.2.x** | **Beryl** | Hexagonal crystal — structural purity | AST parsing optimization, memory footprint reduction |
 
-- **Hard to break** — like minerals under compression
-- **Transparent** — so users can see exactly what it does and why
-- **Precise** — no ambiguity in what it detects, reports, or rejects
+## Usage Convention
 
-The Mineral Path communicates that Zenzic is built for duration. We choose materials that have proven
-themselves over geological timescales, not marketing cycles. When a version is named after a mineral,
-that mineral's physical properties describe the engineering priorities of the release.
+Codenames appear in:
+- `CHANGELOG.md` section headings (e.g., `## [0.8.0] — Basalt`)
+- `RELEASE.md` and `CITATION.cff` `version-note` fields
+- Migration guides and breaking-change announcements
 
-## The Roadmap
-
-| Version | Mineral | Age | Engineering Focus |
-|---------|---------|-----|-------------------|
-| **v0.6.x** | **Obsidian** | The Age of Fire and Crisis | Sharp, volcanic, born from the MkDocs integration collapse. The Shield, the Blood Sentinel, and the first SARIF output — precision instruments forged under extreme pressure. {/* zenzic:ignore Z905 */} |
-| **v0.7.x** | **Quartz** | The Age of Clarity | Piezoelectric precision: transparent, self-oscillating, the standard for timing and frequency. A stable, auditable core — finding codes, exit code contracts, Virtual Site Map. |
-| **v0.8.x** | **Basalt** | The Age of Foundations | Dense, volcanic, used for high-tensile reinforcement in construction. Focus: Plugin SDK and performance at scale. |
-| **v0.9.x** | **Graphite** | The Age of Connectivity | Highly conductive — the bridge between systems. Focus: third-party integrations, public API, and ecosystem expansion. |
-| **v1.0.0** | **Diamond** | The Age of Indestructibility | The hardest natural material. Focus: Long-Term Support, stability guarantees, and full maturity. |
-
-## The Obsidian Origin {/* zenzic:ignore Z905 */}
-
-The first stable Zenzic release was named **Obsidian** deliberately. Obsidian is volcanic glass — {/* zenzic:ignore Z905 */}
-formed under extreme heat and pressure, at the boundary between liquid rock and the atmosphere.
-The v0.6.x cycle was exactly that: the collapse of the original MkDocs plugin architecture, a
-forced rewrite, and the emergence of the Safe Harbor model from the wreckage.
-
-Obsidian is also the sharpest natural material. It was the material of the first surgical {/* zenzic:ignore Z905 */}
-instruments — blades that could make cuts thinner than a modern scalpel. Zenzic v0.6.x introduced
-the [Shield](../reference/finding-codes.mdx#z201) (credential detection), the Blood
-Sentinel (path traversal enforcement), and the first SARIF output. Precision instruments,
-forged in fire.
-
-## The Quartz Standard
-
-Quartz is chosen for v0.7.x because it is the geological material of **precision timekeeping**.
-Quartz oscillators are the foundation of every clock, every GPS receiver, every digital circuit
-that needs to know *exactly* when something happens.
-
-Zenzic v0.7.x brings that same standard to documentation analysis:
-
-- **Finding codes (`Zxxx`)** — stable, machine-readable, version-invariant identifiers
-- **SARIF output** — compatible with every major security scanning platform
-- **Exit code contract** — deterministic, non-suppressible for security incidents
-- **Virtual Site Map** — a precise in-memory projection of the final site, validated before any build
-
-Quartz does not bend. Quartz does not lie. Quartz tells you exactly what time it is.
-
-## Beyond Quartz
-
-The Mineral Path continues. Basalt, Graphite, and Diamond are not promises — they are coordinates.
-They tell contributors and users what kind of engineering work each cycle prioritizes. The names will
-not change unless the engineering direction changes.
-
-The Mineral Path is also a statement about what Zenzic is **not**: a product whose versions are
-named after cities, animals, or arbitrary brand keywords. Every name on this path has a physical
-referent in the earth. Every physical referent has properties that map to code.
+Codenames **do not** appear in:
+- Tutorial or how-to guide text (use agnostic prose)
+- Error messages or CLI output (use the version number instead)
+- Translations (codenames are proper nouns — always written in English)
 
 If you want to contribute to a specific milestone, the
-[Engineering Ledger](/developers/explanation/engineering-ledger) holds the active
+Engineering Ledger *(Maintainer Only)* holds the active
 sprint context and architectural decisions in progress.

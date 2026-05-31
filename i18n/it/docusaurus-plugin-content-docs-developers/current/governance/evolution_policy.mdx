@@ -17,7 +17,7 @@ principio è che **non tutto può cambiare** — e i Tre Pilastri sono le cose c
 
 ## 1. Il Contratto di Immutabilità
 
-I Tre Pilastri non sono preferenze. Sono i requisiti strutturali del Safe Harbor.
+I Tre Pilastri non sono preferenze. Sono i requisiti strutturali del Exclusion Zone.
 Un Zenzic senza il Pilastro II (Zero Sottoprocessi) non è un Zenzic più veloce —
 è uno strumento diverso che ha abbandonato il suo modello di fiducia.
 
@@ -32,10 +32,10 @@ Un Zenzic senza il Pilastro II (Zero Sottoprocessi) non è un Zenzic più veloce
 Una modifica che viola il Pilastro II o il Pilastro III — anche temporaneamente, anche
 per un motivo valido — richiede:
 
-1. **Un incremento della versione Major** (es. v0.7.0 → v1.0.0)
+1. **Un incremento della versione Major**
 2. **Un periodo pubblico di analisi d'impatto di 30 giorni**
-3. **Un [ADR](https://github.com/PythonWoods/zenzic/blob/main/.github/copilot-instructions.md)** formale aggiunto all'Zenzic Ledger
-4. **Una [sessione AI Avversariale](./adversarial_ai) (Tipo A)** contro l'architettura sostitutiva proposta
+3. **Un [ADR](../explanation/adr-vault)** formale aggiunto all'ADR Vault
+4. **Una revisione formale tramite stress test** dell'architettura sostitutiva proposta
 5. **Consenso di 2/3 dei Core Maintainer**
 
 Questo non è una barriera burocratica. È il costo del modello di fiducia.
@@ -78,7 +78,7 @@ I seguenti non sono motivazioni valide per una modifica ai Pilastri:
 
 - "È fastidioso scrivere pure functions per questa regola."
 - "Dobbiamo spedire questa chiamata a subprocess ora."
-- "L'AI ha proposto un'architettura più semplice che bypassa il Pilastro II."
+- "L'AI ha proposto un'architettura più ridotta che bypassa il Pilastro II."
 - "Questa è un'eccezione temporanea."
 
 ---
@@ -99,5 +99,3 @@ emergenza da un Pilastro, i Core Maintainer possono invocare l'Eccezione di Emer
 
 L'Eccezione di Emergenza **non può** essere invocata per comodità, pressione di deadline
 o debito tecnico. Richiede un CVE documentato o un incidente di sicurezza equivalente.
-
-> *Saga VI: The Governance of Quartz — [leggi la cronaca](https://zenzic.dev/blog/governance-of-quartz)*

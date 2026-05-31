@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# ── Sentinel Guard ─────────────────────────────────────────────────
-# Zenzic Sentinel direct-invocation bootstrap.
+# ── Zenzic Check bootstrap ─────────────────────────────────────────
+# Zenzic Check direct-invocation bootstrap.
 #
 # NOTE (ZRT-010 — Sovereign Parity): the canonical entry-point is
 # 'just check', which inlines the Pre-Launch Guard and uses the
@@ -49,9 +49,4 @@ fi
 
 echo "Mode: Local Zenzic (${ZENZIC_PATH})"
 
-# Permanent exclusion: contributor-covenant.org is a flaky third-party URL.
-GUARD=(
-  --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
-)
-
-uv run --project "${ZENZIC_PATH}" zenzic check all --strict "${GUARD[@]}" "$@"
+uv run --project "${ZENZIC_PATH}" zenzic check all --strict "$@"

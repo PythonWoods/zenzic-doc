@@ -3,11 +3,12 @@ sidebar_position: 0
 sidebar_label: "Panoramica"
 ---
 
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
 # La tua documentazione, completamente protetta
 
-**Zenzic garantisce sicurezza in build-time e tranquillità operativa — rilevando link rotti,
-credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione
-richiesta per iniziare. Nessun build engine invocato. Nessuna sorpresa il venerdì.**
+**Zenzic rileva link rotti, credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione richiesta per iniziare. Nessun build engine invocato.**
 
 ---
 
@@ -18,7 +19,7 @@ uvx zenzic lab
 ```
 
 `zenzic lab` lancia una vetrina interattiva di ogni scanner in azione: rilevamento credenziali,
-link rotti, pagine orfane, Blood Sentinel per la protezione da path-traversal. Eseguilo su
+link rotti, pagine orfane, path traversal guard enforcement. Eseguilo su
 fixture preconfezionate e osserva i risultati in tempo reale.
 
 **L'audit completo in un secondo — senza installazione, senza configurazione:**
@@ -27,69 +28,42 @@ fixture preconfezionate e osserva i risultati in tempo reale.
 uvx zenzic check all .
 ```
 
-→ **[Scopri di più nel tutorial Interactive Lab](./tutorials/first-audit#step-2-siege)**
+→ **[Scopri di più nel tutorial Interactive Lab](./tutorials/first-audit#step-2-credential-scanner)**
 
 ---
 
-## Il Sentinel Dashboard — 100/100
+## Due Strumenti: Check e Score
 
-Ecco come appare il successo:
+**`zenzic check all`** è un gate binario. Emette un exit code deterministico in base ai finding rilevati nello scope analizzato. Exit 0 indica nessun finding rilevato.
 
-<SentinelOutput variant="clean" showFrame />
+<ZenzicOutput status="success" exitCode={0} showFrame />
 
-`100/100` non è una stima. È una **prova matematica** che la tua documentazione
-non ha problemi strutturali, nessuna credenziale esposta, nessun errore di navigazione.
-Qualsiasi punteggio inferiore è un diagnostico preciso e azionabile — non un avviso generico.
+**`zenzic score`** calcola uno score di qualità 0–100 tramite un modello a penalità pesate su quattro categorie: Integrità Strutturale (30%), Navigazione (25%), Brand & Asset (25%), Eccellenza dei Contenuti (20%). Un `100/100` indica zero finding penalizzati nello scope analizzato. Il contenuto escluso non è valutato. Uno score inferiore a `100/100` è un audit superato se soddisfa la soglia `fail_under` configurata.
 
-> **Pronto a raggiungere il 100/100?** Esegui `uvx zenzic score` per vedere dove sei oggi.
+Regola assoluta: qualsiasi finding Z2xx collassa lo score a `0/100` incondizionatamente, indipendentemente da `fail_under`.
 
----
-
-## Smetti di decifrare i log. Inizia a risolvere i problemi
-
-**Prima di Zenzic** — un fallimento CI standard:
-
-```text
-[14:23:01] BUILD FAILED
-[14:23:01]   error: Cannot read properties of undefined (reading 'path')
-[14:23:01]   at DocusaurusContentDocs.<anonymous> (content-docs.js:212:14)
-[14:23:01]   ... 47 righe omesse ...
-[14:23:01] Process exited with code 1
-```
-
-Cosa si è rotto? Quale file? Quale riga? Il build engine sa che ha fallito — ma non perché.
-
-**Con Zenzic** — il Sentinel Report:
-
-<SentinelOutput variant="findings" showFrame />
-
-**Tre righe. Tre azioni. Zero ambiguità.**
-
-Il Sentinel Report indica file, riga, codice `Zxxx` e soluzione — prima ancora che
-il build inizi. Nessuna archeologia dei log, nessuna lettura di stack trace.
+→ **[Modello di scoring completo](./explanation/scoring-system)**
 
 ---
 
-## Shield — L'ultima linea di difesa contro la Crisi Nera
+## Analisi Deterministica dei Fallimenti: Prima vs Dopo Zenzic
 
-Una chiave API esposta nella tua documentazione non è un problema di contenuto.
-È un incidente di sicurezza.
+| Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic                                                                             |
+|-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | ZenzicOutput: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
+| **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica O(1) via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
+| **Leak di Credenziali** | Il linter può non rilevare segreti in YAML/blocchi codice; nessun masking; l’incidente può finire in git. | Credential scanner: scansiona tutto, maschera i segreti, blocca la pipeline (exitCode=2, Z201), mai stampa il segreto completo. |
+| **Codici di Uscita**    | Non standard, ambigui o assenti.                                                                   | Tier: Z1xx (integrità link), Z2xx (sicurezza), Z4xx (struttura), Z6xx (governance).                 |
 
-<SentinelOutput variant="breach" showFrame />
+**Esempio: ZenzicOutput per una Virtual Route**
 
-Lo **Shield** di Zenzic scansiona ogni riga di ogni file — incluso il frontmatter YAML e
-i blocchi di codice — prima che qualsiasi altro controllo venga eseguito. Se viene rilevata
-una credenziale:
+<ZenzicOutput status="error" code="Z111" exitCode={1} showFrame>
+docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente (Z111)
+</ZenzicOutput>
 
-- La pipeline **si blocca incondizionatamente** — l'exit code 2 non può essere soppresso da alcun flag
-- La credenziale è **mascherata** nel report (mai stampata per intero)
-- La correggi **prima che entri nella git history** — niente BFG Repo Cleaner, niente rotazioni
+Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
 
-  d'emergenza a mezzanotte, nessun post-mortem di incidente
-
-Questo non è un controllo lint. È un **gate di sicurezza non negoziabile**.
-
-→ **[Come agire quando Shield blocca un segreto](./how-to/configure-ci-cd#shield-recovery)**
+→ **[Come agire quando il credential scanner blocca un segreto](./how-to/configure-ci-cd#credential-recovery)**
 
 ---
 
@@ -98,17 +72,17 @@ Questo non è un controllo lint. È un **gate di sicurezza non negoziabile**.
 | | |
 | :--- | :--- |
 | **[Tutorial →](./tutorials/first-audit)** | Da zero a un audit superato in 3 minuti. |
-| **[How-to →](./how-to/configure-ci-cd)** | Pubblica con fiducia usando GitHub Actions. |
+| **[How-to →](./how-to/configure-ci-cd)** | Integrazione con GitHub Actions per controlli CI/CD automatizzati. |
 | **[Reference →](./reference/cli)** | Ogni flag, ogni codice `Zxxx`, ogni opzione. |
-| **[Explanation →](./explanation/health-metrics)** | Perché 100/100 è l'unico numero che conta. |
+| **[Explanation →](./explanation/scoring-system)** | Come i finding abbassano la baseline di 100 punti e come `fail_under` imposta la soglia CI. |
 
 ---
 
-## Enterprise Ready — Integrazione Nativa con GitHub
+## Integrazione Nativa con GitHub
 
 ```yaml title=".github/workflows/zenzic.yml"
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
     format: sarif
@@ -124,4 +98,4 @@ Verificato cross-platform: Ubuntu · Windows · macOS · Python 3.10–3.14.
 
 ---
 
-*"The Code is Law. The Documentation is Truth. The Sentinel is vigilant."*
+*"The Code is Law. The Documentation is Truth. Zenzic is vigilant."*

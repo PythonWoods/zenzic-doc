@@ -1,154 +1,99 @@
 ---
 sidebar_position: 10
 sidebar_label: "Perché Zenzic"
-title: "Perché Zenzic — La Safe Harbor Philosophy"
-description: "Una dichiarazione di principi. Zenzic non spiega la documentazione; la difende. Ecco perché questa distinzione è fondamentale."
+title: "Perché Zenzic — Prevenzione del Rischio e Quality Gate Deterministici"
+description: "Come Zenzic riduce il rischio documentale, elimina i cicli di QA manuale e applica quality gate deterministici in CI/CD."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Perché Zenzic — La Safe Harbor Philosophy
+# Perché Zenzic — Prevenzione del Rischio e Quality Gate Deterministici
 
-> *"Una documentazione che non viene difesa è una documentazione che prima o poi mentirà."*
-
-Questa pagina non è un documento di marketing. È una dichiarazione di principi — una
-spiegazione delle scelte progettuali dietro Zenzic che possono sembrare controverse,
-conservatrici, o persino estreme, ma che sono deliberate e non negoziabili.
+Zenzic esiste per impedire che i difetti documentali entrino nel branch principale. L'obiettivo
+è operativo: bloccare regressioni prima del rilascio, ridurre l'esposizione di sicurezza e
+mantenere risultati CI deterministici.
 
 ---
 
-## La Documentazione come Input Non Fidato
+## Valore di Business
 
-Ogni sistema di documentazione che ha mai fallito — link rotti dopo un refactoring,
-credenziali trapelate in un repository pubblico, pagine orfane abbandonate dopo una
-rinomina — ha fallito perché qualcuno ha assunto che la documentazione fosse corretta.
+### 1. Riduzione del Rischio
 
-Zenzic non fa questa assunzione.
+Zenzic previene i guasti documentali ad alto impatto prima del deploy:
 
-**Zenzic tratta il sorgente della documentazione come input non fidato.** La stessa
-disciplina che la tua applicazione applica a un confine di rete — valida prima di fidarsi
-— viene applicata qui al confine della documentazione. Un file Markdown è codice. Un file
-di configurazione è codice. Una destinazione di link è un'affermazione che deve essere
-verificata, non creduta.
+- link interni rotti che diventano 404 in produzione,
+- credenziali trapelate in Markdown o code block,
+- incoerenze di navigazione e topologia che nascondono pagine critiche.
 
-Questa è la garanzia del **Safe Harbor**: esegui Zenzic, ottieni un certificato. Se il
-tool termina con exit 0, la documentazione è strutturalmente integra. Non perfetta — ma
-strutturalmente verificabile. Nessun link interno rotto. Nessuna credenziale trapelata.
-Nessuna pagina scomparsa silenziosamente dalla navigazione. Il sorgente è sicuro da
-consegnare a qualsiasi motore di build.
+Per repository pubblici, il rilevamento credenziali (Z2xx) è un controllo diretto contro la
+divulgazione accidentale di segreti.
 
----
+### 2. Risparmio di Tempo
 
-## La Tassa Node.js
+Il quality gate automatizza controlli che spesso vengono svolti manualmente in review.
 
-Ogni strumento di documentazione nell'ecosistema JavaScript richiede Node.js. Un gate
-di qualità per la documentazione non dovrebbe dover provisionare un runtime da diversi
-gigabyte solo per verificare se la destinazione di un link esiste.
+Formulazione corretta: **l'automazione del quality gate previene l'integrazione di debito
+documentale nel branch principale, azzerando i cicli di revisione manuale per i link
+interrotti.**
 
-Zenzic è **100% Python puro**. Zero chiamate a subprocess. Zero Node.js. Zero npm. Un
-singolo `uvx zenzic check all` e il lavoro è fatto — su Linux, macOS e Windows, con
-Python da 3.10 a 3.14.
+I team smettono di spendere cicli di revisione su difetti ripetitivi e si concentrano sulla
+qualità del contenuto.
 
-Questa non è una coincidenza. È la **RULE R08** — la Legge Zero Subprocess — sancita
-come invariante architetturale. Significa:
+### 3. Affidabilità
 
-- **GitHub Actions:** `astral-sh/setup-uv` + `uvx zenzic check all` — nessun passaggio di
-  pre-installazione Python, nessuna wheel da gestire. Una riga aggiunta a qualsiasi workflow.
-- **Pre-commit:** Aggiungi `zenzic-verify` a `.pre-commit-config.yaml`. L'hook gira sui file
-  in stage; zero effetti collaterali sull'albero di lavoro.
-- **Qualsiasi runner CI:** Richiede `bash` ≥5 e `python3` ≥3.10 nel `PATH`. Nessun altro runtime. Zero Node.js.
-
-La Tassa Node.js è un debito che si accumula. Zenzic si rifiuta di pagarla.
+Affidabilità significa risultati ripetibili a parità di input. Zenzic applica analisi
+deterministica e codici di uscita deterministici, in modo che il comportamento CI sia stabile
+su run e ambienti diversi.
 
 ---
 
-## La Trinità della Difesa
+## Trinità della Difesa {#defence-trinity}
 
-Zenzic applica tre linee di difesa non negoziabili:
+### Integrità dei Link (Z1xx)
 
-### 1. Integrità dei Link (Z1xx)
+Link interni, anchor e riferimenti di route vengono validati prima della build. Questo impedisce
+che errori di navigazione runtime arrivino agli utenti.
 
-La rete di riferimenti che connette un sito di documentazione è il suo scheletro
-strutturale. Un link rotto non è un bug cosmetico — è un contratto rotto con il lettore.
-Zenzic valida ogni link interno, ogni riferimento di ancora, ogni percorso cross-locale.
-Costruisce una **Virtual Site Map** (VSM) in memoria — una proiezione del sito
-finale — e verifica le rotte fantasma che si romperebbero solo a runtime.
+### Prevenzione Leak Credenziali (Z2xx) {#credential-scanner}
 
-### 2. Lo Shield (Z201)
+Lo scanner controlla ogni file per pattern noti di credenziali. I finding di sicurezza sono
+fail-closed e fermano immediatamente la pipeline.
 
-Le credenziali nella documentazione affossano le aziende. Una chiave di accesso AWS,
-un token GitHub, una chiave API privata — qualsiasi di questi, committata in un repository
-pubblico, innesca una violazione che nessun `git history --rewrite` può mai annullare
-completamente. Lo Shield scansiona ogni byte di ogni file, incluso il frontmatter YAML
-(dove i segreti si nascondono frequentemente), prima che qualsiasi altro controllo venga
-eseguito.
+### Sicurezza di Path e Topologia (Z202/Z203) {#path-traversal-guard}
 
-**Il codice di uscita 2 non è mai sopprimibile.** Non da `--exit-zero`. Non da
-`fail-on-error: false`. Non da `zenzic:ignore`. Una credenziale trapelata è un arresto
-definitivo.
-
-### 3. Blood Sentinel (Z202/Z203)
-
-Il path traversal nelle configurazioni di documentazione è una classe di attacchi che
-la maggior parte dei team non immagina mai possa esistere. Un `docs_dir: "../../etc"` in
-un file di configurazione non è un errore — è un jailbreak. Blood Sentinel chiude questo
-vettore in modo incondizionato.
-
-**Il codice di uscita 3 non è mai sopprimibile.** Punto.
+Path traversal e risoluzione path non sicura sono bloccati. Durante l'analisi, la configurazione
+non può uscire dai confini del repository.
 
 ---
 
-## Radice Sovrana
+## Modello di Esecuzione Deterministico {#three-pillars}
 
-La documentazione non vive in isolamento. Un monorepo può contenere tre servizi, ognuno
-con la propria radice di documentazione, ognuno con il proprio `zenzic.toml`. Zenzic
-rispetta questa struttura.
+Zenzic applica tre regole di ingegneria per mantenere i risultati prevedibili:
 
-**La configurazione segue il target, non il chiamante.** Quando esegui
-`zenzic check all /percorso/al/progetto-B`, Zenzic carica la configurazione del
-progetto-B — non la configurazione della directory in cui ti trovi. Questo è
-**ADR-009 — Sovranità del Percorso**: `find_repo_root(search_from=target)` garantisce
-che l'analisi sia sempre ancorata al repository proprietario del target.
+1. **Analizza il sorgente, non l'output di build.**
+2. **Nessun sottoprocesso nel loop di analisi core.**
+3. **Validazione e scoring con approccio pure-function-first.**
 
-Questo invariante rende Zenzic sicuro da eseguire da uno script di orchestrazione CI
-che analizza più repository in sequenza. Non esiste "context hijacking" — ogni analisi
-è completamente sovrana.
+Questo modello garantisce che lo stesso stato repository produca lo stesso set di finding e lo
+stesso risultato di gate.
 
 ---
 
-## La Rottura Quartz
+## Semantica del CI Gate
 
-Zenzic v0.7.0 ha introdotto un modello di scoring che **non è retrocompatibile** con le
-baseline di v0.6.x.
+- **Exit 0**: nessun finding bloccante.
+- **Exit 1**: finding di qualità che bloccano il merge.
+- **Exit 2**: finding di sicurezza/credenziali.
+- **Exit 3**: violazione del path traversal guard.
 
-Il modello v0.6.x utilizzava un tasso di decadimento uniforme: cinque problemi in qualsiasi
-categoria azzeravano quella categoria indipendentemente dalla severità. Puniva il volume,
-non la gravità. Un singolo link rotto e cinquanta link rotti producevano punteggi
-proporzionalmente diversi — ma non significativamente diversi.
-
-Il **Quartz Penalty Scorer** (D092) sostituisce questo modello con una tabella di penalità
-per codice:
-
-| Categoria | Peso | Codici di esempio |
-|---|---|---|
-| Integrità Strutturale | 40 pts | Z101, Z102, Z104, Z105, Z107 |
-| Eccellenza del Contenuto | 30 pts | Z501, Z502, Z503, Z505 |
-| Navigazione | 20 pts | Z402 |
-| Brand & Asset | 10 pts | Z903, Z904, Z905 |
-
-Un punteggio di 70/100 con 1000 blocchi di codice senza tag (Z505) significa: l'integrità
-strutturale è perfetta, la navigazione è pulita, e solo la categoria del contenuto è
-degradata — non l'intero progetto. I cap per categoria impediscono al rumore di mascherare
-il segnale.
-
-Se hai un file snapshot v0.6.x (`.zenzic-score.json`), Zenzic v0.7.0 si rifiuterà di
-caricarlo e ti chiederà di creare una nuova baseline. Questo è intenzionale. Confrontare
-mele con arance è peggio che non avere alcun confronto.
-
-Esegui `zenzic score --save` una volta per stabilire una baseline di Quartz Maturity.
+Il modello DQS flat-cost rende esplicito il debito da soppressioni: ogni soppressione applica una
+penalità fissa, quindi la variazione del punteggio è prevedibile e verificabile.
 
 ---
 
-*Zenzic è sviluppato e mantenuto in Italia 🇮🇹 — con la convinzione che la qualità della
-documentazione non sia opzionale.*
+## Use Cases
+
+- **Manutenzione monorepo B2B**: applicare uno standard documentale coerente su più servizi.
+- **Validazione portali API**: prevenire regressioni di route e navigazione.
+- **Pipeline docs-as-code**: bloccare regressioni in anticipo con comportamento di gate deterministico.

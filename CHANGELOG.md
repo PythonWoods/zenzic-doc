@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD024 -->
 # Changelog
 
-All notable changes to the Zenzic documentation portal (`zenzic-doc`) are documented here.
+All notable changes to the Zenzic documentation portal (zenzic-doc) are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions track the Zenzic Core release line under the Branch Parity Rule.
 
@@ -11,274 +11,29 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
-#### Added
-
-- **DX Release Recipes (Sprint DX):** All four ecosystem repositories now include:
-  - `just version` — prints current version from bump-my-version
-  - `just release-dry <part>` — full verbose dry-run (shows file diffs)
-  - `just release-dry <part> --short` — compact preview (3 essential lines only)
-  - `just release-contracts` — validates justfile architectural contracts, wired into `verify`
-- **Branch Parity Rule — snapshot parity with Core v0.7.1:** No code changes in this
-  repository (Node/Docusaurus ecosystem). This entry tracks alignment with the Zenzic
-  Core infrastructure alignment release (Boundary Testing matrix fix, Mypy floor
-  lowered to 3.10).
-- **`_check-hooks` DX guard:** Added hidden `_check-hooks` recipe as first dependency of
-  `just verify` across all four ecosystem repositories. Emits a warning if the pre-push
-  Final Guard hook (`pre-commit install -t pre-push`) is not installed locally, without
-  blocking the verification run.
-- **`ecosystem.mdx` — Ecosystem Transparency (Sprint D101):** Page retitled “The Zenzic
-  Ecosystem”. Added three new sections: “The Ecosystem at a Glance” (Core / Structum /
-  Zenzic-Doc role table), “zenzic-doc — Living Test Bench” (self-dogfooding, Graceful
-  Degradation, `verify-codes-parity`), and “The 4-Gates Standard” (IDE / Pre-commit /
-  Pre-push / Remote CI). EN + IT updated atomically.- **`Z907 I18N_PARITY` — finding-codes.mdx encyclopedia entry (Sprint D102):** Added
-  dedicated `{#z907}` section to `finding-codes.mdx` (EN + IT) documenting the I18n
-  Parity check: mirror-presence and frontmatter-parity invariants. Resolves
-  `verify-codes-parity` MISSING error for Z907. Bilingual symmetry restored.
-#### Changed
-
-- **`noxfile.py` refactoring — pipeline unification:** Removed `preflight` nox session
-  (duplicated `just verify`; used bare `uvx zenzic` without version pin). Renamed
-  `verify-docs` session to `verify-codes-parity`.
-- **`verify-codes-parity` — Graceful Degradation:** Step 1 now uses
-  `ZENZIC_PROJECT_PATH` for Core Maintainers (local source via `uv run --project`)
-  and falls back to `uv run --with zenzic` for External Contributors (published PyPI
-  release). Eliminates hardcoded sibling path and `importlib.util` hack.
-- **`justfile` update:** Added `verify-codes` recipe (`uvx nox -s verify-codes-parity`).
-  Updated `verify` target: `lint-all typecheck build verify-codes` (codes parity is
-  now Gate 4 of the standard pipeline).
-- **`_check-hooks` — DX Polish (Sprint D102):** Updated warning copy: ANSI yellow colour,
-  explanatory “why it matters” line, and `uvx pre-commit install -t pre-push` (zero global
-  install required). Applied across all four ecosystem repositories.
-- **Double Execution eliminated — `just verify` pipeline (Sprint D102):** Removed redundant
-  `typecheck` from `verify` chain (already runs inside `lint-all`/pre-commit). Removed
-  `check` dependency from `build` recipe (Zenzic Sentinel already runs inside
-  `lint-all`/pre-commit). `verify` chain: `_check-hooks lint-all build verify-codes`.
-- **`finding-codes.mdx` — Legacy section purged (Sprint D102):** `## Legacy Codes
-  [Deprecated]` section (Z001/Z002/Z009 pre-v0.6.0 codes) removed. Z000 promoted to
-  canonical code in `codes.py`. `## Integration with CI/CD` promoted from H3 to H2.
-- **`docs/reference/checks.mdx` — canonical code modernization (Sprint D102):**
-  Legacy references updated: `Z001`→`Z101`, `Z002`→`Z103`, `Z009`→`Z902`.
+No changes yet.
 
 ---
 
-## [0.7.0] — 2026-05-07 — Quartz Maturity (Stable)
+## [0.9.0] - 2026-05-31
 
-> **Authoritative source:** [zenzic.dev](https://zenzic.dev). This file is the
-> machine-readable counterpart of [`RELEASE.md`](RELEASE.md) and follows the same
-> Branch Parity Rule as the Zenzic Core changelog.
+### Added
 
-#### Added
+- Historical archive split for v0.8.x and v0.7.x release notes under `changelogs/`.
+- `tutorials/examples.mdx` (EN + IT): full gallery of all 20 `zenzic lab` sandboxes with scenario matrix, exit-code column, and per-scenario prose.
+- 15 new gallery sections covering z102, z103, z105, z108, z202, z204, z301, z302, z303, z402, z403, z501, z502, z503, z505.
+- `finding-codes.mdx` (EN + IT): Z204 CLI output updated to `POLICY VIOLATION DETECTED` banner.
+- `privacy-gate.mdx` (EN + IT): Exit Behavior section and `[core]` table-header fix.
 
-- **Editorial Sprint A — Zero-Config Sovereignty**: Tutorial `docs/tutorials/first-audit.mdx`
-  (EN+IT) updated to document blog auto-discovery without manual configuration.
-  `uvx zenzic check all` now covers blog posts in scope by default; the tutorial
-  demonstrates this explicitly with a blog `ContentRoot` note: `blog/` detected via
-  `docusaurus.config.ts` or filesystem convention — no `blog_dir` to configure.
+### Changed
 
-- **Editorial Sprint B — Aerospace Manifesto**: Constraint language replaces marketing
-  adjectives across all four ecosystem READMEs (`zenzic`, `zenzic-doc`, `zenzic-action`,
-  `structum`). Taglines rewritten as deterministic invariants:
-  - `zenzic` — "Deterministic audit of documentation structures with bidirectional
-    traceability. Every finding maps to a source file and a line number. Every URL has
-    a physical origin. Zero global state."
-  - `zenzic-doc` — Compliance evidence statement: `zenzic check all --strict` exits 0
-    with zero findings on every push.
-  - `zenzic-action` — Exit code contract paragraph (exits 2 and 3 are never
-    suppressible at the enforcement boundary).
-  - `structum` — "Reads, never executes. AST-only. No `eval()`, no dynamic import,
-    no subprocess."
-  Engineering Ledger preamble re-framed on NASA Power of 10 Rules 1/4 (deterministic
-  control flow, zero global state) and Rule 2 (subprocess ban enforced by ruff).
-
-- **Editorial Sprint C — Show, Don't Tell**: Surgical eradication of non-quantifiable
-  adjectives across `docs/how-to/`, `docs/explanation/`, and `docs/tutorials/` (EN+IT).
-  Six EN replacements + six IT mirrors in `docs/explanation/` and `docs/how-to/`;
-  four tutorial replacements (EN+IT) in `docs/tutorials/`:
-  - `why-zenzic.mdx` — marketing bullet labels replaced with factual tool invocations
-    (exact `bash ≥5`, `python3 ≥3.11` requirements, `astral-sh/setup-uv` invocation).
-  - `safe-harbor.mdx` — "trivially testable" replaced with deterministic behaviour
-    contract (identical inputs, identical outputs, no shared state).
-  - `install.mdx` — section title "Lean & Agnostic by Design" → "Static analysis only
-    — no build runtime required"; "making it ideal for" prose removed.
-  - `configure-ci-cd.mdx` — "powerful but irreversible" → "irreversible".
-  - `migrate-engines.mdx` — "custodian" metaphor replaced with contract language;
-    tip block rewritten in imperative voice.
-  - `tutorials/first-audit.mdx` — Sprint B traceability proof addedinline: broken
-    link → exact `Z101` finding with file, line, and code. Sprint A: blog
-    auto-discovery noted in Step 1. Sprint C: `:::note[Deliberate Failure — The
-    Traceability Proof]` illustrates deterministic output.
-  - `tutorials/examples.mdx` — opening paragraph rewritten: "Clone it. Run
-    `uvx zenzic check all`. Each example isolates one feature."
-
-- **Technical Phase 1 — SentinelOutput API v2**: `src/components/SentinelOutput.tsx`
-  extended with a domain-specific `Status` discriminant that supersedes `variant`:
-
-  | `status`    | Internal `variant` | Exit | Meaning                        |
-  |-------------|-------------------|------|--------------------------------|
-  | `success`   | `clean`           |  0   | Integrity verified             |
-  | `error`     | `findings`        |  1   | Structural/link violation      |
-  | `warning`   | `findings`        | 0–1  | Non-blocking anomaly           |
-  | `inspect`   | `inspect`         |  0   | Audit/debug mode               |
-  | `breach`    | `breach`          |  2   | Security perimeter compromised |
-
-  New props: `status`, `code` (Zxxx string), `exitCode` (0|1|2|3), `traceability`
-  (boolean). `variant` preserved for backward compatibility with a `console.warn`
-  deprecation notice in development mode. Traceability guard: `status="error"|"warning"`
-  without `code` emits a warning — a finding without a Zxxx code violates Absolute
-  Traceability. `tsc --noEmit` clean.
-
-- **Technical Phase 2 — VSMVisualizer**: New component `src/components/VSMVisualizer.tsx`
-  registered globally in `src/theme/MDXComponents.js`. Renders a hierarchical
-  in-place-expandable tree of the Virtual Site Map distinguishing:
-  - **Physical Nodes** (📄) — real `.md`/`.mdx` files on disk
-  - **Virtual Routes** (🏷 tag, 📑 pagination, 👤 author) — routes inferred from
-    frontmatter metadata, with in-place Reverse-Mapping disclosure of `source_files`.
-  - **Reverse-Mapping violation** — virtual node with `source_files = ∅` rendered with
-    ⚠ marker (should never appear in a passing audit).
-  Props: `roots: string[]` (required), `virtual?: boolean`, `nodes?: VSMNode[]`
-  (override for custom trees). `tsc --noEmit` clean.
-
-- **Technical Phase 3 — finding-codes.mdx Migration**: All 8 `<SentinelOutput>`
-  usages in `docs/reference/finding-codes.mdx` (EN+IT) migrated from legacy `variant=`
-  to the Phase 1 contract (`status`, `code`, `exitCode`). Every finding code in the
-  reference encyclopedia is now linked to its Zxxx identifier via `code=` — Absolute
-  Traceability from prose to component to finding code.
-
-
-  Following the Core's EPOCH 7a.1 purge, the `[link_validation].absolute_path_allowlist`
-  TOML block is **gone** from `zenzic-doc/zenzic.toml`. Multi-instance Docusaurus
-  plugin URL prefixes (`/docs/`, `/developers/`, every additional content-docs
-  instance) are now auto-detected by `DocusaurusAdapter.get_absolute_url_prefixes()`
-  via static parsing of `docusaurus.config.ts` plus a filesystem heuristic over
-  `i18n/<locale>/docusaurus-plugin-content-docs-<id>/`. Zero TOML duplication of
-  Docusaurus routing required. **Documentation supersession** — ADR-0011
-  ("Cross-Instance Allowlist"), `how-to/manage-cross-site-links.mdx` and the
-  `[link_validation]` section of `reference/configuration.mdx` describe an
-  obsolete configuration surface and are pending refactor in a follow-up
-  documentation sprint. The Z108 STALE_ALLOWLIST_ENTRY entry in
-  `developers/governance/technical-debt.mdx` is now closed-by-removal: there is
-  no allowlist left to go stale.
-
-- **EPOCH 7a — Multi-Root Discovery documentation (dual-track)**: Two new doc
-  surfaces ship the user-facing and developer-facing narrative for the Core's
-  Multi-Root Discovery foundation that lifts the historical `docs_dir` boundary
-  in the VSM.
-  - **User track** — `docs/reference/engines.mdx` (EN+IT) gains an
-    `### Blog auto-discovery {#docusaurus-blog}` section that celebrates the
-    practical outcome and documents the three detection rules (config block,
-    convention fallback, `blog: false` opt-out) without leaking implementation
-    details.
-  - **Developer track** — `docs/explanation/discovery.mdx` (EN+IT) gains a
-    `## Multi-Root Discovery (EPOCH 7a)` section with the `ContentRoot` dataclass,
-    the `hasattr()`-gated adapter hook, the four-stage pipeline cooperation
-    (Discovery → VSM → Validator → Scanner), the Zero Subprocess auto-discovery
-    pass, the Reverse-Mapping invariant, and the engine support matrix.
-  - The dual-track separation is strict — no implementation jargon leaks into
-    the User track; no celebratory language leaks into the Developer track.
-  - Linguistic parity is enforced across EN and IT in both tracks (`Z907 I18N_PARITY`
-    clean).
-- **Diátaxis Architecture Restructure**: Information architecture rebuilt around
-  the [Diátaxis framework](https://diataxis.fr) — `tutorials/`, `how-to/`,
-  `reference/`, `explanation/`. Sidebar autogenerated from filesystem.
-- **Zenzic Blog**: `/blog/` inaugurated as the official engineering log of Zenzic.
-  Six founding articles cover the v0.6.x sprint, the AI-Driven Siege postmortem,
-  and the v0.7.0 Quartz Maturity declaration. Two-track convention:
-  🛡️ **Saga** (long-form) and 📜 **Log** (terse patch-notes mirror).
-- **Brand System**: Formal brand package shipped at
-  `static/assets/brand/brand-kit.zip` — SVG icons, PNG exports, social card
-  templates, brand HTML reference page.
-- **Bilingual Parity (EN + IT)**: `i18n/it/` mirrors `docs/` exactly.
-  `npm run build` produces both locales with zero broken links.
-- **Sovereign Override 404 Shield KB** (`developers/how-to/sovereign-override-404-shield.mdx`,
-  EN + IT mirror): Complete lifecycle guide for the `ZENZIC_EXTRA_ARGS` shield pattern —
-  when to apply, how to propagate through `justfile` / `pre-commit` / CI env blocks,
-  and when to retire the exclusion after a URL becomes reachable.
-  Italian mirror at `i18n/it/docusaurus-plugin-content-docs-developers/current/how-to/`
-  for Z907 parity.
-- **CONTRIBUTING.md — Sovereign Override section**: Emergency protocol and rationale
-  for the 404 shield added under "Sovereign Override (404 Shield)", linking contributors
-  to the MDX guide for full architecture context.
-- **D117 — `pathname:` protocol support**: Engine-agnostic escape hatch for
-  Docusaurus `pathname:///` links documented in `reference/engines.mdx` (EN+IT).
-- **Pre-commit Gate & REUSE 3.3 Compliance**: Full pipeline operational with
-  207/207 files compliant. New `just` recipes: `preflight`, `reuse`, `sentinel`.
-- **D118 — Absolute Title Consistency**: Blog list page titles locked across
-  `:visited` / `:active` / `:hover` states.
-- **SentinelPalette CLI × Web Color Bridge**: Six CSS custom properties in
-  `src/css/custom.css` mirror the CLI semantic palette across light and dark
-  modes (WCAG AA-calibrated).
-- **Asset Integrity & Static Consolidation**: `static/` reorganised around a
-  single canonical hierarchy (`assets/brand`, `assets/favicon`, `assets/social`,
-  `css`, `img`).
-- **Cross-Instance Routing — Developer Area promotion**: `/docs/community/developers/*`
-  → `/developers/*` (its own top-level Docusaurus instance).
-- **ADR-0011 "Cross-Instance Allowlist"** (EN+IT) — formalises the
-  `absolute_path_allowlist` configuration as a *trust contract* between
-  Docusaurus instances.
-
-#### Changed
-
-- All previous paths under `docs/usage/` and `docs/guides/` reorganised under
-  the Diátaxis quadrants. Sidebar slugs are now filesystem-driven — no slug
-  divergence permitted.
-- **Author metadata rendering hardening**: a targeted swizzle at
-  `src/theme/BlogPostItem/Header/Authors` now returns `null` when no authors
-  are declared, removing placeholder/fallback noise and omitting the block
-  structurally from the DOM.
-- **Cross-platform docs CI verification**: `.github/workflows/ci.yml` now runs
-  on an Ubuntu/Windows matrix (`fail-fast: false`) while preserving Core branch
-  parity checkout (`_zenzic_core`) and unified `just verify` execution.
-- `static/brand/` (legacy duplicate) deleted; canonical path is
-  `static/assets/brand/`.
-- `static/assets/stylesheets/` renamed to `static/css/`.
-- `brand-kit.zip` moved into `static/assets/brand/`.
-- Navbar logo path updated in `docusaurus.config.ts`.
-- `scripts/build-assets.js` and `scripts/bump-version.sh` updated — no more
-  mirror-copy pattern.
-- **ESLint workspace hygiene**: `.eslintignore` (ESLint v8 format) removed;
-  CI checkout artifacts (`_zenzic_core/`) and local virtual environments
-  (`.venv/`, `venv/`) migrated to the `ignores` array in `eslint.config.mjs`
-  (ESLint v9 flat config). Eliminates false-positive lint errors on vendored
-  and generated files.
-- **Pre-commit 404 shield parity**: `zenzic-check` hook entry in
-  `.pre-commit-config.yaml` replaced inline `bash -c` invocation with
-  `bash scripts/pre-commit-zenzic.sh`, propagating `ZENZIC_EXTRA_ARGS`
-  correctly during local pre-commit runs. Closes the silent bypass where the
-  Sovereign Override shield was active in CI but not locally.
-- **ZENZIC_EXTRA_ARGS CI propagation**: `.github/workflows/ci.yml` injects
-  five `--exclude-url` entries for known pre-launch transient URLs
-  (`zenzic.dev/blog/`, `zenzic.dev/docs/explanation/structural-integrity`,
-  `zenzic.dev/developers/`, `zenzic.dev/it/developers/`, and the
-  `v0.7.0` GitHub release tag). `PYTHONUTF8: '1'` added for Windows encoding
-  determinism.
-- **Dependency maintenance (ZRT-008)**: consolidated 8 Dependabot PRs — Docusaurus
-  3.10.0 → 3.10.1 (`@docusaurus/core`, `faster`, `preset-classic`,
-  `module-type-aliases`, `tsconfig`, `types`; patch: webpackbar bundler fix),
-  `lucide-react` 1.8.0 → 1.14.0 (new icons), `postcss` → 8.5.14
-  (security: XSS via unescaped `</style>` in non-bundler cases; custom syntax
-  regression fix). `npm run build` (EN + IT) clean after update.
-
-#### Removed
-
-- **Legacy URL paths**: `/docs/community/developers/*`, `/docs/community/governance/*`,
-  `/docs/community/contribute/*` are gone with no compatibility shim. External
-  bookmarks must be updated.
-- **Probabilistic / AI-architecture content** purged from the Zenzic blog.
-  The `Adversarial Stress-Testing Protocol` page is the single exception and
-  frames AI explicitly as "punching bag", never as co-author.
-
-#### Verification gates
-
-| Gate | Result |
-|------|--------|
-| `zenzic check all` on docs repo | ✅ Exit 0 |
-| `npm run build` (EN + IT) | ✅ Zero broken-link errors |
-| TypeScript `tsc --noEmit` | ✅ Zero errors |
-| Markdownlint (all MDX) | ✅ Zero warnings |
-| REUSE lint | ✅ 207/207 compliant |
-| Pre-commit (all hooks) | ✅ All passed |
+- Documentation for local gates now mirrors the real `just verify` recipe sequence (pre-commit hooks → pytest → strict audit → score stamp → freshness gate).
+- Developers command matrix updated to remove obsolete preflight terminology.
+- v0.8.x narratives archived; v0.9.0 sprint material moved to this entry.
 
 ---
 
-**For the engine release notes, see
-[Zenzic Core CHANGELOG](https://github.com/PythonWoods/zenzic/blob/main/CHANGELOG.md).**
+## Historical Releases
+
+- v0.8.x archive: [changelogs/v0.8.md](./changelogs/v0.8.md)
+- v0.7.x archive: [changelogs/v0.7.md](./changelogs/v0.7.md)

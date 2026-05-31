@@ -14,7 +14,7 @@
 @theme {
   --font-family-sans: 'Inter', sans-serif;
   --font-family-mono: 'JetBrains Mono', monospace;
-  --color-zinc-950: #09090b;
+  --color-zinc-950: var(--zenzic-slate-900);
 }
 
 /*
@@ -43,17 +43,22 @@ body:has(.zz-homepage) .navbar {
 
 :root {
   /* ── Light mode defaults ── */
-  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.4:1 on white) */
+  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light (WCAG AAA 7.9:1 on white) */
   --ifm-color-primary-dark: #3730a3;
   --ifm-color-primary-darker: #312e81;
   --ifm-color-primary-darkest: #1e1b6e;
   --ifm-color-primary-light: #4f46e5;
   --ifm-color-primary-lighter: #6366f1;
   --ifm-color-primary-lightest: #818cf8;
-  --obsidian-accent: #0891b2;             /* Cyan profondo — leggibile su sfondo chiaro */
-  --obsidian-blood: #991b1b;              /* Rosso mattone tecnico */
+  --zenzic-slate-900: #09090b;
+  --zenzic-slate-800: #0f0f13;
+  --zenzic-slate-700: #111114;
+  --zenzic-cyan-primary: #38bdf8;
+  --zenzic-cyan-deep: #0891b2;
+  --zenzic-accent: var(--zenzic-cyan-deep);
+  --zenzic-fatal-deep: #991b1b;              /* Violation red (light surface) */
 
-  /* ── SentinelWebPalette — CLI semantic color bridge ──
+  /* ── ZenzicWebPalette — CLI semantic color bridge ──
      Dark mode: optical match with CLI terminal.
      Light mode (these defaults): WCAG-calibrated for white backgrounds. */
   --zenzic-brand:   #4f46e5;   /* Indigo — exact CLI match, AA on white */
@@ -61,86 +66,187 @@ body:has(.zz-homepage) .navbar {
   --zenzic-warning: #b45309;   /* Amber-700 — WCAG-calibrated (CLI: #f59e0b) */
   --zenzic-error:   #e11d48;   /* Rose-600 — WCAG-calibrated (CLI: #f43f5e) */
   --zenzic-dim:     #475569;   /* Slate-600 — WCAG-calibrated (CLI: #64748b) */
-  --zenzic-fatal:   var(--obsidian-blood);  /* Follows --obsidian-blood per mode */
+  --zenzic-fatal:   var(--zenzic-fatal-deep);  /* Follows --zenzic-fatal-deep per mode */
+  --zenzic-brand-soft: #808af0;
+  --zenzic-ink-100: #fafafa;
+  --zenzic-ink-200: #e4e4e7;
+  --zenzic-ink-300: #d4d4d8;
+  --zenzic-ink-400: #a1a1aa;
+  --zenzic-ink-600: #52525b;
+  --zenzic-ink-700: #3f3f46;
+  --zenzic-ink-800: #27272a;
+  --zenzic-ink-900: #18181b;
+  --zenzic-zinc-100: #f4f4f5;
+  --zenzic-code-surface: #0c0c10;
+  --zenzic-code-inline: #c4b5fd;
+  --zenzic-hero-top-dark: #171c25;
+  --zenzic-hero-top-light: #eef3fb;
+  --zenzic-surface-white: #ffffff;
+  --zenzic-author-signature: #3730a3;
+  --zenzic-brand-900: #1e1b6e;
+  --zenzic-brand-800: #312e81;
+  --zenzic-brand-700: #4338ca;
+  --zenzic-brand-600: #4f46e5;
+  --zenzic-brand-500: #6366f1;
+  --zenzic-brand-400: #808af0;
+  --zenzic-brand-300: #a8b3fb;
+  --zenzic-brand-200: #c7d2fe;
+  --zenzic-brand-100: #e0e7ff;
+  --zenzic-violet-inline: #c4b5fd;
+  --zenzic-cyan-soft: #3ab3c4;
+  --zenzic-success-soft: #34d399;
+  --zenzic-fatal-soft: #f87171;
+  --zenzic-slate-soft: #94a3b8;
+  --zenzic-scrollbar-track: transparent;
+  --zenzic-border-dark-40: rgba(63, 63, 70, 0.4);
+  --zenzic-border-dark-50: rgba(63, 63, 70, 0.5);
+  --zenzic-border-dark-30: rgba(63, 63, 70, 0.3);
+  --zenzic-border-dark-25: rgba(63, 63, 70, 0.25);
+  --zenzic-border-dark-20: rgba(63, 63, 70, 0.2);
+  --zenzic-border-dark-15: rgba(63, 63, 70, 0.15);
+  --zenzic-bg-dark-10: rgba(63, 63, 70, 0.1);
+  --zenzic-bg-dark-25: rgba(63, 63, 70, 0.25);
+  --zenzic-bg-brand-03: rgba(79, 70, 229, 0.04);
+  --zenzic-bg-brand-06: rgba(79, 70, 229, 0.06);
+  --zenzic-bg-brand-12: rgba(79, 70, 229, 0.12);
+  --zenzic-bg-brand-15: rgba(79, 70, 229, 0.16);
+  --zenzic-bg-cyan-06: rgba(56, 189, 248, 0.06);
+  --zenzic-bg-cyan-12: rgba(6, 182, 212, 0.12);
+  --zenzic-bg-success-06: rgba(16, 185, 129, 0.06);
+  --zenzic-bg-success-12: rgba(16, 185, 129, 0.12);
+  --zenzic-bg-warning-06: rgba(245, 158, 11, 0.06);
+  --zenzic-bg-error-06: rgba(244, 63, 94, 0.06);
+  --zenzic-bg-fatal-15: rgba(139, 0, 0, 0.15);
+  --zenzic-bg-slate-10: rgba(148, 163, 184, 0.1);
+  --zenzic-bg-zinc-50: rgba(24, 24, 27, 0.5);
+  --zenzic-bg-zinc-60: rgba(24, 24, 27, 0.6);
+  --zenzic-bg-slate-80: rgba(15, 15, 19, 0.8);
+  --zenzic-border-brand-20: rgba(79, 70, 229, 0.2);
+  --zenzic-border-brand-25: rgba(79, 70, 229, 0.25);
+  --zenzic-border-brand-30: rgba(79, 70, 229, 0.26);
+  --zenzic-border-brand-35: rgba(79, 70, 229, 0.35);
+  --zenzic-border-brand-40: rgba(79, 70, 229, 0.34);
+  --zenzic-border-cyan-30: rgba(6, 182, 212, 0.3);
+  --zenzic-border-success-30: rgba(16, 185, 129, 0.3);
+  --zenzic-border-slate-25: rgba(148, 163, 184, 0.25);
+  --zenzic-border-fatal-35: rgba(139, 0, 0, 0.35);
+  --zenzic-overlay-black-06: rgba(0, 0, 0, 0.06);
+  --zenzic-overlay-black-08: rgba(0, 0, 0, 0.08);
+  --zenzic-overlay-black-10: rgba(0, 0, 0, 0.1);
+  --zenzic-overlay-black-30: rgba(0, 0, 0, 0.3);
+  --zenzic-overlay-white-06: rgba(255, 255, 255, 0.06);
+  --zenzic-overlay-white-07: rgba(255, 255, 255, 0.07);
+  --zenzic-overlay-white-08: rgba(255, 255, 255, 0.08);
+  --zenzic-overlay-white-10: rgba(255, 255, 255, 0.1);
+  --zenzic-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --zenzic-shadow-terminal: 0 10px 24px -12px rgba(0, 0, 0, 0.46), 0 0 12px rgba(79, 70, 229, 0.1);
+  --zenzic-shadow-terminal-hover: 0 16px 32px -12px rgba(0, 0, 0, 0.58), 0 0 16px rgba(79, 70, 229, 0.14);
+  --zenzic-scrollbar-thumb: #27272a;
+  --zenzic-scrollbar-thumb-hover: #3f3f46;
 
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: var(--zenzic-overlay-black-10);
   --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
   --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   --ifm-heading-font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --ifm-heading-font-weight: 600;
 }
 
+/* Optional palette profiles for rapid A/B validation.
+  Default profile is Corporate Calm (values in :root).
+  Optional override: <html data-zenzic-palette="technical-neon">. */
+html[data-zenzic-palette='corporate-calm'] {
+  --zenzic-brand-soft: #808af0;
+  --zenzic-brand-400: #808af0;
+  --zenzic-brand-300: #a8b3fb;
+  --zenzic-cyan-soft: #3ab3c4;
+  --zenzic-bg-brand-06: rgba(79, 70, 229, 0.06);
+  --zenzic-bg-brand-12: rgba(79, 70, 229, 0.12);
+  --zenzic-bg-brand-15: rgba(79, 70, 229, 0.16);
+  --zenzic-border-brand-30: rgba(79, 70, 229, 0.26);
+  --zenzic-border-brand-40: rgba(79, 70, 229, 0.34);
+}
+
+html[data-zenzic-palette='technical-neon'] {
+  --zenzic-brand-soft: #97a3ff;
+  --zenzic-brand-400: #97a3ff;
+  --zenzic-brand-300: #bdc8ff;
+  --zenzic-cyan-soft: #00cbe6;
+  --zenzic-bg-brand-06: rgba(79, 70, 229, 0.1);
+  --zenzic-bg-brand-12: rgba(79, 70, 229, 0.16);
+  --zenzic-bg-brand-15: rgba(79, 70, 229, 0.2);
+  --zenzic-border-brand-30: rgba(79, 70, 229, 0.34);
+  --zenzic-border-brand-40: rgba(79, 70, 229, 0.44);
+}
+
 [data-theme='light'] {
   /* ── D112/D113: Zinc Standard Typography — structure is neutral, cold, precise ── */
-  --ifm-heading-color: #3f3f46;           /* Zinc-700 — autorevole senza peso */
-  --ifm-font-color-base: #27272a;         /* Zinc-800 — premium readability */
-  --ifm-color-emphasis-600: #52525b;      /* Zinc-600 — metadata, secondary (WCAG AA 7.8:1 on white) */
+  --ifm-heading-color: var(--zenzic-ink-900);
+  --ifm-font-color-base: var(--zenzic-ink-800);
+  --ifm-color-emphasis-600: var(--zenzic-ink-600);
 
   /* ── D114: The Author's Signature — Indigo reserved for human identity ── */
-  --obsidian-author-signature: #3730a3;   /* Indigo-800 — deep, ink-grade */
+  --zenzic-author-sig: var(--zenzic-author-signature);
 
   /* Links/actions: Indigo for function */
-  --ifm-color-primary: #4338ca;           /* Indigo-700 — Bimodal Light */
-  --ifm-link-color: #4338ca;
+  --ifm-color-primary: var(--zenzic-brand-700);
+  --ifm-link-color: var(--zenzic-brand-700);
 
-  --obsidian-accent: #0891b2;             /* Cyan profondo */
-  --obsidian-blood: #991b1b;              /* Rosso mattone */
+  --zenzic-accent: var(--zenzic-cyan-deep);
 }
 
 [data-theme='dark'] {
   /* ── Adaptive Palette — Dark mode ── */
-  --obsidian-accent: #06b6d4;             /* Cyan elettrico */
-  --obsidian-blood: #8b0000;              /* Sangue profondo */
+  --zenzic-accent: var(--zenzic-cyan-soft);
+  --zenzic-fatal-deep: #8b0000;
 
-  /* ── SentinelWebPalette — exact CLI terminal match in dark mode ── */
-  --zenzic-brand:   #4f46e5;
+  /* ── ZenzicWebPalette — exact CLI terminal match in dark mode ── */
+  --zenzic-brand: var(--zenzic-brand-600);
   --zenzic-success: #10b981;
   --zenzic-warning: #f59e0b;
-  --zenzic-error:   #f43f5e;
-  --zenzic-dim:     #94a3b8;  /* Slate-400 — WCAG AA 8.2:1 on #09090b (D110: raised from #64748b) */
-  /* --zenzic-fatal inherits var(--obsidian-blood) = #8b0000 — exact CLI match */
+  --zenzic-error: #f43f5e;
+  --zenzic-dim: var(--zenzic-slate-soft);
 
 
   /* Core colours */
-  --ifm-color-primary: #818cf8;
-  --ifm-color-primary-dark: #6366f1;
-  --ifm-color-primary-darker: #4f46e5;
-  --ifm-color-primary-darkest: #4338ca;
-  --ifm-color-primary-light: #a5b4fc;
-  --ifm-color-primary-lighter: #c7d2fe;
-  --ifm-color-primary-lightest: #e0e7ff;
+  --ifm-color-primary: var(--zenzic-brand-400);
+  --ifm-color-primary-dark: var(--zenzic-brand-500);
+  --ifm-color-primary-darker: var(--zenzic-brand-600);
+  --ifm-color-primary-darkest: var(--zenzic-brand-700);
+  --ifm-color-primary-light: var(--zenzic-brand-300);
+  --ifm-color-primary-lighter: var(--zenzic-brand-200);
+  --ifm-color-primary-lightest: var(--zenzic-brand-100);
 
   /* Backgrounds */
-  --ifm-background-color: #09090b;
-  --ifm-background-surface-color: #0f0f13;
-  --ifm-navbar-background-color: #09090b;
-  --ifm-footer-background-color: #09090b;
-  --ifm-card-background-color: #111114;
-  --ifm-code-background: rgba(39, 39, 42, 0.5);
+  --ifm-background-color: var(--zenzic-slate-900);
+  --ifm-background-surface-color: var(--zenzic-slate-800);
+  --ifm-navbar-background-color: var(--zenzic-slate-900);
+  --ifm-footer-background-color: var(--zenzic-slate-900);
+  --ifm-card-background-color: var(--zenzic-slate-700);
+  --ifm-code-background: var(--zenzic-bg-dark-25);
 
   /* Text */
-  --ifm-font-color-base: #e4e4e7;
-  --ifm-font-color-secondary: #a1a1aa;
-  --ifm-heading-color: #fafafa;
+  --ifm-font-color-base: var(--zenzic-ink-200);
+  --ifm-font-color-secondary: var(--zenzic-ink-400);
+  --ifm-heading-color: var(--zenzic-ink-100);
 
   /* Borders */
-  --ifm-hr-background-color: rgba(63, 63, 70, 0.4);
-  --ifm-toc-border-color: rgba(63, 63, 70, 0.4);
-  --ifm-color-emphasis-300: rgba(63, 63, 70, 0.5);
+  --ifm-hr-background-color: var(--zenzic-border-dark-40);
+  --ifm-toc-border-color: var(--zenzic-border-dark-40);
+  --ifm-color-emphasis-300: var(--zenzic-border-dark-50);
 
   /* Code blocks */
-  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
-  --prism-background-color: #0c0c10;
+  --docusaurus-highlighted-code-line-bg: var(--zenzic-bg-brand-15);
+  --prism-background-color: var(--zenzic-code-surface);
 
   /* Links */
-  --ifm-link-color: #818cf8;
-  --ifm-link-hover-color: #a5b4fc;
-  --ifm-menu-color-active: #818cf8;
+  --ifm-link-color: var(--zenzic-brand-400);
+  --ifm-link-hover-color: var(--zenzic-brand-300);
+  --ifm-menu-color-active: var(--zenzic-brand-400);
 
   /* Table */
-  --ifm-table-stripe-background: rgba(24, 24, 27, 0.5);
-  --ifm-table-border-color: rgba(63, 63, 70, 0.4);
+  --ifm-table-stripe-background: var(--zenzic-bg-zinc-50);
+  --ifm-table-border-color: var(--zenzic-border-dark-40);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -150,13 +256,13 @@ body:has(.zz-homepage) .navbar {
    ═══════════════════════════════════════════════════════════════ */
 .zz-homepage {
   /* Override variables to dark mode defaults regardless of global [data-theme] */
-  --ifm-background-color: #09090b;
-  --ifm-font-color-base: #e4e4e7;
-  --ifm-heading-color: #fafafa;
-  --ifm-color-primary: #818cf8;
+  --ifm-background-color: var(--zenzic-slate-900);
+  --ifm-font-color-base: var(--zenzic-ink-200);
+  --ifm-heading-color: var(--zenzic-ink-100);
+  --ifm-color-primary: var(--zenzic-brand-soft);
 
-  background-color: #09090b;
-  background-image: radial-gradient(circle at top, #1c2128 0%, #09090b 80%);
+  background-color: var(--zenzic-slate-900);
+  background-image: radial-gradient(circle at top, var(--zenzic-hero-top-dark) 0%, var(--zenzic-slate-900) 80%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
   color: var(--ifm-font-color-base);
@@ -165,7 +271,7 @@ body:has(.zz-homepage) .navbar {
 
 /* Because the layout defines background on body, we must ensure homepage fills the viewport */
 body:has(.zz-homepage) {
-  background-color: #09090b;
+  background-color: var(--zenzic-slate-900);
 }
 
 /* ── Global canvas background treatments ── */
@@ -175,20 +281,20 @@ body {
 }
 
 [data-theme='dark'] body {
-  background-image: radial-gradient(circle at top, #1c2128 0%, #09090b 62%);
+  background-image: radial-gradient(circle at top, var(--zenzic-hero-top-dark) 0%, var(--zenzic-slate-900) 62%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 [data-theme='light'] body {
-  background-image: radial-gradient(circle at top, #f1f5f9 0%, #ffffff 62%);
+  background-image: radial-gradient(circle at top, var(--zenzic-hero-top-light) 0%, var(--zenzic-surface-white) 62%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 /* Custom text selection */
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
+  background: var(--zenzic-border-brand-30);
 }
 
 /* ── Navbar ── */
@@ -222,22 +328,22 @@ body {
 }
 
 [data-theme='dark'] .navbar {
-  border-bottom: 1px solid rgba(63, 63, 70, 0.3);
+  border-bottom: 1px solid var(--zenzic-border-dark-30);
 }
 
 [data-theme='light'] .navbar {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--zenzic-overlay-black-08);
 }
 
 /* Thin, elegant scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+::-webkit-scrollbar-track { background: var(--zenzic-scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--zenzic-scrollbar-thumb); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--zenzic-scrollbar-thumb-hover); }
 
 /* ── Sidebar ── */
 [data-theme='dark'] .theme-doc-sidebar-container {
-  border-right: 1px solid rgba(63, 63, 70, 0.3);
+  border-right: 1px solid var(--zenzic-border-dark-30);
 }
 
 [data-theme='dark'] .menu {
@@ -245,81 +351,139 @@ body {
 }
 
 [data-theme='dark'] .menu__link {
-  color: #a1a1aa;
+  color: var(--zenzic-ink-400);
   border-radius: 6px;
   font-size: 0.875rem;
 }
 
 [data-theme='dark'] .menu__link:hover {
-  background: rgba(63, 63, 70, 0.25);
-  color: #e4e4e7;
+  background: var(--zenzic-bg-dark-25);
+  color: var(--zenzic-ink-200);
 }
 
 [data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
-  background: rgba(79, 70, 229, 0.12);
-  color: #818cf8;
+  background: var(--zenzic-bg-brand-12);
+  color: var(--zenzic-brand-400);
   font-weight: 500;
 }
 
 [data-theme='dark'] .menu__list-item-collapsible:hover {
-  background: rgba(63, 63, 70, 0.15);
+  background: var(--zenzic-border-dark-15);
 }
 
-/* ── Footer ── */
+/* ── Footer (compact enterprise layout) ── */
 .footer {
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.5rem 1rem;
+  --ifm-footer-link-color: inherit;
 }
 
 .footer .container {
   max-width: 1200px;
 }
 
+.footer__links {
+  margin-bottom: 1rem;
+}
+
+.footer__col {
+  margin-bottom: 0;
+}
+
+.footer__title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+  opacity: 0.7;
+}
+
+.footer__item {
+  font-size: 0.8rem;
+  padding: 0.15rem 0;
+}
+
+.footer__link-item {
+  line-height: 1.4;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.footer__link-item:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
 .footer__bottom {
   margin-top: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--zenzic-border-dark-15);
 }
 
 .footer__copyright {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   letter-spacing: 0.01em;
+  opacity: 0.6;
 }
 
 [data-theme='dark'] .footer {
   background: transparent;
-  border-top: 1px solid rgba(63, 63, 70, 0.3);
+  border-top: 1px solid var(--zenzic-border-dark-30);
 }
 
 [data-theme='light'] .footer {
   background: transparent;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--zenzic-overlay-black-08);
+}
+
+[data-theme='light'] .footer__bottom {
+  border-top-color: var(--zenzic-overlay-black-08);
+}
+
+/* ── Footer mobile — stack columns vertically on small screens ── */
+@media (max-width: 640px) {
+  .footer__links {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer__col {
+    flex: 1 1 100%;
+    margin-bottom: 0;
+  }
+
+  .footer {
+    padding: 2rem 1.25rem 1.25rem;
+  }
 }
 
 [data-theme='dark'] .footer__copyright {
-  color: #a1a1aa;  /* Zinc-400 — 7.6:1 on #09090b (D110: raised from #52525b which failed AA) */
+  color: var(--zenzic-ink-400);
 }
 
 [data-theme='light'] .footer__copyright {
-  color: #52525b;  /* Zinc-600 — 7.8:1 on white (D110: raised from #a1a1aa which failed AA) */
+  color: var(--zenzic-ink-600);
 }
 
 /* ── Code blocks ── */
 [data-theme='dark'] .prism-code {
-  background: #0c0c10;
-  border: 1px solid rgba(63, 63, 70, 0.3);
+  background: var(--zenzic-code-surface);
+  border: 1px solid var(--zenzic-border-dark-30);
   border-radius: 8px;
   padding: 1.25rem;
 }
 
 [data-theme='light'] .prism-code {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--zenzic-overlay-black-08);
   border-radius: 8px;
   padding: 1.25rem;
 }
 
 [data-theme='dark'] code {
-  background: rgba(39, 39, 42, 0.5);
-  border: 1px solid rgba(63, 63, 70, 0.25);
+  background: var(--zenzic-bg-dark-25);
+  border: 1px solid var(--zenzic-border-dark-25);
   border-radius: 4px;
-  color: #c4b5fd;
+  color: var(--zenzic-code-inline);
   padding: 0.125rem 0.375rem;
   font-size: 0.875em;
 }
@@ -334,21 +498,21 @@ body {
 
 /* ── TOC (right sidebar) ── */
 [data-theme='dark'] .table-of-contents__link {
-  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a which failed AA) */
+  color: var(--zenzic-ink-300);
 }
 
 [data-theme='dark'] .table-of-contents__link:hover,
 [data-theme='dark'] .table-of-contents__link--active {
-  color: #818cf8;
+  color: var(--zenzic-brand-400);
 }
 
 /* ── Admonitions ── */
 [data-theme='dark'] .alert {
-  background: rgba(79, 70, 229, 0.03);
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  background: var(--zenzic-bg-brand-03);
+  border: 1px solid var(--zenzic-border-brand-20);
   border-radius: 8px;
   border-left: 4px solid var(--ifm-alert-border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--zenzic-shadow-soft);
   backdrop-filter: blur(8px);
 }
 
@@ -358,28 +522,28 @@ body {
 }
 
 [data-theme='dark'] .alert--secondary {
-  --ifm-alert-border-color: #4f46e5;
-  --ifm-alert-background-color: rgba(79, 70, 229, 0.06);
+  --ifm-alert-border-color: var(--zenzic-brand-600);
+  --ifm-alert-background-color: var(--zenzic-bg-brand-06);
 }
 
 [data-theme='dark'] .alert--success {
-  --ifm-alert-border-color: #10b981;
-  --ifm-alert-background-color: rgba(16, 185, 129, 0.06);
+  --ifm-alert-border-color: var(--zenzic-success);
+  --ifm-alert-background-color: var(--zenzic-bg-success-06);
 }
 
 [data-theme='dark'] .alert--info {
-  --ifm-alert-border-color: #38bdf8;
-  --ifm-alert-background-color: rgba(56, 189, 248, 0.06);
+  --ifm-alert-border-color: var(--zenzic-cyan-primary);
+  --ifm-alert-background-color: var(--zenzic-bg-cyan-06);
 }
 
 [data-theme='dark'] .alert--warning {
-  --ifm-alert-border-color: #f59e0b;
-  --ifm-alert-background-color: rgba(245, 158, 11, 0.06);
+  --ifm-alert-border-color: var(--zenzic-warning);
+  --ifm-alert-background-color: var(--zenzic-bg-warning-06);
 }
 
 [data-theme='dark'] .alert--danger {
-  --ifm-alert-border-color: #f43f5e;
-  --ifm-alert-background-color: rgba(244, 63, 94, 0.06);
+  --ifm-alert-border-color: var(--zenzic-error);
+  --ifm-alert-background-color: var(--zenzic-bg-error-06);
 }
 
 /* ── Tables ── */
@@ -388,7 +552,7 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid rgba(63, 63, 70, 0.4);
+  border-bottom: 1px solid var(--zenzic-border-dark-40);
 }
 
 table thead tr {
@@ -396,53 +560,53 @@ table thead tr {
 }
 
 [data-theme='dark'] table th {
-  background: rgba(15, 15, 19, 0.8);
-  color: #e4e4e7;
+  background: var(--zenzic-bg-slate-80);
+  color: var(--zenzic-ink-200);
   font-weight: 600;
-  border-bottom: 2px solid rgba(63, 63, 70, 0.4);
+  border-bottom: 2px solid var(--zenzic-border-dark-40);
 }
 
 [data-theme='dark'] table td {
-  border-bottom: 1px solid rgba(63, 63, 70, 0.2);
+  border-bottom: 1px solid var(--zenzic-border-dark-20);
 }
 
 [data-theme='dark'] table tr:hover td {
-  background: rgba(63, 63, 70, 0.1);
+  background: var(--zenzic-bg-dark-10);
 }
 
 /* ── Breadcrumbs ── */
 [data-theme='dark'] .breadcrumbs__link {
-  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
+  color: var(--zenzic-ink-300);
 }
 
 [data-theme='dark'] .breadcrumbs__link:hover {
-  color: #a1a1aa;
+  color: var(--zenzic-ink-400);
 }
 
 /* ── Search ── */
 [data-theme='dark'] .DocSearch-Button {
-  background: rgba(24, 24, 27, 0.6);
-  border: 1px solid rgba(63, 63, 70, 0.3);
+  background: var(--zenzic-bg-zinc-60);
+  border: 1px solid var(--zenzic-border-dark-30);
 }
 
 /* ── Pagination ── */
 [data-theme='dark'] .pagination-nav__link {
-  border: 1px solid rgba(63, 63, 70, 0.3);
+  border: 1px solid var(--zenzic-border-dark-30);
   border-radius: 8px;
   background: transparent;
 }
 
 [data-theme='dark'] .pagination-nav__link:hover {
-  border-color: rgba(79, 70, 229, 0.4);
-  background: rgba(79, 70, 229, 0.06);
+  border-color: var(--zenzic-border-brand-40);
+  background: var(--zenzic-bg-brand-06);
 }
 
 [data-theme='dark'] .pagination-nav__sublabel {
-  color: #d4d4d8;  /* Zinc-300 — 13.9:1 on #09090b (D110: raised from #71717a) */
+  color: var(--zenzic-ink-300);
 }
 
 [data-theme='dark'] .pagination-nav__label {
-  color: #e4e4e7;
+  color: var(--zenzic-ink-200);
 }
 
 /* ── Suppress link underlines in Tailwind blocks ── */
@@ -456,54 +620,102 @@ table thead tr {
   padding: 0.5rem 0.8rem;
 }
 [data-theme='dark'] .alert code {
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--zenzic-overlay-black-30);
+  border: 1px solid var(--zenzic-overlay-white-10);
 }
 [data-theme='light'] .alert code {
-  background-color: rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--zenzic-overlay-black-06);
+  border: 1px solid var(--zenzic-overlay-black-10);
 }
 
-/* IL SIGILLO DELLA SENTINELLA - CLASSE MONOLITICA */
+/* IL SIGILLO DI ZENZIC - CLASSE MONOLITICA */
 .zz-terminal-monolith {
-  background-color: #0c0c10;
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  background-color: var(--zenzic-code-surface);
+  border: 1px solid var(--zenzic-border-brand-20);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.45), 0 0 10px rgba(79, 70, 229, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--zenzic-shadow-terminal);
   margin: 1.25rem 0;
 }
 
-.zz-terminal-monolith:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.55), 0 0 14px rgba(79, 70, 229, 0.12);
+/* Admonition fenced-block coherence — fenced code inside :::info/:::tip/:::danger
+   must not inherit the parent .alert inline-code padding/border. */
+.alert pre { padding: 0.75rem 1rem; margin: 0.75rem 0; border-radius: 6px; }
+.alert pre code { padding: 0; border: 0; background: transparent; }
+
+/* zz-figure — canonical wrapper for ThemedImage/iframe inside docs.
+   Replaces ad-hoc inline style={{borderRadius,overflow,margin}}. */
+.zz-figure { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+.zz-figure img,
+.zz-figure iframe { width: 100%; display: block; }
+.zz-figure--centered { max-width: 560px; margin-left: auto; margin-right: auto; }
+
+/* zz-gradient-text — animated shimmer for Hero h1 primary line.
+   Uses -webkit-text-fill-color (not color:transparent) for cross-browser gradient text.
+   Palette: white → indigo-300 → white → indigo-200 — Zenzic brand, dark surface only. */
+@keyframes zz-shimmer {
+  0%  { background-position: -200% 0; }
+  to  { background-position:  200% 0; }
+}
+.zz-gradient-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #a5b4fc 30%,
+    #ffffff 55%,
+    #c7d2fe 80%,
+    #ffffff 100%
+  );
+  background-size: 200% 200%;
+  animation: 6s linear infinite zz-shimmer;
+}
+
+/* TerminalWindow — macOS-style frame (zero inline styles, zero arbitrary Tailwind values) */
+.zz-terminal-frame {
+  max-width: 600px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px var(--zenzic-bg-brand-12),
+    0 0 24px var(--zenzic-bg-brand-06);
+  border: 1px solid var(--zenzic-bg-brand-12);
+}
+
+.zz-terminal-titlebar {
+  background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 /* ── Zenzic Blog — Semantic Tag Colours ── */
 /* Release → Indigo (brand primary) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/release"],
-a.tag_oVPq[href*="/blog/tags/release"] { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.35); }
+a.tag_oVPq[href*="/blog/tags/release"] { background: var(--zenzic-bg-brand-15); color: var(--zenzic-brand-400); border-color: var(--zenzic-border-brand-35); }
 
-/* Security → Blood (#8b0000 lightened for contrast) */
+/* Security → Fatal semantic */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
-a.tag_oVPq[href*="/blog/tags/security"] { background: rgba(139, 0, 0, 0.15); color: #f87171; border-color: rgba(139, 0, 0, 0.35); }
+a.tag_oVPq[href*="/blog/tags/security"] { background: var(--zenzic-bg-fatal-15); color: var(--zenzic-fatal-soft); border-color: var(--zenzic-border-fatal-35); }
+/* Light mode: #f87171 on composited light bg = 2.05:1 FAIL → use --zenzic-fatal-deep (#991b1b) = 6.2:1 AA on light bg */
+[data-theme='light'] .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/security"],
+[data-theme='light'] a.tag_oVPq[href*="/blog/tags/security"] { color: var(--zenzic-fatal-deep); }
 
 /* Engineering → Cyan */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/engineering"],
-a.tag_oVPq[href*="/blog/tags/engineering"] { background: rgba(6, 182, 212, 0.12); color: var(--obsidian-accent); border-color: rgba(6, 182, 212, 0.3); }
+a.tag_oVPq[href*="/blog/tags/engineering"] { background: var(--zenzic-bg-cyan-12); color: var(--zenzic-accent); border-color: var(--zenzic-border-cyan-30); }
 
 /* Post-Mortem → Bone white (muted) */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/post-mortem"],
-a.tag_oVPq[href*="/blog/tags/post-mortem"] { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.25); }
+a.tag_oVPq[href*="/blog/tags/post-mortem"] { background: var(--zenzic-bg-slate-10); color: var(--zenzic-slate-soft); border-color: var(--zenzic-border-slate-25); }
 
 /* Community → Emerald */
 .tag_node_modules-\@docusaurus-theme-classic-lib-theme-BlogTagsListPage-styles-module a[href*="/blog/tags/community"],
-a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+a.tag_oVPq[href*="/blog/tags/community"] { background: var(--zenzic-bg-success-12); color: var(--zenzic-success-soft); border-color: var(--zenzic-border-success-30); }
 
 /* Shared tag chip base — dark mode */
 [data-theme='dark'] .tag_oVPq {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--zenzic-overlay-white-10);
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 0.78rem;
@@ -513,41 +725,41 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* ── Zenzic Blog — Blog List Card Layout ── */
 [data-theme='dark'] article.margin-bottom--xl {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--zenzic-overlay-white-07);
   padding-bottom: 2.5rem;
   margin-bottom: 2.5rem !important;
 }
 
 /* Hover: title brightens to Accent Cyan */
 [data-theme='dark'] article h2 a:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 /* Card container subtle glow on hover */
 [data-theme='dark'] article.margin-bottom--xl:hover {
-  border-bottom-color: rgba(79, 70, 229, 0.2);
+  border-bottom-color: var(--zenzic-border-brand-20);
   transition: border-color 0.25s ease;
 }
 
 /* Blog post title colour — Zinc-200, softer than pure white */
 [data-theme='dark'] article h2 a {
-  color: #e4e4e7;
+  color: var(--zenzic-ink-200);
   transition: color 0.2s ease;
 }
 
 /* D112 fix: blog list titles are <h2><a> — link color overrides heading-color.
    Light mode: Zinc-700 for titles, Zinc-600 on hover (no Indigo bleed). */
 [data-theme='light'] article h2 a {
-  color: #3f3f46;
+  color: var(--zenzic-ink-700);
   font-weight: 700;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 [data-theme='light'] article h2 a:hover {
-  color: #52525b;
+  color: var(--zenzic-ink-600);
   text-decoration: none;
 }
 
@@ -561,13 +773,13 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 [data-theme='light'] .blog-list-page h2 a,
 [data-theme='light'] .blog-list-page h2 a:visited,
 [data-theme='light'] .blog-list-page h2 a:active {
-  color: #3f3f46 !important;
+  color: var(--zenzic-ink-700) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
 
 [data-theme='light'] .blog-list-page h2 a:hover {
-  color: var(--obsidian-accent) !important;
+  color: var(--zenzic-accent) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
@@ -576,13 +788,13 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 [data-theme='dark'] .blog-list-page h2 a,
 [data-theme='dark'] .blog-list-page h2 a:visited,
 [data-theme='dark'] .blog-list-page h2 a:active {
-  color: #fafafa !important;
+  color: var(--zenzic-ink-100) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
 
 [data-theme='dark'] .blog-list-page h2 a:hover {
-  color: var(--obsidian-accent) !important;
+  color: var(--zenzic-accent) !important;
   opacity: 1 !important;
   text-decoration: none;
 }
@@ -595,21 +807,21 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* Blog post page single title <h1> */
 [data-theme='light'] .blog-post-page h1 {
-  color: #3f3f46;
+  color: var(--zenzic-ink-700);
 }
 
-/* Blog header — very subtle separation, Sentinel Lead bg */
+/* Blog header — very subtle separation, Zenzic Lead bg */
 [data-theme='dark'] .blog-post-page header,
 [data-theme='dark'] article header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--zenzic-overlay-white-08);
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
 }
 
-/* Blog hero/banner background — Sentinel Lead */
+/* Blog hero/banner background — Zenzic Lead */
 [data-theme='dark'] .hero.hero--primary,
 [data-theme='dark'] .blogPostContainer header {
-  background: #09090b;
+  background: var(--zenzic-slate-900);
 }
 
 /* ── Zenzic Blog — Monolith Enforcement (D103) ── */
@@ -622,8 +834,8 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* D107.1: Gradient purged. Black is absolute. Typography is the only light. */
 
-/* ── D111: Transparent Monolith — reveal the Sentinel Lead body ── */
-/* All blog/doc containers become transparent so the single #09090b body surface shows through */
+/* ── D111: Transparent Monolith — reveal Zenzic Lead body ── */
+/* All blog/doc containers become transparent so the single body surface shows through */
 [data-theme='dark'] .blog-wrapper,
 [data-theme='dark'] .blog-post-page,
 [data-theme='dark'] .theme-blog-post-container,
@@ -643,7 +855,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: color 0.2s ease;
 }
 [data-theme='dark'] .blog-sidebar-all-posts-link:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 /* Year group heading link */
@@ -654,23 +866,23 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   transition: color 0.2s ease;
 }
 [data-theme='dark'] .blog-sidebar-year-link:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 
-/* ── D107: Sentinel Archive Reconstruction — Card Catalogue ── */
+/* ── D107: Zenzic Archive Reconstruction — Card Catalogue ── */
 
-/* Archive page hero — Sentinel Lead bg, no hero--primary noise */
+/* Archive page hero — Zenzic Lead bg, no hero--primary noise */
 [data-theme='dark'] .archive-hero {
-  background: #09090b;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--zenzic-slate-900);
+  border-bottom: 1px solid var(--zenzic-overlay-white-07);
   padding: 3.5rem 0 2.5rem;
 }
 
 [data-theme='dark'] .archive-hero__title {
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
-  color: #fafafa;
+  color: var(--zenzic-ink-100);
   margin-bottom: 0.5rem;
 }
 
@@ -683,7 +895,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 
 /* Archive main content area */
 [data-theme='dark'] .archive-main {
-  background: #09090b;
+  background: var(--zenzic-slate-900);
   padding: 3rem 0 5rem;
 }
 
@@ -693,8 +905,8 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4f46e5;
-  border-bottom: 1px solid rgba(79, 70, 229, 0.3);
+  color: var(--zenzic-brand-600);
+  border-bottom: 1px solid var(--zenzic-border-brand-30);
   padding-bottom: 0.5rem;
   margin-top: 3rem;
   margin-bottom: 1.5rem;
@@ -710,7 +922,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 /* Individual archive card */
 [data-theme='dark'] .archive-card {
   padding: 1.4rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--zenzic-overlay-white-06);
   transition: border-color 0.2s ease;
 }
 
@@ -719,7 +931,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 }
 
 [data-theme='dark'] .archive-card:hover {
-  border-bottom-color: rgba(79, 70, 229, 0.25);
+  border-bottom-color: var(--zenzic-border-brand-25);
 }
 
 /* Date chip */
@@ -747,7 +959,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 }
 
 [data-theme='dark'] .archive-card__title a:hover {
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   text-decoration: none;
 }
 
@@ -769,21 +981,21 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
 /* ── D113: Sidebar active link — Zinc-100 surface, Indigo text ── */
 [data-theme='light'] .menu__link--active {
   color: var(--ifm-color-primary) !important;
-  background-color: #f4f4f5 !important;  /* Zinc-100 */
+  background-color: var(--zenzic-zinc-100) !important;
 }
 
 /* ── D114: The Author's Signature — Indigo-800 on author name ── */
 /* Applies in both light and dark but most impactful in light mode */
 [data-theme='light'] .avatar__name a,
 [data-theme='light'] .authorName_Y8Hr {
-  color: var(--obsidian-author-signature) !important;
+  color: var(--zenzic-author-sig) !important;
   font-weight: 600;
   letter-spacing: -0.01em;
   text-decoration: none;
 }
 
 [data-theme='light'] .avatar__name a:hover {
-  color: #4f46e5 !important;  /* Vibrant Indigo ignites on hover */
+  color: var(--zenzic-brand-600) !important;
   text-decoration: none;
 }
 
@@ -818,7 +1030,7 @@ a.tag_oVPq[href*="/blog/tags/community"] { background: rgba(16, 185, 129, 0.12);
   flex-shrink: 0;
   margin-left: 6px;
   opacity: 0;
-  color: var(--obsidian-accent);
+  color: var(--zenzic-accent);
   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
   transform: translateX(-6px);
 }

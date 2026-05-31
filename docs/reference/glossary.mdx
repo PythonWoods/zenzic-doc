@@ -20,13 +20,13 @@ See: [Architecture -- Adapter Protocol](../explanation/architecture#adapter-prot
 
 ---
 
-### Blood Sentinel {#blood-sentinel}
+### Path Traversal Guard
 
-A security classification applied when a documentation link resolves to an OS system directory (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). Blood Sentinel fires the `PATH_TRAVERSAL_SUSPICIOUS` finding and forces **exit code 3** -- the highest-priority exit code in Zenzic. It also activates when `docs_dir` itself escapes the repository root (F4-1 jailbreak protection).
+A security classification applied when a documentation link resolves to an OS system directory (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`). The path traversal guard fires the `PATH_TRAVERSAL_SUSPICIOUS` finding and forces **exit code 3** -- the highest-priority exit code in Zenzic. It also activates when `docs_dir` itself escapes the repository root (F4-1 jailbreak protection).
 
-Blood Sentinel events are never suppressed by `--exit-zero`. They indicate potential template injection, a compromised documentation toolchain, or unintentional infrastructure disclosure.
+Path traversal guard events are never suppressed by `--exit-zero`. They indicate potential template injection, a compromised documentation toolchain, or unintentional infrastructure disclosure.
 
-See: [Checks Reference -- Blood Sentinel](./checks#blood-sentinel)
+See: [Checks Reference -- Path Traversal Guard](./checks#path-traversal-guard)
 
 ---
 
@@ -42,9 +42,9 @@ A URL path that the build engine's nav configuration declares but that has no co
 
 ---
 
-### Hex Shield {#hex-shield}
+### Hex Pattern Detector
 
-The Shield pattern that detects hex-encoded byte sequences -- three or more consecutive `\xNN` escape sequences (e.g. `\x40\x41` · `\x42`, three in sequence). This pattern catches obfuscated payloads, shellcode fragments, or encoded credentials that appear in documentation examples. Part of the eight pattern families scanned by the Zenzic Shield.
+The credential scanner pattern that detects hex-encoded byte sequences -- three or more consecutive `\xNN` escape sequences (e.g. `\x40\x41` · `\x42`, three in sequence). This pattern catches obfuscated payloads, shellcode fragments, or encoded credentials that appear in documentation examples. Part of the eight pattern families scanned by the Zenzic credential scanner.
 
 ---
 
@@ -56,7 +56,7 @@ The 4-level hierarchy that determines which files and directories Zenzic scans. 
 | :---: | :--- | :--- |
 | L1 | System Guardrails | Hardcoded immutable exclusions (`.git`, `.venv`, `node_modules`, etc.) |
 | L2 | Forced Inclusions + VCS | Config `included_dirs`/`included_file_patterns` and `.gitignore` patterns |
-| L3 | Config Exclusions | `excluded_dirs` and `excluded_file_patterns` from `zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` |
+| L3 | Config Exclusions | `excluded_dirs` and `excluded_file_patterns` from `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` |
 | L4 | CLI Overrides | `--exclude-dir` and `--include-dir` flags |
 
 The hierarchy is evaluated top-to-bottom; the first matching rule wins. System Guardrails (L1) can never be overridden.
@@ -65,15 +65,15 @@ See: [Discovery & Exclusion](../explanation/discovery)
 
 ---
 
-### Safe Harbor {#safe-harbor}
+### Exclusion Zone {#privacy-gate}
 
-The design philosophy behind Zenzic's file discovery and exclusion model. Safe Harbor guarantees three properties:
+The design philosophy behind Zenzic's file discovery and exclusion model. Exclusion Zone guarantees three properties:
 
 1. **Determinism** -- Given the same config and filesystem state, Zenzic yields the exact same files in the exact same order.
 2. **Safety by default** -- System Guardrails prevent scanning of VCS internals, virtual environments, and build caches.
 3. **Explicit override** -- Every inclusion and exclusion is traceable to a specific configuration line or CLI flag.
 
-The name references the concept of a safe harbor in admiralty law: a defined boundary within which rules are clear and protection is guaranteed.
+The Privacy Gate (Exclusion Zone) defines a strict boundary where Zenzic's scanners are intentionally inhibited to protect sensitive metadata or intentional security-testing patterns.
 
 ---
 
@@ -89,19 +89,19 @@ A per-file data structure populated during Pass 1 of the Two-Pass Pipeline. The 
 
 ---
 
-### Sentinel Score {#sentinel-score}
+### Zenzic Score {#zenzic-score}
 
-A 0--100 quality score computed across four weighted categories: Structural (40%), Content (30%), Navigation (20%), and Brand & Assets (10%). Each category accumulates per-code penalty deductions (D092 — Quartz Penalty Scorer). The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `zenzic.toml` or `--fail-under` on the CLI.
+A 0--100 quality score computed across four weighted categories: Structural (30%), Navigation (25%), Content (20%), and Brand & Assets (25%). Each category accumulates per-code penalty deductions (D092 — Zenzic Penalty Scorer). The score is computed by `zenzic score` and can be gated in CI via `fail_under` in `.zenzic.toml` or `--fail-under` on the CLI.
 
 Use `zenzic score --save` to snapshot the current score and `zenzic diff` to compare against the baseline.
 
 ---
 
-### Shield Violation {#shield-violation}
+### Credential Scanner Violation
 
-An exception raised by the Shield's IO Middleware (`safe_read_line`) when a credential is detected during metadata extraction. `ShieldViolation` is intentionally fatal -- it prevents the secret from entering any parser (YAML, Markdown, regex) by halting processing immediately. The caller must catch it and exit with **code 2**.
+An exception raised by the credential scanner's IO Middleware (`safe_read_line`) when a credential is detected during metadata extraction. `ShieldViolation` is intentionally fatal -- it prevents the secret from entering any parser (YAML, Markdown, regex) by halting processing immediately. The caller must catch it and exit with **code 2**.
 
-Distinct from a Shield *finding* (a `SecurityFinding` dataclass yielded during Pass 1 harvesting). A finding is data; a violation is a control-flow interruption.
+Distinct from a credential scanner *finding* (a `SecurityFinding` dataclass yielded during Pass 1 harvesting). A finding is data; a violation is a control-flow interruption.
 
 ---
 
@@ -124,11 +124,11 @@ System Guardrails form Level 1 of the Layered Exclusion hierarchy. They cannot b
 
 Zenzic's core analysis architecture. The pipeline processes each Markdown file in two sequential passes:
 
-- **Pass 1 (Harvest + Shield)** -- Stream every line; record `[id]: url` reference definitions; run the Shield on every line (including fenced code blocks and frontmatter). Populate the Reference Map.
+- **Pass 1 (Harvest + Credential Scan)** -- Stream every line; record `[id]: url` reference definitions; run the credential scanner on every line (including fenced code blocks and frontmatter). Populate the Reference Map.
 - **Pass 2 (Cross-Check)** -- Resolve every `[text][id]` usage against the complete Reference Map. Flag undefined IDs as `DANGLING_REF`.
 - **Pass 3 (Integrity Report)** -- Compute the per-file integrity score. Append Dead Definition and alt-text warnings.
 
-Pass 2 only begins when Pass 1 completes without Shield findings. This is the Shield-as-firewall guarantee: no further analysis is performed on files that contain leaked credentials.
+Pass 2 only begins when Pass 1 completes without credential scanner findings. This is the credential scanner-as-firewall guarantee: no further analysis is performed on files that contain leaked credentials.
 
 See: [Architecture -- Two-Pass Pipeline](../explanation/architecture#two-pass-pipeline)
 

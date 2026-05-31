@@ -11,14 +11,14 @@ description: "ADR 004: Suddivisione del modulo CLI monolitico in un package stru
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-15 (sprint v0.7.0, D062-B / D063 / D064)
+**Data:** 2026-04-15 (v0.8.x, D062-B / D063 / D064)
 
 ---
 
 ## Contesto
 
 La CLI originale di Zenzic era contenuta in un singolo file: `src/zenzic/cli.py`.
-Nel corso del ciclo di rilascio v0.6.x, quel file è cresciuto fino a superare
+Nel corso del ciclo di rilascio v0.8.x series, quel file è cresciuto fino a superare
 le **2.000 righe**, contenendo sei responsabilità concettualmente distinte in
 un unico namespace:
 
@@ -76,7 +76,7 @@ src/zenzic/cli/
 minimale che importa ogni sub-app e la registra sull'applicazione Typer root.
 Non contiene alcuna logica di analisi.
 
-Tre decisioni complementari sono state applicate nello stesso sprint:
+Tre decisioni complementari sono state applicate nella stessa release:
 
 - **D062-B:** `src/zenzic/ui.py` → `src/zenzic/core/ui.py`. Le primitive UI sono
 
@@ -177,3 +177,28 @@ la riorganizzazione interna.
 - Il lab showcase (`cli/_lab.py`) può essere esteso con nuovi atti senza influire
 
   sulla superficie di test della pipeline di analisi.
+
+---
+
+## Decisione Complementare D082 — Decomposizione CLI
+
+**Stato:** Accettata — v0.8.0
+
+**Contesto:** `_check.py` era cresciuto fino a 1641 righe, accumulando quattro categorie di
+helper che appartengono propriamente altrove: filtri di governance, risoluzione del target,
+boilerplate di setup dei comandi, e la reportistica di governance già presente in `_governance.py`.
+
+**Decisione:** Estrarre gli helper in moduli dedicati con re-export retrocompatibili.
+
+| Nuovo modulo | Estratto da | Funzioni |
+|:-------------|:------------|:---------|
+| `_governance.py` | `_check.py` | `_apply_per_file_ignores`, `_apply_directory_policies` |
+| `_target_resolver.py` | `_check.py` | `_resolve_target`, `_apply_target` |
+| `_command_setup.py` | `_check.py` | Factory `setup_command()` |
+
+**Contratto Zero-Regressione:** 1550 test passano invariati. Tutti i simboli spostati rimangono
+importabili da `_check.py` tramite stub di re-export, quindi qualsiasi codice a valle che importa
+direttamente da `_check` continua a funzionare senza modifiche.
+
+**Risultato:** `_check.py` ridotto da 1641 → 1478 righe. Ogni nuovo modulo ha una singola
+responsabilità chiaramente nominata, coerente con il modello di ownership decentralizzata di questo ADR.

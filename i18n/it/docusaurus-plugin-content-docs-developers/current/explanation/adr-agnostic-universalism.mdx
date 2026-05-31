@@ -11,7 +11,7 @@ description: "ADR 005: Z404 CONFIG_ASSET_MISSING esteso a tutti i motori support
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-20 (sprint v0.7.0)
+**Data:** 2026-04-20 (sprint v0.8.x)
 
 ---
 
@@ -22,7 +22,7 @@ l'adapter Docusaurus. Rilevava quando un file dichiarato in `docusaurus.config.t
 (favicon, immagine Open Graph, CSS personalizzato) non esisteva su disco.
 
 Questa scelta creava una contraddizione strutturale: Zenzic si presenta come un
-**Safe Harbor per tutti i motori di documentazione**. Offrire un controllo
+**Exclusion Zone per tutti i motori di documentazione**. Offrire un controllo
 dell'integrità degli asset di configurazione solo agli utenti Docusaurus violava
 questa garanzia. Un progetto MkDocs che dichiarava un `theme.favicon` puntante
 a un file inesistente non riceveva alcuna diagnostica — una lacuna silenziosa
@@ -33,9 +33,9 @@ nel perimetro di sicurezza.
 ## Decisione
 
 Z404 è stato esteso da un controllo Docusaurus-specifico a un **controllo
-universale** che copre tutti i motori supportati. Ogni adapter dichiara quali
-asset di configurazione gestisce, e il motore centrale invoca
-`check_config_assets()` uniformemente su tutti gli adapter.
+universale** che copre tutti i motori supportati. Il controllo degli asset di
+configurazione di ogni adapter è implementato come funzione a livello di modulo.
+La pipeline CLI lo esegue per tipo di motore dopo il main scan pass.
 
 | Motore | Asset controllati |
 |--------|------------------|
@@ -48,21 +48,18 @@ asset di configurazione gestisce, e il motore centrale invoca
 
 ## Motivazione
 
-### 1. Safe Harbor Significa Tutti i Porti
+### 1. Privacy Gate È un Contratto Universale
 
-Un porto sicuro solo per le navi Docusaurus non è un Safe Harbor — è un
-**porto di marca con una limitazione di stazza**. Nel momento in cui un
+Un Privacy Gate che si applica solo a Docusaurus non è un Exclusion Zone — è una
+**funzionalità circoscritta con un'assunzione di motore non documentata**. Nel momento in cui un
 controllo è specifico per un motore senza una ragione tecnica, si segnala ai
 contributori che la parità tra motori è opzionale. Quel segnale si amplifica
 nel corso delle versioni.
 
 ### 2. Il Protocollo Adapter Fornisce Già il Hook
 
-`BaseAdapter` definiva già `check_config_assets()` come metodo opzionale. La
-decisione di universalismo non era un cambiamento architetturale — era
-**l'attivazione di un contratto architetturale già presente**. Ogni adapter
-aveva già l'infrastruttura; mancavano solo le implementazioni per MkDocs e
-Zensical.
+La decisione di universalismo ha esteso un pattern esistente — validazione
+per-adapter a livello di modulo — a tutti i motori supportati, non solo Docusaurus.
 
 ### 3. Prevenire l'Assunzione di "Config Fidata"
 
@@ -76,15 +73,12 @@ Markdown.
 
 ## Implementazione
 
-Il metodo `check_config_assets()` di ogni adapter:
-
-1. Legge il file di configurazione del motore (I/O una tantum, non in un hot loop).
-2. Risolve ogni percorso di asset dichiarato rispetto a `docs_root`.
-3. Emette un `Finding` con codice `Z404` per ogni percorso che non esiste su disco.
-
-La pipeline `check_all()` del core invoca `adapter.check_config_assets()` dopo la
-fase di scansione per file, assicurando che i finding Z404 compaiano nello stesso
-report SARIF e nel conteggio dei codici di uscita di tutti gli altri finding.
+Il controllo degli asset di configurazione di ogni motore legge il file di
+configurazione del motore, risolve i percorsi di asset dichiarati rispetto a
+`docs_root`, ed emette un `Finding` con codice `Z404` per ogni percorso che non
+esiste su disco. La CLI esegue questi controlli dopo il main scan pass, assicurando
+che i finding Z404 compaiano nello stesso report SARIF e nel conteggio dei codici
+di uscita di tutti gli altri finding.
 
 ---
 

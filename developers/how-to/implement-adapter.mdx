@@ -1,7 +1,7 @@
 ---
 icon: lucide/plug
 sidebar_label: "Writing an Adapter"
-description: "Implement the BaseAdapter protocol to teach Zenzic about a new documentation engine."
+description: "Implement the BaseAdapter abstract base class to teach Zenzic about a new documentation engine."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -17,29 +17,18 @@ i18n conventions — without modifying Zenzic itself.
 
 ## What Is an Adapter
 
-An **adapter** is a Python class that satisfies the `BaseAdapter` protocol
+An **adapter** is a Python class that extends the `BaseAdapter` abstract base class
 (`src/zenzic/core/adapters/_base.py`).  Zenzic's
-scanner, orphan detector, and link validator talk exclusively to this protocol —
+scanner, orphan detector, and link validator talk exclusively to this interface —
 they never import or call engine-specific code directly.
 
-An adapter answers questions for each docs tree through two API surfaces:
+An adapter answers questions for each docs tree through a single API surface:
 
-### Metadata-Driven Routing (preferred)
+### Metadata-Driven Routing
 
 | Method | Question |
 |---|---|
 | `get_route_info(rel)` | What is the canonical URL, route status, slug, and proxy flag for this source file? Returns a `RouteMetadata` instance. |
-
-### Legacy File-to-URL Routing (backward compatible)
-
-| Method | Question |
-|---|---|
-| `map_url(rel)` | What canonical URL does this source file produce? |
-| `classify_route(rel, nav_paths)` | Is this file `REACHABLE`, `ORPHAN_BUT_EXISTING`, or `IGNORED`? |
-
-New adapters should implement `get_route_info()`.  The legacy methods are
-retained for backward compatibility — their default implementations delegate
-to `get_route_info()`.
 
 ### Common Methods
 
@@ -67,9 +56,10 @@ from pathlib import Path
 from typing import Any
 
 from zenzic.core.adapters import RouteMetadata
+from zenzic.core.adapters._base import BaseAdapter
 from zenzic.models.vsm import RouteStatus
 
-class MyEngineAdapter:
+class MyEngineAdapter(BaseAdapter):
     """Adapter for MyEngine documentation projects."""
 
     def __init__(
@@ -154,9 +144,8 @@ class MyEngineAdapter:
     def get_route_info(self, rel: Path) -> RouteMetadata:
         """Return unified routing metadata for a source file.
 
-        This single method replaces the legacy map_url() + classify_route()
-        double dispatch.  The VSM builder calls this to construct
-        RouteMetadata for every source file in a single pass.
+        The VSM builder calls this to construct RouteMetadata for every
+        source file in a single pass.
         """
         posix = rel.as_posix()
 
@@ -199,10 +188,10 @@ myengine = "my_engine_adapter.adapter:MyEngineAdapter"
 ```
 
 The **key** (left of `=`) becomes the engine name users pass to `--engine` or
-set as `engine` in `zenzic.toml`:
+set as `engine` in `.zenzic.toml`:
 
-```toml title="zenzic.toml"
-# In the user's zenzic.toml
+```toml title=".zenzic.toml"
+# In the user's .zenzic.toml
 [build_context]
 engine = "myengine"
 ```
@@ -260,7 +249,7 @@ zenzic check all --engine myengine
 
 ## Step 5 — Custom Rules Are Engine-Independent
 
-`[[custom_rules]]` in `zenzic.toml` run on raw Markdown source and are
+`[[custom_rules]]` in `.zenzic.toml` run on raw Markdown source and are
 completely decoupled from the adapter layer.  A rule that searches for `DRAFT`
 will fire identically whether the adapter is MkDocs, Zensical, or your own
 engine.  No extra work is required to make custom rules compatible with a new
@@ -384,7 +373,7 @@ Connect adapter code to deployment truth:
 
    (see [Adapters & Engine Configuration](/docs/how-to/configure-adapter)).
 
-2. Validate adapter behavior under strict Sentinel policy:
+2. Validate adapter behavior under strict Zenzic policy:
 
    `zenzic check all --engine myengine --strict`.
    For run controls, see [CLI Commands: Global flags](/docs/reference/cli#global-flags).

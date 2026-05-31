@@ -1,99 +1,56 @@
 {
-  "terminal.gutter.finding": {
-    "message": "'intro.md' not reachable from nav"
-  },
-  "terminal.gutter.line15": {
-    "message": "before continuing."
-  },
-  "terminal.gutter.line16": {
-    "message": "See the getting started page for details."
-  },
-  "terminal.gutter.line17": {
-    "message": "Then configure your environment."
-  },
-  "terminal.shield.header": {
-    "message": "SECURITY BREACH DETECTED"
-  },
-  "terminal.shield.label.finding": {
-    "message": "Finding:"
-  },
-  "terminal.shield.value.finding": {
-    "message": "GitHub token detected"
-  },
-  "terminal.shield.label.location": {
-    "message": "Location:"
-  },
-  "terminal.shield.label.credential": {
-    "message": "Credential:"
-  },
-  "terminal.shield.label.action": {
-    "message": "Action:"
-  },
-  "terminal.shield.value.action": {
-    "message": "Rotate this credential immediately and purge it from the repository history."
-  },
-  "terminal.summary.errors": {
-    "message": "✘ 2 errors"
-  },
-  "terminal.summary.warnings": {
-    "message": "⚠ 1 warning"
-  },
-  "terminal.summary.files": {
-    "message": "• 1 file with findings"
-  },
-  "terminal.summary.verdict": {
-    "message": "FAILED: One or more checks failed."
-  },
   "homepage.features.title": {
-    "message": "A new standard for docs.",
+    "message": "Documentation drift is silent.",
     "description": "Features section title"
   },
   "homepage.features.muted": {
-    "message": "Purpose-built engines for structural integrity.",
+    "message": "Teams usually see it after deployment.",
     "description": "Muted part of features title"
   },
-  "chk01.title": {
-    "message": "Broken links"
+  "homepage.pain.label": {
+    "message": "Pain Point",
+    "description": "Pain point section label"
   },
-  "chk01.desc": {
-    "message": "Detects dead internal links, missing anchors, and unreachable URLs before the build runs."
+  "homepage.metrics.deterministic.label": {
+    "message": "Deterministic",
+    "description": "Metrics strip label — deterministic"
   },
-  "chk02.title": {
-    "message": "Orphan pages"
+  "homepage.metrics.subprocesses.label": {
+    "message": "Subprocesses",
+    "description": "Metrics strip label — subprocesses"
   },
-  "chk02.desc": {
-    "message": "Finds <code>.md</code> files that exist on disk but are absent from the site navigation."
+  "homepage.metrics.re2.label": {
+    "message": "RE2 Engine",
+    "description": "Metrics strip label — RE2 engine"
   },
-  "chk03.title": {
-    "message": "Invalid snippets"
+  "homepage.metrics.gates.label": {
+    "message": "Native Gates",
+    "description": "Metrics strip label — native gates"
   },
-  "chk03.desc": {
-    "message": "Compiles every fenced Python block. Catches syntax errors before readers copy-paste code."
+  "findings.Z104.title": {
+    "message": "File not found"
   },
-  "chk04.title": {
-    "message": "Placeholder stubs"
+  "findings.Z201.title": {
+    "message": "Credential leak (exit 2)"
   },
-  "chk04.desc": {
-    "message": "Flags pages below a word-count threshold or containing patterns like <code>TODO</code>, <code>WIP</code>."
+  "findings.Z405.title": {
+    "message": "Unused asset"
   },
-  "chk05.title": {
-    "message": "Unused assets"
+  "findings.Z502.title": {
+    "message": "Short content"
   },
-  "chk05.desc": {
-    "message": "Reports images and files that exist in <code>docs/</code> but are never referenced by any page."
-  },
-  "chk06.title": {
-    "message": "Zenzic Shield"
-  },
-  "chk06.desc": {
-    "message": "Scans every URL for leaked credentials - API keys, tokens. Exits with code <code>2</code> immediately."
+  "findings.Z601.title": {
+    "message": "Brand obsolescence"
   },
   "homepage.hero.badge": {
-    "message": "v0.7.1 \"Quartz Maturity\" Stable",
+    "message": "v0.9.0",
     "description": "Wait release version badge"
   },
+  "enterprise.section.sub": {
+    "message": "Track suppression debt, enforce quality policies, and govern documentation health across teams and repositories."
+  },
   "homepage.hero.title": {
-    "message": "The Safe Harbor",
+    "message": "The Exclusion Zone",
     "description": "Main hero headline"
   },
   "homepage.hero.titleMuted": {
@@ -114,6 +71,9 @@
   },
   "homepage.score.title": {
     "message": "Quality Score"
+  },
+  "homepage.score.title.muted": {
+    "message": "Deterministic health check, per commit."
   },
   "homepage.score.sub": {
     "message": "Track a deterministic score in CI to block regressions. A holistic, elegant view of your documentation health."
@@ -145,74 +105,77 @@
   "score.nav": {
     "message": "Nav Isolation"
   },
-  "homepage.sentinel.title": {
-    "message": "Sentinel in Action"
+  "homepage.scanner.title": {
+    "message": "Zenzic in Action"
   },
-  "homepage.sentinel.sub": {
+  "homepage.scanner.title.muted": {
+    "message": "CI gate blocks regressions before merge."
+  },
+  "homepage.scanner.sub": {
     "message": "Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike."
   },
-  "sentinel.gutter.title": {
+  "scanner.gutter.title": {
     "message": "Gutter reporter"
   },
-  "sentinel.gutter.desc": {
+  "scanner.gutter.desc": {
     "message": "Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke."
   },
-  "sentinel.gutter.msg": {
+  "scanner.gutter.msg": {
     "message": "'intro.md' not reachable from nav"
   },
-  "sentinel.gutter.ctx1": {
+  "scanner.gutter.ctx1": {
     "message": "before continuing."
   },
-  "sentinel.gutter.line": {
+  "scanner.gutter.line": {
     "message": "See the getting started page for details."
   },
-  "sentinel.gutter.ctx2": {
+  "scanner.gutter.ctx2": {
     "message": "Then configure your environment."
   },
-  "sentinel.shield.title": {
-    "message": "Zenzic Shield"
+  "scanner.shield.title": {
+    "message": "credential scanner"
   },
-  "sentinel.shield.desc": {
+  "scanner.shield.desc": {
     "message": "Scans every line - including fenced <code>bash</code> and <code>yaml</code> blocks - for leaked credentials. Exit code <code>2</code> is reserved exclusively for security events."
   },
-  "sentinel.shield.banner": {
+  "scanner.shield.banner": {
     "message": "SECURITY BREACH DETECTED"
   },
-  "sentinel.shield.finding": {
+  "scanner.shield.finding": {
     "message": "Finding:"
   },
-  "sentinel.shield.location": {
+  "scanner.shield.location": {
     "message": "Location:"
   },
-  "sentinel.shield.credential": {
+  "scanner.shield.credential": {
     "message": "Credential:"
   },
-  "sentinel.shield.action": {
+  "scanner.shield.action": {
     "message": "Action:"
   },
-  "sentinel.shield.actionVal": {
+  "scanner.shield.actionVal": {
     "message": "Rotate this credential immediately and purge it from the repository history."
   },
-  "sentinel.summary.title": {
+  "scanner.summary.title": {
     "message": "Severity summary"
   },
-  "sentinel.summary.desc": {
+  "scanner.summary.desc": {
     "message": "Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings."
   },
-  "sentinel.summary.errors": {
+  "scanner.summary.errors": {
     "message": "✘ 2 errors"
   },
-  "sentinel.summary.warnings": {
+  "scanner.summary.warnings": {
     "message": "⚠ 1 warning"
   },
-  "sentinel.summary.files": {
+  "scanner.summary.files": {
     "message": "• 1 file with findings"
   },
-  "sentinel.summary.failed": {
+  "scanner.summary.failed": {
     "message": "FAILED: One or more checks failed."
   },
-  "sentinel.label": {
-    "message": "Reporter & Shield"
+  "scanner.label": {
+    "message": "Reporter & Credentials"
   },
   "score.label": {
     "message": "Health Metrics"
@@ -251,7 +214,10 @@
     "message": "Get Started"
   },
   "quickstart.heading": {
-    "message": "From zero to documentation integrity in one command."
+    "message": "From zero to documentation integrity"
+  },
+  "quickstart.heading.muted": {
+    "message": "in one command."
   },
   "quickstart.sub": {
     "message": "No configuration required. No account needed. Works on any Markdown project."
@@ -261,6 +227,15 @@
   },
   "quickstart.docs": {
     "message": "Read the full docs →"
+  },
+  "homepage.governance.title": {
+    "message": "Suppression CAP"
+  },
+  "homepage.governance.title.muted": {
+    "message": "— Live Preview"
+  },
+  "homepage.governance.sub": {
+    "message": "When active suppressions exceed the configured CAP, zenzic-action writes this summary directly to the GitHub Actions job panel. No log diving required."
   },
   "theme.ErrorPageContent.title": {
     "message": "This page crashed.",

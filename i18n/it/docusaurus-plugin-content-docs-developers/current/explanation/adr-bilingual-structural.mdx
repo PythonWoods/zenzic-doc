@@ -11,7 +11,7 @@ description: "ADR 008: Parità atomica del filesystem tra l'albero sorgente ingl
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-20 (sprint v0.7.0, D045 — Migrazione Diátaxis)
+**Data:** 2026-04-20 (sprint v0.8.x, D045 — Migrazione Diátaxis)
 
 ---
 
@@ -24,7 +24,7 @@ italiane **specchiando il percorso del filesystem inglese**: un utente su
 `/docs/reference/finding-codes` passa a `/it/docs/reference/finding-codes` — e
 Docusaurus serve il file al percorso corrispondente nell'albero `i18n/it/`.
 
-Durante la migrazione Diátaxis v0.7.0 (D045), 29 file inglesi sono stati rinominati
+Durante la migrazione Diátaxis v0.8.x (D045), 29 file inglesi sono stati rinominati
 e spostati per allinearsi alla struttura a quattro quadranti. Diversi file italiani
 non sono stati spostati atomicamente nello stesso commit. Il risultato: il language
 switcher produceva **errori 404** sulle pagine dove il file inglese era stato
@@ -100,7 +100,7 @@ Qualsiasi output di questo comando rappresenta un'asimmetria strutturale che
 ### 1. L'Italiano è un Cittadino di Prima Classe
 
 La documentazione italiana non è un asset secondario o un "nice to have". È parte
-del contratto del Safe Harbor. Un link che funziona in inglese ma dà 404 in
+del contratto del Exclusion Zone. Un link che funziona in inglese ma dà 404 in
 italiano è un **fallimento strutturale** del sistema documentale — equivalente a
 un link interno rotto nell'albero inglese.
 
@@ -113,7 +113,7 @@ contributore imposta da questo ADR. Non c'è nessun backstop in fase di build.
 ### 3. Coerenza della Storia Git
 
 Un commit atomico che sposta sia i file EN che IT crea un'**unità di storia
-coerente**: la rinomina è una singola operazione reversibile. I commit separati
+coerente**: la rinomina è un singolo passaggio reversibile. I commit separati
 creano rumore nella storia e rendono `bisect` inaffidabile quando si indagano
 regressioni.
 
@@ -150,6 +150,6 @@ regressioni.
 
 - L'invariante di simmetria si applica solo alla **struttura delle directory**. Il
 
-  *contenuto* italiano può essere in ritardo rispetto all'inglese durante sprint
-  attivi, purché il file sia presente (anche come stub). Un 404 è peggio di una
+  *contenuto* italiano può essere in ritardo rispetto all'inglese durante
+  i cicli di sviluppo attivi, purché il file sia presente (anche come stub). Un 404 è peggio di una
   traduzione obsoleta.

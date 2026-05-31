@@ -41,7 +41,7 @@ Zenzic richiede Python 3.10 o superiore.
 
 **Come si installa Zenzic?**
 
-Il modo più semplice è usare `uvx` per eseguirlo direttamente senza installazione:
+Il modo più diretto è usare `uvx` per eseguirlo direttamente senza installazione:
 
 ```bash
 uvx zenzic check all
@@ -49,10 +49,10 @@ uvx zenzic check all
 
 Oppure installalo nel progetto con `uv add --dev zenzic` (raccomandato) o `pip install zenzic`.
 
-**Devo creare un file `zenzic.toml`?**
+**Devo creare un file `.zenzic.toml`?**
 
 No. Zenzic funziona con configurazione zero — i valori predefiniti coprono la maggior parte dei
-progetti standard senza alcuna configurazione aggiuntiva. Il file `zenzic.toml` è necessario solo
+progetti standard senza alcuna configurazione aggiuntiva. Il file `.zenzic.toml` è necessario solo
 per personalizzare il comportamento, ad esempio per escludere directory, asset o URL esterni specifici.
 
 **Posso usare Zenzic con un progetto non-MkDocs?**
@@ -82,9 +82,9 @@ segnala per tenerti in controllo.
 La verifica dei link esterni viene eseguita solo quando viene passato il flag `--strict` —
 omettere il flag disabilita completamente tutte le richieste di rete. Per escludere
 permanentemente URL specifici senza rinunciare alla modalità strict, aggiungi i loro prefissi
-a `excluded_external_urls` in `zenzic.toml`:
+a `excluded_external_urls` in `.zenzic.toml`:
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 excluded_external_urls = [
     "https://internal.company.com",
     "https://github.com/MyOrg/private-repo",
@@ -124,13 +124,13 @@ Il flag `--strict` ha due effetti a seconda del comando:
 
 Consigliato nelle pipeline CI per intercettare tutte le categorie di problemi.
 
-**Cos'è il Zenzic Shield (exit code 2)?**
+**Cos'è il credential scanner (exit code 2)?**
 
-Exit code `2` indica che il check dei riferimenti ha rilevato un pattern che assomiglia a
+Exit code `2` indica che il credential scanner ha rilevato un pattern che assomiglia a
 una credenziale (API key, token, password) in un URL o in un testo. Ruota immediatamente
 la credenziale se ricevi questo codice.
 
-**Cos'è il Blood Sentinel (exit code 3)?**
+**Cos'è il path traversal guard (exit code 3)?**
 
 Exit code `3` indica che un link risolve a una directory di sistema OS (`/etc/`, `/root/`, `/var/`,
 ecc.). Questo viene trattato come un incidente di sicurezza e non può essere soppresso. Rimuovi

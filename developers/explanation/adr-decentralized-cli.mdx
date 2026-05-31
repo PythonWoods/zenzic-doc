@@ -11,14 +11,14 @@ description: "ADR 004: Splitting the monolithic CLI module into a structured pac
 
 **Status:** Active
 **Decider:** Architecture Lead
-**Date:** 2026-04-15 (v0.7.0 sprint, D062-B / D063 / D064)
+**Date:** 2026-04-15 (D062-B / D063 / D064)
 
 ---
 
 ## Context
 
 Zenzic's original CLI lived in a single file: `src/zenzic/cli.py`. Over the
-course of the v0.6.x release cycle, that file grew to exceed **2,000 lines**,
+course of the current series release cycle, that file grew to exceed **2,000 lines**,
 containing six conceptually distinct responsibilities in a single namespace:
 
 | Responsibility | Examples |
@@ -75,7 +75,7 @@ src/zenzic/cli/
 that imports each sub-app and registers it on the root Typer application. It
 contains no analysis logic.
 
-Three companion decisions were applied in the same sprint:
+Three companion decisions were applied in the same release:
 
 - **D062-B:** `src/zenzic/ui.py` → `src/zenzic/core/ui.py`. UI primitives are
 
@@ -168,3 +168,28 @@ existing integrations, despite the internal reorganisation.
 - The lab showcase (`cli/_lab.py`) can be extended with new acts without
 
   affecting the analysis pipeline's test surface.
+
+---
+
+## Companion Decision D082 — CLI Decomposition
+
+**Status:** Accepted — v0.8.0
+
+**Context:** `_check.py` had grown to 1641 lines, accumulating four categories of
+helper that properly belong elsewhere: governance filters, target resolution, command
+setup boilerplate, and the governance reporting already in `_governance.py`.
+
+**Decision:** Extract helpers into dedicated modules with backward-compatible re-exports.
+
+| New module | Extracted from | Functions |
+|:-----------|:---------------|:----------|
+| `_governance.py` | `_check.py` | `_apply_per_file_ignores`, `_apply_directory_policies` |
+| `_target_resolver.py` | `_check.py` | `_resolve_target`, `_apply_target` |
+| `_command_setup.py` | `_check.py` | `setup_command()` factory |
+
+**Zero-Regression Contract:** 1550 tests pass unchanged. All moved symbols remain
+importable from `_check.py` via re-export stubs, so any downstream code that imports
+directly from `_check` continues to work without modification.
+
+**Outcome:** `_check.py` reduced from 1641 → 1478 lines. Each new module has a single,
+clearly-named responsibility consistent with this ADR's decentralised-ownership model.

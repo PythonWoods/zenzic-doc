@@ -104,8 +104,8 @@ const DEMO_PHYSICAL: VSMNode[] = [
     label: 'blog/',
     kind: 'dir',
     children: [
-      { label: '2026-04-08-hardening-the-documentation-pipeline.mdx', url: '/blog/hardening-the-documentation-pipeline', kind: 'physical' },
-      { label: '2026-05-05-v070-quartz-maturity-stable.mdx',           url: '/blog/v070-quartz-maturity-stable',          kind: 'physical' },
+      { label: '2026-05-24-log-v080.mdx',              url: '/blog/log-v080',                   kind: 'physical' },
+      { label: '2026-05-24-v080-namespace-contract.mdx', url: '/blog/v080-namespace-contract', kind: 'physical' },
     ],
   },
 ];
@@ -115,31 +115,31 @@ const DEMO_VIRTUAL: VSMNode[] = [
     label: '/blog/tags/',
     kind: 'tag_index',
     url: '/blog/tags/',
-    sourceFiles: ['blog/2026-04-08-hardening-the-documentation-pipeline.mdx', 'blog/2026-05-05-v070-quartz-maturity-stable.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/tags/ci-cd/',
     kind: 'tag',
     url: '/blog/tags/ci-cd/',
-    sourceFiles: ['blog/2026-04-08-hardening-the-documentation-pipeline.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx'],
   },
   {
     label: '/blog/tags/zenzic/',
     kind: 'tag',
     url: '/blog/tags/zenzic/',
-    sourceFiles: ['blog/2026-04-08-hardening-the-documentation-pipeline.mdx', 'blog/2026-05-05-v070-quartz-maturity-stable.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/page/1/',
     kind: 'pagination',
     url: '/blog/page/1/',
-    sourceFiles: ['blog/2026-04-08-hardening-the-documentation-pipeline.mdx', 'blog/2026-05-05-v070-quartz-maturity-stable.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx', 'blog/2026-05-24-v080-namespace-contract.mdx'],
   },
   {
     label: '/blog/authors/',
     kind: 'author_index',
     url: '/blog/authors/',
-    sourceFiles: ['blog/2026-04-08-hardening-the-documentation-pipeline.mdx'],
+    sourceFiles: ['blog/2026-05-24-log-v080.mdx'],
   },
 ];
 
@@ -243,7 +243,7 @@ function TreeNode({ node, depth = 0 }: { node: VSMNode; depth?: number }): React
   return (
     <div>
       <div
-        className={`flex items-center gap-1.5 py-0.5 rounded px-1 ${canExpand ? 'cursor-pointer hover:dark:bg-zinc-800/40 hover:bg-zinc-100/60' : ''}`}
+        className={`flex items-center gap-1.5 py-0.5 rounded-sm px-1.5 ${canExpand ? 'cursor-pointer hover:dark:bg-zinc-800/40 hover:bg-zinc-100/60' : ''}`}
         style={{ paddingLeft: `${indent + 4}px` }}
         onClick={canExpand ? () => setExpanded((v) => !v) : undefined}
         role={canExpand ? 'button' : undefined}
@@ -273,7 +273,7 @@ function TreeNode({ node, depth = 0 }: { node: VSMNode; depth?: number }): React
 
         {/* kind badge */}
         {cfg.badgeText && (
-          <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded font-mono ${cfg.badgeClass}`}>
+          <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-sm font-mono ${cfg.badgeClass}`}>
             {cfg.badgeText}
           </span>
         )}

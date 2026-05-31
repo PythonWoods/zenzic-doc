@@ -1,12 +1,18 @@
 ---
 sidebar_position: 3
 title: Configuration Reference
-description: Complete reference for zenzic.toml and pyproject.toml configuration fields, types, defaults, and CLI overrides.
+description: Complete reference for .zenzic.toml and pyproject.toml configuration fields, types, defaults, and CLI overrides.
 ---
 
 # Configuration Reference
 
 Zenzic is configured through a TOML file. Every field has a sensible default, so zero-config usage is fully supported -- but production projects benefit from explicit tuning.
+
+:::warning[TOML Section Nesting]
+
+TOML syntax dictates that any key-value pair defined after a section header (e.g., `[build_context]`) belongs to that section. Top-level keys like `docs_dir`, `placeholder_patterns`, or `excluded_dirs` **MUST** be placed at the very top of `.zenzic.toml`, before any `[section]` is declared. Otherwise, they will be silently ignored by the parser.
+
+:::
 
 ## Config File Priority {#config-priority}
 
@@ -15,22 +21,22 @@ Zenzic resolves configuration using a **4-level hierarchy** — the most specifi
 | Priority | Source | Description |
 | :---: | :--- | :--- |
 | **1 (highest)** | **CLI flags** | `--engine`, `--exclude-dir`, `--strict`, etc. Override every other source for the current run. |
-| 2 | `zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
+| 2 | `.zenzic.toml` | Standalone file at the repository root — the authoritative sovereign config |
 | 3 | `pyproject.toml` | `[tool.zenzic]` table inside `pyproject.toml` |
 | 4 (lowest) | Built-in defaults | Hardcoded defaults when no config file is found |
 
-**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `zenzic.toml` for that single run without modifying any file.
+**CLI flags always win.** A flag like `--engine mkdocs` overrides the `engine` value in `.zenzic.toml` for that single run without modifying any file.
 
 **Exclusions and inclusions are cumulative, not replacing:**
 
 - `--exclude-dir` *adds* to the list already defined in the config file.
-- `--include-dir` is a **force override**: a directory excluded in `zenzic.toml` but included via `--include-dir` will be scanned. The only exception is Level 1 System Guardrails (`node_modules`, `.git`, etc.) — these cannot be force-included.
+- `--include-dir` is a **force override**: a directory excluded in `.zenzic.toml` but included via `--include-dir` will be scanned. The only exception is Level 1 System Guardrails (`node_modules`, `.git`, etc.) — these cannot be force-included.
 
 When a config file is present but contains a TOML syntax error, Zenzic raises a `ConfigurationError` with a Rich-formatted message. It will **never** silently fall back to defaults when a file exists but cannot be parsed.
 
-### Standalone `zenzic.toml`
+### Standalone `.zenzic.toml`
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 docs_dir = "docs"
 snippet_min_lines = 3
 strict = true
@@ -53,6 +59,82 @@ engine = "mkdocs"
 
 Use `zenzic init` to scaffold a config file. If `pyproject.toml` exists, the command will prompt whether to embed the config there. Use `zenzic init --pyproject` to skip the prompt.
 
+`zenzic init` also scaffolds `.zenzic.local.toml` as a machine-local overlay. This
+file is designed for Local Sovereignty: local values override shared config, but
+must remain private on your workstation.
+
+## `.zenzic.local.toml` Local Sanctuary {#local-sanctuary}
+
+`.zenzic.local.toml` is the private maneuvering space for engineers.
+
+- It is loaded after shared config (`.zenzic.toml` or `[tool.zenzic]`) and therefore wins locally.
+- It is intended for machine-specific paths, temporary cleanup knobs, diagnostics, and private secrets.
+- It is never a team policy file.
+
+When `zenzic init` runs in a Git repository, it enforces `.zenzic.local.toml` inside
+`.gitignore` (creating or updating `.gitignore` safely, without destructive edits).
+
+```toml title=".zenzic.local.toml"
+# --- ZENZIC LOCAL OVERRIDES ---
+# This file is auto-generated and must stay in .gitignore.
+# Everything declared here overrides shared .zenzic.toml only on your machine.
+
+[core]
+# docs_dir = "my/custom/path/to/docs"
+forbidden_patterns = []
+
+[governance]
+# suppression_cap = 100
+# suppression_cap_fail_hard = false
+
+[secrets]
+# github_pat = "YOUR_GITHUB_PAT"
+
+[debug]
+# log_level = "DEBUG"
+
+[env]
+# ZENZIC_FORCE_COLOR = "true"
+```
+
+Use `.zenzic.toml` for shared constitutional governance. Use `.zenzic.local.toml`
+for local experiments and private data only.
+
+### Source-of-Truth Introspection (`zenzic config explain`)
+
+Use `zenzic config explain` to verify both active value and origin for each
+config field.
+
+```bash
+zenzic config explain
+```
+
+Expected provenance semantics:
+
+- `local` -> `.zenzic.local.toml (Override)`
+- `global` -> `.zenzic.toml`
+- `default` -> built-in fallback
+
+Example (governance override):
+
+```text
+suppression_cap = 45   Source: .zenzic.local.toml (Override)
+```
+
+### Governance Suppression Contract (Suppression CAP)
+
+```toml
+[governance]
+suppression_cap = 30
+suppression_cap_fail_hard = true
+per_file_ignores = { "docs/legacy/*.md" = ["Z601"] }
+```
+
+- `suppression_cap` and `suppression_cap_fail_hard` enforce CAP governance.
+- `per_file_ignores` defines scoped suppressions in normal runs.
+- `zenzic check all --audit` ignores both inline suppressions and
+  `per_file_ignores` to expose full debt truth.
+
 ---
 
 ## Core Settings {#core-settings}
@@ -66,8 +148,14 @@ Use `zenzic init` to scaffold a config file. If `pyproject.toml` exists, the com
 
 Path to the documentation root directory, relative to the repository root.
 
+When omitted, Zenzic defaults to `"docs"`. Set to `"."` to scan the entire
+repository root (L1 system exclusions still apply). Set to any other
+relative path when your project stores documentation in a non-standard
+location such as `website/` or `content/`.
+
 ```toml
-docs_dir = "content"
+# docs_dir = "docs"   # default — omit if your docs live in docs/
+docs_dir = "."        # scan the entire repository (e.g. README-only projects)
 ```
 
 ### `snippet_min_lines` {#snippet-min-lines}
@@ -140,12 +228,12 @@ validate_same_page_anchors = true
 | | |
 | :--- | :--- |
 | **Type** | `list[str]` |
-| **Default** | `["includes", "stylesheets", "overrides", "hooks"]` |
+| **Default** | `["includes", "stylesheets", "overrides"]` |
 
 Directories inside `docs/` to exclude from orphan and snippet checks. User entries are **merged** with the immutable System Guardrails (`SYSTEM_EXCLUDED_DIRS`) -- they can never be removed.
 
 ```toml
-excluded_dirs = ["includes", "stylesheets", "overrides", "hooks", "snippets"]
+excluded_dirs = ["includes", "stylesheets", "overrides", "snippets"]
 ```
 
 :::info[System Guardrails (always excluded)]
@@ -163,7 +251,7 @@ These represent the **L1 System Guardrails** layer. No configuration can overrid
 | **Type** | `list[str]` |
 | **Default** | `[]` |
 
-Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and Shield). Uses `fnmatch` syntax.
+Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and credential scanner). Uses `fnmatch` syntax.
 
 ```toml
 # Skip locale-suffixed files and changelogs
@@ -261,15 +349,15 @@ htmlcov/
 
 If `respect_vcs_ignore = true`, Zenzic would silently exclude any documentation file whose path matches these patterns. A `docs/coverage-report.md` page, for instance, would vanish from orphan detection without any diagnostic message. The linter would appear healthy while silently skipping entire documentation subtrees.
 
-**The Explicit zenzic.toml is Superior**
+**The Explicit .zenzic.toml is Superior**
 
-The `excluded_dirs` and `excluded_file_patterns` fields in your project config — `zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` — (L3 in the Layered Exclusion hierarchy) are:
+The `excluded_dirs` and `excluded_file_patterns` fields in your project config — `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` — (L3 in the Layered Exclusion hierarchy) are:
 
 - **Visible** — exclusions are declared in one authoritative file, not scattered across `.gitignore`, `.dockerignore`, and `.npmignore`
 - **Reviewable** — a new contributor running `git diff` sees exactly what Zenzic excludes and why
 - **Stable** — exclusions do not change when a developer updates `.gitignore` for unrelated tooling reasons
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 # Explicit exclusions are maintainable and auditable
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
@@ -339,7 +427,7 @@ The `[build_context]` table tells Zenzic which documentation engine produced the
 
 Build engine identifier. Used by the adapter factory to select the correct path-resolution strategy. Built-in adapters: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
 
-When set to `"auto"` (the default), Zenzic probes the project root at runtime using **Quartz Auto-Discovery**, scanning for engine config files in priority order:
+When set to `"auto"` (the default), Zenzic probes the project root at runtime using **engine auto-discovery**, scanning for engine config files in priority order:
 
 1. `zensical.toml` → `zensical`
 2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
@@ -420,11 +508,25 @@ fallback_to_default = false
 | **Type** | `int` |
 | **Default** | `0` |
 
-Minimum quality score (0--100). If the Sentinel Score falls below this value, `zenzic score` exits with code 1. A value of `0` disables the threshold (observational mode).
+Minimum quality score (0--100). If the Zenzic Score falls below this value, `zenzic score` exits with code 1. A value of `0` disables the threshold (observational mode).
 
 ```toml
 fail_under = 80
 ```
+
+:::info Mathematical Invariant — Flat-Cost Model
+Every active suppression deducts exactly **1 DQS point** (flat-cost model). The maximum score your project can achieve is therefore:
+
+$$\text{Max Achievable Score} = 100 - |F_s|$$
+
+where $|F_s|$ is the total active suppression count. Configuring `fail_under > 100 - suppression_cap` creates a **mathematical contradiction**: the score gate will trigger due to suppression debt *before* the suppression cap is reached, making the upper slots of your cap budget unreachable.
+
+**Safe configuration rule:** `fail_under` $\leq$ `100 - suppression_cap`.
+:::
+
+:::tip[Designing Hybrid Governance Policies]
+Because `fail_under` and `suppression_cap` act as **orthogonal constraints**, you can design hybrid governance policies for enterprise environments. For example, setting `fail_under = 90` and `suppression_cap = 30` means: "The global repository quality (findings + debt) must never drop below 90/100, **but** regardless of the score, we absolutely refuse to tolerate more than 30 suppressed defects." This prevents teams from hiding massive structural debt even if their active code is otherwise perfect.
+:::
 
 ### `strict` {#strict}
 
@@ -446,11 +548,79 @@ strict = true
 | **Type** | `bool` |
 | **Default** | `false` |
 
-When `true`, `zenzic check all` always exits with code 0 even when issues are found. Issues are still printed and scored. Useful for observation-only pipelines. Shield violations (exit code 2) and Blood Sentinel events (exit code 3) are **never** suppressed.
+When `true`, `zenzic check all` always exits with code 0 even when issues are found. Issues are still printed and scored. Useful for observation-only pipelines. Credential scanner violations (exit code 2) and path traversal guard events (exit code 3) are **never** suppressed.
 
 ```toml
 exit_zero = true
 ```
+
+---
+
+## Project Metadata {#project-metadata}
+
+### `release_name` {#release-name}
+
+| | |
+| :--- | :--- |
+| **Type** | `str` |
+| **Default** | `""` |
+| **Section** | `[project_metadata]` |
+
+The current release codename. Used as the protected term in `brand_obsolescence` enforcement — Zenzic emits Z601 if this string appears as an obsolete term in documentation.
+
+```toml
+[project_metadata]
+release_name = "Basalt"
+```
+
+### `badge_stamp_files` {#badge-stamp-files}
+
+| | |
+| :--- | :--- |
+| **Type** | `list[str]` |
+| **Default** | `["README.md"]` |
+| **Section** | `[project_metadata]` |
+
+Files updated by `zenzic score --stamp`. Each file must contain one or both HTML comment markers: `<!-- zenzic:audit-badge -->` and `<!-- zenzic:score-badge -->`. The Shields.io badge URL on the line immediately following each marker is replaced in place with deterministic audit and score telemetry.
+
+The stamp runs **before** exit-code checks, so the badge always reflects the actual score — including a red badge in local development, which is immediate feedback that the commit will be rejected by CI.
+
+```toml
+[project_metadata]
+badge_stamp_files = ["README.md", "README.it.md"]
+```
+
+Add one or both markers to each listed file, followed on the next line by any Shields.io badge as a placeholder. See [Official Badges](/docs/how-to/add-badges) for the complete setup guide.
+
+---
+
+## Governance Settings {#governance-settings}
+
+### `brand_obsolescence` {#brand-obsolescence}
+
+| | |
+| :--- | :--- |
+| **Type** | `list[str]` |
+| **Default** | `[]` |
+| **Section** | `[governance]` |
+| **Finding** | Z601 `BRAND_OBSOLESCENCE` |
+
+A governance rule to enforce terminology standards across documentation. Ideal for corporate rebranding or deprecating internal project names. Zenzic ships with an empty default list — teams configure their own deprecated term lists here.
+
+When a term in this list appears in any scanned file, Zenzic emits Z601 `BRAND_OBSOLESCENCE` with exit code 2 (same severity as a credential leak). Historical files (e.g. `CHANGELOG*.md`) are excluded via `excluded_file_patterns`. Use an inline `[HISTORICAL]` comment to suppress individual intentional references in other files.
+
+```toml
+[governance]
+brand_obsolescence = [
+    "OldProductName",
+    "LegacyBrand",
+    "DeprecatedInternalTerm",
+]
+```
+
+**Pattern matching:** case-sensitive whole-word scan. The term `"Deprecated"` does not match `"DeprecatedFeature"` or `"deprecated"`.
+
+**Scope:** applies to all files within the active `docs_dir` scan scope, subject to the standard exclusion hierarchy.
 
 ---
 
@@ -510,23 +680,23 @@ Several configuration values can be overridden per-run via CLI flags on `zenzic 
 | `--exclude-dir DIR` | (additive) | Additional directories to exclude (repeatable) |
 | `--include-dir DIR` | (additive) | Force-include directories even if excluded by config (repeatable). Cannot override System Guardrails |
 | `--show-info` | (display) | Show info-level findings (e.g. circular links) |
-| `--format json` | (display) | Output in JSON format instead of the Sentinel report |
+| `--format json` | (display) | Output in JSON format instead of Zenzic report |
 | `--fail-under N` | `fail_under` | Exit non-zero if score is below threshold (on `zenzic score`) |
 | `--quiet` / `-q` | (display) | Minimal one-line output for pre-commit hooks |
 
 ### Override Priority
 
-CLI flags always override both `zenzic.toml` and `pyproject.toml` values for a single run. The full priority chain is:
+CLI flags always override both `.zenzic.toml` and `pyproject.toml` values for a single run. The full priority chain is:
 
 ```text
-CLI flags > zenzic.toml > pyproject.toml [tool.zenzic] > built-in defaults
+CLI flags > .zenzic.toml > pyproject.toml [tool.zenzic] > built-in defaults
 ```
 
 ---
 
 ## Complete Example {#complete-example}
 
-```toml title="zenzic.toml"
+```toml title=".zenzic.toml"
 
 docs_dir = "docs"
 snippet_min_lines = 3
@@ -607,11 +777,11 @@ base_url = "/"
 
 ### Unknown Sections Emit a Warning {#unknown-sections}
 
-Since v0.6.1, Zenzic emits a `WARNING` when it encounters an unrecognised TOML section (e.g. `[project]`) instead of discarding it silently.
+Zenzic, Zenzic emits a `WARNING` when it encounters an unrecognised TOML section (e.g. `[project]`) instead of discarding it silently.
 If you see:
 
 ```text
-WARNING  zenzic.toml: unknown section [project] will be ignored …
+WARNING  .zenzic.toml: unknown section [project] will be ignored …
 ```
 
 move all settings that follow that header to the top of the file, before any `[section]` tag.
@@ -619,7 +789,7 @@ move all settings that follow that header to the top of the file, before any `[s
 ### Dogfooding Pattern with Docusaurus {#dogfooding}
 
 Documenting a linter with its own linter creates intentional false positives: pages that *explain* placeholder patterns will trigger the placeholder checker.
-Disable the checker in the `zenzic.toml` of the documentation repository:
+Disable the checker in the `.zenzic.toml` of the documentation repository:
 
 ```toml
 # Doc repository — explains lint rules without triggering them

@@ -1,0 +1,346 @@
+---
+sidebar_label: "Guida di Stile Zenzic"
+sidebar_position: 6
+description: "Standard di scrittura documentale e regole di formattazione per i contributori Zenzic."
+---
+
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+
+# Guida di Stile Zenzic
+
+> *"Il rigore delZenzic nel codice deve estendersi a ogni pixel che l'utente vede."*
+
+Questo documento codifica il **Zenzic Visual Language** — le regole
+vincolanti per tutte le pagine della documentazione Zenzic. Ogni
+contributore deve seguirle. I revisori devono rifiutare le PR che le violano.
+
+**Direttiva:** ZRT-DOC-002
+
+---
+
+## 1. Regola delle Card (High-Density UX) {#card-rule}
+
+Le card di navigazione orientano. **Non** sostituiscono la barra laterale.
+
+### Struttura
+
+Ogni card in un blocco `<div class="grid cards" markdown>` deve avere esattamente:
+
+1. Un'**icona** (`<Icon name="..." />` — vedi §3).
+2. Un **titolo in grassetto**.
+3. Una **descrizione** di massimo due righe.
+4. Un **unico link d'azione** con prefisso freccia.
+
+### Esempio canonico
+
+```markdown
+
+- <Icon name="play" /> &nbsp; **Guida Utente**
+
+    Tutto ciò che serve per installare, configurare e integrare Zenzic
+    nel tuo workflow CI/CD.
+
+    [<Icon name="arrow-right" /> Esplora la Guida](../../../how-to/install.mdx)
+```
+
+### Pattern vietati
+
+| Pattern | Motivo |
+| :--- | :--- |
+| Catene di link orizzontali (separati da `·`) | Crea un muro di testo; impossibile da scansionare |
+| Liste `<li>` annidate dentro una card | Rompe l'uniformità dell'altezza delle card |
+| Separatori `---` dentro una card | Aggiunge rumore visivo senza guadagno informativo |
+| Card senza action link | Vicolo cieco; l'utente non ha dove andare |
+
+### Eccezione
+
+**Card di presentazione** (es. demo "Zenzic in Action" nella homepage)
+possono omettere l'action link perché il loro scopo è la dimostrazione
+visiva, non la navigazione. Devono comunque avere il CSS delle card
+(bordo, hover, transizione).
+
+---
+
+## 2. Tassonomia delle Admonition {#admonition-taxonomy}
+
+Ogni tipo di admonition ha un — e un solo — ruolo semantico.
+
+| Tipo | Ruolo | Quando usare |
+| :--- | :--- | :--- |
+| `:::tip` | **Quick Win** | Comandi one-liner eseguibili immediatamente |
+| `:::info` | **Output Zenzic** | Blocchi di output CLI e campioni di report Zenzic |
+| `:::danger` | **Security Gate** | Solo Exit Code 2 (credenziali) e Exit Code 3 (path traversal) |
+| `:::warning` | **Vincolo di Design** | Regole architetturali, policy per contributori, caveat "usare con parsimonia" |
+| `:::note` | **Chiarimento** | Fatti specifici del motore, onboarding contributori, guide multi-step |
+| `:::info` | **Ponte Cross-Reference** | Link dalla sezione corrente al prossimo step operativo |
+| `:::info` | **CTA Comunità** | Chiamate di engagement ("Aiutaci a crescere", "Unisciti alla discussione") |
+| `:::note` | **Filosofia** | Visione del progetto, manifesto di design, credo delZenzic |
+
+### Applicazione
+
+Se un blocco non rientra in nessuna delle categorie sopra, riscrivilo come
+prosa. Le admonition non sono decorazione.
+
+---
+
+## 3. Legge dell'Iconografia (ZRT-DOC-003) {#iconography}
+
+### Il Componente `<Icon />`
+
+Ogni icona nella documentazione deve essere renderizzata con:
+
+```mdx
+<Icon name="nome-icona" />
+```
+
+Override opzionale della dimensione (default `1.15em`, ereditata dal testo circostante):
+
+```mdx
+<Icon name="shield-check" size={20} />
+```
+
+Tutti i nomi delle icone seguono la convenzione del [set Lucide](https://lucide.dev/icons/)
+(minuscolo, separato da trattini).
+
+### Gerarchia
+
+| Priorità | Set | Sintassi | Note |
+| :---: | :--- | :--- | :--- |
+| 1 | **Lucide** | `<Icon name="play" />` | Tutte le icone UI e di navigazione |
+
+### Regole
+
+- **Coerenza semantica:** se un'icona rappresenta "Contribuisci" in una pagina,
+
+  deve essere la stessa icona in ogni pagina.
+
+- **Sintassi uniforme:** ogni icona in una griglia di card usa `<Icon name="..." />`.
+
+  Nessun mix di sintassi o set di icone.
+
+- **Contratto di tree-shaking:** prima di usare un nuovo nome di icona, aggiungerlo
+
+  alla mappa esplicita `iconsMap` in `src/components/Icon.tsx`. I nomi non registrati
+  renderizzano un placeholder rosso e emettono un `console.warn`.
+
+---
+
+## 4. Protocollo Anchor ID (ZRT-DOC-004) {#anchor-ids}
+
+### Quando aggiungere ID espliciti
+
+Aggiungere `{#id}` a un heading quando soddisfa **entrambe** le condizioni:
+
+1. È un heading **H2 o H3** (mai H1 — Docusaurus genera automaticamente gli ID H1 dal `sidebar_label`).
+2. È referenziato da un link cross-pagina (`[testo](pagina.mdx#ancora)`).
+
+### Invariante i18n
+
+L'ID canonico è sempre lo **slug inglese**. Le pagine italiane (e di ogni
+futura lingua) devono usare lo stesso valore `{#id}`:
+
+```markdown
+{/* EN */}
+## Getting Started {#getting-started}
+
+{/* IT */}
+## Inizia Ora {#getting-started}
+```
+
+Questo garantisce che il resolver VSM e i link cross-lingua non si
+rompano mai a causa della generazione di slug dipendente dalla traduzione.
+
+### Formato heading
+
+```markdown
+## Titolo Sezione {#section-title}
+```
+
+Non aggiungere ID a heading che non vengono mai linkati esternamente.
+Ogni ID esplicito è un contratto di manutenzione.
+
+---
+
+## 5. Regola dei Blocchi di Codice {#code-blocks}
+
+Ogni fence di apertura **deve** avere un tag di linguaggio:
+
+| Fence | Verdetto |
+| :--- | :---: |
+| ` ```python ` | ✓ |
+| ` ```bash ` | ✓ |
+| ` ```toml ` | ✓ |
+| ` ```text ` | ✓ (output senza formattazione) |
+| ` ``` ` | ✗ **VIETATO** |
+
+Usare `text` per output senza syntax highlighting. I fence nudi danneggiano
+gli strumenti di accessibilità e i syntax highlighter.
+
+**Specificità del Gutter:** per l'output CLI mostrato nei blocchi `:::info`,
+preferire sempre il tag `text` per evitare che l'evidenziatore di sintassi
+generi colori casuali su stringhe di log o percorsi di file.
+
+---
+
+## 6. Header SPDX {#spdx-header}
+
+Ogni file `.md` deve iniziare con:
+
+```html
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+```
+
+I file con frontmatter YAML posizionano il blocco SPDX immediatamente dopo
+il `---` di chiusura.
+
+---
+
+## 7. Checklist di Coerenza Visiva {#checklist}
+
+Prima di sottomettere una PR, verificare:
+
+- [ ] Ogni griglia di card segue §1 (singolo action link).
+- [ ] Ogni admonition corrisponde al suo ruolo §2.
+- [ ] Tutte le icone usano `<Icon name="..." />` — nessuno shortcode `:lucide-*:`, `:octicons-*:`, o `:material-*:` rimane (§3).
+- [ ] Ogni nuovo nome di icona è registrato in `src/components/Icon.tsx` (§3).
+- [ ] Gli heading H2/H3 cross-referenziati hanno `{#id}` esplicito (§4). Nessun anchor sugli H1.
+- [ ] Nessun code fence nudo esiste (§5).
+- [ ] L'header SPDX è presente (§6).
+- [ ] Il mirror italiano è strutturalmente identico all'inglese.
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ZenzicPalette._*` (§9).
+- [ ] Tutti i riferimenti ai colori usano `ZenzicPalette.*` — nessuna costante piatta rimossa (§9).
+
+---
+
+## 8. Gateway ZenzicUI {#zenzicui-gateway}
+
+Tutto l'output terminale brandizzato di Zenzic fluisce attraverso un unico oggetto: `ZenzicUI` in
+`src/zenzic/ui.py`. I moduli di comando non devono **mai** istanziare `Console` o `ZenzicUI`
+direttamente — devono chiamare `get_ui()` e `get_console()` da `zenzic.cli._shared`.
+
+### Metodi principali
+
+| Metodo | Quando usare |
+| :--- | :--- |
+| `print_header(version)` | Il banner Zenzic Frame ad inizio output — una volta per invocazione del comando |
+| `make_panel(content, *, title, border_style)` | Rich `Panel` stilizzato — per blocchi di output strutturati |
+| `print_exception_alert(message, *, context, title, border_style)` | Pannelli di errore per `ZenzicError` e `PluginContractError` |
+
+### Pattern di utilizzo
+
+```python
+# In qualsiasi modulo _check.py / _clean.py / _standalone.py
+from . import _shared
+
+# Stampa il banner Zenzic
+_shared.get_ui().print_header(__version__)
+
+# Stampa un pannello stilizzato
+panel = _shared.get_ui().make_panel(
+    "Contenuto qui",
+    title="Titolo Pannello",
+    border_style="bold cyan",
+)
+_shared.get_console().print(panel)
+```
+
+### Perché il gateway è importante
+
+I flag CLI `--no-color` e `--force-color` chiamano `configure_console()`, che sostituisce
+atomicamente i singleton `console` e `_ui` a livello di modulo. Qualsiasi istanza di
+`Console` o `ZenzicUI` creata localmente sarà congelata prima che il flag abbia effetto,
+ignorando silenziosamente la preferenza colore dell'utente.
+
+Il parametro `force_terminal` deve essere **sempre** `None` (auto-detect) nella `Console`
+a livello di modulo, mai `False`. Un `False` esplicito disabilita completamente il
+rilevamento del sistema colori — producendo zero styling ANSI anche nei terminali truecolor.
+Questa è la fonte più comune di regressioni visive nel layer CLI di Zenzic.
+
+### Aggiunta alla checklist
+
+Aggiungere alla checklist della tua PR:
+
+- [ ] Nessuna istanziazione `Console(...)` o `ZenzicUI(...)` nei moduli di comando.
+- [ ] Tutto l'output banner usa `get_ui().print_header()`, non un'istanza UI creata localmente.
+- [ ] `force_terminal` su qualsiasi nuova chiamata `Console` è `None` o condizionale (`True if ... else None`), mai `False`.
+
+---
+
+## 9. ZenzicPalette — Zero Hex Law {#zenzic-palette}
+
+`ZenzicPalette` in `src/zenzic/ui.py` è la **sola fonte autorizzata di valori colore**
+nell'intera codebase Zenzic. Questa è la Zero Hex Law.
+
+### La Legge
+
+:::warning Vincolo di Design
+
+Nessuna stringa colore esadecimale (es. `#4f46e5`) e nessun nome colore Rich grezzo (es. `"red"`, `"cyan"`)
+possono comparire in `src/` **eccetto** all'interno degli attributi privati `ZenzicPalette._*`.
+Ogni altro file deve indirizzare esclusivamente gli attributi pubblici semantici indicati di seguito.
+
+:::
+
+### Palette semantica
+
+| Attributo | Hex | Significato |
+| :--- | :---: | :--- |
+| `ZenzicPalette.BRAND` | `#4f46e5` | Colore primario / brand Zenzic (Indigo) |
+| `ZenzicPalette.SUCCESS` | `#10b981` | OK · pulito · passato (Emerald) |
+| `ZenzicPalette.WARNING` | `#f59e0b` | Attenzione · advisory (Amber) |
+| `ZenzicPalette.ERROR` | `#f43f5e` | Errore · link rotti (Rose) |
+| `ZenzicPalette.DIM` | `#64748b` | Testo muto · secondario (Slate) |
+| `ZenzicPalette.FATAL` | `#8b0000` | Security breach · path traversal (Critical Red) |
+
+### Stringhe stile pre-composte
+
+Per le combinazioni più comuni, usare una costante `STYLE_*` invece di costruire
+`f"bold {X}"` inline:
+
+| Costante | Espande in |
+| :--- | :--- |
+| `ZenzicPalette.STYLE_BRAND` | `"bold #4f46e5"` |
+| `ZenzicPalette.STYLE_OK` | `"bold #10b981"` |
+| `ZenzicPalette.STYLE_WARN` | `"bold #f59e0b"` |
+| `ZenzicPalette.STYLE_ERR` | `"bold #f43f5e"` |
+| `ZenzicPalette.STYLE_DIM` | `"#64748b"` |
+
+### Pattern di utilizzo
+
+```python
+# CORRETTO — alias semantico tramite ZenzicPalette
+from zenzic.ui import ZenzicPalette
+
+table = Table(border_style=ZenzicPalette.DIM, header_style=ZenzicPalette.STYLE_BRAND)
+text = Text.from_markup(f"[{ZenzicPalette.BRAND}]Zenzic[/]")
+panel = Panel("...", border_style=ZenzicPalette.STYLE_ERR)
+```
+
+```python
+# VIETATO — literal hex al di fuori di ZenzicPalette
+text = Text.from_markup("[#4f46e5]Zenzic[/]")   # ✗
+
+# VIETATO — import di costante piatta (rimossa in)
+from zenzic.ui import INDIGO, EMERALD            # ✗
+
+# VIETATO — alias locale
+P = ZenzicPalette                              # ✗  usare sempre il nome completo della classe
+```
+
+### Aggiornare la palette
+
+Per cambiare un colore, modificare **solo** l'attributo esadecimale `_PRIVATO` corrispondente
+all'interno di `ZenzicPalette` in `src/zenzic/ui.py`. Tutti gli alias semantici e le
+stringhe stile pre-composte derivano da quegli attributi privati — l'intera codebase
+si aggiorna automaticamente.
+
+### Aggiunta alla checklist
+
+Aggiungere alla checklist della tua PR:
+
+- [ ] Nessun literal esadecimale (`#rrggbb`) in `src/` al di fuori di `ZenzicPalette._*`.
+- [ ] Nessun nome colore Rich grezzo (`"red"`, `"cyan"`) per uso della palette brand — usare `ZenzicPalette.*`.
+- [ ] Nessun alias locale `P = ZenzicPalette` — usare sempre il nome completo della classe.
+- [ ] Nessun `from zenzic.ui import INDIGO` (o qualsiasi costante piatta rimossa).

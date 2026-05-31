@@ -3,13 +3,17 @@
 
 # ── Dogfooding Enforcement ─────────────────────────────────────────
 # Zenzic guards its own documentation.  No commit enters zenzic-doc
-# without the Sentinel's approval.
+# without passing the Zenzic Check.
 # ───────────────────────────────────────────────────────────────────
+
+# Segregate stage execution: linters run at commit-time only.
+# The just-verify Final Guard runs at push-time only (stages: [pre-push]).
+default_stages: [pre-commit]
 
 repos:
   # 1. Generic file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: \.mdx$
@@ -43,13 +47,13 @@ repos:
         pass_filenames: false
         types_or: [ts, tsx]
 
-  # 4. Zenzic Sentinel — ZRT-010 Sovereign Parity: entry-point is 'just check'
+  # 4. Zenzic Check — ZRT-010 Sovereign Parity: entry-point is 'just check'
   #    so local and CI always run the same guard-aware invocation.
   #    always_run: true — config/nav changes can break docs even without .md edits
   - repo: local
     hooks:
       - id: zenzic-check
-        name: "Zenzic Sentinel"
+        name: 🔍 Zenzic Check (docs-portal audit)
         entry: just check
         language: system
         pass_filenames: false
@@ -57,17 +61,17 @@ repos:
 
   # 5. REUSE/SPDX license compliance
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v6.2.0
+    rev: 9fabf9eb815a57aac116b435e8346c200cdb8604  # v6.2.0
     hooks:
       - id: reuse
 
-  # 6. Pre-push Final Guard (4-Gates Standard, EPOCH 4 / v0.7.0)
+  # 6. Pre-push Final Guard (lifecycle gate model)
   # Single entry-point: locale ≡ remote. Same `just verify` runs in GHA.
   # Install with: uvx pre-commit install -t pre-push
   - repo: local
     hooks:
       - id: just-verify
-        name: 🛡️ Doc Final Guard (just verify)
+        name: 🛡️ Zenzic-Doc Final Guard (just verify)
         entry: just verify
         language: system
         stages: [pre-push]

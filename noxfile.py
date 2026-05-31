@@ -12,12 +12,70 @@ Quick reference:
     nox -s verify-codes-parity  — Doc-Code Validator: Zxxx parity between .mdx and codes.py
 """
 
+import os
+from pathlib import Path
+
 import nox
+_ROOT = Path(__file__).resolve().parent
 
 nox.options.reuse_existing_virtualenvs = True
 
 # Default sessions for fast feedback
 nox.options.sessions = ["typecheck", "reuse"]
+
+
+def _normalize_candidate(root: Path, raw_path: str) -> Path:
+    """Resolve a candidate core path relative to repository root when needed."""
+    candidate = Path(raw_path).expanduser()
+    if not candidate.is_absolute():
+        candidate = (root / candidate).resolve()
+    else:
+        candidate = candidate.resolve()
+    return candidate
+
+
+def _display_path(root: Path, path: Path) -> str:
+    """Render stable display path for session logs."""
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path)
+
+
+def _resolve_core_path(root: Path, session: nox.Session) -> Path:
+    """Resolve local Zenzic core path using sovereign precedence and fail-closed policy."""
+    candidates: list[tuple[str, str]] = []
+
+    env_override = os.environ.get("ZENZIC_CORE_PATH")
+    if env_override:
+        candidates.append(("ZENZIC_CORE_PATH", env_override))
+
+    candidates.extend(
+        [
+            ("_zenzic_core", "_zenzic_core"),
+            ("../zenzic", "../zenzic"),
+        ]
+    )
+
+    checked: list[str] = []
+    for label, raw in candidates:
+        candidate = _normalize_candidate(root, raw)
+        checked.append(f"{label} -> {_display_path(root, candidate)}")
+        if (candidate / "src" / "zenzic").is_dir():
+            session.log(
+                f"[Zenzic] Local core found at '{_display_path(root, candidate)}' "
+                "— using local source metadata."
+            )
+            return candidate
+
+    session.error(
+        "[Zenzic] Core repository not found in sovereign search order.\n"
+        "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic\n"
+        "Each candidate must contain src/zenzic.\n"
+        f"Checked: {checked}\n"
+        "Fail-closed policy active: PyPI fallback is prohibited."
+    )
+    raise RuntimeError("unreachable")
 
 
 @nox.session(venv_backend="none")
@@ -47,130 +105,22 @@ def reuse(session: nox.Session) -> None:
 
 @nox.session(name="verify-codes-parity", venv_backend="none")
 def verify_codes_parity(session: nox.Session) -> None:
-    """Doc-Code Validator: verify every Zxxx code in .mdx files exists in codes.py.
+    """Run Doc-Code Validator with core interpreter and ACL regex backend.
 
-    Scans all .mdx files under docs/ and i18n/ for Zxxx patterns and cross-checks
-    them against the canonical CODE_NAMES registry in the core package. Exits non-zero
-    if any undocumented code is found in the docs, or any registered code is absent
-    from finding-codes.mdx — ensuring documentation and code stay in perfect parity.
-
-    Graceful Degradation:
-      - Core Maintainer: ZENZIC_PROJECT_PATH set (or ../zenzic exists) → uses local source.
-      - External Contributor: local core not found → uses published PyPI release.
+    Sovereign Resolution (Fail-Closed):
+      - Override: ZENZIC_CORE_PATH
+      - CI canonical: ./_zenzic_core
+      - Dev fallback: ../zenzic
+      - PyPI fallback prohibited.
     """
-    import os
-    import re
-    import subprocess
-    from pathlib import Path
-
-    root = Path(__file__).parent
-
-    # ── Step 1: Load canonical codes — Graceful Degradation ───────────────────
-    core_path = os.environ.get("ZENZIC_PROJECT_PATH", "../zenzic")
-    python_snippet = (
-        "from zenzic.core.codes import CODE_NAMES; "
-        "print('\\n'.join(sorted(CODE_NAMES.keys())))"
+    root = _ROOT
+    core_path = _resolve_core_path(root, session)
+    session.run(
+        "uv",
+        "run",
+        "--project",
+        str(core_path),
+        "python",
+        "scripts/verify_codes_parity.py",
+        external=True,
     )
-
-    if os.path.exists(core_path):
-        # Core Maintainer: run against local source tree
-        session.log(f"[Zenzic] Local core detected at '{core_path}' — using local source.")
-        cmd = ["uv", "run", "--project", core_path, "python", "-c", python_snippet]
-    else:
-        # External Contributor: fall back to published PyPI release
-        session.log("[Zenzic] Local core not found — using published PyPI release.")
-        cmd = ["uv", "run", "--with", "zenzic", "python", "-c", python_snippet]
-
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        session.warn(
-            f"Could not load codes.py: {result.stderr.strip()} — skipping core→doc direction check"
-        )
-        canonical: set[str] = set()
-    else:
-        canonical = set(result.stdout.strip().splitlines())
-
-    if canonical:
-        session.log(f"Loaded {len(canonical)} canonical codes from codes.py")
-
-    # ── Step 2: Collect all Zxxx references from .mdx files ──────────────────
-    zxxx_pattern = re.compile(r"\bZ\d{3}\b")
-    found_in_docs: dict[str, set[str]] = {}  # code → set of files mentioning it
-
-    for mdx_file in sorted(root.glob("docs/**/*.mdx")):
-        text = mdx_file.read_text(encoding="utf-8")
-        for match in zxxx_pattern.finditer(text):
-            code = match.group()
-            found_in_docs.setdefault(code, set()).add(str(mdx_file.relative_to(root)))
-
-    session.log(f"Found {len(found_in_docs)} distinct Zxxx codes referenced in docs/")
-
-    # ── Step 3: Check finding-codes.mdx has a dedicated section for each canonical code ──
-    finding_codes_file = root / "docs" / "reference" / "finding-codes.mdx"
-    finding_codes_text = finding_codes_file.read_text(encoding="utf-8")
-    missing_from_encyclopedia: list[str] = []
-
-    for code in sorted(canonical):
-        anchor = f"{{#{code.lower()}}}"
-        if anchor not in finding_codes_text:
-            missing_from_encyclopedia.append(code)
-
-    # ── Step 3b: Bilingual symmetry — IT finding-codes.mdx must mirror EN ────
-    it_fc_path = (
-        root
-        / "i18n"
-        / "it"
-        / "docusaurus-plugin-content-docs"
-        / "current"
-        / "reference"
-        / "finding-codes.mdx"
-    )
-    missing_from_it: list[str] = []
-    if it_fc_path.exists():
-        it_fc_text = it_fc_path.read_text(encoding="utf-8")
-        missing_from_it = [
-            code
-            for code in sorted(canonical)
-            if f"{{#{code.lower()}}}" not in it_fc_text
-        ]
-    else:
-        session.warn("IT finding-codes.mdx not found — bilingual symmetry skipped")
-
-    # ── Step 4: Check no phantom codes in docs (codes not in registry) ───────
-    phantom_codes: list[tuple[str, str]] = []
-    for code, files in sorted(found_in_docs.items()):
-        if canonical and code not in canonical:
-            for f in sorted(files):
-                phantom_codes.append((code, f))
-
-    # ── Step 5: Report ────────────────────────────────────────────────────────
-    failed = False
-
-    if missing_from_encyclopedia:
-        session.error(
-            f"MISSING from finding-codes.mdx encyclopedia: {missing_from_encyclopedia}\n"
-            "Each canonical code must have a dedicated {#zxxx} anchor section."
-        )
-        failed = True
-
-    if missing_from_it:
-        session.error(
-            f"BILINGUAL SYMMETRY FAILURE — missing from IT finding-codes.mdx: "
-            f"{missing_from_it}\n"
-            "The Italian encyclopedia must contain the same {{#zxxx}} anchors as the English one."
-        )
-        failed = True
-    elif it_fc_path.exists():
-        session.log(
-            f"✓ Bilingual symmetry: IT finding-codes.mdx has all {len(canonical)} anchors"
-        )
-
-    if phantom_codes:
-        for code, filepath in phantom_codes:
-            session.warn(f"Phantom code {code} in {filepath} — not in codes.py registry")
-
-    if not failed:
-        session.log(
-            f"✓ Doc-Code Validator: all {len(canonical)} canonical codes "
-            f"present in finding-codes.mdx (EN + IT). No phantom codes detected."
-        )

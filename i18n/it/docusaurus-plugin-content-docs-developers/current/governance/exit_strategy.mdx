@@ -6,7 +6,7 @@ sidebar_label: "Il Giuramento di Sovranità"
 
 # Il Giuramento di Sovranità: Zero Residui
 
-> *"Zenzic è una sentinella nella tua pipeline, non una catena. La capacità di
+> *"Zenzic è un analizzatore nella tua pipeline, non una catena. La capacità di
 > rimuoverlo non è un caso limite — è un requisito di design."*
 
 ---
@@ -15,13 +15,13 @@ sidebar_label: "Il Giuramento di Sovranità"
 
 Zenzic fa una promessa incondizionata: **non terrà mai in ostaggio il tuo codebase.**
 
-Per garantire l'integrità del Safe Harbor, il core di audit di Zenzic è strettamente
+Per garantire l'integrità del Exclusion Zone, il core di audit di Zenzic è strettamente
 in sola lettura. Crediamo che un linter non dovrebbe mai essere una fonte di mutazioni
 indesiderate. Eventuali future funzionalità di rimedio saranno implementate come utilità
 esplicite e interattive (es. `zenzic fix`), mantenendo la fase di analisi al 100%
 priva di mutazioni.
 
-Questo documento è la prova formale di quella promessa.
+Questo documento è l'impegno formale di quella promessa.
 
 ---
 
@@ -80,7 +80,7 @@ docs_dir = "docs"
 engine = "mkdocs"
 ```
 
-Oppure in un file `zenzic.toml` standalone nella root del repository.
+Oppure in un file `.zenzic.toml` standalone nella root del repository.
 
 **Procedura di rimozione:**
 
@@ -91,7 +91,7 @@ Oppure in un file `zenzic.toml` standalone nella root del repository.
 Oppure:
 
 ```bash
-rm zenzic.toml
+rm .zenzic.toml
 ```
 
 La sezione `[tool.zenzic]` è uno spazio dei nomi isolato. Rimuoverla non influenza
@@ -106,10 +106,10 @@ nessun'altra configurazione di strumenti.
 ```yaml title=".github/workflows/docs.yml"
 # Elimina questo blocco
 
-- uses: PythonWoods/zenzic-action@v1
+- uses: PythonWoods/zenzic-action@<version>
 
   with:
-    version: "0.7.0"
+    version: "<version>"
     format: sarif
     upload-sarif: "true"
 ```
@@ -117,7 +117,7 @@ nessun'altra configurazione di strumenti.
 ### Step 2 — Rimuovi la Configurazione (15 secondi)
 
 ```bash
-rm zenzic.toml
+rm .zenzic.toml
 # OPPURE modifica pyproject.toml: rimuovi la sezione [tool.zenzic]
 ```
 
@@ -134,6 +134,4 @@ Uno strumento che rende la partenza difficile non ha fiducia nel suo valore — 
 proteggendo la propria presenza. Il modello di fiducia di Zenzic è Zero-Trust:
 incluso verso sé stesso.
 
-La sentinella esiste per proteggere la tua documentazione. Non per proteggere sé stessa.
-
-> *Saga VI: The Governance of Quartz — [leggi la cronaca](https://zenzic.dev/blog/governance-of-quartz)*
+L'analizzatore esiste per proteggere la tua documentazione. Non per proteggere sé stesso.

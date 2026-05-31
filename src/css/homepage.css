@@ -33,3 +33,43 @@
 .zz-homepage {
   scroll-behavior: smooth;
 }
+
+/* Global audit grid used as structural baseline for all homepage sections */
+.zz-homepage .zz-audit-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.zz-homepage .zz-audit-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, var(--ifm-color-emphasis-200) 0.5px, transparent 0.5px),
+    linear-gradient(to right, var(--ifm-color-emphasis-200) 0.5px, transparent 0.5px);
+  background-size: 100% 96px, 96px 100%;
+  opacity: 0.08;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  z-index: 0;
+}
+
+.zz-homepage .zz-audit-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section divider scaffolding for diagnostic layers */
+.zz-homepage .zz-divider {
+  position: relative;
+}
+
+.zz-homepage .zz-divider::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+  opacity: 0.75;
+}

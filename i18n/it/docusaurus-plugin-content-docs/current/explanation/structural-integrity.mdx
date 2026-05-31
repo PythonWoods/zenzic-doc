@@ -1,11 +1,11 @@
 ---
 sidebar_position: 9
-sidebar_label: Il Filtro della Sentinella
-title: La Sentinella vs. il Correttore
+sidebar_label: Il Filtro di Zenzic
+title: Zenzic vs. il Correttore
 description: Perché Zenzic si concentra sull'integrità strutturale e sulla sicurezza piuttosto che sullo stile della prosa — e perché questa distinzione definisce una categoria di strumento separata.
 ---
 
-# La Sentinella vs. il Correttore
+# Zenzic vs. il Correttore
 
 Zenzic non si interessa al tuo stile di scrittura.
 
@@ -20,10 +20,10 @@ occupano categorie ortogonali.
 
 ---
 
-## Il Filtro della Sentinella {#the-sentinels-filter}
+## Il Filtro di Zenzic {#integrity-filter}
 
-Ogni regola che entra nel Quartz Core deve superare un test di ammissione tridimensionale.
-Lo chiamiamo **Il Filtro della Sentinella**: una regola entra in Zenzic se e solo se difende
+Ogni regola che entra nel Zenzic Core deve superare un test di ammissione tridimensionale.
+Lo chiamiamo **Il Filtro di Zenzic**: una regola entra in Zenzic se e solo se difende
 una di queste tre dimensioni.
 
 ### Dimensione 1 — Integrità Strutturale {#dimension-structural}
@@ -41,7 +41,9 @@ Le regole di Integrità Strutturale catturano questi errori **prima che il build
 | :--- | :--- | :--- |
 | [`Z101`](../reference/finding-codes.mdx#z101) | `LINK_BROKEN` | Link interni morti — file non trovato |
 | [`Z102`](../reference/finding-codes.mdx#z102) | `ANCHOR_MISSING` | Link a heading che non esistono più |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Cicli di link circolari — telemetria strutturale, non un difetto (vedi [razionale architetturale](../reference/finding-codes.mdx#z106)) |
 | [`Z107`](../reference/finding-codes.mdx#z107) | `CIRCULAR_ANCHOR` | Link anchor auto-referenziali |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Etichette di link vuote o composte solo da whitespace |
 | [`Z401`](../reference/finding-codes.mdx#z401) | `MISSING_DIRECTORY_INDEX` | Directory senza `index.md` raggiungibile |
 | [`Z402`](../reference/finding-codes.mdx#z402) | `ORPHAN_PAGE` | File irraggiungibili da qualsiasi percorso di navigazione |
 | [`Z404`](../reference/finding-codes.mdx#z404) | `CONFIG_ASSET_MISSING` | Asset dichiarati nella config che non esistono su disco |
@@ -62,11 +64,11 @@ Le regole di sicurezza sono **non sopprimibili per design**. I codici di uscita 
 
 | Codice Finding | Nome | Cosa rileva | Uscita |
 | :--- | :--- | :--- | :---: |
-| [`Z201`](../reference/finding-codes.mdx#z201) | `SHIELD_SECRET` | Credenziali, chiavi API, token in qualsiasi riga sorgente | 2 |
+| [`Z201`](../reference/finding-codes.mdx#z201) | `CREDENTIAL_SECRET` | Credenziali, chiavi API, token in qualsiasi riga sorgente | 2 |
 | [`Z202`](../reference/finding-codes.mdx#z202) | `PATH_TRAVERSAL` | Escape di path di sistema in un link o valore di config | 3 |
 | [`Z203`](../reference/finding-codes.mdx#z203) | `PATH_TRAVERSAL_SUSPICIOUS` | Pattern di traversal relativo che esce dalla docs root | 3 |
 
-Vedi [Safe Harbor](./safe-harbor.mdx) e [La Trinità di Zenzic](./the-zenzic-trinity.mdx)
+Vedi [Exclusion Zone](./privacy-gate.mdx) e [La Trinità di Zenzic](./the-zenzic-trinity.mdx)
 per il contratto completo sui codici di uscita.
 
 ---
@@ -81,7 +83,8 @@ a prima vista portano conseguenze tecniche concrete per i tool downstream.
 
 L'esempio canonico è [`Z505: UNTAGGED_CODE_BLOCK`](../reference/finding-codes.mdx#z505):
 un blocco di codice delimitato senza specificatore di linguaggio viene renderizzato come testo
-semplice nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
+plain-text nella maggior parte dei motori. Più in particolare, impedisce la validazione degli
+
 snippet e interrompe la misurazione della copertura del syntax highlighting. L'assenza del tag
 linguaggio non è una preferenza stilistica — è un contratto machine-readable mancante tra
 l'autore e ogni strumento nella pipeline.
@@ -90,7 +93,8 @@ l'autore e ogni strumento nella pipeline.
 | :--- | :--- | :--- |
 | [`Z505`](../reference/finding-codes.mdx#z505) | `UNTAGGED_CODE_BLOCK` | Blocchi delimitati senza specificatore di linguaggio |
 | [`Z503`](../reference/finding-codes.mdx#z503) | `SNIPPET_ERROR` | Snippet di codice che non superano il parsing |
-| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Link che formano un ciclo di riferimento circolare |
+| [`Z106`](../reference/finding-codes.mdx#z106) | `CIRCULAR_LINK` | Cicli di link — telemetria strutturale; la documentazione forma un Knowledge Graph interconnesso dove i cicli sono attesi (vedi [razionale architetturale](../reference/finding-codes.mdx#z106)) |
+| [`Z108`](../reference/finding-codes.mdx#z108) | `EMPTY_LINK_TEXT` | Link con etichetta vuota o composta solo da whitespace |
 
 ---
 
@@ -128,7 +132,7 @@ strutturale, la sicurezza e l'accessibilità tecnica in CI, è l'unico di cui ha
 ## Cosa Zenzic Esplicitamente Non Fa {#what-zenzic-does-not-do}
 
 Il confine di ciò che Zenzic rifiuta è importante quanto ciò che applica. Questa tabella è
-permanente. Se una regola proposta non supera Il Filtro della Sentinella, non viene inclusa.
+permanente. Se una regola proposta non supera Il Filtro di Zenzic, non viene inclusa.
 
 | Categoria | Esempio | Posizione |
 | :--- | :--- | :--- |
@@ -141,7 +145,7 @@ permanente. Se una regola proposta non supera Il Filtro della Sentinella, non vi
 | Coerenza della prosa | Uso uniforme della terminologia | ✗ Specifico del dominio — usa `vale` |
 
 Queste categorie non sono al di sotto di Zenzic — sono **al di fuori del suo mandato**.
-La Sentinella applica la struttura. Tutto il resto è sovranità editoriale.
+Zenzic applica la struttura. Tutto il resto è sovranità editoriale.
 
 ---
 
@@ -166,6 +170,6 @@ del tuo team.
 ## Letture Correlate {#further-reading}
 
 - [La Trinità di Zenzic](./the-zenzic-trinity.mdx) — I tre pilastri non negoziabili: Zero Subprocess, Funzioni Pure, Analisi Strutturale
-- [Safe Harbor](./safe-harbor.mdx) — Il contratto sui codici di uscita e il gate di sicurezza inviolabile
+- [Exclusion Zone](./privacy-gate.mdx) — Il contratto sui codici di uscita e il gate di sicurezza inviolabile
 - [Riferimento Codici Finding](../reference/finding-codes.mdx) — Il registro completo Zxxx con i passaggi di rimedio
-- [Metriche di Salute](./health-metrics.mdx) — Come viene calcolato il Punteggio di Qualità Deterministico
+- [Sistema di Scoring](./scoring-system.mdx) — Come viene calcolato il Punteggio di Qualità Deterministico

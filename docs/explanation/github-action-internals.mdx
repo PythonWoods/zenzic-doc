@@ -1,8 +1,8 @@
 ---
 sidebar_position: 11
-icon: lucide/shield-check
+icon: lucide/lock
 title: GitHub Action Internals
-description: "How zenzic-action enforces security: Blood Sentinel Protocol, Exit Code Contract, Root-First Sentinel cascade, and Sovereign Intent."
+description: "How zenzic-action enforces security: Path Traversal Guard protocol, Exit Code Contract, Root-First discovery cascade, and Sovereign Intent."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -23,6 +23,8 @@ For day-to-day usage (copy-paste YAML, input reference), see the [CI/CD Integrat
 ```text
 action.yml            ← public contract (inputs, outputs, env injection)
     │
+    ├─▶  uvx zenzic guard scan       ← Defense-in-Depth (when guard-scan: "true")
+    │
     └─▶  zenzic-action-wrapper.sh   ← enforcement layer (security, exit codes, SARIF)
               │
               └─▶  uvx zenzic check all   ← Zenzic Core (analysis engine)
@@ -32,7 +34,7 @@ action.yml            ← public contract (inputs, outputs, env injection)
 
 ---
 
-## Blood Sentinel Protocol {#blood-sentinel}
+## Path Traversal Guard Protocol
 
 The wrapper enforces two independent *Jailbreak Guards* — one for the SARIF output path, one for the configuration file path. Both use the same `case`-based pattern, ensuring identical policy at every read/write boundary.
 
@@ -71,7 +73,7 @@ esac
 ```
 
 :::note[Guard scope]
-The Config Jailbreak Guard applies **only to explicit overrides** — values supplied via the `config-file` input. Auto-discovered paths (`zenzic.toml`, `.github/zenzic.toml`) are hardcoded in the wrapper source and cannot be injected by an attacker. Guarding them would be security theatre, not security.
+The Config Jailbreak Guard applies **only to explicit overrides** — values supplied via the `config-file` input. Auto-discovered paths (`.zenzic.toml`, `.github/.zenzic.toml`) are hardcoded in the wrapper source and cannot be injected by an attacker. Guarding them would be security theatre, not security.
 :::
 
 ### SARIF Integrity Check
@@ -97,8 +99,8 @@ Zenzic defines four exit codes. The wrapper propagates them **without remapping*
 |:---:|---|:---:|
 | `0` | Clean — all checks passed | — |
 | `1` | Documentation findings (broken links, orphans, dead refs, etc.) | ✅ via `fail-on-error: false` |
-| `2` | **SECURITY** — credential pattern detected (Shield / Z201) | ❌ Never |
-| `3` | **SECURITY** — system path traversal (Blood Sentinel / Z202–Z203) | ❌ Never |
+| `2` | **SECURITY** — credential pattern detected (credential scanner / Z201) | ❌ Never |
+| `3` | **SECURITY** — system path traversal (path traversal guard / Z202–Z203) | ❌ Never |
 
 Exits `2` and `3` terminate the job unconditionally. Neither `fail-on-error: "false"` nor any other input can suppress them. This is enforced in the wrapper's exit logic, not in `action.yml`, so it cannot be circumvented by overriding action inputs.
 
@@ -120,18 +122,57 @@ This ensures downstream steps that read `findings-count` never see `"0 findings,
 
 ---
 
-## Root-First Sentinel — Configuration Discovery {#cascade}
+## Secret Guard Step {#guard-scan}
+
+When `guard-scan: "true"` is set, the action runs `zenzic guard scan` as a standalone composite step **before** the main quality gate. This implements Defense-in-Depth for teams where contributors may bypass pre-commit hooks with `git commit --no-verify`.
+
+The guard scan uses the same `version` pin as the main check. It reads `forbidden_patterns` and built-in credential signatures from the repository's `.zenzic.toml`. If it detects a credential or forbidden term, it exits non-zero and terminates the job immediately — the main `check all` never runs.
+
+```yaml
+- name: Run Zenzic Documentation Quality Gate
+  uses: PythonWoods/zenzic-action@<version>
+  with:
+    version: "<version>"
+    guard-scan: "true"   # runs zenzic guard scan before check all
+    format: sarif
+    upload-sarif: "true"
+```
+
+:::note[Guard scan is always fatal]
+`fail-on-error` does not govern the guard scan step. If secrets are found, the job stops. This mirrors the Exit 2 security contract: security findings are facts, not findings to negotiate.
+:::
+
+---
+
+## Sovereign Job Summary {#job-summary}
+
+The wrapper writes a structured Markdown table to `$GITHUB_STEP_SUMMARY` for every non-zero exit. The summary appears in the **GitHub Actions → job → Summary** tab and in PR check details — without requiring the developer to open the step log.
+
+| Exit | Summary title | Content |
+|:---:|---|---|
+| `1` + CAP | **❌ Suppression CAP Exceeded** | Active/CAP counts, Playbook link |
+| `1` generic | **❌ Documentation Findings** | Findings count, Quality Score |
+| `2` | **❌ Security Breach** | Z201 rule, action guidance |
+| `3` | **❌ Boundary Breach** | Z202/Z203 rules, action guidance |
+
+The **CAP Exceeded** summary is constructed by parsing the SARIF output for a result with `ruleId: "SUPPRESSION_CAP_EXCEEDED"`. No second invocation of Zenzic is required — the CAP-exceeded SARIF contains exactly one result with governance properties embedded in `properties.governance`.
+
+The `cap-exceeded` output (`"true"` / `"false"`) is available to downstream steps for conditional logic (e.g. dashboard automation, PR labeling).
+
+---
+
+## Root-First Discovery — Configuration Cascade {#cascade}
 
 The wrapper implements a **hierarchical auto-discovery** for the Zenzic configuration file. The search order reflects the conventional placement in real-world repositories:
 
 ```text
 Priority 1  →  Explicit override   (config-file input is set)
-Priority 2  →  zenzic.toml         (repository root)
-Priority 3  →  .github/zenzic.toml (hidden config directory)
+Priority 2  →  .zenzic.toml         (repository root)
+Priority 3  →  .github/.zenzic.toml (hidden config directory)
 Priority —  →  (no file found)     → Zenzic uses built-in defaults
 ```
 
-This order guarantees **parity between local runs and CI**: a developer who runs `zenzic check all` locally picks up `zenzic.toml` from the root, and so does the action in CI.
+This order guarantees **parity between local runs and CI**: a developer who runs `zenzic check all` locally picks up `.zenzic.toml` from the root, and so does the action in CI.
 
 The discovered path is passed to the CLI via `--config` using a Bash array — never a string — so paths containing spaces are handled correctly:
 
@@ -180,5 +221,5 @@ set +f                         # restore glob expansion
 |---|---|
 | [action README](https://github.com/PythonWoods/zenzic-action) | Quick Start, inputs/outputs reference, Sovereign Override usage |
 | [CI/CD Integration](../how-to/configure-ci-cd) | Workflow recipes, SARIF badge, score badge |
-| [Architecture](./architecture) | Zenzic Core two-pass pipeline, Shield middleware, adapter protocol |
-| [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) | Architectural decisions behind the exit code contract and Blood Sentinel |
+| [Architecture](./architecture) | Zenzic Core two-pass pipeline, credential scanner middleware, adapter protocol |
+| [ADR Vault](https://zenzic.dev/developers/explanation/adr-vault) | Architectural decisions behind the exit code contract and path traversal guard |

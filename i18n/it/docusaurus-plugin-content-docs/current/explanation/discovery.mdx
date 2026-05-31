@@ -6,7 +6,76 @@ description: Come Zenzic scopre i file sorgente e il modello di esclusione a qua
 
 # Discovery Universale e Esclusione a Livelli
 
-Zenzic adotta un principio architetturale preciso: **un solo punto d'ingresso** per la scoperta dei file. Ogni modulo del sistema — scanner, validator, Shield, orphan-checker — vede lo stesso identico insieme di file. Non esistono scorciatoie.
+Zenzic adotta un principio architetturale preciso: **un solo punto d'ingresso** per la scoperta dei file. Ogni modulo del sistema — scanner, validator, credential scanner, orphan-checker — vede lo stesso identico insieme di file. Non esistono scorciatoie.
+
+---
+
+## L'Autorità della Radice {#root-authority}
+
+Prima che Zenzic possa scoprire, escludere o scansionare un singolo file, deve rispondere a una domanda:
+**dove inizia questo progetto?**
+
+Zenzic è uno strumento con perimetro di Workspace. Non analizza directory arbitrarie; analizza
+**progetti definiti**. Per stabilire il confine del progetto, Zenzic esegue una **traversata
+verso l'alto** (upward traversal) a partire dal percorso target, cercando un marcatore di radice
+autorizzato.
+
+### Marcatori di Radice del Repository {#root-markers}
+
+Due marcatori sono autorizzati (il primo trovato vince):
+
+| Marcatore | Descrizione |
+| :--- | :--- |
+| `.git/` | Marcatore VCS universale — presente in qualsiasi repository tracciato da Git |
+| `.zenzic.toml` | Il file di configurazione di Zenzic — il contratto esplicito di governance |
+
+Entrambi sono intenzionalmente engine-neutral: `mkdocs.yml`, `docusaurus.config.ts` e file
+analoghi dei motori di build non sono marcatori di radice. Il Core deve rimanere indipendente
+da qualsiasi framework documentale specifico.
+
+### Perché il Marcatore di Radice è Obbligatorio {#why-mandatory}
+
+Senza un marcatore di radice (VCS o configurazione), Zenzic non può stabilire il **Perimetro di Sovranità** del progetto. Il blocco è necessario per quattro motivi indipendenti:
+
+- **Risolvere i percorsi relativi** — ogni segnalazione è espressa come percorso relativo alla radice. Senza un'ancora fissa, la posizione dei file è ambigua e non riproducibile tra macchine diverse.
+- **Mappare il workspace nel VSM** — Zenzic costruisce sempre una Virtual Site Map, indipendentemente dall'adapter. In modalità engine (Docusaurus, MkDocs), il VSM include ghost route, trasformazioni di slug e pagine virtuali. In modalità Standalone, il VSM è una proiezione 1:1 del filesystem. In entrambi i casi, la radice definisce il punto zero per la canonizzazione di ogni riferimento interno — così che `index.md` alla radice sia distinguibile senza ambiguità da un `index.md` in una sottocartella.
+- **Applicare le `directory_policies`** — i contratti di governance fanno corrispondere percorsi tramite pattern glob relativi alla radice del workspace. Senza una radice definita, le regole di esenzione sono non deterministiche e non possono essere applicate in modo coerente.
+- **Prevenire il Massive Indexing** — senza un confine esplicito, il motore potrebbe scansionare accidentalmente l'intero filesystem host, producendo dati incoerenti e rischiando la fuga di informazioni.
+
+L'assenza di un marcatore di radice produce questo errore:
+
+```text
+ERROR: Could not locate repo root: no .git directory or .zenzic.toml found in any
+ancestor of /percorso/al/target. Run Zenzic from inside the repository.
+```
+
+Non si tratta di un errore di configurazione. È una **garanzia di sicurezza**: il Quality Gate
+interrompe una scansione fuori perimetro prima che inizi.
+
+### Opzioni di Risoluzione {#root-resolution}
+
+Per consentire a Zenzic di analizzare una directory, soddisfa uno dei seguenti requisiti:
+
+**Opzione A — Inizializza Zenzic** (crea il marcatore `.zenzic.toml`):
+
+```bash
+cd /percorso/al/target
+zenzic init
+```
+
+**Opzione B — Inizializza un repository Git** (crea il marcatore `.git/`):
+
+```bash
+cd /percorso/al/target
+git init
+```
+
+**Opzione C — Esegui dall'interno di un progetto esistente** (la traversata verso l'alto troverà il marcatore automaticamente):
+
+```bash
+# Da qualsiasi punto all'interno di un progetto che ha già .git/ o .zenzic.toml
+zenzic check all
+```
 
 ---
 
@@ -21,24 +90,21 @@ Questo garantisce che:
 - Le estensioni riconosciute come documentazione sorgente siano fissate: `.md` e `.mdx`
 - I link simbolici vengano sempre saltati
 
+Il vantaggio e architetturale: quando una directory viene esclusa, viene esclusa ovunque — scanner, validator, credential scanner e orphan-checker vedono esattamente lo stesso insieme di file. Non esiste il rischio che un modulo "dimentichi" di applicare una regola di esclusione.
+
 La funzione accetta tre argomenti:
 
 1. **`docs_root`** — percorso assoluto alla directory di documentazione
 2. **`config`** — configurazione Zenzic caricata (fornisce `excluded_dirs`)
 3. **`exclusion_manager`** — il `LayeredExclusionManager` per la valutazione completa a 4 livelli
 
-```python
-# Uso interno — tutti i moduli seguono questo contratto
-for md_file in iter_markdown_sources(docs_root, config, exclusion_manager):
-    # md_file e un Path assoluto, ordinato, non-symlink, .md o .mdx
-    content = md_file.read_text(encoding="utf-8")
-```
-
 ---
 
 ## Gerarchia di esclusione a quattro livelli {#four-level-hierarchy}
 
 Il `LayeredExclusionManager` orchestra le decisioni di esclusione attraverso quattro livelli. L'ordine di valutazione segue una logica precisa: il primo livello che corrisponde vince.
+
+### I Quattro Livelli {#four-levels}
 
 ```mermaid
 flowchart TD
@@ -56,13 +122,20 @@ flowchart TD
     L4 -->|No CLI override| INCLUDED[INCLUDED - Default]
 
     style EXCLUDED_L1 fill:#ef4444,color:#fff
-    style EXCLUDED_VCS fill:#f97316,color:#fff
-    style EXCLUDED_L3 fill:#f97316,color:#fff
-    style EXCLUDED_L4 fill:#f97316,color:#fff
-    style INCLUDED_L2 fill:#22c55e,color:#fff
-    style INCLUDED_L4 fill:#22c55e,color:#fff
-    style INCLUDED fill:#22c55e,color:#fff
+    style EXCLUDED_VCS fill:#f59e0b,color:#fff
+    style EXCLUDED_L3 fill:#f59e0b,color:#fff
+    style EXCLUDED_L4 fill:#f59e0b,color:#fff
+    style INCLUDED_L2 fill:#10b981,color:#fff
+    style INCLUDED_L4 fill:#10b981,color:#fff
+    style INCLUDED fill:#10b981,color:#fff
 ```
+
+| Livello | Nome | Sorgente | Modificabile? |
+| :---: | :--- | :--- | :---: |
+| **L1** | System Guardrails | Hardcoded in `SYSTEM_EXCLUDED_DIRS` | No |
+| **L2** | Forced Inclusions + VCS | `included_dirs`, `included_file_patterns`, `.gitignore` | Sì (config) |
+| **L3** | Config Exclusions | `excluded_dirs`, `excluded_file_patterns` in `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` | Sì (config) |
+| **L4** | CLI Overrides | Flag `--exclude-dir`, `--include-dir` | Sì (per-run) |
 
 ### L1 — System Guardrails {#level-1-system}
 
@@ -93,7 +166,7 @@ Il livello 2 gestisce due forze opposte:
 L'ordine di precedenza tra questi due sotto-livelli e chiaro: le inclusioni forzate vincono sempre sulle esclusioni VCS.
 
 ```toml
-# zenzic.toml
+# .zenzic.toml
 respect_vcs_ignore = true
 included_dirs = ["generated-docs"]
 included_file_patterns = ["api.generated.md"]
@@ -103,7 +176,7 @@ In questo esempio, anche se `generated-docs/` e nel `.gitignore`, Zenzic lo scan
 
 ### L3 — Configurazione {#level-3-config}
 
-Le esclusioni dichiarate in `zenzic.toml` o `[tool.zenzic]` in `pyproject.toml`:
+Le esclusioni dichiarate in `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml`:
 
 - `excluded_dirs` — directory da escludere (additive ai Guardrail)
 - `excluded_file_patterns` — pattern glob applicati ai nomi dei file
@@ -119,37 +192,12 @@ Flag a riga di comando per override temporanei:
 
 I flag CLI vengono valutati con la stessa logica degli altri livelli: `--include-dir` vince su `--exclude-dir` per la stessa directory, ma nessuno dei due puo sovrastare L1.
 
----
-
-## Flusso di valutazione per le directory {#directory-evaluation-flow}
-
-Quando `LayeredExclusionManager.should_exclude_dir` viene chiamato per una directory, il flusso e il seguente:
-
-1. **L1 — System Guardrails:** la directory e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi (immutabile)
-2. **L2 — Inclusioni forzate (config):** la directory e in `included_dirs`? Se si, includi
-3. **L4 — CLI `--exclude-dir`:** la directory e stata esclusa via CLI? Se si, escludi
-4. **L4 — CLI `--include-dir`:** la directory e stata inclusa via CLI? Se si, includi
-5. **L2 VCS — gitignore:** con `respect_vcs_ignore = true`, la directory corrisponde a un pattern `.gitignore`? Se si, escludi
-6. **L3 — Config `excluded_dirs`:** la directory e nella lista di configurazione? Se si, escludi
-7. **Default:** includi
-
-## Flusso di valutazione per i file {#file-evaluation-flow}
-
-Il flusso per `should_exclude_file` e analogo ma piu granulare:
-
-1. **L1 — System Guardrails:** un componente del percorso del file e in `SYSTEM_EXCLUDED_DIRS`? Se si, escludi
-2. **L2 — `included_file_patterns`:** il nome del file corrisponde a un pattern di inclusione forzata? Se si, includi
-3. **L2 — `included_dirs`:** un componente del percorso e in `included_dirs`? Se si, includi
-4. **L4 — CLI `--exclude-dir`:** un componente del percorso e nelle esclusioni CLI? Se si, escludi
-5. **L4 — CLI `--include-dir`:** un componente del percorso e nelle inclusioni CLI? Se si, includi
-6. **L2 VCS — gitignore:** il percorso relativo corrisponde a un pattern `.gitignore`? Se si, escludi
-7. **L3 — `excluded_file_patterns`:** il nome del file corrisponde a un pattern di esclusione? Se si, escludi
-8. **L3 — `excluded_dirs`:** un componente del percorso e nelle directory escluse dalla configurazione? Se si, escludi
-9. **Default:** includi
 
 ---
 
 ## Flusso di lavoro `respect_vcs_ignore` {#vcs-workflow}
+
+Per default, `respect_vcs_ignore` è `false`. Zenzic scansiona ogni file sotto `docs/` che non sia escluso dai System Guardrails o dalle esclusioni config/CLI. Questo è il **principio Zero-Config**: ciò che vedi nel filesystem è ciò che Zenzic scansiona.
 
 Quando `respect_vcs_ignore = true`, il `LayeredExclusionManager` costruisce un `VCSIgnoreParser` unificato dai file `.gitignore`:
 
@@ -158,22 +206,24 @@ Quando `respect_vcs_ignore = true`, il `LayeredExclusionManager` costruisce un `
 3. Unisce le regole di tutti i parser in un singolo parser
 4. Pre-compila le espressioni regolari per performance ottimali
 
-Il parser segue la specifica gitignore completa:
+Il parser segue la specifica gitignore completa, incluse negazione (`!`), ancoraggio al percorso e wildcards glob.
 
-- L'ultima regola corrispondente vince (semantica last-match-wins)
-- `!` nega una regola (re-include un file precedentemente escluso)
-- `*` corrisponde a tutto tranne `/`
-- `**` corrisponde a tutto incluso `/`
-- La `/` finale limita la regola alle sole directory
-- La `/` iniziale ancora la regola alla directory base
+### Interazione con le Forced Inclusions
 
-I percorsi contenenti `..` vengono sempre trattati come non corrispondenti (protezione di sicurezza).
+Le inclusioni forzate (`included_dirs`, `included_file_patterns`) sovrascrivono le esclusioni VCS. Questo supporta il workflow comune in cui la documentazione generata è elencata nel `.gitignore` (perché non deve essere committata) ma deve comunque essere lintata:
+
+```toml
+respect_vcs_ignore = true
+
+# Questo file è nel .gitignore ma deve essere lintato
+included_file_patterns = ["api.generated.md"]
+```
 
 ---
 
-## Safe Harbor Philosophy {#safe-harbor}
+## Exclusion Zone Philosophy {#privacy-gate}
 
-Il sistema di esclusione e progettato seguendo la Safe Harbor Philosophy:
+Il sistema di esclusione e progettato seguendo la Exclusion Zone Philosophy:
 
 - **Nessuna sorpresa:** senza configurazione, Zenzic funziona con valori predefiniti ragionevoli
 - **Nessun file critico esposto:** i System Guardrails proteggono directory che non contengono mai documentazione utile (`.git`, `.venv`, ecc.)
@@ -184,39 +234,22 @@ Il `LayeredExclusionManager` viene costruito una sola volta dalla CLI e passato 
 
 ---
 
-## Walk dei file non-Markdown {#walk-files}
+## Note sulle Prestazioni {#performance}
 
-Per i file non-Markdown (asset, immagini, configurazione), Zenzic fornisce `walk_files`: un iteratore basato su `os.walk` con pruning in-place delle directory.
-
-A differenza di `Path.rglob("*")`, `walk_files` pota gli alberi esclusi (ad esempio `.nox/`, `node_modules/`) senza mai entrare in essi. Questo e cruciale per le performance in repository con migliaia di dipendenze.
-
-Il pruning viene pilotato sia dal `LayeredExclusionManager` (via `should_exclude_dir`) sia da un set aggiuntivo di directory hard-prune (usato da `find_unused_assets` per `excluded_asset_dirs`).
+- **La directory pruning** viene applicata durante `os.walk()`, non dopo. Gli alberi esclusi (ad esempio `node_modules/` con migliaia di file) non vengono mai attraversati.
+- Per i file non-Markdown, `walk_files()` usa lo stesso motore `os.walk()` con pruning in-place. A differenza di `Path.rglob("*")`, non entra mai negli alberi esclusi.
+- I pattern dei file sono **precompilati** in `re.Pattern` al momento della costruzione di `LayeredExclusionManager` usando `fnmatch.translate()`.
+- I pattern VCS senza regole di negazione usano una **fast path con regex combinata** — tutte le regole positive vengono fuse in una singola regex compilata per matching O(1) per percorso.
+- `LayeredExclusionManager` viene costruito **una sola volta** per invocazione CLI e passato per riferimento lungo l'intera pipeline.
+- Un set separato di hard-prune viene usato da `find_unused_assets` per `excluded_asset_dirs`.
 
 ---
 
-## Multi-Root Discovery (EPOCH 7a) {#multi-root}
+## Multi-Root Discovery {#multi-root}
 
-`docs_dir` è la radice canonica dei sorgenti, ma gli static-site generator moderni gestiscono regolarmente **alberi di contenuto che vivono fuori da `docs/`**. Il caso di scuola è la directory `blog/` di Docusaurus: viene materializzata in URL reali dalla build, ma una scansione Zenzic pre-EPOCH-7a non avrebbe mai visto i file al suo interno. Il Virtual Site Map ingeriva solo i file sotto `docs_root`, perciò i link rotti dentro (o verso) i post del blog sfuggivano a `zenzic check all` e affioravano solo a valle, quando `docusaurus build` falliva. Chiamiamo questa modalità di fallimento **VSM Blindness**.
+`docs_dir` è la radice canonica dei sorgenti, ma gli static-site generator moderni gestiscono regolarmente **alberi di contenuto che vivono fuori da `docs/`**. Il caso di scuola è la directory `blog/` di Docusaurus: viene materializzata in URL reali dalla build, ma una scansione Zenzic pre-current series non avrebbe mai visto i file al suo interno. Il Virtual Site Map ingeriva solo i file sotto `docs_root`, perciò i link rotti dentro (o verso) i post del blog sfuggivano a `zenzic check all` e affioravano solo a valle, quando `docusaurus build` falliva. Chiamiamo questa modalità di fallimento **VSM Blindness**.
 
-Multi-Root Discovery cura la cecità permettendo all'adapter attivo di dichiarare ulteriori radici di contenuto in modo deterministico — senza `rglob`, senza `subprocess`, senza euristiche ambientali:
-
-```python
-# zenzic.core.adapters._base
-@dataclass(frozen=True, slots=True)
-class ContentRoot:
-    path: Path        # assoluto, es. <repo>/blog
-    url_prefix: str   # es. 'blog' (o '' per contenuti serviti alla radice)
-    label: str        # diagnostico, es. 'docusaurus-blog'
-```
-
-Gli adapter aderiscono implementando il metodo opzionale `get_extra_content_roots(repo_root) -> list[ContentRoot]`. Il Core lo individua via `hasattr()` (rispecchiando la convenzione preesistente di `get_locale_source_roots`), così gli adapter che non hanno nulla da dichiarare non hanno bisogno di stub — l'aggiunta è **non-breaking** per gli adapter di terze parti costruiti contro il Protocollo v0.7.0.
-
-Quando un adapter restituisce content root, quattro stadi della pipeline cooperano per ammettere i file come contenuto di prima classe:
-
-1. **Discovery** — `iter_extra_content_markdown_sources(content_root, url_prefix, ...)` percorre ogni radice con `walk_files` (stesso motore `os.walk`, stesso exclusion manager) e produce coppie `(abs_path, logical_rel)` dove `logical_rel` porta il prefisso URL come primo segmento (es. `Path('blog/2026-04-12-foo.mdx')`). L'uso di `os.walk` invece di `Path.rglob()` non è una preferenza stilistica: `rglob` non offre la **potatura in-place delle sottodirectory escluse** (il walker entrerebbe in `node_modules/`, `.venv/` e `.git/` per poi scartare i risultati), e l'ordine di yield dipende dall'implementazione del filesystem. `os.walk` con potatura `dirs[:]` garantisce determinismo bit-per-bit indipendentemente dal filesystem sottostante — invariante necessario perché il VSM resti riproducibile.
-2. **VSM** — `build_vsm` risolve il `rel` logico di ogni file da `docs_root` *o* da una radice extra abbinata, poi dispatcha al `get_route_info(rel)` dell'adapter. L'iniezione del prefisso permette a una sola chiamata dell'adapter di disambiguare senza un secondo dispatch.
-3. **Validator** — il link checker carica i file delle radici extra in `md_contents`, estende `_allowed_roots` così i link relativi cross-tree risolvono sotto lo Shield, e usa il `rel` con prefisso nei suggerimenti "Did you mean?".
-4. **Scanner** — `find_unused_assets` e `find_placeholders` iterano le radici extra quando raccolgono i set di riferimento, così un asset citato solo da un post del blog non viene segnalato come Z903 (Asset Inutilizzato).
+Multi-Root Discovery cura la cecità permettendo all'adapter attivo di dichiarare ulteriori radici di contenuto — ciascuna con un percorso fisico, un prefisso URL e un'etichetta diagnostica. Quando vengono dichiarate radici extra, tutti gli stadi della pipeline trattano quei file come contenuto di prima classe accanto all'albero primario `docs/`.
 
 ### Auto-discovery senza `subprocess` {#auto-discovery}
 
@@ -229,58 +262,30 @@ Nessun processo Node.js viene mai avviato — il config viene letto come **dato*
 
 ### Invariante di tracciabilità {#traceability}
 
-Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. La suite di regression (`tests/test_docusaurus_blog_vsm.py::TestEpoch7aReverseMapping`) asserisce `(repo_root / route.source).is_file()` per ogni rotta del blog, fissando il contratto che le rotte virtuali della EPOCH 7b (tag, paginazione, autori) erediteranno: una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
+Ogni voce nel VSM, incluse quelle prodotte da una radice extra, porta un `Route.source` che risale a un file reale su disco. Una rotta senza origine fisica sarebbe un validatore che urla `error` senza mai dire `dove`.
 
 ### Invariante di Reverse-Mapping e Virtual Routes {#reverse-mapping}
 
-Il Multi-Root Discovery (EPOCH 7a) ha risolto il **VSM Blindness** per i file fisici
-fuori da `docs/`. La EPOCH 7b estende la garanzia alle **pagine generate dal motore**:
+Il Multi-Root Discovery (current series) ha risolto il **VSM Blindness** per i file fisici
+fuori da `docs/`. La current series estende la garanzia alle **pagine generate dal motore**:
 Docusaurus produce URL — pagine di tag, indici paginati, profili autore — che non hanno
 un corrispondente fisico in Markdown. Queste rotte esistono solo nell'output del build,
 mai su disco.
 
-L'invariante è formalizzata nel dataclass `VirtualRoute`:
-
-```python
-from zenzic.core.adapters import VirtualRoute
-
-route = VirtualRoute(
-    url="/blog/tags/python/",
-    kind="tag",
-    label="tag:python",
-    source_files=frozenset({"blog/2026-04-12-post.md"}),
-)
-# Tentare di creare una VirtualRoute con source_files=frozenset() solleva ValueError:
-# "VirtualRoute '/blog/tags/ghost/': source_files is empty —
-#  Reverse-Mapping Invariant violated"
-```
-
-L'invariante è applicata a **tre livelli**:
-
-| Livello | Dove | Guardia |
-| :---    | :--- | :------ |
-| **1 — Costruttore** | `VirtualRoute.__post_init__` | Solleva `ValueError` immediatamente |
-| **2 — Builder**     | `build_vsm()` | `_log.error` difensivo + salto `continue` |
-| **3 — Test**        | `TestReverseMappingInvariant` | Asserisce il contratto `ValueError` |
-
-Gli adapter aderiscono implementando il metodo opzionale
-`get_virtual_routes(md_contents) -> list[VirtualRoute]` (stesso pattern di scoperta
-`hasattr` di `get_extra_content_roots`). `build_vsm()` lo chiama immediatamente dopo
-il ciclo delle rotte fisiche, prima di `_detect_collisions()`, così le virtual routes
-partecipano alla collision detection alla pari delle rotte fisiche.
+L'invariante garantisce che ogni URL generato dal motore risalga ad almeno un file sorgente. Gli adapter aderiscono implementando il metodo opzionale `get_virtual_routes()`, e le virtual routes partecipano alla collision detection alla pari delle rotte fisiche.
 
 ### Matrice di supporto motori {#engine-support}
 
 | Motore           | Implementa `get_extra_content_roots` | Stato                                                                       |
 |------------------|--------------------------------------|------------------------------------------------------------------------------|
 | Docusaurus       | Sì                                   | Auto-rileva `blog/` da config o convenzione.                                 |
-| MkDocs (Material) | No                                  | Adesione rinviata fino all'ingresso del plugin `material/blog` nello scope v0.7. |
+| MkDocs (Material) | No                                  | Adesione rinviata fino all'ingresso del plugin `material/blog` nello scope v0.8.x |
 | Zensical         | No                                   | Architettura identica — abilitato quando arriva un plugin out-of-tree.       |
 | Standalone       | No                                   | Nessun plugin; `docs_root` è l'intera superficie di contenuto.               |
 
 ### Esportare la mappa del sito: `inspect routes` {#inspect-routes}
 
-EPOCH 7b include un comando CLI di prima classe che espone il VSM a consumer esterni:
+current series include un comando CLI di prima classe che espone il VSM a consumer esterni:
 
 ```shell
 zenzic inspect routes --json
@@ -288,7 +293,7 @@ zenzic inspect routes --json
 
 Questa funzionalità esporta la mappa completa del sito in formato JSON deterministico.
 È progettata per essere consumata da tool esterni: script Bash custom, dashboard di
-CI/CD, o agenti di Intelligenza Artificiale che necessitano di contesto architetturale.
+CI/CD, o tool specializzati che necessitano di contesto architetturale.
 
 Ogni record nel JSON contiene quattro campi: `url`, `kind` (`physical` o `virtual`),
 `source_files` (un array ordinato di percorsi relativi al repository che *causano*

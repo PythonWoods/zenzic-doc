@@ -29,41 +29,20 @@ possiede legittimamente, in modo che il validator smetta di segnalarli
 
 | Situazione | Usa questo | Non usare |
 |---|---|---|
-| Molti link cross-plugin condividono un prefisso (`/developers/`, `/api/`) | `[link_validation] absolute_path_allowlist` in `zenzic.toml` | ignore inline |
-| Una singola riga isolata in un file matcha legittimamente una regola | `<!-- zenzic:ignore Zxxx -->` (oppure `{/* zenzic:ignore Zxxx */}` per MDX) | allowlist |
-| Due o più file avrebbero bisogno dello stesso ignore inline | Promuovi a allowlist / config | ignore inline in ogni file |
+| Una singola riga isolata in un file matcha legittimamente una regola | `<!-- zenzic:ignore Zxxx -->` (oppure `{/* zenzic:ignore Zxxx */}` per MDX) | — |
+| Più link cross-plugin in file diversi | Ignore inline — uno per link | — |
 
-La regola decisionale: **se è una proprietà del progetto, va in config;
-se è una proprietà di una riga, va inline.**
+La regola decisionale: **se è una proprietà di una riga, va inline.**
 
 ---
 
-## Allowlist di un prefisso cross-istanza
+## Gestione dei Prefissi Cross-Istanza
 
-Aggiungi i prefissi di cui ti fidi a `zenzic.toml`:
+:::danger[`[link_validation]` rimosso]
+Lo schema TOML `[link_validation]` — incluso `absolute_path_allowlist` — non è supportato e genera un errore di validazione TOML all'avvio. Un `.zenzic.toml` che dichiara ancora `[link_validation]` va aggiornato.
 
-```toml
-# zenzic.toml
-[link_validation]
-absolute_path_allowlist = [
-    "/developers/",
-    "/api/",
-]
-```
-
-Ora qualsiasi link che inizia con `/developers/` o `/api/` è accettato
-da Z105. Tutto il resto continua a fallire — un typo come
-`/developres/foo` verrà catturato.
-
-**Regole da ricordare:**
-
-1. Le voci **devono** iniziare con `/`. Il check usa un semplice
-   `startswith` matching — niente regex, niente glob.
-2. Il match è solo sul path URL — `?query` e `#anchor` vengono
-   rimossi prima del confronto.
-3. Il validator non verifica che il target esista realmente
-   nell'istanza sorella. L'allowlist è un **contratto di fiducia**,
-   non un resolver.
+Per i link cross-istanza segnalati da Z105, usa gli ignore inline su ogni riga interessata.
+:::
 
 ---
 
@@ -77,12 +56,12 @@ Gli ignore inline sono chirurgici. Usali quando:
 - L'eccezione è contesto locale, non una verità di progetto.
 
 ```markdown
-<!-- zenzic:ignore Z201 -->
+<!-- zenzic:ignore: Z201 -->
 api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
 ```
 
 ```mdx
-{/* zenzic:ignore Z105 */}
+{/* zenzic:ignore: Z105 */}
 [Esempio di link hard](/legacy/path)
 ```
 
@@ -91,28 +70,23 @@ diff delle PR, tracciabile con `git blame`.
 
 ---
 
-## Anti-pattern: ignorare inline i link cross-plugin
+## Anti-pattern: abuso degli ignore inline
 
-**Non** spargere `<!-- zenzic:ignore Z105 -->` su ogni link cross-plugin.
-Questo:
+**Non** aggiungere `<!-- zenzic:ignore: Z1XX -->` come soppressione generale. Questo:
 
-- Nasconde la dipendenza cross-istanza a chiunque legga `zenzic.toml`.
-- Costringe ogni contributor a riscoprire la stessa regola.
 - Implica che il link sia "rotto e accettato" mentre in realtà è
   corretto per design.
+- Nasconde la dipendenza cross-istanza ai revisori della PR.
 
-Se due o più file necessitano dello stesso ignore Z105 per lo stesso
-prefisso, quel prefisso è una **verità sistemica** del tuo progetto —
-promuovilo a `absolute_path_allowlist`.
+Annota gli ignore inline con un commento che spieghi perché il link è
+legittimamente assoluto, così la soppressione è tracciabile con `git blame`.
 
 ---
 
 ## Tornare indietro
 
-Rimuovi una voce da `absolute_path_allowlist` e l'enforcement di Z105
-ritorna immediatamente su quel prefisso. La protezione è economica da
-attivare ed economica da rimuovere — non c'è costo di migrazione in
-nessuna direzione.
+Rimuovi un ignore inline e l'enforcement di Z105 ritorna immediatamente
+su quella riga. Non c'è costo di migrazione.
 
 ---
 
@@ -134,15 +108,15 @@ Data una pagina con il seguente frontmatter:
 
 ```mdx
 ---
-slug: amazing-post
-title: Un Post Straordinario
+slug: sample-post
+title: Un Post di Esempio
 ---
 ```
 
 | Link | Risultato |
 |---|---|
 | `[Post](/blog/2026-05-05-post)` | ❌ **Z104** — path derivato dal filename assente dalla VSM |
-| `[Post](/blog/amazing-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
+| `[Post](/blog/sample-post)` | ✅ Validato — lo slug corrisponde alla voce nella VSM |
 
 Il validator solleva `Z104 FILE_NOT_FOUND` (non Z105) perché `/blog/` è un
 prefisso di proprietà del progetto. Il prefisso è fidato; la route esatta
@@ -155,7 +129,7 @@ VSM insieme al file sorgente e allo slug nel frontmatter:
 
 ```console
 $ zenzic inspect routes --kind physical
-/blog/amazing-post/   ←  blog/2026-05-05-post.md  [slug: amazing-post]
+/blog/sample-post/   ←  blog/2026-05-05-post.md  [slug: sample-post]
 ```
 
 Aggiorna qualsiasi link che punta al percorso derivato dal filename con l'URL
@@ -175,15 +149,12 @@ Discovery  →  set_slug_map (solo Docusaurus)  →  build_vsm  →  Validate
           guardiano hasattr — no-op per MkDocs / Standalone
 ```
 
-Questo segue il principio della *Maturità del Quarzo*: evolvere l'adapter
+Questo segue il principio della *migrazione incrementale*: evolvere l'adapter
 complesso senza appesantire quelli più semplici.
 
 ---
 
 ## Correlati
 
-- [Riferimento Configurazione — `[link_validation]`](../reference/configuration.mdx#link-validation)
 - [Politica di Soppressione](../reference/suppression-policy.mdx) — sintassi
   completa degli ignore inline e regole di ambito.
-- Per il razionale completo di design, vedi
-  [ADR 011: Cross-Instance Allowlist](/developers/explanation/adr-cross-instance-allowlist).

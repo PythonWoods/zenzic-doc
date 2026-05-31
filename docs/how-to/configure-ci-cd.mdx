@@ -10,11 +10,7 @@ description: "GitHub Actions workflows, pre-commit hooks, and CI pipeline integr
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# CI/CD Integration — Ship with Confidence
-
-**Documentation errors caught in CI cost minutes to fix. The same errors caught in production
-cost hours of user frustration, lost trust, and a rushed hotfix at the worst possible time.
-Zenzic is the gate that keeps your Friday evenings free.**
+# CI/CD Integration
 
 Zenzic is automation-ready out of the box. The `--format json` flag and `--save` option expose machine-readable output that any CI/CD system can consume to drive dynamic badges, quality gates, and regression detection.
 
@@ -61,10 +57,10 @@ zenzic diff --format json
   "status": "success",
   "timestamp": "2026-03-24T12:00:00+00:00",
   "categories": [
-    {"name": "structural", "weight": 0.40, "issues": 0, "category_score": 40.0, "contribution": 40.0},
-    {"name": "content",    "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
-    {"name": "navigation", "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
-    {"name": "brand",      "weight": 0.10, "issues": 0, "category_score": 10.0, "contribution": 10.0}
+    {"name": "structural", "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
+    {"name": "content",    "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
+    {"name": "navigation", "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0},
+    {"name": "brand",      "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0}
   ]
 }
 ```
@@ -87,12 +83,12 @@ Each individual check command returns a uniform findings structure:
 ```
 
 Exit codes are preserved in JSON mode: exit 0 when only warnings are found,
-exit 1 on errors (or warnings under `--strict`), exit 2 on Shield breaches,
-exit 3 on Blood Sentinel — the same contract as terminal output.
+exit 1 on errors (or warnings under `--strict`), exit 2 on credential scanner findings,
+exit 3 on path traversal guard — the same contract as terminal output.
 
 ---
 
-## GitHub Actions: Zenzic Shield Gate
+## GitHub Actions: Zenzic Credential Gate
 
 The simplest integration — fails the build on any documentation error.
 
@@ -122,7 +118,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Check references and run Shield
+      - name: Check references and credentials
 
         run: uvx zenzic check references
 ```
@@ -159,7 +155,7 @@ jobs:
 
         run: uvx zenzic check all --strict
 
-      - name: Check references and run Shield
+      - name: Check references and credentials
 
         run: uvx zenzic check references
 ```
@@ -167,7 +163,7 @@ jobs:
 The `enable-cache: true` option caches the uv tool cache across runs,
 eliminating the PyPI download on every push.
 
-Exit code `2` means a credential was detected in a reference URL. Exit code `3` means a link resolves to an OS system path (Blood Sentinel). Both require immediate investigation — rotate any exposed credential and remove the offending link.
+Exit code `2` means a credential was detected in a reference URL. Exit code `3` means a link resolves to an OS system path (path traversal guard). Both require immediate investigation — rotate any exposed credential and remove the offending link.
 
   </TabItem>
   <TabItem value="zenzic-action-(recommended)" label="zenzic-action (recommended)">
@@ -199,9 +195,9 @@ jobs:
 
       - name: Run Zenzic
 
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.7.1"          # pin to a stable release
+          version: "0.9.0"          # pin to a stable release
           format: sarif             # emit SARIF for Code Scanning
           upload-sarif: "true"
           fail-on-error: "true"
@@ -244,9 +240,9 @@ Slack notifications without re-parsing the SARIF file:
       - name: Run Zenzic
 
         id: zenzic
-        uses: PythonWoods/zenzic-action@v1
+        uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.7.1"
+          version: "0.9.0"
 
       - name: Post finding count
 
@@ -254,14 +250,154 @@ Slack notifications without re-parsing the SARIF file:
 ```
 
 :::warning[Security incidents are always fatal]
-`fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (Shield — credential
-detected) and exit 3 (Blood Sentinel — path traversal) are **never suppressible** by any input.
+`fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (credential scanner — credential
+detected) and exit 3 (path traversal guard — path traversal) are **never suppressible** by any input.
 The action enforces this unconditionally. See the
 [Exit Code Contract](../reference/cli#exit-codes).
 :::
 
   </TabItem>
 </Tabs>
+
+---
+
+## Zenzic Quality Gate — The Diff Protocol {#diff-protocol}
+
+The Zenzic Quality Gate uses `zenzic diff` to compare the current score against a saved baseline. If the score dropped, the PR check fails. This is the recommended setup for teams that want to enforce documentation quality as a hard merge gate.
+
+### How it works
+
+1. **On `main`**: Zenzic runs, saves the score as `.zenzic-score.json`, and uploads it as a CI artifact.
+2. **On every PR**: The artifact from `main` is downloaded as the baseline. Zenzic runs on the PR branch and calls `zenzic diff --base <baseline>` to compare.
+3. **Verdict**: If the score dropped or suppression debt exceeded the cap, the PR check fails.
+
+```yaml title=".github/workflows/zenzic-quality-gate.yml"
+name: Zenzic Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # On main: save the authoritative baseline
+  baseline:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run Zenzic and save baseline
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.9.0"
+          format: json          # triggers .zenzic-score.json snapshot
+          upload-sarif: "false"
+
+      - name: Upload baseline artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-score.json
+          retention-days: 90
+
+  # On PRs: compare against main baseline
+  quality-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download main baseline
+        uses: actions/download-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-baseline/
+        continue-on-error: true   # first PR on a new repo has no baseline yet
+
+      - name: Zenzic — Quality Gate
+        uses: PythonWoods/zenzic-action@<version>
+        id: zenzic
+        with:
+          version: "0.9.0"
+          format: sarif
+          upload-sarif: "true"
+          diff-base: ".zenzic-baseline/.zenzic-score.json"
+
+      - name: Report quality score
+        if: always()
+        run: |
+          echo "Score: ${{ steps.zenzic.outputs.score }}"
+          echo "Suppression debt: ${{ steps.zenzic.outputs.suppression-debt-pts }} pts"
+          echo "Findings: ${{ steps.zenzic.outputs.findings-count }}"
+```
+
+:::info[Quality Regression via `zenzic diff`]
+When a score regression is detected, the PR annotation reads: *"Documentation quality score dropped vs baseline. The Zenzic Quality Gate blocked this PR."* Add `fail-on-error: "false"` to make regression detection observational (warning) rather than blocking.
+:::
+
+---
+
+## Audit Mode in CI — Sovereign Audit {#audit-mode}
+
+The `audit: "true"` input forces a sovereign audit: all active `zenzic:ignore` inline comments and all `governance.per_file_ignores` entries are bypassed. Every finding that would normally be hidden by a suppression is surfaced.
+
+Use audit mode in:
+- **Nightly builds** — weekly sanity check that suppressed debt remains intentional.
+- **Security Review workflows** — before a release, verify the unfiltered documentation state.
+- **Debt reduction sprints** — see the full scope of what is being suppressed before raising or lowering `suppression_cap`.
+
+```yaml title=".github/workflows/zenzic-audit.yml"
+name: Zenzic Sovereign Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # every Monday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Sovereign Audit (suppressions bypassed)
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.9.0"
+          format: sarif
+          upload-sarif: "true"
+          audit: "true"           # bypass all zenzic:ignore and per_file_ignores
+          fail-on-error: "false"  # audit is observational, not blocking
+```
+
+Results appear in the **Security → Code Scanning** tab. Every suppressed finding is visible alongside active ones. This is the unfiltered truth of your documentation.
+
+---
+
+## Defense-in-Depth: Secret Guard {#guard-scan}
+
+The `guard-scan: "true"` input runs `zenzic guard scan` as a standalone step **before** the main quality gate. Use this in repositories where contributors may bypass pre-commit hooks with `git commit --no-verify`:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Run Zenzic Documentation Quality Gate
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.9.0"
+          guard-scan: "true"   # zenzic guard scan runs before check all
+          format: sarif
+          upload-sarif: "true"
+```
+
+If `guard scan` detects a hardcoded credential or forbidden pattern, it exits non-zero and terminates the job. `fail-on-error: "false"` does not suppress this — the guard scan is always fatal, consistent with the Exit 2 security contract.
 
 ---
 
@@ -287,13 +423,13 @@ steps:
 
     id: zenzic_step
     run: |
-      uvx zenzic score --save   # threshold read from fail_under in zenzic.toml
+      uvx zenzic score --save   # threshold read from fail_under in .zenzic.toml
       SCORE=$(jq '.score' .zenzic-score.json)
       echo "SCORE=$SCORE" >> "$GITHUB_OUTPUT"
 
   - name: 🔄 Update Gist for Badge
 
-    uses: Schneegans/dynamic-badges-action@v1.7.0
+    uses: Schneegans/dynamic-badges-action@<version>
     with:
       auth: ${{ secrets.GIST_SECRET }}
       gistID: ${{ secrets.ZENZIC_GIST_ID }}
@@ -320,20 +456,18 @@ steps:
 
 ---
 
-## Regression Detection
+## Regression Detection {#regression}
 
-`zenzic diff` compares the current score against the saved `.zenzic-score.json` baseline:
+`zenzic diff` compares the current score against the saved `.zenzic-score.json` baseline and fails if the score dropped:
 
 ```yaml title=".github/workflows/zenzic.yml"
-
 - name: Detect score regression
-
   run: |
-    uvx zenzic score --save      # update snapshot
+    uvx zenzic score --save        # update snapshot
     uvx zenzic diff --threshold 5  # fail if score drops > 5 points
 ```
 
-Combine with branch protection rules to block merges that degrade documentation quality.
+For the full Zenzic Quality Gate setup with PR blocking and baseline artifact upload, see the Diff Protocol section above.
 
 ---
 
@@ -343,21 +477,21 @@ Combine with branch protection rules to block merges that degrade documentation 
 |:---:|---|---|
 | `0` | All checks passed | Keep badge green |
 | `1` | One or more checks failed | Set badge to `failing` / `ef4444` |
-| **`2`** | **Zenzic Shield: credential detected** | **Rotate credential immediately** |
-| **`3`** | **Blood Sentinel: path traversal detected** | **Remove offending link immediately** |
+| **`2`** | **Credential scanner: credential detected** | **Rotate credential immediately** |
+| **`3`** | **Path traversal guard: path traversal detected** | **Remove offending link immediately** |
 
 > For the full badge copy-paste reference, see [Official Badges](./add-badges.mdx).
 
 ---
 
-## Shield Recovery — When a Credential Is Detected {#shield-recovery}
+## Credential Recovery — When a Credential Is Detected {#credential-recovery}
 
 A credential detection (exit code 2) is not a failed build. It is a **security incident**.
 The recovery playbook is short and non-negotiable:
 
 ### Step 1 — Identify the exposure
 
-The Sentinel Report tells you everything you need:
+The Zenzic Report tells you everything you need:
 
 ```text
  ✘  Z201  docs/how-to/configure.md:4    Secret detected (aws-access-key)
@@ -395,20 +529,20 @@ on a shared branch. If the repository is public, assume the credential is alread
 regardless of history rewriting — rotation is mandatory.
 :::
 
-### Step 5 — Verify the Shield is satisfied
+### Step 5 — Verify no credentials are detected
 
 ```bash
 uvx zenzic check all
-# Expected: exit 0, Shield section shows ✔ no credentials detected
+# Expected: exit 0, no credentials detected
 ```
 
-Only exit 0 from the Shield pass means the recovery is complete.
+Only exit 0 means the recovery is complete.
 
 :::info[Why Zenzic saves you from BFG Repo Cleaner]
 BFG Repo Cleaner is an irreversible tool for purging secrets from git history.
 Its use is a symptom of a process failure: the secret reached the repository undetected.
-Zenzic’s Shield prevents this by catching credentials **before** they enter the CI pipeline
-— ideally via a pre-commit hook. See [pre-commit integration](#pre-commit) to add the Shield
+Zenzic prevents this by catching credentials **before** they enter the CI pipeline
+— ideally via a pre-commit hook. See [pre-commit integration](#pre-commit) to add Zenzic
 as a local gate that runs on every `git commit`.
 :::
 
@@ -416,7 +550,7 @@ as a local gate that runs on every `git commit`.
 
 ## Pre-commit Integration {#pre-commit}
 
-The Shield in CI is your last line of defence. The pre-commit hook is your first:
+The credential scanner in CI is your last line of defence. The pre-commit hook is your first:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -425,9 +559,9 @@ repos:
 
     hooks:
 
-      - id: zenzic-shield
+      - id: zenzic-credentials
 
-        name: Zenzic Shield
+        name: Zenzic Credentials
         language: system
         entry: uvx zenzic check all
         pass_filenames: false

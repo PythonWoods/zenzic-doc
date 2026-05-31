@@ -1,8 +1,12 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Quartz Enterprise workflow for zenzic-doc
+# just - Release Enterprise workflow for zenzic-doc
 set shell :=["bash", "-c"]
+
+# Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
+# In CI/CD the installed `zenzic` binary is used by default.
+ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
 
 # Use `just --list` to see available commands
 
@@ -50,8 +54,26 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (4-Gates Standard: pre-commit + build + codes parity)
-verify: _check-hooks release-contracts lint-all build verify-codes
+# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
+verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
+    just score --stamp --no-header
+    just score --check-stamp --no-header
+
+# ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
+# not a public Zenzic linter rule). Pre-commit `rev:` keys must be 40-char
+# commit SHAs, not mutable tags. Regex anchored to line-start so the
+# `# vX.Y.Z` annotation comment is safe.
+check-pinning:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Validating Immutable Infrastructure (ADR-089)..."
+    if grep -E '^[[:space:]]*rev:[[:space:]]*v?[0-9]+\.[0-9]+' .pre-commit-config.yaml >/dev/null 2>&1; then
+        echo "[ADR-089] FATAL: Unpinned tag detected in pre-commit config. Zenzic internal policy requires SHA-256 pinning." >&2
+        grep -nE '^[[:space:]]*rev:[[:space:]]*v?[0-9]+\.[0-9]+' .pre-commit-config.yaml >&2
+        echo "👉 Update via: uvx pre-commit autoupdate --freeze" >&2
+        exit 1
+    fi
+    echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
 # Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
 verify-codes:
@@ -68,18 +90,95 @@ build:
 check *args:
     #!/usr/bin/env bash
     set -euo pipefail
-    # Permanent exclusion: contributor-covenant.org is a flaky third-party URL.
-    GUARD=(
-      --exclude-url "https://www.contributor-covenant.org/version/2/1/code_of_conduct.html"
-    )
-    CORE_PATH="${ZENZIC_PROJECT_PATH:-../zenzic}"
 
-    if [ -d "$CORE_PATH" ]; then
-        echo "🛡️  [Zenzic Sentinel] Local core detected. Using: $CORE_PATH"
-        uv run --project "$CORE_PATH" zenzic check all --strict "${GUARD[@]}" {{args}}
+    if [[ -n "${ZENZIC_BIN:-}" ]]; then
+        ${ZENZIC_BIN} check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
+        exit 0
+    fi
+
+    CORE_PATH=""
+    CHECKED=()
+
+    if [[ -n "${ZENZIC_CORE_PATH:-}" ]]; then
+        CHECKED+=("ZENZIC_CORE_PATH -> ${ZENZIC_CORE_PATH}")
+        if [[ -d "${ZENZIC_CORE_PATH}/src/zenzic" ]]; then
+            CORE_PATH="${ZENZIC_CORE_PATH}"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("_zenzic_core -> _zenzic_core")
+        if [[ -d "_zenzic_core/src/zenzic" ]]; then
+            CORE_PATH="_zenzic_core"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("../zenzic -> ../zenzic")
+        if [[ -d "../zenzic/src/zenzic" ]]; then
+            CORE_PATH="../zenzic"
+        fi
+    fi
+
+    if [[ -n "$CORE_PATH" ]]; then
+        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    elif command -v zenzic >/dev/null 2>&1; then
+        zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
     else
-        echo "🛡️  [Zenzic Sentinel] Local core not found. Using published PyPI release..."
-        uvx zenzic@0.7.0 check all --strict "${GUARD[@]}" {{args}}
+        echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
+        echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2
+        echo "Each candidate must contain src/zenzic." >&2
+        echo "Checked: ${CHECKED[*]}" >&2
+        echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
+        exit 2
+    fi
+
+score *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ -n "${ZENZIC_BIN:-}" ]]; then
+        ${ZENZIC_BIN} score {{args}}
+        exit 0
+    fi
+
+    CORE_PATH=""
+    CHECKED=()
+
+    if [[ -n "${ZENZIC_CORE_PATH:-}" ]]; then
+        CHECKED+=("ZENZIC_CORE_PATH -> ${ZENZIC_CORE_PATH}")
+        if [[ -d "${ZENZIC_CORE_PATH}/src/zenzic" ]]; then
+            CORE_PATH="${ZENZIC_CORE_PATH}"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("_zenzic_core -> _zenzic_core")
+        if [[ -d "_zenzic_core/src/zenzic" ]]; then
+            CORE_PATH="_zenzic_core"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("../zenzic -> ../zenzic")
+        if [[ -d "../zenzic/src/zenzic" ]]; then
+            CORE_PATH="../zenzic"
+        fi
+    fi
+
+    if [[ -n "$CORE_PATH" ]]; then
+        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic score {{args}}
+    elif command -v zenzic >/dev/null 2>&1; then
+        zenzic score {{args}}
+    else
+        echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
+        echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2
+        echo "Each candidate must contain src/zenzic." >&2
+        echo "Checked: ${CHECKED[*]}" >&2
+        echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
+        exit 2
     fi
 typecheck:
     npm run typecheck
@@ -102,15 +201,9 @@ release part:
         *) echo "Invalid part '{{ part }}'. Use patch|minor|major"; exit 2 ;;
     esac
     uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
-    npm ci
     version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
-    if git rev-parse "v${version}" >/dev/null 2>&1; then
-        echo "Tag v${version} already exists. Aborting."
-        exit 3
-    fi
     git add -u
     git commit -m "release: bump version to ${version}"
-    git tag -a "v${version}" -m "Release v${version}"
 
 # Show the current project version
 version:
@@ -137,11 +230,20 @@ doctor:
 
 _check-hooks:
     #!/usr/bin/env bash
+    _missing=0
+    if [ ! -f .git/hooks/pre-commit ]; then
+        echo -e "\033[33m⚠️  WARNING: pre-commit hook is not installed.\033[0m"
+        echo "Without it, linters and type-checks will NOT run automatically on git commit."
+        echo "👉 Fix it by running: uvx pre-commit install"
+        echo ""
+        _missing=1
+    fi
     if [ ! -f .git/hooks/pre-push ]; then
-        echo -e "\033[33m⚠️  WARNING: Pre-push hook is not installed.\033[0m"
+        echo -e "\033[33m⚠️  WARNING: pre-push hook is not installed.\033[0m"
         echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
         echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
         echo ""
+        _missing=1
     fi
 
 # Enforce release contracts: dirty allowed only in release-dry.
@@ -151,8 +253,14 @@ release-contracts:
     grep -qE '^version:' justfile
     grep -qE '^release part:' justfile
     grep -qE '^release-dry part' justfile
+    grep -qE '^verify:[[:space:]].*\bverify-codes\b' justfile
+    grep -qE '^[[:space:]]+uvx nox -s verify-codes-parity$' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
         echo "release-contracts failed: release part must not use --allow-dirty"
+        exit 1
+    fi
+    if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -qE 'git[[:space:]]+tag'; then
+        echo "release-contracts failed: release part must not create tags"
         exit 1
     fi

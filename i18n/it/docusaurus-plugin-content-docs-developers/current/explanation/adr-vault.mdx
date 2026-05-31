@@ -17,37 +17,42 @@ del progetto Zenzic. Ogni ADR documenta una decisione tecnica rilevante: il suo
 contesto (perché esisteva il problema), la sua decisione (cosa è stato scelto) e
 i suoi invarianti (cosa non deve mai cambiare come conseguenza).
 
+Per il flusso operativo quotidiano, i controlli di rilascio e l'enforcement di
+governance, usare la guida operativa:
+
+- [Protocollo Operativo di Rilascio e Governance](../how-to/release-governance-protocol.mdx)
+
 Gli ADR sono la **memoria immutabile** del progetto. Spiegano non solo cosa fa
-Zenzic, ma perché — in modo che i futuri contributori possano estendere il sistema
-senza violare inconsapevolmente i vincoli che lo rendono affidabile.
+Zenzic, ma perché. Il comportamento operativo durante commit e push è invece
+governato dal Protocollo Operativo di Rilascio e Governance.
 
 ---
 
 ## Decisioni Genesi
 
-Questi ADR sono stati stabiliti prima del primo rilascio pubblico. Definiscono le
+Questi ADR sono stati stabiliti prima della pubblicazione pubblica. Definiscono le
 fondamenta filosofiche e tecniche su cui si basano tutte le decisioni successive.
 
-| ADR | Titolo | Sprint |
-|-----|-------|--------|
-| [ADR 001](./adr-lint-source.mdx) | Analizza il Sorgente, Non la Build | Genesi (pre-v0.1.0) |
-| [ADR 002](./adr-zero-subprocesses.mdx) | Policy Zero Subprocesses | Genesi (pre-v0.1.0) |
+| ADR | Titolo |
+|-----|-------|
+| [ADR 001](./adr-lint-source.mdx) | Analizza il Sorgente, Non la Build |
+| ADR 002 | Policy Zero Subprocesses *(Maintainer Only)* |
 
 ---
 
 ## Decisioni di Architettura Core
 
-Questi ADR documentano le decisioni strutturali prese durante lo sviluppo attivo
-di Zenzic v0.6.x e v0.7.0.
+Questi ADR documentano le decisioni strutturali prese durante lo sviluppo attivo.
 
-| ADR | Titolo | Sprint |
-|-----|-------|--------|
-| [ADR 003](./adr-discovery.mdx) | Root Discovery Protocol | D036 / ZRT-005 |
-| [ADR 004](./adr-decentralized-cli.mdx) | Package CLI Decentralizzata | D062-B / D064 |
-| [ADR 005](./adr-agnostic-universalism.mdx) | Agnosticismo Universale Z404 | D087 |
-| [ADR 007](./adr-sovereign-sandbox.mdx) | Sandbox Sovrana | D043 |
-| [ADR 008](./adr-bilingual-structural.mdx) | Invariante Strutturale Bilingue | D045 |
-| [ADR 009](./adr-path-sovereignty.mdx) | Sovranità del Percorso | CEO-052 |
+| ADR | Titolo |
+|-----|-------|
+| [ADR 003](./adr-discovery.mdx) | Root Discovery Protocol |
+| [ADR 004](./adr-decentralized-cli.mdx) | Package CLI Decentralizzata |
+| [ADR 005](./adr-agnostic-universalism.mdx) | Agnosticismo Universale Z404 |
+| ADR 007 | Sandbox Sovrana *(Maintainer Only)* |
+| [ADR 008](./adr-bilingual-structural.mdx) | Invariante Strutturale Bilingue |
+| [ADR 009](./adr-path-sovereignty.mdx) | Sovranità del Percorso |
+| [ADR 013](./adr-regex-acl.mdx) | The Regex Anti-Corruption Layer (ReDoS Protection) |
 
 ---
 
@@ -57,10 +62,9 @@ Questi ADR documentano decisioni architetturali specifiche a questo sito di
 documentazione (`zenzic.dev`) — scelte su come il sito Docusaurus viene costruito,
 localizzato e mantenuto.
 
-| ADR | Titolo | Sprint |
-|-----|-------|--------|
-| [ADR 006](./adr-unified-perimeter.mdx) | Perimetro Unificato (Storage + Journal) | CEO 051 |
-| [ADR 011](./adr-cross-instance-allowlist.mdx) | Cross-Instance Allowlist per Path Assoluti | EPOCH 5 (v0.7.0) |
+| ADR | Titolo |
+|-----|-------|
+| [ADR 006](./adr-unified-perimeter.mdx) | Scope di Scansione Unificato (Storage + Journal) |
 
 ---
 
@@ -108,10 +112,9 @@ qui.
 
 2. Creare il mirror italiano al percorso corrispondente in `i18n/it/`.
 3. Aggiungere entrambi i file alla tabella qui sopra nella sezione appropriata.
-4. Registrare la decisione nella sezione `[ADR]` dell'Zenzic Ledger rilevante
+4. Registrare la decisione nella sezione `[ADR]` del registro di governance
 
-   (`.github/copilot-instructions.md`) nel repository dove la decisione è stata
-   implementata.
+  rilevante nel repository dove la decisione è stata implementata.
 
 L'ADR è permanente una volta pubblicato. Per modificare una decisione, aggiungere
 un nuovo ADR che fa riferimento all'originale e documenta la modifica — non

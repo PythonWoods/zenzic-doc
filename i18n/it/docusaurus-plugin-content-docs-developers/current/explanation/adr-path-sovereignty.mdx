@@ -11,7 +11,7 @@ description: "ADR 009: La configurazione segue il target, non il chiamante — p
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-12 (sprint v0.7.0, CEO-052)
+**Data:** 2026-04-12 (sprint v0.8.x, CEO-052)
 
 ---
 
@@ -32,7 +32,7 @@ zenzic check all /home/user/another-project/docs
 ```
 
 In questo caso, `find_repo_root()` avrebbe navigato verso l'alto da
-`/home/user/my-tools`, trovato il `zenzic.toml` di *quel* repository, e caricato
+`/home/user/my-tools`, trovato il `.zenzic.toml` di *quel* repository, e caricato
 la configurazione di *quel* repository — inclusi il suo `engine`, `docs_dir`,
 `excluded_dirs` e le regole personalizzate. Il target di analisi era
 `another-project`, ma la configurazione applicata era quella di `my-tools`.
@@ -56,7 +56,7 @@ def find_repo_root(
 ) -> Path:
     start = search_from or Path.cwd()
     for parent in [start, *start.parents]:
-        if (parent / ".git").exists() or (parent / "zenzic.toml").exists():
+        if (parent / ".git").exists() or (parent / ".zenzic.toml").exists():
             return parent
     if fallback_to_cwd:
         return Path.cwd()
@@ -65,7 +65,7 @@ def find_repo_root(
 
 `_apply_target()` in `cli/_check.py` orchestra la ricalibrazione: dopo aver
 derivato `docs_root` dal percorso fornito dall'utente, chiama
-`find_repo_root(search_from=docs_root)` per caricare il `zenzic.toml` corretto,
+`find_repo_root(search_from=docs_root)` per caricare il `.zenzic.toml` corretto,
 poi ri-deriva `docs_dir` dalla configurazione del repo target.
 
 ---
@@ -95,7 +95,7 @@ else:
 ### 1. Il Principio dell'Integrità Contestuale
 
 Un file di configurazione appartiene al progetto in cui risiede. Caricare un
-`zenzic.toml` straniero per una coincidenza di directory di lavoro è una
+`.zenzic.toml` straniero per una coincidenza di directory di lavoro è una
 **vulnerabilità della supply chain di configurazione** — l'analisi è segretamente
 governata da regole che l'utente non intendeva applicare.
 
