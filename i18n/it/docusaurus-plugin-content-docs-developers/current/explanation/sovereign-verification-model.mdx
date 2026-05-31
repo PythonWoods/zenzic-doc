@@ -76,7 +76,7 @@ Esplicitazione raccomandata:
 | `justfile` | Entry-point operativo primario (`check`, `verify`) | Usa ordine sovrano e stop fail-closed |
 | `noxfile.py` | Wrapper deterministico per sessioni | Usa lo stesso ordine sovrano del `justfile` |
 | `.github/workflows/*.yml` | Topologia di esecuzione condivisa | Checkout di `_zenzic_core` prima di verify |
-| recipe `release-contracts` | Guardia anti-drift | Rifiuta pattern di fallback PyPI nei gate |
+| recipe `release-contracts` | Guardia anti-drift | Rifiuta pattern di fallback PyPI e auto-tagging nei path di release |
 
 ---
 

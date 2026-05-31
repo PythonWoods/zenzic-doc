@@ -33,7 +33,7 @@ in CI e auditabile dai log.
 | Risoluzione core sovrana | `ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic`, fail-closed | `justfile`, `noxfile.py`, CI |
 | Override branch governato | `ZENZIC_CORE_REF` richiede ticket/reason/approver/expiry | workflow self-check `zenzic-action` |
 | Guard lessicale di confine | Termini proibiti bloccati nei path governati | `scripts/enforce-radical-unawareness.sh` + pre-commit |
-| Guard anti-drift del contratto pubblico | Marker obbligatori sempre presenti | recipe `release-contracts` |
+| Guard anti-drift del contratto pubblico | Marker obbligatori sempre presenti; le recipe release non devono creare tag automatici | recipe `release-contracts` |
 | Igiene provenienza licensing | Verifica SPDX/REUSE obbligatoria | pre-commit `reuse` + CI |
 
 ---
@@ -46,6 +46,8 @@ Eseguire dalla root del repository, salvo nota diversa.
 just release-contracts
 just verify
 ```
+
+Policy tagging: i tag vengono creati e pushati manualmente dopo il merge; le recipe release non devono creare tag.
 
 Guard lessicale (policy-as-code):
 
