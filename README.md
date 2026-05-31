@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # zenzic-doc Developer Guide
 
-[![CI](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml/badge.svg)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
+[![ci-status](https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-doc/ci.yml?branch=main&label=ci&style=flat-square)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
 <!-- zenzic:audit-badge -->
 [![zenzic-audit](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square)](https://zenzic.dev/docs/reference/scoring-algorithm)
 <!-- zenzic:score-badge -->

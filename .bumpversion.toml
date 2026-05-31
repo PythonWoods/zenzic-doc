@@ -83,11 +83,6 @@ search = "v{current_version}"
 replace = "v{new_version}"
 
 [[tool.bumpversion.files]]
-filename = "CITATION.cff"
-search = "version: {current_version}"
-replace = "version: {new_version}"
-
-[[tool.bumpversion.files]]
 filename = "i18n/en/code.json"
 search = '"message": "v{current_version}"'
 replace = '"message": "v{new_version}"'
