@@ -111,7 +111,7 @@ sidebar_label: Short Label
 ```
 
 **Do not add `slug:` frontmatter.** URLs must mirror the filesystem path exactly
-(Slug Law — see [copilot-instructions.md](.github/copilot-instructions.md)).
+(Slug Law — see [Governance docs](developers/governance/index.mdx)).
 
 ### Icons
 

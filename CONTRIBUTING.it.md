@@ -112,8 +112,8 @@ sidebar_label: Short Label
 ```
 
 **Non aggiungere il frontmatter `slug:`.** Gli URL devono rispecchiare
-esattamente il path del filesystem (Slug Law — vedi
-[copilot-instructions.md](.github/copilot-instructions.md)).
+esattamente il path del filesystem (Slug Law — vedi la
+[documentazione Governance](developers/governance/index.mdx)).
 
 ### Icone
 

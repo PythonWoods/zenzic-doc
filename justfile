@@ -201,7 +201,6 @@ release part:
         *) echo "Invalid part '{{ part }}'. Use patch|minor|major"; exit 2 ;;
     esac
     uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
-    npm ci
     version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
     git add -u
     git commit -m "release: bump version to ${version}"
