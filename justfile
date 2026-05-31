@@ -54,7 +54,7 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (6-Gates Standard: pre-commit + docs audit + build + codes parity + score + freshness)
+# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
 verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
     just score --stamp --no-header
     just score --check-stamp --no-header

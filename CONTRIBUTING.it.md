@@ -223,7 +223,7 @@ Per l'architettura completa e la lifecycle policy, vedi la
 Esegui il gate locale completo:
 
 ```bash
-just verify        # all pre-commit hooks + typecheck + build + codes parity (full local gate)
+just verify        # lint-all + build + codes parity + audit strict + score stamp + freshness gate
 ```
 
 Deve passare con zero errori prima di aprire o aggiornare una PR.

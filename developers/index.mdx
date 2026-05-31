@@ -62,8 +62,7 @@ Zenzic uses [`just`](https://github.com/casey/just) as its interactive command r
 | `just check` | **Self-lint — run Zenzic on its own documentation (strict)** |
 | `just test` | Run the test suite (delegates to `nox -s tests`, Hypothesis **dev** profile) |
 | `just test-full` | Run the test suite with Hypothesis **ci** profile (500 examples) |
-| `just preflight` | Full CI-equivalent pipeline: lint, typecheck, tests, reuse, security |
-| `just verify` | **Pre-push gate: `preflight` + `build-prod`** |
+| `just verify` | **Pre-push gate: lint-all + build + verify-codes + strict audit + score stamp + freshness check** |
 | `just build` | Build the documentation site (fast, no strict enforcement) |
 | `just build-prod` | Build the documentation site (strict mode, mirrors CI) |
 | `just serve [port]` | Start the live-reload documentation server (default port 8000) |

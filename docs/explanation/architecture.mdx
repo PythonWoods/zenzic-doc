@@ -597,12 +597,12 @@ Degradation**:
 - **Core Maintainer**: `ZENZIC_PROJECT_PATH` set → `uv run --project <path>` against local source.
 - **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI package.
 
-Running `just verify` in `zenzic-doc` executes all four gates in sequence. External contributors
+Running `just verify` in `zenzic-doc` executes the full lifecycle-gate flow with one entry-point. External contributors
 need no local checkout of Zenzic Core.
 
 ---
 
-## The 4-Gates Standard {#4-gates-standard}
+## The 4-Lifecycle-Gates Standard {#4-gates-standard}
 
 Every repository in the Zenzic ecosystem enforces quality at four progressive checkpoints:
 

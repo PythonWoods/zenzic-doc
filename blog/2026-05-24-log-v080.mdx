@@ -1,192 +1,40 @@
 ---
 slug: log-v080
-title: "Release v0.8.0: The Governance Engine"
+title: "Release v0.8.0: Governance Baseline"
 sidebar_label: "Release v0.8.0"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-logs]
-date: 2026-05-30T10:00:00
+date: 2026-05-24T10:00:00
 description: >-
-  v0.8.0 delivers: Scoring Engine 2.0 with flat-cost suppression debt,
-  Adapter ABC Contract, Strict Mode decoupling, Sovereign Audit, and a
-  stable Z1xx–Z6xx namespace. 1,574 passing tests. Clean migration path.
+  Historical release baseline for v0.8.0. This entry keeps only the
+  governance-scope commitments frozen at release time.
 image: /img/social-card.png
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-Documentation pipelines commonly reach a point where the score looks acceptable but the gate still fails — or where the score passes despite active CI-blocking findings. In v0.7 and earlier, `--strict` and `fail_under` interacted in ways that made it easy to configure a gate that was either too permissive or too strict on the wrong axis. Suppression directives had per-category allowances that reset implicitly. Adapters exposed two overlapping methods where one would have been sufficient. And the code namespace, while broadly stable, had no formal immutability contract.
-
-**TL;DR.** v0.8.0 formalizes the governance layer: a five-tier weighted quality score with flat-cost suppression debt, a stable frozen code namespace, the Adapter ABC Contract replacing ad-hoc method signatures, and Sovereign Audit mode for unfiltered inspection. 1,574 passing tests. Breaking changes are documented below with migration paths.
+This page is the historical baseline for the v0.8.0 line.
+It intentionally preserves only the scope that was frozen for that milestone.
 
 {/* truncate */}
 
-## Scoring Engine 2.0 — Flat-Cost Suppression Debt
+## Baseline Scope (v0.8.0)
 
-Documentation quality scoring has a gate paradox: a CI pipeline can exit with code 1 while the quality score remains at 100 — or a repository can score 100 while failing the gate. In v0.7, CI-blocking codes (Z103, Z111, Z113) had no corresponding penalty in the weight matrix. They could block the pipeline without contributing to the score. Simultaneously, inline suppression directives had per-category allowances that silently reset under certain configurations. Teams monitoring the score were seeing numbers that did not reflect the real enforcement state.
+The v0.8.0 baseline records the governance foundation used as bridge toward the
+next release line:
 
-v0.8.0 replaces the per-category allowance model with a uniform cost: every inline or per-file `zenzic:ignore` directive costs exactly **1 quality point**, with no free allowance.
+- strict-vs-score governance boundaries formalized for CI usage;
+- sovereign audit usage documented as maintainers' inspection path;
+- namespace stability contract documented for integration tooling;
+- deterministic runtime constraints and security posture documentation hardened.
 
-The five-tier weight matrix:
+## Historical Note
 
-| Tier | Codes | Weight |
-|------|-------|--------|
-| Security Gate | Z2xx | — (score collapses to 0) |
-| Structural | Z1xx | 30 pts |
-| Navigation | Z3xx, Z4xx | 25 pts |
-| Content | Z5xx | 20 pts |
-| Governance | Z4xx (Z405, Z406), Z6xx | 25 pts |
+Post-freeze work discovered during the epoch shift is intentionally excluded from
+this historical page and tracked in the v0.9.0 manifesto.
 
-The `suppression_cap` key sets a hard-fail threshold enforced at the CLI layer: if the active suppression count exceeds this value, Zenzic exits with code 1 regardless of the computed score.
+## Compatibility Snapshot
 
-```toml title=".zenzic.toml"
-[governance]
-fail_under = 85
-suppression_cap = 10
-```
-
-Any Z2xx finding (credential, path traversal, or forbidden term) collapses the score to 0 unconditionally. The Z204 Privacy Gate extends this to project-specific forbidden patterns configured in `.zenzic.local.toml` — local-only enforcement without repository leakage.
-
-## Strict Mode Decoupling
-
-Before v0.8.0, the interaction between `--strict` and `fail_under` was a common source of misconfiguration. A team running `--strict` expecting a zero-warning policy might not realize that warnings elevated to errors were changing exit codes rather than scores. Another team lowering `fail_under` expecting to relax the gate might be surprised to find `--strict` still blocking the pipeline. The two controls shared the same exit code (1) but governed different things — and the documentation did not distinguish them clearly.
-
-`--strict` and `fail_under` are independent controls with distinct semantics:
-
-- **`--strict`**: elevates all `warning`-severity findings to `error`. Affects exit code; does not change the quality score.
-- **`fail_under`**: a mathematical threshold applied after scoring. If the score falls below the configured floor, exit code 1 is issued regardless of `--strict`.
-
-Both can be combined. `--strict` without `fail_under` enforces a zero-warning policy. `fail_under` without `--strict` enforces a minimum score. Using both is the standard CI configuration for projects under active governance.
-
-## Adapter ABC Contract
-
-Custom adapter authors working with v0.7 had to implement `map_url()` and `classify_route()` separately, even though both methods ultimately returned properties of the same underlying route record. The result was two code paths with partial overlap, each of which needed to be kept in sync as the VSM evolved. The v0.8.0 contract collapses this into a single `get_route_info()` call that returns both the canonical URL and route status in one atomic operation.
-
-`BaseAdapter` is now a strict abstract base class. Two methods with ambiguous semantics have been removed:
-
-| Removed | Replacement |
-|---------|-------------|
-| `adapter.map_url(rel)` | `adapter.get_route_info(rel).canonical_url` |
-| `adapter.classify_route(rel, nav_paths)` | `adapter.get_route_info(rel).status` |
-
-The `find_orphans()` callback parameter `classify_route` is removed; pass `adapter: BaseAdapter | None` instead.
-
-Custom adapters that implement the removed methods must be updated before upgrading. No deprecation shim is provided.
-
-## Auto-Discovery — Deterministic I/O
-
-Multi-plugin Docusaurus configurations — where `@docusaurus/plugin-content-docs` is declared more than once under different route prefixes — required manual allowlist configuration in earlier Zenzic versions. Forgetting to declare a prefix produced false-positive broken-link findings for every inter-tree link. A single configuration change (adding a new content tree) would silently break the link checker until the allowlist was updated. v0.8.0 eliminates the allowlist entirely.
-
-The `DocusaurusAdapter` resolves all plugin URL prefixes through two pure static-parsing passes over `docusaurus.config.{ts,js,mjs,cjs}` — no subprocess, no `rglob`, no allowlist. Every `@docusaurus/plugin-content-docs` instance is discovered automatically; the VSM boundary expands to include `blog/`, `developers/`, and any additional content root declared in the config.
-
-Blog posts are first-class VSM citizens. Broken links inside `blog/` and cross-tree links from `docs/` to `blog/` are caught by `zenzic check all`. A Reverse-Mapping invariant asserts every `Route.source` traces back to a real file on disk.
-
-## Sovereign Audit Mode
-
-The `--audit` flag bypasses all inline and per-file suppressions:
-
-```bash
-zenzic check all --audit
-```
-
-Suppressed findings surface with a `[POLICY_EXEMPTION]` label. Z2xx findings were never suppressible and are unaffected by `--audit`. This mode is the canonical instrument for governance reviews and release sign-off.
-
-## FROZEN_CODES and Stability Contracts
-
-Integration tools and plugin authors writing automation against Zenzic need a stable API surface. If finding codes can be renumbered between versions, every downstream SARIF parser, every GitHub Actions workflow step, and every suppression directive written by hand becomes fragile. The `FROZEN_CODES`, `NON_SUPPRESSIBLE_CODES`, and `PLUGIN_FORBIDDEN_EXITS` sets provide that contract explicitly — a versioned stability promise that downstream tools can rely on without defensive version guards.
-
-Three public contracts are stable as of v0.8.0:
-
-- **`FROZEN_CODES`**: finding codes guaranteed not to be renumbered across versions.
-- **`NON_SUPPRESSIBLE_CODES`**: codes that no suppression directive can silence.
-- **`PLUGIN_FORBIDDEN_EXITS`**: exit codes that plugin rules are prohibited from emitting.
-
-Import from `zenzic.core.codes` in integration code and plugin rule authors.
-
-## Namespace Finalization — Z1xx–Z6xx
-
-The finding code namespace is now the stable public API:
-
-| Range | Domain |
-|-------|--------|
-| Z1xx | Link Integrity |
-| Z2xx | Security |
-| Z3xx | Reference Integrity |
-| Z4xx | Structure |
-| Z5xx | Content Quality |
-| Z6xx | Governance (opt-in) |
-
-The legacy migration map (`LEGACY_TO_CODE`) transparently converts old codes on load.
-
-## New Commands
-
-In CI contexts, absolute score thresholds answer the question "is this good enough?" But pull request workflows often need a different question: "did this branch make things worse?" `zenzic diff` answers the second question. A branch can sit below the quality threshold while still being blocked on a regression relative to the target branch. The two signals are complementary and are best used together.
-
-**`zenzic diff`** — compares the quality score of the current tree against a reference branch. Exits with code 4 on score regression:
-
-```bash
-zenzic diff main
-```
-
-**`zenzic explain`** — traces the origin of every active configuration value (Default / Global `.zenzic.toml` / Local override):
-
-```bash
-zenzic explain
-```
-
-**`zenzic guard`** — fast pre-commit credential scanner, independent of a full site analysis:
-
-```bash
-zenzic guard scan path/to/file.mdx
-zenzic guard init   # installs the pre-commit hook
-```
-
-**`zenzic inspect codes`** — live code registry with tier, ownership, and non-suppressibility flag per entry.
-
-## Native Telemetry Validation
-
-Documentation quality badges are a commitment: when `zenzic score --stamp` writes an indigo `100/100` badge into a commit, that number must reflect the actual score at that point in time. The reliability of that commitment depends on developers remembering to run `--stamp` before every push — a friction point that scales poorly across teams.
-
-Before v0.8.0, the only CI enforcement mechanism was a hand-written bash gate:
-
-```bash
-git diff HEAD --quiet README.md || exit 1
-```
-
-This pattern hardcoded filenames, required `git` and `bash`, and produced no actionable output on failure. It also violated the Zero-Config Default pillar: using `--stamp` silently required a corresponding CI gate that no Zenzic command surfaced or documented.
-
-`zenzic score --check-stamp` eradicates the need for external gates. It reads `badge_stamp_files` from `.zenzic.toml`, computes the expected Shields.io URL for the current score, and exits 1 with a precise remediation message if any configured file contains a stale badge URL:
-
-```text
-FAILED: Badge in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
-```
-
-If the `<!-- zenzic:badge -->` marker is absent from a file, `--check-stamp` passes silently. Users who do not use badges pay zero configuration cost. Users who opt into badge stamping receive automatic CI enforcement without writing a single line of workflow YAML — `zenzic-action` runs `--check-stamp` by default after `check all`.
-
-The architectural rationale is documented in [ADR 015: Native Telemetry Validation](/developers/explanation/adr-native-telemetry).
-
-## New Finding Codes
-
-| Code | Name | Trigger |
-|------|------|---------|
-| Z108 | EMPTY_LINK_TEXT | Link label is empty or whitespace-only |
-| Z204 | FORBIDDEN_TERM | Project-specific forbidden term (Privacy Gate, local-only config) |
-
-Z106 (CIRCULAR_LINK) is downgraded to `info` severity and no longer penalizes the quality score.
-
-## DFA-Pure Runtime (RE2 Anti-Corruption Layer)
-
-The standard-library `re` module is removed from all production analysis paths. Every pattern match runs through the RE2 layer, which rejects backreferences and lookaheads at load time and guarantees O(n) complexity under adversarial inputs.
-
-## Breaking Changes
-
-| From (≤ v0.7.x) | To (v0.8.0) | Migration |
-|---|---|---|
-| Undocumented standalone alias | `engine = "standalone"` (required) | normalize in `.zenzic.toml` |
-| MkDocs plugin (in-tree) | removed; use Core CLI | remove the dependency |
-| `just preflight` | `just verify` | update local scripts |
-| Hook id `zenzic-check-all` | `zenzic-verify` | bump `rev:` to `v0.8.0` |
-| `adapter.map_url()` / `classify_route()` | removed | migrate to `get_route_info()` |
-| Legacy Z-codes (Z903/Z904/Z905/Z907) | auto-migrated via `LEGACY_TO_CODE` | no action required |
-
-Full matrix: [RELEASE.md](https://github.com/PythonWoods/zenzic/blob/main/RELEASE.md#breaking-changes).
+v0.8.0 remains a stable historical reference for contributors auditing legacy
+repository states and migration decisions.
