@@ -245,7 +245,9 @@ function BreachOutput({
   location = 'docs/how-to/configure.md:4',
   masked = 'AKIA************MPLE',
   credentialType = 'aws-access-key',
-}: Pick<ZenzicOutputProps, 'location' | 'masked' | 'credentialType'>): React.JSX.Element {
+  code,
+}: Pick<ZenzicOutputProps, 'location' | 'masked' | 'credentialType' | 'code'>): React.JSX.Element {
+  void code;
   return (
     <>
       <div className="-mx-6 -mt-5 mb-4 bg-[#8b0000] text-white font-bold px-6 py-2 text-center tracking-[0.2em]">
@@ -493,6 +495,7 @@ export default function ZenzicOutput({
           location={location}
           masked={masked}
           credentialType={credentialType}
+          code={code}
         />
       )}
       {variant === 'findings' && <FindingsOutput rows={rows} compact={compact} isStrict={isStrict} />}

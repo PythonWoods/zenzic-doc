@@ -34,7 +34,7 @@ nella lista vietata viene trattato come un finding di classe sicurezza. Exit 2. 
 Dichiara i termini vietati in `.zenzic.local.toml`:
 
 ```toml title=".zenzic.local.toml"
-[security]
+[core]
 forbidden_patterns = [
     "Project Obsidian",           # codename interno
     "internal.corp.example.com",  # URL di infrastruttura
@@ -60,12 +60,14 @@ vengono mai committati nel `.zenzic.toml` condiviso. Estende, non sovrascrive, l
 
 ## Comportamento di Exit
 
-Z204 è un **finding di classe sicurezza**:
+Z204 è un **finding di violazione di policy** (severità di classe sicurezza):
 
 - Esce con **codice 2** immediatamente
 - Non soppresso da `--exit-zero` o `exit_zero = true` in `.zenzic.toml`
 - Non soppresso da `.zenzic-ignore`
 - Non influenzato dalla soglia `fail_under`
+
+Il banner CLI mostra **`POLICY VIOLATION DETECTED`** (distinto da `SECURITY BREACH DETECTED` di Z201) per segnalare un enforcement di governance invece di una risposta a un incidente di credenziali.
 
 Quando scatta Z204, la pipeline CI si ferma. Il termine deve essere rimosso o il finding
 investigato — non esiste alcun meccanismo di bypass.

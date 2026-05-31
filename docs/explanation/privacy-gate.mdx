@@ -34,7 +34,7 @@ is treated as a security-class finding. Exit 2. Non-suppressible.
 Declare forbidden terms in `.zenzic.local.toml`:
 
 ```toml title=".zenzic.local.toml"
-[security]
+[core]
 forbidden_patterns = [
     "Project Obsidian",           # internal codename
     "internal.corp.example.com",  # infrastructure URL
@@ -60,12 +60,14 @@ committed to the shared `.zenzic.toml`. It extends, never overrides, the shared 
 
 ## Exit Behavior
 
-Z204 is a **security-class finding**:
+Z204 is a **policy-violation finding** (security-class severity):
 
 - Exits with **code 2** immediately
 - Not suppressed by `--exit-zero` or `exit_zero = true` in `.zenzic.toml`
 - Not suppressed by `.zenzic-ignore`
 - Not influenced by `fail_under` threshold
+
+The CLI banner reads **`POLICY VIOLATION DETECTED`** (distinct from Z201’s `SECURITY BREACH DETECTED`) to signal governance enforcement rather than credential incident response.
 
 When Z204 fires, the CI pipeline halts. The term must be removed or the finding
 investigated — there is no bypass mechanism.

@@ -62,7 +62,7 @@ Zenzic uses exit codes to communicate severity across CI/CD pipelines:
 
 * **Exit 0:** All checks passed (or suppressed via `--exit-zero`).
 * **Exit 1:** Errors and warnings detected; use `--strict` to promote warnings.
-* **Exit 2:** Security breaches (Z201 CREDENTIAL_SECRET) or forbidden-term violations (Z204 FORBIDDEN_TERM). **Never** suppressed.
+* **Exit 2:** Security breaches (Z201 CREDENTIAL_SECRET) or policy violations (Z204 FORBIDDEN_TERM). **Never** suppressed.
 * **Exit 3:** Security incidents detected (Z203 PATH_TRAVERSAL_FATAL). **Never** suppressed, even with `--exit-zero`.
 
 ---

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Examples Overview
-description: A guided index of the Zenzic Z-code gallery — five self-contained violation scenarios that demonstrate the audit engine in action.
+description: A guided index of the Zenzic Z-code gallery — twenty self-contained violation scenarios that demonstrate the audit engine in action.
 ---
 
 # Examples
@@ -29,7 +29,7 @@ Or launch the interactive gallery:
 ```bash
 uvx zenzic lab            # gallery menu
 uvx zenzic lab z101       # run the Z101 scenario
-uvx zenzic lab all        # run all 5 scenarios
+uvx zenzic lab all        # run all 20 scenarios
 ```
 
 ---
@@ -116,13 +116,251 @@ page translated in one locale also exists in all other configured locales.
 
 ---
 
+### z102-anchor-missing — Anchor Integrity {#example-z102}
+
+**Directory:** `examples/z102-anchor-missing/`
+**Engine:** `standalone`
+**Z-Code:** Z102 `ANCHOR_MISSING`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` links to `guide.md#nonexistent-section`. The target file exists but
+has no `#nonexistent-section` heading. Zenzic's link validator detects the dead
+fragment without any network request.
+
+**Start here if:** you want to validate that fragment links resolve to real headings.
+
+---
+
+### z103-orphan-link — Orphan Link {#example-z103}
+
+**Directory:** `examples/z103-orphan-link/`
+**Engine:** `zensical`
+**Z-Code:** Z103 `ORPHAN_LINK`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/guide.md` exists on disk but is not listed in `zensical.toml` nav. `index.md` links
+to it, so the file is reachable via direct URL but invisible through site navigation.
+Requires the zensical engine for VSM-aware link checking.
+
+**Start here if:** you use zensical and need to detect links that bypass navigation structure.
+
+---
+
+### z105-absolute-path — Absolute Path {#example-z105}
+
+**Directory:** `examples/z105-absolute-path/`
+**Engine:** `standalone`
+**Z-Code:** Z105 `ABSOLUTE_PATH`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains `[Guide](/guide)` — an absolute path starting with `/`. Absolute
+paths break portability when a site is hosted in a subdirectory.
+
+**Start here if:** your documentation must be host-path-portable (CDN subdirectory, GitHub Pages).
+
+---
+
+### z108-empty-link-text — Empty Link Text {#example-z108}
+
+**Directory:** `examples/z108-empty-link-text/`
+**Engine:** `standalone`
+**Z-Code:** Z108 `EMPTY_LINK_TEXT`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains `[](guide.md)` — a link with an empty label. Empty link text
+is inaccessible to screen readers and violates WCAG 2.1 §2.4.4.
+
+**Start here if:** you want to enforce accessible link labeling across your documentation.
+
+---
+
+### z202-path-traversal — Path Traversal {#example-z202}
+
+**Directory:** `examples/z202-path-traversal/`
+**Engine:** `standalone`
+**Z-Code:** Z202 `PATH_TRAVERSAL`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains `[Config](../../private/secret.txt)` — a link that escapes the
+`docs/` root via `../..`. Z202 is non-suppressible. Exit code 1.
+
+:::danger[This example exits with code 1 by design]
+`z202-path-traversal` contains an intentional directory traversal link for scanner testing.
+Do **not** suppress or ignore Z202 findings in production — they are non-suppressible by design.
+:::
+
+**Start here if:** you need to understand how Zenzic enforces the docs-root boundary.
+
+---
+
+### z204-forbidden-term — Policy Violation {#example-z204}
+
+**Directory:** `examples/z204-forbidden-term/`
+**Engine:** `standalone`
+**Z-Code:** Z204 `FORBIDDEN_TERM`
+<ZenzicOutput status="breach" exitCode={2} compact />
+
+`.zenzic.local.toml` declares `ProjectX` as a forbidden term. `docs/index.md` mentions it —
+triggering the **POLICY VIOLATION DETECTED** banner (distinct from Z201's credential banner).
+Z204 is non-suppressible. Exit code 2.
+
+:::danger[This example exits with code 2 by design]
+`z204-forbidden-term` contains intentional forbidden-term content for governance scanner testing.
+The `.zenzic.local.toml` is committed for demonstration only — in production, it is git-ignored.
+:::
+
+**Start here if:** you need to enforce internal codenames or confidential terms never appear in docs.
+
+---
+
+### z301-dangling-ref — Dangling Reference {#example-z301}
+
+**Directory:** `examples/z301-dangling-ref/`
+**Engine:** `standalone`
+**Z-Code:** Z301 `DANGLING_REF`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` uses `[Click here][missing-ref]` but no `[missing-ref]: url` definition
+exists anywhere in the file. Zenzic's reference scanner flags the undefined identifier.
+
+**Start here if:** you use reference-style links and want to catch typos in link IDs.
+
+---
+
+### z302-dead-def — Dead Definition {#example-z302}
+
+**Directory:** `examples/z302-dead-def/`
+**Engine:** `standalone`
+**Z-Code:** Z302 `DEAD_DEF`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` defines `[setup]: https://example.com/setup` but never uses the reference ID
+`setup` in any link. The orphan definition signals hidden documentation debt.
+
+**Start here if:** you want to keep your reference link tables free of unused entries.
+
+---
+
+### z303-duplicate-def — Duplicate Definition {#example-z303}
+
+**Directory:** `examples/z303-duplicate-def/`
+**Engine:** `standalone`
+**Z-Code:** Z303 `DUPLICATE_DEF`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` defines `[api]: https://api-v1.example.com` and `[api]: https://api-v2.example.com`
+— the same ID twice. Markdown renderers silently pick one URL, creating invisible link drift.
+
+**Start here if:** you want to enforce unique reference identifiers across documentation pages.
+
+---
+
+### z402-orphan-page — Orphan Page {#example-z402}
+
+**Directory:** `examples/z402-orphan-page/`
+**Engine:** `zensical`
+**Z-Code:** Z402 `ORPHAN_PAGE`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/secret.md` exists on disk but is not listed in `zensical.toml` nav. No visitor
+navigating the site menu can reach it. Requires the zensical engine.
+
+**Start here if:** you need to audit your documentation for pages that fell out of the nav.
+
+---
+
+### z403-missing-alt — Missing Alt Text {#example-z403}
+
+**Directory:** `examples/z403-missing-alt/`
+**Engine:** `standalone`
+**Z-Code:** Z403 `MISSING_ALT`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains `![](diagram.png)` — an image element with no alt text, violating
+WCAG 2.1 §1.1.1. Zenzic flags this syntactically; no I/O on the image file is performed.
+
+**Start here if:** you want to enforce accessible image alt text across your documentation.
+
+---
+
+### z501-placeholder — Placeholder Content {#example-z501}
+
+**Directory:** `examples/z501-placeholder/`
+**Engine:** `standalone`
+**Z-Code:** Z501 `PLACEHOLDER`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains `TODO: content goes here` and `Coming soon!` — classic stub
+patterns that signal unfinished pages published by accident.
+
+**Start here if:** you want to catch stub or draft content before it reaches production.
+
+---
+
+### z502-short-content — Short Content {#example-z502}
+
+**Directory:** `examples/z502-short-content/`
+**Engine:** `standalone`
+**Z-Code:** Z502 `SHORT_CONTENT`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` has only 8 words of prose — below the default 50-word minimum threshold.
+The page lacks placeholder patterns, so only Z502 fires, not Z501.
+
+**Start here if:** you want to enforce a minimum content density for published pages.
+
+---
+
+### z503-snippet-error — Snippet Error {#example-z503}
+
+**Directory:** `examples/z503-snippet-error/`
+**Engine:** `standalone`
+**Z-Code:** Z503 `SNIPPET_ERROR`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains a fenced `python` block with a `SyntaxError` (`def compute_total(items =`).
+Zenzic's `ast`-based snippet validator catches the invalid snippet at documentation-build time.
+
+**Start here if:** you publish Python code examples and want to guarantee they are syntactically valid.
+
+---
+
+### z505-untagged-code-block — Untagged Code Block {#example-z505}
+
+**Directory:** `examples/z505-untagged-code-block/`
+**Engine:** `standalone`
+**Z-Code:** Z505 `UNTAGGED_CODE_BLOCK`
+<ZenzicOutput status="error" exitCode={1} compact />
+
+`docs/index.md` contains a fenced code block with no language specifier (bare ` ``` `).
+Zenzic's built-in `UntaggedCodeBlockRule` is always active — no configuration needed.
+
+**Start here if:** you want to enforce language tags on every fenced code block.
+
+---
+
 ## Feature-to-Example Matrix {#matrix}
 
 | Z-Code | Violation Class | Example |
 | :---: | :--- | :--- |
 | Z101 | Broken internal links | [z101-broken-links](#example-z101) |
+| Z102 | Fragment anchor not defined | [z102-anchor-missing](#example-z102) |
+| Z103 | Link to nav-orphaned page | [z103-orphan-link](#example-z103) |
+| Z105 | Absolute path in link | [z105-absolute-path](#example-z105) |
+| Z108 | Empty link text | [z108-empty-link-text](#example-z108) |
 | Z201 | Credential / secret detection | [z201-credentials](#example-z201) |
+| Z202 | Docs-root path traversal | [z202-path-traversal](#example-z202) |
+| Z204 | Forbidden governance term | [z204-forbidden-term](#example-z204) |
+| Z301 | Dangling reference-style link | [z301-dangling-ref](#example-z301) |
+| Z302 | Unused reference definition | [z302-dead-def](#example-z302) |
+| Z303 | Duplicate reference definition | [z303-duplicate-def](#example-z303) |
+| Z402 | Markdown page not in nav | [z402-orphan-page](#example-z402) |
+| Z403 | Image missing alt text | [z403-missing-alt](#example-z403) |
 | Z405 | Unreferenced asset on disk | [z405-unused-assets](#example-z405) |
+| Z501 | Stub / TODO placeholder content | [z501-placeholder](#example-z501) |
+| Z502 | Page below minimum word count | [z502-short-content](#example-z502) |
+| Z503 | Python snippet syntax error | [z503-snippet-error](#example-z503) |
+| Z505 | Untagged fenced code block | [z505-untagged-code-block](#example-z505) |
 | Z601 | Deprecated brand name in content | [z601-brand-obsolescence](#example-z601) |
 | Z602 | i18n locale file parity gap | [z602-i18n-parity](#example-z602) |
 
