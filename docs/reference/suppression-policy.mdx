@@ -190,7 +190,7 @@ Security findings (Z201–Z204) **always bypass directory policies** uncondition
 Active suppressions (Levels 1 and 2) reduce the quality score:
 
 $$
-\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+	ext{debt} = n
 $$
 
 Where $n$ is the total number of active suppressions and `cap` is `governance.suppression_cap` (default: **30**).
@@ -201,10 +201,12 @@ Where $n$ is the total number of active suppressions and `cap` is `governance.su
 | 1 | 30 | 1 pt | **99** |
 | 10 | 30 | 10 pt | **90** |
 | 30 | 30 | 30 pt | **70** |
-| 31 | 30 | 32 pt | **68** |
-| 35 | 30 | 40 pt | **60** |
+| 31 | 30 | 31 pt | **69** |
+| 35 | 30 | 35 pt | **65** |
 
 The debt is applied **after** the Gravity Cap. If your brand score is 0, the total is capped at 70, and then debt is subtracted from that.
+
+`suppression_cap` is a governance hard-fail threshold, not a debt multiplier. Exceeding the cap triggers exit code 1 independently from the score gate (`fail_under`).
 
 :::info[Why does suppression cost points?]
 Zenzic cannot assess the quality of what it cannot see. Every suppression is a blind spot. The debt formula makes this cost explicit and visible in the score, instead of hiding it behind a perfect number. *Zenzic does not grade on a curve.*

@@ -226,7 +226,7 @@ The Suppression Audit is governance telemetry, not a raw failure counter.
 
 - It reports the total active suppressions (inline directives + `per_file_ignores`).
 - It expresses explicitly authorized technical debt envelope.
-- Score impact is applied only to suppressions above `suppression_cap`.
+- Score impact is applied to every active suppression (flat-cost: 1 pt each).
 
 ### 3) Label Semantics: `[MANAGED DEBT]` and `[EXTENDED DEBT]`
 
@@ -236,7 +236,7 @@ The Suppression Audit is governance telemetry, not a raw failure counter.
 These labels describe governance posture. They are complementary to score math and help reviewers track suppression growth over time.
 
 :::warning Breaking Change
-Suppressions within `suppression_cap` are allowance-based. Every suppression deducts 1 point (flat-cost model). `suppression_cap` is now exclusively a hard-fail exit threshold. Projects with active suppressions see their maximum achievable score reduced by the suppression count.
+Suppressions are not allowance-based. Every suppression deducts 1 point (flat-cost model), while `suppression_cap` remains an independent hard-fail exit threshold. Projects with active suppressions always see their maximum achievable score reduced by the suppression count.
 :::
 
 ---

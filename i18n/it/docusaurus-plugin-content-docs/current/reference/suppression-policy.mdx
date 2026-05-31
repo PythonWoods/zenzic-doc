@@ -190,7 +190,7 @@ I finding di sicurezza (Z201–Z204) **bypassano sempre le directory policy** in
 Le soppressioni attive (Livelli 1 e 2) riducono il quality score:
 
 $$
-\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+	ext{debt} = n
 $$
 
 Dove $n$ è il numero totale di soppressioni attive e `cap` è `governance.suppression_cap` (default: **30**).
@@ -201,10 +201,12 @@ Dove $n$ è il numero totale di soppressioni attive e `cap` è `governance.suppr
 | 1 | 30 | 1 pt | **99** |
 | 10 | 30 | 10 pt | **90** |
 | 30 | 30 | 30 pt | **70** |
-| 31 | 30 | 32 pt | **68** |
-| 35 | 30 | 40 pt | **60** |
+| 31 | 30 | 31 pt | **69** |
+| 35 | 30 | 35 pt | **65** |
 
 Il debt viene applicato **dopo** il Gravity Cap. Se il tuo brand score è 0, il totale viene limitato a 70, e poi il debt viene sottratto da quel valore.
+
+`suppression_cap` è una soglia di hard-fail di governance, non un moltiplicatore del debt. Superare il cap attiva l'exit code 1 indipendentemente dal gate di punteggio (`fail_under`).
 
 :::info[Perché la soppressione costa punti?]
 Zenzic non può valutare la qualità di ciò che non può vedere. Ogni soppressione è un punto cieco. La formula del debt rende questo costo esplicito e visibile nel punteggio, invece di nasconderlo dietro un numero perfetto. *Zenzic non valuta in curva.*

@@ -40,25 +40,24 @@ Questo significa:
 ## La Formula del Costo {#formula}
 
 $$
-\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+	ext{debt} = n
 $$
 
 Dove:
 - $n$ = soppressioni attive totali (inline + per-file)
 - `cap` = `governance.suppression_cap` in `.zenzic.toml` (default: **30**)
 
-Il costo **scala** non appena superi il cap: ogni soppressione oltre 30 costa **2 pt** invece di 1.
+Il costo del debt è **flat**: ogni soppressione costa sempre **1 pt**.
 
 | Soppressioni | Debt | Punteggio (da 100) |
 | :---: | :---: | :---: |
 | 0 | 0 pt | 100 |
 | 10 | 10 pt | 90 |
 | 30 | 30 pt | 70 |
-| 31 | **32 pt** | 68 |
-| 35 | **40 pt** | 60 |
+| 31 | 31 pt | 69 |
+| 35 | 35 pt | 65 |
 
-L'escalation è intenzionale: accumulare soppressioni oltre il cap di governance è un segnale
-che il progetto ha un debito documentale strutturale che non può essere mascherato.
+Quando le soppressioni superano il cap configurato, l'esecuzione fallisce comunque tramite il gate di governance (`suppression_cap`), anche se il debt resta lineare. Il gate di punteggio (`fail_under`) e il gate del cap sono ortogonali e valutati in modo indipendente.
 
 ---
 

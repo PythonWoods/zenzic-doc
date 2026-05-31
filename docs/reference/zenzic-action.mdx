@@ -9,7 +9,7 @@ description: "Complete reference for the Zenzic GitHub Action — inputs, output
 
 # Zenzic GitHub Action Reference
 
-The `PythonWoods/zenzic-action` action is the official CI enforcement point for the Zenzic documentation quality system. It runs `zenzic check all`, surfaces findings in GitHub Code Scanning, and implements the Zenzic Quality Gate — blocking PRs when the score drops.
+The `PythonWoods/zenzic-action` action is the official CI enforcement point for the Zenzic documentation quality system. In non-audit mode it executes a three-stage validation pipeline: `zenzic check all` (structural findings), `zenzic score` (DQS governance: `fail_under` + `suppression_cap`), and `zenzic score --check-stamp` (badge freshness, enabled by default). Findings are surfaced in GitHub Code Scanning, and quality regression gating is handled via `zenzic diff` when a baseline is configured.
 
 Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/zenzic-action)
 
@@ -29,6 +29,7 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `audit` | `false` | No | Sovereign audit mode — bypasses all `zenzic:ignore` inline comments and `governance.per_file_ignores` entries. Reveals the true, unfiltered documentation state. |
 | `diff-base` | *(snapshot)* | No | Path to a JSON baseline file for `zenzic diff` comparison. When set, the action compares the current score against this file instead of the saved `.zenzic-score.json`. Use an artifact from `main` to implement the Zenzic Quality Gate. |
 | `guard-scan` | `false` | No | Run `zenzic guard scan` as a Defense-in-Depth step **before** the main quality gate. Catches hardcoded credentials and forbidden patterns that bypassed pre-commit hooks. Failure is always fatal — not governed by `fail-on-error`. |
+| `check-stamp` | `true` | No | Run `zenzic score --check-stamp` after governance scoring. Fails the workflow when badge markers in `badge_stamp_files` are stale. Set to `false` to opt out. |
 
 ---
 
@@ -59,7 +60,7 @@ Exit codes 2 and 3 are **never suppressed** by `fail-on-error: "false"`, `--exit
 
 ## The Zenzic Quality Gate {#quality-gate}
 
-The Zenzic Quality Gate is the recommended PR enforcement setup. It combines `zenzic check all` with `zenzic diff --base` to block merges that decrease documentation quality.
+The Zenzic Quality Gate is the recommended PR enforcement setup. It combines structural checks, governance scoring, optional badge freshness, and regression comparison to block merges that decrease documentation quality.
 
 **Implementation:** see [CI/CD Integration → Diff Protocol](../how-to/configure-ci-cd.mdx#diff-protocol) for the full `zenzic-quality-gate.yml` workflow.
 
@@ -67,12 +68,14 @@ The Zenzic Quality Gate is the recommended PR enforcement setup. It combines `ze
 
 ```text
 PR opened
-  └─ zenzic check all → exit 0/1 (findings)
+  └─ zenzic check all → exit 0/1/2/3 (findings)
+  └─ zenzic score → exit 0/1 (fail_under + suppression_cap)
+  └─ zenzic score --check-stamp (default: true) → exit 0/1 (freshness)
   └─ zenzic diff --base <main-baseline>
        ├─ score stable or improved → exit 0 ✅ PR can merge
 ```
 
-The suppression debt is included in the score used for comparison. A PR that adds suppressions to hide findings will show a lower score.
+The suppression debt is included in the score used for comparison. A PR that adds suppressions to hide findings will show a lower score. Security exits (2/3) remain non-suppressible and always fail the run.
 
 ---
 

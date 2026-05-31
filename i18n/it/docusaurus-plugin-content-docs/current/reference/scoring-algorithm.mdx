@@ -226,7 +226,7 @@ Il Suppression Audit e telemetria di governance, non un semplice contatore di fa
 
 - Riporta il totale delle soppressioni attive (direttive inline + voci `per_file_ignores`).
 - Esplicita il perimetro di debito tecnico autorizzato.
-- L'impatto sul punteggio si applica solo alle soppressioni oltre `suppression_cap`.
+- L'impatto sul punteggio si applica a ogni soppressione attiva (flat-cost: 1 pt ciascuna).
 
 ### 3) Semantica Label: `[MANAGED DEBT]` e `[EXTENDED DEBT]`
 
@@ -236,7 +236,7 @@ Il Suppression Audit e telemetria di governance, non un semplice contatore di fa
 Queste label descrivono la postura di governance. Sono complementari alla matematica del punteggio e aiutano i revisori a tracciare la crescita delle soppressioni nel tempo.
 
 :::warning Breaking Change
-Le soppressioni entro `suppression_cap` sono allowance-based. Ogni soppressione deduce 1 punto (modello flat-cost). `suppression_cap` è ora esclusivamente una soglia di hard-fail per l'exit code. I progetti con soppressioni attive vedranno il punteggio massimo raggiungibile ridotto del numero di soppressioni.
+Le soppressioni non sono allowance-based. Ogni soppressione deduce 1 punto (modello flat-cost), mentre `suppression_cap` resta una soglia di hard-fail indipendente. I progetti con soppressioni attive vedranno sempre il punteggio massimo raggiungibile ridotto del numero di soppressioni.
 :::
 
 ---

@@ -54,8 +54,10 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (4-Gates Standard: pre-commit + docs audit + build + codes parity)
+# Recommended final local check (6-Gates Standard: pre-commit + docs audit + build + codes parity + score + freshness)
 verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
+    just score --stamp --no-header
+    just score --check-stamp --no-header
 
 # ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
 # not a public Zenzic linter rule). Pre-commit `rev:` keys must be 40-char
@@ -123,6 +125,53 @@ check *args:
         uv run --project "$CORE_PATH" zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
     elif command -v zenzic >/dev/null 2>&1; then
         zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    else
+        echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
+        echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2
+        echo "Each candidate must contain src/zenzic." >&2
+        echo "Checked: ${CHECKED[*]}" >&2
+        echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
+        exit 2
+    fi
+
+score *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ -n "${ZENZIC_BIN:-}" ]]; then
+        ${ZENZIC_BIN} score {{args}}
+        exit 0
+    fi
+
+    CORE_PATH=""
+    CHECKED=()
+
+    if [[ -n "${ZENZIC_CORE_PATH:-}" ]]; then
+        CHECKED+=("ZENZIC_CORE_PATH -> ${ZENZIC_CORE_PATH}")
+        if [[ -d "${ZENZIC_CORE_PATH}/src/zenzic" ]]; then
+            CORE_PATH="${ZENZIC_CORE_PATH}"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("_zenzic_core -> _zenzic_core")
+        if [[ -d "_zenzic_core/src/zenzic" ]]; then
+            CORE_PATH="_zenzic_core"
+        fi
+    fi
+
+    if [[ -z "$CORE_PATH" ]]; then
+        CHECKED+=("../zenzic -> ../zenzic")
+        if [[ -d "../zenzic/src/zenzic" ]]; then
+            CORE_PATH="../zenzic"
+        fi
+    fi
+
+    if [[ -n "$CORE_PATH" ]]; then
+        echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
+        uv run --project "$CORE_PATH" zenzic score {{args}}
+    elif command -v zenzic >/dev/null 2>&1; then
+        zenzic score {{args}}
     else
         echo "❌ [Zenzic] Core repository not found in sovereign search order and 'zenzic' not found on PATH." >&2
         echo "Required precedence: ZENZIC_CORE_PATH -> ./_zenzic_core -> ../zenzic" >&2

@@ -10,8 +10,11 @@ description: "Riferimento completo per la Zenzic GitHub Action — input, output
 # Riferimento Zenzic GitHub Action
 
 La `PythonWoods/zenzic-action` è l'action ufficiale CI per il sistema di qualità documentale
-Zenzic. Esegue `zenzic check all`, porta i finding in GitHub Code Scanning e implementa il
-Zenzic Quality Gate — bloccando le PR quando il punteggio scende.
+Zenzic. In modalità non-audit esegue una pipeline di validazione in tre fasi: `zenzic check all`
+(finding strutturali), `zenzic score` (governance DQS: `fail_under` + `suppression_cap`) e
+`zenzic score --check-stamp` (freshness badge, abilitato di default). I finding vengono pubblicati
+in GitHub Code Scanning, mentre il gate di regressione qualità è gestito da `zenzic diff` quando
+è configurata una baseline.
 
 Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/zenzic-action)
 
@@ -31,6 +34,7 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `audit` | `false` | No | Modalità sovereign audit — bypassa tutti i commenti `zenzic:ignore` inline e tutte le voci `governance.per_file_ignores`. Rivela lo stato reale e non filtrato della documentazione. |
 | `diff-base` | *(snapshot)* | No | Percorso a un file JSON di baseline per il confronto con `zenzic diff`. Quando impostato, l'action confronta il punteggio corrente contro questo file invece del `.zenzic-score.json` salvato. Usa un artefatto da `main` per implementare il Zenzic Quality Gate. |
 | `guard-scan` | `false` | No | Esegue `zenzic guard scan` come step Defense-in-Depth **prima** del gate principale. Rileva credenziali hardcodate e pattern vietati in repo dove gli sviluppatori hanno bypassato i pre-commit hook. Il fallimento è sempre fatale — non governato da `fail-on-error`. |
+| `check-stamp` | `true` | No | Esegue `zenzic score --check-stamp` dopo la validazione di governance. Fa fallire il workflow quando i badge in `badge_stamp_files` sono stale. Imposta `false` per fare opt-out. |
 
 ---
 
@@ -63,8 +67,9 @@ fatti, non finding da negoziare.
 
 ## Il Zenzic Quality Gate {#quality-gate}
 
-Il Zenzic Quality Gate è il setup di enforcement PR raccomandato. Combina `zenzic check all`
-con `zenzic diff --base` per bloccare i merge che diminuiscono la qualità della documentazione.
+Il Zenzic Quality Gate è il setup di enforcement PR raccomandato. Combina controlli strutturali,
+scoring di governance, freshness dei badge (opzionale) e confronto di regressione per bloccare
+i merge che riducono la qualità della documentazione.
 
 **Implementazione:** vedi [Integrazione CI/CD → Protocollo Diff](../how-to/configure-ci-cd.mdx#diff-protocol)
 per il workflow completo `zenzic-quality-gate.yml`.
@@ -73,13 +78,16 @@ per il workflow completo `zenzic-quality-gate.yml`.
 
 ```text
 PR aperta
-  └─ zenzic check all → exit 0/1 (finding)
+  └─ zenzic check all → exit 0/1/2/3 (finding)
+  └─ zenzic score → exit 0/1 (fail_under + suppression_cap)
+  └─ zenzic score --check-stamp (default: true) → exit 0/1 (freshness)
   └─ zenzic diff --base <baseline-main>
        ├─ punteggio stabile o migliorato → exit 0 ✅ La PR può fare merge
 ```
 
 Il suppression debt è incluso nel punteggio usato per il confronto. Una PR che aggiunge
-soppressioni per nascondere finding mostrerà un punteggio inferiore.
+soppressioni per nascondere finding mostrerà un punteggio inferiore. Gli exit di sicurezza
+(2/3) restano non sopprimibili e falliscono sempre l'esecuzione.
 
 ---
 

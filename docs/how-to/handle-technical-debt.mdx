@@ -38,24 +38,24 @@ This means:
 ## The Cost Formula {#formula}
 
 $$
-\text{debt} = \min(n, \text{cap}) \times 1\,\text{pt} + \max(0,\, n - \text{cap}) \times 2\,\text{pt}
+	ext{debt} = n
 $$
 
 Where:
 - $n$ = total active suppressions (inline + per-file)
 - `cap` = `governance.suppression_cap` in `.zenzic.toml` (default: **30**)
 
-The cost **escalates** once you exceed the cap: each suppression beyond 30 costs **2 pts** instead of 1.
+The debt cost is **flat**: each suppression always costs **1 pt**.
 
 | Suppressions | Debt | Score (from 100) |
 | :---: | :---: | :---: |
 | 0 | 0 pt | 100 |
 | 10 | 10 pt | 90 |
 | 30 | 30 pt | 70 |
-| 31 | **32 pt** | 68 |
-| 35 | **40 pt** | 60 |
+| 31 | 31 pt | 69 |
+| 35 | 35 pt | 65 |
 
-The escalation is intentional: accumulating suppressions beyond the governance cap is a signal that the project has structural documentation debt that cannot be papered over.
+When suppressions exceed the configured cap, the run still hard-fails via the governance gate (`suppression_cap`) even though debt remains linear. The score gate (`fail_under`) and the cap gate are orthogonal and evaluated independently.
 
 ---
 
