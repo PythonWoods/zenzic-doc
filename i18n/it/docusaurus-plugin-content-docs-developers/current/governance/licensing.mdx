@@ -91,9 +91,10 @@ Questo gate viene eseguito in:
 Qualsiasi PR che fallisce `uv run reuse lint` non viene integrata.
 
 > **Nota operativa:** se un endpoint di riferimento va in timeout nel final guard,
-> mantieni invariato il contenuto del documento e aggiungi un'esclusione temporanea
-> in `.zenzic.toml` con un commento di review esplicito. Così non si maschera il
-> drift dei contenuti e il guard resta utilizzabile su reti instabili.
+> mantieni invariato il contenuto del documento e usa il permalink locale invece
+> di un URL esterno. Per la guida adapter, collega
+> `/developers/how-to/implement-adapter` così il guard verifica il route reale
+> del sito senza dipendere da un fetch remoto.
 
 ---
 

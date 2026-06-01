@@ -36,7 +36,7 @@ export default function GovernancePreview(): React.JSX.Element {
             <CapExceededSummary
               activeSuppressions={43}
               globalCap={30}
-              remediationUrl="https://zenzic.dev/developers/how-to/release-governance-protocol"
+              remediationUrl="/developers/how-to/release-governance-protocol"
             />
           </div>
 

@@ -204,6 +204,12 @@ Z105 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
     2. Usa `@site/` o alias engine-specifici simili se supportati (es. in Docusaurus).
     3. Se hai ricevuto un **Z104** (non Z105) su un link assoluto `/blog/` o `/docs/`, il prefisso di route è riconosciuto ma lo slug non esiste — vedi [Rimedio Z104](#z104) sopra.
 
+:::note[Confine Multi-Istanza Docusaurus]
+Attualmente, Docusaurus non supporta percorsi relativi (`../`) attraverso istanze di plugin diverse (es. da `docs/` a `developers/`). Per collegare istanze diverse, è necessario usare URL assoluti di produzione (`https://...`). Questo attiverà un finding Z105. Poiché le soppressioni inline all'interno delle tabelle Markdown potrebbero non essere parsate correttamente dal motore AST, devi sopprimere questo finding tramite [`[governance.per_file_ignores]`](/developers/how-to/release-governance-protocol) nel tuo `.zenzic.toml` e accettare la penalità di 1 punto DQS finché il Docusaurus Adapter non implementerà la risoluzione root-relative cross-istanza.
+
+*Questa è una limitazione architetturale nota, tracciata nella [ROADMAP](https://zenzic.dev/developers/explanation/adr-vault).*
+:::
+
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::note[Quality Score — Informativo | 0.0 pts (nessun impatto DQS)]

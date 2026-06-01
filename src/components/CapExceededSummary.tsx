@@ -12,7 +12,7 @@
  *
  *   <CapExceededSummary activeSuppressions={43} globalCap={30} />
  *   <CapExceededSummary activeSuppressions={28} globalCap={30}
- *     remediationUrl="https://zenzic.dev/developers/how-to/release-governance-protocol" />
+ *     remediationUrl="/developers/how-to/release-governance-protocol" />
  *
  * State variants:
  *   delta ≤ 0          → 'ok'     green — CAP within limit

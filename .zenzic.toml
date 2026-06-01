@@ -38,9 +38,6 @@ excluded_external_urls = [
     "https://spdx.org/licenses/",
     # GitHub PAT settings endpoint can intermittently time out from CI runners.
     "https://github.com/settings/tokens",
-    # Adapter guide on zenzic.dev intermittently times out from CI/local runners.
-    # Temporary exclusion; keep the documentation content unchanged and review later.
-    "https://zenzic.dev/developers/how-to/implement-adapter",
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
     #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
@@ -111,7 +108,12 @@ i18n_parity = true
 # BEHAVIOR: ADDITIVE — each entry adds 1 pt of Technical Debt (flat-cost).
 # IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
 #
-# [governance.per_file_ignores]
+[governance.per_file_ignores]
+# Z105: cross-plugin absolute links — inline suppressions are not parsed inside Markdown table cells.
+# Tracked in ROADMAP: Docusaurus Cross-Instance Resolver.
+"docs/explanation/github-action-internals.mdx" = ["Z105"]
+"i18n/it/docusaurus-plugin-content-docs/current/explanation/github-action-internals.mdx" = ["Z105"]
+
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
 
@@ -133,7 +135,7 @@ i18n_parity = true
 "it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
 
 # Governance Playbook:
-# https://zenzic.dev/developers/how-to/release-governance-protocol
+# /developers/how-to/release-governance-protocol
 
 # --- EXCLUSION ZONES (Full bypass — use sparingly) ---
 # Paths listed here are INVISIBLE to Zenzic: no findings, no audit trail.

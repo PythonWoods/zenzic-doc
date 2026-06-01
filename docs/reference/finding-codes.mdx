@@ -204,6 +204,12 @@ Z105 counts toward the **Structural** tier of the [Deterministic Quality Score](
     2. Use `@site/` or similar engine-specific aliases if supported (e.g., in Docusaurus).
     3. If you received a **Z104** (not Z105) on an absolute `/blog/` or `/docs/` link, the route prefix is recognised but the slug does not exist — see [Z104 remediation](#z104) above.
 
+:::note[Docusaurus Multi-Instance Boundary]
+Currently, Docusaurus does not support relative file paths (`../`) across different plugin instances (e.g., from `docs/` to `developers/`). To link across instances, you must use absolute production URLs (`https://...`). This will trigger a Z105 finding. Because inline suppressions inside Markdown tables may not be parsed correctly by the AST engine, you must suppress this finding using [`[governance.per_file_ignores]`](/developers/how-to/release-governance-protocol) in your `.zenzic.toml` and accept the 1-point DQS penalty until the Docusaurus Adapter implements cross-instance root-relative resolution.
+
+*This is a known architectural limitation tracked in the [ROADMAP](https://zenzic.dev/developers/explanation/adr-vault).*
+:::
+
 ### Z106: CIRCULAR_LINK {#z106}
 
 :::note[Quality Score — Informational | 0.0 pts (no DQS impact)]

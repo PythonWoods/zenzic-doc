@@ -99,9 +99,10 @@ This gate runs in:
 Any PR that fails `uv run reuse lint` does not merge.
 
 > **Operational note:** if a reference endpoint times out in the final guard,
-> keep the document content unchanged and add a temporary exclusion in
-> `.zenzic.toml` with a clear review comment. This avoids masking content drift
-> while still keeping the guard usable on unstable networks.
+> keep the document content unchanged and use the local permalink instead of an
+> external URL. For the adapter guide, link to
+> `/developers/how-to/implement-adapter` so the guard checks the real site route
+> without depending on a remote fetch.
 
 ---
 
