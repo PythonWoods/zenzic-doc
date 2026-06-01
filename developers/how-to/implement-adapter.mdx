@@ -139,6 +139,27 @@ class MyEngineAdapter(BaseAdapter):
         """Return the set of .md paths listed in the engine's nav, relative to docs_root."""
         return self._nav_paths
 
+    def get_metadata_files(self) -> frozenset[str]:
+        """Return engine-owned metadata files to ignore in findings."""
+        return frozenset({"myengine.toml"})
+
+    def provides_index(self, directory_path: Path) -> bool:
+        """Return whether this engine serves an index page for the directory."""
+        index_rel = (directory_path / "index.md").as_posix().lstrip("/")
+        return index_rel in self._nav_paths
+
+    def get_extra_content_roots(self, repo_root: Path) -> list[Path]:
+        """Return additional markdown roots outside docs_root."""
+        return []
+
+    def get_locale_source_roots(self, repo_root: Path) -> list[tuple[Path, str]]:
+        """Return locale roots as (root_path, locale_label) tuples."""
+        return []
+
+    def get_absolute_url_prefixes(self, repo_root: Path | None = None) -> list[str]:
+        """Return project-owned absolute URL prefixes."""
+        return []
+
     # ── Metadata-Driven Routing ────────────────────────────────────────────
 
     def get_route_info(self, rel: Path) -> RouteMetadata:
@@ -203,11 +224,13 @@ engine = "myengine"
 By default, Zenzic instantiates your adapter by calling:
 
 ```python
-adapter_class(context, docs_root, config_dict)
+adapter_class(context, docs_root)
 ```
 
-where `context` is a `BuildContext` instance and `config_dict` is the parsed
-engine config (or `{}` if discovery failed).
+where `context` is a `BuildContext` instance.
+
+If your adapter needs repository-aware config loading, implement
+`from_repo(context, docs_root, repo_root)` and load engine config there.
 
 If your adapter needs a different constructor signature, implement a
 `from_repo(context, docs_root, repo_root)` classmethod and Zenzic will prefer it:
