@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 📖 Documentation Map
 
-The Zenzic documentation ships as **two separate Docusaurus instances** under one domain.
+The Zenzic documentation ships as **one Docusaurus site** under one domain, with the main docs, a dedicated `developers` docs plugin, and the blog published alongside the same content tree.
 
 ```text
 zenzic.dev/
@@ -38,9 +38,7 @@ zenzic.dev/
 └── blog/           → Release notes & engineering post-mortems
 ```
 
-Two instances, one Quality Gate. The split is enforced by
-[ADR 011](https://zenzic.dev/developers/explanation/adr-cross-instance-allowlist) —
-every cross-boundary link is a documented contract, never a silent suppression.
+The docs, developers, and blog sections are routed through the same site configuration.
 
 | You are a... | Start here |
 | :--- | :--- |
@@ -52,8 +50,7 @@ every cross-boundary link is a documented contract, never a silent suppression.
 
 ## Prerequisites
 
-- Node.js 24 or newer
-- npm 10 or newer
+- Node.js matching the project support policy declared in `package.json`
 - Optional: [just](https://github.com/casey/just) for short, memorable commands
 
 ## First Setup
