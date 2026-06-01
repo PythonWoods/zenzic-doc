@@ -49,12 +49,13 @@ The core analysis engine operates as a **Two-Pass Pipeline** over the documentat
 
 ### Pass 1 -- Harvest and Credential Scan {#pass-1}
 
-Pass 1 reads every `.md` file under `docs/` and performs two independent operations:
+Pass 1 reads every `.md` and `.mdx` file under `docs/` and performs three coordinated operations:
 
 | Stream | What it reads | Purpose |
 | :--- | :--- | :--- |
 | **Credential scanner stream** | Every line including frontmatter and fenced code blocks | Detect leaked credentials |
 | **Content stream** | Lines outside fenced blocks (frontmatter skipped) | Harvest reference definitions, detect images |
+| **Reference URL secret scan** | URLs harvested from reference definitions | Re-scan normalized URLs for embedded credentials |
 
 The credential scanner stream uses raw `enumerate()` -- no line is ever invisible to the credential scanner. The content stream uses a fenced-block-aware state machine that skips lines inside ` ``` ` or `~~~` fences, preventing false-positive reference definitions from code examples.
 
@@ -457,10 +458,10 @@ Every `[[custom_rules]]` pattern is compiled with RE2 at load time. A pattern ei
 
 The scan engine automatically selects sequential or parallel execution based on the number of files:
 
-| File count | Mode | Behaviour |
+| Condition | Mode | Behaviour |
 | :--- | :--- | :--- |
-| < 50 files | Sequential | Zero process-spawn overhead. Full O(N) I/O. |
-| >= 50 files | Parallel | `ProcessPoolExecutor` with per-worker isolation |
+| `workers = 1` (default) or file count < 50 | Sequential | Zero process-spawn overhead. Full O(N) I/O. |
+| `workers != 1` and file count >= 50 | Parallel | `ThreadPoolExecutor` with per-file distribution |
 
 The threshold (50 files) is a conservative heuristic: below it, process-spawn overhead exceeds the parallelism benefit. Results are always sorted by `file_path` regardless of execution mode.
 
@@ -643,4 +644,4 @@ Zenzic addresses this through the [`[governance]`](../reference/configuration-re
 brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z6XX -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z6XX */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z601 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z601 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.

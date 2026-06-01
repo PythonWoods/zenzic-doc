@@ -21,7 +21,7 @@ description: "ADR 015: Zenzic valida nativamente la freschezza dei propri badge 
 file elencato in `badge_stamp_files`. Questo meccanismo è deterministico e Git-native: il badge
 viene cristallizzato in ogni commit, senza richiedere alcun servizio esterno.
 
-Tuttavia, prima di questa decisione, Zenzic non aveva alcun meccanismo nativo per **verificare**
+Tuttavia, Zenzic non ha alcun meccanismo nativo per **verificare**
 che il badge committato corrispondesse al punteggio calcolato. L'unico percorso di enforcement
 era un gate bash esterno aggiunto manualmente ai workflow CI:
 

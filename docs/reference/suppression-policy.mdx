@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: "Suppression Policy"
-description: "The Zenzic Suppression Manifesto — three suppression levels, Technical Debt cost formula, inviolable security codes, and the --audit override."
+description: "The Zenzic Suppression Manifesto — four suppression levels, Technical Debt cost formula, inviolable security codes, and the --audit override."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -17,14 +17,14 @@ Zenzic's suppression system lets teams declare **validated exceptions** — inte
 
 ## Reporting Levels — Audit Footer Semantics {#reporting-levels}
 
-When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting the current state of suppressions. This footer uses a semantic taxonomy with four distinct reporting levels:
+When you run `zenzic check all` or `zenzic check all --audit`, Zenzic emits a footer reporting the current state of suppressions. This footer uses a semantic taxonomy with four distinct reporting levels:
 
 | State | Suppressions | Label | Severity | Meaning |
 | :--- | :---: | :--- | :--- | :--- |
 | **Clean State** | 0 | *(no label)* | ✅ Green | Full integrity — no suppressions in use. Documentation is at baseline. |
-| **Managed Debt** | 0 < n < CAP | `[MANAGED DEBT]` (cyan) | ⏳ OK | Suppressions are within budget. Technical debt is monitored and authorized. |
-| **Extended Debt** | n ≥ CAP | `[EXTENDED DEBT]` (yellow) | ⚠️ Warning | Suppression budget is at or exceeded the limit. Immediate review required. |
-| **Critical Debt** | n > CAP | `[CRITICAL DEBT]` (red) | 🚨 Error | Suppressions exceed the hard cap. CI gate will fail (exit code 1). Remediation is mandatory. |
+| **Managed Debt** | 0 < n ≤ CAP and CAP ≤ 30 | `[MANAGED DEBT]` (cyan) | ⏳ OK | Suppressions are in use within the sovereign cap profile. |
+| **Extended Debt** | 0 < n ≤ CAP and CAP > 30 | `[EXTENDED DEBT]` (yellow) | ⚠️ Warning | Suppressions are in use under an expanded cap profile and require governance review. |
+| **Cap Exceeded** | n > CAP | `[CAP_EXCEEDED]` (red) | 🚨 Error | Suppressions exceed the configured cap. CI gate fails with exit code 1 when `suppression_cap_fail_hard=true`. Remediation is mandatory. |
 
 ### Footer Examples
 
@@ -38,8 +38,8 @@ When you run `zenzic check` or `zenzic audit`, Zenzic emits a footer reporting t
 # Extended debt — at the cap (34 out of 34 suppressions; limit reached)
 🔒 Suppression Audit: 34/34 (inline: 34, per-file: 0) [EXTENDED DEBT]
 
-# Critical debt — over the cap (39 out of 34; gate fails)
-🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CRITICAL DEBT] — EXIT CODE 1
+# Cap exceeded — over the cap (39 out of 34; gate fails)
+🔒 Suppression Audit: 39/34 (inline: 35, per-file: 4) [CAP_EXCEEDED] — EXIT CODE 1
 ```
 
 ### Setting the Suppression Budget
@@ -55,14 +55,14 @@ If `suppression_cap` is omitted, Zenzic uses a built-in default of **30**.
 
 ---
 
-## The Three Suppression Levels {#levels}
+## The Four Suppression Levels {#levels}
 
-Zenzic offers three levels of suppression, from the most precise to the most broad.
+Zenzic offers four levels of suppression, from the most precise to the most broad.
 They are designed to be combined: a well-governed project uses each level for its intended purpose.
 
 | Level | Mechanism | Scope | Audit Trail | Score Cost |
 | :--- | :--- | :--- | :---: | :---: |
-| **1. Inline** | `<!-- zenzic:ignore ZXXX -->` comment | Single line | ✅ Yes | 1 pt/suppress |
+| **1. Inline** | `<!-- zenzic:ignore: ZXXX -->` comment | Single line | ✅ Yes | 1 pt/suppress |
 | **2. Per-file** | `governance.per_file_ignores` in TOML | File glob | ✅ Yes | 1 pt/entry |
 | **3. Exclusion Zone** | `excluded_dirs` / `excluded_file_patterns` | Directory or pattern | ❌ No | 0 pt |
 | **4. Directory Policy** | `governance.directory_policies` in TOML | File glob | ✅ Yes (audit mode) | **0 pt** |
@@ -80,16 +80,16 @@ The most precise suppression: one comment, one line, one finding.
 **Markdown (`.md`) files:**
 
 ```markdown
-Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
+Legacy product name retained for historical accuracy. <!-- zenzic:ignore: Z601 -->
 ```
 
 **MDX (`.mdx`) files:**
 
 ```mdx
-Quartz was previously known as Obsidian. {/* zenzic:ignore: Z601 */}
+Legacy product name retained for historical accuracy. {/* zenzic:ignore: Z601 */}
 ```
 
-Both comment forms are invisible in rendered output. The distinction matters: using the wrong comment type in the wrong file format will cause the suppression to be silently ignored.
+Both comment forms are invisible in rendered output. Use the comment form that matches the surrounding file style to keep source examples consistent.
 
 To suppress **multiple codes on the same line**, add one comment per code:
 
@@ -102,7 +102,7 @@ Some line. {/* zenzic:ignore: Z107 */} {/* zenzic:ignore: Z601 */}
 The comment should always appear at the **end of the line**, following the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
 
 ```mdx
-- Historical reference — Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
+- Historical reference — legacy product naming retained here. <!-- zenzic:ignore: Z601 -->
 ```
 
 ---
@@ -176,9 +176,9 @@ When running `zenzic check all --audit`, directory policy exemptions are **not d
 
 ```shell
 $ zenzic check all --audit
-explanation/mineral-path.mdx:21 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Obsidian'
-explanation/mineral-path.mdx:22 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Quartz'
-blog/2026-05-24-log-v080.mdx:1 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'Basalt'
+explanation/brand-history.mdx:21 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameA'
+explanation/brand-history.mdx:22 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameB'
+blog/2026-05-24-log-v080.mdx:1 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyReleaseCodename'
 ```
 
 Security findings (Z201–Z204) **always bypass directory policies** unconditionally — they cannot be exempted regardless of any TOML configuration.
@@ -190,7 +190,7 @@ Security findings (Z201–Z204) **always bypass directory policies** uncondition
 Active suppressions (Levels 1 and 2) reduce the quality score:
 
 $$
-	ext{debt} = n
+	\text{debt} = n
 $$
 
 Where $n$ is the total number of active suppressions and `cap` is `governance.suppression_cap` (default: **30**).
@@ -295,7 +295,7 @@ Exclusion zones (`excluded_dirs`, `excluded_file_patterns`) are **not** bypassed
 
 Use suppression for **documented intent**, not evasion:
 
-- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames.
+- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately retain obsolete product naming.
 - **ToC navigation links** — `[Section](#section-name)` patterns that trigger Z107 in long documents are intentional.
 - **Intentionally short pages** — A glossary page may be below the Z502 word-count threshold by design.
 
@@ -313,141 +313,3 @@ Do **not** suppress to:
 - [Scoring Algorithm](./scoring-algorithm.mdx) — How suppression debt interacts with the full quality score.
 - [Finding Codes Reference](./finding-codes.mdx) — Full catalog of all Zxxx codes with remediation steps.
 - [Configuration Reference](./configuration-reference.mdx) — Full `governance` section reference.
-
-
----
-
-## Per-Line Suppression Syntax {#syntax}
-
-Suppression is **format-aware** and operates at the line level. Add a comment at the end of the offending line:
-
-**Markdown (`.md`) files:**
-
-```markdown
-Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
-```
-
-**MDX (`.mdx`) files:**
-
-```mdx
-Quartz was previously known as Obsidian. {/* zenzic:ignore: Z601 */}
-```
-
-Both comment forms are invisible in rendered output — Markdown processors treat HTML comments as non-rendered, and Docusaurus/React treats `{/* */}` as JSX whitespace. The distinction matters: using the wrong comment type in the wrong file format will cause the suppression to be silently ignored.
-
-To suppress **multiple codes on the same line**, add one comment per code:
-
-```mdx
-Some line. {/* zenzic:ignore: Z107 */} {/* zenzic:ignore: Z601 */}
-```
-
-### Recommended: Trailing Position
-
-The comment should always appear at the **end of the line** (or end of the cell in Markdown tables), after all content. This follows the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
-
-**Prose / lists:** Comment at absolute end of line.
-
-```mdx
-- **Historical reference** — Quartz was previously known as Obsidian. <!-- zenzic:ignore: Z601 -->
-```
-
-**Markdown tables:** Comment at the end of the **last cell**, before the closing pipe.
-
-```md
-| [Section](#example-section) | Description of this section. |
-```
-
-:::tip[Why trailing?]
-Placing the `zenzic:ignore` at the end of the line:
-
-1. **Separates content from instruction** — the human message is uninterrupted.
-2. **Enables visual scanning** — scan the right edge of a file to see all active suppressions.
-3. **Avoids prose disruption** — comments embedded in mid-sentence break reading flow.
-
-:::
-
----
-
-## Suppressible vs Inviolable Codes {#codes}
-
-Zenzic divides finding codes into two classes: **Suppressible** (the author's intent is sovereign) and **Inviolable** (security facts cannot be declared false positives).
-
-| Code | Name | Suppressible? |
-| :--- | :--- | :---: |
-| Z101 | LINK_BROKEN | ✅ Yes |
-| Z102 | ANCHOR_MISSING | ✅ Yes |
-| Z103 | ORPHAN_LINK | ✅ Yes |
-| Z104 | FILE_NOT_FOUND | ✅ Yes |
-| Z105 | ABSOLUTE_PATH | ✅ Yes |
-| Z106 | CIRCULAR_LINK | ✅ Yes |
-| Z107 | CIRCULAR_ANCHOR | ✅ Yes |
-| **Z201** | **CREDENTIAL_SECRET** | 🔒 **Never** |
-| **Z202** | **PATH_TRAVERSAL** | 🔒 **Never** |
-| **Z203** | **PATH_TRAVERSAL_FATAL** | 🔒 **Never** |
-| Z301 | DANGLING_REF | ✅ Yes |
-| Z302 | DEAD_DEF | ✅ Yes |
-| Z303 | DUPLICATE_DEF | ✅ Yes |
-| Z401 | MISSING_DIRECTORY_INDEX | ✅ Yes |
-| Z402 | ORPHAN_PAGE | ✅ Yes |
-| Z403 | MISSING_ALT | ✅ Yes |
-| Z404 | CONFIG_ASSET_MISSING | ✅ Yes |
-| Z501 | PLACEHOLDER | ✅ Yes |
-| Z502 | SHORT_CONTENT | ✅ Yes |
-| Z503 | SNIPPET_ERROR | ✅ Yes |
-| Z505 | UNTAGGED_CODE_BLOCK | ✅ Yes |
-| Z901 | RULE_ENGINE_ERROR | ✅ Yes |
-| Z902 | RULE_TIMEOUT | ✅ Yes |
-| Z405 | UNUSED_ASSET | ✅ Yes |
-| Z406 | NAV_CONTRACT | ✅ Yes |
-| Z601 | BRAND_OBSOLESCENCE | ✅ Yes |
-
-:::danger[The Inviolability Law — CEO-152]
-`zenzic:ignore: Z201`, `zenzic:ignore: Z202`, and `zenzic:ignore: Z203` are **silently rejected**. The credential scanner and path traversal guard operate independently of the suppression engine. Even if a `zenzic:ignore` comment is present on the same line as a credential, Zenzic will still emit the finding and exit with code 2 or 3.
-
-You cannot ignore a breach.
-:::
-
----
-
-## Interaction with `--strict` Mode {#strict}
-
-`--strict` and `zenzic:ignore` operate at **different layers** of the analysis pipeline:
-
-1. **Detection phase:** Zenzic finds a violation (e.g. Z402 Orphan Page, severity `warning`).
-2. **Suppression filter (ignore):** If the line carries `zenzic:ignore: Z402`, the violation is destroyed. For Zenzic, it never existed.
-3. **Severity evaluation (strict):** `--strict` promotes surviving warnings to errors. It only acts on violations that passed through step 2.
-
-**The consequence:** Inhibiting a finding via `zenzic:ignore` effectively removes it from the audit stream. Even when running in `--strict` mode, ignored findings will not trigger a non-zero exit code — they are considered *validated exceptions* declared by the author.
-
-| Finding state | `--strict`? | Exit code | Reason |
-| :--- | :---: | :---: | :--- |
-| Warning present | No | `0` | Warning is tolerated by default |
-| Warning present | **Yes** | `1` | `--strict` promotes warning to error |
-| Warning + `ignore` | No | `0` | Author declared a validated exception |
-| Warning + `ignore` | **Yes** | `0` | **Intent wins over rigour** |
-| Z201/Z202/Z203 | Any | `2` or `3` | Inviolable — suppression is rejected |
-
----
-
-## When to Suppress vs When to Fix {#guidance}
-
-Suppression is an act of **documented intent**, not evasion. In a `git` repository, a `zenzic:ignore` comment is a signed declaration that the author reviewed the finding and considered it a legitimate exception. Suppression should be used for:
-
-- **ToC navigation links** — `[Section Name](#example-section-name)` is a common in-page ToC pattern that might look like Z107.
-
-- **Historical brand references** — CHANGELOG entries, migration guides, and historical documentation may legitimately name obsolete codenames (Z601).
-- **Intentionally short pages** — A `glossary.md` with terse definitions may be below the Z502 word-count threshold by design.
-
-Suppression should **not** be used to:
-
-- Hide a real broken link rather than fix the target.
-- Silence a Z402 orphan page rather than add it to the navigation.
-- Bypass Z201 to "document" a real credential.
-
----
-
-## See Also {#see-also}
-
-- [Finding Codes Reference](./finding-codes.mdx) — Full catalog of all Zxxx codes with remediation steps.
-- [Configuration Reference](./configuration-reference.mdx) — `excluded_codes` for repo-wide suppression.
-- [Scoring System](../explanation/scoring-system.mdx) — How suppressed findings affect the Quality Score.

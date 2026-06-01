@@ -21,7 +21,7 @@ description: "ADR 015: Zenzic validates its own DQS badge freshness natively via
 listed in `badge_stamp_files`. This mechanism is deterministic and Git-native: the badge is
 crystallised in each commit, requiring no external service.
 
-However, before this decision, Zenzic had no native mechanism to **verify** that the committed
+However, Zenzic has no native mechanism to **verify** that the committed
 badge matched the computed score. The only enforcement path was an external bash gate added
 manually to CI workflows:
 

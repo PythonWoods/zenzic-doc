@@ -36,7 +36,7 @@ Ogni codice ha un'ancora permanente. Puoi collegarti direttamente a un codice sp
 
 ## Panoramica delle Categorie
 
-Zenzic organizza le rilevazioni in **sette categorie diagnostiche**, ognuna affrontando un pilastro specifico dell'integrità della documentazione:
+Zenzic organizza le rilevazioni in **otto categorie diagnostiche**, ognuna affrontando un pilastro specifico dell'integrità della documentazione:
 
 | **Categoria** | **Range** | **Scopo** | **Severità Default** | **Sopprimibile?** |
 |---|---|---|---|---|
@@ -51,8 +51,8 @@ Zenzic organizza le rilevazioni in **sette categorie diagnostiche**, ognuna affr
 
 :::info[Sintassi di soppressione per-linea]
 Sopprimi un finding su una linea specifica con un commento format-aware sulla stessa linea.\
-**Markdown (.md):** `<!-- zenzic:ignore Zxxx -->`\
-**MDX (.mdx):** `{/* zenzic:ignore Zxxx */}`\
+**Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
+**MDX (.mdx):** `{/* zenzic:ignore: Zxxx */}`\
 Vedi la [Suppression Policy](./suppression-policy.mdx) per il riferimento completo, incluse le interazioni con la modalità `--strict`.
 :::
 
@@ -132,10 +132,10 @@ Z102 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
 ### Z103: ORPHAN_LINK {#z103}
 
 :::note[Quality Score — Nessun impatto DQS (0.0 pts)]
-Z103 **non** riduce il [Deterministic Quality Score](./scoring-algorithm.mdx). Causa exit 0 in modalità standard, exit 1 con `--strict`. Vedi [Scoring Algorithm](./scoring-algorithm.mdx) per la tabella completa delle penalità.
+Z103 **non** riduce il [Deterministic Quality Score](./scoring-algorithm.mdx). Causa exit 1 in modalità standard. Vedi [Scoring Algorithm](./scoring-algorithm.mdx) per la tabella completa delle penalità.
 :::
 
-* **Severità:** `warning`
+* **Severità:** `error`
 * **Contesto Tecnico:** Questo link punta a un file presente nella VSM ma non incluso nella struttura di navigazione del sito (sidebar/nav). Gli utenti possono collegarsi ad esso, ma non possono trovarlo tramite la UI.
 * **Rationale Architetturale:** Una pagina orfana di navigazione esiste nel build ma non nel Knowledge Graph che i lettori percorrono. È raggiungibile solo via URL diretto — il lettore deve già conoscere l'URL per trovarla. Una pagina del genere ha discoverability zero: non può essere trovata seguendo alcun percorso di navigazione, voce di sidebar, o albero di documentazione. Z103 rende esplicita questa invisibilità, dando all'autore la scelta di o aggiungere la pagina alla navigazione (rendendola scopribile) o riconoscere intenzionalmente che è un endpoint nascosto.
 * **Rimedio:**
@@ -183,7 +183,7 @@ Z104 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
 Z105 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−2.0 pts per occorrenza**, capped a 30 pts per il tier.
 :::
 
-* **Severità:** `warning`
+* **Severità:** `error`
 * **Contesto Tecnico:** I percorsi assoluti (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) rompono la portabilità della documentazione. Zenzic li flagga per prevenire la sindrome "Funziona sulla mia macchina" nelle pipeline CI/CD.
 
   **I prefissi project-owned sono esenti da Z105 ma non da Z104.** I siti Docusaurus spesso usano link assoluti che iniziano con `/blog/`, `/docs/`, o altri valori di `routeBasePath` per attraversare i confini fra plugin. Zenzic auto-rileva questi prefissi dalla configurazione dell'engine (Zero-Config — nessuna entry richiesta in `.zenzic.toml`) e sopprime Z105 per essi.
@@ -713,8 +713,8 @@ Z602 è un **check di integrità bilingue**. Non riduce il [Deterministic Qualit
 
 ## Reserved Codes (Inattivi) {#reserved-codes}
 
-:::note[Non ancora attivi]
-I codici in questa sezione sono definiti nel registro Zenzic e riservati a future implementazioni dell'engine. **Non vengono emessi a runtime** e hanno **nessun impatto sul Deterministic Quality Score**. La loro presenza qui è puramente informativa — la semantica può cambiare prima dell'attivazione.
+:::note[Runtime-inattivi per contratto]
+I codici in questa sezione sono definiti nel registro Zenzic e riservati a implementazioni dell'engine. **Non vengono emessi a runtime** e hanno **nessun impatto sul Deterministic Quality Score**. La loro presenza qui è puramente informativa.
 :::
 
 ### Z111: VIRTUAL_ROUTE_BROKEN {#z111}
@@ -773,8 +773,7 @@ I codici in questa sezione sono definiti nel registro Zenzic e riservati a futur
     1. Rivedi `postsPerPage` nel blocco blog del tuo `docusaurus.config.ts`.
     2. Considera di abilitare il blog archive (`archiveBasePath: 'archive'`) per scaricare
        i post storici dall'indice paginato.
-    3. Sopprimi con `{/* zenzic:ignore: Z114 */}` sul link o imposta una soglia più alta
-       in un futuro setting `.zenzic.toml` (non ancora implementato).
+    3. Sopprimi con `{/* zenzic:ignore: Z114 */}` sul link.
 
 ---
 
