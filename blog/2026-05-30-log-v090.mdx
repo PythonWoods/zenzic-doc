@@ -1,14 +1,13 @@
 ---
 slug: log-v090
-title: "Release v0.9.0: The Deterministic Telemetry"
+title: "Release v0.9.0: Deterministic Telemetry"
 sidebar_label: "Release v0.9.0"
 authors: [pythonwoods]
 tags: [release, milestone, engineering-logs]
 date: 2026-05-30T10:00:00
 description: >-
-  v0.9.0 introduces deterministic telemetry as a first-class release contract:
-  flat-cost DQS semantics, adapter API cleanup, native badge freshness checks,
-  and landing/topology restructuring.
+  v0.9.0 establishes deterministic telemetry as a release contract: flat-cost DQS semantics,
+  adapter API cleanup, and native badge freshness checks.
 image: /img/social-card.png
 ---
 
@@ -49,15 +48,6 @@ Telemetry is now enforced through a native freshness command:
 - `zenzic score --check-stamp` verifies badge freshness deterministically;
 - freshness checks are config-aware through declared stamp targets;
 - CI and local pre-push gates share the same telemetry contract.
-
-## 4) Landing/Topology (LSM) Restructuring
-
-The release also introduces landing and topology realignment in the LSM layer:
-
-- narrative and route surfaces are aligned to the new telemetry model;
-- release communication is split between historical archives and active manifests;
-- topology-facing docs now follow the same deterministic signal boundaries used
-  by runtime governance.
 
 ## Outcome
 
