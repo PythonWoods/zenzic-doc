@@ -236,8 +236,9 @@ esiste nel file. Lo scanner di riferimenti di Zenzic segnala l'ID non definito.
 **Z-Code:** Z302 `DEAD_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` definisce `[setup]: https://example.com/setup` ma non usa mai l'ID
-`setup` in nessun link. La definizione orfana segnala debito documentale nascosto.
+`docs/index.md` contiene un difetto intenzionale di definizione morta attorno all'ID di
+riferimento `setup`: il pattern di definizione è presente ma non viene mai consumato da un
+link in stile riferimento. Questo pattern orfano segnala debito documentale nascosto.
 
 **Parti da qui se:** vuoi mantenere le tabelle di link di riferimento prive di voci inutilizzate.
 
@@ -250,9 +251,9 @@ esiste nel file. Lo scanner di riferimenti di Zenzic segnala l'ID non definito.
 **Z-Code:** Z303 `DUPLICATE_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` definisce `[api]: https://api-v1.example.com` e `[api]: https://api-v2.example.com`
-— lo stesso ID due volte. I renderer Markdown scelgono silenziosamente un URL, creando link drift
-invisibile.
+`docs/index.md` contiene un difetto intenzionale di definizione duplicata per l'ID di
+riferimento `api`. Quando lo stesso ID viene dichiarato piu di una volta, i renderer Markdown
+scelgono silenziosamente un URL, creando link drift invisibile.
 
 **Parti da qui se:** vuoi applicare identificatori di riferimento univoci nelle pagine di documentazione.
 

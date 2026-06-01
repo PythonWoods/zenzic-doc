@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Architettura
-description: Approfondimento tecnico sulla pipeline a due passate di Zenzic, il credential scanner, il protocollo Adapter, il Layered Exclusion Manager e il contratto dei codici di uscita.
+description: Approfondimento tecnico sulla pipeline a tre fasi di Zenzic, il credential scanner, il protocollo Adapter, il Layered Exclusion Manager e il contratto dei codici di uscita.
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -33,13 +33,13 @@ l'evidenza di sicurezza per contributor e utenti finali.
 
 ---
 
-## Pipeline a Due Passate {#two-pass-pipeline}
+## Pipeline a Tre Fasi {#three-phase-pipeline}
 
-Il motore principale di analisi opera come una **Pipeline a Due Passate** sull'insieme dei file di documentazione. Ogni passata ha una responsabilità distinta; la Passata 2 inizia solo dopo il completamento della Passata 1.
+Il motore principale di analisi opera come una **Pipeline a Tre Fasi** sull'insieme dei file di documentazione. Ogni fase ha una responsabilità distinta e viene eseguita in ordine deterministico.
 
 <div className="zz-figure">
   <ThemedImage
-    alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (credential scanner + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
+    alt="Zenzic — Pipeline a Tre Fasi: File Set → Passata 1 (credential scanner + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
@@ -71,7 +71,7 @@ Gli eventi di harvest includono:
 | `MISSING_ALT` | `url` | Immagine senza alt text |
 | `SECRET` | `SecurityFinding` | Credenziale rilevata dal credential scanner |
 
-Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Il credential scanner agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
+Se viene prodotto un evento `SECRET`, il file viene marcato come compromesso ed escluso dai percorsi di output insicuri, mentre la Passata 2 continua a essere eseguita per la coerenza strutturale.
 
 ### Passata 2 — Cross-Check e Validazione dei Link {#pass-2}
 
@@ -93,7 +93,7 @@ Il report include:
 
 Il validatore di link (`validate_links_async`) opera indipendentemente con la propria struttura multifase:
 
-**Fase 1** — Legge tutti i file `.md` in memoria, estrae link inline e reference link, calcola gli slug degli heading per file. Costruisce `InMemoryPathResolver` una volta sola dalla mappa completa dei file.
+**Fase 1** — Legge tutti i file `.md`/`.mdx` in memoria, estrae link inline e reference link, calcola gli slug degli heading per file. Costruisce `InMemoryPathResolver` una volta sola dalla mappa completa dei file.
 
 **Fase 1.5** — Costruisce il grafo di adiacenza dei link e applica il rilevamento cicli DFS iterativo. Il registro dei cicli è un `frozenset[str]` — lookup O(1) nella Fase 2. Complessità totale: Θ(V+E).
 
@@ -345,7 +345,7 @@ quello della destinazione.
 
 Il protocollo risolve config e perimetro dal percorso della destinazione (non da `cwd`): trova il `.zenzic.toml` della destinazione, calibra `docs_root` alla directory o file di destinazione, e applica la Guardia Sandbox per ancorare il controllo di path traversal alla destinazione — non alla posizione del chiamante.
 
-### Il Genesis Nomad (`init`)
+### Caso Speciale `init`
 
 `zenzic init <percorso>` è un caso speciale: **crea** un progetto invece di verificarlo.
 Il percorso indicato diventa direttamente il `repo_root`, e la directory viene creata
@@ -465,7 +465,7 @@ La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e 
 | Condizione | Modalità | Dettaglio |
 | :--- | :--- | :--- |
 | `workers=1` (default) oppure file < 50 | **Sequenziale** | Zero overhead di spawn processi. I/O completo O(N). |
-| `workers != 1` e file >= 50 | **Parallelo** | `ThreadPoolExecutor` con distribuzione per-file |
+| `workers != 1` e file >= 50 | **Parallelo** | `ProcessPoolExecutor` con distribuzione per-file |
 
 La soglia di 50 file è un'euristica conservativa: sotto questa soglia, l'overhead di spawn dei processi supera il beneficio del parallelismo. I risultati sono sempre ordinati per `file_path` indipendentemente dalla modalità di esecuzione.
 
@@ -593,13 +593,13 @@ Oltre all'audit standard di Zenzic, `zenzic-doc` impone un secondo invariante un
 ruolo di documentazione di un linter: ogni codice di finding Zxxx presente in `docs/` deve
 avere un'entità registrata in `src/zenzic/core/codes.py` nel pacchetto Core — e viceversa.
 Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parity` tramite
-**Graceful Degradation**:
+**Risoluzione Sovrana (Fail-Closed)**:
 
-- **Core Maintainer**: `ZENZIC_PROJECT_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
-- **External Contributor**: core locale assente → `uv run --with zenzic` sul pacchetto PyPI pubblicato.
+- **Core Maintainer**: `ZENZIC_CORE_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
+- **Core non trovato**: la sessione fallisce in modalità fail-closed; fallback PyPI proibito.
 
 Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori
-esteri non hanno bisogno di un checkout locale di Zenzic Core.
+devono fornire un path locale al core Zenzic (`ZENZIC_CORE_PATH`, `./_zenzic_core` o `../zenzic`).
 
 ---
 

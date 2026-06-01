@@ -11,13 +11,13 @@ description: "ADR 009: La configurazione segue il target, non il chiamante — p
 
 **Stato:** Attivo
 **Decisore:** Architecture Lead
-**Data:** 2026-04-12 (sprint v0.8.x, CEO-052)
+**Data:** 2026-04-12 (CEO-052)
 
 ---
 
 ## Contesto
 
-`find_repo_root()` cercava originariamente verso l'alto a partire da `os.getcwd()`
+`find_repo_root()` cerca verso l'alto a partire da `os.getcwd()`
 — la directory di lavoro corrente della shell invocante. Funzionava correttamente
 per il caso standard in cui l'utente esegue Zenzic dall'interno del repository
 che vuole analizzare.
@@ -59,14 +59,14 @@ def find_repo_root(
         if (parent / ".git").exists() or (parent / ".zenzic.toml").exists():
             return parent
     if fallback_to_cwd:
-        return Path.cwd()
+        return start
     raise RuntimeError(...)
 ```
 
-`_apply_target()` in `cli/_check.py` orchestra la ricalibrazione: dopo aver
-derivato `docs_root` dal percorso fornito dall'utente, chiama
-`find_repo_root(search_from=docs_root)` per caricare il `.zenzic.toml` corretto,
-poi ri-deriva `docs_dir` dalla configurazione del repo target.
+`_apply_target()` in `cli/_target_resolver.py` orchestra la ricalibrazione del
+docs-root dopo la risoluzione del target: preserva `docs_dir` configurato
+quando il target è la radice del repo, oppure aggiorna `docs_dir` dal target
+risolto.
 
 ---
 
@@ -134,7 +134,7 @@ posizionale `PATH` opzionale (Regola R18 — Simmetria CLI Totale):
 
 ## Conseguenze
 
-- Eseguire Zenzic da qualsiasi directory ora produce risultati identici a
+- Eseguire Zenzic da qualsiasi directory produce risultati identici a
 
   eseguirlo dall'interno del repository target — nessuna sorpresa per gli
   operatori CI.
@@ -142,10 +142,11 @@ posizionale `PATH` opzionale (Regola R18 — Simmetria CLI Totale):
 - I contributori che implementano nuovi comandi CLI con argomento `PATH` **devono**
 
   chiamare `find_repo_root(search_from=resolved_path)` e invocare
-  `_apply_target()`. Questo è ora un invariante documentato nella guida al
+    `_apply_target()`. Questo è un invariante documentato nella guida al
   contributo.
 
-- Il parametro `fallback_to_cwd=True` di `find_repo_root()` è riservato
+- Il parametro `fallback_to_cwd=True` di `find_repo_root()` è un percorso di
 
-  esclusivamente al comando `init` (Genesis Fallback — vedi ADR-003). Nessun
-  altro comando può usarlo.
+    fallback vincolato. Usalo solo dove la semantica del comando richiede
+    esplicitamente un fallback alla directory corrente, evitando di introdurlo
+    come default nei flussi di comando PATH-targeted.

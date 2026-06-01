@@ -16,15 +16,15 @@ programmatori Python. Se vuoi contribuire al motore Zenzic, consulta il
 
 | Strumento | Versione | Installazione |
 |-----------|----------|---------------|
-| Node.js | 24 o superiore | [nodejs.org](https://nodejs.org) |
-| npm | 10 o superiore | incluso con Node.js 24 |
+| Node.js | 20 o superiore (24 raccomandato) | [nodejs.org](https://nodejs.org) |
+| npm | 10 o superiore | incluso con Node.js |
 | just | qualsiasi | `brew install just` / `cargo install just` |
 | uv / uvx | qualsiasi | `pip install uv` o [docs.astral.sh](https://docs.astral.sh/uv/) |
 
 Verifica il tuo setup:
 
 ```bash
-node --version   # must be ≥ 24
+node --version   # must be ≥ 20 (≥ 24 raccomandato)
 npm --version    # must be ≥ 10
 just --version
 ```
@@ -152,7 +152,7 @@ Per garantire la coerenza tra il motore core (**zenzic**) e la documentazione (*
 
 ### 🔍 Come funziona
 
-1. **Sviluppo Locale**: il linter cerca sempre il repository core nella cartella adiacente (`../zenzic`). Sei responsabile di mantenere allineati i branch locali.
+1. **Sviluppo Locale**: la risoluzione del core segue una precedenza deterministica: `ZENZIC_CORE_PATH` → `./_zenzic_core` → `../zenzic`. Sei responsabile di mantenere allineati i branch locali.
 2. **In CI (GitHub Actions)**: la pipeline della documentazione tenta di clonare il repository core cercando un branch con **lo stesso nome esatto** di quello in build nel repo doc.
 3. **Fallback**: se il branch specchio non viene trovato nel repo core, la CI ripiega automaticamente sul branch `main`.
 

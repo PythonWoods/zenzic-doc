@@ -76,7 +76,8 @@ per intercettare segreti nella prosa normale.
 | Nome pattern | Regex | Cosa intercetta |
 | :--- | :--- | :--- |
 | `openai-api-key` | `sk-[a-zA-Z0-9]{48}` | Chiavi API OpenAI |
-| `github-token` | `gh[pousr]_[a-zA-Z0-9]{36}` | Token personal/OAuth GitHub |
+| `github-token` | `(?i)\b(?:ghp\|gho\|ghu\|ghs\|ghr)_[a-zA-Z0-9_.-]+\b` | Token GitHub personal, OAuth, app e refresh |
+| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | Personal access token GitLab |
 | `aws-access-key` | `AKIA[0-9A-Z]{16}` | Access key ID AWS IAM |
 | `stripe-live-key` | `sk_live_[0-9a-zA-Z]{24}` | Chiavi segrete live Stripe |
 | `slack-token` | `xox[baprs]-[0-9a-zA-Z]{10,48}` | Token bot/utente/app Slack |

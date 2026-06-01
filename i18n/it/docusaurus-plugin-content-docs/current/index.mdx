@@ -8,7 +8,7 @@ sidebar_label: "Panoramica"
 
 # La tua documentazione, completamente protetta
 
-**Zenzic rileva link rotti, credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione richiesta per iniziare. Nessun build engine invocato.**
+**Zenzic rileva link rotti, credenziali esposte e pagine orfane prima che raggiungano la produzione. Nessuna configurazione richiesta per iniziare. Nessuna integrazione build engine-specific richiesta.**
 
 ---
 
@@ -22,7 +22,7 @@ uvx zenzic lab
 link rotti, pagine orfane, path traversal guard enforcement. Eseguilo su
 fixture preconfezionate e osserva i risultati in tempo reale.
 
-**L'audit completo in un secondo — senza installazione, senza configurazione:**
+**Esegui un audit completo rapidamente — senza installazione, senza configurazione:**
 
 ```bash
 uvx zenzic check all .
@@ -38,7 +38,7 @@ uvx zenzic check all .
 
 <ZenzicOutput status="success" exitCode={0} showFrame />
 
-**`zenzic score`** calcola uno score di qualità 0–100 tramite un modello a penalità pesate su quattro categorie: Integrità Strutturale (30%), Navigazione (25%), Brand & Asset (25%), Eccellenza dei Contenuti (20%). Un `100/100` indica zero finding penalizzati nello scope analizzato. Il contenuto escluso non è valutato. Uno score inferiore a `100/100` è un audit superato se soddisfa la soglia `fail_under` configurata.
+**`zenzic score`** calcola uno score di qualità 0–100 tramite un modello a penalità pesate su quattro categorie: Integrità Strutturale (30%), Navigazione (25%), Brand & Assets (25%), Eccellenza dei Contenuti (20%). Un `100/100` indica zero finding penalizzati nello scope analizzato. Il contenuto escluso non è valutato. Uno score inferiore a `100/100` è un audit superato se soddisfa la soglia `fail_under` configurata.
 
 Regola assoluta: qualsiasi finding Z2xx collassa lo score a `0/100` incondizionatamente, indipendentemente da `fail_under`.
 
@@ -51,7 +51,7 @@ Regola assoluta: qualsiasi finding Z2xx collassa lo score a `0/100` incondiziona
 | Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic                                                                             |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | ZenzicOutput: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
-| **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica O(1) via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
+| **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
 | **Leak di Credenziali** | Il linter può non rilevare segreti in YAML/blocchi codice; nessun masking; l’incidente può finire in git. | Credential scanner: scansiona tutto, maschera i segreti, blocca la pipeline (exitCode=2, Z201), mai stampa il segreto completo. |
 | **Codici di Uscita**    | Non standard, ambigui o assenti.                                                                   | Tier: Z1xx (integrità link), Z2xx (sicurezza), Z4xx (struttura), Z6xx (governance).                 |
 
@@ -71,7 +71,7 @@ Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
 
 | | |
 | :--- | :--- |
-| **[Tutorial →](./tutorials/first-audit)** | Da zero a un audit superato in 3 minuti. |
+| **[Tutorials →](./tutorials/first-audit)** | Da zero a un audit superato in 3 minuti. |
 | **[How-to →](./how-to/configure-ci-cd)** | Integrazione con GitHub Actions per controlli CI/CD automatizzati. |
 | **[Reference →](./reference/cli)** | Ogni flag, ogni codice `Zxxx`, ogni opzione. |
 | **[Explanation →](./explanation/scoring-system)** | Come i finding abbassano la baseline di 100 punti e come `fail_under` imposta la soglia CI. |
@@ -89,12 +89,12 @@ Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
     upload-sarif: "true"
 ```
 
-I finding appaiono come **annotazioni inline nelle Pull Request** e nel **tab Security** —
+I finding possono apparire come **annotazioni inline nelle Pull Request** e nel **tab Security** —
 nessun parsing di log, nessuno script personalizzato, nessun post-processing. L'ufficiale
 [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) gestisce
-installazione, esecuzione e upload SARIF 2.1.0 in un singolo step del workflow.
+installazione, esecuzione e upload SARIF in un singolo step del workflow.
 
-Verificato cross-platform: Ubuntu · Windows · macOS · Python 3.10–3.14.
+La verifica CI in questo repository usa un runner Ubuntu.
 
 ---
 

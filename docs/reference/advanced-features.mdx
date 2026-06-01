@@ -74,7 +74,8 @@ applies a defence-in-depth pass to non-definition lines to catch secrets in plai
 | Pattern name | Regex | What it catches |
 | :--- | :--- | :--- |
 | `openai-api-key` | `sk-[a-zA-Z0-9]{48}` | OpenAI API keys |
-| `github-token` | `gh[pousr]_[a-zA-Z0-9]{36}` | GitHub personal/OAuth tokens |
+| `github-token` | `(?i)\b(?:ghp\|gho\|ghu\|ghs\|ghr)_[a-zA-Z0-9_.-]+\b` | GitHub personal, OAuth, app, and refresh tokens |
+| `gitlab-pat` | `glpat-[A-Za-z0-9\-_]{20,}` | GitLab personal access tokens |
 | `aws-access-key` | `AKIA[0-9A-Z]{16}` | AWS IAM access key IDs |
 | `stripe-live-key` | `sk_live_[0-9a-zA-Z]{24}` | Stripe live secret keys |
 | `slack-token` | `xox[baprs]-[0-9a-zA-Z]{10,48}` | Slack bot/user/app tokens |

@@ -181,9 +181,10 @@ motore di build.
 
 ### `--no-external`
 
-`--no-external` è disponibile su `check all` e `check links`. Salta il **Passaggio 3** —
-la validazione HTTP HEAD concorrente degli URL esterni — lasciando il Passaggio 1 (credential scanner, Z201)
-e il Passaggio 2 (risoluzione link interni) completamente attivi.
+`--no-external` è disponibile su `check all` e `check links`. All'interno della pipeline del
+link validator salta il **Passaggio 3** — validazione HTTP HEAD concorrente degli URL esterni —
+mantenendo attivi il Passaggio 1 (risoluzione filesystem e target-map) e il Passaggio 2
+(validazione dei link interni).
 
 Usalo in ambienti di sviluppo air-gapped o offline dove la raggiungibilità degli URL esterni
 non può essere verificata, o come ottimizzazione quando la salute dei link esterni è confermata
@@ -191,13 +192,13 @@ da altri strumenti.
 
 ```bash
 zenzic check all --strict --no-external   # verifica struttura/qualità; salta HTTP esterno
-zenzic check links --no-external          # solo link interni; credential scanner (Z201) sempre attivo
+zenzic check links --no-external          # solo link interni; salta i controlli HTTP esterni
 ```
 
 Quando attivo, il report aggiunge un messaggio di trasparenza:
 
 ```text
-💡 External link validation skipped (--no-external). Credential scanner (Z201) remains active.
+💡 External link validation skipped (--no-external).
 ```
 
 :::warning[Mai usare in CI]
@@ -209,10 +210,11 @@ Il meccanismo permanente per escludere URL noti-instabili è `excluded_external_
 
 | Preoccupazione | Influenzato da `--no-external`? |
 | :--- | :--- |
-| Passaggio 1 — credential scanner / rilevamento credenziali (Z201) | ❌ Mai saltato |
-| Passaggio 1 — path traversal guard / path traversal (Z202/Z203) | ❌ Mai saltato |
-| Passaggio 2 — Risoluzione link interni | ❌ Mai saltato |
+| Passaggio 1 — Risoluzione filesystem e target-map | ❌ Mai saltato |
+| Passaggio 2 — Validazione link interni | ❌ Mai saltato |
 | Passaggio 3 — Richieste HTTP HEAD esterne | ✅ Saltato |
+
+Credential scanner e path traversal guard girano in controlli di sicurezza dedicati e non sono gestiti da `--no-external`.
 
 ### `--exclude-url` {#exclude-url}
 
@@ -347,7 +349,7 @@ progetto generato puo eseguire subito `zenzic check all` come smoke test.
 
 ### Blueprint Governance-Ready
 
-`zenzic init` ora genera una coppia di configurazioni Governance-Ready:
+`zenzic init` genera una coppia di configurazioni Governance-Ready:
 
 - `.zenzic.toml` (costituzione condivisa, versionata)
 - `.zenzic.local.toml` (sacrario locale macchina, ignorato da git)
@@ -497,7 +499,7 @@ usato per i fallimenti ordinari dei controlli. Se ricevi il codice di uscita 2, 
 come un incidente di sicurezza bloccante e **ruota immediatamente la credenziale esposta**.
 :::
 
-::::danger[Codice di uscita 3 — Incidente di Sicurezza Path Traversal Guard]
+:::danger[Codice di uscita 3 — Incidente di Sicurezza Path Traversal Guard]
 Il codice 3 viene emesso quando il path traversal guard rileva un link che risolve verso una
 directory di sistema dell'OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`).
 A differenza del codice 1, questo è un incidente di sicurezza e ha priorità su tutti gli
@@ -523,7 +525,7 @@ Ogni codice di uscita ha una firma visiva distinta nel Zenzic Report:
 
 ## Output JSON
 
-Tutti i comandi di controllo supportano `--format json` per output machine-readable.
+I sottocomandi `check` concreti supportano `--format json` per output machine-readable.
 
 ### `check all`
 
@@ -599,8 +601,8 @@ exit 3 per path traversal guard — lo stesso contratto dell'output testuale.
 
 ## Output SARIF {#sarif-output}
 
-Tutti i comandi `check` supportano `--format sarif` per emettere un report conforme a
-**SARIF 2.1.0**, pronto per il caricamento diretto in
+I sottocomandi `check` concreti supportano `--format sarif` per emettere un report conforme
+a SARIF, pronto per il caricamento diretto in
 [GitHub Code Scanning](https://docs.github.com/code-security/code-scanning).
 
 ```bash
@@ -645,7 +647,7 @@ all'ancora corrispondente in questa pagina di riferimento.
 | Z901–Z902 Sistema | `Z901`–`Z902` | `warning` |
 | Z906 NO_FILES_FOUND | `Z906` | `note` |
 
-### Esempio di output SARIF 2.1.0
+### Esempio di output SARIF
 
 ```json
 {
@@ -805,11 +807,16 @@ Aggiorna entrambi i marker in tutti i file elencati in `badge_stamp_files` (defa
 
 L'URL Shields.io sulla riga immediatamente successiva a ciascun marker viene sostituito in-place.
 
-Per verificare in CI che i badge siano aggiornati:
+| Colore | Hex | Condizione |
+| :--- | :--- | :--- |
+| Indigo | `4f46e5` | Score = 100 |
+| Amber | `f59e0b` | Score ≥ `fail_under` (passing) |
+| Red | `ef4444` | Score < `fail_under` o security override |
 
-```bash
-zenzic score --check-stamp
-```
+Lo stamp gira sempre **prima** dei controlli sugli exit code, cosi il badge riflette il punteggio reale anche quando
+la build fallisce. Quando il punteggio locale è sotto `fail_under`, il badge rosso è feedback immediato
+prima del push: non appare su main perche la CI blocca il commit.
+Vedi [Official Badges](/docs/how-to/add-badges) per setup e snippet CI/CD completo.
 
 Per rendere visibile il punteggio senza bloccare la pipeline:
 
@@ -828,24 +835,19 @@ zenzic inspect capabilities   # Mostra tutti i scanner built-in, le regole plugi
 
 `zenzic inspect capabilities` mostra l'arsenale completo di Zenzic in due sezioni:
 
-**Sezione A — Scanner Core (Built-in):** sette scanner compilati in Zenzic. Il credential scanner (Z201)
+**Sezione A — Scanner Core (Built-in):** scanner compilati in Zenzic dal registro canonico. Il credential scanner (Z201)
 e il path traversal guard (Z202–203) usano codici di uscita dedicati (2 e 3 rispettivamente) che non
 sono mai sopprimibili con `--exit-zero`.
 
 **Sezione B — Regole Estensibili (Sistema Plugin):** regole registrate tramite il gruppo
 entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
-<ZenzicOutput
-  status="inspect"
-  exitCode={0}
-  scanners={[
-    { codes: 'Z201',     scanner: 'Credential Scanner', capability: 'Rilevamento credenziali e sicurezza',          exit: '2', icon: '🛡', security: true },
-    { codes: 'Z202–203', scanner: 'Path Traversal Guard', capability: 'Prevenzione path-traversal e jailbreak',       exit: '3', icon: '🔒', security: true },
-    { codes: 'Z101–106', scanner: 'Link Validator',   capability: 'Link interrotti e risoluzione ancoraggi',      exit: '1', icon: '🔗' },
-    { codes: 'Z401–404', scanner: 'Structure Guard',  capability: 'Orfani, indici e asset di configurazione',    exit: '1', icon: '🏗' },
-    { codes: 'Z501–504', scanner: 'Content scanner', capability: 'Segnaposto, snippet e punteggio qualità',     exit: '1', icon: '📄' },
-  ]}
-/>
+<ZenzicOutput status="inspect" exitCode={0} />
+
+Ogni riga nella tabella delle Regole Estensibili mostra il nome dell'entry-point,
+il `rule_id` stabile della regola (usato nei finding e nelle liste di soppressione),
+la distribuzione di origine (`(core)` per le regole built-in, oppure il nome del
+pacchetto per i plugin di terze parti) e il nome completo della classe Python.
 
 Usa questo comando per verificare quali regole sono attive dopo aver installato un pacchetto
 plugin.
