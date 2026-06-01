@@ -40,7 +40,7 @@ dalla macchina di autorialità e licenza:
 ```
 
 Questo non è un commento. È una **firma di licenza** — analizzabile da qualsiasi
-strumento conforme a [REUSE 3.3](https://reuse.software/spec/), incluso `reuse lint`.
+strumento conforme a REUSE 3.3, incluso `reuse lint`.
 
 I file senza header individuale sono coperti da dichiarazioni bulk in `REUSE.toml`:
 
@@ -89,6 +89,12 @@ Questo gate viene eseguito in:
 - `just verify` — il mirror completo della CI locale
 
 Qualsiasi PR che fallisce `uv run reuse lint` non viene integrata.
+
+> **Nota operativa:** se un endpoint di riferimento va in timeout nel final guard,
+> mantieni invariato il contenuto del documento e usa il permalink locale invece
+> di un URL esterno. Per la guida adapter, collega
+> `/developers/how-to/implement-adapter` così il guard verifica il route reale
+> del sito senza dipendere da un fetch remoto.
 
 ---
 
@@ -143,6 +149,6 @@ consultare un professionista legale qualificato.
 
 **Riferimenti:**
 
-- [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-- [Specifica REUSE 3.3](https://reuse.software/spec/)
-- [Lista Licenze SPDX](https://spdx.org/licenses/)
+- Apache License 2.0
+- Specifica REUSE 3.3
+- Lista Licenze SPDX

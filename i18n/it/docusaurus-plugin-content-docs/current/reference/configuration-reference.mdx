@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Riferimento Configurazione
-description: Riferimento completo per .zenzic.toml e pyproject.toml — ogni campo, tipo, valore predefinito ed esempio pratico.
+description: Riferimento per .zenzic.toml e pyproject.toml — campi, tipi, valori predefiniti ed esempi pratici.
 ---
 
 # Riferimento Configurazione
@@ -242,7 +242,7 @@ I link a percorsi corrispondenti a questi pattern non vengono segnalati come rot
 Zenzic predefinisce il **Controllo Consapevole** rispetto all'Automazione Cieca. Comprendere questo principio è la chiave per configurare lo strumento efficacemente nei progetti in produzione.
 :::
 
-`respect_vcs_ignore` è `false` per default. Questa non è una svista — è una scelta architettonica deliberata radicata in un caso concreto di fallimento.
+`respect_vcs_ignore` è `true` per default. Questo allinea Zenzic al comportamento dei linter moderni (i percorsi ignorati da VCS vengono esclusi salvo inclusioni esplicite).
 
 **Il problema del `.gitignore` rumoroso**
 
@@ -272,7 +272,7 @@ I campi `excluded_dirs` e `excluded_file_patterns` nel file di configurazione de
 excluded_dirs = ["includes", "stylesheets", "overrides"]
 excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
 
-# respect_vcs_ignore = false   ← default; ometti o imposta esplicitamente
+# respect_vcs_ignore = true   ← default; ometti o imposta esplicitamente
 ```
 
 **Quando abilitare `respect_vcs_ignore`**
@@ -290,9 +290,9 @@ respect_vcs_ignore = true
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `respect_vcs_ignore` | `bool` | `false` | Quando `true`, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs ed esclude i file corrispondenti da tutti i controlli |
+| `respect_vcs_ignore` | `bool` | `true` | Quando `true`, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs ed esclude i file corrispondenti da tutti i controlli |
 
-Disabilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la motivazione. Quando attivato, le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
+Abilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la guida operativa. Le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
 
 ---
 
@@ -382,9 +382,9 @@ validate_same_page_anchors = true
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `validate_same_page_anchors` | `bool` | `false` | Quando `true`, i link a ancora nella stessa pagina (`#sezione`) vengono validati rispetto agli heading presenti nel file sorgente |
+| `validate_same_page_anchors` | `bool` | `true` | Quando `true`, i link a ancora nella stessa pagina (`#sezione`) vengono validati rispetto agli heading presenti nel file sorgente |
 
-La validazione delle ancore nella stessa pagina è disabilitata per default perché gli ID ancora possono essere generati da attributi HTML, plugin personalizzati o macro a tempo di build che sono invisibili durante la scansione del sorgente.
+La validazione delle ancore nella stessa pagina è abilitata per default per rafforzare l'integrità a livello sorgente. Disabilitala solo quando gli ID ancora vengono generati da attributi HTML, plugin personalizzati o macro a tempo di build invisibili durante la scansione.
 
 ### `excluded_external_urls` {#excluded-external-urls}
 
@@ -416,9 +416,6 @@ locales = ["it", "fr"]
 base_url = "/docs/"
 fallback_to_default = true
 ```
-
-| Campo | Tipo | Predefinito | Descrizione |
-| :--- | :--- | :--- | :--- |
 
 ### `engine` {#engine}
 
@@ -491,6 +488,41 @@ Il contesto di build informa gli adapter su quale motore di documentazione ha pr
 
 ---
 
+## Impostazioni Parità I18N {#i18n-parity-settings}
+
+La sezione `[i18n]` controlla i check di parità strutturale tra traduzioni (Z907)
+e la parità delle chiavi frontmatter tra mirror linguistici.
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `enabled` | `bool` | `false` | Attiva lo scanner di parità i18n |
+| `base_lang` | `string` | `"en"` | Codice lingua base |
+| `base_source` | `Path` | `"docs"` | Radice sorgente della lingua base |
+| `targets` | `dict[string, Path]` | `{}` | Mappa locale -> radice mirror |
+| `strict_parity` | `bool` | `true` | Mirror mancante è errore se `true`, warning se `false` |
+| `require_frontmatter_parity` | `list[string]` | `["title", "description"]` | Chiavi frontmatter obbligatorie nelle pagine tradotte |
+| `extra_sources` | `list[I18nSource]` | `[]` | Coppie base/targets aggiuntive (es. docs developers) |
+
+```toml
+[i18n]
+enabled = true
+base_lang = "en"
+base_source = "docs"
+strict_parity = true
+require_frontmatter_parity = ["title", "description"]
+
+[i18n.targets]
+it = "i18n/it/docusaurus-plugin-content-docs/current"
+
+[[i18n.extra_sources]]
+base_source = "developers"
+
+[i18n.extra_sources.targets]
+it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
+```
+
+---
+
 ## Comportamento CI / Exit {#ci-exit-behaviour}
 
 ### `fail_under` {#fail-under}
@@ -543,6 +575,41 @@ L'opzione `exit_zero` non sopprime mai gli exit code di sicurezza. Il credential
 
 ---
 
+## Metadati di Progetto {#project-metadata}
+
+### `release_name` {#release-name}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `string` |
+| **Default** | `""` |
+| **Sezione** | `[project_metadata]` |
+
+Codename della release corrente. Usato come termine protetto nell'enforcement
+`brand_obsolescence`.
+
+```toml
+[project_metadata]
+release_name = "Basalt"
+```
+
+### `badge_stamp_files` {#badge-stamp-files}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `list[string]` |
+| **Default** | `["README.md"]` |
+| **Sezione** | `[project_metadata]` |
+
+Elenco dei file aggiornati da `zenzic score --stamp` per il badge di audit/score.
+
+```toml
+[project_metadata]
+badge_stamp_files = ["README.md", "README.it.md"]
+```
+
+---
+
 ## Impostazioni Governance {#governance-settings}
 
 ### `brand_obsolescence` {#brand-obsolescence}
@@ -571,6 +638,72 @@ brand_obsolescence = [
 **Corrispondenza dei pattern:** scansione whole-word case-sensitive. Il termine `"Deprecated"` non corrisponde a `"DeprecatedFeature"` o `"deprecated"`.
 
 **Ambito:** si applica a tutti i file nell'ambito di scansione `docs_dir` attivo, soggetto alla gerarchia di esclusione standard.
+
+### `i18n_parity` {#i18n-parity}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `bool` |
+| **Default** | `false` |
+| **Sezione** | `[governance]` |
+| **Finding** | Z602 `I18N_PARITY` |
+
+Abilita il reporting di governance per la parità traduzioni sui tree locali configurati.
+
+### `per_file_ignores` {#per-file-ignores}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `dict[string, list[string]]` |
+| **Default** | `{}` |
+| **Sezione** | `[governance]` |
+
+Soppressioni scoped per pattern glob. I finding di sicurezza restano non sopprimibili.
+
+### `directory_policies` {#directory-policies}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `dict[string, list[string]]` |
+| **Default** | `{}` |
+| **Sezione** | `[governance]` |
+
+Esenzioni strategiche a livello directory (zero debito). In modalità `--audit`,
+i finding esentati appaiono con etichetta `[POLICY_EXEMPTION]`.
+
+### `suppression_cap_scope` {#suppression-cap-scope}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `"all"` |
+| **Default** | `"all"` |
+| **Sezione** | `[governance]` |
+
+Definisce l'ambito di conteggio delle soppressioni. Il valore supportato attuale è `"all"`.
+
+### `suppression_cap_fail_hard` {#suppression-cap-fail-hard}
+
+| | |
+| :--- | :--- |
+| **Tipo** | `bool` |
+| **Default** | `true` |
+| **Sezione** | `[governance]` |
+
+Quando `true`, il superamento di `suppression_cap` provoca exit code 1 immediato.
+
+```toml
+[governance]
+i18n_parity = true
+suppression_cap = 30
+suppression_cap_scope = "all"
+suppression_cap_fail_hard = true
+
+[governance.per_file_ignores]
+"docs/legacy/**" = ["Z601"]
+
+[governance.directory_policies]
+"blog/**" = ["Z601"]
+```
 
 ---
 

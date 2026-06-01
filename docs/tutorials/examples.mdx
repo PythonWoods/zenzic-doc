@@ -234,8 +234,9 @@ exists anywhere in the file. Zenzic's reference scanner flags the undefined iden
 **Z-Code:** Z302 `DEAD_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` defines `[setup]: https://example.com/setup` but never uses the reference ID
-`setup` in any link. The orphan definition signals hidden documentation debt.
+`docs/index.md` contains an intentional dead-definition defect around the `setup` reference ID:
+the reference definition pattern is present but never consumed by a reference-style link.
+This orphan definition pattern signals hidden documentation debt.
 
 **Start here if:** you want to keep your reference link tables free of unused entries.
 
@@ -248,8 +249,9 @@ exists anywhere in the file. Zenzic's reference scanner flags the undefined iden
 **Z-Code:** Z303 `DUPLICATE_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` defines `[api]: https://api-v1.example.com` and `[api]: https://api-v2.example.com`
-— the same ID twice. Markdown renderers silently pick one URL, creating invisible link drift.
+`docs/index.md` contains an intentional duplicate-definition defect for the `api` reference ID.
+When the same reference ID is declared more than once, Markdown renderers silently pick one URL,
+creating invisible link drift.
 
 **Start here if:** you want to enforce unique reference identifiers across documentation pages.
 

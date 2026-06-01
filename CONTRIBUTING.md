@@ -16,15 +16,15 @@ programmers. If you want to contribute to the Zenzic engine itself, see the
 
 | Tool | Version | Install |
 |------|---------|---------|
-| Node.js | 24 or newer | [nodejs.org](https://nodejs.org) |
-| npm | 10 or newer | bundled with Node.js 24 |
+| Node.js | 20 or newer (24 recommended) | [nodejs.org](https://nodejs.org) |
+| npm | 10 or newer | bundled with Node.js |
 | just | any | `brew install just` / `cargo install just` |
 | uv / uvx | any | `pip install uv` or [docs.astral.sh](https://docs.astral.sh/uv/) |
 
 Verify your setup:
 
 ```bash
-node --version   # must be ≥ 24
+node --version   # must be ≥ 20 (≥ 24 recommended)
 npm --version    # must be ≥ 10
 just --version
 ```
@@ -149,7 +149,7 @@ npm run write-translations
 To ensure consistency between the core engine (**zenzic**) and the documentation (**zenzic-doc**), our CI system enforces the **Rule of Branch Parity**.
 
 ### 🔍 How it works
-1. **Local Development**: The linter always looks for the core repository in the adjacent folder (`../zenzic`). You are responsible for keeping local branches aligned.
+1. **Local Development**: Core resolution follows deterministic precedence: `ZENZIC_CORE_PATH` → `./_zenzic_core` → `../zenzic`. You are responsible for keeping local branches aligned.
 2. **In CI (GitHub Actions)**: The documentation pipeline attempts to clone the core repository by looking for a branch with the **exact same name** as the one being built in the doc repo.
 3. **Fallback**: If the mirrored branch is not found in the core repo, the CI will automatically fall back to the `main` branch.
 

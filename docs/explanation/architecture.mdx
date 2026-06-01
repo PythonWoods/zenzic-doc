@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Architecture
-description: Technical deep dive into Zenzic's Two-Pass Pipeline, credential scanner, Adapter Protocol, Layered Exclusion Manager, and exit code contract.
+description: Technical deep dive into Zenzic's Three-Phase Pipeline, credential scanner, Adapter Protocol, Layered Exclusion Manager, and exit code contract.
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -33,13 +33,13 @@ auditable for contributors and downstream users.
 
 ---
 
-## Two-Pass Pipeline {#two-pass-pipeline}
+## Three-Phase Pipeline {#three-phase-pipeline}
 
-The core analysis engine operates as a **Two-Pass Pipeline** over the documentation file set. Each pass has a distinct responsibility; Pass 2 only begins after Pass 1 completes.
+The core analysis engine operates as a **Three-Phase Pipeline** over the documentation file set. Each phase has a distinct responsibility and runs in deterministic order.
 
 <div className="zz-figure">
   <ThemedImage
-    alt="Zenzic Two-Pass Analysis Pipeline: File Set → Pass 1 (credential scanner + Content streams) → Pass 2 (Cross-Check) → Pass 3 (Integrity Report) → Quality Report"
+    alt="Zenzic Three-Phase Analysis Pipeline: File Set → Pass 1 (credential scanner + Content streams) → Pass 2 (Cross-Check) → Pass 3 (Integrity Report) → Quality Report"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
@@ -49,12 +49,13 @@ The core analysis engine operates as a **Two-Pass Pipeline** over the documentat
 
 ### Pass 1 -- Harvest and Credential Scan {#pass-1}
 
-Pass 1 reads every `.md` file under `docs/` and performs two independent operations:
+Pass 1 reads every `.md` and `.mdx` file under `docs/` and performs three coordinated operations:
 
 | Stream | What it reads | Purpose |
 | :--- | :--- | :--- |
 | **Credential scanner stream** | Every line including frontmatter and fenced code blocks | Detect leaked credentials |
 | **Content stream** | Lines outside fenced blocks (frontmatter skipped) | Harvest reference definitions, detect images |
+| **Reference URL secret scan** | URLs harvested from reference definitions | Re-scan normalized URLs for embedded credentials |
 
 The credential scanner stream uses raw `enumerate()` -- no line is ever invisible to the credential scanner. The content stream uses a fenced-block-aware state machine that skips lines inside ` ``` ` or `~~~` fences, preventing false-positive reference definitions from code examples.
 
@@ -70,7 +71,7 @@ Harvest events include:
 | `MISSING_ALT` | `url` | Image without alt text |
 | `SECRET` | `SecurityFinding` | Credential detected by credential scanner |
 
-If any `SECRET` event is yielded, Pass 2 is **skipped entirely** for that file. The credential scanner acts as a firewall: no further analysis is performed on potentially compromised content.
+If any `SECRET` event is yielded, the file is flagged as compromised and excluded from insecure output paths, while Pass 2 analysis still executes for structural consistency.
 
 ### Pass 2 -- Cross-Check and Link Validation {#pass-2}
 
@@ -92,7 +93,7 @@ The report includes:
 
 The link validator (`validate_links_async`) operates independently with its own multi-pass structure:
 
-**Pass 1** -- Read all `.md` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
+**Pass 1** -- Read all `.md`/`.mdx` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
 
 **Pass 1.5** -- Build the link adjacency graph and run iterative DFS cycle detection. The cycle registry is a `frozenset[str]` -- O(1) membership checks in Pass 2. Total complexity: Theta(V+E).
 
@@ -294,7 +295,7 @@ When a link target uses `@site/static/img/logo.png`, the resolver strips the vir
 
 ### Engine Factory {#engine-factory}
 
-The `get_adapter()` factory queries the `zenzic.adapters` entry-point group and falls back to `StandaloneAdapter` if no adapter is found. Third-party adapters register via `pyproject.toml` — see the [Adapter implementation guide](https://zenzic.dev/developers/how-to/implement-adapter).
+The `get_adapter()` factory queries the `zenzic.adapters` entry-point group and falls back to `StandaloneAdapter` if no adapter is found. Third-party adapters register via `pyproject.toml` — see the [Adapter implementation guide](/developers/how-to/implement-adapter).
 
 ### `has_engine_config` Guard {#has-engine-config-guard}
 
@@ -341,7 +342,7 @@ Hijacking**: the caller's environment silently overrides the target's.
 
 The protocol resolves config and scope from the target path (not from `cwd`): it finds the target's `.zenzic.toml`, calibrates `docs_root` to the target directory or file, and applies the Sandbox Guard to anchor the path traversal check at the target — not the caller's location.
 
-### The Genesis Nomad (`init`)
+### `init` Special Case
 
 `zenzic init <path>` is a special case: it **creates** a project rather than auditing one.
 The given path becomes the `repo_root` directly, and the directory is created
@@ -457,10 +458,10 @@ Every `[[custom_rules]]` pattern is compiled with RE2 at load time. A pattern ei
 
 The scan engine automatically selects sequential or parallel execution based on the number of files:
 
-| File count | Mode | Behaviour |
+| Condition | Mode | Behaviour |
 | :--- | :--- | :--- |
-| < 50 files | Sequential | Zero process-spawn overhead. Full O(N) I/O. |
-| >= 50 files | Parallel | `ProcessPoolExecutor` with per-worker isolation |
+| `workers = 1` (default) or file count < 50 | Sequential | Zero process-spawn overhead. Full O(N) I/O. |
+| `workers != 1` and file count >= 50 | Parallel | `ProcessPoolExecutor` with per-file distribution |
 
 The threshold (50 files) is a conservative heuristic: below it, process-spawn overhead exceeds the parallelism benefit. Results are always sorted by `file_path` regardless of execution mode.
 
@@ -591,14 +592,14 @@ itself before it can be pushed (Sovereign Parity, ZRT-010).
 Beyond the standard Zenzic audit, `zenzic-doc` enforces a second invariant unique to its
 role as documentation for a linter: every Zxxx finding code present in `docs/` must have a
 registered entry in `src/zenzic/core/codes.py` in the Core package — and vice versa. This
-bidirectional parity is enforced by the `verify-codes-parity` Nox session via **Graceful
-Degradation**:
+bidirectional parity is enforced by the `verify-codes-parity` Nox session via
+**Sovereign Resolution (Fail-Closed)**:
 
-- **Core Maintainer**: `ZENZIC_PROJECT_PATH` set → `uv run --project <path>` against local source.
-- **External Contributor**: local core absent → `uv run --with zenzic` against the published PyPI package.
+- **Core Maintainer**: `ZENZIC_CORE_PATH` set → `uv run --project <path>` against local source.
+- **Core path not found**: the session fails closed; PyPI fallback is prohibited.
 
-Running `just verify` in `zenzic-doc` executes the full lifecycle-gate flow with one entry-point. External contributors
-need no local checkout of Zenzic Core.
+Running `just verify` in `zenzic-doc` executes the full lifecycle-gate flow with one entry-point. Contributors must provide
+a local checkout path for Zenzic Core (`ZENZIC_CORE_PATH`, `./_zenzic_core`, or `../zenzic`).
 
 ---
 
@@ -643,4 +644,4 @@ Zenzic addresses this through the [`[governance]`](../reference/configuration-re
 brand_obsolescence = ["Obsidian"]
 ```
 
-Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z6XX -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z6XX */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
+Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z601 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z601 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.

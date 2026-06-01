@@ -14,7 +14,7 @@ image: /img/social-card.png
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-Zenzic is designed to run inside automated pipelines without configuration drift. Three patterns appear consistently in production deployments: a quality gate that blocks merges on score regression, a containment strategy for repositories with accumulated link debt, and an i18n parity gate enforcing structural symmetry across translations.
+Zenzic is designed to run inside automated pipelines without configuration drift. On the v0.9.0 line, three patterns appear consistently in production deployments: a quality gate that blocks merges on score regression, a containment strategy for repositories with accumulated link debt, and an i18n parity gate enforcing structural symmetry across translations.
 
 These patterns target different teams at different stages: DevOps teams enforcing merge gates in CI, technical leads scoping governance adoption in repositories with accumulated debt, and documentation engineers maintaining multilingual portals. The patterns are independent and can be combined. A repository with legacy debt can run Pattern 2 to fence exemptions while still enforcing a quality floor via Pattern 1 and structural i18n parity via Pattern 3.
 
@@ -51,7 +51,7 @@ suppression_cap = 15
 zenzic diff main
 ```
 
-Compares the quality score of the current branch against `main`. Exits with code 4 on regression. Suitable for pull request checks where the absolute score is acceptable but a branch-local regression is not.
+Compares the quality score of the current branch against `main`. Exits with code 1 on regression. Suitable for pull request checks where the absolute score is acceptable but a branch-local regression is not.
 
 ## Pattern 2 — Legacy Debt Containment
 
@@ -92,10 +92,10 @@ Multilingual documentation sites accumulate structural drift: pages added to the
 enabled = true
 default_locale = "en"
 locales = ["en", "it"]
-parity_strict = true
+strict_parity = true
 ```
 
-When `parity_strict = true`, every page present in `default_locale` must have a counterpart in every other locale. Missing translations surface as `Z602 I18N_PARITY` findings at `error` severity.
+When `strict_parity = true`, every page present in `default_locale` must have a counterpart in every other locale. Missing translations surface as `Z602 I18N_PARITY` findings at `error` severity.
 
 **Enforcement in CI:**
 
@@ -107,7 +107,7 @@ Z602 findings are `error`-severity by default. `--strict` is not required to blo
 
 **Gradual adoption:**
 
-If the translation backlog is substantial, set `parity_strict = false` initially and use `governance.directory_policies` to suppress Z602 for specific locale directories that are still under active translation work:
+If the translation backlog is substantial, set `strict_parity = false` initially and use `governance.directory_policies` to suppress Z602 for specific locale directories that are still under active translation work:
 
 ```toml title=".zenzic.toml"
 [governance.directory_policies]

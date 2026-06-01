@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Architettura
-description: Approfondimento tecnico sulla pipeline a due passate, il flusso del credential scanner, il protocollo Adapter e i codici di uscita.
+description: Approfondimento tecnico sulla pipeline a tre fasi di Zenzic, il credential scanner, il protocollo Adapter, il Layered Exclusion Manager e il contratto dei codici di uscita.
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -9,14 +9,14 @@ import ThemedImage from '@theme/ThemedImage';
 
 # Architettura
 
-Zenzic e un analizzatore statico a due passate. Questa pagina documenta le strutture interne che ne governano il funzionamento: dalla pipeline di scansione al protocollo degli adapter, dal flusso del credential scanner al sistema di esclusione a livelli.
+Questa pagina descrive il design interno di Zenzic per contributor e utenti avanzati che devono capire come funziona lo strumento internamente. Per configurazione e uso, consulta [Configuration Reference](../reference/configuration-reference) e [Checks Reference](../reference/checks).
 
-## Integrita Oltre il Codice {#integrity-beyond-code}
+## Integrità Oltre il Codice {#integrity-beyond-code}
 
 Zenzic estende il determinismo dell'analisi statica anche all'infrastruttura di build.
 
 La stessa regola ingegneristica vale a livello repository: se il contesto di
-esecuzione non e deterministico, i risultati dell'analisi non sono affidabili.
+esecuzione non è deterministico, i risultati dell'analisi non sono affidabili.
 Per questo i controlli CI/CD sono parte del contratto architetturale, non un
 dettaglio operativo secondario.
 
@@ -27,19 +27,19 @@ dettaglio operativo secondario.
 | Attestazioni di provenienza build | Fornisce metadati verificabili sull'origine degli artefatti distribuiti |
 | Dependabot per le actions | Automatizza il refresh degli SHA preservando il modello di pinning immutabile |
 
-Questo e l'equivalente infrastrutturale dell'analisi statica: vincolare gli
-input di esecuzione, preservare la riproducibilita e rendere auditabile
+Questo è l'equivalente infrastrutturale dell'analisi statica: vincolare gli
+input di esecuzione, preservare la riproducibilità e rendere auditabile
 l'evidenza di sicurezza per contributor e utenti finali.
 
 ---
 
-## Pipeline a Due Passate {#two-pass-pipeline}
+## Pipeline a Tre Fasi {#three-phase-pipeline}
 
-La pipeline principale di Zenzic opera in due passate sequenziali sul medesimo insieme di file. Ogni file viene letto una sola volta per passata; il costo I/O totale resta $O(N)$ rispetto al numero di file.
+Il motore principale di analisi opera come una **Pipeline a Tre Fasi** sull'insieme dei file di documentazione. Ogni fase ha una responsabilità distinta e viene eseguita in ordine deterministico.
 
 <div className="zz-figure">
   <ThemedImage
-    alt="Zenzic — Pipeline a Due Passate: File Set → Passata 1 (credential scanner + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
+    alt="Zenzic — Pipeline a Tre Fasi: File Set → Passata 1 (credential scanner + Content stream) → Passata 2 (Cross-Check) → Passata 3 (Integrity Report) → Quality Report"
     sources={{
       light: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow-light.svg'),
       dark: useBaseUrl('/assets/brand/svg/zenzic-pipeline-flow.svg'),
@@ -49,17 +49,15 @@ La pipeline principale di Zenzic opera in due passate sequenziali sul medesimo i
 
 ### Passata 1 — Raccolta e Scansione {#pass-1}
 
-La prima passata attraversa tutti i file `.md` e `.mdx` scoperti da `iter_markdown_sources` ed esegue tre operazioni per ciascun file:
+La prima passata attraversa tutti i file `.md` e `.mdx` sotto `docs/` ed esegue tre operazioni coordinate:
 
-| Fase | Descrizione | Output |
+| Stream | Cosa legge | Scopo |
 | :--- | :--- | :--- |
-| **1.a Credential scanner pass** | Scansiona **ogni riga** del file (incluso il frontmatter YAML e le righe dentro blocchi di codice) alla ricerca di pattern di credenziali | Lista di `SecurityFinding` |
-| **1.b Content pass** | Estrae le definizioni reference-link (`[id]: url`), rileva le immagini inline, verifica la presenza dell'alt text | `ReferenceMap` popolata, eventi `DEF`, `IMG`, `MISSING_ALT` |
-| **1.c Credential scanner URL** | Per ogni URL trovato in una definizione reference, esegue `scan_url_for_secrets` | `SecurityFinding` aggiuntivi (se la riga non era gia segnalata da 1.a) |
+| **Credential scanner stream** | Ogni riga, incluse frontmatter e blocchi di codice fenced | Rilevare credenziali esposte |
+| **Content stream** | Righe fuori dai blocchi fenced (frontmatter saltato) | Raccogliere definizioni reference e rilevare immagini |
+| **Reference URL secret scan** | URL raccolte dalle definizioni reference | Rieseguire la scansione delle URL normalizzate per credenziali |
 
-Il credential scanner ha la priorità assoluta. Se la fase 1.a rileva un segreto, l'evento viene emesso immediatamente. I risultati del credential scanner e Content vengono poi uniti e ordinati per numero di riga.
-
-Il credential scanner scansiona le righe **senza saltare i blocchi di codice** — questo e intenzionale. Un segreto incorporato in un esempio `bash` o in un blocco senza etichetta linguistica e comunque un segreto esposto.
+Lo stream del credential scanner usa `enumerate()` grezzo: nessuna riga è mai invisibile al credential scanner. Lo stream dei contenuti usa una macchina a stati consapevole dei blocchi fenced che salta le righe dentro fence ` ``` ` o `~~~`, prevenendo falsi positivi di definizioni reference dagli esempi di codice.
 
 Durante la Passata 1, il `ReferenceScanner` popola una `ReferenceMap` per file.
 
@@ -73,7 +71,7 @@ Gli eventi di harvest includono:
 | `MISSING_ALT` | `url` | Immagine senza alt text |
 | `SECRET` | `SecurityFinding` | Credenziale rilevata dal credential scanner |
 
-Se viene prodotto un evento `SECRET`, la Passata 2 viene **saltata interamente** per quel file. Il credential scanner agisce come un firewall: nessuna analisi ulteriore viene eseguita sul contenuto potenzialmente compromesso.
+Se viene prodotto un evento `SECRET`, il file viene marcato come compromesso ed escluso dai percorsi di output insicuri, mentre la Passata 2 continua a essere eseguita per la coerenza strutturale.
 
 ### Passata 2 — Cross-Check e Validazione dei Link {#pass-2}
 
@@ -95,7 +93,7 @@ Il report include:
 
 Il validatore di link (`validate_links_async`) opera indipendentemente con la propria struttura multifase:
 
-**Fase 1** — Legge tutti i file `.md` in memoria, estrae link inline e reference link, calcola gli slug degli heading per file. Costruisce `InMemoryPathResolver` una volta sola dalla mappa completa dei file.
+**Fase 1** — Legge tutti i file `.md`/`.mdx` in memoria, estrae link inline e reference link, calcola gli slug degli heading per file. Costruisce `InMemoryPathResolver` una volta sola dalla mappa completa dei file.
 
 **Fase 1.5** — Costruisce il grafo di adiacenza dei link e applica il rilevamento cicli DFS iterativo. Il registro dei cicli è un `frozenset[str]` — lookup O(1) nella Fase 2. Complessità totale: Θ(V+E).
 
@@ -105,9 +103,9 @@ Il validatore di link (`validate_links_async`) opera indipendentemente con la pr
 
 ---
 
-## Flusso Credential Scanner
+## Credential Scanner
 
-Il credential scanner di Zenzic è un componente di sicurezza che opera trasversalmente a tutta la pipeline. Il suo flusso per ogni riga di ogni file e il seguente:
+Il credential scanner di Zenzic è un motore di rilevamento credenziali integrato nella Passata 1. Opera come middleware: ogni riga passa dal credential scanner prima che qualsiasi altro parser la veda.
 
 <div className="zz-figure zz-figure--centered">
   <ThemedImage
@@ -131,7 +129,7 @@ Per l'estrazione di metadati (parsing del frontmatter per slug, tag, stato draft
 
 ## Fondamenti di Sicurezza Enterprise-Grade {#enterprise-security}
 
-Questa sezione documenta le funzionalità di hardening della sicurezza introdotte in v0.8.x. Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
+Questa sezione documenta le funzionalità di hardening della sicurezza. Queste proprietà sono verificate dalla suite di test e applicate dalla guardia `_validate_docs_root` e dal recinto I/O `safe_read_line`.
 
 ### F2-1 — Troncamento Anti-ReDoS delle righe {#f2-1-antiredos}
 
@@ -139,7 +137,7 @@ Il credential scanner applica un limite rigido di **1 MiB per riga** prima di qu
 
 ### F4-1 — Validazione Anti-Jailbreak del Percorso {#f4-1-antijailbreak}
 
-La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
+La funzione `_validate_docs_root()` in `cli/_shared.py` eleva il **path traversal guard** (Codice di Uscita 3) da un controllo a tempo di link a una **barriera pre-scansione del filesystem**.
 
 **Modello di minaccia:** Un `.zenzic.toml` malevolo o mal configurato contenente `docs_dir = "../../etc"` causerebbe la scansione da parte di Zenzic di directory di sistema OS, potenzialmente divulgando contenuti di file sensibili attraverso i risultati del rilevamento credenziali o esponendo la struttura delle directory nei messaggi di errore.
 
@@ -160,22 +158,22 @@ La funzione `_validate_docs_root()` in `cli.py` eleva il **path traversal guard*
 
 Gli adapter sono il meccanismo che permette a Zenzic di supportare diversi motori di build senza accoppiarsi a nessuno di essi.
 
-### BaseAdapter {#base-adapter}
+### `BaseAdapter` {#base-adapter}
 
 `BaseAdapter` è un Abstract Base Class (`ABC`) che ogni adapter deve soddisfare. Metodi chiave:
 
-| Metodo | Responsabilita |
+| Metodo | Responsabilità |
 | :--- | :--- |
 | `has_engine_config()` | Guard: restituisce `True` se l'adapter ha trovato un file di configurazione del motore. Quando `False`, i controlli nav-dipendenti vengono saltati |
 | `get_route_info()` | API Metadata-Driven Routing. Restituisce tutti i metadati di routing in una singola chiamata: URL canonico, stato della route, slug opzionale, route base path e flag proxy. |
 | `get_nav_paths()` | Restituisce l'insieme dei percorsi `.md` dichiarati nella navigazione del sito |
 | `get_ignored_patterns()` | Pattern fnmatch che l'adapter tratta come ignorati (ad esempio `README.md` per alcuni motori) |
-| `is_locale_dir(name)` | Determina se una directory e un albero di localizzazione |
+| `is_locale_dir(name)` | Determina se una directory è un albero di localizzazione |
 | `resolve_asset(path, docs_root)` | Risolve un asset con fallback i18n |
 | `resolve_anchor(file, anchor, cache, docs_root)` | Risolve un'ancora con fallback i18n |
 | `provides_index(directory_path)` | **Hook I/O della fase di discovery.** Restituisce `True` se il motore genererà una landing page per questa directory. Unico metodo del protocollo che può eseguire I/O su disco (`Path.exists()`). |
 
-### RouteMetadata {#route-metadata}
+### `RouteMetadata` {#route-metadata}
 
 I metadati di routing unificati restituiti da `get_route_info()`:
 
@@ -227,12 +225,12 @@ Questo garantisce che Zenzic rimanga un **Custode Strutturale** anche per la doc
 
 ### Adapter disponibili {#built-in-adapters}
 
-| Engine | Adapter | Configurazione rilevata |
-| :--- | :--- | :--- |
-| `mkdocs` | `MkDocsAdapter` | `mkdocs.yml` |
-| `zensical` | `ZensicalAdapter` | `zensical.toml` |
-| `docusaurus` | `DocusaurusAdapter` | `docusaurus.config.js` / `.ts` |
-| `standalone` | `StandaloneAdapter` | Nessuna — adapter agnostico, orphan check saltato |
+| Adapter | Engine | Configurazione rilevata | Funzionalità |
+| :--- | :--- | :--- | :--- |
+| `MkDocsAdapter` | `mkdocs` | `mkdocs.yml` | Risoluzione nav completa, modalità i18n folder/suffix, fallback locale |
+| `ZensicalAdapter` | `zensical` | `zensical.toml` | Config nativa TOML, lettura nativa di `mkdocs.yml` |
+| `DocusaurusAdapter` | `docusaurus` | `docusaurus.config.js/ts` | Parsing statico config JS, supporto slug frontmatter, route base path |
+| `StandaloneAdapter` | `standalone` | (nessuna) | Adapter agnostico per progetti Markdown puri; orphan check saltato |
 
 ### Sovranità del Protocollo {#protocol-sovereignty}
 
@@ -299,7 +297,7 @@ Quando il target di un link usa `@site/static/img/logo.png`, il resolver rimuove
 
 ### Factory degli engine {#engine-factory}
 
-La factory `get_adapter()` interroga il gruppo entry-point `zenzic.adapters` e ricade su `StandaloneAdapter` se non trova un adapter per il motore richiesto. Gli adapter di terze parti si registrano via `pyproject.toml` — vedi la [guida all'implementazione degli adapter](https://zenzic.dev/developers/how-to/implement-adapter).
+La factory `get_adapter()` interroga il gruppo entry-point `zenzic.adapters` e ricade su `StandaloneAdapter` se non trova un adapter per il motore richiesto. Gli adapter di terze parti si registrano via `pyproject.toml` — vedi la [guida all'implementazione degli adapter](/developers/how-to/implement-adapter).
 
 ### Guardia `has_engine_config` {#has-engine-config-guard}
 
@@ -347,7 +345,7 @@ quello della destinazione.
 
 Il protocollo risolve config e perimetro dal percorso della destinazione (non da `cwd`): trova il `.zenzic.toml` della destinazione, calibra `docs_root` alla directory o file di destinazione, e applica la Guardia Sandbox per ancorare il controllo di path traversal alla destinazione — non alla posizione del chiamante.
 
-### Il Genesis Nomad (`init`)
+### Caso Speciale `init`
 
 `zenzic init <percorso>` è un caso speciale: **crea** un progetto invece di verificarlo.
 Il percorso indicato diventa direttamente il `repo_root`, e la directory viene creata
@@ -377,7 +375,7 @@ Zenzic usa quattro codici di uscita, ognuno con una semantica precisa:
 | Codice | Nome | Significato | Sopprimibile con `--exit-zero`? |
 | :---: | :--- | :--- | :---: |
 | **0** | Pulito | Nessun problema trovato (o `--exit-zero` attivo per problemi non-sicurezza) | — |
-| **1** | Risultati | Errori di qualita trovati (link rotti, orfani, snippet, segnaposto, asset, riferimenti) | Si |
+| **1** | Risultati | Errori di qualità trovati (link rotti, orfani, snippet, segnaposto, asset, riferimenti) | Sì |
 | **2** | Credential Scanner | Credenziale rilevata dallo Zenzic credential scanner | **No** |
 | **3** | Path Traversal Guard | Traversamento path verso directory di sistema OS (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`) | **No** |
 
@@ -464,10 +462,10 @@ Ogni pattern in `[[custom_rules]]` viene compilato con RE2 al momento del carica
 
 La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e parallela in base al numero di file:
 
-| Condizione | Modalita | Dettaglio |
+| Condizione | Modalità | Dettaglio |
 | :--- | :--- | :--- |
-| `workers=1` (default) oppure file < 50 | **Sequenziale** | Zero overhead di spawn processi. Supporto completo per validazione URL esterni |
-| `workers != 1` e file >= 50 | **Parallelo** | `ProcessPoolExecutor` con distribuzione per-file. Ogni worker e un processo indipendente |
+| `workers=1` (default) oppure file < 50 | **Sequenziale** | Zero overhead di spawn processi. I/O completo O(N). |
+| `workers != 1` e file >= 50 | **Parallelo** | `ProcessPoolExecutor` con distribuzione per-file |
 
 La soglia di 50 file è un'euristica conservativa: sotto questa soglia, l'overhead di spawn dei processi supera il beneficio del parallelismo. I risultati sono sempre ordinati per `file_path` indipendentemente dalla modalità di esecuzione.
 
@@ -595,13 +593,13 @@ Oltre all'audit standard di Zenzic, `zenzic-doc` impone un secondo invariante un
 ruolo di documentazione di un linter: ogni codice di finding Zxxx presente in `docs/` deve
 avere un'entità registrata in `src/zenzic/core/codes.py` nel pacchetto Core — e viceversa.
 Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parity` tramite
-**Graceful Degradation**:
+**Risoluzione Sovrana (Fail-Closed)**:
 
-- **Core Maintainer**: `ZENZIC_PROJECT_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
-- **External Contributor**: core locale assente → `uv run --with zenzic` sul pacchetto PyPI pubblicato.
+- **Core Maintainer**: `ZENZIC_CORE_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
+- **Core non trovato**: la sessione fallisce in modalità fail-closed; fallback PyPI proibito.
 
 Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori
-esteri non hanno bisogno di un checkout locale di Zenzic Core.
+devono fornire un path locale al core Zenzic (`ZENZIC_CORE_PATH`, `./_zenzic_core` o `../zenzic`).
 
 ---
 

@@ -46,8 +46,8 @@ This is an **unconditional early return** — no flags, no config options, and n
 | Code | Name | Condition |
 | :--- | :--- | :--- |
 | Z201 | CREDENTIAL | Credential pattern detected in document |
-| Z202 | PATH_TRAVERSAL | System-path escape attempt in a link |
-| Z203 | PATTERN_MATCH | Custom forbidden-pattern match |
+| Z202 | PATH_TRAVERSAL | Link target escapes `docs/` to a non-system path |
+| Z203 | PATH_TRAVERSAL_FATAL | Link target resolves to an OS system path |
 | Z204 | FORBIDDEN_TERM | Privacy Gate — confidential term exposure |
 
 When the Security Override fires, `ScoreReport` returns `security_override=True` and `security_findings=N` (total Z2xx count). The `--strict` flag and `fail-on-error` configuration are irrelevant — the gate operates before all of them.
@@ -132,7 +132,7 @@ Z602 (I18N_PARITY) is a Governance gate that fires as a standalone finding. It d
 Z6xx violations represent **brand and governance decay** — the kind that accumulates silently. Beyond 10 occurrences, the engine applies an exponential amplifier to the Governance bucket deductions:
 
 $$
-\text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{\lfloor n_{\text{excess}} / 5 \rfloor}\right)
+  \text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{n_{\text{excess}} / 5}\right)
 $$
 
 where $n_{\text{excess}} = n_{Z6xx} - 10$.
@@ -157,7 +157,7 @@ $$
 
 Every active suppression is an acknowledged assumption of responsibility. The **flat-cost model** deducts exactly **1 point per suppression**, regardless of how many suppressions are present. There is no free allowance.
 
-`suppression_cap` (default: 30) is a **hard-fail threshold**, not an allowance boundary. When `suppression_count > suppression_cap`, `zenzic score` exits with code 1 immediately, before the score gate is evaluated. The penalty formula is independent of the cap:
+`suppression_cap` (default: 30) is a **hard-fail threshold**, not an allowance boundary. In `zenzic score`, the `fail_under` gate is evaluated first and the suppression-cap gate is evaluated after it; both remain independent controls. The penalty formula is independent of the cap:
 
 $$
 \omega_{\text{debt}} = n
@@ -208,9 +208,9 @@ Suppression Audit: 8/30 (inline: 5, per-file: 3)
 Run `zenzic check all --audit` to see findings without applying suppressions.
 :::
 
-## Interpretazione dei Risultati {#interpretazione-dei-risultati}
+## Result Interpretation {#result-interpretation}
 
-### 1) Finding Informativi
+### 1) Informational Findings
 
 Informational findings are non-blocking diagnostics for visibility and observability.
 
@@ -220,7 +220,7 @@ Informational findings are non-blocking diagnostics for visibility and observabi
 
 Typical examples include Z106 (`CIRCULAR_LINK`) and informational surfaces such as Z114 or Z906.
 
-### 2) Audit delle Soppressioni
+### 2) Suppression Audit
 
 The Suppression Audit is governance telemetry, not a raw failure counter.
 

@@ -44,7 +44,7 @@ The three paradox codes received their penalties in the migration:
 
 ## From Allowance to Flat-Cost
 
-The v0.7.x suppression model was allowance-based:
+The previous suppression model was allowance-based:
 
 $$
 \omega_{\text{debt}} = \max(0,\; n - \text{cap})
@@ -123,7 +123,7 @@ I18N_PARITY acts as a governance gate: it enforces language parity between docum
 trees and triggers Exit 1 when parity fails. Assigning it a DQS penalty would conflate
 two independent quality dimensions (translation completeness vs. link health / content
 quality) into a single number, making the score harder to interpret. A separate ADR is
-required to add Z602 to the DQS formula. For now, it is excluded from the penalty table and identified as `FROZEN_CODE` in `CODE_DEFINITIONS`.
+required to add Z602 to the DQS formula. For now, it is excluded from the penalty table, listed in `FROZEN_CODES`, and defined in `CODE_DEFINITIONS` with penalty `0.0`.
 
 ## Migration Impact (v0.7.x → v0.8.0)
 

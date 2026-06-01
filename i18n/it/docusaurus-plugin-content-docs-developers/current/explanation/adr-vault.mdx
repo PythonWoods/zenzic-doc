@@ -30,8 +30,8 @@ governato dal Protocollo Operativo di Rilascio e Governance.
 
 ## Decisioni Genesi
 
-Questi ADR sono stati stabiliti prima della pubblicazione pubblica. Definiscono le
-fondamenta filosofiche e tecniche su cui si basano tutte le decisioni successive.
+Questi ADR definiscono le fondamenta filosofiche e tecniche su cui si basano
+tutte le decisioni successive.
 
 | ADR | Titolo |
 |-----|-------|
@@ -42,7 +42,7 @@ fondamenta filosofiche e tecniche su cui si basano tutte le decisioni successive
 
 ## Decisioni di Architettura Core
 
-Questi ADR documentano le decisioni strutturali prese durante lo sviluppo attivo.
+Questi ADR documentano le decisioni strutturali dell'architettura corrente.
 
 | ADR | Titolo |
 |-----|-------|
@@ -53,6 +53,8 @@ Questi ADR documentano le decisioni strutturali prese durante lo sviluppo attivo
 | [ADR 008](./adr-bilingual-structural.mdx) | Invariante Strutturale Bilingue |
 | [ADR 009](./adr-path-sovereignty.mdx) | Sovranità del Percorso |
 | [ADR 013](./adr-regex-acl.mdx) | The Regex Anti-Corruption Layer (ReDoS Protection) |
+| [ADR 015](./adr-native-telemetry.mdx) | Validazione Telemetria Nativa |
+| [ADR 020](./adr-parallel-early-termination.mdx) | Completezza Audit Parallelo vs. Fail-Fast |
 
 ---
 
@@ -64,7 +66,7 @@ localizzato e mantenuto.
 
 | ADR | Titolo |
 |-----|-------|
-| [ADR 006](./adr-unified-perimeter.mdx) | Scope di Scansione Unificato (Storage + Journal) |
+| [ADR 006](./adr-unified-perimeter.mdx) | Scope di Scansione Unificato (Storage + Blog) |
 
 ---
 
@@ -116,6 +118,6 @@ qui.
 
   rilevante nel repository dove la decisione è stata implementata.
 
-L'ADR è permanente una volta pubblicato. Per modificare una decisione, aggiungere
-un nuovo ADR che fa riferimento all'originale e documenta la modifica — non
-riscrivere mai la storia.
+Per policy di governance, gli ADR sono record append-only. Per modificare una
+decisione, aggiungere un nuovo ADR che fa riferimento all'originale e documenta
+la modifica — non riscrivere mai la storia.

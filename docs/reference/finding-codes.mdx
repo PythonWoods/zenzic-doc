@@ -36,7 +36,7 @@ Each code has a permanent anchor. You can link directly to a specific code using
 
 ## Category Overview
 
-Zenzic organizes findings into **seven diagnostic categories**, each addressing a specific pillar of documentation integrity:
+Zenzic organizes findings into **eight diagnostic categories**, each addressing a specific pillar of documentation integrity:
 
 | **Category** | **Range** | **Purpose** | **Default Severity** | **Suppressible?** |
 |---|---|---|---|---|
@@ -51,8 +51,8 @@ Zenzic organizes findings into **seven diagnostic categories**, each addressing 
 
 :::info[Per-line suppression syntax]
 Suppress a finding on a specific line with a format-aware comment on that same line.\
-**Markdown (.md):** `<!-- zenzic:ignore Zxxx -->`\
-**MDX (.mdx):** `{/* zenzic:ignore Zxxx */}`\
+**Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
+**MDX (.mdx):** `{/* zenzic:ignore: Zxxx */}`\
 See [Suppression Policy](./suppression-policy.mdx) for the full reference including interaction with `--strict` mode.
 :::
 
@@ -132,10 +132,10 @@ Z102 counts toward the **Structural** tier of the [Deterministic Quality Score](
 ### Z103: ORPHAN_LINK {#z103}
 
 :::note[Quality Score — No DQS impact (0.0 pts)]
-Z103 does **not** reduce the [Deterministic Quality Score](./scoring-algorithm.mdx). It causes exit 0 in standard mode, exit 1 with `--strict`. See [Scoring Algorithm](./scoring-algorithm.mdx) for the complete penalty table.
+Z103 does **not** reduce the [Deterministic Quality Score](./scoring-algorithm.mdx). It causes exit 1 in standard mode. See [Scoring Algorithm](./scoring-algorithm.mdx) for the complete penalty table.
 :::
 
-* **Severity:** `warning`
+* **Severity:** `error`
 * **Technical Context:** This link points to a file that is present in the VSM but is not included in the site's navigation structure (sidebar/nav). Users may be able to link to it, but they cannot find it via the UI.
 * **Architectural Rationale:** A navigation-orphaned page exists in the build but not in the Knowledge Graph that readers traverse. It is reachable only by direct URL — the reader must already know the URL to find it. Such a page has zero discoverability: it cannot be found by following any navigation path, sidebar entry, or documentation tree. Z103 makes this invisibility explicit, giving the author the choice to either add the page to navigation (making it discoverable) or acknowledge intentionally that it is a hidden endpoint.
 * **Remediation Steps:**
@@ -183,7 +183,7 @@ Z104 counts toward the **Structural** tier of the [Deterministic Quality Score](
 Z105 counts toward the **Structural** tier of the [Deterministic Quality Score](./scoring-algorithm.mdx). Penalty: **−2.0 pts per occurrence**, capped at 30 pts for the tier.
 :::
 
-* **Severity:** `warning`
+* **Severity:** `error`
 * **Technical Context:** Absolute paths (e.g., `C:\Docs\page.md` or `/home/user/docs/page.md`) break documentation portability. Zenzic flags these to prevent "It works on my machine" syndrome in CI/CD pipelines.
 
   **Project-owned prefixes are exempt from Z105 but not from Z104.** Docusaurus sites often use absolute links starting with `/blog/`, `/docs/`, or other `routeBasePath` values to cross plugin boundaries. Zenzic auto-detects these prefixes from the engine configuration (Zero-Config — no `.zenzic.toml` entry required) and suppresses Z105 for them.
@@ -203,6 +203,12 @@ Z105 counts toward the **Structural** tier of the [Deterministic Quality Score](
     1. Convert the link to a relative path starting from the current file's directory.
     2. Use `@site/` or similar engine-specific aliases if supported (e.g., in Docusaurus).
     3. If you received a **Z104** (not Z105) on an absolute `/blog/` or `/docs/` link, the route prefix is recognised but the slug does not exist — see [Z104 remediation](#z104) above.
+
+:::note[Docusaurus Multi-Instance Boundary]
+Currently, Docusaurus does not support relative file paths (`../`) across different plugin instances (e.g., from `docs/` to `developers/`). To link across instances, you must use absolute production URLs (`https://...`). This will trigger a Z105 finding. Because inline suppressions inside Markdown tables may not be parsed correctly by the AST engine, you must suppress this finding using [`[governance.per_file_ignores]`](/developers/how-to/release-governance-protocol) in your `.zenzic.toml` and accept the 1-point DQS penalty until the Docusaurus Adapter implements cross-instance root-relative resolution.
+
+*This is a known architectural limitation tracked in the [ROADMAP](https://zenzic.dev/developers/explanation/adr-vault).*
+:::
 
 ### Z106: CIRCULAR_LINK {#z106}
 
@@ -713,8 +719,8 @@ Z602 is a **bilingual integrity check**. It does not reduce the [Deterministic Q
 
 ## Reserved Codes (Inactive) {#reserved-codes}
 
-:::note[Not yet active]
-The codes in this section are defined in the Zenzic registry and reserved for future engine implementations. They are **not emitted at runtime** and have **no impact on the Deterministic Quality Score**. Their presence here is informational only — semantics may change before activation.
+:::note[Runtime-inactive by contract]
+The codes in this section are defined in the Zenzic registry and reserved for engine implementations. They are **not emitted at runtime** and have **no impact on the Deterministic Quality Score**. Their presence here is informational only.
 :::
 
 ### Z111: VIRTUAL_ROUTE_BROKEN {#z111}
@@ -773,8 +779,7 @@ The codes in this section are defined in the Zenzic registry and reserved for fu
     1. Review `postsPerPage` in your `docusaurus.config.ts` blog block.
     2. Consider enabling the blog archive (`archiveBasePath: 'archive'`) to offload
        historical posts from the paginated index.
-    3. Suppress with `{/* zenzic:ignore: Z114 */}` on the link or set a higher threshold
-       in a future `.zenzic.toml` setting (not yet implemented).
+    3. Suppress with `{/* zenzic:ignore: Z114 */}` on the link.
 
 ---
 

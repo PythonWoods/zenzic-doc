@@ -17,7 +17,7 @@ description: "ADR 009: The configuration follows the target, not the caller — 
 
 ## Context
 
-`find_repo_root()` originally searched upward from `os.getcwd()` — the invoking
+`find_repo_root()` searches upward from `os.getcwd()` — the invoking
 shell's current working directory. This worked correctly for the standard case
 where the user runs Zenzic from inside the repository they want to analyse.
 
@@ -57,14 +57,13 @@ def find_repo_root(
         if (parent / ".git").exists() or (parent / ".zenzic.toml").exists():
             return parent
     if fallback_to_cwd:
-        return Path.cwd()
+        return start
     raise RuntimeError(...)
 ```
 
-`_apply_target()` in `cli/_check.py` orchestrates the recalibration: after
-deriving `docs_root` from the user-provided target, it calls
-`find_repo_root(search_from=docs_root)` to load the correct `.zenzic.toml`,
-then re-derives `docs_dir` from the target repo's configuration.
+`_apply_target()` in `cli/_target_resolver.py` orchestrates docs-root
+recalibration after target resolution: it preserves configured `docs_dir` when
+the target is the repo root, or patches `docs_dir` from the resolved target.
 
 ---
 
@@ -131,16 +130,17 @@ Path Sovereignty applies to every CLI command that accepts an optional positiona
 
 ## Consequences
 
-- Running Zenzic from any directory now produces identical results to running it
+- Running Zenzic from any directory produces identical results to running it
 
   from inside the target repository — no surprises for CI operators.
 
 - Contributors implementing new CLI commands that accept a `PATH` argument
 
   **must** call `find_repo_root(search_from=resolved_path)` and invoke
-  `_apply_target()`. This is now a documented invariant in the contribution guide.
+    `_apply_target()`. This is a documented invariant in the contribution guide.
 
-- The `fallback_to_cwd=True` parameter of `find_repo_root()` is reserved
+- The `fallback_to_cwd=True` parameter of `find_repo_root()` is a constrained
 
-  exclusively for the `init` command (Genesis Fallback — see ADR-003). No other
-  command may use it.
+    fallback path. Use it only where command semantics explicitly require a
+    current-working-directory fallback, and avoid introducing it as a default in
+    PATH-targeted command flows.

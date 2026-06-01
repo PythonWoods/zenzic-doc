@@ -134,6 +134,7 @@ function ZenzicOutput(): React.JSX.Element {
         <div className="space-y-1.5">
           <div>
             Summary:{'  '}
+            <span className="text-rose-500">✘ 1 security breach</span>{'  '}
             <span className="text-rose-500">✘ 2 errors</span>{'  '}
             <span className="text-amber-500">⚠ 4 warnings</span>{'  '}
             <span className="dark:text-zinc-500 text-zinc-500">💡 0 info</span>{'  '}

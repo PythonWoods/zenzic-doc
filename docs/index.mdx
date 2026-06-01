@@ -8,7 +8,7 @@ sidebar_label: "Overview"
 
 # Your Documentation, Fully Protected
 
-**Zenzic detects broken links, leaked credentials, and orphan pages before they reach production. No configuration required to start. No build engine invoked.**
+**Zenzic detects broken links, leaked credentials, and orphan pages before they reach production. No configuration required to start. No engine-specific build integration required.**
 
 ---
 
@@ -22,7 +22,7 @@ uvx zenzic lab
 broken links, orphan pages, path traversal guard enforcement. Run it against bundled
 fixtures and see the results in real time.
 
-**The full audit in one second — no installation, no setup:**
+**Run a full audit quickly — no installation, no setup:**
 
 ```bash
 uvx zenzic check all .
@@ -51,7 +51,7 @@ One absolute rule: any Z2xx finding collapses the score to `0/100` unconditional
 | Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic                                                                            |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | ZenzicOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
-| **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | O(1) deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |
+| **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | Deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |
 | **Credential Leak**     | Linter may miss secrets in YAML/code blocks; no masking; incident may reach git history.            | Credential scanner: scans all content, masks secrets, halts pipeline (exitCode=2, Z201), never prints full secret. |
 | **Exit Codes**          | Non-standard, ambiguous, or missing.                                                                | Tiered: Z1xx (link integrity), Z2xx (security), Z4xx (structure), Z6xx (governance).                   |
 
@@ -89,12 +89,12 @@ This is not a lint check. It is a **non-negotiable security gate**.
     upload-sarif: "true"
 ```
 
-Findings appear as **inline Pull Request annotations** and in the **Security tab** —
+Findings can appear as **inline Pull Request annotations** and in the **Security tab** —
 no log parsing, no custom scripts, no post-processing. The official
 [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) handles
-installation, execution, and SARIF 2.1.0 upload in a single workflow step.
+installation, execution, and SARIF upload in a single workflow step.
 
-Cross-platform verified: Ubuntu · Windows · macOS · Python 3.10–3.14.
+CI verification in this repository uses an Ubuntu runner.
 
 ---
 

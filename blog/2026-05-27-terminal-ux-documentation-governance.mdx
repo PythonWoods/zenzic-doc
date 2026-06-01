@@ -19,6 +19,8 @@ A linter reports violations within individual files. A governance engine verifie
 that a set of invariants holds across the entire document graph — and halts the
 pipeline when one does not.
 
+This analysis reflects the terminal contract as shipped on the v0.9.0 release line.
+
 {/* truncate */}
 
 ## Beyond Linting
@@ -309,8 +311,8 @@ FAILED: suppression cap exceeded (36/30).
 Update governance.suppression_cap in .zenzic.toml if intentional.
 ```
 
-This failure is Exit 1. It is overridable via `--exit-zero` for observe-only
-runs. It cannot be resolved by adding more `zenzic:ignore` directives — each
+This failure is Exit 1 and remains fail-hard when suppression cap is exceeded.
+It cannot be resolved by adding more `zenzic:ignore` directives — each
 additional directive increases the count and the debt simultaneously.
 
 <ZenzicOutput status="success" exitCode={0} />
@@ -327,7 +329,8 @@ The four exit codes and their contracts:
 | Code | Trigger | Suppressible via directive? | `--exit-zero` effect |
 |------|---------|-----------------------------|----------------------|
 | 0 | No error-severity findings in the analyzed scope | — | No effect |
-| 1 | Error-severity findings detected; or suppression cap exceeded | Yes — via `zenzic:ignore` | Converts to 0 |
+| 1 | Error-severity findings detected | Yes — via `zenzic:ignore` | Converts to 0 |
+| 1 | Suppression cap exceeded | No — directives increase debt/cap pressure | No effect (fail-hard) |
 | 2 | Credential detected in documentation content (Z2xx) | Never | No effect |
 | 3 | Path traversal to system directories detected (Z203) | Never | No effect |
 
@@ -340,11 +343,11 @@ state is not reflected in the exit code.
 
 **Exit 1.** One or more error-severity findings were detected, or the
 suppression count exceeded `governance.suppression_cap`. This is the standard
-CI gate. It is the only exit code affected by `--exit-zero`: when that flag is
-set (via CLI or `.zenzic.toml`), Exit 1 is converted to Exit 0 for
-observe-only runs. The conversion does not suppress findings from the output —
-they remain visible in the terminal. `--exit-zero` cannot be combined with
-`--strict`; Zenzic rejects that combination with Exit 2 at startup.
+CI gate. `--exit-zero` converts Exit 1 to Exit 0 only for the standard
+error-findings path; suppression-cap failures remain fail-hard. The conversion
+does not suppress findings from the output — they remain visible in the
+terminal. `--exit-zero` cannot be combined with `--strict`; Zenzic rejects that
+combination with Exit 2 at startup.
 
 <ZenzicOutput status="error" exitCode={1} compact />
 
