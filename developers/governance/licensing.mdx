@@ -98,6 +98,11 @@ This gate runs in:
 
 Any PR that fails `uv run reuse lint` does not merge.
 
+> **Operational note:** if a reference endpoint times out in the final guard,
+> keep the document content unchanged and add a temporary exclusion in
+> `.zenzic.toml` with a clear review comment. This avoids masking content drift
+> while still keeping the guard usable on unstable networks.
+
 ---
 
 ## 4. Contributor Policy — No CLA, Multi-Author Copyright

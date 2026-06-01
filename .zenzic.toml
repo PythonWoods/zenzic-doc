@@ -33,8 +33,14 @@ fail_under = 90
 excluded_external_urls = [
     # REUSE specification endpoint intermittently times out from CI/local runners.
     "https://reuse.software/spec/",
+    # SPDX license list endpoint intermittently times out from CI/local runners.
+    # Temporary exclusion; remove once the final guard stops timing out on this URL.
+    "https://spdx.org/licenses/",
     # GitHub PAT settings endpoint can intermittently time out from CI runners.
     "https://github.com/settings/tokens",
+    # Adapter guide on zenzic.dev intermittently times out from CI/local runners.
+    # Temporary exclusion; keep the documentation content unchanged and review later.
+    "https://zenzic.dev/developers/how-to/implement-adapter",
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
     #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
