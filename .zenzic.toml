@@ -33,6 +33,8 @@ fail_under = 90
 excluded_external_urls = [
     # REUSE specification endpoint intermittently times out from CI/local runners.
     "https://reuse.software/spec/",
+    # GitHub PAT settings endpoint can intermittently time out from CI runners.
+    "https://github.com/settings/tokens",
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
     #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
