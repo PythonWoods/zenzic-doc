@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 📖 Mappa della Documentazione
 
-La documentazione di Zenzic è distribuita come **due istanze Docusaurus separate** sotto lo stesso dominio.
+La documentazione di Zenzic è distribuita come **un unico sito Docusaurus** sotto lo stesso dominio, con le docs principali, un plugin docs dedicato `developers` e il blog pubblicati nello stesso albero dei contenuti.
 
 ```text
 zenzic.dev/
@@ -38,9 +38,7 @@ zenzic.dev/
 └── blog/           → Release notes e post-mortem ingegneristici
 ```
 
-Due istanze, un Quality Gate. La separazione è imposta dall'
-[ADR 011](https://zenzic.dev/it/developers/explanation/adr-cross-instance-allowlist) —
-ogni link che attraversa il confine è un contratto documentato, mai una soppressione silenziosa.
+Le sezioni docs, developers e blog transitano dalla stessa configurazione del sito.
 
 | Sei un... | Inizia da qui |
 | :--- | :--- |
@@ -52,8 +50,7 @@ ogni link che attraversa il confine è un contratto documentato, mai una soppres
 
 ## Prerequisiti
 
-- Node.js 24 o superiore
-- npm 10 o superiore
+- Node.js compatibile con la policy di supporto del progetto dichiarata in `package.json`
 - Opzionale: [just](https://github.com/casey/just) per comandi brevi e memorizzabili
 
 ## Primo Setup

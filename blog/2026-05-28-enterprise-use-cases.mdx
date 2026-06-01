@@ -55,14 +55,14 @@ Compares the quality score of the current branch against `main`. Exits with code
 
 ## Pattern 2 — Legacy Debt Containment
 
-The most common reason teams delay governance adoption is accumulated technical debt. A repository with hundreds of broken links in archived migration guides, deprecated API references, or legacy tutorials cannot pass a strict quality gate without a remediation campaign first — which blocks every other improvement. The result is that governance tooling goes unconfigured rather than progressively adopted. `directory_policies` breaks this deadlock by fencing the debt structurally without touching the affected files.
+The most common reason teams delay governance adoption is accumulated technical debt. A repository with hundreds of broken links in archived migration guides, deprecated API references, or legacy tutorials cannot pass a strict quality gate without a remediation campaign first — which blocks every other improvement. The result is that governance tooling goes unconfigured rather than progressively adopted. `governance.directory_policies` breaks this deadlock by fencing the debt structurally without touching the affected files.
 
-Repositories with historical documentation debt — archived migration guides, deprecated API references, legacy tutorials — accumulate broken links and stale brand references over time. Eradicating debt from exempted directories blocks releases unnecessarily. `directory_policies` fences it instead.
+Repositories with historical documentation debt — archived migration guides, deprecated API references, legacy tutorials — accumulate broken links and stale brand references over time. Eradicating debt from exempted directories blocks releases unnecessarily. `governance.directory_policies` fences it instead.
 
 **Configuration:**
 
 ```toml title=".zenzic.toml"
-[directory_policies]
+[governance.directory_policies]
 "docs/archive/**" = ["Z101", "Z102", "Z601"]
 "docs/legacy/**"  = ["Z101", "Z601"]
 ```
@@ -77,7 +77,7 @@ This approach isolates the debt rather than distributing inline `zenzic:ignore` 
 zenzic check all --audit
 ```
 
-`--audit` bypasses all suppressions — including `directory_policies` — and reports every finding with a `[POLICY_EXEMPTION]` label. Use this during periodic debt review cycles to quantify the residual finding count before deciding whether to reduce the exemption scope.
+`--audit` bypasses all suppressions — including `governance.directory_policies` — and reports every finding with a `[POLICY_EXEMPTION]` label. Use this during periodic debt review cycles to quantify the residual finding count before deciding whether to reduce the exemption scope.
 
 ## Pattern 3 — Sovereign I18N Parity
 
@@ -107,10 +107,10 @@ Z602 findings are `error`-severity by default. `--strict` is not required to blo
 
 **Gradual adoption:**
 
-If the translation backlog is substantial, set `parity_strict = false` initially and use `directory_policies` to suppress Z602 for specific locale directories that are still under active translation work:
+If the translation backlog is substantial, set `parity_strict = false` initially and use `governance.directory_policies` to suppress Z602 for specific locale directories that are still under active translation work:
 
 ```toml title=".zenzic.toml"
-[directory_policies]
+[governance.directory_policies]
 "i18n/it/docusaurus-plugin-content-docs/current/reference/**" = ["Z602"]
 ```
 
