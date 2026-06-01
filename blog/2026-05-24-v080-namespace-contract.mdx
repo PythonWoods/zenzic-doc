@@ -38,9 +38,9 @@ Build engines and static analyzers solve different phases of the problem:
 
 Zenzic's analysis complexity is $O(N)$ in the number of files and links scanned.
 All pattern matching runs on the RE2 DFA engine, which guarantees linear time and
-is immune to catastrophic backtracking (ReDoS). There is no process startup overhead
-and no dependency installation: pure Python on a warm bytecode cache runs entirely
-in the current process.
+is immune to catastrophic backtracking (ReDoS). There is no Node.js build-pipeline
+startup overhead for this pre-build analysis, but Python runtime dependencies must
+be installed (including RE2 bindings) and execution runs in the current Python process.
 
 The phase difference relative to a full SSG build (which compiles, bundles, and
 emits routes) does not vary by environment — Zenzic always runs before the build

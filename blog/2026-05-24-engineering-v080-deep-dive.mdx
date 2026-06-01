@@ -278,7 +278,7 @@ The Obsidian milestone closed the legacy adapter contract.
 
 No inline tags. No suppression comments. No debt. The policy exemption is declared once at the governance contract level, not repeated across every affected line.
 
-When Zenzic applies a policy exemption during a scan, findings in those paths are annotated with `[POLICY_EXEMPTION]` in the audit output — giving reviewers a complete, centralized record of what was exempted and under which pattern. This preserves auditability without hiding the signal.
+When Zenzic applies a policy exemption during a standard scan, findings in those paths are dropped silently; the `[POLICY_EXEMPTION]` label is emitted only in `--audit` mode, giving reviewers a complete, centralized record of what was exempted and under which pattern. This preserves auditability without hiding the signal.
 
 The hierarchy that emerges is deliberate:
 
