@@ -54,7 +54,7 @@ Each route carries a status that tells Zenzic how to treat links pointing to it:
 | Status | Meaning | Link result |
 | :--- | :--- | :--- |
 | `REACHABLE` | Page is listed in navigation or is a locale route | Valid |
-| `ORPHAN_BUT_EXISTING` | File exists on disk but is not in site navigation | Z103 warning |
+| `ORPHAN_BUT_EXISTING` | File exists on disk but is not in site navigation | Z103 error |
 | `IGNORED` | Excluded by configuration (e.g. README files, private directories) | Z101 error |
 | `CONFLICT` | Two source files produce the same canonical URL | Z101 error |
 
@@ -99,10 +99,10 @@ validate_same_page_anchors = true
 | Code | Severity | Meaning |
 | :--- | :---: | :--- |
 | `Z101` | error | **Broken link** — target does not exist in the VSM |
-| `Z103` | warning | **Orphan link** — target exists on disk but not in site navigation |
-| `ABSOLUTE_PATH` | error | **Absolute path** — link uses a site-absolute path (`/docs/page`) instead of a relative path (`../page`) |
+| `Z103` | error | **Orphan link** — target exists on disk but not in site navigation |
+| `Z105` | error | **Absolute path** — link uses a site-absolute path (`/docs/page`) instead of a relative path (`../page`) |
 
-`Z101` always blocks the pipeline (exit code 1). `Z103` is a warning — it appears in the report but does not fail CI unless `--strict` is passed. `ABSOLUTE_PATH` is an error because absolute paths break portability when a site is hosted in a subdirectory.
+`Z101`, `Z103`, and `Z105` are all error-severity findings and block with exit code 1. `Z105` is error-severity because absolute paths break portability when a site is hosted in a subdirectory.
 
 :::note[Physical Consistency — why relative paths matter]
 
@@ -118,15 +118,15 @@ Some build engines (e.g. Docusaurus) allow frontmatter `slug` overrides that dec
 
 ### Path Traversal Guard -- system-path traversal {#path-traversal-guard}
 
-The path traversal guard treats host-path traversal as a **security event**, not routine link hygiene. If a link escapes `docs/` and resolves to OS system paths (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emits `PATH_TRAVERSAL_SUSPICIOUS` and exits with code **3**.
+The path traversal guard treats host-path traversal as a **security event**, not routine link hygiene. If a link escapes `docs/` and resolves to OS system paths (`/etc/`, `/root/`, `/var/`, `/proc/`, `/sys/`, `/usr/`), Zenzic emits `Z203 PATH_TRAVERSAL_FATAL` and exits with code **3**.
 
 | Code | Severity | Exit code | Meaning |
 | :--- | :---: | :---: | :--- |
-| `PATH_TRAVERSAL_SUSPICIOUS` | security_incident | **3** | Href targets an OS system directory |
-| `PATH_TRAVERSAL` | error | 1 | Href escapes `docs/` to a non-system path |
+| `Z203` (`PATH_TRAVERSAL_FATAL`) | security_incident | **3** | Href targets an OS system directory |
+| `Z202` (`PATH_TRAVERSAL`) | error | 1 | Href escapes `docs/` to a non-system path |
 
 :::danger[Exit Code 3 — Path Traversal Guard]
-A `PATH_TRAVERSAL_SUSPICIOUS` finding means a documentation source file contains a link whose resolved target points to `/etc/passwd`, `/root/`, or another OS system path. This can indicate a template injection, a compromised documentation toolchain, or an author mistake that reveals internal infrastructure details. Treat it as a build-blocking security incident.
+A `Z203 PATH_TRAVERSAL_FATAL` finding means a documentation source file contains a link whose resolved target points to `/etc/passwd`, `/root/`, or another OS system path. This can indicate a template injection, a compromised documentation toolchain, or an author mistake that reveals internal infrastructure details. Treat it as a build-blocking security incident.
 :::
 
 <PathTraversalGuardTerminal />
@@ -210,10 +210,10 @@ Code examples in documentation are tested less rigorously than production code. 
 
 | Language tag | Parser | What is checked |
 | :--- | :--- | :--- |
-| `python`, `py` | `compile()` in `exec` mode | Python 3.11+ syntax |
-| `yaml`, `yml` | `yaml.safe_load()` | YAML 1.1 structure |
+| `python`, `py` | `compile()` in `exec` mode | Python syntax |
+| `yaml`, `yml` | `yaml.safe_load()` | YAML structure |
 | `json` | `json.loads()` | JSON syntax |
-| `toml` | `tomllib.loads()` (stdlib 3.11+) | TOML v1.0 syntax |
+| `toml` | `tomllib.loads()` | TOML syntax |
 
 Blocks tagged with any other language (`bash`, `javascript`, `mermaid`, etc.) are treated as plain text and are not syntax-checked. However, **every fenced block is still scanned by the Zenzic credential scanner** for credential patterns.
 
@@ -294,7 +294,7 @@ An asset is considered **used** if it appears as a Markdown image link (`![alt](
 
 **CLI:** `zenzic check references`
 
-The security and link-integrity check for [Markdown reference-style links](https://spec.commonmark.org/0.31.2/#link-reference-definitions). Also acts as the primary surface for the **credential scanner**.
+The security and link-integrity check for [Markdown reference-style links](https://spec.commonmark.org/current/#link-reference-definitions). Also acts as the primary surface for the **credential scanner**.
 
 ### Three-Pass Reference Pipeline
 
@@ -304,7 +304,7 @@ The security and link-integrity check for [Markdown reference-style links](https
 | 2 | **Cross-Check** | Resolves every `[text][id]` usage against the complete `ReferenceMap`; flags unresolvable IDs |
 | 3 | **Integrity Report** | Computes per-file integrity score; appends Dead Definition and alt-text warnings |
 
-Pass 2 only begins when Pass 1 completes without credential scanner findings.
+Pass 2 always runs after Pass 1 harvest completion. Security findings from Pass 1 affect exit semantics (exit code 2) but do not skip Pass 2 cross-check.
 
 ### Reference violation codes
 

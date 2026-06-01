@@ -46,8 +46,8 @@ Si tratta di un **early return incondizionale** — nessun flag, nessuna opzione
 | Codice | Nome | Condizione |
 | :--- | :--- | :--- |
 | Z201 | CREDENTIAL | Pattern di credenziale rilevato nel documento |
-| Z202 | PATH_TRAVERSAL | Tentativo di escape di sistema in un link |
-| Z203 | PATTERN_MATCH | Corrispondenza di pattern vietato personalizzato |
+| Z202 | PATH_TRAVERSAL | Il target del link esce da `docs/` verso un percorso non di sistema |
+| Z203 | PATH_TRAVERSAL_FATAL | Il target del link si risolve verso un path di sistema operativo |
 | Z204 | FORBIDDEN_TERM | Privacy Gate — esposizione di termine riservato |
 
 Quando si attiva il Security Override, `ScoreReport` restituisce `security_override=True` e `security_findings=N` (conteggio totale Z2xx). Il flag `--strict` e la configurazione `fail-on-error` sono irrilevanti — il gate opera prima di entrambi.
@@ -132,7 +132,7 @@ Z602 (I18N_PARITY) è un gate di Governance che si attiva come finding autonomo.
 Le violazioni Z6xx rappresentano **decadimento del brand e della governance** — il tipo che si accumula silenziosamente. Oltre 10 occorrenze, il motore applica un amplificatore esponenziale alle deduzioni del bucket Governance:
 
 $$
-\text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{\lfloor n_{\text{excess}} / 5 \rfloor}\right)
+  \text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{n_{\text{excess}} / 5}\right)
 $$
 
 dove $n_{\text{excess}} = n_{Z6xx} - 10$.
@@ -157,7 +157,7 @@ $$
 
 Ogni soppressione attiva è un'assunzione consapevole di responsabilità. Il **modello flat-cost** deduce esattamente **1 punto per soppressione**, indipendentemente da quante soppressioni siano presenti. Non esiste una franchigia gratuita.
 
-`suppression_cap` (default: 30) è una **soglia di hard-fail**, non un limite di franchigia. Quando `suppression_count > suppression_cap`, `zenzic score` termina con codice 1 immediatamente, prima della valutazione della soglia di punteggio. La formula della penaltà è indipendente dal cap:
+`suppression_cap` (default: 30) è una **soglia di hard-fail**, non un limite di franchigia. In `zenzic score`, il gate `fail_under` viene valutato prima e il gate sul suppression cap viene valutato dopo; restano due controlli indipendenti. La formula della penalità è indipendente dal cap:
 
 $$
 \omega_{\text{debt}} = n
