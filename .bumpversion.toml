@@ -73,16 +73,6 @@ search = "v{current_version}"
 replace = "v{new_version}"
 
 [[tool.bumpversion.files]]
-filename = "static/assets/social/social-card.svg"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-[[tool.bumpversion.files]]
-filename = "static/assets/social/social-card-light.svg"
-search = "v{current_version}"
-replace = "v{new_version}"
-
-[[tool.bumpversion.files]]
 filename = "i18n/en/code.json"
 search = '"message": "v{current_version}"'
 replace = '"message": "v{new_version}"'
