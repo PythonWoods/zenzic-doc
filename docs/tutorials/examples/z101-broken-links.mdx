@@ -1,0 +1,102 @@
+---
+sidebar_position: 1
+title: "z101 — Broken Links"
+description: "Walk through the z101-broken-links fixture: two internal link targets that do not exist on disk, triggering Z101 LINK_BROKEN at exit code 1."
+---
+
+import Z101BrokenLinks from '@site/src/components/examples/Z101BrokenLinks';
+
+# z101-broken-links — Link Integrity
+
+**Z-Code:** `Z101 LINK_BROKEN` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z101BrokenLinks />
+
+## The Fixture
+
+The fixture lives at `examples/z101-broken-links/` in the Zenzic repository.
+The source document is `docs/index.md`, which contains two links pointing to files
+that do not exist on disk:
+
+| Line | Link | Target | Exists? |
+| :--: | :--- | :----- | :-----: |
+| 7    | `[Getting Started](missing.md)` | `missing.md` | ✘ |
+| 8    | `[Setup Guide](guide/setup.md)` | `guide/setup.md` | ✘ |
+
+Neither `missing.md` nor the `guide/` subdirectory exists in the fixture.
+Both links are therefore broken. Zenzic fires Z101 for each one.
+
+```toml title="examples/z101-broken-links/.zenzic.toml"
+docs_dir = "docs"
+fail_under = 0
+
+[build_context]
+engine = "standalone"
+```
+
+## Running the Example
+
+```bash
+# Clone the Zenzic repository — no install required
+cd examples/z101-broken-links
+uvx zenzic check links
+```
+
+Expected output:
+
+```text
+docs/index.md:7:20 ✘ [Z101] [missing.md] target not found on disk
+
+  5  │  ## Broken References
+  6  │
+  7  ❱  - [Getting Started](missing.md)
+     │                     ^^^^^^^^^^
+  8  │  - [Setup Guide](guide/setup.md)
+  9  │
+
+docs/index.md:8:18 ✘ [Z101] [guide/setup.md] target not found on disk
+
+  6  │
+  7  │  - [Getting Started](missing.md)
+  8  ❱  - [Setup Guide](guide/setup.md)
+     │                 ^^^^^^^^^^^^^^
+  9  │
+```
+
+Exit code: `1`
+
+## Understanding the Output
+
+Each Z101 finding reports:
+
+- **Source file and line** (`docs/index.md:7`) — pinpoints the exact location of the broken
+  link in the document.
+- **Z-code** (`Z101`) — identifies the violation class: a link whose target does not exist
+  on disk.
+- **Rule name** (`LINK_BROKEN`) — the canonical identifier for this check.
+- **Target path** (`[missing.md]`) — the link destination that Zenzic could not resolve.
+
+Z101 is a **standalone-engine check**: it requires no navigation configuration.
+Zenzic resolves all internal link targets relative to `docs_dir` as declared in
+`.zenzic.toml`. If the file is absent from disk, Z101 fires — no network request is made.
+
+## Fixing the Violation
+
+Create the missing files so both links resolve:
+
+```bash
+mkdir -p examples/z101-broken-links/docs/guide
+touch examples/z101-broken-links/docs/missing.md
+touch examples/z101-broken-links/docs/guide/setup.md
+uvx zenzic check links  # → exit 0, no findings
+```
+
+Alternatively, remove the broken link lines from `docs/index.md`.
+
+## See Also
+
+- [z102 — Anchor Missing](z102-anchor-missing) — the fragment-level variant of link integrity:
+  the target file exists, but the heading anchor does not.
+- [z103 — Orphan Link](z103-orphan-link) — link targets that exist on disk but are absent from
+  the site navigation (zensical engine required).
+- [Checks Reference — Z101](../../reference/checks) — full rule specification.

@@ -1,0 +1,8 @@
+{
+  "label": "Galleria Z-Code",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Fixture di violazione Z-code autonomi. Ogni esempio isola una classe di violazione — il minimo necessario per riprodurre l'exit code riportato."
+  }
+}

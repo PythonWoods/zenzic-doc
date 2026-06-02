@@ -1,0 +1,93 @@
+---
+sidebar_position: 4
+title: "z105 — Percorso Assoluto"
+description: "Analisi del fixture z105-absolute-path: un link con percorso assoluto che inizia con '/', interrompendo la portabilità rispetto al percorso host. Z-Code Z105 ABSOLUTE_PATH, exit 1."
+---
+
+import Z105AbsolutePath from '@site/src/components/examples/Z105AbsolutePath';
+
+# z105-absolute-path — Percorso Assoluto
+
+**Z-Code:** `Z105 ABSOLUTE_PATH` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z105AbsolutePath />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z105-absolute-path/` nel repository Zenzic.
+Contiene un solo documento:
+
+| File | Ruolo |
+| :--- | :---- |
+| `docs/index.md` | Sorgente — contiene `[Guide](/guide)` alla riga 10 |
+| `.zenzic.toml` | Engine: `standalone`, `fail_under = 0` |
+
+`docs/index.md` punta a `/guide` tramite un percorso assoluto. I percorsi assoluti
+vengono risolti dalla root del server: quando un sito è ospitato in una sottodirectory
+(ad es. `https://example.com/my-docs/`), il link `/guide` si risolve in
+`https://example.com/guide` — non in `https://example.com/my-docs/guide`.
+Questa risoluzione silenziosa rende la documentazione non portabile tra ambienti di
+hosting differenti, come GitHub Pages (project site) o subdirectory CDN.
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione aggiuntiva richiesta
+cd examples/z105-absolute-path
+uvx zenzic check links
+```
+
+Output atteso:
+
+```text
+docs/index.md:10:  Z105  ABSOLUTE_PATH  '/guide' — use a relative path
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding Z105 riporta:
+
+- **File sorgente e riga** (`docs/index.md:10`) — il link che usa un percorso assoluto.
+- **Z-code** (`Z105`) — classe di violazione: un link che inizia con `/`.
+- **Nome regola** (`ABSOLUTE_PATH`) — identificatore canonico di questo controllo.
+- **Messaggio del finding** — indica il percorso non portabile e suggerisce l'uso di un percorso relativo.
+
+### Z105 versus Z101
+
+| Codice | File di destinazione su disco? | Tipo percorso | Violazione |
+| :----: | :----------------------------: | :-----------: | :--------- |
+| Z101 | ✘ | relativo | File di destinazione non trovato su disco |
+| Z105 | — (non verificato) | assoluto (`/`) | Il percorso non è portabile tra root di hosting diverse |
+
+Z101 controlla se la _destinazione_ esiste. Z105 controlla se la _forma del percorso_
+è portabile — si attiva indipendentemente dall'esistenza di un file `guide` su disco.
+
+## Correggere la Violazione
+
+Sostituire il percorso assoluto con uno relativo in `docs/index.md`:
+
+```markdown
+<!-- Prima -->
+- [Guide](/guide)
+
+<!-- Dopo -->
+- [Guide](./guide.md)
+```
+
+Poi rieseguire:
+
+```bash
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+Per siti serviti da una sottodirectory, assicurarsi che tutti i link interni siano
+relativi. I link esterni (es. `https://example.com/docs`) non sono interessati da Z105.
+
+## Vedi Anche
+
+- [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
+- [z108 — Testo Link Vuoto](z108-empty-link-text) — l'etichetta del link è vuota, compromettendo l'accessibilità agli screen reader.
+- [z202 — Path Traversal](../examples#example-z202) — un link che esce dalla directory `docs/`.
+- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.

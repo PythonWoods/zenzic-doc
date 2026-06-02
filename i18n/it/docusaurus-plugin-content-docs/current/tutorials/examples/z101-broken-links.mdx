@@ -1,0 +1,89 @@
+---
+sidebar_position: 1
+title: "z101 — Link Rotti"
+description: "Analisi del fixture z101-broken-links: due destinazioni di link interni inesistenti su disco, che attivano Z101 LINK_BROKEN con exit code 1."
+---
+
+import Z101BrokenLinks from '@site/src/components/examples/Z101BrokenLinks';
+
+# z101-broken-links — Integrità dei Link
+
+**Z-Code:** `Z101 LINK_BROKEN` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z101BrokenLinks />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z101-broken-links/` nel repository Zenzic.
+Il documento sorgente è `docs/index.md`, che contiene due link che puntano a file
+non esistenti su disco:
+
+| Riga | Link | Destinazione | Esiste? |
+| :--: | :--- | :----------- | :-----: |
+| 7    | `[Getting Started](missing.md)` | `missing.md` | ✘ |
+| 8    | `[Setup Guide](guide/setup.md)` | `guide/setup.md` | ✘ |
+
+Né `missing.md` né la sottodirectory `guide/` esistono nel fixture.
+Entrambi i link sono quindi rotti. Zenzic attiva Z101 per ciascuno.
+
+```toml title="examples/z101-broken-links/.zenzic.toml"
+docs_dir = "docs"
+fail_under = 0
+
+[build_context]
+engine = "standalone"
+```
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione richiesta
+cd examples/z101-broken-links
+uvx zenzic check links
+```
+
+Output atteso:
+
+```text
+docs/index.md:7:  Z101  LINK_BROKEN  [missing.md] target not found on disk
+docs/index.md:8:  Z101  LINK_BROKEN  [guide/setup.md] target not found on disk
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Ogni finding Z101 riporta:
+
+- **File sorgente e riga** (`docs/index.md:7`) — individua la posizione esatta del link rotto
+  nel documento.
+- **Z-code** (`Z101`) — identifica la classe di violazione: un link la cui destinazione non
+  esiste su disco.
+- **Nome regola** (`LINK_BROKEN`) — identificatore canonico di questo controllo.
+- **Percorso destinazione** (`[missing.md]`) — la destinazione del link che Zenzic non ha
+  potuto risolvere.
+
+Z101 è un **controllo standalone-engine**: non richiede configurazione di navigazione.
+Zenzic risolve tutte le destinazioni di link interni relative a `docs_dir` come dichiarato in
+`.zenzic.toml`. Se il file è assente su disco, Z101 si attiva — senza alcuna richiesta di rete.
+
+## Correggere la Violazione
+
+Crea i file mancanti affinché entrambi i link si risolvano:
+
+```bash
+mkdir -p examples/z101-broken-links/docs/guide
+touch examples/z101-broken-links/docs/missing.md
+touch examples/z101-broken-links/docs/guide/setup.md
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+In alternativa, rimuovi le righe con i link rotti da `docs/index.md`.
+
+## Vedi Anche
+
+- [z102 — Ancora Mancante](z102-anchor-missing) — variante a livello di frammento del
+  controllo integrità link: il file esiste, ma l'ancora dell'intestazione non esiste.
+- [z103 — Link Orfano](z103-orphan-link) — destinazioni di link esistenti su disco ma assenti
+  dalla navigazione del sito (motore zensical richiesto).
+- [Riferimento Controlli — Z101](../../reference/checks) — specifica completa della regola.

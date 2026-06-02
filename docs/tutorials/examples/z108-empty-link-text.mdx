@@ -1,0 +1,100 @@
+---
+sidebar_position: 5
+title: "z108 — Empty Link Text"
+description: "Analysis of the z108-empty-link-text fixture: a link whose label is empty, making it inaccessible to screen readers. Z-Code Z108 EMPTY_LINK_TEXT, exit 1."
+---
+
+import Z108EmptyLinkText from '@site/src/components/examples/Z108EmptyLinkText';
+
+# z108-empty-link-text — Empty Link Text
+
+**Z-Code:** `Z108 EMPTY_LINK_TEXT` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z108EmptyLinkText />
+
+## The Fixture
+
+The fixture lives in `examples/z108-empty-link-text/` in the Zenzic repository.
+It contains two documents:
+
+| File | Role |
+| :--- | :---- |
+| `docs/index.md` | Source — contains `[](guide.md)` at line 10 (empty label) |
+| `docs/guide.md` | Target — exists on disk (ensures Z101 does not fire) |
+| `.zenzic.toml` | Engine: `standalone`, `fail_under = 0` |
+
+`docs/index.md` links to `guide.md` using `[](guide.md)` — the Markdown syntax
+for a link with an empty label. The target file exists on disk (so Z101 does not
+fire), but the link has no visible text. Screen readers announce it as the bare
+word _"link"_ with no destination context, violating WCAG 2.1 §2.4.4 (Link
+Purpose). Sighted users see an invisible, apparently blank bullet point.
+
+## Running the Example
+
+```bash
+# Clone the Zenzic repository — no extra installation required
+cd examples/z108-empty-link-text
+uvx zenzic check links
+```
+
+Expected output:
+
+```text
+docs/index.md:10:5 ✘ [Z108] link to 'guide.md' has no label
+
+	8  │  ## Navigation
+	9  │
+   10  ❱  - [](guide.md)
+	   │    ^^ label is empty
+   11  │
+```
+
+Exit code: `1`
+
+## Interpreting the Output
+
+The Z108 finding reports:
+
+- **Source file and line** (`docs/index.md:10`) — the link with the missing label.
+- **Z-code** (`Z108`) — violation class: a link with an empty text node.
+- **Rule name** (`EMPTY_LINK_TEXT`) — canonical identifier for this check.
+- **Finding message** — identifies the target file whose link has no label.
+
+### Z108 versus Z101
+
+| Code | Target file exists? | Link text | Violation |
+| :--: | :-----------------: | :-------: | :-------- |
+| Z101 | ✘ | present | Target file not found on disk |
+| Z108 | ✔ | **empty** | Link has no label — inaccessible to assistive technology |
+
+Z108 requires the target to exist (if it didn't, Z101 would fire instead). The
+violation is about the _label_, not the destination.
+
+## Fixing the Violation
+
+Add a descriptive label to the link in `docs/index.md`:
+
+```markdown
+<!-- Before -->
+- [](guide.md)
+
+<!-- After -->
+- [Guide](guide.md)
+```
+
+Then re-run:
+
+```bash
+uvx zenzic check links  # → exit 0, no findings
+```
+
+The label should be descriptive enough to convey the link's purpose without
+surrounding context — WCAG 2.4.4 (Level AA) requires link text to be meaningful
+in isolation.
+
+## See Also
+
+- [z101 — Broken Links](z101-broken-links) — the target file does not exist on disk.
+- [z105 — Absolute Path](z105-absolute-path) — the link uses a non-portable absolute path.
+- [z403 — Missing Alt Text](../examples#example-z403) — the same accessibility principle applied to images.
+- [Checks Reference](../../reference/checks) — full rule specification.

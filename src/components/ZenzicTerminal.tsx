@@ -4,6 +4,32 @@
 import React from 'react';
 import Translate from '@docusaurus/Translate';
 
+export interface ZenzicTerminalProps {
+  title?: string;
+  output?: string;
+  children?: React.ReactNode;
+}
+
+export default function ZenzicTerminal({
+  title = 'zenzic check links',
+  output,
+  children,
+}: ZenzicTerminalProps): React.JSX.Element {
+  return (
+    <div className="zz-terminal-monolith bg-zinc-900/20 backdrop-blur-md border border-zinc-800/60 rounded-xl overflow-hidden font-mono text-[12px] leading-relaxed">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800/40 bg-zinc-900/30">
+        <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+        <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+        <span className="ml-2 text-zinc-500 text-[11px] tracking-wide">{title}</span>
+      </div>
+      <div className="px-5 py-4 text-zinc-300 whitespace-pre-wrap break-words">
+        {output ?? children}
+      </div>
+    </div>
+  );
+}
+
 // ── Gutter Reporter Terminal ───────────────────────────────────────────────
 export function GutterTerminal(): React.JSX.Element {
   return (

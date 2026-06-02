@@ -1,0 +1,101 @@
+---
+sidebar_position: 2
+title: "z102 — Ancora Mancante"
+description: "Analisi del fixture z102-anchor-missing: un link con frammento che punta a un'intestazione inesistente nel file di destinazione, attivando Z102 ANCHOR_MISSING con exit code 1."
+---
+
+import Z102AnchorMissing from '@site/src/components/examples/Z102AnchorMissing';
+
+# z102-anchor-missing — Integrità dell'Ancora
+
+**Z-Code:** `Z102 ANCHOR_MISSING` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z102AnchorMissing />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z102-anchor-missing/` nel repository Zenzic.
+Contiene due documenti:
+
+| File | Ruolo |
+| :--- | :---- |
+| `docs/index.md` | Sorgente — contiene il link con frammento rotto alla riga 11 |
+| `docs/guide.md` | Destinazione — esiste su disco ma manca dell'intestazione referenziata |
+
+`docs/index.md` riga 11 punta a `guide.md#nonexistent-section`. Il file di destinazione
+`guide.md` esiste e contiene un'intestazione valida — `## Overview` (ancora `#overview`) —
+ma non ha alcuna intestazione `#nonexistent-section`. Zenzic risolve il file, scansiona le
+intestazioni, individua il frammento morto e attiva Z102.
+
+```toml title="examples/z102-anchor-missing/.zenzic.toml"
+docs_dir = "docs"
+fail_under = 0
+
+[build_context]
+engine = "standalone"
+```
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione richiesta
+cd examples/z102-anchor-missing
+uvx zenzic check links
+```
+
+Output atteso:
+
+```text
+docs/index.md:11:  Z102  ANCHOR_MISSING  guide.md#nonexistent-section — anchor not found on target page
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding Z102 riporta:
+
+- **File sorgente e riga** (`docs/index.md:11`) — posizione esatta del link con frammento rotto.
+- **Z-code** (`Z102`) — classe di violazione: il file di destinazione esiste, ma l'ancora non esiste.
+- **Nome regola** (`ANCHOR_MISSING`) — identificatore canonico di questo controllo.
+- **Frammento morto** (`guide.md#nonexistent-section`) — la destinazione del link che Zenzic non ha potuto risolvere.
+
+La distinzione chiave rispetto a Z101:
+
+| Codice | Cosa manca | Il file di destinazione esiste? |
+| :----: | :--------- | :-----------------------------: |
+| Z101 | Il **file** di destinazione | ✘ |
+| Z102 | L'**ancora di intestazione** nel file di destinazione | ✔ |
+
+Z102 è un **controllo standalone-engine**: Zenzic legge `guide.md` da disco, analizza le sue
+intestazioni e verifica se il frammento `#nonexistent-section` si risolve. Non viene effettuata
+alcuna richiesta di rete. L'intestazione `#overview` è valida e presente — solo
+`#nonexistent-section` è assente.
+
+## Correggere la Violazione
+
+Aggiungi l'intestazione mancante in `guide.md`:
+
+```markdown title="docs/guide.md (dopo la correzione)"
+## Nonexistent Section
+
+Contenuto per questa sezione.
+```
+
+Oppure correggi il link in `index.md` per referenziare l'intestazione effettivamente presente:
+
+```markdown title="docs/index.md (dopo la correzione)"
+- [Overview](guide.md#overview)
+```
+
+Poi riesegui:
+
+```bash
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+## Vedi Anche
+
+- [z101 — Link Rotti](z101-broken-links) — variante a livello di file: il file di destinazione non esiste.
+- [z103 — Link Orfano](z103-orphan-link) — destinazioni di link esistenti su disco ma assenti dalla navigazione del sito.
+- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.

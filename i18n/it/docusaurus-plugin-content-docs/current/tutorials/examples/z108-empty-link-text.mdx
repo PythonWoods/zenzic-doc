@@ -1,0 +1,95 @@
+---
+sidebar_position: 5
+title: "z108 — Testo Link Vuoto"
+description: "Analisi del fixture z108-empty-link-text: un link con etichetta vuota, inaccessibile agli screen reader. Z-Code Z108 EMPTY_LINK_TEXT, exit 1."
+---
+
+import Z108EmptyLinkText from '@site/src/components/examples/Z108EmptyLinkText';
+
+# z108-empty-link-text — Testo Link Vuoto
+
+**Z-Code:** `Z108 EMPTY_LINK_TEXT` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z108EmptyLinkText />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z108-empty-link-text/` nel repository Zenzic.
+Contiene due documenti:
+
+| File | Ruolo |
+| :--- | :---- |
+| `docs/index.md` | Sorgente — contiene `[](guide.md)` alla riga 10 (etichetta vuota) |
+| `docs/guide.md` | Destinazione — esiste su disco (garantisce che Z101 non si attivi) |
+| `.zenzic.toml` | Engine: `standalone`, `fail_under = 0` |
+
+`docs/index.md` rimanda a `guide.md` tramite `[](guide.md)` — la sintassi Markdown
+per un link con etichetta vuota. Il file di destinazione esiste su disco (quindi Z101
+non si attiva), ma il link non ha testo visibile. Gli screen reader lo annunciano come
+la sola parola _"link"_ senza alcun contesto sulla destinazione, violando WCAG 2.1
+§2.4.4 (Scopo del Link). Gli utenti con visione normale vedono un punto elenco
+apparentemente vuoto.
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione aggiuntiva richiesta
+cd examples/z108-empty-link-text
+uvx zenzic check links
+```
+
+Output atteso:
+
+```text
+docs/index.md:10:  Z108  EMPTY_LINK_TEXT  link to 'guide.md' has no label
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding Z108 riporta:
+
+- **File sorgente e riga** (`docs/index.md:10`) — il link con l'etichetta mancante.
+- **Z-code** (`Z108`) — classe di violazione: un link con nodo di testo vuoto.
+- **Nome regola** (`EMPTY_LINK_TEXT`) — identificatore canonico di questo controllo.
+- **Messaggio del finding** — identifica il file di destinazione il cui link non ha etichetta.
+
+### Z108 versus Z101
+
+| Codice | File di destinazione esiste? | Testo del link | Violazione |
+| :----: | :--------------------------: | :------------: | :--------- |
+| Z101 | ✘ | presente | File di destinazione non trovato su disco |
+| Z108 | ✔ | **vuoto** | Link senza etichetta — inaccessibile alle tecnologie assistive |
+
+Z108 richiede che la destinazione esista (se non esistesse, si attiverebbe Z101). La
+violazione riguarda l'_etichetta_, non la destinazione.
+
+## Correggere la Violazione
+
+Aggiungere un'etichetta descrittiva al link in `docs/index.md`:
+
+```markdown
+<!-- Prima -->
+- [](guide.md)
+
+<!-- Dopo -->
+- [Guida](guide.md)
+```
+
+Poi rieseguire:
+
+```bash
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+L'etichetta deve essere abbastanza descrittiva da comunicare lo scopo del link
+senza il contesto circostante — WCAG 2.4.4 (Livello AA) richiede che il testo del
+link sia significativo da solo.
+
+## Vedi Anche
+
+- [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
+- [z105 — Percorso Assoluto](z105-absolute-path) — il link usa un percorso assoluto non portabile.
+- [z403 — Alt Text Mancante](../examples#example-z403) — lo stesso principio di accessibilità applicato alle immagini.
+- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.

@@ -44,8 +44,9 @@ uvx zenzic lab all        # run all 20 scenarios
 <ZenzicOutput status="error" exitCode={1} compact />
 
 Demonstrates Zenzic detecting Markdown links that point to files that do not exist.
-The fixture contains `docs/index.md` with two broken links — one to a missing page and
-one to a non-existent anchor. Both trigger Z101 findings.
+The fixture contains `docs/index.md` with two broken links — one to a missing file
+(`missing.md`) and one to a file inside a missing subdirectory (`guide/setup.md`).
+Both trigger Z101 findings.
 
 **Start here if:** you want to understand how Zenzic validates internal link references.
 
@@ -348,8 +349,8 @@ Zenzic's built-in `UntaggedCodeBlockRule` is always active — no configuration 
 | Z101 | Broken internal links | [z101-broken-links](#example-z101) |
 | Z102 | Fragment anchor not defined | [z102-anchor-missing](#example-z102) |
 | Z103 | Link to nav-orphaned page | [z103-orphan-link](#example-z103) |
-| Z105 | Absolute path in link | [z105-absolute-path](#example-z105) |
-| Z108 | Empty link text | [z108-empty-link-text](#example-z108) |
+| Z105 | Absolute path in link | [z105-absolute-path](examples/z105-absolute-path) |
+| Z108 | Empty link text | [z108-empty-link-text](examples/z108-empty-link-text) |
 | Z201 | Credential / secret detection | [z201-credentials](#example-z201) |
 | Z202 | Docs-root path traversal | [z202-path-traversal](#example-z202) |
 | Z204 | Forbidden governance term | [z204-forbidden-term](#example-z204) |

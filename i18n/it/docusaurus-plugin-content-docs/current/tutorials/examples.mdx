@@ -44,8 +44,9 @@ uvx zenzic lab all        # esegui tutti e 20 gli scenari
 <ZenzicOutput status="error" exitCode={1} compact />
 
 Dimostra come Zenzic rileva link Markdown che puntano a file non esistenti.
-Il fixture contiene `docs/index.md` con due link rotti — uno verso una pagina mancante e
-uno verso un'ancora inesistente. Entrambi generano finding Z101.
+Il fixture contiene `docs/index.md` con due link rotti — uno verso un file mancante
+(`missing.md`) e uno verso un file in una sottodirectory inesistente (`guide/setup.md`).
+Entrambi generano finding Z101.
 
 **Parti da qui se:** vuoi capire come Zenzic valida i riferimenti di link interni.
 
@@ -124,7 +125,7 @@ pagina tradotta in un locale esista anche in tutti gli altri locale configurati.
 **Z-Code:** Z102 `ANCHOR_MISSING`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` linka a `guide.md#nonexistent-section`. Il file di destinazione esiste ma
+`docs/index.md` punta a `guide.md#nonexistent-section`. Il file di destinazione esiste ma
 non ha un'intestazione `#nonexistent-section`. Zenzic rileva il frammento morto senza
 alcuna richiesta di rete.
 
@@ -139,8 +140,8 @@ alcuna richiesta di rete.
 **Z-Code:** Z103 `ORPHAN_LINK`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/guide.md` esiste su disco ma non è elencato nella nav di `zensical.toml`. `index.md` la
-linka, quindi è raggiungibile via URL diretto ma invisibile dalla navigazione del sito.
+`docs/guide.md` esiste su disco ma non è elencato nella nav di `zensical.toml`. `index.md`
+rimanda ad essa, quindi è raggiungibile via URL diretto ma invisibile dalla navigazione del sito.
 Richiede il motore zensical per il controllo link con VSM.
 
 **Parti da qui se:** usi zensical e vuoi rilevare link che aggirano la struttura di navigazione.
@@ -351,8 +352,8 @@ La `UntaggedCodeBlockRule` integrata di Zenzic è sempre attiva — nessuna conf
 | Z101 | Link interni rotti | [z101-broken-links](#example-z101) |
 | Z102 | Ancora frammento non definita | [z102-anchor-missing](#example-z102) |
 | Z103 | Link a pagina orfana dalla nav | [z103-orphan-link](#example-z103) |
-| Z105 | Percorso assoluto nel link | [z105-absolute-path](#example-z105) |
-| Z108 | Testo link vuoto | [z108-empty-link-text](#example-z108) |
+| Z105 | Percorso assoluto nel link | [z105-absolute-path](examples/z105-absolute-path) |
+| Z108 | Testo link vuoto | [z108-empty-link-text](examples/z108-empty-link-text) |
 | Z201 | Rilevamento credenziali / segreti | [z201-credentials](#example-z201) |
 | Z202 | Path traversal fuori dalla docs-root | [z202-path-traversal](#example-z202) |
 | Z204 | Termine governance proibito | [z204-forbidden-term](#example-z204) |

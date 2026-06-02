@@ -1,0 +1,106 @@
+---
+sidebar_position: 3
+title: "z103 — Link Orfano"
+description: "Analisi del fixture z103-orphan-link: un link verso un file che esiste su disco ma è assente dalla navigazione del sito, attivando Z103 ORPHAN_LINK con exit code 1."
+---
+
+import Z103OrphanLink from '@site/src/components/examples/Z103OrphanLink';
+
+# z103-orphan-link — Link Orfano
+
+**Z-Code:** `Z103 ORPHAN_LINK` · **Engine:** `zensical` · **Exit:** `1`
+
+<Z103OrphanLink />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z103-orphan-link/` nel repository Zenzic.
+Contiene due documenti e due file di configurazione:
+
+| File | Ruolo |
+| :--- | :---- |
+| `docs/index.md` | Sorgente — in nav, rimanda a `guide.md` alla riga 16 |
+| `docs/guide.md` | Destinazione — esiste su disco, **non** in nav |
+| `.zenzic.toml` | Configurazione engine (`zensical`), `fail_under = 0` |
+| `zensical.toml` | Dichiarazione nav — `guide.md` deliberatamente escluso |
+
+`zensical.toml` dichiara una nav con solo `index.md`. Il file `guide.md` esiste su
+disco ma non ha alcuna voce di navigazione — il suo stato VSM è `ORPHAN_BUT_EXISTING`.
+Quando `index.md` rimanda a esso alla riga 16, la `VSMBrokenLinkRule` di Zenzic attiva
+Z103: il link aggira la navigazione e rende la pagina raggiungibile solo via URL diretto.
+
+```toml title="examples/z103-orphan-link/zensical.toml"
+[project]
+site_name = "Z103 Example"
+docs_dir  = "docs"
+nav = [
+    "index.md",
+]
+```
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione richiesta
+cd examples/z103-orphan-link
+uvx zenzic check links
+```
+
+Output atteso:
+
+```text
+docs/index.md:16:  Z103  ORPHAN_LINK  'guide.md' exists but is not reachable via site navigation
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding Z103 riporta:
+
+- **File sorgente e riga** (`docs/index.md:16`) — il link che referenzia una pagina orfana dalla nav.
+- **Z-code** (`Z103`) — classe di violazione: il file di destinazione esiste ma ha stato VSM `ORPHAN_BUT_EXISTING`.
+- **Nome regola** (`ORPHAN_LINK`) — identificatore canonico di questo controllo.
+- **Messaggio del finding** — conferma che il file esiste su disco ma è invisibile dalla navigazione del sito.
+
+### Z103 versus Z101
+
+| Codice | File di destinazione esiste su disco? | Voce in nav? | Violazione |
+| :----: | :-----------------------------------: | :----------: | :--------- |
+| Z101 | ✘ | — | File non trovato su disco |
+| Z103 | ✔ | ✘ | File esiste ma aggira la navigazione |
+
+Z103 è **emesso solo dal motore zensical**. Il motore standalone non ha Virtual Site Map
+(VSM), quindi lo stato `ORPHAN_BUT_EXISTING` non viene mai assegnato e Z103 non viene mai
+attivato. Se il tuo progetto usa il motore standalone, nessun Z103 viene prodotto
+indipendentemente dalla configurazione di navigazione.
+
+## Correggere la Violazione
+
+Aggiungi `guide.md` alla nav in `zensical.toml`:
+
+```toml title="zensical.toml (dopo la correzione)"
+[project]
+site_name = "Z103 Example"
+docs_dir  = "docs"
+nav = [
+    "index.md",
+    "guide.md",
+]
+```
+
+Poi riesegui:
+
+```bash
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+In alternativa, rimuovi il link `[Guide](guide.md)` da `index.md` se la pagina è
+intenzionalmente non pubblicata.
+
+## Vedi Anche
+
+- [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
+- [z102 — Ancora Mancante](z102-anchor-missing) — il file di destinazione esiste ma l'ancora dell'intestazione non esiste.
+- [z402 — Pagina Orfana](../examples#example-z402) — l'inverso: una pagina non in nav e senza alcun link che la referenzia.
+- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.
