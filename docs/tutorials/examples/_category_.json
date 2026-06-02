@@ -1,0 +1,8 @@
+{
+  "label": "Z-Code Gallery",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Self-contained Z-code violation fixtures. Each example isolates one violation class — the minimum setup required to reproduce the reported exit code."
+  }
+}

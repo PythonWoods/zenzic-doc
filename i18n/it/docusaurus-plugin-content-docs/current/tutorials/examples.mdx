@@ -38,14 +38,15 @@ uvx zenzic lab all        # esegui tutti e 20 gli scenari
 
 ### z101-broken-links — Integrità dei Link {#example-z101}
 
-**Directory:** `examples/z101-broken-links/`
+**Directory:** `examples/z1xx-links/z101-broken-links/`
 **Engine:** `standalone`
 **Z-Code:** Z101 `LINK_BROKEN`
 <ZenzicOutput status="error" exitCode={1} compact />
 
 Dimostra come Zenzic rileva link Markdown che puntano a file non esistenti.
-Il fixture contiene `docs/index.md` con due link rotti — uno verso una pagina mancante e
-uno verso un'ancora inesistente. Entrambi generano finding Z101.
+Il fixture contiene `docs/index.md` con due link rotti — uno verso un file mancante
+(`missing.md`) e uno verso un file in una sottodirectory inesistente (`guide/setup.md`).
+Entrambi generano finding Z101.
 
 **Parti da qui se:** vuoi capire come Zenzic valida i riferimenti di link interni.
 
@@ -53,7 +54,7 @@ uno verso un'ancora inesistente. Entrambi generano finding Z101.
 
 ### z201-credentials — Credential Scanner {#example-z201}
 
-**Directory:** `examples/z201-credentials/`
+**Directory:** `examples/z2xx-security/z201-credentials/`
 **Engine:** `standalone`
 **Z-Code:** Z201 `CREDENTIAL_SECRET`
 <ZenzicOutput status="breach" exitCode={2} compact />
@@ -74,7 +75,7 @@ incidente di sicurezza.
 
 ### z405-unused-assets — Integrità degli Asset {#example-z405}
 
-**Directory:** `examples/z405-unused-assets/`
+**Directory:** `examples/z4xx-topology/z405-unused-assets/`
 **Engine:** `standalone`
 **Z-Code:** Z405 `UNUSED_ASSET`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -88,7 +89,7 @@ collegato da nessun documento Markdown. Zenzic rileva l'asset orfano e riporta Z
 
 ### z601-brand-obsolescence — Obsolescenza del Brand {#example-z601}
 
-**Directory:** `examples/z601-brand-obsolescence/`
+**Directory:** `examples/z6xx-brand/z601-brand-obsolescence/`
 **Engine:** `standalone`
 **Z-Code:** Z601 `BRAND_OBSOLESCENCE`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -103,7 +104,7 @@ che devono essere eliminati dalla documentazione.
 
 ### z602-i18n-parity — Parità i18n {#example-z602}
 
-**Directory:** `examples/z602-i18n-parity/`
+**Directory:** `examples/z6xx-brand/z602-i18n-parity/`
 **Engine:** `standalone`
 **Z-Code:** Z602 `I18N_PARITY`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -119,12 +120,12 @@ pagina tradotta in un locale esista anche in tutti gli altri locale configurati.
 
 ### z102-anchor-missing — Integrità dell'Ancora {#example-z102}
 
-**Directory:** `examples/z102-anchor-missing/`
+**Directory:** `examples/z1xx-links/z102-anchor-missing/`
 **Engine:** `standalone`
 **Z-Code:** Z102 `ANCHOR_MISSING`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/index.md` linka a `guide.md#nonexistent-section`. Il file di destinazione esiste ma
+`docs/index.md` punta a `guide.md#nonexistent-section`. Il file di destinazione esiste ma
 non ha un'intestazione `#nonexistent-section`. Zenzic rileva il frammento morto senza
 alcuna richiesta di rete.
 
@@ -134,13 +135,13 @@ alcuna richiesta di rete.
 
 ### z103-orphan-link — Link Orfano {#example-z103}
 
-**Directory:** `examples/z103-orphan-link/`
+**Directory:** `examples/z1xx-links/z103-orphan-link/`
 **Engine:** `zensical`
 **Z-Code:** Z103 `ORPHAN_LINK`
 <ZenzicOutput status="error" exitCode={1} compact />
 
-`docs/guide.md` esiste su disco ma non è elencato nella nav di `zensical.toml`. `index.md` la
-linka, quindi è raggiungibile via URL diretto ma invisibile dalla navigazione del sito.
+`docs/guide.md` esiste su disco ma non è elencato nella nav di `zensical.toml`. `index.md`
+rimanda ad essa, quindi è raggiungibile via URL diretto ma invisibile dalla navigazione del sito.
 Richiede il motore zensical per il controllo link con VSM.
 
 **Parti da qui se:** usi zensical e vuoi rilevare link che aggirano la struttura di navigazione.
@@ -149,7 +150,7 @@ Richiede il motore zensical per il controllo link con VSM.
 
 ### z105-absolute-path — Percorso Assoluto {#example-z105}
 
-**Directory:** `examples/z105-absolute-path/`
+**Directory:** `examples/z1xx-links/z105-absolute-path/`
 **Engine:** `standalone`
 **Z-Code:** Z105 `ABSOLUTE_PATH`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -163,7 +164,7 @@ I percorsi assoluti rompono la portabilità quando il sito è ospitato in una so
 
 ### z108-empty-link-text — Testo Link Vuoto {#example-z108}
 
-**Directory:** `examples/z108-empty-link-text/`
+**Directory:** `examples/z1xx-links/z108-empty-link-text/`
 **Engine:** `standalone`
 **Z-Code:** Z108 `EMPTY_LINK_TEXT`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -177,7 +178,7 @@ vuoto è inaccessibile agli screen reader e viola WCAG 2.1 §2.4.4.
 
 ### z202-path-traversal — Path Traversal {#example-z202}
 
-**Directory:** `examples/z202-path-traversal/`
+**Directory:** `examples/z2xx-security/z202-path-traversal/`
 **Engine:** `standalone`
 **Z-Code:** Z202 `PATH_TRAVERSAL`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -196,7 +197,7 @@ scanner. Z202 è non sopprimibile per design — non sopprimerlo in produzione.
 
 ### z204-forbidden-term — Violazione di Policy {#example-z204}
 
-**Directory:** `examples/z204-forbidden-term/`
+**Directory:** `examples/z2xx-security/z204-forbidden-term/`
 **Engine:** `standalone`
 **Z-Code:** Z204 `FORBIDDEN_TERM`
 <ZenzicOutput status="breach" exitCode={2} compact />
@@ -217,7 +218,7 @@ dello scanner di governance. Il `.zenzic.local.toml` è committato solo per dimo
 
 ### z301-dangling-ref — Riferimento Pendente {#example-z301}
 
-**Directory:** `examples/z301-dangling-ref/`
+**Directory:** `examples/z3xx-references/z301-dangling-ref/`
 **Engine:** `standalone`
 **Z-Code:** Z301 `DANGLING_REF`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -231,7 +232,7 @@ esiste nel file. Lo scanner di riferimenti di Zenzic segnala l'ID non definito.
 
 ### z302-dead-def — Definizione Morta {#example-z302}
 
-**Directory:** `examples/z302-dead-def/`
+**Directory:** `examples/z3xx-references/z302-dead-def/`
 **Engine:** `standalone`
 **Z-Code:** Z302 `DEAD_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -246,7 +247,7 @@ link in stile riferimento. Questo pattern orfano segnala debito documentale nasc
 
 ### z303-duplicate-def — Definizione Duplicata {#example-z303}
 
-**Directory:** `examples/z303-duplicate-def/`
+**Directory:** `examples/z3xx-references/z303-duplicate-def/`
 **Engine:** `standalone`
 **Z-Code:** Z303 `DUPLICATE_DEF`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -261,7 +262,7 @@ scelgono silenziosamente un URL, creando link drift invisibile.
 
 ### z402-orphan-page — Pagina Orfana {#example-z402}
 
-**Directory:** `examples/z402-orphan-page/`
+**Directory:** `examples/z4xx-topology/z402-orphan-page/`
 **Engine:** `zensical`
 **Z-Code:** Z402 `ORPHAN_PAGE`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -275,7 +276,7 @@ che naviga il menu del sito può raggiungerla. Richiede il motore zensical.
 
 ### z403-missing-alt — Alt Text Mancante {#example-z403}
 
-**Directory:** `examples/z403-missing-alt/`
+**Directory:** `examples/z4xx-topology/z403-missing-alt/`
 **Engine:** `standalone`
 **Z-Code:** Z403 `MISSING_ALT`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -289,7 +290,7 @@ WCAG 2.1 §1.1.1. Zenzic lo segnala sintatticamente; nessun I/O sul file immagin
 
 ### z501-placeholder — Contenuto Placeholder {#example-z501}
 
-**Directory:** `examples/z501-placeholder/`
+**Directory:** `examples/z5xx-content/z501-placeholder/`
 **Engine:** `standalone`
 **Z-Code:** Z501 `PLACEHOLDER`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -303,7 +304,7 @@ che segnalano pagine non completate pubblicate per errore.
 
 ### z502-short-content — Contenuto Breve {#example-z502}
 
-**Directory:** `examples/z502-short-content/`
+**Directory:** `examples/z5xx-content/z502-short-content/`
 **Engine:** `standalone`
 **Z-Code:** Z502 `SHORT_CONTENT`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -317,7 +318,7 @@ La pagina non ha pattern placeholder, quindi si attiva solo Z502, non Z501.
 
 ### z503-snippet-error — Errore Snippet {#example-z503}
 
-**Directory:** `examples/z503-snippet-error/`
+**Directory:** `examples/z5xx-content/z503-snippet-error/`
 **Engine:** `standalone`
 **Z-Code:** Z503 `SNIPPET_ERROR`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -332,7 +333,7 @@ costruzione della documentazione.
 
 ### z505-untagged-code-block — Blocco Codice Senza Tag {#example-z505}
 
-**Directory:** `examples/z505-untagged-code-block/`
+**Directory:** `examples/z5xx-content/z505-untagged-code-block/`
 **Engine:** `standalone`
 **Z-Code:** Z505 `UNTAGGED_CODE_BLOCK`
 <ZenzicOutput status="error" exitCode={1} compact />
@@ -348,26 +349,26 @@ La `UntaggedCodeBlockRule` integrata di Zenzic è sempre attiva — nessuna conf
 
 | Z-Code | Classe di Violazione | Esempio |
 | :---: | :--- | :--- |
-| Z101 | Link interni rotti | [z101-broken-links](#example-z101) |
-| Z102 | Ancora frammento non definita | [z102-anchor-missing](#example-z102) |
-| Z103 | Link a pagina orfana dalla nav | [z103-orphan-link](#example-z103) |
-| Z105 | Percorso assoluto nel link | [z105-absolute-path](#example-z105) |
-| Z108 | Testo link vuoto | [z108-empty-link-text](#example-z108) |
-| Z201 | Rilevamento credenziali / segreti | [z201-credentials](#example-z201) |
-| Z202 | Path traversal fuori dalla docs-root | [z202-path-traversal](#example-z202) |
-| Z204 | Termine governance proibito | [z204-forbidden-term](#example-z204) |
-| Z301 | Riferimento link-style pendente | [z301-dangling-ref](#example-z301) |
-| Z302 | Definizione riferimento inutilizzata | [z302-dead-def](#example-z302) |
-| Z303 | Definizione riferimento duplicata | [z303-duplicate-def](#example-z303) |
-| Z402 | Pagina Markdown non nella nav | [z402-orphan-page](#example-z402) |
-| Z403 | Immagine senza alt text | [z403-missing-alt](#example-z403) |
-| Z405 | Asset su disco non referenziato | [z405-unused-assets](#example-z405) |
-| Z501 | Contenuto stub / placeholder TODO | [z501-placeholder](#example-z501) |
-| Z502 | Pagina sotto il conteggio minimo di parole | [z502-short-content](#example-z502) |
-| Z503 | Errore di sintassi snippet Python | [z503-snippet-error](#example-z503) |
-| Z505 | Blocco codice delimitato senza tag | [z505-untagged-code-block](#example-z505) |
-| Z601 | Nome brand deprecato nel contenuto | [z601-brand-obsolescence](#example-z601) |
-| Z602 | Gap di parità file locale i18n | [z602-i18n-parity](#example-z602) |
+| Z101 | Link interni rotti | [z101-broken-links](examples/z1xx-links/z101-broken-links) |
+| Z102 | Ancora frammento non definita | [z102-anchor-missing](examples/z1xx-links/z102-anchor-missing) |
+| Z103 | Link a pagina orfana dalla nav | [z103-orphan-link](examples/z1xx-links/z103-orphan-link) |
+| Z105 | Percorso assoluto nel link | [z105-absolute-path](examples/z1xx-links/z105-absolute-path) |
+| Z108 | Testo link vuoto | [z108-empty-link-text](examples/z1xx-links/z108-empty-link-text) |
+| Z201 | Rilevamento credenziali / segreti | [z201-credentials](examples/z2xx-security/z201-credentials) |
+| Z202 | Path traversal fuori dalla docs-root | [z202-path-traversal](examples/z2xx-security/z202-path-traversal) |
+| Z204 | Termine governance proibito | [z204-forbidden-term](examples/z2xx-security/z204-forbidden-term) |
+| Z301 | Riferimento link-style pendente | [z301-dangling-ref](examples/z3xx-references/z301-dangling-ref) |
+| Z302 | Definizione riferimento inutilizzata | [z302-dead-def](examples/z3xx-references/z302-dead-def) |
+| Z303 | Definizione riferimento duplicata | [z303-duplicate-def](examples/z3xx-references/z303-duplicate-def) |
+| Z402 | Pagina Markdown non nella nav | [z402-orphan-page](examples/z4xx-topology/z402-orphan-page) |
+| Z403 | Immagine senza alt text | [z403-missing-alt](examples/z4xx-topology/z403-missing-alt) |
+| Z405 | Asset su disco non referenziato | [z405-unused-assets](examples/z4xx-topology/z405-unused-assets) |
+| Z501 | Contenuto stub / placeholder TODO | [z501-placeholder](examples/z5xx-content/z501-placeholder) |
+| Z502 | Pagina sotto il conteggio minimo di parole | [z502-short-content](examples/z5xx-content/z502-short-content) |
+| Z503 | Errore di sintassi snippet Python | [z503-snippet-error](examples/z5xx-content/z503-snippet-error) |
+| Z505 | Blocco codice delimitato senza tag | [z505-untagged-code-block](examples/z5xx-content/z505-untagged-code-block) |
+| Z601 | Nome brand deprecato nel contenuto | [z601-brand-obsolescence](examples/z6xx-brand/z601-brand-obsolescence) |
+| Z602 | Gap di parità file locale i18n | [z602-i18n-parity](examples/z6xx-brand/z602-i18n-parity) |
 
 ---
 
