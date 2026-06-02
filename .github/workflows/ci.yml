@@ -63,7 +63,7 @@ jobs:
         id: resolve-branch
         shell: bash
         run: |
-          TARGET_BRANCH="${{ github.base_ref || github.ref_name }}"
+          TARGET_BRANCH="${{ github.head_ref || github.ref_name }}"
           echo "Target branch is: $TARGET_BRANCH"
 
           if git ls-remote --exit-code --heads https://github.com/PythonWoods/zenzic.git "$TARGET_BRANCH" > /dev/null 2>&1; then
