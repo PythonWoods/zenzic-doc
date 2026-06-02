@@ -112,13 +112,13 @@ i18n_parity = true
 # Z105: cross-plugin absolute links — inline suppressions are not parsed inside Markdown table cells.
 # Tracked in ROADMAP: Docusaurus Cross-Instance Resolver.
 "docs/explanation/github-action-internals.mdx" = ["Z105"]
-"i18n/it/docusaurus-plugin-content-docs/current/explanation/github-action-internals.mdx" = ["Z105"]
+"docs/it/explanation/github-action-internals.mdx" = ["Z105"]
 
 # Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
 # demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
-# rel_path is relative to docs_root (no "docs/" prefix); IT locale uses "it/" prefix.
-"tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
-"it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+# rel_path is relative to repo_root (with "docs/" prefix); IT locale uses "docs/it/" prefix.
+"docs/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+"docs/it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
 
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
@@ -132,13 +132,13 @@ i18n_parity = true
 # IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
 #
 # [governance.directory_policies]
-# "blog/**"                       = ["Z601"]  # historical archive
+# "docs/blog/**"                  = ["Z601"]  # historical archive
 # "docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
 
 [governance.directory_policies]
-"blog/**"                         = ["Z601"]  # historical release blog posts
-"explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
-"it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+"docs/blog/**"                    = ["Z601"]  # historical release blog posts
+"docs/explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
+"docs/it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
 
 # Governance Playbook:
 # /developers/how-to/release-governance-protocol
