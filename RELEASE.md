@@ -40,7 +40,7 @@ Distribution target: **CDN** — [zenzic.dev](https://zenzic.dev).
 
 ```bash
 git tag zenzic-doc-v0.9.1
-git push origin release/v0.9.1 --tags
+git push origin release/v0.9.1-prep --tags
 ```
 
 - [ ] Create GitHub Release from the tag, using the `## v0.9.1` CHANGELOG section as the release body.
