@@ -68,7 +68,10 @@ The rest of this article examines each layer of the terminal interface that
 implements these contracts: the run header, the diagnostic renderer, the
 suppression audit model, and the exit code semantics.
 
-<ZenzicOutput status="success" exitCode={0} showFrame />
+<ZenzicTerminal title="zenzic check all">
+<span className="text-zinc-400 block">standalone · 20 files (14 docs, 6 assets) · 0.8 s · 38 files/s</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ All checks passed — exit 0</span>
+</ZenzicTerminal>
 
 ## Information Density in the Run Header
 
@@ -128,7 +131,10 @@ in the analysis pipeline detectable before they affect CI wall time.
 To enumerate the full scanner manifest active for a given configuration — codes,
 capabilities, and exit-code contracts — use `zenzic inspect`.
 
-<ZenzicOutput status="inspect" exitCode={0} />
+<ZenzicTerminal title="zenzic inspect rules">
+<span className="text-zinc-400 block">Rule Registry · 12 rules loaded</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ exit 0</span>
+</ZenzicTerminal>
 
 ## Diagnostic Rendering
 
@@ -206,17 +212,11 @@ docs/guides/install.md:47:29
      49  │  Continue to the Configuration section when ready.
 ```
 
-<ZenzicOutput
-  status="error"
-  exitCode={1}
-  showFrame
-  rows={[{
-    code: 'Z101',
-    file: 'docs/guides/install.md:47',
-    message: 'Broken internal link → install.md',
-    severity: 'error'
-  }]}
-/>
+<ZenzicTerminal title="zenzic check all">
+<div className="text-zinc-400 text-[11px] mb-2">docs/guides/install.md:47</div>
+<div className="flex gap-2 items-baseline"><span className="text-rose-500">✘</span><span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z101]</span><span className="text-zinc-300">Broken internal link → install.md</span></div>
+<div className="mt-2 text-rose-500 font-semibold text-[11px] tracking-wide">FAILED — exit 1</div>
+</ZenzicTerminal>
 
 ## The Mathematics of Suppression Debt
 
@@ -315,7 +315,7 @@ This failure is Exit 1 and remains fail-hard when suppression cap is exceeded.
 It cannot be resolved by adding more `zenzic:ignore` directives — each
 additional directive increases the count and the debt simultaneously.
 
-<ZenzicOutput status="success" exitCode={0} />
+<ZenzicTerminal title="zenzic check all"><span className="text-emerald-500 font-medium">✔ All checks passed — exit 0</span></ZenzicTerminal>
 
 ## Exit Semantics as a CI Contract
 
@@ -349,7 +349,7 @@ does not suppress findings from the output — they remain visible in the
 terminal. `--exit-zero` cannot be combined with `--strict`; Zenzic rejects that
 combination with Exit 2 at startup.
 
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 **Exit 2.** A finding with `security_breach` severity was produced — meaning a
 credential or secret was detected in the documentation source tree. This exit
@@ -365,7 +365,7 @@ a scanned path attempted to escape the repository boundary toward system paths.
 Like Exit 2, it precedes all other exit-code evaluation. `--exit-zero` has no
 effect.
 
-<ZenzicOutput status="breach" exitCode={2} showFrame />
+<CredentialTerminal />
 
 The evaluation order is fixed: Exit 3 conditions are checked first, Exit 2
 second, Exit 1 third. This order ensures that security contracts are never

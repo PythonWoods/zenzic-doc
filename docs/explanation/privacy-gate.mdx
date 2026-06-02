@@ -8,74 +8,69 @@ description: "Z204 FORBIDDEN_TERM — project-specific banned patterns enforced 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Z204 — Forbidden Term
+# Privacy Gate Architecture (Zero-Trust in CI/CD)
 
-Z204 `FORBIDDEN_TERM` fires when a documentation file contains a string that the project
-has declared permanently off-limits via `.zenzic.local.toml`.
+The Privacy Gate is the security contract that prevents documentation pipelines
+from publishing sensitive material. It is intentionally designed as a
+**fail-closed** system.
 
-This is not spell-checking. This is a **non-negotiable gate**: a term in the forbidden list
-is treated as a security-class finding. Exit 2. Non-suppressible.
-
----
-
-## What Z204 Catches
-
-| Scenario | Example | Why it matters |
-| :--- | :--- | :--- |
-| Internal codenames | `"Project Obsidian"` | Codenames must never appear in public docs |{/* zenzic:ignore: Z601 */}
-| Deprecated product names | `"Zenzic Legacy"` | Creates user confusion after a rename |
-| Legal exposure terms | `"ACME Corp"` | NDA or trademark violation in public content |
-| Sensitive internal URLs | `"internal.corp.example.com"` | Infrastructure disclosure |
+In practical terms: when a security-class condition is detected, Zenzic stops
+the pipeline immediately instead of producing a "best effort" report.
 
 ---
 
-## Configuration
+## Why the Gate Exists
 
-Declare forbidden terms in `.zenzic.local.toml`:
+Traditional documentation QA focuses on correctness (broken links, missing
+anchors, structural drift). Privacy risk is different:
 
-```toml title=".zenzic.local.toml"
-[core]
-forbidden_patterns = [
-    "Project Obsidian",           # internal codename
-    "internal.corp.example.com",  # infrastructure URL
-    "acme-access-key",            # vendor-specific key prefix
-]
-```
+- A leaked credential can become an active incident within minutes.
+- A traversal or forbidden-term disclosure can expose internal topology,
+  policies, or regulated information.
+- "Warning-only" behavior is incompatible with Zero-Trust governance.
 
-`.zenzic.local.toml` is the **Local Sanctuary** — project-specific overrides that are never
-committed to the shared `.zenzic.toml`. It extends, never overrides, the shared config.
+The Privacy Gate therefore treats security findings as **operational blockers**,
+not style issues.
 
 ---
 
-## Difference from Z201 (Credential Scanner)
+## Zero-Trust Enforcement Model
 
-| Property | Z201 LEAKED_CREDENTIAL | Z204 FORBIDDEN_TERM |
-| :--- | :--- | :--- |
-| Pattern source | Built-in entropy heuristics + known formats | Your `.zenzic.local.toml` |
-| Suppressible? | **No** (Exit 2, always) | **No** (Exit 2, always) |
-| Scope | Any credential-shaped string | Exact strings you declare |
-| False-positive risk | Low (multi-pass normalization) | Zero — you own the list |
+The architecture follows four invariants:
 
----
+1. **No trust in author intent.** Security checks run on every scan path.
+2. **No suppression for security class.** Security findings are factual
+    assertions, not advisory lint.
+3. **Deterministic failure semantics.** Exit behavior is stable and auditable.
+4. **CI-first containment.** The merge/deploy path is interrupted before
+    publication.
 
-## Exit Behavior
-
-Z204 is a **policy-violation finding** (security-class severity):
-
-- Exits with **code 2** immediately
-- Not suppressed by `--exit-zero` or `exit_zero = true` in `.zenzic.toml`
-- Not suppressed by `.zenzic-ignore`
-- Not influenced by `fail_under` threshold
-
-The CLI banner reads **`POLICY VIOLATION DETECTED`** (distinct from Z201’s `SECURITY BREACH DETECTED`) to signal governance enforcement rather than credential incident response.
-
-When Z204 fires, the CI pipeline halts. The term must be removed or the finding
-investigated — there is no bypass mechanism.
+This makes the Privacy Gate compatible with regulated pipelines where evidence
+and reproducibility are mandatory.
 
 ---
 
-## Related
+## Architectural Scope
 
-- [Credential Scanner (Z201)](../reference/finding-codes.mdx#z201) — Built-in secret detection
-- [Configuration Reference](../reference/configuration-reference.mdx) — `.zenzic.local.toml` Local Sanctuary
-- [Suppression Policy](../reference/suppression-policy.mdx) — What can and cannot be suppressed
+The Privacy Gate is not a single rule: it is a family-level control spanning
+the Z2xx security domain in the Z-Code Gallery.
+
+- [Z201 (Credential Secret)](../reference/finding-codes.mdx#z201)
+- [Z202 (Path Traversal)](../reference/finding-codes.mdx#z202)
+- [Z203 (Path Traversal Fatal)](../reference/finding-codes.mdx#z203)
+- [Z204 (Forbidden Term)](../reference/finding-codes.mdx#z204)
+
+For technical signatures, examples, and remediation playbooks, use the
+[Z2xx Security family in the Finding Codes Gallery](../reference/finding-codes.mdx#z201).
+
+---
+
+## Operational Philosophy
+
+The Privacy Gate enforces a strict distinction:
+
+- **Quality findings** can be triaged and scheduled.
+- **Security findings** must be removed or explicitly remediated before release.
+
+This is the core Zero-Trust posture of Zenzic in CI/CD:
+**documentation is treated as production attack surface**.

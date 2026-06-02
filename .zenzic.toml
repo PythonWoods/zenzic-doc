@@ -114,6 +114,12 @@ i18n_parity = true
 "docs/explanation/github-action-internals.mdx" = ["Z105"]
 "i18n/it/docusaurus-plugin-content-docs/current/explanation/github-action-internals.mdx" = ["Z105"]
 
+# Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
+# demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
+# rel_path is relative to docs_root (no "docs/" prefix); IT locale uses "it/" prefix.
+"tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+"it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
 

@@ -511,15 +511,15 @@ Ogni codice di uscita ha una firma visiva distinta nel Zenzic Report:
 
 **Uscita 0 — Zenzic Audit Badge**
 
-<ZenzicOutput status="success" exitCode={0} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-emerald-500 font-medium">✔ exit 0 — PASSED</span></ZenzicTerminal>
 
 **Uscita 1 — Anomalie di qualità**
 
-<ZenzicOutput status="error" code="Z104" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500">✘</span>{" "}<span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z104]</span>{" "}<span className="text-zinc-300">FILE_NOT_FOUND — exit 1</span></ZenzicTerminal>
 
 **Uscita 2 — Violazione di sicurezza credential scanner**
 
-<ZenzicOutput status="breach" exitCode={2} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ SECURITY BREACH — exit 2</span></ZenzicTerminal>
 
 ---
 
@@ -842,7 +842,10 @@ sono mai sopprimibili con `--exit-zero`.
 **Sezione B — Regole Estensibili (Sistema Plugin):** regole registrate tramite il gruppo
 entry-point `zenzic.rules` da qualsiasi pacchetto di terze parti installato.
 
-<ZenzicOutput status="inspect" exitCode={0} />
+<ZenzicTerminal title="zenzic inspect rules">
+<span className="text-zinc-400 block">Registro Regole · 12 regole caricate</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ exit 0</span>
+</ZenzicTerminal>
 
 Ogni riga nella tabella delle Regole Estensibili mostra il nome dell'entry-point,
 il `rule_id` stabile della regola (usato nei finding e nelle liste di soppressione),

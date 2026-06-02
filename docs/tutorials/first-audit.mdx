@@ -51,10 +51,10 @@ uvx zenzic lab z201
 Zenzic scans the bundled `z201-credentials` fixture and fires **exit code 2** with the
 Security Breach banner — the non-suppressible alert for a leaked credential:
 
-<ZenzicOutput status="breach" exitCode={2} showFrame
+<CredentialTerminal
+  finding="AWS access key detected"
   location="docs/how-to/configure.md:4"
-  masked="AKIA************MPLE"
-  credentialType="aws-access-key"
+  credential="AKIA************MPLE"
 />
 
 The masked credential and non-zero exit code are the expected output of the credential scanner.
@@ -149,7 +149,10 @@ report and exits with a machine-readable code:
 
 A clean run looks like this — the **Zenzic Audit Badge**:
 
-<ZenzicOutput status="success" exitCode={0} showFrame />
+<ZenzicTerminal title="zenzic check all">
+<span className="text-zinc-400 block">standalone · 20 files · 0.4 s</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ All checks passed — exit 0</span>
+</ZenzicTerminal>
 
 Exit 0 confirms that every link resolves, every page is reachable, and no credential is exposed within the analyzed scope.
 

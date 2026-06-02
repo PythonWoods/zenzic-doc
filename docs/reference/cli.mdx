@@ -508,15 +508,15 @@ Each exit code has a distinct visual signature in the Zenzic Report:
 
 **Exit 0 — Zenzic Audit Badge**
 
-<ZenzicOutput status="success" exitCode={0} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-emerald-500 font-medium">✔ exit 0 — PASSED</span></ZenzicTerminal>
 
 **Exit 1 — Quality findings**
 
-<ZenzicOutput status="error" code="Z104" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500">✘</span>{" "}<span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z104]</span>{" "}<span className="text-zinc-300">FILE_NOT_FOUND — exit 1</span></ZenzicTerminal>
 
 **Exit 2 — credential scanner security breach**
 
-<ZenzicOutput status="breach" exitCode={2} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ SECURITY BREACH — exit 2</span></ZenzicTerminal>
 
 ---
 
@@ -832,7 +832,10 @@ suppressible with `--exit-zero`.
 **Section B — Extensible Rules (Plugin System):** rules registered via the `zenzic.rules`
 entry-point group from any installed third-party package.
 
-<ZenzicOutput status="inspect" exitCode={0} />
+<ZenzicTerminal title="zenzic inspect rules">
+<span className="text-zinc-400 block">Rule Registry · 12 rules loaded</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ exit 0</span>
+</ZenzicTerminal>
 
 Each row in the Extensible Rules table shows the entry-point name, the rule's stable `rule_id`
 (used in findings and suppression lists), the origin distribution (`(core)` for built-in rules,
