@@ -36,7 +36,10 @@ uvx zenzic check all .
 
 **`zenzic check all`** is a binary gate. It emits a deterministic exit code based on findings detected within the analyzed scope. Exit 0 means no findings were detected.
 
-<ZenzicOutput status="success" exitCode={0} showFrame />
+<ZenzicTerminal title="zenzic check all">
+<span className="text-zinc-400 block">standalone · 20 files · 0.4 s</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ All checks passed — exit 0</span>
+</ZenzicTerminal>
 
 **`zenzic score`** computes a 0–100 quality score using a weighted penalty model across four categories: Structural Integrity (30%), Navigation (25%), Brand & Assets (25%), Content Excellence (20%). A `100/100` means zero penalized findings within the analyzed scope. Excluded content is not evaluated. A score below `100/100` is a passing audit if it meets the configured `fail_under` threshold.
 
@@ -50,16 +53,17 @@ One absolute rule: any Z2xx finding collapses the score to `0/100` unconditional
 
 | Scenario                | Without Zenzic (Traditional Linter)                                                                 | With Zenzic                                                                            |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | ZenzicOutput: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
+| **Broken Link**         | CI fails with generic error, no file/line/cause.                                                    | Zenzic finding: file, line, code (e.g. Z404), actionable fix, deterministic exit code.        |
 | **Virtual Route (e.g. `/blog/tags/python/`)** | False positive (404): dynamic routes not resolved, forced to use ignore/regex.                        | Deterministic resolution via VRM: virtual route mapped to `source_files` without Node.js. |
 | **Credential Leak**     | Linter may miss secrets in YAML/code blocks; no masking; incident may reach git history.            | Credential scanner: scans all content, masks secrets, halts pipeline (exitCode=2, Z201), never prints full secret. |
 | **Exit Codes**          | Non-standard, ambiguous, or missing.                                                                | Tiered: Z1xx (link integrity), Z2xx (security), Z4xx (structure), Z6xx (governance).                   |
 
-**Example: ZenzicOutput for a Virtual Route finding**
+**Example: Zenzic terminal output for a Virtual Route finding**
 
-<ZenzicOutput status="error" code="Z111" exitCode={1} showFrame>
-docs/blog/tags/python/: Virtual route not mapped to any source file (Z111)
-</ZenzicOutput>
+<ZenzicTerminal title="zenzic check all">
+<div className="flex gap-2 items-baseline"><span className="text-rose-500">✘</span><span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z111]</span><span className="text-zinc-300">docs/blog/tags/python/: Virtual route not mapped to any source file</span></div>
+<div className="mt-2 text-rose-500 font-semibold text-[11px] tracking-wide">FAILED — exit 1</div>
+</ZenzicTerminal>
 
 This is not a lint check. It is a **non-negotiable security gate**.
 

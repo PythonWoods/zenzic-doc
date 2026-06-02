@@ -41,7 +41,7 @@ uvx zenzic lab all        # run all 20 scenarios
 **Directory:** `examples/z1xx-links/z101-broken-links/`
 **Engine:** `standalone`
 **Z-Code:** Z101 `LINK_BROKEN`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 Demonstrates Zenzic detecting Markdown links that point to files that do not exist.
 The fixture contains `docs/index.md` with two broken links — one to a missing file
@@ -57,7 +57,7 @@ Both trigger Z101 findings.
 **Directory:** `examples/z2xx-security/z201-credentials/`
 **Engine:** `standalone`
 **Z-Code:** Z201 `CREDENTIAL_SECRET`
-<ZenzicOutput status="breach" exitCode={2} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ SECURITY BREACH — exit 2</span></ZenzicTerminal>
 
 Contains a synthetic AWS access key embedded in `docs/setup.md`. Zenzic fires the
 **security_breach** severity finding — the non-suppressible alert for a leaked credential.
@@ -77,7 +77,7 @@ scanner testing. Do **not** treat exit code 2 from this example as a real securi
 **Directory:** `examples/z4xx-topology/z405-unused-assets/`
 **Engine:** `standalone`
 **Z-Code:** Z405 `UNUSED_ASSET`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 Contains `assets/banner.png` — an image file that exists on disk but is never linked
 from any Markdown document. Zenzic detects the orphan asset and reports Z405.
@@ -91,7 +91,7 @@ from any Markdown document. Zenzic detects the orphan asset and reports Z405.
 **Directory:** `examples/z6xx-brand/z601-brand-obsolescence/`
 **Engine:** `standalone`
 **Z-Code:** Z601 `BRAND_OBSOLESCENCE`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 The `.zenzic.toml` declares `OldPlatform` as an obsolete brand name. The fixture's
 `docs/index.md` mentions `OldPlatform` — triggering Z601 findings on every occurrence.
@@ -106,7 +106,7 @@ that must be eliminated from documentation.
 **Directory:** `examples/z6xx-brand/z602-i18n-parity/`
 **Engine:** `standalone`
 **Z-Code:** Z602 `I18N_PARITY`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/en/` contains two pages: `index.md` and `guide.md`. The Italian locale
 `docs/it/` has only `index.md` — `guide.md` is missing. Zenzic detects the parity
@@ -122,7 +122,7 @@ page translated in one locale also exists in all other configured locales.
 **Directory:** `examples/z1xx-links/z102-anchor-missing/`
 **Engine:** `standalone`
 **Z-Code:** Z102 `ANCHOR_MISSING`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` links to `guide.md#nonexistent-section`. The target file exists but
 has no `#nonexistent-section` heading. Zenzic's link validator detects the dead
@@ -137,7 +137,7 @@ fragment without any network request.
 **Directory:** `examples/z1xx-links/z103-orphan-link/`
 **Engine:** `zensical`
 **Z-Code:** Z103 `ORPHAN_LINK`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/guide.md` exists on disk but is not listed in `zensical.toml` nav. `index.md` links
 to it, so the file is reachable via direct URL but invisible through site navigation.
@@ -152,7 +152,7 @@ Requires the zensical engine for VSM-aware link checking.
 **Directory:** `examples/z1xx-links/z105-absolute-path/`
 **Engine:** `standalone`
 **Z-Code:** Z105 `ABSOLUTE_PATH`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains `[Guide](/guide)` — an absolute path starting with `/`. Absolute
 paths break portability when a site is hosted in a subdirectory.
@@ -166,7 +166,7 @@ paths break portability when a site is hosted in a subdirectory.
 **Directory:** `examples/z1xx-links/z108-empty-link-text/`
 **Engine:** `standalone`
 **Z-Code:** Z108 `EMPTY_LINK_TEXT`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains `[](guide.md)` — a link with an empty label. Empty link text
 is inaccessible to screen readers and violates WCAG 2.1 §2.4.4.
@@ -180,7 +180,7 @@ is inaccessible to screen readers and violates WCAG 2.1 §2.4.4.
 **Directory:** `examples/z2xx-security/z202-path-traversal/`
 **Engine:** `standalone`
 **Z-Code:** Z202 `PATH_TRAVERSAL`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains `[Config](../../private/secret.txt)` — a link that escapes the
 `docs/` root via `../..`. Z202 is non-suppressible. Exit code 1.
@@ -199,7 +199,7 @@ Do **not** suppress or ignore Z202 findings in production — they are non-suppr
 **Directory:** `examples/z2xx-security/z204-forbidden-term/`
 **Engine:** `standalone`
 **Z-Code:** Z204 `FORBIDDEN_TERM`
-<ZenzicOutput status="breach" exitCode={2} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ SECURITY BREACH — exit 2</span></ZenzicTerminal>
 
 `.zenzic.local.toml` declares `ProjectX` as a forbidden term. `docs/index.md` mentions it —
 triggering the **POLICY VIOLATION DETECTED** banner (distinct from Z201's credential banner).
@@ -219,7 +219,7 @@ The `.zenzic.local.toml` is committed for demonstration only — in production, 
 **Directory:** `examples/z3xx-references/z301-dangling-ref/`
 **Engine:** `standalone`
 **Z-Code:** Z301 `DANGLING_REF`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` uses `[Click here][missing-ref]` but no `[missing-ref]: url` definition
 exists anywhere in the file. Zenzic's reference scanner flags the undefined identifier.
@@ -233,7 +233,7 @@ exists anywhere in the file. Zenzic's reference scanner flags the undefined iden
 **Directory:** `examples/z3xx-references/z302-dead-def/`
 **Engine:** `standalone`
 **Z-Code:** Z302 `DEAD_DEF`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains an intentional dead-definition defect around the `setup` reference ID:
 the reference definition pattern is present but never consumed by a reference-style link.
@@ -248,7 +248,7 @@ This orphan definition pattern signals hidden documentation debt.
 **Directory:** `examples/z3xx-references/z303-duplicate-def/`
 **Engine:** `standalone`
 **Z-Code:** Z303 `DUPLICATE_DEF`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains an intentional duplicate-definition defect for the `api` reference ID.
 When the same reference ID is declared more than once, Markdown renderers silently pick one URL,
@@ -263,7 +263,7 @@ creating invisible link drift.
 **Directory:** `examples/z4xx-topology/z402-orphan-page/`
 **Engine:** `zensical`
 **Z-Code:** Z402 `ORPHAN_PAGE`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/secret.md` exists on disk but is not listed in `zensical.toml` nav. No visitor
 navigating the site menu can reach it. Requires the zensical engine.
@@ -277,7 +277,7 @@ navigating the site menu can reach it. Requires the zensical engine.
 **Directory:** `examples/z4xx-topology/z403-missing-alt/`
 **Engine:** `standalone`
 **Z-Code:** Z403 `MISSING_ALT`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains `![](diagram.png)` — an image element with no alt text, violating
 WCAG 2.1 §1.1.1. Zenzic flags this syntactically; no I/O on the image file is performed.
@@ -291,7 +291,7 @@ WCAG 2.1 §1.1.1. Zenzic flags this syntactically; no I/O on the image file is p
 **Directory:** `examples/z5xx-content/z501-placeholder/`
 **Engine:** `standalone`
 **Z-Code:** Z501 `PLACEHOLDER`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains `TODO: content goes here` and `Coming soon!` — classic stub
 patterns that signal unfinished pages published by accident.
@@ -305,7 +305,7 @@ patterns that signal unfinished pages published by accident.
 **Directory:** `examples/z5xx-content/z502-short-content/`
 **Engine:** `standalone`
 **Z-Code:** Z502 `SHORT_CONTENT`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` has only 8 words of prose — below the default 50-word minimum threshold.
 The page lacks placeholder patterns, so only Z502 fires, not Z501.
@@ -319,7 +319,7 @@ The page lacks placeholder patterns, so only Z502 fires, not Z501.
 **Directory:** `examples/z5xx-content/z503-snippet-error/`
 **Engine:** `standalone`
 **Z-Code:** Z503 `SNIPPET_ERROR`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains a fenced `python` block with a `SyntaxError` (`def compute_total(items =`).
 Zenzic's `ast`-based snippet validator catches the invalid snippet at documentation-build time.
@@ -333,7 +333,7 @@ Zenzic's `ast`-based snippet validator catches the invalid snippet at documentat
 **Directory:** `examples/z5xx-content/z505-untagged-code-block/`
 **Engine:** `standalone`
 **Z-Code:** Z505 `UNTAGGED_CODE_BLOCK`
-<ZenzicOutput status="error" exitCode={1} compact />
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500 font-medium">✘ 1 error — exit 1</span></ZenzicTerminal>
 
 `docs/index.md` contains a fenced code block with no language specifier (bare ` ``` `).
 Zenzic's built-in `UntaggedCodeBlockRule` is always active — no configuration needed.

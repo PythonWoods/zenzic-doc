@@ -120,7 +120,7 @@ Aggiungi una tabella `[governance.per_file_ignores]` al tuo `.zenzic.toml`:
 "docs/legacy/*.md"   = ["Z101"]  # link rotti noti verso sistemi dismessi
 ```
 
-La chiave della mappa è un glob relativo a `docs_dir`. Ogni voce nell'elenco è una soppressione, conteggiata nel totale del Technical Debt.
+La chiave della mappa è un glob relativo alla root del repository (corrispondente ai percorsi mostrati nell'output del CLI). Ogni voce nell'elenco è una soppressione, conteggiata nel totale del Technical Debt.
 
 :::tip[Usa `zenzic explain` per controllare lo stato]
 Esegui `zenzic explain Z601` per vedere lo stato attuale della soppressione per-file di una regola — la tabella Config Genealogy mostrerà ogni glob pattern in cui la regola è silenziata.
@@ -157,11 +157,11 @@ Aggiungi una tabella `[governance.directory_policies]` al tuo `.zenzic.toml`:
 
 ```toml
 [governance.directory_policies]
-"blog/**"                       = ["Z601"]  # post storici del blog — riferimenti ai codename attesi
+"docs/blog/**"                    = ["Z601"]  # post storici del blog — riferimenti ai codename attesi
 "docs/explanation/registry.mdx" = ["Z601"]  # registro SSOT dei codename
 ```
 
-La chiave della mappa è un pattern glob relativo a `docs_dir`. I finding corrispondenti vengono **rimossi silenziosamente prima della visualizzazione** con **costo zero di suppression debt** — non vengono mai conteggiati nel footer Suppression Audit.
+La chiave della mappa è un pattern glob relativo alla root del repository (corrispondente ai percorsi mostrati nell'output del CLI). I finding corrispondenti vengono **rimossi silenziosamente prima della visualizzazione** con **costo zero di suppression debt** — non vengono mai conteggiati nel footer Suppression Audit.
 
 :::info[Gerarchia: Directory Policy > Per-file ignore > Inline]
 Per scegliere il livello di soppressione:
@@ -248,7 +248,7 @@ Zenzic divide i codici di finding in due classi: **Sopprimibili** (l'intenzione 
 | Z406 | NAV_CONTRACT | ✅ Sì |
 | Z601 | BRAND_OBSOLESCENCE | ✅ Sì |
 
-:::danger[La Legge dell'Inviolabilità — CEO-152]
+:::danger[La Legge dell'Inviolabilità]
 `zenzic:ignore: Z201`, `Z202`, `Z203` e `Z204` vengono **silenziosamente rifiutati**. Il security gate opera indipendentemente dal motore di soppressione. Anche se un commento `zenzic:ignore` è presente, Zenzic emette comunque il finding ed esce con il codice 2 o 3.
 
 **Non puoi ignorare una breccia.**

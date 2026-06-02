@@ -11,9 +11,10 @@ description: "How to keep Z105 ABSOLUTE_PATH happy when your documentation spans
 
 When your project hosts more than one Docusaurus instance under the same
 domain (for example a User area at `/docs/` and a Developer area at
-`/developers/`), links that cross instance boundaries **must** be absolute.
-Docusaurus does not resolve relative paths across plugin boundaries — and
-neither does Zenzic's link validator.
+`/developers/`), links that cross instance boundaries **must use URL links**
+(root-relative `/developers/…` or a full URL) instead of relative Markdown
+file paths. Docusaurus does not resolve relative file-path links across plugin
+boundaries — and neither does Zenzic's link validator.
 
 By default, Zenzic's `Z105 ABSOLUTE_PATH` rule rejects any absolute link
 (`/foo/bar`) because absolute paths break when a site is hosted in a
@@ -27,7 +28,7 @@ them — without weakening Z105 elsewhere.
 
 | Situation | Use this | Don't use |
 |---|---|---|
-| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore Zxxx -->` (or `{/* zenzic:ignore Zxxx */}` for MDX) | — |
+| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore: Zxxx -->` (or `{/* zenzic:ignore: Zxxx */}` for MDX) | — |
 | Multiple cross-plugin links in different files | Inline ignores — one per link | — |
 
 The decision rule: **if it is a property of one line, it belongs inline.**

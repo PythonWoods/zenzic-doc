@@ -120,7 +120,7 @@ Add a `[governance.per_file_ignores]` table to your `.zenzic.toml`:
 "docs/legacy/*.md"   = ["Z101"]  # known broken links to decommissioned systems
 ```
 
-The map key is a glob pattern relative to `docs_dir`. Each entry in the list is one suppression, counted toward the Technical Debt total.
+The map key is a glob pattern relative to the repository root (matching the paths displayed in the CLI output). Each entry in the list is one suppression, counted toward the Technical Debt total.
 
 :::tip[Use `zenzic explain` to check status]
 Run `zenzic explain Z601` to see the current per-file suppression status for a rule — the Config Genealogy table will show every glob pattern where the rule is silenced.
@@ -157,11 +157,11 @@ Add a `[governance.directory_policies]` table to your `.zenzic.toml`:
 
 ```toml
 [governance.directory_policies]
-"blog/**"                       = ["Z601"]  # historical blog posts — brand refs expected
+"docs/blog/**"                   = ["Z601"]  # historical blog posts — brand refs expected
 "docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
 ```
 
-The map key is a glob pattern relative to `docs_dir`. Matched findings are **silently dropped before display** with **zero suppression debt cost** — they are never counted in the Suppression Audit footer.
+The map key is a glob pattern relative to the repository root (matching the paths displayed in the CLI output). Matched findings are **silently dropped before display** with **zero suppression debt cost** — they are never counted in the Suppression Audit footer.
 
 :::info[Hierarchy: Directory Policy > Per-file ignore > Inline]
 When choosing a suppression level:
@@ -248,7 +248,7 @@ Zenzic divides finding codes into two classes: **Suppressible** (author intent i
 | Z406 | NAV_CONTRACT | ✅ Yes |
 | Z601 | BRAND_OBSOLESCENCE | ✅ Yes |
 
-:::danger[The Inviolability Law — CEO-152]
+:::danger[The Inviolability Law]
 `zenzic:ignore: Z201`, `Z202`, `Z203`, and `Z204` are **silently rejected**. The security gate operates independently of the suppression engine. Even if a `zenzic:ignore` comment is present, Zenzic still emits the finding and exits with code 2 or 3.
 
 **You cannot ignore a breach.**

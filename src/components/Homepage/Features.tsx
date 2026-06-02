@@ -5,12 +5,12 @@ import React from 'react';
 import Link from '@docusaurus/Link';
 import Translate from '@docusaurus/Translate';
 
-// ZenzicOutput — 1:1 mirror of `zenzic check all` on a fixture containing
+// TerminalPreview — 1:1 mirror of `zenzic check all` on a fixture containing
 // Z104 (broken link), Z201 (credential), Z405 (unused asset), Z502 (short
 // content), Z601 (brand obsolescence). Markers, brackets, status line and
 // banner are copied verbatim from the real CLI. No fabrication, no styling
 // shortcuts that misrepresent the engine's output.
-function ZenzicOutput(): React.JSX.Element {
+function TerminalPreview(): React.JSX.Element {
   return (
     <div className="dark:bg-zinc-950/80 bg-zinc-50 backdrop-blur-md border dark:border-zinc-800/60 border-zinc-200 rounded-xl shadow-2xl font-mono text-[12px] md:text-[13px] leading-relaxed overflow-hidden">
       {/* Terminal chrome */}
@@ -223,7 +223,7 @@ export default function Features(): React.JSX.Element {
             </span>
           </h2>
         </div>
-        <ZenzicOutput />
+        <TerminalPreview />
         <FindingCodeIndex />
       </div>
     </section>

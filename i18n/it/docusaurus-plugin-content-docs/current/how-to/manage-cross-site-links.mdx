@@ -12,9 +12,10 @@ description: "Come tenere felice Z105 ABSOLUTE_PATH quando la documentazione att
 Quando il tuo progetto ospita più di un'istanza Docusaurus sotto lo stesso
 dominio (per esempio un'area Utente in `/docs/` e un'area Developer in
 `/developers/`), i link che attraversano i confini delle istanze
-**devono** essere assoluti. Docusaurus non risolve i path relativi
-attraverso i confini dei plugin — e nemmeno il validator dei link di
-Zenzic.
+**devono usare URL link** (root-relative `/developers/…` o URL completo)
+invece di path file Markdown relativi. Docusaurus non risolve i path
+file relativi attraverso i confini dei plugin — e nemmeno il validator
+dei link di Zenzic.
 
 Per impostazione predefinita, la regola `Z105 ABSOLUTE_PATH` di Zenzic
 rifiuta qualsiasi link assoluto (`/foo/bar`) perché i path assoluti si
@@ -29,7 +30,7 @@ possiede legittimamente, in modo che il validator smetta di segnalarli
 
 | Situazione | Usa questo | Non usare |
 |---|---|---|
-| Una singola riga isolata in un file matcha legittimamente una regola | `<!-- zenzic:ignore Zxxx -->` (oppure `{/* zenzic:ignore Zxxx */}` per MDX) | — |
+| Una singola riga isolata in un file matcha legittimamente una regola | `<!-- zenzic:ignore: Zxxx -->` (oppure `{/* zenzic:ignore: Zxxx */}` per MDX) | — |
 | Più link cross-plugin in file diversi | Ignore inline — uno per link | — |
 
 La regola decisionale: **se è una proprietà di una riga, va inline.**

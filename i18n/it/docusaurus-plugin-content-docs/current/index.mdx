@@ -36,7 +36,10 @@ uvx zenzic check all .
 
 **`zenzic check all`** è un gate binario. Emette un exit code deterministico in base ai finding rilevati nello scope analizzato. Exit 0 indica nessun finding rilevato.
 
-<ZenzicOutput status="success" exitCode={0} showFrame />
+<ZenzicTerminal title="zenzic check all">
+<span className="text-zinc-400 block">standalone · 20 files · 0.4 s</span>
+<span className="text-emerald-500 font-medium block mt-1">✔ Tutti i controlli superati — exit 0</span>
+</ZenzicTerminal>
 
 **`zenzic score`** calcola uno score di qualità 0–100 tramite un modello a penalità pesate su quattro categorie: Integrità Strutturale (30%), Navigazione (25%), Brand & Assets (25%), Eccellenza dei Contenuti (20%). Un `100/100` indica zero finding penalizzati nello scope analizzato. Il contenuto escluso non è valutato. Uno score inferiore a `100/100` è un audit superato se soddisfa la soglia `fail_under` configurata.
 
@@ -50,16 +53,17 @@ Regola assoluta: qualsiasi finding Z2xx collassa lo score a `0/100` incondiziona
 
 | Scenario                | Senza Zenzic (Linter Tradizionale)                                                                  | Con Zenzic                                                                             |
 |-------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | ZenzicOutput: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
+| **Link Rotto**          | CI fallisce con errore generico, nessun file/riga/causa.                                            | Rilevamento Zenzic: file, riga, codice (es. Z404), fix azionabile, exit code deterministico.      |
 | **Rotta Virtuale (es. `/blog/tags/python/`)** | Falso positivo (404): le rotte dinamiche non vengono risolte, costretto a usare ignore/regex.         | Risoluzione deterministica via VRM: la rotta virtuale è mappata a `source_files` senza Node.js. |
 | **Leak di Credenziali** | Il linter può non rilevare segreti in YAML/blocchi codice; nessun masking; l’incidente può finire in git. | Credential scanner: scansiona tutto, maschera i segreti, blocca la pipeline (exitCode=2, Z201), mai stampa il segreto completo. |
 | **Codici di Uscita**    | Non standard, ambigui o assenti.                                                                   | Tier: Z1xx (integrità link), Z2xx (sicurezza), Z4xx (struttura), Z6xx (governance).                 |
 
-**Esempio: ZenzicOutput per una Virtual Route**
+**Esempio: output terminale Zenzic per una Virtual Route**
 
-<ZenzicOutput status="error" code="Z111" exitCode={1} showFrame>
-docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente (Z111)
-</ZenzicOutput>
+<ZenzicTerminal title="zenzic check all">
+<div className="flex gap-2 items-baseline"><span className="text-rose-500">✘</span><span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z111]</span><span className="text-zinc-300">docs/blog/tags/python/: Rotta virtuale non mappata a nessun file sorgente</span></div>
+<div className="mt-2 text-rose-500 font-semibold text-[11px] tracking-wide">FAILED — exit 1</div>
+</ZenzicTerminal>
 
 Questo non è un lint check. È un **gate di sicurezza non negoziabile**.
 

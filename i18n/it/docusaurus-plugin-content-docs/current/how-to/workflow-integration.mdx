@@ -213,12 +213,7 @@ La protezione è attiva per default. La variabile è un'eccezione dell'operatore
 non una modifica alla configurazione.
 :::
 
-<ZenzicOutput
-  status="error"
-  code="Z301"
-  exitCode={1}
-  compact
-/>
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500">✘</span>{" "}<span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z301]</span>{" "}<span className="text-zinc-300">DANGLING_REF — exit 1</span></ZenzicTerminal>
 
 Il finding sopra è ciò che appare con un link esterno pre-lancio. È accurato — l'URL
 non si risolve. `ZENZIC_EXTRA_ARGS="--no-external"` lo sopprime per una singola

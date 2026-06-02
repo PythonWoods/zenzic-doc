@@ -1,69 +1,67 @@
 ---
 sidebar_position: 4
-sidebar_label: "Codici di Finding"
-description: "L'Enciclopedia definitiva dei Codici di Finding di Zenzic. Rimedi azionabili per ogni identificatore diagnostico Zxxx."
+sidebar_label: "Codici di Rilevamento"
+description: "Guida rapida ai codici Zenzic. Severità, penalità, codice di uscita e rimedio per ogni identificatore diagnostico Zxxx."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Riferimento Codici di Finding
+# Riferimento Codici di Rilevamento
 
-Ogni problema rilevato da Zenzic è contrassegnato da un **codice di finding canonico** (`Zxxx`). Questa enciclopedia fornisce il contesto tecnico e i passaggi pratici di rimedio per ogni segnale diagnostico.
+Ogni problema rilevato da Zenzic è contrassegnato da un **codice di rilevamento canonico** (`Zxxx`). Questa pagina è il cheat-sheet di riferimento rapido — severità, penalità, codice di uscita e percorso di rimedio essenziale per ogni segnale diagnostico.
 
-## Tier Model (ADR-012)
+## Modello a Livelli
 
-Zenzic organizza le diagnostiche in quattro tier operativi:
+Zenzic organizza i diagnostici in quattro livelli operativi:
 
-| Tier | Ownership | Formato | Ambito |
+| Livello | Proprietà | Formato | Ambito |
 |---|---|---|---|
-| Core | Zenzic | `Zxxx` | Scanner built-in e finding di sistema |
-| Governance | Zenzic | `Z6xx` | Check di policy opt-in (`[governance]`) |
-| Plugin | Terze parti | `<plugin-id>:<code>` | Regole esterne via entry-point |
-| Custom | Progetto locale | `ZZxxx` | Regole `[[custom_rules]]` nel TOML |
+| Core | Zenzic | `Zxxx` | Scanner integrati e rilevamenti di sistema |
+| Governance | Zenzic | `Z6xx` | Controlli policy opt-in (`[governance]`) |
+| Plugin | Terze parti | `<plugin-id>:<code>` | Regole da entry-point esterni |
+| Custom | Progetto locale | `ZZxxx` | `[[custom_rules]]` dichiarate nel TOML |
 
-## Stability Contract
+## Contratto di Stabilità
 
-Il registro codici è governato da superfici contrattuali immutabili:
+Il registro dei codici è regolato da superfici di contratto immutabili:
 
-- `FROZEN_CODES`: codici che non possono essere rinumerati o mutati semanticamente senza approvazione architetturale.
+- `FROZEN_CODES`: codici che non possono essere rinumerati o modificati semanticamente senza approvazione a livello architetturale.
 - `NON_SUPPRESSIBLE_CODES`: codici di sicurezza che non possono essere silenziati inline.
-- `PLUGIN_FORBIDDEN_EXITS`: i plugin non possono emettere Exit 2/3 (riservati alla semantica di sicurezza core).
+- `PLUGIN_FORBIDDEN_EXITS`: i plugin non possono emettere Exit 2/3 (riservati alla semantica di sicurezza del core).
 
 :::tip[Deep-linking]
-Ogni codice ha un'ancora permanente. Puoi collegarti direttamente a un codice specifico usando `https://zenzic.dev/it/docs/reference/finding-codes#z101`.
+Ogni codice ha un anchor permanente. È possibile collegarsi direttamente a un codice specifico usando `https://zenzic.dev/it/docs/reference/finding-codes#z101`.
 :::
 
-## Panoramica delle Categorie
+## Panoramica Categorie
 
-Zenzic organizza le rilevazioni in **otto categorie diagnostiche**, ognuna affrontando un pilastro specifico dell'integrità della documentazione:
-
-| **Categoria** | **Range** | **Scopo** | **Severità Default** | **Sopprimibile?** |
+| **Categoria** | **Intervallo** | **Scopo** | **Severità Predefinita** | **Sopprimibile?** |
 |---|---|---|---|---|
-| **Z0xx** | Migrazione e Compatibilità | Deprecazione engine; guida migrazione | `error` | ❌ No (abort fatale) |
+| **Z0xx** | Migrazione e Compatibilità | Deprecazione motore; guida alla migrazione | `error` | ❌ No (abort fatale) |
 | **Z1xx** | Integrità dei Link | Link rotti, vuoti, circolari; pagine orfane; problemi di percorso | `error`/`warning`/`info` | ✅ Sì |
 | **Z2xx** | Sicurezza (credential scanner) | Rilevamento segreti; path traversal; incidenti di sicurezza | `warning`/`security_breach`/`security_incident` | 🔒 **Mai** |
 | **Z3xx** | Integrità dei Riferimenti | Definizioni di riferimento dangling/duplicate | `error`/`warning` | ✅ Sì |
-| **Z4xx** | Struttura | Directory index, pagine orfane, alt text mancante, asset di config | `info`/`warning` | ✅ Sì |
-| **Z5xx** | Qualità Contenuti | Placeholder, contenuto corto, validazione snippet, regressioni | `warning`/`error` | ✅ Sì |
-| **Z6xx** | Governance | Obsolescenza brand, parità traduzioni (opt-in) | `warning` | ✅ Sì |
-| **Z9xx** | Engine e Sistema | Errori di esecuzione regole, timeout, diagnostiche di sistema | `error`/`warning` | ✅ Sì |
+| **Z4xx** | Struttura | Indici directory, pagine orfane, alt text mancante, asset di config | `info`/`warning` | ✅ Sì |
+| **Z5xx** | Qualità dei Contenuti | Testo segnaposto, contenuto breve, validazione snippet, regressioni | `warning`/`error` | ✅ Sì |
+| **Z6xx** | Governance | Obsolescenza brand, parità i18n (opt-in) | `warning` | ✅ Sì |
+| **Z9xx** | Motore e Sistema | Errori di esecuzione regole, timeout, diagnostici di sistema | `error`/`warning` | ✅ Sì |
 
-:::info[Sintassi di soppressione per-linea]
-Sopprimi un finding su una linea specifica con un commento format-aware sulla stessa linea.\
+:::info[Sintassi di soppressione per riga]
+Sopprimi un rilevamento su una riga specifica con un commento nel formato corretto sulla stessa riga.\
 **Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
 **MDX (.mdx):** `{/* zenzic:ignore: Zxxx */}`\
-Vedi la [Suppression Policy](./suppression-policy.mdx) per il riferimento completo, incluse le interazioni con la modalità `--strict`.
+Vedi [Politica di Soppressione](./suppression-policy.mdx) per il riferimento completo.
 :::
 
-### Exit Code Contract
+### Contratto Codici di Uscita
 
-Zenzic utilizza exit code per comunicare la severità attraverso le pipeline CI/CD:
-
-* **Exit 0:** Tutti i check sono passati (o soppressi via `--exit-zero`).
-* **Exit 1:** Errori e warning rilevati; usa `--strict` per promuovere i warning.
-* **Exit 2:** Security breach (Z201 CREDENTIAL_SECRET) o violazioni di policy (Z204 FORBIDDEN_TERM). **Mai** soppressi.
-* **Exit 3:** Incidenti di sicurezza rilevati (Z203 PATH_TRAVERSAL_FATAL). **Mai** soppressi, neppure con `--exit-zero`.
+| Codice di Uscita | Significato | Sopprimibile? |
+| :---: | :--- | :--- |
+| **0** | Tutti i controlli superati (o soppressi con `--exit-zero`) | — |
+| **1** | Errori e avvisi rilevati; usa `--strict` per promuovere i warning | ✅ Sì |
+| **2** | Breach di sicurezza (Z201, Z204). **Mai** soppresso | ❌ Mai |
+| **3** | Incidente di sicurezza (Z203 PATH_TRAVERSAL_FATAL). **Mai** soppresso, nemmeno con `--exit-zero` | ❌ Mai |
 
 ---
 
@@ -71,14 +69,13 @@ Zenzic utilizza exit code per comunicare la severità attraverso le pipeline CI/
 
 ### Z000: UNSUPPORTED_ENGINE {#z000}
 
-* **Severità:** `error` (Fatale — interrompe l'esecuzione immediatamente)
-* **Contesto Tecnico:** Z000 è un **errore di configurazione fatale**, non un finding collezionabile. Emerge come eccezione `ConfigurationError` quando l'adapter factory incontra un alias di engine legacy deprecato o rimosso in `.zenzic.toml`. L'esecuzione si ferma prima che qualsiasi scansione inizi; Z000 **non** apparirà nell'output `--format json` né nell'array dei findings.
-* **Rationale Architetturale:** Un alias di engine deprecato non causa semplicemente una misconfigurazione — invalida il determinismo della Virtual Site Map. La garanzia core di Zenzic è `score(repo) == score(repo)` in qualsiasi ambiente. Se l'adapter factory accettasse un engine sconosciuto e proseguisse con una euristica di fallback, la VSM prodotta sarebbe non-deterministica: ambienti diversi potrebbero risolvere adapter diversi, produrre route table diverse, e generare score diversi per input identici. L'abort hard è l'unica risposta che preserva il contratto di determinismo.
-* **Rimedio:**
-    1. Apri il tuo `.zenzic.toml` o `pyproject.toml`.
-    2. Individua il campo `engine`.
-    3. Imposta `engine = "standalone"`.
-    4. Se stai usando MkDocs, assicurati che sia impostato `engine = "mkdocs"`.
+**Severità:** `error` (abort fatale) · **Penalità:** nessuna · **Uscita:** 1 · **Sopprimibile:** No
+
+Errore di configurazione fatale: l'adapter factory ha rilevato un alias motore deprecato o rimosso in `.zenzic.toml`. L'esecuzione si interrompe prima di qualsiasi scansione — Z000 non appare nell'output `--format json`.
+
+**Rimedio:**
+1. Apri `.zenzic.toml` e imposta `engine = "standalone"` (o `"mkdocs"`, `"docusaurus"`, `"zensical"`).
+2. Rimuovi qualsiasi alias motore legacy.
 
 ---
 
@@ -86,199 +83,90 @@ Zenzic utilizza exit code per comunicare la severità attraverso le pipeline CI/
 
 ### Z101: LINK_BROKEN {#z101}
 
-:::info[Quality Score — Structural tier (30%) | −8.0 pts / occorrenza]
-Z101 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−8.0 pts per occorrenza**, capped a 30 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −8,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z101-broken-links)
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Emesso durante il Pass 2 (Validation) del Two-Pass Engine. Un link relativo punta a una risorsa che non esiste all'interno della **Virtual Site Map (VSM)**. Questo significa che, sebbene il file possa esistere fisicamente, è o fuori dallo scope di scansione dei docs o è stato escluso da una regola di esclusione.
-* **Rationale Architetturale:** Un link rotto è la rottura silente di un contratto bidirezionale fra autore e lettore. L'autore ha committato un percorso; ogni lettore confida che quel percorso porti da qualche parte. Quando un file viene rinominato o cancellato, le pipeline CI standard non rilevano la rottura — il build ha successo, la test suite passa, e il danno si propaga in modo invisibile fino a quando un utente colpisce il 404. Zenzic intercetta questa rottura prima di qualsiasi build, divenendo l'unico gate nella pipeline capace di fermare questa classe di documentation rot alla sorgente.
-* **Rimedio:**
-    1. Verifica l'esistenza fisica del file di destinazione.
-    2. Controlla il calcolo del percorso relativo (es. `../folder/target.md`).
-    3. Assicurati che il file non sia matchato da `ignored_patterns` nella tua config.
-    4. Se referenzi un file fuori da `docs/`, usa un percorso globale o un symlink (anche se relativo è preferibile).
+Un link relativo punta a una risorsa non trovata nella Virtual Site Map. Il file potrebbe essere fuori dall'ambito di `docs_dir` o corrispondente a un pattern di esclusione.
 
-<ZenzicOutput
-  status="error"
-  code="Z101"
-  exitCode={1}
-  compact
-  rows={[{ code: 'Z101', file: 'docs/guides/setup.md:14', message: "Broken link → 'install.md' (target not found)", severity: 'error' }]}
-/>
-
-:::note[Confine Architetturale — Validazione di Frammenti Cross-Page]
-Zenzic valida l’esistenza della **route** verso cui punta un link. Non valida il frammento specifico (`#intestazione`) all’interno di una pagina diversa. Se un link come `/docs/reference/cli#intestazione-specifica` punta a una route valida, Zenzic non emette alcun finding, anche se `#intestazione-specifica` non esiste in quella pagina.
-
-Per gli anchor nella stessa pagina (link della forma `#sezione-in-questa-pagina`), vedere [Z102: ANCHOR_MISSING](#z102).
-
-Per la validazione di frammenti cross-page — verificare che `#intestazione` esista all’interno di un’altra pagina — il generatore di siti statici (es. Docusaurus) esegue questo controllo in fase di build. Eseguire `npm run build` rivelerà gli anchor cross-page non validi che esulano dallo scope del route-graph di Zenzic.
-:::
+**Rimedio:**
+1. Verifica l'esistenza fisica del file di destinazione.
+2. Correggi il percorso relativo (es. `../folder/target.md`).
+3. Conferma che il file non sia corrispondente a `ignored_patterns` nella config.
 
 ### Z102: ANCHOR_MISSING {#z102}
 
-:::info[Quality Score — Structural tier (30%) | −5.0 pts / occorrenza]
-Z102 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−5.0 pts per occorrenza**, capped a 30 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −5,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z102-anchor-missing)
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Il file di destinazione è valido (Z101 passa), ma l'anchor HTML specifico (es. `#setup`) non si trova nel registro degli header del target. Zenzic effettua il parsing di tutti gli header Markdown e dei tag `<a id="...">` espliciti per costruire questo registro durante il Pass 1.
-* **Rationale Architetturale:** Un heading è un contratto pubblico. Quando un autore scrive `## Setup` o dichiara `{#my-anchor}`, committa quell'identificatore a ogni link in entrata che lo referenzia. Quando il testo dell'heading viene modificato o l'ID esplicito rimosso, il contratto si rompe silenziosamente: il file esiste ancora (Z101 non scatta), ma la sezione che il lettore si aspettava non c'è più. Z102 enforcea la stabilità contrattuale a livello di anchor — che un check di esistenza file da solo non può fornire — intercettando le regressioni introdotte da ordinari rinomini di heading.
-* **Rimedio:**
-    1. Apri il file di destinazione e verifica il testo dell'heading.
-    2. Assicurati che l'anchor combaci con la slugificazione engine-specifica (es. Docusaurus usa Kebab-case).
-    3. Se usi ID custom, assicurati che la sintassi `{#id}` o `<a id="id"></a>` sia corretta.
+Il file di destinazione del link esiste (Z101 passa), ma l'anchor HTML specifico (es. `#setup`) è assente dal registro intestazioni del file di destinazione. Zenzic analizza tutte le intestazioni e i tag `<a id="...">` espliciti durante il Pass 1.
+
+**Rimedio:**
+1. Controlla il testo dell'intestazione nel file di destinazione e verifica lo slug dell'anchor.
+2. Assicurati che la slugificazione Kebab-case corrisponda al motore Markdown (Docusaurus: minuscolo, spazi → trattini).
+3. Usa `{#id}` o `<a id="id"></a>` per ID personalizzati.
 
 ### Z103: ORPHAN_LINK {#z103}
 
-:::note[Quality Score — Nessun impatto DQS (0.0 pts)]
-Z103 **non** riduce il [Deterministic Quality Score](./scoring-algorithm.mdx). Causa exit 1 in modalità standard. Vedi [Scoring Algorithm](./scoring-algorithm.mdx) per la tabella completa delle penalità.
-:::
+**Severità:** `error` · **Penalità:** 0,0 pt · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z103-orphan-link)
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Questo link punta a un file presente nella VSM ma non incluso nella struttura di navigazione del sito (sidebar/nav). Gli utenti possono collegarsi ad esso, ma non possono trovarlo tramite la UI.
-* **Rationale Architetturale:** Una pagina orfana di navigazione esiste nel build ma non nel Knowledge Graph che i lettori percorrono. È raggiungibile solo via URL diretto — il lettore deve già conoscere l'URL per trovarla. Una pagina del genere ha discoverability zero: non può essere trovata seguendo alcun percorso di navigazione, voce di sidebar, o albero di documentazione. Z103 rende esplicita questa invisibilità, dando all'autore la scelta di o aggiungere la pagina alla navigazione (rendendola scopribile) o riconoscere intenzionalmente che è un endpoint nascosto.
-* **Rimedio:**
-    1. Aggiungi il file alla navigazione `mkdocs.yml` o al `sidebars.ts` di Docusaurus.
-    2. Se la pagina è intenzionale (es. landing page nascosta), puoi sopprimere il warning con un commento `<!-- zenzic-disable Z103 -->`.
+La destinazione del link esiste nella VSM ma non è raggiungibile attraverso alcuna struttura di navigazione (sidebar/nav). Gli utenti possono raggiungerla solo tramite URL diretto.
+
+**Rimedio:**
+1. Aggiungi il file al `nav` (MkDocs) o a `sidebars.ts` (Docusaurus).
+2. Se la pagina nascosta è intenzionale, sopprimi con `<!-- zenzic:ignore: Z103 -->`.
 
 ### Z104: FILE_NOT_FOUND {#z104}
 
-:::info[Quality Score — Structural tier (30%) | −8.0 pts / occorrenza]
-Z104 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−8.0 pts per occorrenza**, capped a 30 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −8,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Un errore filesystem di basso livello. L'engine ha tentato di aprire un file referenziato da un link o asset ma ha ricevuto un `FileNotFoundError`. Questo si verifica tipicamente quando un file viene spostato o cancellato durante un processo di build concorrente.
+Errore filesystem di basso livello: il motore non ha potuto aprire un file referenziato da un link. Si attiva anche come **variante slug-mismatch** in Docusaurus: un link assoluto punta a un prefisso di route del progetto (es. `/blog/`) ma lo slug esatto non esiste nella VSM — causa più comune: il campo `slug:` nel frontmatter differisce dall'URL nel link.
 
-  **Variante slug-mismatch (Docusaurus):** Z104 scatta anche quando un link assoluto punta a un prefisso di route project-owned (es. `/blog/`) scansionato da Zenzic, ma lo slug esatto non esiste nella Virtual Site Map. La causa più comune è un campo `slug:` nel frontmatter che differisce dall'URL usato in un link:
+```text
+blog/post.mdx:12: '/blog/zenzic-v070' not found in the site map
+💡 Did you mean: '/blog/zenzic-v070-release/'?
+```
 
-  ```mdx title="blog/2026-05-05-release-log.mdx"
-  {/* Questo link è errato — lo slug reale è zenzic-v070-release */}
-  [Read the previous post](/blog/zenzic-v070)
-  ```
-
-  ```yaml title="blog/2026-04-29-zenzic-v070-release.mdx (frontmatter)"
-  slug: zenzic-v070-release
-  ```
-
-  Output Zenzic:
-
-  ```
-  blog/2026-05-05-release-log.mdx:12: '/blog/zenzic-v070' not found in the site map
-  💡 Did you mean: '/blog/zenzic-v070-release/'?
-  ```
-
-  La Virtual Site Map viene costruita dagli slug nel frontmatter (non dai nomi di file fisici), quindi il file fisico `2026-04-29-zenzic-v070-release.mdx` non crea la route `/blog/zenzic-v070/` — solo `/blog/zenzic-v070-release/`.
-
-* **Rationale Architetturale:** La variante slug-mismatch rivela una proprietà strutturale unica di Docusaurus: il campo frontmatter `slug:` disaccoppia l'URL pubblico di un file dal suo percorso fisico. Questo disaccoppiamento rende non-portabili i link URL-based — un link a `/blog/my-post/` può rompersi invisibilmente se lo `slug:` del file target viene cambiato, anche se il file stesso continua a esistere su disco e nessun Z101 scatta. La Virtual Site Map di Zenzic costruisce le route a partire dagli slug nel frontmatter, non dai nomi di file, rendendo rilevabile questa classe di rotture slug-mismatch silenziose prima che il build venga eseguito.
-* **Rimedio:**
-    1. Assicurati che nessun altro processo stia modificando la directory `docs/` durante la scansione Zenzic.
-    2. Verifica che la tua impostazione `docs_dir` sia corretta e che il percorso del file sia assoluto rispetto alla root del repository.
-    3. *(Variante slug-mismatch)* Esegui `zenzic inspect routes --kind physical` per vedere tutti gli URL canonici nella VSM, e aggiorna il link in modo che combaci con lo slug esatto dichiarato nel frontmatter del file di destinazione.
+**Rimedio:**
+1. Verifica che nessun processo concorrente stia modificando `docs/` durante la scansione.
+2. Controlla che `docs_dir` sia corretto e il percorso sia assoluto rispetto alla radice del repository.
+3. *(Slug-mismatch)* Esegui `zenzic inspect routes --kind physical` per elencare tutti gli slug canonici nella VSM. Aggiorna il link per corrispondere allo slug `slug:` dichiarato nel frontmatter.
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
-:::info[Quality Score — Structural tier (30%) | −2.0 pts / occorrenza]
-Z105 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−2.0 pts per occorrenza**, capped a 30 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −2,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z105-absolute-path)
 
-* **Severità:** `error`
-* **Contesto Tecnico:** I percorsi assoluti (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) rompono la portabilità della documentazione. Zenzic li flagga per prevenire la sindrome "Funziona sulla mia macchina" nelle pipeline CI/CD.
+Un percorso assoluto del filesystem (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) compromette la portabilità della documentazione. I prefissi URL del progetto (`/blog/`, `/docs/`) sono esenti da Z105 ma vengono comunque verificati tramite lookup VSM (uno slug mancante genera **Z104**).
 
-  **I prefissi project-owned sono esenti da Z105 ma non da Z104.** I siti Docusaurus spesso usano link assoluti che iniziano con `/blog/`, `/docs/`, o altri valori di `routeBasePath` per attraversare i confini fra plugin. Zenzic auto-rileva questi prefissi dalla configurazione dell'engine (Zero-Config — nessuna entry richiesta in `.zenzic.toml`) e sopprime Z105 per essi.
-
-  Tuttavia, sopprimere Z105 non significa che il link rimanga non controllato. Per i prefissi pienamente scansionati (es. `blog/` è in scope), Zenzic esegue un lookup in VSM e solleva un finding [Z104 — FILE_NOT_FOUND](#z104) se la route esatta è assente. Questo intercetta slug mismatch e post rinominati che rompono i link assoluti. Il costo del lookup è $O(1)$ — una singola `get()` su hash-map — senza impatto misurabile sul tempo di scansione.
-
-  | Link | Z105 | Verifica VSM | Esito |
-  | :--- | :---: | :---: | :--- |
-  | `/blog/correct-slug` (slug presente in VSM) | ✅ esente | ✅ passa | Nessun finding |
-  | `/blog/wrong-slug` (slug assente dalla VSM) | ✅ esente | ❌ fallisce | **Z104** |
-  | `/developers/intro` (content root plugin sibling, pagina esiste) | ✅ esente | ✅ passa | Nessun finding |
-  | `/developers/ghost` (content root plugin sibling, pagina assente) | ✅ esente | ❌ fallisce | **Z104** |
-  | `/api/v1/users` (prefisso sconosciuto) | ❌ **Z105** | — | Z105 |
-
-* **Rationale Architetturale:** Un percorso assoluto nella sorgente di documentazione vincola il link al layout filesystem di un singolo host — l'esatto opposto del contratto di portabilità che la documentazione deve onorare. A differenza del codice, dove gli import assoluti possono essere accettabili se scopati a un package pubblicato, un percorso assoluto in documentazione fa trapelare lo stato della macchina dell'autore in un artefatto pubblico: il build avrà successo sul laptop dell'autore e fallirà in CI, in un fork, o nell'ambiente di un contributor. Zenzic flagga Z105 come finding Structural perché la rottura non è stilistica — è un difetto di portabilità che si accumula silenziosamente: ogni percorso assoluto aggiunge un'altra assunzione environment-specific alla documentazione, fino a quando una riorganizzazione, un mirror, o una migrazione li fa emergere tutti insieme.
-* **Rimedio:**
-    1. Converti il link in un percorso relativo a partire dalla directory del file corrente.
-    2. Usa `@site/` o alias engine-specifici simili se supportati (es. in Docusaurus).
-    3. Se hai ricevuto un **Z104** (non Z105) su un link assoluto `/blog/` o `/docs/`, il prefisso di route è riconosciuto ma lo slug non esiste — vedi [Rimedio Z104](#z104) sopra.
-
-:::note[Confine Multi-Istanza Docusaurus]
-Attualmente, Docusaurus non supporta percorsi relativi (`../`) attraverso istanze di plugin diverse (es. da `docs/` a `developers/`). Per collegare istanze diverse, è necessario usare URL assoluti di produzione (`https://...`). Questo attiverà un finding Z105. Poiché le soppressioni inline all'interno delle tabelle Markdown potrebbero non essere parsate correttamente dal motore AST, devi sopprimere questo finding tramite [`[governance.per_file_ignores]`](/developers/how-to/release-governance-protocol) nel tuo `.zenzic.toml` e accettare la penalità di 1 punto DQS finché il Docusaurus Adapter non implementerà la risoluzione root-relative cross-istanza.
-
-*Questa è una limitazione architetturale nota, tracciata nella [ROADMAP](https://zenzic.dev/developers/explanation/adr-vault).*
-:::
+**Rimedio:**
+1. Converti in un percorso relativo dalla directory del file corrente.
+2. Usa `@site/` o alias specifici del motore dove supportati.
+3. Se hai ricevuto Z104 su un link assoluto `/blog/`, vedi il rimedio Z104.
 
 ### Z106: CIRCULAR_LINK {#z106}
 
-:::note[Quality Score — Informativo | 0.0 pts (nessun impatto DQS)]
-Z106 è puramente informativo e **non** riduce il [Deterministic Quality Score](./scoring-algorithm.mdx). Ispeziona con `--show-info`. Vedi [Scoring Algorithm](./scoring-algorithm.mdx#penalty-table) per il razionale dietro il design a penalità zero.
-:::
+**Severità:** `info` · **Penalità:** 0,0 pt · **Uscita:** 0 · **Sopprimibile:** Sì (solo informativo, `--show-info`)
 
-* **Severità:** `info`
-* **Contesto Tecnico:** Rilevato dal modulo Graph Integrity. Un insieme di link forma un ciclo diretto (A → B → A). È un segnale di telemetria strutturale: visibile via `--show-info`, escluso dallo scoring, e non blocca il Quality Gate.
-* **Rimedio:**
-    1. Rivedi il flow dei contenuti per vedere se un link può essere sostituito da una sezione "See Also" più ampia.
-    2. Assicurati che gli utenti non rimangano intrappolati fra due pagine senza chiaro percorso di uscita.
+Un insieme di link forma un ciclo diretto (A → B → A). Si tratta di un segnale di telemetria strutturale — non blocca il Quality Gate né riduce il DQS.
 
-:::note[Rationale architetturale]
-**Knowledge Graph, non Dependency Graph.** Nel codice sorgente, un ciclo di dipendenze (modulo A importa B, che importa A) è un difetto di compilation-time. La documentazione è un Knowledge Graph: se un Tutorial collega una pagina Reference per dettagli tecnici, è atteso e desiderabile che la pagina Reference rimandi al Tutorial come esempio funzionante. Un grafo densamente interconnesso è segnale di UX di alta qualità, non un difetto.
-
-**Score Anti-Pattern Prevention.** Elevare Z106 a Warning o Error dedurrebbe punti dal Quality Score, mettendo pressione agli ingegneri per rimuovere link utili al solo fine di soddisfare il linter. Questo viola il principio Zero-DBT: un linter deve flaggare solo difetti genuini. Un link circolare intenzionale non è un difetto da risolvere.
-
-**AST Recursion Protection.** L'algoritmo di rilevamento cicli (DFS iterativa, Θ(V+E)) è un requisito meccanico del builder della Virtual Site Map. Identificare i cicli matematicamente è necessario per interrompere la ricorsione e prevenire loop infiniti durante la traversata del grafo — non è triggerato da una preoccupazione di qualità.
-
-**Topological Telemetry.** `--show-info` espone i finding Z106 come metriche strutturali, non come violazioni. Una densità di cicli anomalmente alta su una singola pagina può indicare un problema di Information Architecture che vale la pena rivedere — ma quella valutazione spetta all'ingegnere, non allo static analyzer.
-:::
-
-### Z108: EMPTY_LINK_TEXT {#z108}
-
-:::info[Quality Score — Structural tier (30%) | −1.0 pt / occorrenza]
-Z108 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−1.0 pt per occorrenza**, capped a 30 pts per il tier.
-:::
-
-* **Severità:** `error`
-* **Contesto Tecnico:** Emesso quando il testo visibile in un link Markdown inline o in un reference link collassato è vuoto o composto da soli whitespace. Esempi: `[](./page.md)`, `[ ](./page.md)`, e `[][ref]`.
-* **Rationale Architetturale:** Il testo del link è il contratto semantico machine-readable fra l'autore e ogni consumer downstream. Gli screen reader annunciano il testo del link come descrizione della destinazione di navigazione. I crawler dei motori di ricerca lo indicizzano come etichetta di relazione fra pagine. Chi naviga da tastiera vi si affida per capire dove il focus del Tab condurrà. Una label vuota o whitespace-only rompe tutti e tre i contratti simultaneamente: il link esiste nel DOM ma non comunica nulla. Zenzic classifica Z108 come finding Structural — non come preferenza di stile — perché degrada sia l'accessibilità sia il livello semantico del knowledge graph.
-* **Rimedio:**
-  1. Sostituisci la label vuota con testo descrittivo, es. `[Documentation](./page.md)`.
-  2. Se il link è solo un placeholder, rimuovilo finché destinazione e label non saranno noti.
-  3. Riesegui `zenzic check links` dopo l'edit per confermare che non rimangano finding Z108.
-
-:::tip[Esempio eseguibile]
-Per una dimostrazione pratica, crea una fixture locale con `[](./target.md)`
-ed esegui `zenzic check links` per osservare Z108 in isolamento.
-:::
-
----
+**Rimedio:** Rivedi il flusso dei contenuti; considera di sostituire un link con una sezione "Vedi anche". Nessuna azione richiesta se il ciclo è intenzionale.
 
 ### Z107: CIRCULAR_ANCHOR {#z107}
 
-:::info[Quality Score — Structural tier (30%) | −1.0 pt / occorrenza]
-Z107 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−1.0 pt per occorrenza**, capped a 30 pts per il tier.
-:::
+**Severità:** `warning` · **Penalità:** −1,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì
 
-<ZenzicOutput
-  status="warning"
-  code="Z107"
-  exitCode={1}
-  compact
-  rows={[{
-    code: "Z107",
-    file: "docs/guide.md",
-    line: 42,
-    message: "Self-referential anchor link: anchor #intro points to a heading on this very page."
-  }]}
-/>
+Un link della forma `[testo](#anchor)` si risolve in un'intestazione della **stessa** pagina — un self-loop che naviga il lettore esattamente dove si trova già. Distinto da una voce di sommario (che collega in avanti a un anchor inferiore su una pagina lunga).
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato dalla `CircularAnchorRule` nel pluggable rule engine. Un link nella forma `[text](#anchor)` dove l'anchor si risolve in un heading della *stessa* pagina è logicamente circolare — naviga esattamente dove il lettore è già. La regola slugifica tutti gli heading nel file (lowercased, spazi in trattini, caratteri speciali rimossi) e li confronta con ogni link anchor locale.
-* **Rationale Architetturale:** Un link nella forma `[text](#anchor)` dove `#anchor` si risolve in un heading nella stessa pagina è un ciclo degenere di lunghezza 1 — riconduce il lettore esattamente alla posizione che già occupa. È distinto da una legittima entry di table-of-contents in cima alla pagina (che linka in avanti verso un anchor più in basso). Z107 scatta solo quando il link e il suo heading risolto condividono lo stesso contesto di pagina: un self-loop che fornisce zero valore di navigazione e può confondere screen reader e chi naviga da tastiera che si aspettano che i link spostino il focus in una posizione diversa.
-* **Rimedio:**
-    1. Sostituisci `[text](#anchor)` con la prosa semplice `text` se non è intesa alcuna navigazione.
-    2. Oppure linka al concetto in una pagina *diversa* che lo espande.
-    3. Se il link è intenzionale (es. una entry di ToC in cima a una pagina lunga), per definizione non è circolare — rivedi il match dello slug dell'anchor.
+**Rimedio:**
+1. Sostituisci `[testo](#anchor)` con testo normale se non è prevista navigazione.
+2. Oppure collega il concetto a una pagina *diversa*.
+
+### Z108: EMPTY_LINK_TEXT {#z108}
+
+**Severità:** `error` · **Penalità:** −1,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z108-empty-link-text)
+
+Un link Markdown inline o un link di riferimento collapsed ha testo visibile vuoto o composto solo da spazi — es. `[](./page.md)`, `[ ](./page.md)`, `[][ref]`. Rompe simultaneamente l'accessibilità screen reader e l'indicizzazione semantica.
+
+**Rimedio:**
+1. Aggiungi testo descrittivo al link: `[Documentazione](./page.md)`.
+2. Rimuovi completamente il link se la destinazione non è ancora nota.
 
 ---
 
@@ -286,107 +174,70 @@ Z107 conta nel tier **Structural** del [Deterministic Quality Score](./scoring-a
 
 ### Z201: CREDENTIAL_SECRET {#z201}
 
-:::danger[Quality Score — Security Override | FATAL | Exit 2 | Non-suppressible]
-Z201 triggera il Security Gate: il [Deterministic Quality Score](./scoring-algorithm.mdx) collassa a **0/100** incondizionatamente. Exit code **2** (credential leak) — bypassa `--exit-zero`. Una sorgente di documentazione che fa trapelare credenziali non può ricevere uno score di qualità. Vedi [Scoring Algorithm](./scoring-algorithm.mdx#security-override).
+:::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 2 | DQS collassa a 0/100]
+`zenzic:ignore: Z201` è **silenziosamente rifiutato**. Il credential scanner si attiva incondizionatamente su ogni riga. [↗ Gallery](../tutorials/examples/z2xx-security/z201-credentials)
 :::
 
-:::danger[🔒 INVIOLABILE — Non può essere soppresso]
-`zenzic:ignore: Z201` viene **silenziosamente rifiutato**. Il credential scanner scatta incondizionatamente su ogni linea. I finding di sicurezza sono fatti, non suggerimenti — un credential leak non può essere dichiarato un falso positivo.
-:::
+**Severità:** `security_breach` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 2
 
-* **Severità:** `security_breach` (Exit 2)
-* **Contesto Tecnico:** Il credential scanner analizza ogni linea — raw e normalizzata — per pattern di credenziali noti. La decodifica Base64 speculativa viene applicata ai token candidati: se la decodifica rivela un pattern di credenziale, la linea originale (codificata) viene flaggata. Questo previene l'offuscamento via Base64 encoding in valori di frontmatter o blocchi di codice.
-* **Rationale Architetturale:** La sorgente di documentazione è untrusted input. È scritta da esseri umani, accettata da contributor esterni, e processata da pipeline CI che possono detenere accesso a credenziali di produzione. Una singola API key committata in un file Markdown — in fretta, prima di una scadenza — è un incidente di supply-chain, non un errore editoriale: una volta pushato a un remote, il secret è compromesso indipendentemente da qualsiasi cancellazione successiva. Zenzic tratta i file di documentazione come codice sotto audit di sicurezza, scansionando ogni linea incondizionatamente prima che qualsiasi altra analisi cominci.
-* **Rimedio:**
-    1. **IMMEDIATO:** Ruota la credenziale trapelata. Va considerata compromessa.
-    2. Rimuovi il secret dal file.
-    3. Bonifica la history git con `git-filter-repo` o tool simili per assicurarti che il secret non sia solo nascosto ma sparito.
-    4. Usa placeholder come `YOUR_API_KEY` per gli esempi nella documentazione.
+Il credential scanner ha rilevato un pattern di credenziale noto. Viene applicata la decodifica speculativa Base64 — anche i token codificati che decodificano in pattern di credenziali vengono segnalati.
 
-<ZenzicOutput
-  status="breach"
-  code="Z201"
-  exitCode={2}
-  compact
-  masked="ghp_****Kx9mR2"
-  credentialType="github-personal-token"
-  location="docs/setup/api-guide.md:23"
-/>
+**Rimedio:**
+1. **IMMEDIATO:** Ruota la credenziale esposta — è compromessa.
+2. Rimuovi il segreto dal file.
+3. Pulisci la cronologia git usando `git-filter-repo`.
+4. Usa placeholder come `YOUR_API_KEY` negli esempi di documentazione.
 
 ### Z202: PATH_TRAVERSAL {#z202}
 
-:::danger[Quality Score — Security Override | FATAL | Exit 1 | Non-suppressible]
-Z202 triggera il Security Gate: il [Deterministic Quality Score](./scoring-algorithm.mdx) collassa a **0/100** incondizionatamente. Exit code **1** (traversal standard — distinto dall'incidente OS-path Z203 a Exit 3). Il boundary guard non può essere soppresso. Vedi [Scoring Algorithm](./scoring-algorithm.mdx#security-override).
+:::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 1 | DQS collassa a 0/100]
+`zenzic:ignore: Z202` è **silenziosamente rifiutato**. [↗ Gallery](../tutorials/examples/z2xx-security/z202-path-traversal)
 :::
 
-:::danger[🔒 INVIOLABILE — Non può essere soppresso]
-`zenzic:ignore: Z202` e `zenzic:ignore: Z203` vengono **silenziosamente rifiutati**. La path traversal guard enforcea il boundary di scansione incondizionatamente.
-:::
+**Severità:** `error` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 1
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Un percorso relativo usa segmenti `..` per evadere il boundary della root `docs/`. È un guardrail di sicurezza per assicurare che l'engine Zenzic non divulghi o scansioni accidentalmente file sensibili del repository (come `.env` o `config.py`) che non fanno parte della documentazione.
-* **Rationale Architetturale:** Una path traversal è categoricamente distinta da un link rotto (Z101). Un link rotto è un fallimento di manutenzione; una traversal è una violazione di boundary. La root `docs/` definisce cosa è documentazione pubblica e cosa è infrastruttura interna. Un link che evade questo perimetro via sequenze `..` può esporre file che esistono nel repository ma non erano mai stati intesi per la pubblicazione. L'evasione può essere accidentale (un percorso relativo mal calcolato) o deliberata (un probe di template injection); Zenzic applica lo stesso Exit 1 a entrambi perché il rischio architetturale — trapelare percorsi di file privati nella documentazione renderizzata — è identico.
-* **Rimedio:**
-    1. Sposta l'asset o file di destinazione all'interno della gerarchia `docs/` o `static/`.
-    2. Se devi referenziare un file esterno, usa un link simbolico (se permesso) o un URL letterale assoluto.
+Un percorso relativo usa segmenti `..` per uscire dal confine della radice `docs/`, esponendo potenzialmente file privati del repository (`.env`, `config.py`).
+
+**Rimedio:**
+1. Sposta l'asset o il file di destinazione nella gerarchia `docs/` o `static/`.
+2. Se devi referenziare un file esterno, usa un link simbolico (se consentito) o un URL assoluto letterale.
 
 ### Z203: PATH_TRAVERSAL_FATAL {#z203}
 
-:::danger[Quality Score — Security Override | FATAL | Exit 3 | Non-suppressible]
-Z203 triggera il Security Gate al livello di severità più alto: il [Deterministic Quality Score](./scoring-algorithm.mdx) collassa a **0/100** incondizionatamente. Exit code **3** (incidente di sicurezza OS-path) — il più alto exit code in Zenzic, che bypassa `--exit-zero` incondizionatamente. Distinto da Z202 (Exit 1, traversal generica): Z203 mira a directory di sistema (`/etc/`, `/root/`) che segnalano compromissione della supply chain piuttosto che errore di authoring. Vedi [Scoring Algorithm](./scoring-algorithm.mdx#security-override).
+:::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 3 (massima) | DQS collassa a 0/100]
+`zenzic:ignore: Z203` è **silenziosamente rifiutato**. Diverso da Z202: punta alle directory di sistema (`/etc/`, `/root/`) segnalando una compromissione della supply-chain.
 :::
 
-* **Severità:** `security_incident` (Exit 3)
-* **Contesto Tecnico:** La **path traversal guard** ha rilevato un tentativo di accedere a directory OS restricted (es. `/etc/`, `/root/`). Viene trattato come incidente di sicurezza ad alta autorità, triggerando un exit code non-zero che non può essere soppresso.
-* **Rationale Architetturale:** Z203 è strutturalmente distinto da Z202 (traversal generica) nella sua classe di target. Un percorso che si risolve a `/etc/`, `/root/`, `/proc/`, o directory OS simili non può derivare da un legittimo workflow di documentazione — nessun autore che costruisca link di documentazione punterà mai al file delle password di sistema. La sua presenza indica uno di tre scenari: (1) template injection nella pipeline di build della documentazione, (2) una toolchain compromessa che inserisce link di probe, o (3) un commit malevolo. Tutti e tre giustificano Exit 3 (incidente di sicurezza), non Exit 1 (errore di qualità), perché segnalano una minaccia sistemica all'ambiente di build, non un errore di authoring sui contenuti.
-* **Rimedio:**
-    1. Indaga il file sorgente per intento malevolo o compromissione della supply chain.
-    2. Rimuovi qualsiasi percorso assoluto che referenzia locations host-system.
-    3. Assicurati che nessun contenuto malevolo stia iniettando probe nella tua documentazione.
+**Severità:** `security_incident` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 3
+
+Path traversal rilevato verso directory di sistema riservate (es. `/etc/`, `/root/`). Non può risultare da un flusso di lavoro di documentazione legittimo — la presenza indica iniezione di template, toolchain compromessa, o commit malevolo.
+
+**Rimedio:**
+1. Indaga il file sorgente per intento malevolo o compromissione della supply chain.
+2. Rimuovi tutti i percorsi assoluti che referenziano posizioni di sistema.
+3. Controlla i vettori di iniezione nella pipeline CI.
 
 ### Z204: FORBIDDEN_TERM {#z204}
 
-:::danger[Quality Score — Security Override | FATAL | Exit 2 | Non-suppressible]
-Z204 triggera il Security Gate: il [Deterministic Quality Score](./scoring-algorithm.mdx) collassa a **0/100** incondizionatamente. Exit code **2** (esposizione di forbidden-term) — bypassa `--exit-zero`. Una sorgente di documentazione che espone termini confidenziali del progetto non può ricevere uno score di qualità. Vedi [Scoring Algorithm](./scoring-algorithm.mdx#security-override).
+:::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 2 | DQS collassa a 0/100]
+`zenzic:ignore: Z204` è **silenziosamente rifiutato**. Sorgente: `forbidden_patterns` in `.zenzic.local.toml` (ignorato da git). [↗ Gallery](../tutorials/examples/z2xx-security/z204-forbidden-term)
 :::
 
-:::danger[🔒 INVIOLABILE — Non può essere soppresso]
-`zenzic:ignore: Z204` viene **silenziosamente rifiutato**. La Privacy Gate scatta incondizionatamente su ogni linea — l'esposizione di un forbidden term è un fatto di sicurezza, non un suggerimento.
-:::
+**Severità:** `security_breach` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 2
 
-:::info[Brand Integrity — Architettura a due livelli]
-Zenzic enforcea l'integrità di brand e privacy tramite due livelli complementari:
+Il Privacy Gate ha rilevato un termine di progetto riservato (nome in codice interno, hostname di staging, alias di team) configurato in `.zenzic.local.toml`. Il matching è una sottostringa verbatim case-insensitive — nessuna regex. Esegui `zenzic init` per creare `.zenzic.local.toml` (aggiunto automaticamente a `.gitignore`).
 
-| Livello | Sorgente | Scope | Severità |
+:::info[Integrità brand — due livelli]
+| Livello | Sorgente | Ambito | Severità |
 |---|---|---|---|
-| **Z204 Privacy Gate** | `forbidden_patterns` in `.zenzic.local.toml` *(git-ignored)* | Termini privati — code-name, host di staging, alias di team | **Exit 2 (Critical)** |
-| **Z601 Brand Guard** | `[governance].brand_obsolescence` in `.zenzic.toml` | Termini brand deprecati (es. un vecchio nome di prodotto) | Exit 1 (Quality) |
-
-Usa Z204 per i segreti che non devono mai essere committati. Usa Z601 per igiene di brand dove riferimenti storici intenzionali (es. entry di CHANGELOG) devono essere sopprimibili.
+| **Z204 Privacy Gate** | `forbidden_patterns` in `.zenzic.local.toml` *(git-ignored)* | Termini privati — code-name, staging host | **Uscita 2 (Critica)** |
+| **Z601 Brand Guard** | `[governance].brand_obsolescence` in `.zenzic.toml` | Termini brand deprecati | Uscita 1 (Qualità) |
 :::
 
-* **Severità:** `security_breach` (Exit 2)
-* **Sorgente:** `forbidden_patterns` dichiarata in `.zenzic.local.toml` — la Privacy Gate Enterprise machine-local, git-ignored.
-* **Contesto Tecnico:** La Privacy Gate esegue una scansione case-insensitive verbatim substring su ogni linea di ogni file di documentazione. I pattern vengono matchati letteralmente — niente regex, niente wildcard. Questo rende la garanzia deterministica: se il termine è nel file, sarà sempre trovato. Esegui `zenzic init` per scaffoldare `.zenzic.local.toml` automaticamente (il file viene aggiunto a `.gitignore` alla creazione).
-* **Rationale Architetturale:** Z204 tratta i file di documentazione come artefatti pubblici untrusted che non devono mai veicolare stato privato del progetto. Code-name interni, hostname di staging, e alias di team sono l'equivalente verbale delle credenziali — encodano contesto strategico, organizzativo, o operativo che competitor o attaccanti possono weaponizzare. Diversamente da Z201 (pattern di credenziali machine-detectable), i forbidden term sono fatti project-specific: solo il progetto sa quali sono i suoi nomi interni. Zenzic esternalizza quella conoscenza in `.zenzic.local.toml` (git-ignored by construction) cosicché la lista di termini confidenziali non entri mai nel repository pubblico, mentre il gate continua a enforcearla ad ogni scansione. La classificazione Exit 2 rispecchia Z201 perché la classe di failure è strutturalmente identica: informazione confidenziale ha attraversato il boundary pubblico.
-* **Cause Comuni:**
-    * Un code-name interno o alias di progetto compare in una doc pubblica (`Project Titan`, `Mercury`).
-    * Un hostname di staging o endpoint API interno viene referenziato in prosa (`staging.acme.io`).
-    * Un nome di developer, alias di team, o identificatore di cost-center trapela in una guida user-facing.
-* **Rimedio:**
-    1. Rimuovi o generalizza il forbidden term (sostituiscilo con un identificatore pubblico o un placeholder).
-    2. Se il termine è legittimamente pubblico, rimuovilo da `forbidden_patterns` in `.zenzic.local.toml`.
-    3. Verifica che `.zenzic.local.toml` sia listato in `.gitignore` — i termini in questo file non devono mai essere committati.
-
-<ZenzicOutput
-  status="breach"
-  code="Z204"
-  exitCode={2}
-  compact
-  masked="Project Tit***"
-  credentialType="FORBIDDEN_TERM"
-  location="docs/roadmap/planning.md:14"
-/>
+**Rimedio:**
+1. Rimuovi o generalizza il termine vietato.
+2. Se il termine è legittimamente pubblico, rimuovilo da `forbidden_patterns`.
+3. Verifica che `.zenzic.local.toml` sia in `.gitignore`.
 
 ---
 
@@ -394,42 +245,29 @@ Usa Z204 per i segreti che non devono mai essere committati. Usa Z601 per igiene
 
 ### Z301: DANGLING_REF {#z301}
 
-:::info[Quality Score — Navigation tier (25%) | −4.0 pts / occorrenza]
-Z301 conta nel tier **Navigation** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−4.0 pts per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z301-dangling-ref)
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Un reference-style link (es. `[my link][ref]`) è presente, ma la definizione (es. `[ref]: http://...`) manca dal file. Questo fa sì che il link venga renderizzato come testo semplice nella maggior parte degli engine Markdown.
-* **Rationale Architetturale:** Un reference-style link è un contratto in due parti: l'autore dichiara `[id]: url` e usa `[text][id]`. Quando la definizione manca, i renderer degradano silenziosamente il link a testo semplice — `[text][id]` viene reso come caratteri letterali senza alcuna indicazione che fosse inteso un link. Il fallimento è invisibile all'ispezione visuale della pagina renderizzata. Z301 enforcea la completezza contrattuale al livello sorgente, dove la rottura è rilevabile, anziché al render time, dove un link mancante diviene indistinguibile da prosa intenzionale.
-* **Rimedio:**
-    1. Aggiungi la definizione mancante in fondo al file Markdown.
-    2. Controlla che non ci siano typo nell'ID del riferimento.
+Un link in stile riferimento (`[mio link][ref]`) è presente, ma la definizione (`[ref]: http://...`) è assente dal file. La maggior parte dei renderer degrada silenziosamente il link a testo normale.
+
+**Rimedio:**
+1. Aggiungi la definizione mancante in fondo al file Markdown.
+2. Controlla errori di battitura nell'ID di riferimento.
 
 ### Z302: DEAD_DEF {#z302}
 
-:::info[Quality Score — Navigation tier (25%) | −1.0 pt / occorrenza]
-Z302 conta nel tier **Navigation** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−1.0 pt per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `warning` · **Penalità:** −1,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z302-dead-def)
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Una reference definition esiste ma nessun link nel file la usa. Sebbene innocua per l'utente finale, crea debito di manutenzione e gonfia il file sorgente.
-* **Rationale Architetturale:** Una reference definition inutilizzata è un contratto falso — dichiara un'associazione URL per un identificatore che nessun link nel file consuma. Quando l'URL cambierà in seguito, la definizione inutilizzata potrà essere aggiornata (o dimenticata) senza alcuna indicazione se sia mai stata necessaria. Quando un refactoring rimuove il link che usava la definizione, la definizione diviene un fantasma. Z302 fa emergere questi fantasmi presto, prevenendo l'accumulo di definizioni che asseriscono mappature URL per link non più esistenti — una forma di documentation drift che si accumula silenziosamente nel tempo.
-* **Rimedio:**
-    1. Rimuovi la definizione inutilizzata.
-    2. Oppure aggiorna un link affinché usi questo riferimento se era inteso essere usato.
+Una definizione di riferimento esiste ma nessun link nel file la utilizza. Innocua per i lettori ma crea debito di manutenzione.
+
+**Rimedio:** Rimuovi la definizione inutilizzata, o aggiorna un link per usare questo riferimento.
 
 ### Z303: DUPLICATE_DEF {#z303}
 
-:::info[Quality Score — Navigation tier (25%) | −3.0 pts / occorrenza]
-Z303 conta nel tier **Navigation** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−3.0 pts per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `warning` · **Penalità:** −3,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z303-duplicate-def)
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Esistono definizioni multiple per lo stesso reference ID. Secondo le specifiche CommonMark, tipicamente "vince" la prima definizione, ma questa ambiguità andrebbe risolta.
-* **Rationale Architetturale:** In un sistema di documentazione deterministico, la stessa sorgente deve produrre lo stesso output su ogni piattaforma. CommonMark specifica che quando due definizioni condividono lo stesso reference ID la prima vince — ma è un dettaglio di implementazione del renderer, non una garanzia semantica trasversale a tutti gli engine compliant. Una definizione duplicata rende indeterminato l'URL del link: l'autore può credere che la seconda definizione sovrascriva la prima (come nella cascata CSS) o che si applichi qualche altra regola di precedenza. Z303 enforcea il principio che la risoluzione dei link debba essere non-ambigua, assicurando che l'output renderizzato sia deterministico su tutti i renderer CommonMark-compliant.
-* **Rimedio:**
-    1. Assicurati che ogni reference ID abbia esattamente una definizione nel file.
-    2. Consolida i duplicati in un unico riferimento canonico.
+Esistono definizioni multiple per lo stesso ID di riferimento. CommonMark specifica che vince la prima definizione, ma questa ambiguità va risolta per un rendering deterministico cross-engine.
+
+**Rimedio:** Assicurati che ogni ID di riferimento abbia esattamente una definizione; consolida i duplicati in un unico riferimento canonico.
 
 ---
 
@@ -437,201 +275,97 @@ Z303 conta nel tier **Navigation** del [Deterministic Quality Score](./scoring-a
 
 ### Z401: MISSING_DIRECTORY_INDEX {#z401}
 
-:::warning[Non incluso nel Quality Score]
-Z401 è un **hint strutturale** emesso solo in modalità Standalone. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Crea un `index.md` nella directory flaggata per risolverlo.
-:::
+**Severità:** `info` · **Penalità:** nessuna (suggerimento strutturale) · **Uscita:** 0 · **Sopprimibile:** Sì
 
-* **Severità:** `info`
-* **Contesto Tecnico:** Nella documentazione gerarchica, ogni directory dovrebbe avere una pagina di "landing" (di solito `index.md` o `README.md`). Senza questa, l'URL della directory può restituire un 404 o un raw directory listing in alcuni engine di build.
-* **Rationale Architetturale:** Una directory di documentazione senza index è un vicolo cieco navigazionale. Nella documentazione gerarchica, gli URL a livello directory (es. `/docs/guides/`) sono attesi servire una landing page che orienti il lettore all'interno di quella sezione. Senza un `index.md`, l'URL o restituisce un 404 o un raw directory listing, a seconda dell'engine di build e dell'ambiente di hosting. La struttura di pagina di un sito di documentazione è un grafo; Z401 identifica nodi directory in quel grafo che non hanno entry point — nodi a cui un lettore può arrivare da un parent ma da cui non può iniziare significativamente.
-* **Rimedio:**
-    1. Crea un file di nome `index.md` o `README.md` nella directory flaggata.
-    2. Fornisci una breve panoramica del contenuto di quella directory.
+Una directory di documentazione non ha `index.md` o `README.md`. L'URL della directory potrebbe restituire 404 o un elenco raw a seconda del motore di build.
+
+**Rimedio:** Crea `index.md` nella directory segnalata con una breve panoramica della sezione.
 
 ### Z402: ORPHAN_PAGE {#z402}
 
-:::info[Quality Score — Navigation tier (25%) | −4.0 pts / occorrenza]
-Z402 conta nel tier **Navigation** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−4.0 pts per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `warning` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z4xx-topology/z402-orphan-page)
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Il file esiste nella cartella docs ma non è raggiungibile attraverso alcun menu di navigazione. È l'equivalente strutturale di "Dead Code".
-* **Rationale Architetturale:** Una pagina che esiste nel build ma è assente da tutti i menu di navigazione giace fuori dal Knowledge Graph che i lettori percorrono. È l'equivalente in documentazione del dead code: presente nell'artefatto, consuma tempo di build e storage, ma irraggiungibile da qualsiasi lettore che navighi normalmente. Diversamente dal dead code (intercettato da warning del compilatore o tree-shaker), le pagine orfane passano tutti i check CI standard — il build ha successo, i link verso la pagina sono validi, nessun 404 viene prodotto. Z402 è l'unico gate capace di far emergere questa classe di inaccessibilità invisibile prima che si accumuli attraverso le release.
-* **Rimedio:**
-    1. Includi la pagina nella tua config `nav` (MkDocs) o `sidebar` (Docusaurus).
-    2. Cancella il file se è un artefatto residuo di una versione precedente.
+Un file esiste in `docs/` ma non è raggiungibile da alcun menu di navigazione. L'equivalente documentale del codice morto.
+
+**Rimedio:**
+1. Aggiungi il file al `nav` (MkDocs) o a `sidebars.ts` (Docusaurus).
+2. Elimina il file se è un artefatto residuo.
 
 ### Z403: MISSING_ALT {#z403}
 
-:::warning[Non incluso nel Quality Score]
-Z403 è un **warning di accessibilità**. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Risolvilo per SEO e compliance di accessibilità.
-:::
+**Severità:** `warning` · **Penalità:** nessuna (avviso di accessibilità) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z4xx-topology/z403-missing-alt)
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Le immagini senza alt text sono invisibili agli screen reader e degradano la SEO. Zenzic enforcea l'accessibilità come pilastro core degli standard di qualità Zenzic.
-* **Rationale Architetturale:** L'alt text è il contratto machine-readable fra un'immagine e ogni consumer che non la può vedere: screen reader, crawler dei motori di ricerca, indexer SARIF, e link-hover preview. Un `alt=""` mancante o vuoto non è una preferenza stilistica — è una perdita strutturale di informazione. Quando un'immagine è l'unico veicolo di un concetto, di un diagramma, o di una data visualization, un attributo alt vuoto significa che quel concetto è inaccessibile a chiunque dipenda dal consumo programmatico. Zenzic classifica Z403 come finding strutturale perché l'assenza di alt text rimuove un nodo dal livello semantico machine-readable del grafo di documentazione.
-* **Rimedio:**
-    1. Aggiungi testo descrittivo all'interno delle parentesi quadre: `![Una descrizione dell'immagine](url)`.
-    2. Evita testo generico come "image" o "screenshot".
+Un'immagine è priva di testo alt, degradando l'accessibilità per screen reader e il SEO.
+
+**Rimedio:** Aggiungi testo descrittivo: `![Una descrizione dell'immagine](url)`. Evita etichette generiche come "immagine" o "screenshot".
 
 ### Z404: CONFIG_ASSET_MISSING {#z404}
 
-:::warning[Non incluso nel Quality Score]
-Z404 è un **warning di integrità di configurazione**. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Risolvilo per assicurare che il branding del sito (logo, favicon) venga renderizzato correttamente.
-:::
+**Severità:** `warning` · **Penalità:** nessuna (avviso integrità configurazione) · **Uscita:** 1 · **Sopprimibile:** Sì
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** La configurazione principale dell'engine di build (es. `docusaurus.config.ts`) referenzia un logo o favicon che non esiste al percorso specificato. Questo impedisce alla "Face" del progetto di renderizzare correttamente.
-* **Rationale Architetturale:** Un asset dichiarato nella configurazione dell'engine di build (logo, favicon) è un contratto deployment-time fra il progetto e il suo ambiente di hosting. A differenza di un link rotto in un file Markdown (localizzato a una pagina), un asset di config mancante impatta la chrome UI del sito — l'identità visiva renderizzata su ogni pagina, ogni locale, ogni build. Il fallimento è globale e silente: il build può avere successo mentre il sito viene shippato senza logo. Zenzic rileva questa classe di rotture prima che il build venga eseguito, trattando le dichiarazioni di config come promesse strutturali che devono avere file fisici corrispondenti.
-* **Rimedio:**
-    1. Controlla i percorsi `favicon:` o `logo.src:` nel tuo file di config.
-    2. Assicurati che il file sia fisicamente presente nella directory `static/` (per Docusaurus) o `docs/` (per MkDocs).
+La configurazione principale del motore di build (es. `docusaurus.config.ts`) referenzia un logo o favicon che non esiste al percorso specificato. Il fallimento è globale: ogni pagina in ogni locale viene servita senza l'asset di branding.
 
-<ZenzicOutput
-  status="warning"
-  code="Z404"
-  exitCode={1}
-  compact
-  rows={[{ code: 'Z404', file: 'mkdocs.yml:12', message: "Config asset not found: theme.favicon → 'assets/favicon.png'", severity: 'warning' }]}
-/>
-
----
-
-## Z5xx — Qualità Contenuti
-
-### Z501: PLACEHOLDER {#z501}
-
-:::info[Quality Score — Content tier (20%) | −2.0 pts / occorrenza]
-Z501 conta nel tier **Content** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−2.0 pts per occorrenza**, capped a 20 pts per il tier.
-:::
-
-* **Severità:** `warning`
-* **Contesto Tecnico:** Rileva stringhe come `TODO`, `FIXME`, o `[INSERT IMAGE HERE]`. Sono marker di lavoro incompleto che non dovrebbero essere presenti in documentazione di produzione.
-* **Rationale Architetturale:** Un pattern di placeholder in documentazione è una dichiarazione esplicita e committata che il contenuto non è pronto. Termini come `TODO`, `WIP`, e `coming soon` non sono contenuto — sono meta-marker che l'autore ha scelto di committare anziché completare. Dal punto di vista del lettore, atterrare su una pagina che dice "coming soon" equivale ad atterrare su un 404: l'informazione attesa è assente. Zenzic classifica Z501 sotto Content perché la densità di placeholder è un segnale diretto di copertura dei contenuti — la frazione della superficie di documentazione che è stata effettivamente scritta rispetto a quella semplicemente scaffoldata e shippata.
-* **Rimedio:**
-    1. Cerca il placeholder nel file sorgente.
-    2. Sostituiscilo con contenuto reale o rimuovilo.
-
-### Z502: SHORT_CONTENT {#z502}
-
-:::info[Quality Score — Content tier (20%) | −1.0 pt / occorrenza]
-Z502 conta nel tier **Content** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−1.0 pt per occorrenza**, capped a 20 pts per il tier.
-:::
-
-* **Severità:** `warning`
-* **Contesto Tecnico:** Le pagine con poco testo (default < 50 parole) forniscono scarso valore all'utente e possono danneggiare i ranking dei motori di ricerca. Il conteggio parole è puramente **semantico**: frontmatter YAML, commenti MDX (`{/* */}`), e commenti HTML (`<!-- -->`) sono esclusi — solo la prosa renderizzata viene contata.
-* **Rationale Architetturale:** La soglia di word-count in Z502 non è un minimo stilistico arbitrario — è il limite inferiore empirico sotto cui una pagina di documentazione non può contenere le componenti semantiche (introduzione, corpo, esempio) necessarie a rispondere alla domanda di un utente. Una pagina con meno di 50 parole può contenere un heading e una descrizione di una riga: uno stub creato, committato e pubblicato fornendo zero valore informativo. Zenzic misura solo la prosa renderizzata perché la soglia si applica a ciò che il lettore effettivamente riceve, non alla dimensione del file sorgente — una pagina piena di frontmatter e commenti può essere vuota di contenuto.
-* **Rimedio:**
-    1. Espandi la documentazione con più dettagli.
-    2. Se la pagina è un placeholder, combinala con una pagina correlata.
-
-<ZenzicOutput
-  status="warning"
-  code="Z502"
-  exitCode={1}
-  compact
-  rows={[{ code: 'Z502', file: 'docs/reference/api.md', message: 'Short content: 47 words (minimum: 100)', severity: 'warning' }]}
-/>
-
-### Z503: SNIPPET_ERROR {#z503}
-
-:::info[Quality Score — Content tier (20%) | −10.0 pts / occorrenza]
-Z503 conta nel tier **Content** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−10.0 pts per occorrenza** — la penalità single-occurrence più alta nel tier Content. Capped a 20 pts per il tier.
-:::
-
-* **Severità:** `error`
-* **Contesto Tecnico:** La **Snippet Guard** ha identificato un errore di sintassi in un fenced code block taggato con un linguaggio (es. `py`, `js`). Questo impedisce agli utenti di copiare ed eseguire esempi di codice rotto. Il numero di linea riportato è **assoluto** — relativo al file sorgente, non all'inizio dello snippet — permettendo la navigazione immediata all'errore.
-* **Rationale Architetturale:** Uno snippet di codice nella documentazione non è decorativo — è un contratto tecnico che il lettore si aspetta di copiare, eseguire e fidarsi. Uno snippet con un errore di sintassi rompe quel contratto nel modo peggiore possibile: il lettore copia l'esempio, il runtime lo rifiuta, e la fiducia nella documentazione si erode. Z503 porta la penalità per-occorrenza più alta nel tier Content (10.0 pts) perché un esempio di codice rotto attivamente devia i lettori — non è meramente contenuto incompleto (Z501, Z502) ma contenuto attivamente sbagliato che può costare al lettore tempo significativo di debugging. La Snippet Guard intercetta queste rotture al livello sorgente, prima che qualsiasi lettore vi si imbatta.
-* **Rimedio:**
-    1. Correggi la sintassi all'interno del code block.
-    2. Se il blocco contiene codice intenzionalmente rotto (es. per mostrare cosa NON fare), usa il language tag `text` per bypassare la validazione.
-
----
-
-### Z505: UNTAGGED_CODE_BLOCK {#z505}
-
-:::info[Quality Score — Content tier (20%) | −1.0 pt / occorrenza]
-Z505 conta nel tier **Content** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−1.0 pt per occorrenza**, capped a 20 pts per il tier.
-:::
-
-<ZenzicOutput
-  status="warning"
-  code="Z505"
-  exitCode={1}
-  compact
-  rows={[{
-    code: "Z505",
-    file: "docs/reference/api.md",
-    line: 17,
-    message: "Fenced code block has no language specifier. Add a language tag (e.g. \`\`\`python, \`\`\`bash, \`\`\`toml) to enable syntax highlighting and snippet validation."
-  }]}
-/>
-
-* **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `UntaggedCodeBlockRule`. Un delimitatore di apertura fenced code block (`` ``` `` o `~~~`) senza info string (o con soli whitespace). Zenzic implementa l'invariante di fence CommonMark: una fence di *chiusura* deve avere info string vuota — qualsiasi carattere non-whitespace nell'info string la rende una fence di *apertura*. Questo significa che i metadati Docusaurus (es. `` ```python title="file.py" showLineNumbers ``) sono pienamente supportati e mai flaggati.
-* **Rationale Architetturale:** Un code block senza language tag è una regione opaca di testo dal punto di vista di ogni consumer downstream: i syntax highlighter non possono colorarla, la Snippet Guard (Z503) non può validarne la sintassi, gli screen reader la annunciano come testo preformattato indifferenziato, e gli indexer di ricerca non possono estrarne struttura semantica. Il tag mancante disabilita anche il gate stesso che intercetta gli esempi di codice rotti — un blocco senza tag è un blind spot per Z503. Zenzic classifica Z505 sotto Content perché l'omissione degrada silenziosamente il contratto che distingue la prosa di documentazione dal riferimento tecnico: un code block deve dichiarare che tipo di codice contiene, altrimenti lettori e tooling non possono fidarsene come esempio eseguibile.
-* **Perché Zenzic implementa questo:** Check strutturale pure-Python che elimina la Node.js Tax dalla tua pipeline CI. Vedi [Zenzic vs. Proofreader](../explanation/structural-integrity.mdx#dimension-accessibility) per il razionale completo.
-* **Rimedio:**
-    1. Aggiungi un language tag immediatamente dopo i backtick di apertura: `` ```python ``, `` ```bash ``, `` ```toml ``.
-    2. Per blocchi di solo output o display, usa `` ```text `` o `` ```plaintext ``.
-    3. Per blocchi di tutorial che mostrano Markdown raw, usa `` ```markdown ``.
-
----
-
-## Z9xx — Engine e Sistema
-
-### Z901: RULE_ENGINE_ERROR {#z901}
-
-:::warning[Non incluso nel Quality Score]
-Z901 è un **errore a livello di sistema**. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Indaga il plugin o la regola che ha sollevato l'eccezione e segnala un bug se è uno scanner core.
-:::
-
-* **Severità:** `error`
-* **Contesto Tecnico:** Un'eccezione non gestita si è verificata all'interno di una regola core o di un plugin. È un fallimento a livello di sistema che di solito indica un bug in Zenzic o un ambiente incompatibile.
-* **Rationale Architetturale:** Il principio fail-visible di Zenzic richiede che ogni fallimento engine-internal emerga come finding osservabile, non come crash silente o risultato mancante. Un'eccezione non gestita in una regola o plugin che venga catturata e scartata produrrebbe un falso negativo: la scansione si completa con exit 0, ma finding che avrebbero dovuto essere emessi non lo sono stati. Il lettore e la pipeline CI vedono entrambi un risultato pulito — pulito solo perché l'analisi era incompleta. Z901 converte questo fallimento silente in un segnale esplicito e auditable: il risultato della scansione è ora noto come parziale, e la fonte dell'incompletezza è identificata e segnalabile.
-* **Rimedio:**
-    1. Controlla l'output CLI completo per un traceback Python.
-    2. Segnala l'issue su `https://github.com/PythonWoods/zenzic/issues`.
-
-### Z902: RULE_TIMEOUT {#z902}
-
-:::warning[Non incluso nel Quality Score]
-Z902 è un **timeout a livello di sistema**. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Semplifica il pattern regex della custom rule incriminata per risolverlo.
-:::
-
-* **Severità:** `error`
-* **Contesto Tecnico:** Una regola ha impiegato troppo tempo per essere eseguita (default > 30s). È quasi sempre causato da un problema di **Catastrophic Backtracking** in una regular expression custom fornita in `[[custom_rules]]`.
-* **Rationale Architetturale:** Un timeout di custom rule non è meramente un problema di performance — è una superficie di sicurezza. Un pattern regex con catastrophic backtracking (es. `(a+)+`) può essere triggerato da un file di documentazione craftato per bloccare l'intera scansione CI indefinitamente. È un attacco Regex Denial of Service (ReDoS) contro la pipeline di documentazione. Z902 è classificato come `error` (non `warning`) perché un timeout non rilevato può disabilitare silenziosamente un gate di sicurezza — il credential scanner e la privacy gate continuano a girare sui file successivi, ma la regola in timeout non emette finding. Permettere alla scansione di proseguire come se la regola fosse stata eseguita correttamente produrrebbe falsi negativi con exit 0.
-* **Rimedio:**
-    1. Rivedi i tuoi pattern regex custom in `.zenzic.toml`.
-    2. Semplifica i pattern per evitare quantificatori annidati come `(a+)+`.
-    3. Usa alternative non-backtracking se possibile.
+**Rimedio:**
+1. Controlla i percorsi `favicon:` o `logo.src:` nel file di configurazione.
+2. Assicurati che l'asset sia fisicamente presente in `static/` (Docusaurus) o `docs/` (MkDocs).
 
 ### Z405: UNUSED_ASSET {#z405}
 
-:::info[Quality Score — Governance tier (25%) | −3.0 pts / occorrenza]
-Z405 conta nel tier **Governance** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−3.0 pts per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `warning` · **Penalità:** −3,0 pt (Governance) · **Uscita:** 1 · **Sopprimibile:** Sì
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Un'immagine o file asset esiste nella directory ma non è mai referenziato da alcun file Markdown. Questi "Dark Assets" gonfiano il tuo repository e gli artefatti di build.
-* **Rationale Architetturale:** Un asset non utilizzato è un nodo morto nel grafo di documentazione — un file che un tempo era referenziato da una pagina che è stata da allora cancellata, riorganizzata, o refactorizzata. Diversamente dal dead code sorgente (che compilatori e linter possono riportare), i dead asset in un repository di documentazione sono invisibili a tutti i check CI standard: il file esiste su disco, è committato, ed è incluso nell'artefatto di build. Col tempo, si accumulano: espandono la dimensione del repository, fanno crescere l'artefatto di build, ed estendono la superficie pubblicamente accessibile di file che nessun membro del team monitora attivamente. Zenzic classifica Z405 sotto Governance perché la proliferazione di asset è un sintomo di processo — il risultato di governance di refactoring incompleta — non un fallimento di authoring sui contenuti.
-* **Rimedio:**
-    1. Cancella il file inutilizzato.
-    2. Oppure usalo in una pagina di documentazione dove appropriato.
+Un file immagine o asset nel repository non viene mai referenziato da alcun file Markdown. Gli "Dark Asset" gonfiano il repository e gli artefatti di build silenziosamente.
+
+**Rimedio:**
+1. Elimina il file inutilizzato.
+2. Oppure referenzialo in una pagina di documentazione appropriata.
 
 ### Z406: NAV_CONTRACT {#z406}
 
-:::info[Quality Score — Governance tier (25%) | −2.0 pts / occorrenza]
-Z406 conta nel tier **Governance** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−2.0 pts per occorrenza**, capped a 25 pts per il tier.
-:::
+**Severità:** `error` · **Penalità:** −2,0 pt (Governance) · **Uscita:** 1 · **Sopprimibile:** Sì
 
-* **Severità:** `error`
-* **Contesto Tecnico:** Un conflitto fra la struttura fisica dei file e la config di navigazione dell'engine. Per esempio, una entry nav di `mkdocs.yml` che punta a `guide/setup.md` mentre il file è effettivamente in `guides/setup.md`.
-* **Rationale Architetturale:** Il navigation contract è una promessa binaria: o il file è esattamente dove la config nav dice che sia, o l'engine di build produce un risultato indeterminato — una nav entry rotta, una pagina mancante, o un 404 silente. Diversamente da Z101 (un link in contenuto che punta a un file mancante), Z406 è un mismatch a livello di config: la navigazione dichiara una route che nessun file fisico attiva. Questa classe di rottura è particolarmente insidiosa perché sopravvive ai rinomini di file — quando un file si sposta senza un aggiornamento della config nav, il file fisico continua a esistere e la nav si costruisce comunque, ma la pagina è irraggiungibile dalla sidebar. Zenzic classifica Z406 sotto Governance perché le violazioni del nav contract sono il risultato di fallimenti di processo, non di errori di authoring sui contenuti.
-* **Rimedio:**
-    1. Allinea il percorso di navigazione nel tuo file di config con il percorso fisico del file.
-    2. Esegui `zenzic check all` per verificare la fix attraverso la VSM.
+Un conflitto tra la struttura fisica dei file e la configurazione di navigazione del motore. Per MkDocs: una voce `nav` che punta a un percorso non attivato da alcun file fisico. Per Docusaurus: un link `extra.alternate` assente dalla VSM.
+
+**Rimedio:**
+1. Allinea il percorso nav nella configurazione con il percorso fisico del file.
+2. Esegui `zenzic check all` per verificare la correzione sull'intera VSM.
+
+---
+
+## Z5xx — Qualità dei Contenuti
+
+### Z501: PLACEHOLDER {#z501}
+
+**Severità:** `warning` · **Penalità:** −2,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z501-placeholder)
+
+Stringhe segnaposto (`TODO`, `FIXME`, `[INSERIRE IMMAGINE QUI]`) committate nella documentazione di produzione segnalano lavoro incompleto.
+
+**Rimedio:** Sostituisci il segnaposto con contenuto reale, o rimuovilo fino a quando non è pronto.
+
+### Z502: SHORT_CONTENT {#z502}
+
+**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z502-short-content)
+
+Una pagina contiene meno di 50 parole di prosa renderizzata (frontmatter, commenti MDX e HTML esclusi). Una pagina al di sotto di questa soglia non può contenere i componenti semantici necessari per rispondere alla domanda del lettore.
+
+**Rimedio:** Espandi la pagina, o uniscila a una pagina correlata.
+
+### Z503: SNIPPET_ERROR {#z503}
+
+**Severità:** `error` · **Penalità:** −10,0 pt (Contenuto — penalità massima per occorrenza singola) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z503-snippet-error)
+
+Lo Snippet Guard ha identificato un errore di sintassi in un blocco di codice delimitato con un tag linguaggio. Il numero di riga riportato è **assoluto** — relativo al file sorgente, non all'inizio dello snippet.
+
+**Rimedio:**
+1. Correggi la sintassi nel blocco di codice.
+2. Per esempi intenzionalmente errati, usa `` ```text `` per bypassare la validazione.
+
+### Z505: UNTAGGED_CODE_BLOCK {#z505}
+
+**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z505-untagged-code-block)
+
+Un blocco di codice delimitato non ha specificatore di linguaggio. Syntax highlighter, lo Snippet Guard (Z503) e gli screen reader non possono elaborarlo. I metadati Docusaurus (es. `` ```python title="file.py" showLineNumbers ``) sono supportati e non vengono mai segnalati.
+
+**Rimedio:** Aggiungi un tag linguaggio: `` ```python ``, `` ```bash ``, `` ```toml ``. Per blocchi solo visualizzazione, usa `` ```text `` o `` ```plaintext ``.
 
 ---
 
@@ -639,167 +373,105 @@ Z406 conta nel tier **Governance** del [Deterministic Quality Score](./scoring-a
 
 ### Z601: BRAND_OBSOLESCENCE {#z601}
 
-:::info[Quality Score — Governance tier (25%) | −2.0 pts / occorrenza + Escalation]
-Z601 conta nel tier **Governance** del [Deterministic Quality Score](./scoring-algorithm.mdx). Penalità: **−2.0 pts per occorrenza**, capped a 25 pts per il tier.
+**Severità:** `warning` · **Penalità:** −2,0 pt (Governance) + Escalation · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z6xx-brand/z601-brand-obsolescence)
 
-**Governance Escalation:** Oltre 10 occorrenze Z6xx totali, un moltiplicatore esponenziale si applica alla deduzione Governance: `deduction × 2^(excess / 5)`, capped al ceiling di 25 pts del tier. Venti finding Z601 (10 di eccesso) triggerano un moltiplicatore ×4 — quattro volte l'impatto governance baseline. Vedi [Scoring Algorithm — Governance Escalation](./scoring-algorithm.mdx#governance-escalation).
-:::
+Un nome di release deprecato o identificatore di brand appare in un file scansionato. Configurato tramite `[governance].brand_obsolescence` in `.zenzic.toml`. I file CHANGELOG sono esenti per impostazione predefinita (`obsolete_names_exclude_patterns`).
 
-<ZenzicOutput
-  status="warning"
-  code="Z601"
-  exitCode={1}
-  compact
-  rows={[{
-    code: "Z601",
-    file: "docs/explanation/architecture.mdx",
-    line: 12,
-    message: "Obsolete brand term 'OldRelease': update to the active identifier. Add a zenzic:ignore: Z601 comment to the line to suppress intentional historical references."
-  }]}
-/>
+**Governance Escalation:** Oltre 10 occorrenze Z6xx totali, si applica un moltiplicatore esponenziale: `deduzione × 2^(eccesso / 5)`, con un tetto al livello 25 pt.
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Rilevato da `BrandObsolescenceRule`, configurato via `[governance]` in `.zenzic.toml`. Quando `release_name` è impostato (es. `release_name = "CurrentRelease"`) e `brand_obsolescence` lista identificatori di release precedenti (es. `brand_obsolescence = ["OldRelease"]`), qualsiasi occorrenza di un termine listato in un file scansionato solleva Z601. Le linee che portano un commento di soppressione `zenzic:ignore: Z601` vengono silenziosamente saltate — usa `<!-- zenzic:ignore: Z601 -->` nei file ``.md`` e `{/* zenzic:ignore: Z601 */}` nei file ``.mdx``. I file che matchano `obsolete_names_exclude_patterns` (default: `CHANGELOG*.md`) sono pienamente esenti.
-* **Rationale Architetturale:** L'obsolescenza di brand è un fallimento di governance, non un fallimento di qualità contenuti. Quando un corpus di documentazione mantiene riferimenti a un nome di release deprecato, a un identificatore di prodotto dismesso, o a un team rinominato, segnala che il processo di manutenzione della documentazione non è accoppiato al ciclo di vita del prodotto. Questo drift è cumulativo: ogni occorrenza non corretta accumula dissonanza cognitiva per i lettori che possono cercare il comportamento attuale sotto il vecchio nome o assumere che il prodotto sia ancora nel suo stato deprecato. Zenzic classifica Z601 sotto Governance — non Content — perché la sua causa radice è una lacuna di processo (governance check non eseguiti durante la transizione di release), non un errore di authoring sui contenuti.
-* **Rimedio:**
-    1. Aggiorna il testo per fare riferimento al nome di release attivo.
-    2. Per riferimenti storici intenzionali nei file ``.md``, accoda `<!-- zenzic:ignore: Z601 -->` alla linea.
-    3. Per riferimenti storici intenzionali nei file ``.mdx``, accoda `{/* zenzic:ignore: Z601 */}` alla linea.
-    4. Per esentare un intero pattern di file, aggiungilo a `obsolete_names_exclude_patterns` in `.zenzic.toml`.
-
----
-
-### Z906: NO_FILES_FOUND {#z906}
-
-:::note[Informativo — exit 0]
-Z906 è una diagnostica informativa. Non fa fallire lo step del workflow ed è soppressa nei format di output machine (`json`, `sarif`) per Rule R20.
-:::
-
-<ZenzicOutput
-  status="warning"
-  code="Z906"
-  exitCode={0}
-  compact
-  rows={[{
-    code: "Z906",
-    file: "docs/",
-    line: 0,
-    message: "No Markdown sources found in the target directory — audit skipped.",
-    severity: "info"
-  }]}
-/>
-
-* **Severità:** `note`
-* **Contesto Tecnico:** Emesso da `check_all` quando il `docs_root` risolto contiene zero file `.md` / `.mdx` dopo aver applicato tutti i layer di esclusione. Il trigger più comune è eseguire `zenzic check all` contro la root di un repository che non ha ancora una directory di documentazione (`docs/` mancante o vuota). Il finding è text-output only — i format machine (`json`, `sarif`) rimangono puliti.
-* **Rimedio:**
-    1. Verifica che `docs_dir` in `.zenzic.toml` (o il flag `--docs-dir`) punti alla directory corretta.
-    2. Se la directory è intenzionalmente vuota (es. durante il setup iniziale del progetto), Z906 può essere ignorato in sicurezza — esce con 0.
-    3. Se stai scansionando per errore un repository non di documentazione, aggiusta il percorso target.
-
----
+**Rimedio:**
+1. Aggiorna il testo al nome di release attivo.
+2. Per riferimenti storici intenzionali in `.md`: aggiungi `<!-- zenzic:ignore: Z601 -->`.
+3. Per file `.mdx`: aggiungi `{/* zenzic:ignore: Z601 */}`.
+4. Per esentare un pattern di file, aggiungilo a `obsolete_names_exclude_patterns` in `.zenzic.toml`.
 
 ### Z602: I18N_PARITY {#z602}
 
-:::info[Quality Score — Non incluso]
-Z602 è un **check di integrità bilingue**. Non riduce il [Deterministic Quality Score](../explanation/scoring-system.mdx). Risolvilo per assicurare che il tuo contenuto tradotto sia completo e consistente.
-:::
+**Severità:** `warning` · **Penalità:** nessuna (controllo integrità bilingue) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z6xx-brand/z602-i18n-parity)
 
-* **Severità:** `warning`
-* **Contesto Tecnico:** Emesso dal modulo I18n Parity quando il mirror di traduzione di un file di documentazione in lingua base manca, o quando il frontmatter di un file tradotto diverge dalla versione canonica in lingua base. Vengono enforced due invarianti specifici:
-    1. **Presenza del mirror:** Ogni file `.md` / `.mdx` nell'albero `docs/` base deve avere una controparte in ogni directory `i18n/<locale>/` configurata. Un mirror mancante significa che un locale serve silenziosamente il fallback non tradotto.
-    2. **Parità del frontmatter:** Il frontmatter del file tradotto (almeno `sidebar_position`, `sidebar_label`, `title`) deve essere strutturalmente consistente con il file base. Una chiave stale o mancante significa che la sidebar del locale renderizza in modo errato.
-* **Rationale Architetturale:** La Mirror Law (ADR-020) definisce un invariante strutturale: una traduzione non è un documento separato — è una trasformazione sintattica dello stesso documento. Quando il frontmatter di un file tradotto diverge dal canonico base (`sidebar_position` cambiato, `sidebar_label` mancante, `title` stale), la sidebar del locale renderizza un grafo di navigazione differente da quello della sidebar in lingua base. I due locale divengono architetturalmente asimmetrici: lettori in locale diversi sperimentano ordinamento di pagine differente, label di sezione differenti, e potenzialmente discoverability di pagine differente. Z602 enforcea l'invariante che la traduzione sia un'operazione di contenuto, non strutturale.
-* **Rimedio:**
-    1. Crea il file di traduzione mancante al percorso corrispondente sotto `i18n/<locale>/docusaurus-plugin-content-docs/current/`.
-    2. Copia il blocco frontmatter in lingua base e traduci i valori — non aggiungere o rimuovere chiavi rispetto al base.
-    3. Esegui di nuovo `zenzic check all` per confermare che la parità sia ripristinata.
-    4. Per asimmetrie intenzionali (es. una pagina locale-only o una draft non ancora tradotta), sopprimi con `{/* zenzic:ignore: Z602 */}` sul blocco frontmatter o aggiungi il pattern di file a `i18n_exclude_patterns` in `.zenzic.toml`.
+Un mirror di traduzione è mancante, o il frontmatter di un file tradotto diverge dalla base canonica (`sidebar_position`, `sidebar_label`, `title`). Due locale con frontmatter diverso producono grafi di navigazione asimmetrici.
+
+**Rimedio:**
+1. Crea la traduzione mancante in `i18n/<locale>/docusaurus-plugin-content-docs/current/<percorso>`.
+2. Copia il blocco frontmatter della lingua base e traduci i valori — non aggiungere o rimuovere chiavi.
+3. Per asimmetria intenzionale, sopprimi con `{/* zenzic:ignore: Z602 */}` sul blocco frontmatter.
 
 ---
 
-## Reserved Codes (Inattivi) {#reserved-codes}
+## Z9xx — Motore e Sistema
 
-:::note[Runtime-inattivi per contratto]
-I codici in questa sezione sono definiti nel registro Zenzic e riservati a implementazioni dell'engine. **Non vengono emessi a runtime** e hanno **nessun impatto sul Deterministic Quality Score**. La loro presenza qui è puramente informativa.
+### Z901: RULE_ENGINE_ERROR {#z901}
+
+**Severità:** `error` · **Penalità:** nessuna (sistema) · **Uscita:** 1 · **Sopprimibile:** Sì
+
+Eccezione non gestita in una regola core o un plugin. Il principio fail-visible di Zenzic converte i crash silenziosi in rilevamenti Z901 espliciti e auditabili.
+
+**Rimedio:** Controlla l'output CLI per un traceback Python. Segnala il problema su `https://github.com/PythonWoods/zenzic/issues`.
+
+### Z902: RULE_TIMEOUT {#z902}
+
+**Severità:** `error` · **Penalità:** nessuna (sistema) · **Uscita:** 1 · **Sopprimibile:** Sì
+
+Una regola ha superato il limite di tempo di esecuzione (default > 30s). Quasi sempre causato da backtracking catastrofico in una regex personalizzata — un rischio ReDoS che può disabilitare silenziosamente un security gate.
+
+**Rimedio:**
+1. Rivedi i pattern regex personalizzati in `.zenzic.toml`.
+2. Semplifica i pattern: evita quantificatori annidati come `(a+)+`.
+3. Usa alternative non-backtracking dove possibile.
+
+### Z906: NO_FILES_FOUND {#z906}
+
+**Severità:** `note` · **Penalità:** nessuna · **Uscita:** 0 · **Sopprimibile:** Sì (informativo)
+
+Nessun file `.md` / `.mdx` trovato nel `docs_root` risolto dopo tutti i livelli di esclusione. Soppresso nei formati output macchina (`json`, `sarif`).
+
+**Rimedio:**
+1. Verifica che `docs_dir` in `.zenzic.toml` (o `--docs-dir`) punti alla directory corretta.
+2. Se la directory è intenzionalmente vuota, Z906 può essere ignorato in sicurezza — esce con 0.
+
+---
+
+## Codici Riservati (Inattivi) {#reserved-codes}
+
+:::note[Inattivi per contratto a runtime]
+I codici in questa sezione sono definiti nel registro Zenzic e riservati per le implementazioni del motore. **Non vengono emessi a runtime** e **non hanno impatto sul Deterministic Quality Score**.
 :::
 
 ### Z111: VIRTUAL_ROUTE_BROKEN {#z111}
 
-* **Severità:** `error` *(riservato)*
-* **Contesto Tecnico:** Un link nella tua documentazione punta a un URL di virtual route
-  (es., `/blog/tags/react/`) che **non è mai stato generato** perché nessun blog post porta
-  quel valore di tag nel suo frontmatter `tags:`. La route non esiste nella VSM.
+**Severità:** `error` *(riservato)* · **Motore:** Docusaurus
 
-  È distinto da `Z101 LINK_BROKEN` (file fisico mancante): l'URL è
-  strutturalmente valido per Docusaurus, ma nessuna sorgente di contenuto lo attiva. Zenzic costruisce
-  la Virtual Route map a partire da `md_contents` (file già confermati esistenti su disco),
-  quindi Z111 è strettamente un frontmatter/link mismatch — non un problema di cancellazione di file.
+Un link punta a un URL di route virtuale (es. `/blog/tags/react/`) che non è mai stato generato perché nessun post del blog porta quel valore di tag nel frontmatter `tags:`. Distinto da Z101: l'URL è strutturalmente valido, ma nessuna sorgente di contenuto lo attiva.
 
-  Esempio: un file `docs/index.md` contiene `[React posts](/blog/tags/react/)`, ma nessun
-  blog post in `blog/` ha `tags: [react]`. Docusaurus non renderizzerà mai quella pagina;
-  il link è un 404.
-
-* **Rimedio:**
-    1. Identifica lo slug del tag nell'URL della route rotta (es., `react` da `/blog/tags/react/`).
-    2. Cerca nella tua directory `blog/` post il cui frontmatter `tags:` dovrebbe includere
-       quel tag — potrebbero usare una variante capitalizzata (`React`) o un sinonimo.
-    3. O aggiungi il tag ai post rilevanti, o aggiorna il link per puntare a un tag
-       effettivamente generato (es., `/blog/tags/reactjs/`).
-    4. Se il link è forward-looking (un tag che intendi introdurre), sopprimi temporaneamente
-       con `{/* zenzic:ignore: Z111 */}` sul link incriminato.
-
----
+**Rimedio:** Aggiungi il tag ai post rilevanti, o aggiorna il link verso un tag effettivamente generato. Per link anticipatori, sopprimi temporaneamente con `{/* zenzic:ignore: Z111 */}`.
 
 ### Z113: AUTHOR_KEY_COLLISION {#z113}
 
-* **Severità:** `error` *(riservato)*
-* **Contesto Tecnico:** Due o più file `authors.yml` di Docusaurus (o `blog/authors/*.yml`)
-  dichiarano la stessa author key. Docusaurus fonde queste definizioni deterministicamente
-  per priorità, ma il risultato del merge è silente e fragile — una collisione di chiave crea una
-  dipendenza nascosta di configurazione fra file che sono tipicamente mantenuti indipendentemente.
-* **Rimedio:**
-    1. Cerca l'author key in collisione in tutti i file `authors.yml` sotto `blog/`.
-    2. Decidi quale definizione è canonica e rinomina la chiave duplicata.
-    3. Aggiorna ogni blog post che usa la chiave rinominata nella sua lista `authors:`.
+**Severità:** `error` *(riservato)* · **Motore:** Docusaurus
 
----
+Due o più file `authors.yml` dichiarano la stessa chiave autore. Docusaurus unisce silenziosamente per priorità, creando una dipendenza di configurazione nascosta.
+
+**Rimedio:** Identifica la chiave in conflitto, mantieni la definizione canonica, rinomina il duplicato e aggiorna tutti i post del blog che referenziano la chiave rinominata.
 
 ### Z114: LARGE_PAGINATION_SET {#z114}
 
-* **Severità:** `info` *(riservato)*
-* **Contesto Tecnico:** Il plugin blog genererebbe più di 200 pagine di indice paginato
-  (`/blog/page/N/`). Zenzic fa emergere questo come finding informativo — non come errore
-  bloccante — per stimolare una revisione della strategia di paginazione prima che diventi un
-  problema di UX di navigazione.
+**Severità:** `info` *(riservato)* · **Motore:** Docusaurus
 
-  Cause comuni: un numero molto grande di blog post brevi; un'impostazione `postsPerPage`
-  estremamente bassa; un range di date che copre molti anni senza `archiveBasePath` abilitato.
+Il plugin blog genererebbe più di 200 pagine di indice paginate. Informativo — non bloccante.
 
-* **Rimedio:**
-    1. Rivedi `postsPerPage` nel blocco blog del tuo `docusaurus.config.ts`.
-    2. Considera di abilitare il blog archive (`archiveBasePath: 'archive'`) per scaricare
-       i post storici dall'indice paginato.
-    3. Sopprimi con `{/* zenzic:ignore: Z114 */}` sul link.
-
----
-
-## Codici Riservati (Inattivi) {#reserved}
-
-I seguenti codici sono definiti nella tassonomia di Zenzic ma **non vengono emessi dallo scanner principale**. Sono documentati qui per completezza e per evitare il riutilizzo accidentale di identificatori riservati.
+**Rimedio:** Aumenta `postsPerPage` in `docusaurus.config.ts` o abilita `archiveBasePath` per scaricare i post storici.
 
 ### Z504: QUALITY_REGRESSION {#z504}
 
-* **Severità:** `warning` *(riservato)*
-* **Contesto Tecnico:** Emesso da `zenzic diff` quando il [Deterministic Quality Score](./scoring-algorithm.mdx) attuale è inferiore alla baseline salvata (`.zenzic-score.json`). Z504 è il segnale che ponte fra il livello di scoring e il livello di finding — identifica *quale commit ha introdotto una regressione*. Non viene esso stesso pesato nello score (sarebbe circolare); è la conseguenza diagnostica del degrado dello score.
-* **Rimedio:**
-    1. Esegui `zenzic score` per vedere il breakdown attuale dello score per categoria.
-    2. Confronta con la baseline: identifica quale issue count di categoria è cresciuto.
-    3. Risolvi i finding sottostanti (Z101–Z503) che hanno causato il drop.
-    4. Esegui `zenzic score --save` su `main` dopo la fix per aggiornare la baseline.
+**Severità:** `warning` *(riservato)*
+
+Emesso da `zenzic diff` quando il DQS attuale è inferiore alla baseline salvata (`.zenzic-score.json`). Non è esso stesso ponderato nel punteggio (sarebbe circolare); identifica quale commit ha introdotto una regressione.
+
+**Rimedio:** Esegui `zenzic score` per vedere il breakdown per categoria, correggi i rilevamenti sottostanti che hanno causato il calo, poi esegui `zenzic score --save` su `main` per aggiornare la baseline.
 
 ---
 
-## Historical Code Remap {#historical-code-remap}
+## Remap Codici Storici {#historical-code-remap}
 
 {/* zenzic:migration-matrix:start */}
 | Codice Deprecato | Codice Attivo | Note |
@@ -810,75 +482,30 @@ I seguenti codici sono definiti nella tassonomia di Zenzic ma **non vengono emes
 | `Z907` | `Z602` | Remap canonico per `I18N_PARITY`. |
 {/* zenzic:migration-matrix:end */}
 
-Gli identificatori storici rimangono validi solo come riferimenti storici in prosa di migrazione. I finding attivi e gli anchor di sezione usano sempre i codici canonici listati in questa matrice.
+Gli identificatori storici rimangono validi solo come riferimenti storici nella prosa di migrazione. I rilevamenti attivi e gli anchor di sezione usano sempre i codici canonici elencati in questa matrice.
 
 ---
 
-### Soppressione delle Diagnostiche
+## Soppressione dei Diagnostici
 
-Zenzic supporta la **soppressione line-level, per-codice** via commenti inline. Aggiungi un commento `zenzic:ignore` alla fine di qualsiasi linea per silenziare una diagnostica specifica solo per quella linea.
+Zenzic supporta la **soppressione per riga e per codice** tramite commenti inline. Aggiungi un commento `zenzic:ignore` alla fine di qualsiasi riga per silenziare un diagnostico specifico solo per quella riga.
 
-**Soppressione format-aware (CEO-143 — Polymorphic Suppression Protocol):**
-
-Per i file ``.md`` usa un commento HTML standard (invisibile nel Markdown renderizzato):
+Per file `.md`, usa un commento HTML standard (invisibile nel Markdown renderizzato):
 
 ```markdown
-The Obsidian era defined our foundations. <!-- zenzic:ignore: Z601 -->
+L'era Obsidian ha definito le nostre fondamenta. <!-- zenzic:ignore: Z601 -->
 ```
 
-Per i file ``.mdx`` usa un commento JSX (invisibile nell'MDX renderizzato, sicuro per Docusaurus/React):
+Per file `.mdx`, usa un commento JSX (invisibile nel MDX renderizzato, sicuro per Docusaurus/React):
 
 ```mdx
-The Obsidian era defined our foundations. {/* zenzic:ignore: Z601 */}
+L'era Obsidian ha definito le nostre fondamenta. {/* zenzic:ignore: Z601 */}
 ```
 
-Ogni commento di soppressione silenzia **solo** il codice specificato su quella linea. Per sopprimere codici multipli su una linea, aggiungi commenti multipli. Per esentare un intero file, usa `obsolete_names_exclude_patterns` in `.zenzic.toml` (Z601) o i pattern `excluded_files` rilevanti.
+Ogni commento di soppressione silenzia **solo** il codice specificato su quella riga. Per sopprimere più codici, aggiungi più commenti. Per esentare un intero file, usa `obsolete_names_exclude_patterns` (Z601) o i pattern `excluded_files` rilevanti in `.zenzic.toml`.
 
 :::tip[Usa la soppressione con parsimonia]
-La soppressione è per decisioni intenzionali e documentate — non per silenziare finding che non hai rivisto. Ogni linea soppressa dovrebbe avere un commento corrispondente o una entry ADR che spieghi il perché.
+La soppressione è per decisioni intenzionali e documentate — non per silenziare rilevamenti non revisionati. Ogni riga soppressa dovrebbe avere un commento corrispondente che spieghi il perché.
 :::
 
-### Workflow Raccomandato
-
-1. **Baseline scan:** Esegui `zenzic check all` per stabilire una baseline di finding.
-2. **Prioritizza la sicurezza:** Affronta tutti i finding Z2xx (credential scanner) immediatamente — sono security-critical.
-3. **Fix di issue strutturali:** Risolvi i finding Z4xx (Structure) per assicurare navigazione e accessibilità corrette.
-4. **Miglioramento qualità graduale:** Affronta i finding Z5xx (Content Quality) in modo incrementale come parte della normale manutenzione della documentazione.
-5. **Sopprimi violazioni intenzionali:** Usa commenti inline con parsimonia per decisioni di design (es., landing page nascoste, sezioni sperimentali).
-
-### Considerazioni Engine-Specifiche
-
-* **Docusaurus:** I warning Z103 (ORPHAN_LINK) possono essere intenzionali per pagine fuori dalla sidebar principale. Considera di usare le route in `sidebars.js` o di sopprimere questi finding.
-* **MkDocs:** Z401 (MISSING_DIRECTORY_INDEX) è particolarmente rilevante in doc gerarchiche; assicurati che ogni directory abbia un `index.md`.
-* **Modalità Standalone:** La rilevazione orfani (Z103, Z402) è disabilitata senza un navigation contract. Usa esplicitamente.
-
----
-
-## Integrazione con CI/CD {#cicd-integration}
-
-Per la massima efficacia, integra i check Zenzic nella tua pipeline CI/CD:
-
-```bash
-# Fail on any error (Z1xx, Z4xx, Z9xx)
-zenzic check all
-
-# Fail on errors OR warnings (promote with --strict)
-zenzic check all --strict
-
-# Always exit 0 for non-blocking audits
-zenzic check all --exit-zero
-```
-
-Usa configurazioni environment-specific per adattare la severità:
-
-```toml
-[zenzic]
-engine = "docusaurus"
-strict = false  # Warning only in dev; usa --strict in CI
-
-[[rules]]
-code = "Z502"
-minimum_words = 50
-```
-
----
+Vedi [Politica di Soppressione](./suppression-policy.mdx) per il riferimento completo, inclusa la modalità `--strict`, il modello Suppression Debt e l'override `--audit`.

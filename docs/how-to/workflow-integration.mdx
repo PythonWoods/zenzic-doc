@@ -208,12 +208,7 @@ The protection is active by default. The variable is an operator exception, not 
 configuration change.
 :::
 
-<ZenzicOutput
-  status="error"
-  code="Z301"
-  exitCode={1}
-  compact
-/>
+<ZenzicTerminal title="zenzic check all"><span className="text-rose-500">✘</span>{" "}<span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[Z301]</span>{" "}<span className="text-zinc-300">DANGLING_REF — exit 1</span></ZenzicTerminal>
 
 The finding above is what a pre-launch external link looks like. It is accurate — the
 URL does not resolve. `ZENZIC_EXTRA_ARGS="--no-external"` suppresses it for one build

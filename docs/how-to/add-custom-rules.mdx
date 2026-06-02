@@ -65,13 +65,11 @@ surfaced in the report but do not affect the exit code unless `--strict` is pass
 When a custom rule fires, Zenzic prints the finding with a visual snippet showing the offending
 line:
 
-<ZenzicOutput
-  status="error"
-  code="ZZ-NODRAFT"
-  exitCode={1}
-  compact
-  rows={[{ code: 'ZZ-NODRAFT', file: 'docs/guide/install.md:14', message: 'Remove DRAFT marker before publishing.', severity: 'error' }]}
-/>
+<ZenzicTerminal title="zenzic check all">
+<div className="flex gap-2 items-baseline"><span className="text-rose-500">✘</span><span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[ZZ-NODRAFT]</span><span className="text-zinc-300">docs/guide/install.md:14</span></div>
+<div className="text-zinc-500 ml-6 text-[11px]">Remove DRAFT marker before publishing.</div>
+<div className="mt-2 text-rose-500 font-semibold text-[11px] tracking-wide">FAILED — exit 1</div>
+</ZenzicTerminal>
 
 For `"error"` severity the rule ID is printed in red; for `"warning"` in yellow. The `│` line
 shows the raw source line exactly as it appears in the file.

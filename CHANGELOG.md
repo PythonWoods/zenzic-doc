@@ -15,25 +15,26 @@ No changes yet.
 
 ---
 
-## [0.9.0] - 2026-05-31
+## [0.9.1] - 2026-06-02
 
 ### Added
 
-- Historical archive split for v0.8.x and v0.7.x release notes under `changelogs/`.
-- `tutorials/examples.mdx` (EN + IT): full gallery of all 20 `zenzic lab` sandboxes with scenario matrix, exit-code column, and per-scenario prose.
-- 15 new gallery sections covering z102, z103, z105, z108, z202, z204, z301, z302, z303, z402, z403, z501, z502, z503, z505.
-- `finding-codes.mdx` (EN + IT): Z204 CLI output updated to `POLICY VIOLATION DETECTED` banner.
-- `privacy-gate.mdx` (EN + IT): Exit Behavior section and `[core]` table-header fix.
+- Z-Code Gallery completion (EN + IT) aligned with the full release scope.
+- New documentation pages and galleries for `Z107 CIRCULAR_ANCHOR` and `Z104 FILE_NOT_FOUND`.
 
 ### Changed
 
-- Documentation for local gates now mirrors the real `just verify` recipe sequence (pre-commit hooks → pytest → strict audit → score stamp → freshness gate).
-- Developers command matrix updated to remove obsolete preflight terminology.
-- v0.8.x narratives archived; v0.9.0 sprint material moved to this entry.
+- **Repository-Relative Suppression Config:** Updated `.zenzic.toml` `per_file_ignores` and `directory_policies` to use strictly repository-relative keys (prefixed with `docs/` or `docs/it/`).
+- **Strategic Navigation Exemption:** Added `directory_policies` exemption for `docs/tutorials/examples/**` under `Z401` to prevent scoring penalties on example directories that intentionally lack index files.
+- **Score Badge telemetry:** Stamped quality score badge inline in `README.md` and `README.it.md` to show a passing score of `96/100`.
+- Hostile Precision UI standardization applied across release-facing documentation surfaces.
+- Terminal documentation debt removed by normalizing legacy snippets and inconsistent command narratives.
+- SVG asset governance aligned with ADR-037 compliance requirements.
 
 ---
 
 ## Historical Releases
 
+- v0.9.x archive: [changelogs/v0.9.md](./changelogs/v0.9.md)
 - v0.8.x archive: [changelogs/v0.8.md](./changelogs/v0.8.md)
 - v0.7.x archive: [changelogs/v0.7.md](./changelogs/v0.7.md)

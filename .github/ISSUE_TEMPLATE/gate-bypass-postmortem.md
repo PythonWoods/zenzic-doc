@@ -12,7 +12,7 @@ assignees: ""
 > **Blameless principles**
 >
 > 1. **Data, not blame.** The failure log is objective evidence; narrative is secondary.
-> 2. **System focus.** Root cause identifies *why the pipeline* (Zenzic / yarn build / GHA) failed, never who pushed.
+> 2. **System focus.** Root cause identifies *why the pipeline* (Zenzic / just build / GHA) failed, never who pushed.
 > 3. **Always-on remediation.** Every bypass produces a task that hardens the gate so it is no longer needed next time.
 
 ## 🚨 1. Trigger
@@ -30,8 +30,8 @@ assignees: ""
 ## 🔍 3. Root Cause Analysis
 
 - [ ] **False positive** (Zenzic flagged a legitimate documentation link)
-- [ ] **Build failure** (yarn build / Docusaurus rendering error)
-- [ ] **Flakiness** (network fetch during build, `yarn install` failure)
+- [ ] **Build failure** (`just build` / Docusaurus rendering error)
+- [ ] **Flakiness** (network fetch during build, `npm ci` failure)
 - [ ] **Infrastructure** (GitHub Actions / local runner offline)
 - [ ] **Technical debt** (broken link introduced by upstream content change)
 - [ ] **Other** — describe:

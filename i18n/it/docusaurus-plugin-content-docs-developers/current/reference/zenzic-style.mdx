@@ -185,7 +185,10 @@ generi colori casuali su stringhe di log o percorsi di file.
 
 ## 6. Header SPDX {#spdx-header}
 
-Ogni file `.md` deve iniziare con:
+Ogni file sorgente documentale (`.md`, `.mdx` e contenuti equivalenti)
+deve includere metadati SPDX.
+
+Pattern minimo:
 
 ```html
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -194,6 +197,32 @@ Ogni file `.md` deve iniziare con:
 
 I file con frontmatter YAML posizionano il blocco SPDX immediatamente dopo
 il `---` di chiusura.
+
+### Regola delle Modifiche Significative (MUST)
+
+Per modifiche significative (nuova logica, blocchi contenutistici rilevanti,
+riscritture strutturali), i contributori **devono** aggiungere la propria riga
+`SPDX-FileCopyrightText` sotto quella del progetto.
+
+```html
+{/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
+{/* SPDX-FileCopyrightText: 2026 Nome Contributore <contributor@example.com> */}
+{/* SPDX-License-Identifier: Apache-2.0 */}
+```
+
+Per correzioni banali (typo, punteggiatura, sola formattazione) non è
+richiesta una nuova riga contributore.
+
+### Modello di Governance Legale
+
+Zenzic **non** richiede un modello CLA con trasferimento dei diritti.
+La governance si basa su:
+
+- **DCO** (Developer Certificate of Origin) per l'attestazione di paternità.
+- **REUSE/SPDX** per la tracciabilità copyright/licenza per file.
+
+I contributori mantengono il copyright sulle modifiche significative e
+dichiarano la paternità tramite header SPDX.
 
 ---
 
