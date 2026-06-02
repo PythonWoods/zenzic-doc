@@ -1,12 +1,13 @@
 ---
 sidebar_position: 2
-title: "z102 — Ancora Mancante"
+title: "Z102 - Ancora Mancante"
+sidebar_label: "Z102 - Ancora Mancante"
 description: "Analisi del fixture z102-anchor-missing: un link con frammento che punta a un'intestazione inesistente nel file di destinazione, attivando Z102 ANCHOR_MISSING con exit code 1."
 ---
 
 import Z102AnchorMissing from '@site/src/components/examples/Z102AnchorMissing';
 
-# z102-anchor-missing — Integrità dell'Ancora
+# Z102-anchor-missing — Integrità dell'Ancora
 
 **Z-Code:** `Z102 ANCHOR_MISSING` · **Engine:** `standalone` · **Exit:** `1`
 
@@ -43,35 +44,50 @@ cd examples/z102-anchor-missing
 uvx zenzic check links
 ```
 
-Output atteso:
+Expected output:
 
 ```text
-docs/index.md:11:  Z102  ANCHOR_MISSING  guide.md#nonexistent-section — anchor not found on target page
+standalone - 2 files (2 docs, 0 assets) - 0.0s - 111 files/s
+
+docs/guide.md:4  !  [Z502]  Page has only 37 words (minimum 50).
+
+    2  │  <!-- SPDX-License-Identifier: Apache-2.0 -->
+    3  │  
+    4  ❱  # Guide
+    5  │  
+    6  │  ## Overview
+
+docs/index.md:11:2  x  [Z102]  anchor '#nonexistent-section' not found in 
+'guide.md'
+
+     9  │  ## Broken Anchor Reference
+    10  │  
+    11  ❱  - [Nonexistent Section](guide.md#nonexistent-section) — the fragment 
+`#nonexistent-section` is not defined i…
+        │    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12  │  
+    13  │  ## What Zenzic Reports
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 1 warning  i 0 info  - 2 files with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
 ```
 
 Exit code: `1`
 
 ## Interpretare l'Output
 
-Il finding Z102 riporta:
+Il codice di errore `Z102` indica un problema di tipo **ANCHOR_MISSING**.
 
-- **File sorgente e riga** (`docs/index.md:11`) — posizione esatta del link con frammento rotto.
-- **Z-code** (`Z102`) — classe di violazione: il file di destinazione esiste, ma l'ancora non esiste.
-- **Nome regola** (`ANCHOR_MISSING`) — identificatore canonico di questo controllo.
-- **Frammento morto** (`guide.md#nonexistent-section`) — la destinazione del link che Zenzic non ha potuto risolvere.
-
-La distinzione chiave rispetto a Z101:
-
-| Codice | Cosa manca | Il file di destinazione esiste? |
-| :----: | :--------- | :-----------------------------: |
-| Z101 | Il **file** di destinazione | ✘ |
-| Z102 | L'**ancora di intestazione** nel file di destinazione | ✔ |
-
-Z102 è un **controllo standalone-engine**: Zenzic legge `guide.md` da disco, analizza le sue
-intestazioni e verifica se il frammento `#nonexistent-section` si risolve. Non viene effettuata
-alcuna richiesta di rete. L'intestazione `#overview` è valida e presente — solo
-`#nonexistent-section` è assente.
-
+Questo errore o avviso viene generato da Zenzic quando un link markdown contiene un frammento/hash (es. `#section-title`) ma quell'ancora specifica è mancante o non definita nella pagina di destinazione. Zenzic compila automaticamente tutti gli header e i tag ancora HTML del file target per verificare la corrispondenza. In questo esempio specifico:
+- **Tipo di Scansione:** `Link Validator`
+- **Severità:** `Error`
+- **Impatto:** Le ancore mancanti portano a una navigazione interna interrotta, con una detrazione sul DQS di 5.0 punti.
 ## Correggere la Violazione
 
 Aggiungi l'intestazione mancante in `guide.md`:
@@ -98,4 +114,4 @@ uvx zenzic check links  # → exit 0, nessun finding
 
 - [z101 — Link Rotti](z101-broken-links) — variante a livello di file: il file di destinazione non esiste.
 - [z103 — Link Orfano](z103-orphan-link) — destinazioni di link esistenti su disco ma assenti dalla navigazione del sito.
-- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

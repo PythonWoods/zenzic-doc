@@ -1,12 +1,13 @@
 ---
 sidebar_position: 3
-title: "z103 — Link Orfano"
+title: "Z103 - Link Orfano"
+sidebar_label: "Z103 - Link Orfano"
 description: "Analisi del fixture z103-orphan-link: un link verso un file che esiste su disco ma è assente dalla navigazione del sito, attivando Z103 ORPHAN_LINK con exit code 1."
 ---
 
 import Z103OrphanLink from '@site/src/components/examples/Z103OrphanLink';
 
-# z103-orphan-link — Link Orfano
+# Z103-orphan-link — Link Orfano
 
 **Z-Code:** `Z103 ORPHAN_LINK` · **Engine:** `zensical` · **Exit:** `1`
 
@@ -46,35 +47,46 @@ cd examples/z103-orphan-link
 uvx zenzic check links
 ```
 
-Output atteso:
+Expected output:
 
 ```text
-docs/index.md:16:  Z103  ORPHAN_LINK  'guide.md' exists but is not reachable via site navigation
+zensical - 2 files (2 docs, 0 assets) - 0.0s - 103 files/s
+
+docs/guide.md  !  [Z402]  Physical file not listed in navigation.
+
+docs/index.md:16:2  x  [Z101]  'guide.md' resolves to '/guide/' which exists on 
+disk but is not listed in the site navigation (UNREACHABLE_LINK) — add it to nav
+in mkdocs.yml or remove the link
+
+    14  │  The following link points to a page that exists on disk but has no 
+nav entry:
+    15  │  
+    16  ❱  - [Guide](guide.md) — `guide.md` exists on disk, but it is **not in 
+the nav** → **Z103**
+        │    ^^^^^^^^^^^^^^^^^
+    17  │  
+    18  │  ## What Zenzic Reports
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 1 warning  i 0 info  - 2 files with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
 ```
 
 Exit code: `1`
 
 ## Interpretare l'Output
 
-Il finding Z103 riporta:
+Il codice di errore `Z103` indica un problema di tipo **ORPHAN_LINK**.
 
-- **File sorgente e riga** (`docs/index.md:16`) — il link che referenzia una pagina orfana dalla nav.
-- **Z-code** (`Z103`) — classe di violazione: il file di destinazione esiste ma ha stato VSM `ORPHAN_BUT_EXISTING`.
-- **Nome regola** (`ORPHAN_LINK`) — identificatore canonico di questo controllo.
-- **Messaggio del finding** — conferma che il file esiste su disco ma è invisibile dalla navigazione del sito.
-
-### Z103 versus Z101
-
-| Codice | File di destinazione esiste su disco? | Voce in nav? | Violazione |
-| :----: | :-----------------------------------: | :----------: | :--------- |
-| Z101 | ✘ | — | File non trovato su disco |
-| Z103 | ✔ | ✘ | File esiste ma aggira la navigazione |
-
-Z103 è **emesso solo dal motore zensical**. Il motore standalone non ha Virtual Site Map
-(VSM), quindi lo stato `ORPHAN_BUT_EXISTING` non viene mai assegnato e Z103 non viene mai
-attivato. Se il tuo progetto usa il motore standalone, nessun Z103 viene prodotto
-indipendentemente dalla configurazione di navigazione.
-
+Questo errore o avviso viene generato da Zenzic quando una pagina markdown esiste ed è collegata tramite link, ma la destinazione del link non è raggiungibile tramite la struttura di navigazione principale del sito (es. omessa dalla sidebar). In questo esempio specifico:
+- **Tipo di Scansione:** `Link Validator`
+- **Severità:** `Error`
+- **Impatto:** I link orfani possono creare sezioni isolate di contenuto e comportano una detrazione DQS di 2.0 punti.
 ## Correggere la Violazione
 
 Aggiungi `guide.md` alla nav in `zensical.toml`:
@@ -102,5 +114,5 @@ intenzionalmente non pubblicata.
 
 - [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
 - [z102 — Ancora Mancante](z102-anchor-missing) — il file di destinazione esiste ma l'ancora dell'intestazione non esiste.
-- [z402 — Pagina Orfana](../examples#example-z402) — l'inverso: una pagina non in nav e senza alcun link che la referenzia.
-- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.
+- [z402 — Pagina Orfana](../../examples#example-z402) — l'inverso: una pagina non in nav e senza alcun link che la referenzia.
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

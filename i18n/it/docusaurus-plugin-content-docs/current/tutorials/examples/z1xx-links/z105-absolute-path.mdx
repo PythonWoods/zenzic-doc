@@ -1,12 +1,13 @@
 ---
 sidebar_position: 4
-title: "z105 — Percorso Assoluto"
+title: "Z105 - Percorso Assoluto"
+sidebar_label: "Z105 - Percorso Assoluto"
 description: "Analisi del fixture z105-absolute-path: un link con percorso assoluto che inizia con '/', interrompendo la portabilità rispetto al percorso host. Z-Code Z105 ABSOLUTE_PATH, exit 1."
 ---
 
 import Z105AbsolutePath from '@site/src/components/examples/Z105AbsolutePath';
 
-# z105-absolute-path — Percorso Assoluto
+# Z105-absolute-path — Percorso Assoluto
 
 **Z-Code:** `Z105 ABSOLUTE_PATH` · **Engine:** `standalone` · **Exit:** `1`
 
@@ -37,33 +38,43 @@ cd examples/z105-absolute-path
 uvx zenzic check links
 ```
 
-Output atteso:
+Expected output:
 
 ```text
-docs/index.md:10:  Z105  ABSOLUTE_PATH  '/guide' — use a relative path
+standalone - 1 file (1 docs, 0 assets) - 0.0s - 65 files/s
+
+docs/index.md:10:2  x  [Z105]  '/guide' uses an absolute path — use a relative 
+path (e.g. '../' or './') instead; absolute paths break portability when the 
+site is hosted in a subdirectory
+
+     8  │  ## Absolute Path Link
+     9  │  
+    10  ❱  - [Guide](/guide) — uses `/guide` (absolute) instead of `guide.md` 
+(relative) → **Z105**
+        │    ^^^^^^^^^^^^^^^
+    11  │  
+    12  │  ## What Zenzic Reports
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 0 warnings  i 0 info  - 1 file with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
 ```
 
 Exit code: `1`
 
 ## Interpretare l'Output
 
-Il finding Z105 riporta:
+Il codice di errore `Z105` indica un problema di tipo **ABSOLUTE_PATH**.
 
-- **File sorgente e riga** (`docs/index.md:10`) — il link che usa un percorso assoluto.
-- **Z-code** (`Z105`) — classe di violazione: un link che inizia con `/`.
-- **Nome regola** (`ABSOLUTE_PATH`) — identificatore canonico di questo controllo.
-- **Messaggio del finding** — indica il percorso non portabile e suggerisce l'uso di un percorso relativo.
-
-### Z105 versus Z101
-
-| Codice | File di destinazione su disco? | Tipo percorso | Violazione |
-| :----: | :----------------------------: | :-----------: | :--------- |
-| Z101 | ✘ | relativo | File di destinazione non trovato su disco |
-| Z105 | — (non verificato) | assoluto (`/`) | Il percorso non è portabile tra root di hosting diverse |
-
-Z101 controlla se la _destinazione_ esiste. Z105 controlla se la _forma del percorso_
-è portabile — si attiva indipendentemente dall'esistenza di un file `guide` su disco.
-
+Questo errore o avviso viene generato da Zenzic quando un link utilizza un percorso assoluto (che inizia con `/` o punta a un percorso di sistema completo) invece di un percorso relativo. Questo viola i vincoli di portabilità, causando errori di rendering quando la documentazione viene pubblicata su sottopercorsi diversi. In questo esempio specifico:
+- **Tipo di Scansione:** `Link Validator`
+- **Severità:** `Error`
+- **Impatto:** I percorsi assoluti compromettono la portabilità della documentazione, comportando una detrazione DQS di 2.0 punti.
 ## Correggere la Violazione
 
 Sostituire il percorso assoluto con uno relativo in `docs/index.md`:
@@ -89,5 +100,5 @@ relativi. I link esterni (es. `https://example.com/docs`) non sono interessati d
 
 - [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
 - [z108 — Testo Link Vuoto](z108-empty-link-text) — l'etichetta del link è vuota, compromettendo l'accessibilità agli screen reader.
-- [z202 — Path Traversal](../examples#example-z202) — un link che esce dalla directory `docs/`.
-- [Riferimento Controlli](../../reference/checks) — specifica completa della regola.
+- [z202 — Path Traversal](../../examples#example-z202) — un link che esce dalla directory `docs/`.
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.
