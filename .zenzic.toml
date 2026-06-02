@@ -139,6 +139,7 @@ i18n_parity = true
 "docs/blog/**"                    = ["Z601"]  # historical release blog posts
 "docs/explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
 "docs/it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+"docs/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
 
 # Governance Playbook:
 # /developers/how-to/release-governance-protocol
