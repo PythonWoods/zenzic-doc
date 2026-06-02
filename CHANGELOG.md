@@ -15,6 +15,20 @@ No changes yet.
 
 ---
 
+## [0.9.1] - 2026-06-02
+
+### Added
+
+- Z-Code Gallery completion (EN + IT) aligned with the full release scope.
+
+### Changed
+
+- Hostile Precision UI standardization applied across release-facing documentation surfaces.
+- Terminal documentation debt removed by normalizing legacy snippets and inconsistent command narratives.
+- SVG asset governance aligned with ADR-037 compliance requirements.
+
+---
+
 ## [0.9.0] - 2026-05-31
 
 ### Added

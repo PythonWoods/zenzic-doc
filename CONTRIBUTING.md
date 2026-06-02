@@ -306,6 +306,22 @@ Check compliance manually:
 just reuse
 ```
 
+## REUSE Compliance & Copyright
+
+This repository is REUSE-compliant and enforces SPDX metadata as a merge gate.
+
+- Pull requests that add new files or significantly modify existing files must
+  declare contributor authorship with `SPDX-FileCopyrightText`.
+- Trivial edits (typos, punctuation, formatting-only changes) are exempt from
+  the additional contributor line.
+- PRs that violate this policy are rejected by governance checks (Exit 1).
+
+Legal governance model:
+
+- No CLA (Contributor License Agreement) with rights transfer is required.
+- Contribution provenance is governed by DCO + REUSE/SPDX.
+- Contributors retain copyright on significant changes.
+
 ---
 
 ## Code of Conduct

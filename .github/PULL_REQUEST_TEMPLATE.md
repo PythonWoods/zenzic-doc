@@ -25,7 +25,7 @@ Every PR touching `docs/`, `blog/`, `src/`, or `i18n/` must satisfy all that app
 ### 1. Accuracy & Link Validity
 
 - [ ] All new internal links use relative paths and have been verified locally
-  (`just check` or `yarn build` must pass without broken-link errors).
+  (`just check` or `just build` must pass without broken-link errors).
 - [ ] External links point to canonical, stable URLs — not redirects or preview deployments.
 - [ ] Code samples have been tested against the referenced Zenzic version.
 
@@ -40,7 +40,7 @@ Every PR touching `docs/`, `blog/`, `src/`, or `i18n/` must satisfy all that app
 
 ### 3. Build & Zenzic Self-Check
 
-- [ ] `yarn build` completes without errors locally.
+- [ ] `just build` completes without errors locally.
 - [ ] `just check` (Zenzic self-audit of this documentation portal) passes without new findings.
 - [ ] REUSE/SPDX headers are present on every new file.
 
