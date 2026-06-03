@@ -35,30 +35,17 @@ A change that violates Pillar II or Pillar III — even temporarily, even for a
 well-motivated reason — requires:
 
 1. **A Major version increment**
-2. **A 30-day public impact analysis period**
-3. **A formal [ADR](../explanation/adr-vault)**
+2. **A formal [ADR](../adr-vault.mdx)** added to the Zenzic Ledger
+3. **A structural stress-test** of the proposed replacement architecture
 
-   added to the Zenzic Ledger
-
-4. **A formal stress-test review** of the proposed replacement architecture
-5. **2/3 Core Maintainer consensus**
-
-This is not a bureaucratic barrier. It is the cost of the trust model. If the change
-is truly necessary, the 30-day period protects the users who depend on the Pillar.
+This ensures that the trust model is not abandoned lightly or by accident.
 
 ---
 
 ## 2. What Can Evolve (Lightweight Procedure)
 
 **Operational Standards** — quality gate thresholds, coverage floors, benchmark
-targets, finding code messages (not semantics) — evolve on a lightweight track:
-
-| Stage | Activity | Timeline |
-| :--- | :--- | :--- |
-| Proposal | GitHub issue with rationale | Day 0 |
-| Debate | 72-hour window for Core Maintainer objections | 72 hours |
-| Merge | Any Core Maintainer may merge if no blocking objection | Day 4+ |
-| Ledger Update | `[POLICIES]` or `[ARCHITECTURE]` section updated in same commit | — |
+targets, finding code messages (not semantics) — evolve simply by documenting the rationale in a commit and updating the relevant `[POLICIES]` or `[ARCHITECTURE]` section in the Ledger.
 
 Examples of Operational Standard changes:
 
@@ -100,20 +87,7 @@ It is a candidate for a code review.
 
 ---
 
-## 5. Emergency Security Exception
+## 5. Security Exceptions
 
-In case of a **Critical Security Vulnerability** requiring an emergency deviation
-from a Pillar (e.g., a process isolation call during a zero-day response), Core
-Maintainers may invoke the Emergency Exception:
-
-- Suspends **one specific invariant** for **maximum 30 days**
-- Requires a logged emergency ADR in the Zenzic Ledger with: invariant suspended,
-
-  security rationale, expiry deadline
-
-- If restoration is impossible in 30 days → full Pillar Amendment Process begins
-
-  before the deadline expires
-
-The Emergency Exception **cannot** be invoked for convenience, deadline pressure,
-or technical debt. It requires a documented CVE or equivalent security incident.
+In the event of a **Critical Security Vulnerability** requiring an emergency deviation
+from a Pillar (e.g., a process isolation call during a zero-day response), a temporary exception can be made. It must be tracked with a dedicated ADR detailing the security rationale, and the architectural violation must be resolved as soon as the vulnerability is mitigated. This exception cannot be invoked for convenience or technical debt.

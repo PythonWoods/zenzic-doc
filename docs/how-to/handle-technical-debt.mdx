@@ -133,6 +133,12 @@ This is by design. Security findings are facts, not style opinions. You cannot a
 
 ---
 
+## Resolving Discrepancies with Build Engines {#build-engine-discrepancies}
+
+If Zenzic reports a broken link that your build engine accepts, it is typically due to frontmatter routing overrides. Build engines like Docusaurus allow authors to override a file's canonical URL using the `slug:` frontmatter key. Zenzic strictly enforces that links target the exact resolved URL (the slug), rather than the physical file path. To fix the discrepancy, update the broken link to match the overridden slug.
+
+---
+
 ## Reference {#reference}
 
 - [Suppression Policy](../reference/suppression-policy.mdx) — Full reference for all three suppression levels.

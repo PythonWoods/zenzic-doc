@@ -37,6 +37,9 @@ on a 404. The CI pipeline succeeds. The damage is invisible at build time.
 
 Structural Integrity rules catch these breaks **before the build runs**:
 
+- **Orphan pages**: An orphan page is a Markdown file present on disk but absent from the site navigation declared in your build engine's configuration file. Because these pages are unreachable by users navigating the site structure, Zenzic reports them to keep you in control.
+- **Comprehensive link checking**: Zenzic's link validation analyses all Markdown references, including text links, images, reference-style links, and same-page anchors.
+
 | Finding Code | Name | What it catches |
 | :--- | :--- | :--- |
 | [`Z101`](../reference/finding-codes.mdx#z101) | `LINK_BROKEN` | Dead internal links — file not found |

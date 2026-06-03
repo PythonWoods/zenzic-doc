@@ -9,7 +9,9 @@ description: "Two-file configuration model, precedence rules, and a troubleshoot
 
 # Configuration Strategy
 
-Zenzic uses a two-file configuration model. This page explains the precedence chain
+Zenzic is designed to work with zero configuration. A `.zenzic.toml` file is not required to get started, as the defaults cover most standard projects out of the box. Create a configuration file only when you need to customise behaviour.
+
+This page explains the two-file configuration model, the precedence chain,
 and provides a troubleshooting matrix for the most common configuration problems.
 
 ---
@@ -33,6 +35,20 @@ whichever is present. If both exist, `.zenzic.toml` takes priority.
 ---
 
 ## Troubleshooting Matrix
+
+### External link check is slow or needs suppression
+
+External link validation only runs when `--strict` is passed. Omitting the flag disables all network requests entirely.
+To permanently suppress specific URLs without removing strict mode, add their prefixes to `excluded_external_urls` in `.zenzic.toml`:
+
+```toml title=".zenzic.toml"
+excluded_external_urls = [
+    "https://internal.company.com",
+    "https://github.com/MyOrg/private-repo",
+]
+```
+
+---
 
 ### `zenzic:ignore` does not suppress a Z2xx finding
 

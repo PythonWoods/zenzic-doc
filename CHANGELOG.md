@@ -25,7 +25,7 @@ No changes yet.
 ### Changed
 
 - **Repository-Relative Suppression Config:** Updated `.zenzic.toml` `per_file_ignores` and `directory_policies` to use strictly repository-relative keys (prefixed with `docs/` or `docs/it/`).
-- **Strategic Navigation Exemption:** Added `directory_policies` exemption for `docs/tutorials/examples/**` under `Z401` to prevent scoring penalties on example directories that intentionally lack index files.
+- **Strategic Navigation Exemption:** Added `directory_policies` exemption for `docs/how-to/examples/**` under `Z401` to prevent scoring penalties on example directories that intentionally lack index files.
 - **Score Badge telemetry:** Stamped quality score badge inline in `README.md` and `README.it.md` to show a passing score of `96/100`.
 - Hostile Precision UI standardization applied across release-facing documentation surfaces.
 - Terminal documentation debt removed by normalizing legacy snippets and inconsistent command narratives.
