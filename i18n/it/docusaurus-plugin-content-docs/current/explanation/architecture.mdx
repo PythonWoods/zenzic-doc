@@ -458,6 +458,18 @@ Ogni pattern in `[[custom_rules]]` viene compilato con RE2 al momento del carica
 
 ---
 
+## Complessità Algoritmica {#algorithmic-complexity}
+
+L'architettura di Zenzic separa gli intenti computazionali applicando limiti algoritmici specifici a ciascun dominio:
+
+- **Topologia (Knowledge Graph)**: La validazione dei link esegue una DFS iterativa sul grafo di adiacenza della Virtual Site Map. Con una rappresentazione tramite liste di adiacenza, la complessità della traversata è $\Theta(V+E)$, dove $V$ rappresenta pagine e asset ed $E$ i collegamenti. I registri di ciclicità utilizzano hash set per fornire lookup medi $O(1)$ nelle passate successive.
+
+- **Scansione Semantica**: Il credential scanner e le regole personalizzate utilizzano il motore regex `google-re2`, che evita il backtracking catastrofico tipico di alcuni motori regex tradizionali. Ciò garantisce una complessità lineare $O(N)$ rispetto all'input analizzato ed elimina le vulnerabilità ReDoS basate sul backtracking esponenziale.
+
+- **I/O Discovery**: L'ingestione dei file mantiene una complessità $O(N)$ rispetto al volume totale dei dati elaborati. Quando viene raggiunta una determinata soglia operativa, l'elaborazione può essere distribuita tramite process pool paralleli per ridurre il wall-time, mantenendo invariata la complessità computazionale complessiva.
+
+---
+
 ## Motore Adattivo Ibrido {#adaptive-engine}
 
 La pipeline di scansione seleziona automaticamente tra esecuzione sequenziale e parallela in base al numero di file:

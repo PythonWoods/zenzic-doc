@@ -454,6 +454,18 @@ Every `[[custom_rules]]` pattern is compiled with RE2 at load time. A pattern ei
 
 ---
 
+## Algorithmic Complexity {#algorithmic-complexity}
+
+Zenzic's architecture separates computational intents by applying well-defined algorithmic bounds to each domain:
+
+- **Topology (Knowledge Graph)**: Link validation runs an iterative DFS on the Virtual Site Map adjacency graph. Using an adjacency-list representation, traversal complexity is $\Theta(V+E)$, where $V$ represents pages/assets and $E$ represents links. Cycle registries are stored as hash sets, providing average $O(1)$ lookups during subsequent validation passes.
+
+- **Semantic Scanning**: Credential scanning and custom rules use the `google-re2` linear-time regex engine instead of Python's standard `re` module. This ensures $O(N)$ evaluation without catastrophic backtracking, eliminating ReDoS vulnerabilities based on exponential backtracking behavior.
+
+- **I/O Discovery**: File ingestion operates in $O(N)$ complexity relative to the total volume of processed data. Wall-time can be reduced through parallel process pools when processing large file sets, without changing the underlying computational complexity.
+
+---
+
 ## Hybrid Adaptive Engine {#adaptive-engine}
 
 The scan engine automatically selects sequential or parallel execution based on the number of files:
