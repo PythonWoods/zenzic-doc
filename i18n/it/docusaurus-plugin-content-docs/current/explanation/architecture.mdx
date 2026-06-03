@@ -607,7 +607,7 @@ avere un'entità registrata in `src/zenzic/core/codes.py` nel pacchetto Core —
 Questa parità bidirezionale è applicata dalla sessione Nox `verify-codes-parity` tramite
 **Risoluzione Sovrana (Fail-Closed)**:
 
-- **Core Maintainer**: `ZENZIC_CORE_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
+- **Author environment**: `ZENZIC_CORE_PATH` impostato → `uv run --project <percorso>` sul sorgente locale.
 - **Core non trovato**: la sessione fallisce in modalità fail-closed; fallback PyPI proibito.
 
 Eseguire `just verify` in `zenzic-doc` avvia tutti e quattro i gate in sequenza. I contributori

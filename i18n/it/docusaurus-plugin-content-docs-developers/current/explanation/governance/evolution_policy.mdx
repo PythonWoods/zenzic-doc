@@ -33,26 +33,17 @@ Una modifica che viola il Pilastro II o il Pilastro III — anche temporaneament
 per un motivo valido — richiede:
 
 1. **Un incremento della versione Major**
-2. **Un periodo pubblico di analisi d'impatto di 30 giorni**
-3. **Un [ADR](../explanation/adr-vault)** formale aggiunto all'ADR Vault
-4. **Una revisione formale tramite stress test** dell'architettura sostitutiva proposta
-5. **Consenso di 2/3 dei Core Maintainer**
+2. **Un [ADR formale](../adr-vault.mdx)** aggiunto all'ADR Vault
+3. **Uno stress-test strutturale** dell'architettura sostitutiva proposta
 
-Questo non è una barriera burocratica. È il costo del modello di fiducia.
+Questo garantisce che il modello di fiducia non venga abbandonato alla leggera o per errore.
 
 ---
 
 ## 2. Cosa Può Evolvere (Procedura Semplificata)
 
 **Standard Operativi** — soglie dei gate di qualità, floor di copertura, target di benchmark,
-messaggi dei codici di trovato (non la semantica) — evolvono su un percorso semplificato:
-
-| Fase | Attività | Timeline |
-| :--- | :--- | :--- |
-| Proposta | GitHub issue con motivazione | Giorno 0 |
-| Dibattito | Finestra di 72 ore per obiezioni dei Core Maintainer | 72 ore |
-| Merge | Qualsiasi Core Maintainer può fare merge se nessuna obiezione bloccante | Giorno 4+ |
-| Aggiornamento Ledger | Sezione `[POLICIES]` o `[ARCHITECTURE]` aggiornata nello stesso commit | — |
+messaggi dei codici di trovato (non la semantica) — evolvono semplicemente documentando la motivazione in un commit e aggiornando la sezione `[POLICIES]` o `[ARCHITECTURE]` del Ledger.
 
 ---
 
@@ -83,19 +74,7 @@ I seguenti non sono motivazioni valide per una modifica ai Pilastri:
 
 ---
 
-## 5. Eccezione di Emergenza per Sicurezza
+## 5. Eccezioni per Sicurezza
 
 In caso di **Vulnerabilità di Sicurezza Critica** che richieda una deviazione di
-emergenza da un Pilastro, i Core Maintainer possono invocare l'Eccezione di Emergenza:
-
-- Sospende **un singolo invariante specifico** per **massimo 30 giorni**
-- Richiede un ADR di emergenza registrato nell'Zenzic Ledger con: invariante sospeso,
-
-  motivazione di sicurezza, scadenza di ripristino
-
-- Se il ripristino è impossibile in 30 giorni → il processo completo di Modifica al Pilastro
-
-  inizia prima della scadenza
-
-L'Eccezione di Emergenza **non può** essere invocata per comodità, pressione di deadline
-o debito tecnico. Richiede un CVE documentato o un incidente di sicurezza equivalente.
+emergenza da un Pilastro, è possibile fare un'eccezione temporanea. Deve essere tracciata con un ADR dedicato che descriva la motivazione di sicurezza, e la violazione architetturale deve essere risolta non appena la vulnerabilità è mitigata. Questa eccezione non può essere invocata per comodità o per mascherare debito tecnico.

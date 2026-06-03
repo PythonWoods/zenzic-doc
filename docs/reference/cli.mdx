@@ -25,6 +25,8 @@ zenzic check assets       # Media files not referenced by any page
 zenzic check references   # Reference-style links + credential scanner (credential detection)
 
 # All checks in sequence
+# The `check all` command executes all validation suites and returns a binary pass/fail exit code.
+# In contrast, the `score` command computes a weighted numeric quality score (0-100) with a per-category breakdown.
 zenzic check all                    # Run all checks
 zenzic check all --audit            # Sovereign Audit: ignore inline + per-file suppressions
 zenzic check all --strict           # Also validate external URLs; treat warnings as errors
@@ -105,6 +107,8 @@ otherwise be non-blocking.
 | `check all --strict` | Validates external URLs + treats warnings as errors |
 | `check references --strict` | Treats Dead Definitions (unused reference links) as hard errors |
 | `score --strict` / `diff --strict` | Runs link check in strict mode |
+
+The `--strict` flag enforces rigorous validation: for link checking, it validates external HTTP/HTTPS links via active network requests (which are disabled by default for performance); for references, it treats Dead Definitions as fatal errors instead of warnings.
 
 You can also set `strict = true` in `.zenzic.toml` to make it the permanent default.
 
