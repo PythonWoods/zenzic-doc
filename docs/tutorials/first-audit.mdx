@@ -59,7 +59,7 @@ Security Breach banner — the non-suppressible alert for a leaked credential:
 
 The masked credential and non-zero exit code are the expected output of the credential scanner.
 
-**The Credential Scanner (Zenzic Audit Badge)** — now run the Z101 link integrity scenario:
+**Link Integrity Demo (Zenzic Audit Badge)** — now run the Z101 LINK_BROKEN scenario:
 
 ```bash
 uvx zenzic lab z101
@@ -77,7 +77,7 @@ uvx zenzic lab
 Launches the gallery menu of 5 Z-code scenarios: credential leaks, broken links, orphan
 assets, brand obsolescence, and i18n parity. No installation. No configuration required.
 
-→ Pick any scenario from the menu, or run a specific one: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (link integrity).
+→ Pick any scenario from the menu, or run a specific one: `uvx zenzic lab z201` (CREDENTIAL_SECRET), `uvx zenzic lab z101` (LINK_BROKEN).
 :::
 
 ---
@@ -138,14 +138,7 @@ zenzic check all
 
 Zenzic scans every Markdown file, validates internal links against the Virtual Site Map,
 checks anchors, scans for credentials, and runs your custom rules — then prints a structured
-report and exits with a machine-readable code:
-
-| Code | Meaning |
-| :---: | :--- |
-| **0** | Clean — no issues found |
-| **1** | Findings — documentation quality issues detected |
-| **2** | Credential scanner — leaked credential detected (never suppressed) |
-| **3** | Path traversal guard — path traversal attempt detected (never suppressed) |
+report and exits with a machine-readable code. For details on exit code definitions and security tiers, see the [Exit Code Contract](../reference/finding-codes#exit-code-contract).
 
 A clean run looks like this — the **Zenzic Audit Badge**:
 
