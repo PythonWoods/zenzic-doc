@@ -19,10 +19,9 @@ export default function Z405UnusedAssets(): React.JSX.Element {
           [Z405]
         </span>
         <span className="text-zinc-300">
-          File not referenced in any documentation
+          File not referenced in any documentation page.
         </span>
       </div>
-      <div className="text-zinc-400">page.</div>
       <div className="h-2" />
       <div className="text-zinc-700 my-4 select-none">────────────────────────────────────────────────────────────────────────────────</div>
       <div className="h-2" />
