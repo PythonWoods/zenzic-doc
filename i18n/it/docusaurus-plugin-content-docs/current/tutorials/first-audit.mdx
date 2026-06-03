@@ -59,7 +59,7 @@ il banner Security Breach — l'allerta non sopprimibile per una credenziale esp
 
 La credenziale mascherata e l'exit code non-zero sono l'output atteso del credential scanner.
 
-**Il Credential Scanner (Zenzic Audit Badge)** — ora esegui lo scenario Z101 (integrità dei link):
+**Demo integrità dei link (Zenzic Audit Badge)** — ora esegui lo scenario Z101 (LINK_BROKEN):
 
 ```bash
 uvx zenzic lab z101
@@ -78,7 +78,7 @@ uvx zenzic lab
 Lancia il menu della galleria con 5 scenari Z-code: credenziali esposte, link rotti, asset
 orfani, obsolescenza del brand e parità i18n. Nessuna installazione. Nessuna configurazione richiesta.
 
-→ Scegli qualsiasi scenario dal menu, oppure eseguine uno specifico: `uvx zenzic lab z201` (credential scanner), `uvx zenzic lab z101` (integrità dei link).
+→ Scegli qualsiasi scenario dal menu, oppure eseguine uno specifico: `uvx zenzic lab z201` (CREDENTIAL_SECRET), `uvx zenzic lab z101` (LINK_BROKEN).
 :::
 
 ---
@@ -139,14 +139,7 @@ zenzic check all
 
 Zenzic scansiona ogni file Markdown, valida i link interni rispetto alla Virtual Site Map,
 controlla le ancore, cerca credenziali, esegue le regole personalizzate — poi stampa un report
-strutturato ed esce con un codice leggibile dalla macchina:
-
-| Codice | Significato |
-| :---: | :--- |
-| **0** | Pulito — nessun problema rilevato |
-| **1** | Risultati — problemi di qualità della documentazione rilevati |
-| **2** | Credential scanner — credenziale esposta rilevata (mai sopprimibile) |
-| **3** | Path traversal guard — tentativo di path traversal rilevato (mai sopprimibile) |
+strutturato ed esce con un codice leggibile dalla macchina. Per i dettagli sui codici di uscita e i relativi livelli di sicurezza, consulta l'**[Exit Code Contract](../reference/finding-codes#contratto-codici-di-uscita)**.
 
 Un'esecuzione pulita si presenta così — il **Zenzic Audit Badge**:
 
