@@ -488,24 +488,4 @@ Gli identificatori storici rimangono validi solo come riferimenti storici nella 
 
 ## Soppressione dei Diagnostici
 
-Zenzic supporta la **soppressione per riga e per codice** tramite commenti inline. Aggiungi un commento `zenzic:ignore` alla fine di qualsiasi riga per silenziare un diagnostico specifico solo per quella riga.
-
-Per file `.md`, usa un commento HTML standard (invisibile nel Markdown renderizzato):
-
-```markdown
-L'era Obsidian ha definito le nostre fondamenta. <!-- zenzic:ignore: Z601 -->
-```
-
-Per file `.mdx`, usa un commento JSX (invisibile nel MDX renderizzato, sicuro per Docusaurus/React):
-
-```mdx
-L'era Obsidian ha definito le nostre fondamenta. {/* zenzic:ignore: Z601 */}
-```
-
-Ogni commento di soppressione silenzia **solo** il codice specificato su quella riga. Per sopprimere più codici, aggiungi più commenti. Per esentare un intero file, usa `obsolete_names_exclude_patterns` (Z601) o i pattern `excluded_files` rilevanti in `.zenzic.toml`.
-
-:::tip[Usa la soppressione con parsimonia]
-La soppressione è per decisioni intenzionali e documentate — non per silenziare rilevamenti non revisionati. Ogni riga soppressa dovrebbe avere un commento corrispondente che spieghi il perché.
-:::
-
-Vedi [Politica di Soppressione](./suppression-policy.mdx) per il riferimento completo, inclusa la modalità `--strict`, il modello Suppression Debt e l'override `--audit`.
+> Vedi [Politica di Soppressione](./suppression-policy.mdx) per la sintassi inline (`zenzic:ignore`), il modello Suppression Debt e l'override `--audit`.

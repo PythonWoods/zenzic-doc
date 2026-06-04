@@ -236,48 +236,7 @@ I link a percorsi corrispondenti a questi pattern non vengono segnalati come rot
 
 ## Esclusione VCS-Aware {#vcs-aware-exclusion}
 
-### La Via Zenzic: Controllo Consapevole vs. Automazione Cieca {#zenzic-way}
-
-:::tip[Filosofia di design]
-Zenzic predefinisce il **Controllo Consapevole** rispetto all'Automazione Cieca. Comprendere questo principio è la chiave per configurare lo strumento efficacemente nei progetti in produzione.
-:::
-
-`respect_vcs_ignore` è `true` per default. Questo allinea Zenzic al comportamento dei linter moderni (i percorsi ignorati da VCS vengono esclusi salvo inclusioni esplicite).
-
-**Il problema del `.gitignore` rumoroso**
-
-Considera un repository dove `docs_dir = "."` (la radice del repo è anche la radice della documentazione). Questa è una configurazione comune per i progetti che analizzano `README.md`, `CHANGELOG.md` e altri file Markdown alla radice. Un tipico `.gitignore` Python contiene voci come:
-
-```gitignore
-*.egg-info/
-.coverage
-dist/
-htmlcov/
-*.pyc
-.venv/
-```
-
-Con `respect_vcs_ignore = true`, Zenzic esclude silenziosamente qualsiasi file di documentazione il cui percorso corrisponde a questi pattern. Una pagina `docs/coverage-report.md`, ad esempio, sparisce dal rilevamento degli orfani senza alcun messaggio diagnostico. Il linter risulta pulito mentre salta interi sottoalberi della documentazione.
-
-**L'esplicitezza del `.zenzic.toml` è superiore**
-
-I campi `excluded_dirs` e `excluded_file_patterns` nel file di configurazione del progetto — `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml` — (livello L3 nella gerarchia di Esclusione a Livelli) sono:
-
-- **Visibili** — le esclusioni sono dichiarate in un unico file autorevole, non sparse tra `.gitignore`, `.dockerignore` e `.npmignore`
-- **Verificabili** — un nuovo collaboratore che esegue `git diff` vede esattamente cosa esclude Zenzic e perché
-- **Stabili** — le esclusioni non cambiano quando uno sviluppatore aggiorna `.gitignore` per ragioni di tooling non correlate
-
-```toml title=".zenzic.toml"
-# Le esclusioni esplicite sono manutenibili e verificabili
-excluded_dirs = ["includes", "stylesheets", "overrides"]
-excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
-
-# respect_vcs_ignore = true   ← default; ometti o imposta esplicitamente
-```
-
-**Quando abilitare `respect_vcs_ignore`**
-
-Abilitalo per i progetti con un `.gitignore` pulito e orientato alla documentazione, dove i percorsi esclusi dal VCS corrispondono genuinamente a documentazione che non dovrebbe essere analizzata. Controlla sempre l'effetto delle esclusioni usando `--show-info` dopo l'abilitazione.
+> Vedi [Design Esclusioni](../explanation/exclusion-design.mdx) per il razionale del controllo consapevole vs. automazione cieca.
 
 ---
 
@@ -292,7 +251,7 @@ respect_vcs_ignore = true
 | :--- | :--- | :--- | :--- |
 | `respect_vcs_ignore` | `bool` | `true` | Quando `true`, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs ed esclude i file corrispondenti da tutti i controlli |
 
-Abilitato per default — vedi [La Via Zenzic](#zenzic-way) qui sopra per la guida operativa. Le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
+Abilitato per default — vedi [Design Esclusioni](../explanation/exclusion-design.mdx) per la guida operativa. Le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno la precedenza sulle esclusioni VCS, ma i System Guardrails restano sempre applicati.
 
 ---
 
@@ -535,19 +494,7 @@ it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
 fail_under = 80
 ```
 
-:::info Invariante Matematico — Modello Flat-Cost
-Ogni soppressione attiva deduce esattamente **1 punto DQS** (modello flat-cost). Il punteggio massimo raggiungibile dal progetto è quindi:
-
-$$\text{Punteggio Massimo Raggiungibile} = 100 - |F_s|$$
-
-dove $|F_s|$ è il conteggio totale delle soppressioni attive. Configurare `fail_under > 100 - suppression_cap` crea una **contraddizione matematica**: il gate di punteggio si attiverà per il debito da soppressioni *prima* che venga raggiunto il cap, rendendo irraggiungibili gli slot superiori del budget del cap.
-
-**Regola di configurazione sicura:** `fail_under` $\leq$ `100 - suppression_cap`.
-:::
-
-:::tip[Politiche di Governance Ibride]
-Poiché `fail_under` e `suppression_cap` agiscono come **vincoli ortogonali**, è possibile progettare politiche di governance ibride per ambienti enterprise. Ad esempio, configurare `fail_under = 90` e `suppression_cap = 30` significa: "La qualità globale del repository (finding + debito) non deve mai scendere sotto 90/100, **ma** indipendentemente dal punteggio, rifiutiamo categoricamente più di 30 difetti soppressi." Questo impedisce ai team di nascondere debito strutturale massivo anche quando il codice attivo è altrimenti perfetto.
-:::
+> Vedi [Design Esclusioni](../explanation/exclusion-design.mdx) per il modello flat-cost e il design delle policy di governance ibride.
 
 ### `strict` {#strict}
 

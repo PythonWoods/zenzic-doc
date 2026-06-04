@@ -69,39 +69,9 @@ is actively leaking a credential cannot receive a Quality Score.
 
 ---
 
-## The Penalty Table
+## Penalty Calibration Philosophy {#penalty-calibration}
 
-Each finding code carries a **fixed point deduction** within its category. Deductions
-accumulate; once a category's contribution reaches zero, additional violations in that
-category have no further effect on the total score — this is the **Category Cap**.
-
-| Code | Description | Penalty (pts) | Category |
-|------|-------------|:---:|----------|
-| Z2xx | Security Breach | Override → **0/100** | — |
-| Z503 | Snippet Syntax Error | 10.0 | Content |
-| Z101 | Broken Link | 8.0 | Structural |
-| Z104 | File Not Found | 8.0 | Structural |
-| Z102 | Missing Anchor | 5.0 | Structural |
-| Z402 | Orphan Page | 4.0 | Navigation |
-| Z401 | Missing Directory Index | 2.0 | Navigation |
-| Z601 | Brand Obsolescence | 2.0 | Brand |
-| Z405 | Unused Asset | 3.0 | Brand |
-| Z404 | Config Asset Missing | 3.0 | Brand |
-| Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
-| Z406 | Nav Contract Error | 2.0 | Brand |
-| Z105 | Absolute Path | 2.0 | Structural |
-| Z502 | Short Content | 1.0 | Content |
-| Z505 | Untagged Code Block | 1.0 | Content |
-| Z403 | Missing Alt Text | 1.0 | Content |
-| Z107 | Circular Anchor | 1.0 | Structural |
-| Z106 | Circular Link | 0.0 | Informational |
-| Z108 | Empty Link Text | 1.0 | Structural |
-
-Z106 is a link-integrity diagnostic, but it does not deduct points. Z108 is the structural penalty for malformed link labels.
-
-### Penalty Calibration Philosophy
-
-Penalties are assigned to one of three tiers, independent of which category they sit in:
+Penalties are assigned to one of three severity tiers, independent of which category they sit in:
 
 | Tier | Examples | Points |
 |---|---|---|
@@ -113,6 +83,8 @@ A **Critical** penalty (10 pts) signals that the content is actively harmful to 
 (a broken code example). A **High** penalty signals a structural defect that a reader
 will directly encounter (a dead link, an unreachable page). A **Standard** penalty
 signals a quality deficit that degrades the experience over time.
+
+> For the full per-code penalty lookup table, see [Scoring Algorithm — Penalty Reference Table](../reference/scoring-algorithm.mdx#penalty-table).
 
 ---
 
@@ -159,38 +131,11 @@ $$
 
 ---
 
-## Running the Score
+## Score Observability {#score-observability}
 
-```bash
-# Compute and display the score (no file written)
-zenzic score [PATH]
+The score output (`zenzic score`) exposes a Quality Breakdown Ledger that shows every arithmetic step: raw per-tier deductions, applied caps, Gravity Cap adjustment, suppression debt, and the final integer. This explicitness is by design — the score is not a black-box rating but a verifiable arithmetic result.
 
-# Compute, display, and persist to .zenzic-score.json
-zenzic score [PATH] --save
-
-# Compute and fail if score falls below N
-zenzic score [PATH] --fail-under 80
-
-# Compare current score against the saved baseline (CI regression gate)
-zenzic diff [PATH]
-```
-
-The snapshot is written to `.zenzic-score.json` at the repository root. It is a
-machine-readable JSON file — commit it to your repository so `zenzic diff` has a
-baseline to compare against.
-
-### Recommended CI pattern
-
-```yaml title=".github/workflows/zenzic.yml"
-# On main branch pushes: save the new baseline
-- run: zenzic score --save --fail-under 80
-
-# On pull requests: fail if score has dropped
-- run: zenzic diff --threshold 0
-```
-
-`zenzic diff` exits 1 if the current score is **lower** than the saved baseline
-(adjusted by `--threshold`). It does not fail if the score is stable or improving.
+> For CLI command reference and CI integration patterns, see [Handle Technical Debt](../how-to/handle-technical-debt.mdx) and [Scoring Design](./scoring-design.mdx).
 
 ---
 

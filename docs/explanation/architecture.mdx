@@ -349,12 +349,7 @@ The given path becomes the `repo_root` directly, and the directory is created
 (`mkdir -p`) if it does not exist. Engine auto-detection runs on the (possibly empty)
 target directory. The caller's CWD is never written to.
 
-```bash
-
-zenzic init ../new-project          # creates ../new-project/.zenzic.toml
-zenzic init /workspace/fresh-docs   # creates the directory if needed
-
-```
+The path resolution contract means the caller's CWD is always clean — no side effects on the invoking directory.
 
 ### Invariants
 
@@ -489,37 +484,13 @@ It also prevents a single, uniform enforcement surface across engines. The CLI p
 credential scanner and path traversal hardening for every adapter. A Sovereign CLI decouples quality
 gating from build tooling and makes every enforcement point engine-agnostic.
 
-**Migration:** Run Zenzic in CI as an external quality gate:
+Run Zenzic in CI as an external quality gate via `zenzic check all --strict` in a workflow step. This produces identical enforcement with the full VSM, credential scanner (ZRT-006/007), and path traversal guard active — without any runtime integration inside the build engine.
 
-```yaml title=".github/workflows/zenzic.yml"
+> See [CI/CD Integration](../how-to/configure-ci-cd.mdx) for workflow examples.
 
-# GitHub Actions
+### Extension Pattern {#extension-pattern}
 
-- run: zenzic check all --strict
-
-```
-
-This produces identical enforcement with the full VSM, credential scanner (ZRT-006/007), and path traversal guard
-active — without any runtime integration inside the build engine.
-
-### Extension pattern {#extension-pattern}
-
-External tools that need to invoke Zenzic checks programmatically should use the public Python
-API directly, never shell out:
-
-```python
-
-from zenzic.core.scanner import find_repo_root
-from zenzic.models.config import ZenzicConfig
-
-repo_root = find_repo_root()
-config, _ = ZenzicConfig.load(repo_root)
-# ... invoke scanner / validator functions directly
-
-```
-
-All intelligence lives in `zenzic.core`. The CLI is a thin dispatch layer over the same
-functions — there is no hidden logic that requires the subprocess path.
+External tools that need to invoke Zenzic checks programmatically can use the public Python API directly (`zenzic.core.scanner`, `zenzic.models.config`). All intelligence lives in `zenzic.core`. The CLI is a thin dispatch layer over the same functions — there is no hidden logic that requires the subprocess path.
 
 ---
 
@@ -643,17 +614,12 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 | Custom engine not yet supported | **Write an Adapter** — ship as a separate package, register via `zenzic.adapters` entry-point |
 | Migrate from MkDocs to Docusaurus | Use `zenzic check all` with `engine = "mkdocs"` on the source, `engine = "docusaurus"` on the target |
 
+> See [CI/CD Integration](../how-to/configure-ci-cd.mdx) for step-by-step workflows corresponding to each scenario.
+
 ---
 
 ## Brand Integrity {#brand-integrity}
 
 The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a codename contradicts the contract it is trying to document.
 
-Zenzic addresses this through the [`[governance]`](../reference/configuration-reference.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding:
-
-```toml title=".zenzic.toml"
-[governance]
-brand_obsolescence = ["Obsidian"]
-```
-
-Zenzic uses **format-aware, per-line suppression** for intentional historical references. In ``.md`` files, append `<!-- zenzic:ignore: Z601 -->` to the line. In ``.mdx`` files, append `{/* zenzic:ignore: Z601 */}` — a JSX comment invisible to the Docusaurus/React parser. Both forms are silently skipped by the scanner. The distinction between *historical citation* and *forgotten update* is enforced at the line level, not the file level.
+Zenzic addresses this through the [`[governance]`](../reference/configuration-reference.mdx) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601) finding. Format-aware, per-line suppression is available for intentional historical references using the appropriate comment syntax for the file type (`.md` vs. `.mdx`).

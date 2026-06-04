@@ -47,6 +47,21 @@ the `zenzic.adapters` entry-point group is a valid Zenzic adapter — for any SS
 
 ---
 
+## Supported Engine Versions
+
+Zenzic ships adapters for specific major-version lines. Declaring a different engine is a configuration error: Zenzic will emit `Z001 CONFIG_ERROR` and abort.
+
+| Engine | Supported versions | Notes |
+| :--- | :--- | :--- |
+| MkDocs | `1.x` | Series frozen at `1.6.1`; no `1.7` planned. v2 is a separate project requiring a dedicated adapter |
+| Zensical | `0.0.x` | Pre-release; API is volatile. Adapter is updated in lockstep |
+| Docusaurus | `3.x` | v2 support is deprecated and was removed in Zenzic 0.9.0 |
+| Standalone | — | Engine-agnostic; version is irrelevant |
+
+Zenzic does **not** invoke the engine binary — it reads configuration files as plain data. Version constraints apply to the **config-file schema**, not to the installed engine binary. If your project runs a newer engine than listed, the adapter may still work; report an issue only if you observe an actual parse error or a false positive traceable to a schema change.
+
+---
+
 ## Choosing an engine
 
 The `[build_context]` section in `.zenzic.toml` tells Zenzic which engine your project uses:
@@ -265,17 +280,7 @@ that is not in this set and is not a locale mirror is reported as an orphan.
 
 ### Why Zensical eliminates i18n complexity
 
-MkDocs i18n relies on a plugin (`mkdocs-static-i18n`) with its own YAML configuration,
-`docs_structure` switches, `fallback_to_default` logic, and `languages` lists. Zensical
-defines i18n semantics natively in `zensical.toml` without plugin indirection. The result:
-
-- No YAML to parse for locale detection
-- No `fallback_to_default` ambiguity
-- No "which plugin block applies?" heuristics
-- `ConfigurationError` is impossible for misconfigured i18n — the TOML schema is explicit
-
-When Zensical's i18n configuration is available in `zensical.toml`, `ZensicalAdapter` will
-read it directly. Until then, locale topology is sourced from `[build_context]` in `.zenzic.toml`.
+> See [Configuration Loading — Agnostic Citizen chain](../explanation/configuration-loading.mdx) for the architectural rationale behind Zensical's native i18n versus MkDocs plugin indirection.
 
 ### Limitations
 

@@ -67,13 +67,7 @@ Vedi: [Discovery e Esclusione](../explanation/discovery)
 
 ### Exclusion Zone {#privacy-gate}
 
-La filosofia progettuale alla base del modello di file discovery ed esclusione di Zenzic. L'Exclusion Zone garantisce tre proprietà fondamentali:
-
-1. **Determinismo** — Data la stessa configurazione e lo stesso stato del filesystem, Zenzic produce esattamente gli stessi file nello stesso ordine.
-2. **Sicurezza per default** — I System Guardrails impediscono la scansione di VCS internals, ambienti virtuali e cache di build.
-3. **Override esplicito** — Ogni inclusione ed esclusione è tracciabile a una specifica riga di configurazione o flag CLI.
-
-La Privacy Gate (Exclusion Zone) definisce un confine preciso dove gli scanner di Zenzic sono intenzionalmente inibiti per proteggere metadati sensibili o pattern di sicurezza intenzionali.
+Il confine preciso all'interno del modello di file discovery di Zenzic dove gli scanner sono intenzionalmente inibiti. Ogni inclusione ed esclusione nella zona è tracciabile a una specifica riga di configurazione (`.zenzic.toml`) o flag CLI. Governata dalla gerarchia Layered Exclusion.
 
 ---
 
@@ -128,7 +122,7 @@ L'architettura di analisi fondamentale di Zenzic. La pipeline elabora ogni file 
 - **Passata 2 (Cross-Check)** — Risoluzione di ogni utilizzo `[testo][id]` rispetto alla Reference Map completa. Segnalazione degli ID non definiti come `DANGLING_REF`.
 - **Passata 3 (Report di Integrità)** — Calcolo del punteggio di integrità per-file. Aggiunta di avvisi per definizioni morte e alt-text mancanti.
 
-La Passata 2 inizia solo quando la Passata 1 si completa senza finding del credential scanner. Questa è la garanzia "credential scanner come firewall": nessuna ulteriore analisi viene eseguita su file che contengono credenziali trapelate.
+La Passata 2 inizia solo quando la Passata 1 si completa senza finding del credential scanner.
 
 Vedi: [Architettura -- Three-Phase Pipeline](../explanation/architecture#three-phase-pipeline)
 

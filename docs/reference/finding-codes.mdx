@@ -488,24 +488,4 @@ Historical identifiers remain valid only as historical references in migration p
 
 ## Suppressing Diagnostics
 
-Zenzic supports **line-level, per-code suppression** via inline comments. Add a `zenzic:ignore` comment at the end of any line to silence a specific diagnostic for that line only.
-
-For `.md` files use a standard HTML comment (invisible in rendered Markdown):
-
-```markdown
-The Obsidian era defined our foundations. <!-- zenzic:ignore: Z601 -->
-```
-
-For `.mdx` files use a JSX comment (invisible in rendered MDX, safe for Docusaurus/React):
-
-```mdx
-The Obsidian era defined our foundations. {/* zenzic:ignore: Z601 */}
-```
-
-Each suppression comment silences **only** the specified code on that line. To suppress multiple codes, add multiple comments. To exempt an entire file, use `obsolete_names_exclude_patterns` (Z601) or the relevant `excluded_files` patterns in `.zenzic.toml`.
-
-:::tip[Use suppression sparingly]
-Suppression is for intentional, documented decisions — not for silencing findings you haven't reviewed. Every suppressed line should have a corresponding comment explaining why.
-:::
-
-See [Suppression Policy](./suppression-policy.mdx) for the full reference, including `--strict` mode, the Suppression Debt model, and the `--audit` override.
+> See [Suppression Policy](./suppression-policy.mdx) for inline suppression syntax (`zenzic:ignore`), the Suppression Debt model, and the `--audit` override.

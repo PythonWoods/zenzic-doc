@@ -128,15 +128,7 @@ Quando `guard-scan: "true"` è impostato, l'action esegue `zenzic guard scan` co
 
 Lo scan di guardia usa lo stesso pin `version` del check principale. Legge i `forbidden_patterns` e le firme di credenziale integrate dal `.zenzic.toml` del repository. Se rileva una credenziale o un pattern vietato, esce con valore non zero e termina il job immediatamente — il `check all` principale non viene mai eseguito.
 
-```yaml
-- name: Run Zenzic Documentation Quality Gate
-  uses: PythonWoods/zenzic-action@<version>
-  with:
-    version: "<version>"
-    guard-scan: "true"   # esegue zenzic guard scan prima di check all
-    format: sarif
-    upload-sarif: "true"
-```
+> Per il riferimento completo all'input `guard-scan` e gli esempi di workflow, vedi [Riferimento Zenzic GitHub Action — Input](../reference/zenzic-action.mdx#inputs).
 
 :::note[Lo scan di guardia è sempre fatale]
 `fail-on-error` non governa lo step di guard scan. Se vengono trovati segreti, il job si ferma. Questo rispecchia il contratto di sicurezza Exit 2: i finding di sicurezza sono fatti, non finding da negoziare.

@@ -11,7 +11,9 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- **Engine Guide — Supported Engine Versions table:** Added "Supported Engine Versions" section to `docs/reference/engines.mdx` (EN + IT) documenting the supported major-version line for each adapter: MkDocs `1.x`, Zensical `0.0.x`, Docusaurus `3.x`, Standalone (agnostic). Clarifies that version constraints apply to the config-file schema, not the installed engine binary.
 
 ---
 
@@ -30,6 +32,24 @@ No changes yet.
 - Hostile Precision UI standardization applied across release-facing documentation surfaces.
 - Terminal documentation debt removed by normalizing legacy snippets and inconsistent command narratives.
 - SVG asset governance aligned with ADR-037 compliance requirements.
+
+---
+
+## [0.9.0] - 2026-05-31
+
+### Added
+
+- Historical archive split for v0.8.x and v0.7.x release notes under `changelogs/`.
+- `tutorials/examples.mdx` (EN + IT): full gallery of all 20 `zenzic lab` sandboxes with scenario matrix, exit-code column, and per-scenario prose.
+- 15 new gallery sections covering z102, z103, z105, z108, z202, z204, z301, z302, z303, z402, z403, z501, z502, z503, z505.
+- `finding-codes.mdx` (EN + IT): Z204 CLI output updated to `POLICY VIOLATION DETECTED` banner.
+- `privacy-gate.mdx` (EN + IT): Exit Behavior section and `[core]` table-header fix.
+
+### Changed
+
+- Documentation for local gates now mirrors the real `just verify` recipe sequence (pre-commit hooks → pytest → strict audit → score stamp → freshness gate).
+- Developers command matrix updated to remove obsolete preflight terminology.
+- v0.8.x narratives archived; v0.9.0 sprint material moved to this entry.
 
 ---
 

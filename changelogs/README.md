@@ -6,5 +6,8 @@
 This directory stores archived release notes for zenzic-doc.
 For active development notes, see [../CHANGELOG.md](../CHANGELOG.md).
 
-- [v0.8.md](./v0.8.md)
-- [v0.7.md](./v0.7.md)
+| Version | Period | Archive |
+|---------|--------|---------|
+| v0.9.x | 2026-05-31 → active | [main CHANGELOG](../CHANGELOG.md) |
+| v0.8.x | — | [v0.8.md](./v0.8.md) |
+| v0.7.x | — | [v0.7.md](./v0.7.md) |
