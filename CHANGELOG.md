@@ -11,9 +11,18 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
+No changes yet.
+
+---
+
+## [0.9.2] - 2026-06-05
+
 ### Added
 
 - **Engine Guide — Supported Engine Versions table:** Added "Supported Engine Versions" section to `docs/reference/engines.mdx` (EN + IT) documenting the supported major-version line for each adapter: MkDocs `1.x`, Zensical `0.0.x`, Docusaurus `3.x`, Standalone (agnostic). Clarifies that version constraints apply to the config-file schema, not the installed engine binary.
+- **Z109 EXTERNAL_LINK_BROKEN:** Documented Z109 external link finding code (EN + IT) representing broken external URLs.
+- **Diátaxis Compliance Refactoring:** Restructured documentation portal for strict Diátaxis compliance (Batches 1-4), renaming example directories from `docs/how-to/examples/` to `docs/tutorials/examples/` to correctly separate tutorials from how-tos.
+- **Resolved route collisions and sidebar ordering:** Restructured examples and sidebar configurations to resolve overlapping routes and optimize navigation.
 
 ---
 
