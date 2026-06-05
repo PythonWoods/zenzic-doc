@@ -41,7 +41,7 @@ excluded_external_urls = [
     # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
     #"https://github.com",
     # Facebook debugger consistently times out (>10 s) from CI environments.
-    #"https://developers.facebook.com/tools/debug/",
+    "https://developers.facebook.com/tools/debug/",
     # contributor-covenant.org consistently times out (> 10 s) from CI environments.
     #"https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
     #"https://www.contributor-covenant.org",
