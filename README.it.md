@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 <!-- zenzic:audit-badge -->
 [![zenzic-audit](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
 <!-- zenzic:score-badge -->
-[![zenzic-score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-96_%2F_100-f59e0b?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+[![zenzic-score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-90_%2F_100-f59e0b?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
 [![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
 [![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
