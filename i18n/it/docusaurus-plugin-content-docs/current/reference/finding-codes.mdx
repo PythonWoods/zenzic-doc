@@ -168,6 +168,16 @@ Un link Markdown inline o un link di riferimento collapsed ha testo visibile vuo
 1. Aggiungi testo descrittivo al link: `[Documentazione](./page.md)`.
 2. Rimuovi completamente il link se la destinazione non è ancora nota.
 
+### Z109: EXTERNAL_LINK_BROKEN {#z109}
+
+**Severità:** `error` · **Penalità:** −3,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z109-external-link-broken)
+
+Un URL esterno ha restituito un codice di stato di errore HTTP (es. 404, 500) o è stato completamente irraggiungibile a causa di un timeout di connessione o di un errore di risoluzione DNS durante la scansione.
+
+**Rimedio:**
+1. Controlla l'URL di destinazione in un browser web.
+2. Correggi l'URL se contiene errori di digitazione, oppure rimuovi il link se la destinazione non è più esistente.
+
 ---
 
 ## Z2xx — Sicurezza (credential scanner)

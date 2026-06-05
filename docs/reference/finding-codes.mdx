@@ -168,6 +168,16 @@ Inline Markdown link or collapsed reference link has empty or whitespace-only vi
 1. Add descriptive link text: `[Documentation](./page.md)`.
 2. Remove the link entirely if the destination is not yet known.
 
+### Z109: EXTERNAL_LINK_BROKEN {#z109}
+
+**Severity:** `error` · **Penalty:** −3.0 pt (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z109-external-link-broken)
+
+An external URL returned an HTTP error status code (e.g. 404, 500) or was completely unreachable due to a connection timeout or DNS resolution failure during scan.
+
+**Fix:**
+1. Check the target URL in a web browser.
+2. Correct the URL if misspelled, or remove the link if the destination has ceased to exist.
+
 ---
 
 ## Z2xx — Security (credential scanner)
