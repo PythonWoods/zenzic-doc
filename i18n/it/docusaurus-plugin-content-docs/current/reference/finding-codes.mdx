@@ -83,7 +83,7 @@ Errore di configurazione fatale: l'adapter factory ha rilevato un alias motore d
 
 ### Z101: LINK_BROKEN {#z101}
 
-**Severità:** `error` · **Penalità:** −8,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z101-broken-links)
+**Severità:** `error` · **Penalità:** −8,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z101-broken-links)
 
 Un link relativo punta a una risorsa non trovata nella Virtual Site Map. Il file potrebbe essere fuori dall'ambito di `docs_dir` o corrispondente a un pattern di esclusione.
 
@@ -94,7 +94,7 @@ Un link relativo punta a una risorsa non trovata nella Virtual Site Map. Il file
 
 ### Z102: ANCHOR_MISSING {#z102}
 
-**Severità:** `error` · **Penalità:** −5,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z102-anchor-missing)
+**Severità:** `error` · **Penalità:** −5,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z102-anchor-missing)
 
 Il file di destinazione del link esiste (Z101 passa), ma l'anchor HTML specifico (es. `#setup`) è assente dal registro intestazioni del file di destinazione. Zenzic analizza tutte le intestazioni e i tag `<a id="...">` espliciti durante il Pass 1.
 
@@ -105,7 +105,7 @@ Il file di destinazione del link esiste (Z101 passa), ma l'anchor HTML specifico
 
 ### Z103: ORPHAN_LINK {#z103}
 
-**Severità:** `error` · **Penalità:** 0,0 pt · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z103-orphan-link)
+**Severità:** `error` · **Penalità:** 0,0 pt · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z103-orphan-link)
 
 La destinazione del link esiste nella VSM ma non è raggiungibile attraverso alcuna struttura di navigazione (sidebar/nav). Gli utenti possono raggiungerla solo tramite URL diretto.
 
@@ -131,7 +131,7 @@ blog/post.mdx:12: '/blog/zenzic-v070' not found in the site map
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
-**Severità:** `error` · **Penalità:** −2,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z105-absolute-path)
+**Severità:** `error` · **Penalità:** −2,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z105-absolute-path)
 
 Un percorso assoluto del filesystem (es. `C:\Docs\page.md` o `/home/user/docs/page.md`) compromette la portabilità della documentazione. I prefissi URL del progetto (`/blog/`, `/docs/`) sono esenti da Z105 ma vengono comunque verificati tramite lookup VSM (uno slug mancante genera **Z104**).
 
@@ -160,7 +160,7 @@ Un link della forma `[testo](#anchor)` si risolve in un'intestazione della **ste
 
 ### Z108: EMPTY_LINK_TEXT {#z108}
 
-**Severità:** `error` · **Penalità:** −1,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z108-empty-link-text)
+**Severità:** `error` · **Penalità:** −1,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z108-empty-link-text)
 
 Un link Markdown inline o un link di riferimento collapsed ha testo visibile vuoto o composto solo da spazi — es. `[](./page.md)`, `[ ](./page.md)`, `[][ref]`. Rompe simultaneamente l'accessibilità screen reader e l'indicizzazione semantica.
 
@@ -170,7 +170,7 @@ Un link Markdown inline o un link di riferimento collapsed ha testo visibile vuo
 
 ### Z109: EXTERNAL_LINK_BROKEN {#z109}
 
-**Severità:** `error` · **Penalità:** −3,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z1xx-links/z109-external-link-broken)
+**Severità:** `error` · **Penalità:** −3,0 pt (Strutturale) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z1xx-links/z109-external-link-broken)
 
 Un URL esterno ha restituito un codice di stato di errore HTTP (es. 404, 500) o è stato completamente irraggiungibile a causa di un timeout di connessione o di un errore di risoluzione DNS durante la scansione.
 
@@ -185,7 +185,7 @@ Un URL esterno ha restituito un codice di stato di errore HTTP (es. 404, 500) o 
 ### Z201: CREDENTIAL_SECRET {#z201}
 
 :::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 2 | DQS collassa a 0/100]
-`zenzic:ignore: Z201` è **silenziosamente rifiutato**. Il credential scanner si attiva incondizionatamente su ogni riga. [↗ Gallery](../how-to/examples/z2xx-security/z201-credentials)
+`zenzic:ignore: Z201` è **silenziosamente rifiutato**. Il credential scanner si attiva incondizionatamente su ogni riga. [↗ Gallery](../tutorials/examples/z2xx-security/z201-credentials)
 :::
 
 **Severità:** `security_breach` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 2
@@ -201,7 +201,7 @@ Il credential scanner ha rilevato un pattern di credenziale noto. Viene applicat
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 1 | DQS collassa a 0/100]
-`zenzic:ignore: Z202` è **silenziosamente rifiutato**. [↗ Gallery](../how-to/examples/z2xx-security/z202-path-traversal)
+`zenzic:ignore: Z202` è **silenziosamente rifiutato**. [↗ Gallery](../tutorials/examples/z2xx-security/z202-path-traversal)
 :::
 
 **Severità:** `error` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 1
@@ -230,7 +230,7 @@ Path traversal rilevato verso directory di sistema riservate (es. `/etc/`, `/roo
 ### Z204: FORBIDDEN_TERM {#z204}
 
 :::danger[🔒 INVIOLABILE — Non sopprimibile | Uscita 2 | DQS collassa a 0/100]
-`zenzic:ignore: Z204` è **silenziosamente rifiutato**. Sorgente: `forbidden_patterns` in `.zenzic.local.toml` (ignorato da git). [↗ Gallery](../how-to/examples/z2xx-security/z204-forbidden-term)
+`zenzic:ignore: Z204` è **silenziosamente rifiutato**. Sorgente: `forbidden_patterns` in `.zenzic.local.toml` (ignorato da git). [↗ Gallery](../tutorials/examples/z2xx-security/z204-forbidden-term)
 :::
 
 **Severità:** `security_breach` · **Penalità:** DQS collassa a 0/100 · **Uscita:** 2
@@ -255,7 +255,7 @@ Il Privacy Gate ha rilevato un termine di progetto riservato (nome in codice int
 
 ### Z301: DANGLING_REF {#z301}
 
-**Severità:** `error` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z3xx-references/z301-dangling-ref)
+**Severità:** `error` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z301-dangling-ref)
 
 Un link in stile riferimento (`[mio link][ref]`) è presente, ma la definizione (`[ref]: http://...`) è assente dal file. La maggior parte dei renderer degrada silenziosamente il link a testo normale.
 
@@ -265,7 +265,7 @@ Un link in stile riferimento (`[mio link][ref]`) è presente, ma la definizione 
 
 ### Z302: DEAD_DEF {#z302}
 
-**Severità:** `warning` · **Penalità:** −1,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z3xx-references/z302-dead-def)
+**Severità:** `warning` · **Penalità:** −1,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z302-dead-def)
 
 Una definizione di riferimento esiste ma nessun link nel file la utilizza. Innocua per i lettori ma crea debito di manutenzione.
 
@@ -273,7 +273,7 @@ Una definizione di riferimento esiste ma nessun link nel file la utilizza. Innoc
 
 ### Z303: DUPLICATE_DEF {#z303}
 
-**Severità:** `warning` · **Penalità:** −3,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z3xx-references/z303-duplicate-def)
+**Severità:** `warning` · **Penalità:** −3,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z3xx-references/z303-duplicate-def)
 
 Esistono definizioni multiple per lo stesso ID di riferimento. CommonMark specifica che vince la prima definizione, ma questa ambiguità va risolta per un rendering deterministico cross-engine.
 
@@ -293,7 +293,7 @@ Una directory di documentazione non ha `index.md` o `README.md`. L'URL della dir
 
 ### Z402: ORPHAN_PAGE {#z402}
 
-**Severità:** `warning` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z4xx-topology/z402-orphan-page)
+**Severità:** `warning` · **Penalità:** −4,0 pt (Navigazione) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z4xx-topology/z402-orphan-page)
 
 Un file esiste in `docs/` ma non è raggiungibile da alcun menu di navigazione. L'equivalente documentale del codice morto.
 
@@ -303,7 +303,7 @@ Un file esiste in `docs/` ma non è raggiungibile da alcun menu di navigazione. 
 
 ### Z403: MISSING_ALT {#z403}
 
-**Severità:** `warning` · **Penalità:** nessuna (avviso di accessibilità) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z4xx-topology/z403-missing-alt)
+**Severità:** `warning` · **Penalità:** nessuna (avviso di accessibilità) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z4xx-topology/z403-missing-alt)
 
 Un'immagine è priva di testo alt, degradando l'accessibilità per screen reader e il SEO.
 
@@ -345,7 +345,7 @@ Un conflitto tra la struttura fisica dei file e la configurazione di navigazione
 
 ### Z501: PLACEHOLDER {#z501}
 
-**Severità:** `warning` · **Penalità:** −2,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z5xx-content/z501-placeholder)
+**Severità:** `warning` · **Penalità:** −2,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z501-placeholder)
 
 Stringhe segnaposto (`TODO`, `FIXME`, `[INSERIRE IMMAGINE QUI]`) committate nella documentazione di produzione segnalano lavoro incompleto.
 
@@ -353,7 +353,7 @@ Stringhe segnaposto (`TODO`, `FIXME`, `[INSERIRE IMMAGINE QUI]`) committate nell
 
 ### Z502: SHORT_CONTENT {#z502}
 
-**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z5xx-content/z502-short-content)
+**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z502-short-content)
 
 Una pagina contiene meno di 50 parole di prosa renderizzata (frontmatter, commenti MDX e HTML esclusi). Una pagina al di sotto di questa soglia non può contenere i componenti semantici necessari per rispondere alla domanda del lettore.
 
@@ -361,7 +361,7 @@ Una pagina contiene meno di 50 parole di prosa renderizzata (frontmatter, commen
 
 ### Z503: SNIPPET_ERROR {#z503}
 
-**Severità:** `error` · **Penalità:** −10,0 pt (Contenuto — penalità massima per occorrenza singola) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z5xx-content/z503-snippet-error)
+**Severità:** `error` · **Penalità:** −10,0 pt (Contenuto — penalità massima per occorrenza singola) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z503-snippet-error)
 
 Lo Snippet Guard ha identificato un errore di sintassi in un blocco di codice delimitato con un tag linguaggio. Il numero di riga riportato è **assoluto** — relativo al file sorgente, non all'inizio dello snippet.
 
@@ -371,7 +371,7 @@ Lo Snippet Guard ha identificato un errore di sintassi in un blocco di codice de
 
 ### Z505: UNTAGGED_CODE_BLOCK {#z505}
 
-**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z5xx-content/z505-untagged-code-block)
+**Severità:** `warning` · **Penalità:** −1,0 pt (Contenuto) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z5xx-content/z505-untagged-code-block)
 
 Un blocco di codice delimitato non ha specificatore di linguaggio. Syntax highlighter, lo Snippet Guard (Z503) e gli screen reader non possono elaborarlo. I metadati Docusaurus (es. `` ```python title="file.py" showLineNumbers ``) sono supportati e non vengono mai segnalati.
 
@@ -383,7 +383,7 @@ Un blocco di codice delimitato non ha specificatore di linguaggio. Syntax highli
 
 ### Z601: BRAND_OBSOLESCENCE {#z601}
 
-**Severità:** `warning` · **Penalità:** −2,0 pt (Governance) + Escalation · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z6xx-brand/z601-brand-obsolescence)
+**Severità:** `warning` · **Penalità:** −2,0 pt (Governance) + Escalation · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z6xx-brand/z601-brand-obsolescence)
 
 Un nome di release deprecato o identificatore di brand appare in un file scansionato. Configurato tramite `[governance].brand_obsolescence` in `.zenzic.toml`. I file CHANGELOG sono esenti per impostazione predefinita (`obsolete_names_exclude_patterns`).
 
@@ -397,7 +397,7 @@ Un nome di release deprecato o identificatore di brand appare in un file scansio
 
 ### Z602: I18N_PARITY {#z602}
 
-**Severità:** `warning` · **Penalità:** nessuna (controllo integrità bilingue) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../how-to/examples/z6xx-brand/z602-i18n-parity)
+**Severità:** `warning` · **Penalità:** nessuna (controllo integrità bilingue) · **Uscita:** 1 · **Sopprimibile:** Sì · [↗ Gallery](../tutorials/examples/z6xx-brand/z602-i18n-parity)
 
 Un mirror di traduzione è mancante, o il frontmatter di un file tradotto diverge dalla base canonica (`sidebar_position`, `sidebar_label`, `title`). Due locale con frontmatter diverso producono grafi di navigazione asimmetrici.
 

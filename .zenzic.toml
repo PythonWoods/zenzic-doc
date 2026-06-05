@@ -117,8 +117,8 @@ i18n_parity = true
 # Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
 # demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
 # rel_path is relative to repo_root (with "docs/" prefix); IT locale uses "docs/it/" prefix.
-"docs/how-to/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
-"docs/it/how-to/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+"docs/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+"docs/it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
 
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
@@ -139,7 +139,7 @@ i18n_parity = true
 "docs/blog/**"                    = ["Z601"]  # historical release blog posts
 "docs/explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
 "docs/it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
-"docs/how-to/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
+"docs/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
 
 # Governance Playbook:
 # /developers/how-to/release-governance-protocol
