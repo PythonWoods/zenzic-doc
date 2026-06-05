@@ -132,21 +132,9 @@ $ zenzic inspect routes --kind physical
 Update any link that points to the old filename-derived path to use the slug
 URL shown in the output.
 
-### Engine agnosticism: the `hasattr` guard
+### Engine agnosticism
 
-This feature is adapter-selective. The validator calls `set_slug_map()` only
-when the active adapter exposes that method — detected at runtime via
-`hasattr`. Simpler adapters (Standalone, MkDocs) never receive a slug-map
-call and their validation path is unchanged.
-
-```text
-Discovery  →  set_slug_map (Docusaurus only)  →  build_vsm  →  Validate
-                      ↕
-          hasattr guard — no-op for MkDocs / Standalone
-```
-
-This follows the *incremental migration* principle: evolve the complex adapter
-without burdening the simpler ones.
+Slug-map resolution is adapter-selective. Simpler adapters (Standalone, MkDocs) are unaffected — the slug-map path is a Docusaurus-only capability. No configuration change is needed when switching adapters.
 
 ---
 

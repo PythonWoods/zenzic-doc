@@ -58,14 +58,7 @@ console = Console(...)          # breaks shared state
 ui = LegacyInterfaceV1(console) # creates an orphaned instance
 ```
 
-This rule exists because `configure_console()` replaces the module-level `console` and
-`_ui` singletons when `--no-color` or `--force-color` is passed. Any locally-created
-`Console` or UI instance will be frozen at the pre-flag state and ignore the user's color
-preference.
-
-The `force_terminal` parameter of the module-level `Console` is always `None`
-(auto-detect via `sys.stdout.isatty()`), never `False`. Setting `force_terminal=False` is
-a silent bug that strips all ANSI styling even in interactive terminals.
+For the design rationale behind UI state sharing, see [ADR 004 — Unified Console State](../explanation/adr-decentralized-cli.mdx#4-unified-console-state-visual-state-manager).
 
 **UI output conventions:**
 
@@ -75,27 +68,9 @@ a silent bug that strips all ANSI styling even in interactive terminals.
 
 ---
 
-## Adding a Command to an Existing Sub-App
+## Adding CLI Commands
 
-```python
-# src/zenzic/cli/_check.py (example: adding "check metadata")
-@check_app.command(name="metadata")
-def check_metadata(path: Path = ...) -> None:
-    ...
-```
-
-No changes to `__init__.py`, `main.py`, or `_metadata.py` are required — the existing
-Typer sub-app already owns this command surface.
-
----
-
-## Adding a New Top-Level Sub-App
-
-1. Create `src/zenzic/cli/_myfeature.py` with `myfeature_app = typer.Typer(...)` and your commands.
-2. Export `myfeature_app` from `src/zenzic/cli/__init__.py`.
-3. Register in `src/zenzic/main.py`: `app.add_typer(myfeature_app, name="myfeature", rich_help_panel="...")`.
-4. Add a `CommandMeta(...)` entry in `src/zenzic/cli/_metadata.py` so root help panels and short help stay authoritative.
-5. If the sub-app uses `no_args_is_help=True`, add `"myfeature"` to the `_SUBAPPS_WITH_MENU` frozenset in `cli_main()` so the Zenzic banner appears when the sub-app is invoked with no arguments.
+For step-by-step instructions on how to add commands or new sub-apps to the CLI, see [Writing a New Check — CLI Wiring](../how-to/write-a-check.mdx#cli-wiring).
 
 ---
 

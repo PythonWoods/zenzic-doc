@@ -7,14 +7,9 @@ description: "Aggiungi badge CI status e DQS Score al tuo README con il Dual-Bad
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Badge Ufficiali — Dual-Badge Telemetry
+# Aggiungere Badge al README
 
-Zenzic espone **due segnali ortogonali** nel tuo README. Ciascuno ha una fonte di verità distinta e un pubblico distinto:
-
-| Badge | Fonte | Segnale | Visibilità |
-|-------|-------|---------|-----------|
-| **Audit Badge** | `zenzic score --stamp` | Segnale deterministico di governance pass/fail | Cristallizzato in ogni commit |
-| **DQS Score** | `zenzic score --stamp` | Qualità del codice accettato (0–100) | Cristallizzato in ogni commit |
+Zenzic fornisce due segnali ortogonali per il tuo README: un **Audit Badge** (pass/fail governance) e un **DQS Score badge** (punteggio qualità 0–100). Entrambi vengono scritti in-place da `zenzic score --stamp` senza dipendenze esterne.
 
 ---
 
@@ -63,13 +58,11 @@ L'opzione `--stamp` aggiorna sempre i badge **prima** di applicare i controlli d
 
 ### Il Badge Rosso come Segnale Locale
 
-Quando `zenzic score --stamp` viene eseguito in locale e il punteggio è sotto `fail_under`, il badge nel README diventa rosso. Questo è un **feedback immediato e inequivocabile** — visibile prima ancora di tentare il push. Non è necessario aspettare che la CI comunichi il fallimento della build: il badge rosso nell'editor è il segnale.
+Quando `zenzic score --stamp` viene eseguito localmente e il punteggio è sotto `fail_under`, il badge nel tuo README diventa rosso. Questo fornisce un feedback immediato prima del push — il gate CI blocca con Exit Code 1, quindi solo badge indigo o ambra raggiungono il main.
 
-Un badge rosso non apparirà mai sul branch principale pubblico: la CI blocca il push (Exit Code 1), quindi solo badge indaco o ambra raggiungono main. Il badge rosso esiste precisamente per avvertirti *prima* che ciò accada.
+### Badge che Viaggiano nel Tempo
 
-### Badge Time-Traveling
-
-Poiché l'URL viene scritto inline nel commit, ogni commit storico mostra il punteggio calcolato in quel momento — non il punteggio corrente. I commit più vecchi mostrano il loro punteggio, non quello di oggi. Questo è il vantaggio fondamentale rispetto agli endpoint dinamici basati su Gist.
+Poiché l'URL viene scritto inline nel commit, ogni commit storico mostra il punteggio calcolato in quel momento. Questo è il vantaggio principale rispetto agli endpoint dinamici: nessuna dipendenza da database centrali o cache di terze parti.
 
 ### Stamping multi-file (`badge_stamp_files`)
 
@@ -148,13 +141,11 @@ jobs:
           fi
 ```
 
-### Decisioni architetturali
+### Note sul workflow
 
-**`if: always()`** — Il badge deve essere stampato anche quando l'audit fallisce, in modo che il badge rosso appaia nel repository (sul branch della PR) e i contributor vedano immediatamente il punteggio degradato.
-
-**`git status -s README.md`** — Salta il commit quando il punteggio non è cambiato dall'ultima esecuzione. Evita commit "chore" rumorosi ad ogni push.
-
-**`contents: write` a livello di job** — Il permesso è dichiarato a livello di job, non di workflow, per limitare il blast radius. Solo questo job può scrivere nel repository.
+- **`if: always()`** assicura che il badge venga stampato anche quando l'audit fallisce — così i contributor vedono subito il badge rosso sul branch della PR.
+- **`git status -s README.md`** salta il commit quando il punteggio non è cambiato — evita commit "chore" rumorosi ad ogni push.
+- **`contents: write` con scope al job** limita il blast radius: solo questo job può scrivere nel repository.
 
 ### Stamping multi-file
 

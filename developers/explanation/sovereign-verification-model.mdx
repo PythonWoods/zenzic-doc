@@ -81,31 +81,7 @@ Recommended explicitness:
 
 ## 5) Contributor Runbook
 
-Two supported local setups:
-
-1. Sibling layout (recommended)
-
-```text
-workspace/
-  zenzic/
-  zenzic-doc/
-  zenzic-action/
-```
-
-Run:
-
-```bash
-just verify
-```
-
-2. Explicit override layout (custom path)
-
-```bash
-ZENZIC_CORE_PATH=/absolute/path/to/zenzic just verify
-```
-
-If verification reports missing core path, treat it as setup misconfiguration,
-not as a quality warning to suppress.
+For the step-by-step setup procedure on how to configure your local workspace and run the verification suite, see the [Contributor Runbook in the Release Protocol](../how-to/release-governance-protocol.mdx#contributor-runbook-local-setup).
 
 ---
 

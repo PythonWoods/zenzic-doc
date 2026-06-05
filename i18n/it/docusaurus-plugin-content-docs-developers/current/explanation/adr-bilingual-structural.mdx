@@ -59,39 +59,17 @@ ne derivano:
 
 ### Regola 1 — Spostamenti Atomici
 
-Qualsiasi `git mv` applicato a un file in `docs/` deve essere accompagnato da un
-corrispondente `git mv` nello specchio italiano **nello stesso commit**. Una
-rinomina in inglese è una rinomina in italiano.
-
-```bash
-# Corretto — entrambi i movimenti in un commit
-git mv docs/guides/intro.mdx docs/tutorials/intro.mdx
-git mv i18n/it/docusaurus-plugin-content-docs/current/guides/intro.mdx \
-       i18n/it/docusaurus-plugin-content-docs/current/tutorials/intro.mdx
-git commit -m "refactor(docs): sposta intro nel quadrante tutorials (EN + IT)"
-```
+Qualsiasi spostamento o rinomina applicata a un file in `docs/` deve essere accompagnata da un corrispondente spostamento o rinomina nello specchio italiano nello stesso commit.
 
 ### Regola 2 — Parità degli Slug
 
-Se un valore `slug:` viene modificato in un file inglese, deve essere modificato
-identicamente nel file italiano corrispondente. Uno `slug:` divergente causa un
-404 nel language switcher, senza alcun avviso in fase di build.
+Se un valore `slug:` viene modificato in un file inglese, deve essere modificato identicamente nel file italiano corrispondente. Uno `slug:` divergente causa un 404 nel language switcher.
 
-### Regola 3 — Validazione della Simmetria Prima di Ogni Commit
+### Regola 3 — Validazione della Simmetria
 
-Prima di fare commit di qualsiasi modifica che tocchi la struttura del filesystem
-(rinomina, aggiunta, eliminazione), il seguente comando deve uscire con 0:
+Prima di fare commit di qualsiasi modifica che tocchi la struttura del filesystem, deve essere verificata la simmetria strutturale.
 
-```bash
-diff \
-  <(find docs -name "*.mdx" | sed 's|^docs/||' | sort) \
-  <(find i18n/it/docusaurus-plugin-content-docs/current \
-      -name "*.mdx" | \
-      sed 's|^i18n/it/docusaurus-plugin-content-docs/current/||' | sort)
-```
-
-Qualsiasi output di questo comando rappresenta un'asimmetria strutturale che
-**produrrà** un 404 nel language switcher italiano.
+> Per la procedura passo dopo passo con i comandi CLI e i dettagli sul controllo di simmetria, vedi la [checklist per la Parità Bilingue nel Protocollo di Rilascio](../how-to/release-governance-protocol.mdx#parita-bilingue-symmetry-check).
 
 ---
 

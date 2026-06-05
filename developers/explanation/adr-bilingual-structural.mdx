@@ -59,39 +59,17 @@ follow from it:
 
 ### Rule 1 — Atomic Moves
 
-Any `git mv` applied to a file in `docs/` must be accompanied by a corresponding
-`git mv` in the Italian mirror **in the same commit**. A rename in English is a
-rename in Italian.
-
-```bash
-# Correct — both moves in one commit
-git mv docs/guides/intro.mdx docs/tutorials/intro.mdx
-git mv i18n/it/docusaurus-plugin-content-docs/current/guides/intro.mdx \
-       i18n/it/docusaurus-plugin-content-docs/current/tutorials/intro.mdx
-git commit -m "refactor(docs): move intro to tutorials quadrant (EN + IT)"
-```
+Any file move or rename applied to a file in `docs/` must be accompanied by a corresponding move or rename in the Italian mirror in the same commit.
 
 ### Rule 2 — Slug Parity
 
-If a `slug:` value is changed in an English file, it must be changed identically
-in the corresponding Italian file. A diverged `slug:` causes the language
-switcher to produce a 404, with no build-time warning.
+If a `slug:` value is changed in an English file, it must be changed identically in the corresponding Italian file. A diverged `slug:` causes the language switcher to produce a 404.
 
-### Rule 3 — Symmetry Validation Before Every Commit
+### Rule 3 — Symmetry Validation
 
-Before committing any change that touches the filesystem structure (renames,
-additions, deletions), the following command must exit 0:
+Before committing any change that touches the filesystem structure, structural symmetry must be verified.
 
-```bash
-diff \
-  <(find docs -name "*.mdx" | sed 's|^docs/||' | sort) \
-  <(find i18n/it/docusaurus-plugin-content-docs/current \
-      -name "*.mdx" | \
-      sed 's|^i18n/it/docusaurus-plugin-content-docs/current/||' | sort)
-```
-
-Any output from this command represents a structural asymmetry that **will**
-produce a 404 on the Italian language switcher.
+> For step-by-step CLI commands and workflow details on how to perform the symmetry check, see the [Bilingual Parity contribution checklist in the Release Protocol](../how-to/release-governance-protocol.mdx#bilingual-parity-symmetry-check).
 
 ---
 

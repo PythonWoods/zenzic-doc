@@ -373,3 +373,26 @@ Aggiungere alla checklist della tua PR:
 - [ ] Nessun nome colore Rich grezzo (`"red"`, `"cyan"`) per uso della palette brand — usare `ZenzicPalette.*`.
 - [ ] Nessun alias locale `P = ZenzicPalette` — usare sempre il nome completo della classe.
 - [ ] Nessun `from zenzic.ui import INDIGO` (o qualsiasi costante piatta rimossa).
+
+---
+
+## 10. Legge della Componentizzazione degli Asset MDX {#mdx-asset-componentization}
+
+**Direttiva:** ZRT-DOC-010
+
+:::warning Vincolo di Design
+
+Qualsiasi asset vettoriale destinato all'uso **esclusivo all'interno delle pagine MDX** deve essere implementato come componente React (`.tsx`), mai come file `.svg` statico.
+
+:::
+
+Per il razionale architetturale dettagliato dietro questa direttiva, vedere [Razionale della Componentizzazione degli Asset MDX](../explanation/mdx-asset-rationale.mdx).
+
+Per istruzioni passo-passo sulla conversione di SVG statici in componenti TSX, vedere [Protocollo di Governance e Rilascio — Conversione di SVG Statici in Componenti React](../how-to/release-governance-protocol.mdx#11-conversione-di-svg-statici-in-componenti-react).
+
+### Aggiunta alla checklist
+
+Aggiungere alla checklist della tua PR:
+
+- [ ] Nessun nuovo file `.svg` aggiunto a `static/assets/terminal/` (usare un componente `.tsx`).
+- [ ] Qualsiasi SVG contenente testo introdotto all'interno di una pagina MDX è implementato come `.tsx`.

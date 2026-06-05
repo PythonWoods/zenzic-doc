@@ -1,5 +1,7 @@
 ---
+title: "The Sovereignty Oath"
 sidebar_label: "The Sovereignty Oath"
+description: "The Sovereignty Oath of Zenzic, declaring a zero-lock-in and zero-residue decommission policy."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -102,40 +104,9 @@ any other tool configuration. No cascading effects. No shared state.
 
 ---
 
-## 4. The 30-Second Decommission
+## 4. The Decommissioning Process
 
-### Step 1 — Remove from CI (15 seconds)
-
-```yaml title=".github/workflows/docs.yml"
-# Delete this block
-
-- uses: PythonWoods/zenzic-action@<version>
-
-  with:
-    version: "<version>"
-    format: sarif
-    upload-sarif: "true"
-```
-
-Or, if running directly:
-
-```yaml title=".github/workflows/docs.yml"
-# Delete this block
-
-- name: Zenzic
-
-  run: uvx zenzic check all
-```
-
-### Step 2 — Remove Configuration (15 seconds)
-
-```bash
-rm .zenzic.toml
-# OR edit pyproject.toml: remove the [tool.zenzic] section
-```
-
-**Done.** Your pipeline runs without the documentation integrity gate. Your codebase
-is identical to its state before Zenzic was adopted.
+Removing Zenzic from a project is designed to be trivial and leave no residual lock-in. For step-by-step instructions on decommissioning, see the [Install & First Run guide — Decommissioning Zenzic](/docs/how-to/install#decommissioning-zenzic).
 
 ---
 

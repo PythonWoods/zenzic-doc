@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: Overview
+sidebar_label: "Install & First Run"
+title: "Install & First Run"
 icon: lucide/play
-description: "Install, configure, and run Zenzic on your documentation project."
+description: "Install Zenzic and run your first documentation quality check."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -11,35 +12,10 @@ description: "Install, configure, and run Zenzic on your documentation project."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Getting Started
+# Install Zenzic
 
 Zenzic reads directly from the filesystem and works with any Markdown-based project. Use it
 in local development, as a pre-commit hook, in CI pipelines, or for one-off audits.
-
-## Canonical examples
-
-The repository ships maintained Z-code gallery fixtures that mirror the documented contracts:
-
-- `examples/z101-broken-links/` — link integrity fixture (Z101 LINK_BROKEN, exit 1).
-- `examples/z201-credentials/` — credential scanner fixture (Z201 CREDENTIAL_SECRET, exit 2).
-- `examples/z405-unused-assets/` — unreferenced asset fixture (Z405, exit 1).
-- `examples/z601-brand-obsolescence/` — brand obsolescence fixture (Z601, exit 1).
-- `examples/z602-i18n-parity/` — i18n parity fixture (Z602, exit 1).
-
-:::tip[Just want to run it now?]
-
-```bash
-uvx zenzic lab      # explore all 5 Z-code gallery scenarios — zero setup
-uvx zenzic check all  # protect your own documentation
-```
-
-Curious how Zenzic handles credential detection or i18n parity gaps?
-Launch `zenzic lab` and watch Zenzic in action across every Z-code gallery scenario.
-:::
-
-import { SummaryTerminal } from '@site/src/components/ZenzicTerminal';
-
-<SummaryTerminal />
 
 ---
 
@@ -225,48 +201,41 @@ zenzic diff --threshold 5
 
 ## Engine modes {#engine-modes}
 
-Zenzic operates in one of two modes depending on whether it can discover a build-engine
-configuration file:
+Zenzic selects an adapter based on the build-engine configuration file present at the repository root. **Engine-aware mode** activates when `mkdocs.yml` or `zensical.toml` is found, enabling nav-aware orphan detection, i18n fallback resolution, locale directory suppression, and Ghost Route tracking. **Standalone mode** activates when no engine config is found — the orphan check is skipped because without a nav declaration every file would appear orphaned.
 
-### Engine-aware mode {#engine-aware}
+Use `--engine` to override the detected adapter for a single run without changing `.zenzic.toml`.
 
-When `mkdocs.yml` (MkDocs/Zensical) or `zensical.toml` (Zensical) is present at the repository
-root, Zenzic loads the corresponding **adapter** which provides:
+> For the full design rationale behind engine-aware vs. standalone mode, see [Architecture — Sovereign CLI](../explanation/architecture.mdx#sovereign-cli).
 
-- **Nav awareness** — orphan detection knows the difference between "not in the nav" and "not
+## Decommissioning Zenzic
 
-  supposed to be in the nav" (e.g. i18n locale files).
+If you need to remove Zenzic from your project, the decommission process takes less than 30 seconds and leaves no trace.
 
-- **i18n fallback** — cross-locale links are resolved correctly instead of being flagged as broken.
-- **Locale directory suppression** — files under `docs/it/`, `docs/fr/`, etc. are not reported
+### Step 1 — Remove from CI/CD
+Delete the Zenzic block from your workflow files (e.g., `.github/workflows/docs.yml`):
 
-  as orphans.
-
-- **Ghost Routes** — when `mkdocs-material` with `reconfigure_material: true` generates locale
-
-  entry points (e.g. `/it/`) at build time, those pages never appear in `nav:`. Zenzic
-  marks them `REACHABLE` automatically in the [Virtual Site Map](../reference/checks.mdx)
-  so they are never reported as false orphans — with no manual exclusion list required.
-
-### Standalone mode {#standalone-mode}
-
-When no build-engine configuration is found, Zenzic falls back to `StandaloneAdapter`. In this mode:
-
-- **Orphan check is skipped.** Without a nav declaration, every file would appear to be an orphan.
-- **All other checks run normally** — links, snippets, placeholders, assets, and references.
-
-Standalone mode is the right choice for plain Markdown wikis, GitHub-wiki repos, or any project
-where navigation is implicit rather than declared.
-
-:::tip[Force a specific mode]
-Use `--engine` to override the detected adapter for a single run:
-
-```bash
-zenzic check all --engine standalone    # skip orphan check regardless of config files
-zenzic check all --engine mkdocs        # force MkDocs adapter
+```yaml
+- uses: PythonWoods/zenzic-action@<version>
+  with:
+    version: "<version>"
+    format: sarif
+    upload-sarif: "true"
 ```
 
-:::
+Or, if running directly in a shell step:
+
+```yaml
+- name: Zenzic
+  run: uvx zenzic check all
+```
+
+### Step 2 — Remove configuration
+Delete the configuration file from your repository:
+
+```bash
+rm .zenzic.toml
+# OR edit pyproject.toml and remove the [tool.zenzic] section
+```
 
 ---
 

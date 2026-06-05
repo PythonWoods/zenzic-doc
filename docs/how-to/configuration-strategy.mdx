@@ -9,28 +9,11 @@ description: "Two-file configuration model, precedence rules, and a troubleshoot
 
 # Configuration Strategy
 
-Zenzic is designed to work with zero configuration. A `.zenzic.toml` file is not required to get started, as the defaults cover most standard projects out of the box. Create a configuration file only when you need to customise behaviour.
-
-This page explains the two-file configuration model, the precedence chain,
-and provides a troubleshooting matrix for the most common configuration problems.
+This page is a troubleshooting guide for the most common configuration problems. For the full configuration model — file precedence, field definitions, and defaults — see [Configuration Reference](../reference/configuration-reference.mdx).
 
 ---
 
-## File Precedence
-
-Configuration is resolved in this order. Later files override earlier ones:
-
-| Priority | File | Committed | Scope |
-|:--------:|:-----|:----------|:------|
-| 1 (lowest) | `.zenzic.toml` | Yes | Shared project defaults |
-| 2 | `pyproject.toml [tool.zenzic]` | Yes | Embedded alternative to `.zenzic.toml` |
-| 3 (highest) | `.zenzic.local.toml` | **No** | Machine-local overrides |
-
-`.zenzic.toml` and `pyproject.toml [tool.zenzic]` are mutually exclusive — Zenzic reads
-whichever is present. If both exist, `.zenzic.toml` takes priority.
-
-`.zenzic.local.toml` is **always additive** for list fields (e.g. `forbidden_patterns`,
-`excluded_dirs`). Scalar fields follow last-write-wins.
+> **Two-file model summary:** `.zenzic.toml` holds shared project defaults; `.zenzic.local.toml` holds machine-local overrides and is not committed. Scalar fields follow last-write-wins. List fields (`forbidden_patterns`, `excluded_dirs`) are additive.
 
 ---
 
@@ -127,15 +110,6 @@ This is expected. To apply overrides in CI, write the file from a secret before 
 
 ---
 
-## Configuration Fields Quick Reference
+---
 
-For the full field specification, see the [Configuration Reference](../reference/configuration-reference.mdx).
-
-| Field | File | Type | Notes |
-|:------|:-----|:-----|:------|
-| `docs_dir` | `.zenzic.toml` | string | Root of the documentation tree |
-| `fail_under` | `.zenzic.toml` | int 0–100 | Minimum DQS; exit 1 if below |
-| `engine` | `.zenzic.toml [build_context]` | string | `standalone`, `docusaurus`, `mkdocs` |
-| `forbidden_patterns` | `.zenzic.local.toml [governance]` | list[str] | RE2 DFA; case-insensitive by default |
-| `suppression_cap` | `.zenzic.toml [governance]` | int | Max allowed `zenzic:ignore` directives |
-| `brand_obsolescence` | `.zenzic.toml [governance]` | list[str] | Deprecated brand terms (Z601) |
+> For the full field specification, see [Configuration Reference](../reference/configuration-reference.mdx).

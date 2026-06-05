@@ -386,37 +386,9 @@ as a React component (`.tsx`), never as a static `.svg` file.
 
 :::
 
-### Rationale
+For the detailed architectural rationale behind this directive, see [MDX Asset Componentization Rationale](../explanation/mdx-asset-rationale.mdx).
 
-Static `.svg` files cannot:
-
-- React to Docusaurus theme variables (`--ifm-color-*`, light/dark mode switching).
-- Use `<Translate>` for i18n — text is baked into XML, requiring manual duplication.
-- Update deterministically when the underlying data model changes — they require
-  find-and-replace surgery across XML nodes.
-
-React components (`.tsx`) solve all three: they read CSS variables at runtime, wrap
-strings with `<Translate>`, and derive their data from a single source of truth.
-
-### Permitted uses of static `.svg` files
-
-| Use case | Permitted? | Reason |
-| :--- | :---: | :--- |
-| OpenGraph social cards (`static/assets/social/`) | ✓ | Consumed by `<meta og:image>`, not by React |
-| GitHub README illustrations (wordmarks, logos) | ✓ | Rendered by GitHub Markdown, no React context |
-| Architecture/brand diagrams (`static/assets/brand/`) | ✓ | Pure graphics — no data nodes, no text strings |
-| Any text-bearing illustration inside an MDX page | ✗ | Use a `.tsx` component |
-
-### Migration path
-
-When a static SVG carrying text or data nodes must be converted:
-
-1. Create `src/components/<Name>.tsx` with the same visual layout.
-2. Replace text literals with `<Translate id="...">` strings.
-3. Source numeric data (weights, codes, scores) from the canonical Python module
-   via a generated JSON fixture, not from hardcoded SVG attributes.
-4. Register the component in `src/theme/MDXComponents.js` for global MDX availability.
-5. Delete the original `.svg` file.
+For step-by-step instructions on converting static SVGs to TSX components, see [Release and Governance Protocol — Converting Static SVGs to React Components](../how-to/release-governance-protocol.mdx#11-converting-static-svgs-to-react-components).
 
 ### Checklist addition
 

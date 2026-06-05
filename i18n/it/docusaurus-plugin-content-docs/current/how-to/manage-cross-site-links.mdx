@@ -136,22 +136,9 @@ $ zenzic inspect routes --kind physical
 Aggiorna qualsiasi link che punta al percorso derivato dal filename con l'URL
 dello slug mostrato nell'output.
 
-### Agnosticismo verso il motore: il guardiano `hasattr`
+### Agnosticità dal motore
 
-Questa funzionalità è selettiva per adapter. Il validator chiama
-`set_slug_map()` solo quando l'adapter attivo espone quel metodo — rilevato
-a runtime via `hasattr`. Gli adapter più semplici (Standalone, MkDocs) non
-ricevono mai una chiamata slug-map e il loro percorso di validazione rimane
-invariato.
-
-```text
-Discovery  →  set_slug_map (solo Docusaurus)  →  build_vsm  →  Validate
-                      ↕
-          guardiano hasattr — no-op per MkDocs / Standalone
-```
-
-Questo segue il principio della *migrazione incrementale*: evolvere l'adapter
-complesso senza appesantire quelli più semplici.
+La risoluzione della slug-map è selettiva per adapter. Gli adapter più semplici (Standalone, MkDocs) non sono influenzati — il percorso slug-map è una capacità esclusiva di Docusaurus. Non è necessaria alcuna modifica di configurazione quando si cambia adapter.
 
 ---
 

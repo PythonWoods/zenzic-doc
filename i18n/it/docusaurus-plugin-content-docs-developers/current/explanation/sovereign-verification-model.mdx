@@ -82,31 +82,7 @@ Esplicitazione raccomandata:
 
 ## 5) Runbook per Contributor
 
-Due setup locali supportati:
-
-1. Layout sibling (raccomandato)
-
-```text
-workspace/
-  zenzic/
-  zenzic-doc/
-  zenzic-action/
-```
-
-Esegui:
-
-```bash
-just verify
-```
-
-2. Layout con override esplicito (path custom)
-
-```bash
-ZENZIC_CORE_PATH=/percorso/assoluto/a/zenzic just verify
-```
-
-Se la verifica segnala core non trovato, trattalo come errore di setup,
-non come warning di qualita da sopprimere.
+Per la procedura passo dopo passo su come configurare lo spazio di lavoro locale ed eseguire la suite di verifica, vedi il [Runbook per Contributor nel Protocollo di Rilascio](../how-to/release-governance-protocol.mdx#contributor-runbook-local-setup).
 
 ---
 

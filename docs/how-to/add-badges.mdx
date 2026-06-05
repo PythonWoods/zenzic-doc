@@ -7,14 +7,9 @@ description: "Add CI status and DQS Score badges to your README using Dual-Badge
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# Official Badges — Dual-Badge Telemetry
+# Add Badges to Your README
 
-Zenzic exposes **two orthogonal signals** in your README. Each has a distinct source of truth and a distinct audience:
-
-| Badge | Source | Signal | Visibility |
-|-------|--------|--------|-----------|
-| **Audit Badge** | `zenzic score --stamp` | Deterministic pass/fail governance signal | Crystallized in each commit |
-| **DQS Score** | `zenzic score --stamp` | Quality of accepted code (0–100) | Crystallized in each commit |
+Zenzic provides two orthogonal signals for your README: an **Audit Badge** (pass/fail governance) and a **DQS Score badge** (0–100 quality score). Both are written in-place by `zenzic score --stamp` without external dependencies.
 
 ---
 
@@ -63,13 +58,11 @@ The `--stamp` option always updates badges **before** applying exit-code checks 
 
 ### The Red Badge as a Local Signal
 
-When `zenzic score --stamp` runs locally and the score is below `fail_under`, the badge in your README turns red. This is **immediate, unambiguous feedback** — visible before you even attempt a push. You do not need to wait for CI to tell you the build is broken; the red badge in your editor is the signal.
-
-A red badge will never appear on the public main branch: the CI blocks the push (Exit Code 1), so only indigo or amber badges reach main. The red badge exists precisely to warn you *before* that happens.
+When `zenzic score --stamp` runs locally and the score is below `fail_under`, the badge in your README turns red. This gives immediate feedback before you push — the CI gate blocks Exit Code 1, so only indigo or amber badges reach main.
 
 ### Time-Traveling Badges
 
-Because the URL is written inline into the commit, every historical commit shows the score that was computed at that point in time — not the current score. Older commits display their own score, not today's. This is the core advantage over Gist-based dynamic endpoints.
+Because the URL is written inline into the commit, every historical commit shows the score computed at that point in time. This is the core advantage over Gist-based dynamic endpoints: no central state, no stale URLs.
 
 ### Multi-file stamping (`badge_stamp_files`)
 
@@ -148,13 +141,11 @@ jobs:
           fi
 ```
 
-### Key design decisions
+### Workflow notes
 
-**`if: always()`** — The badge must be stamped even when the audit fails, so the red badge appears in the repository (on the PR branch) and contributors see the degraded score immediately.
-
-**`git status -s README.md`** — Skips the commit when the score has not changed since the last run. Avoids noisy "chore" commits on every push.
-
-**`contents: write` scoped to the job** — The permission is declared at the job level, not the workflow level, to limit blast radius. Only this job can write to the repository.
+- **`if: always()`** ensures the badge is stamped even when the audit fails — so contributors see the red badge on the PR branch immediately.
+- **`git status -s README.md`** skips the commit when the score has not changed — avoids noisy "chore" commits on every push.
+- **`contents: write` scoped to the job** limits blast radius: only this job can write to the repository.
 
 ### Multi-file stamping
 

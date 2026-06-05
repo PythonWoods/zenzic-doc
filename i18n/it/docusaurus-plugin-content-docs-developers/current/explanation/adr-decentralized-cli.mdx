@@ -141,6 +141,10 @@ che usasse `from zenzic.rules import run_rule`. Non è stato richiesto alcun
 cambiamento ai percorsi di importazione per le integrazioni esistenti, nonostante
 la riorganizzazione interna.
 
+### 4. Stato della Console Unificato (Visual State Manager)
+
+L'istanza di più oggetti `Console()` in moduli di comando diversi interrompe le sovrascritture degli argomenti della riga di comando. Quando viene passato `--no-color` o `--force-color`, `configure_console()` sovrascrive i singleton in `_shared.py`. Qualsiasi `Console` istanziata localmente aggirerebbe questa configurazione, portando a una colorazione in modalità mista o a preferenze dell'utente ignorate.
+
 ---
 
 ## Invarianti (Non Negoziabili)

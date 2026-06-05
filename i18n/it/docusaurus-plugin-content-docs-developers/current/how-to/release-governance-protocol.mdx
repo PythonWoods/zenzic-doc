@@ -88,6 +88,37 @@ Prima del merge:
 - Rimuovere esclusioni temporanee non più giustificate.
 - Nessuna PR sul Core che altera il comportamento documentato può essere fusa nel branch di rilascio senza una corrispondente PR fusa in zenzic-doc. L'autore è il garante finale della Mirror Law.
 
+### Aggiungere una Dipendenza
+
+Quando si aggiunge una nuova dipendenza di terze parti a un progetto Zenzic:
+1. Verificare la compatibilità della licenza (deve essere compatibile con Apache-2.0: MIT, BSD, Apache-2.0, LGPL-3.0, ISC). Le licenze GPL e proprietarie sono vietate.
+2. Aggiungere i dettagli della dipendenza al file `NOTICE` (nome, URL, titolare del copyright, identificatore di licenza).
+3. Eseguire `uv run reuse lint` per verificare la conformità.
+
+### Parità Bilingue (Symmetry Check) {#parita-bilingue-symmetry-check}
+
+Per verificare che la struttura del filesystem dei docs tree in inglese e italiano coincida esattamente (Symmetry Guardrail), esegui:
+
+```bash
+diff \
+  <(find docs -name "*.mdx" | sed 's|^docs/||' | sort) \
+  <(find i18n/it/docusaurus-plugin-content-docs/current \
+      -name "*.mdx" | \
+      sed 's|^i18n/it/docusaurus-plugin-content-docs/current/||' | sort)
+```
+
+Per il sito developers:
+
+```bash
+diff \
+  <(find developers -name "*.mdx" | sed 's|^developers/||' | sort) \
+  <(find i18n/it/docusaurus-plugin-content-docs-developers/current \
+      -name "*.mdx" | \
+      sed 's|^i18n/it/docusaurus-plugin-content-docs-developers/current/||' | sort)
+```
+
+Qualsiasi output da questi comandi rappresenta un'asimmetria strutturale che produrrà un errore 404 sui selettori di lingua di Docusaurus.
+
 ---
 
 ## 5) Policy Soppressioni (Release A)
@@ -202,3 +233,81 @@ Riferimento canonico:
 
 - [Modello Sovrano di Verifica Condiviso](../explanation/sovereign-verification-model.mdx)
 - [Profilo Assurance Supply Chain](../reference/supply-chain-assurance-profile.mdx)
+
+### Runbook per Contributor (Setup Locale) {#contributor-runbook-local-setup}
+
+Due setup locali supportati per l'esecuzione della verifica:
+
+1. **Layout sibling (raccomandato):**
+   Posiziona il repository core come sibling del tuo repository target:
+   ```text
+   workspace/
+     zenzic/
+     zenzic-doc/
+     zenzic-action/
+   ```
+   Quindi esegui:
+   ```bash
+   just verify
+   ```
+
+2. **Layout con override esplicito (path custom):**
+   Se il tuo repository core si trova in una posizione diversa, esporta `ZENZIC_CORE_PATH` durante l'esecuzione di verify:
+   ```bash
+   ZENZIC_CORE_PATH=/percorso/assoluto/a/zenzic just verify
+   ```
+
+Se la verifica segnala la mancanza del core path, trattalo come un errore di configurazione del setup, non come un warning di qualità da sopprimere.
+
+---
+
+## 9) Aggiungere un nuovo ADR
+
+Quando viene presa una decisione architetturale significativa — che vincola i futuri contributori o risolve una tensione strutturale — deve essere registrata:
+
+1. Crea `developers/explanation/adr-<slug>.mdx` con il successivo numero ADR disponibile.
+2. Crea il mirror italiano nel percorso corrispondente in `i18n/it/docusaurus-plugin-content-docs-developers/current/explanation/`.
+3. Aggiungi entrambi i file alla tabella indice in [ADR Vault](../explanation/adr-vault.mdx).
+4. Registra la decisione nella sezione `[ADR]` del log di governance del repository in cui è stata implementata.
+
+Per policy di governance, le voci ADR sono record append-only. Per emendare una decisione, aggiungi un nuovo ADR che fa riferimento all'originale e documenta l'emendamento — mai riscrivere la storia.
+
+---
+
+## 10) Ripristino della Configurazione Docusaurus
+
+Durante la manutenzione delle configurazioni di Docusaurus (ad es. `docusaurus.config.ts`), applica i seguenti pattern di ripristino per garantire il routing sovrano del locale e la persistenza delle preferenze cross-locale.
+
+### Unificare il namespace di archiviazione della modalità scura
+Per evitare che le preferenze sulla modalità scura si azzerino quando si cambia locale, disabilita il partizionamento del namespace nella configurazione principale:
+
+```ts
+// docusaurus.config.ts
+storage: {
+  namespace: false,
+},
+```
+
+### Scrivere link della barra di navigazione sovrani rispetto al locale
+Per evitare la pipeline di riscrittura dei link i18n di Docusaurus e puntare direttamente a posizioni globali assolute (come il blog), dichiara l'elemento della navbar usando `type: 'html'`:
+
+```ts
+// docusaurus.config.ts — esempio elemento navbar blog
+{
+  type: 'html',
+  value: '<a class="navbar__item navbar__link" href="/blog">Blog</a>',
+  position: 'left',
+},
+```
+
+---
+
+## 11) Conversione di SVG Statici in Componenti React
+
+Quando si converte un SVG statico che contiene testo o nodi di dati in un componente React per pagine MDX:
+
+1. Crea un nuovo file componente `src/components/<Name>.tsx` utilizzando lo stesso layout visivo.
+2. Sostituisci i valori letterali di testo codificati con wrapper `<Translate id="...">`.
+3. Estrai i dati numerici dinamici (pesi, codici, punteggi) dal modulo Python canonico tramite una fixture JSON generata, invece di codificare gli attributi.
+4. Registra il componente in `src/theme/MDXComponents.js` per renderlo globalmente disponibile in MDX.
+5. Elimina il file `.svg` originale dal repository.

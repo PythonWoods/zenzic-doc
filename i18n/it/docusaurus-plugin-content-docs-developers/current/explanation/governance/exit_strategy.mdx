@@ -1,5 +1,7 @@
 ---
+title: "Il Giuramento di Sovranità"
 sidebar_label: "Il Giuramento di Sovranità"
+description: "Il Giuramento di Sovranità di Zenzic, che dichiara una politica di dismissione a zero lock-in e zero residui."
 ---
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
@@ -99,30 +101,9 @@ nessun'altra configurazione di strumenti.
 
 ---
 
-## 4. Il Decommission in 30 Secondi
+## 4. Il Processo di Dismissione
 
-### Step 1 — Rimuovi dalla CI (15 secondi)
-
-```yaml title=".github/workflows/docs.yml"
-# Elimina questo blocco
-
-- uses: PythonWoods/zenzic-action@<version>
-
-  with:
-    version: "<version>"
-    format: sarif
-    upload-sarif: "true"
-```
-
-### Step 2 — Rimuovi la Configurazione (15 secondi)
-
-```bash
-rm .zenzic.toml
-# OPPURE modifica pyproject.toml: rimuovi la sezione [tool.zenzic]
-```
-
-**Fatto.** La tua pipeline gira senza il gate di integrità della documentazione.
-Il tuo codebase è identico a com'era prima di adottare Zenzic.
+La rimozione di Zenzic da un progetto è progettata per essere banale e non lasciare vincoli residui. Per istruzioni passo-passo sulla dismissione, vedere la [Guida all'installazione e primo avvio — Dismissione di Zenzic](/docs/how-to/install#dismissione-di-zenzic).
 
 ---
 
