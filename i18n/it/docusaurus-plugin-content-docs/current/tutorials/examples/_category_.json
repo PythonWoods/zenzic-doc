@@ -1,0 +1,8 @@
+{
+  "label": "Galleria Z-Code",
+  "position": 3,
+  "link": {
+    "type": "doc",
+    "id": "tutorials/examples/index"
+  }
+}
