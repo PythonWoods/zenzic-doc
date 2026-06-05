@@ -73,51 +73,7 @@ i18n di Docusaurus.
 
 ## Decisione
 
-Due fix indipendenti sono stati applicati a `docusaurus.config.ts`:
-
-### Fix 1 — Namespace di Storage Unificato
-
-```ts
-// docusaurus.config.ts
-storage: {
-  namespace: false,
-},
-```
-
-Il `storage.namespace: false` di primo livello sovrascrive il comportamento di
-namespacing di `future.v4`. Entrambi i locale condividono ora la singola chiave
-`"theme"` nel localStorage. La preferenza della modalità scura persiste attraverso
-tutti i cambi di locale.
-
-**Verificato nel build output:** Lo script anti-FOUC inline sia in
-`build/index.html` che in `build/it/index.html` legge:
-
-```js
-localStorage.getItem("theme")
-```
-
-### Fix 2 — Link Locale-Sovrano con `type: 'html'`
-
-```ts
-// docusaurus.config.ts — elemento navbar Journal
-{
-  type: 'html',
-  value: '<a class="navbar__item navbar__link" href="/blog">Journal</a>',
-  position: 'left',
-},
-```
-
-Docusaurus **non** processa l'`innerHTML` degli elementi navbar di `type: 'html'`
-attraverso la pipeline di riscrittura i18n. Il `href="/blog"` grezzo viene
-preservato verbatim nell'output HTML statico di ogni locale.
-
-**Verificato nel build output:** L'HTML del locale italiano contiene:
-
-```html
-href=/blog>Journal</a>
-```
-
-Non `/it/blog` — locale-sovrano.
+Due fix indipendenti sono stati applicati a `docusaurus.config.ts`. Per istruzioni passo-passo sull'implementazione di queste configurazioni, vedere [Protocollo di Governance e Rilascio — Ripristino della Configurazione Docusaurus](../how-to/release-governance-protocol.mdx#10-ripristino-della-configurazione-docusaurus).
 
 ---
 

@@ -105,8 +105,7 @@ modalità audit — definiscono il perimetro di scansione, non la policy di sopp
 - **Security Review** — porta in superficie tutti i finding Z2xx indipendentemente dalla soppressione.
 - **Audit pre-release** — misura lo stato reale (non filtrato) della documentazione prima del rilascio.
 
-**Raccomandato:** imposta `fail-on-error: "false"` nei workflow di audit. La modalità audit è
-osservazionale per design.
+> Nota: `fail-on-error: "false"` è disponibile per workflow di audit osservazionali dove i finding non devono bloccare l'esecuzione.
 
 ---
 

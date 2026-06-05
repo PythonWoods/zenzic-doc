@@ -7,11 +7,11 @@ description: "Definisci regole di lint specifiche del progetto in .zenzic.toml u
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-# DSL Regole Custom
+# Aggiungere Regole di Lint Custom
 
-`[[custom_rules]]` permette di dichiarare regole lint specifiche del progetto direttamente in
-`.zenzic.toml`. Ogni regola applica un'espressione regolare riga per riga a ogni file `.md`. Nessun
-Python richiesto — il DSL è puro TOML.
+`[[custom_rules]]` permette di dichiarare regole di lint specifiche per il progetto direttamente in `.zenzic.toml`. Ogni regola applica un'espressione regolare riga per riga a ogni file `.md` e produce un finding quando il pattern corrisponde. Non è richiesto Python — il DSL è TOML puro.
+
+> Per il riferimento completo ai campi, la matrice di severity e il formato dell'output, vedi [Configuration Reference — `[[custom_rules]]`](../reference/configuration-reference.mdx#custom-rules).
 
 ---
 
@@ -36,67 +36,7 @@ sintassi TOML per gli array-of-tables.
 
 ---
 
-## Campi
 
-| Campo | Tipo | Richiesto | Descrizione |
-| :--- | :--- | :---: | :--- |
-| `id` | stringa | ✓ | Identificatore univoco stabile mostrato nei risultati |
-| `pattern` | stringa | ✓ | Espressione regolare applicata a ogni riga di contenuto |
-| `message` | stringa | ✓ | Spiegazione leggibile mostrata nel risultato |
-| `severity` | `"error"` \| `"warning"` \| `"info"` | — | Default: `"error"` |
-
----
-
-## Comportamento della severità
-
-| Severità | Blocca la pipeline | Con `--strict` |
-| :--- | :---: | :---: |
-| `"error"` | Sì (exit code 1) | Sì |
-| `"warning"` | No | Sì |
-| `"info"` | No | No |
-
-Le regole con `severity = "error"` causano l'uscita di `zenzic check all` con codice 1. I risultati
-`"warning"` vengono mostrati nel report ma non influenzano il codice di uscita a meno che non sia
-passato `--strict`.
-
----
-
-## Formato dell'output
-
-Quando una regola custom scatta, Zenzic mostra il problema con uno snippet visivo della riga
-incriminata:
-
-<ZenzicTerminal title="zenzic check all">
-<div className="flex gap-2 items-baseline"><span className="text-rose-500">✘</span><span className="bg-rose-500/10 text-rose-400 px-1 rounded-sm text-[11px]">[ZZ-NODRAFT]</span><span className="text-zinc-300">docs/guide/install.md:14</span></div>
-<div className="text-zinc-500 ml-6 text-[11px]">Rimuovere il marker DRAFT prima della pubblicazione.</div>
-<div className="mt-2 text-rose-500 font-semibold text-[11px] tracking-wide">FAILED — exit 1</div>
-</ZenzicTerminal>
-
-Per la severità `"error"` l'ID della regola viene mostrato in rosso; per `"warning"` in giallo.
-La riga `│` mostra la riga sorgente esattamente come appare nel file.
-
-Le regole con `severity = "info"` vengono stampate senza lo snippet `│`.
-
----
-
-## Indipendenza dall'adapter
-
-**Le regole custom sono indipendenti dall'adapter.** Una regola che cerca `DRAFT` si attiva
-identicamente che il progetto usi `MkDocsAdapter`, `ZensicalAdapter` o `StandaloneAdapter`. Il motore
-delle regole opera su testo Markdown grezzo, senza conoscenza del build engine. Ciò significa:
-
-- Le regole scritte per un progetto MkDocs non richiedono modifiche dopo la [migrazione a Zensical](./migrate-engines.mdx).
-- Le regole sono sicure da scrivere prima di decidere quale build engine userà il progetto.
-
----
-
-## Performance
-
-**I pattern vengono compilati una volta sola** al caricamento della configurazione, non per ogni file. Non c'è penalità
-di performance nell'avere molte regole. Pattern regex non validi sollevano un `ConfigurationError` all'avvio con il
-pattern incriminato e il messaggio di errore della regex.
-
----
 
 ## Posizionamento TOML
 

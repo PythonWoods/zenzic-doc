@@ -131,13 +131,7 @@ Path Sovereignty applies to every CLI command that accepts an optional positiona
 ## Consequences
 
 - Running Zenzic from any directory produces identical results to running it
-
   from inside the target repository — no surprises for CI operators.
-
-- Contributors implementing new CLI commands that accept a `PATH` argument
-
-  **must** call `find_repo_root(search_from=resolved_path)` and invoke
-    `_apply_target()`. This is a documented invariant in the contribution guide.
 
 - The `fallback_to_cwd=True` parameter of `find_repo_root()` is a constrained
 

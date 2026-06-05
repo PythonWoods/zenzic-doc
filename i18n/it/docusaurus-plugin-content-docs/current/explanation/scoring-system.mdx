@@ -70,42 +70,9 @@ il Punteggio di Qualità **crolla a 0/100 incondizionatamente**. Una sorgente do
 che perde attivamente una credenziale non può ricevere un Punteggio di Qualità.
 :::
 
----
+## Filosofia di Calibrazione delle Penalità {#penalty-calibration}
 
-## La Tabella di Penalità
-
-Ogni codice di finding porta una **deduzione fissa in punti** all'interno della sua categoria.
-Le deduzioni si accumulano; una volta che il contributo di una categoria raggiunge zero,
-ulteriori violazioni in quella categoria non hanno ulteriori effetti sul punteggio totale —
-questo è il **Category Cap** (Tetto di Categoria).
-
-| Codice | Descrizione | Penalità (pts) | Categoria |
-|--------|-------------|:---:|-----------|
-| Z2xx | Violazione di Sicurezza | Override → **0/100** | — |
-| Z503 | Errore Sintassi Snippet | 10.0 | Content |
-| Z101 | Link Interrotto | 8.0 | Structural |
-| Z104 | File Non Trovato | 8.0 | Structural |
-| Z102 | Ancora Mancante | 5.0 | Structural |
-| Z402 | Pagina Orfana | 4.0 | Navigation |
-| Z401 | Indice Directory Mancante | 2.0 | Navigation |
-| Z601 | Brand Obsoleto | 2.0 | Brand |
-| Z405 | Asset Non Utilizzato | 3.0 | Brand |
-| Z404 | Asset Config Mancante | 3.0 | Brand |
-| Z501 | Placeholder (TODO / FIXME) | 2.0 | Content |
-| Z406 | Errore Nav Contract | 2.0 | Brand |
-| Z105 | Percorso Assoluto | 2.0 | Structural |
-| Z502 | Contenuto Breve | 1.0 | Content |
-| Z505 | Blocco di Codice Non Etichettato | 1.0 | Content |
-| Z403 | Alt Text Mancante | 1.0 | Content |
-| Z107 | Ancora Circolare | 1.0 | Structural |
-| Z106 | Link Circolare | 0.0 | Informativo |
-| Z108 | Empty Link Text | 1.0 | Structural |
-
-Z106 è una diagnostica di integrità dei link, ma non sottrae punti. Z108 è la nuova penalità strutturale per le etichette di link malformate.
-
-### Filosofia di Calibrazione delle Penalità
-
-Le penalità sono assegnate a uno di tre livelli, indipendentemente dal bucket di appartenenza:
+Le penalità sono assegnate a uno di tre livelli di gravità, indipendentemente dal bucket di appartenenza:
 
 | Livello | Esempi | Punti |
 |---|---|---|
@@ -113,11 +80,13 @@ Le penalità sono assegnate a uno di tre livelli, indipendentemente dal bucket d
 | Alto | Z301, Z402 (link rotto, pagina orfana) | 3.0 – 4.0 |
 | Standard | Z104, Z401, Z403 … | 1.0 – 2.0 |
 
-Una penalità **Critica** (10 pts) segnala che il contenuto è attivamente dannoso per i
-lettori (un esempio di codice non funzionante). Una penalità **Alta** segnala un difetto
+Una penaltà **Critica** (10 pts) segnala che il contenuto è attivamente dannoso per i
+lettori (un esempio di codice non funzionante). Una penaltà **Alta** segnala un difetto
 strutturale che il lettore incontrerà direttamente (un link morto, una pagina
-irraggiungibile). Una penalità **Standard** segnala un deficit di qualità che degrada
+irraggiungibile). Una penaltà **Standard** segnala un deficit di qualità che degrada
 l'esperienza nel tempo.
+
+> Per la tabella completa di lookup penalità per codice, vedi [Algoritmo di Scoring — Tabella di Riferimento delle Penalità](../reference/scoring-algorithm.mdx#penalty-table).
 
 ---
 
@@ -165,41 +134,11 @@ $$
 
 ---
 
-## Esecuzione del Punteggio
+## Osservabilità del Punteggio {#score-observability}
 
-```bash
-# Calcola e mostra il punteggio (nessun file scritto)
-zenzic score [PATH]
+L'output di `zenzic score` espone un Quality Breakdown Ledger che mostra ogni passo aritmetico: deduzioni raw per tier, cap applicati, aggiustamento Gravity Cap, suppression debt e l'intero finale. Questa esplicitezza è intenzionale — il punteggio non è un rating black-box ma un risultato aritmetico verificabile.
 
-# Calcola, mostra e persiste in .zenzic-score.json
-zenzic score [PATH] --save
-
-# Calcola e fallisce se il punteggio scende sotto N
-zenzic score [PATH] --fail-under 80
-
-# Confronta il punteggio attuale con il baseline salvato (gate di regressione CI)
-zenzic diff [PATH]
-```
-
-Lo snapshot è scritto in `.zenzic-score.json` nella root del repository. È un file
-JSON leggibile dalle macchine — committalo nel repository affinché `zenzic diff`
-abbia un baseline con cui confrontarsi.
-
-### Pattern CI consigliato
-
-```yaml title=".github/workflows/zenzic.yml"
-# Sui push al branch main: salva il nuovo baseline
-
-- run: zenzic score --save --fail-under 80
-
-# Sulle pull request: fallisce se il punteggio è sceso
-
-- run: zenzic diff --threshold 0
-
-```
-
-`zenzic diff` esce con 1 se il punteggio attuale è **inferiore** al baseline salvato
-(aggiustato da `--threshold`). Non fallisce se il punteggio è stabile o migliorante.
+> Per il riferimento CLI e i pattern di integrazione CI, vedi [Gestione del Technical Debt](../how-to/handle-technical-debt.mdx) e [Design dello Scoring](./scoring-design.mdx).
 
 ---
 

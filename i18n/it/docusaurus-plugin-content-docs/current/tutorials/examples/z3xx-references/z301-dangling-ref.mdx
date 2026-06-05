@@ -1,0 +1,70 @@
+---
+sidebar_position: 1
+title: "Z301 - Riferimento Pendente"
+sidebar_label: "Z301 - Riferimento Pendente"
+description: "Analisi del fixture z301-dangling-ref."
+---
+
+import Z301DanglingRef from '@site/src/components/examples/Z301DanglingRef';
+
+# Z301-dangling-ref — DANGLING_REF
+
+**Z-Code:** `Z301 DANGLING_REF` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z301DanglingRef />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z301-dangling-ref/` nel repository Zenzic.
+Contiene documenti che dimostrano la violazione `Z301`.
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione aggiuntiva richiesta
+cd examples/z301-dangling-ref
+uvx zenzic check all
+```
+
+Expected output:
+
+```text
+standalone - 1 file (1 docs, 0 assets) - 0.0s - 62 files/s
+
+docs/index.md:12  x  [Z301]  Reference '[Click here][missing-ref]' uses 
+undefined ID 'missing-ref'.
+
+    10  │  ## Content With Dangling Reference
+    11  │  
+    12  ❱  To get started, [Click here][missing-ref] for the installation guide.
+    13  │  
+    14  │  Note: `missing-ref` has no corresponding `[missing-ref]: url` 
+definition
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 0 warnings  i 0 info  - 1 file with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il codice di errore `Z301` indica un problema di tipo **DANGLING_REF**.
+
+Questo errore o avviso viene generato da Zenzic quando un link in stile riferimento (es. `[my text][ref_id]`) fa riferimento a un identificatore `ref_id` che non è definito in nessun punto del documento. Zenzic usa uno scanner a due passaggi per risolvere correttamente anche i riferimenti in avanti. In questo esempio specifico:
+- **Tipo di Scansione:** `Reference Scanner`
+- **Severità:** `Warning`
+- **Impatto:** I riferimenti pendenti causano link non renderizzati e comportano una detrazione DQS di 4.0 punti.
+## Correggere la Violazione
+
+Risolvi il problema come riportato da Zenzic.
+
+## Vedi Anche
+
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

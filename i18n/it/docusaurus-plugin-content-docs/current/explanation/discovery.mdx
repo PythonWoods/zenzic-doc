@@ -54,28 +54,15 @@ interrompe una scansione fuori perimetro prima che inizi.
 
 ### Opzioni di Risoluzione {#root-resolution}
 
-Per consentire a Zenzic di analizzare una directory, soddisfa uno dei seguenti requisiti:
+Zenzic risolve la root del repository risalendo dalla directory di lavoro corrente finché non trova un root marker (`.zenzic.toml` o `.git/`). Tre condizioni soddisfano questo requisito:
 
-**Opzione A — Inizializza Zenzic** (crea il marcatore `.zenzic.toml`):
+- **Progetto Zenzic:** un file `.zenzic.toml` nella root della directory target (creato da `zenzic init`).
+- **Repository Git:** una directory `.git/` in qualsiasi punto dell'albero degli antenati.
+- **Invocazione annidata:** esecuzione dall'interno di un progetto esistente che contiene già uno dei marker.
 
-```bash
-cd /percorso/al/target
-zenzic init
-```
+Se nessuna di queste condizioni è soddisfatta, Zenzic rifiuta l'invocazione con un errore esplicito.
 
-**Opzione B — Inizializza un repository Git** (crea il marcatore `.git/`):
-
-```bash
-cd /percorso/al/target
-git init
-```
-
-**Opzione C — Esegui dall'interno di un progetto esistente** (la traversata verso l'alto troverà il marcatore automaticamente):
-
-```bash
-# Da qualsiasi punto all'interno di un progetto che ha già .git/ o .zenzic.toml
-zenzic check all
-```
+> Vedi [Per iniziare](../how-to/install.mdx) per il workflow di setup con `zenzic init`.
 
 ---
 
@@ -155,69 +142,38 @@ I System Guardrails sono directory che Zenzic ignora **sempre**, indipendentemen
 
 Queste directory vengono unite a `excluded_dirs` in modo additivo durante `model_post_init` del modello di configurazione. La logica è: le voci dell'utente si **aggiungono** ai Guardrail, non li **sostituiscono**.
 
-### L2 — Forced Inclusions + VCS {#level-2-forced-and-vcs}
+### L2 — Inclusioni Forzate + VCS {#l2-forced-inclusions-vcs}
 
-Il livello 2 gestisce due forze opposte:
+Le inclusioni forzate hanno la precedenza su tutti gli strati di esclusione eccetto L1. Servono due scopi:
 
-**Inclusioni forzate** (`included_dirs`, `included_file_patterns`) — sovrascrivono le esclusioni VCS e le esclusioni di configurazione, ma **mai** i System Guardrails. Questo permette di forzare la scansione di directory o file che sarebbero altrimenti ignorati dal `.gitignore`.
+**Inclusioni forzate a livello di config** (`included_dirs`, `included_file_patterns`) re-includono file o directory che altrimenti verrebbero esclusi da pattern VCS o esclusioni di config. Un caso d'uso tipico è la documentazione API generata dal build elencata in `.gitignore` ma che richiede linting.
 
-**VCS ignore** (`respect_vcs_ignore = true`) — quando attivato, Zenzic legge i file `.gitignore` dalla radice del repository e dalla directory docs. I file corrispondenti vengono esclusi da tutti i controlli. Disabilitato per default (principio Zero-Config).
+**Esclusione VCS** (pattern `.gitignore`) viene attivata impostando `respect_vcs_ignore = true`. Quando attiva, Zenzic legge i file `.gitignore` sia dalla root del repository che dalla directory docs. I file che corrispondono ai pattern VCS vengono esclusi — ma le inclusioni forzate hanno la precedenza sulle esclusioni VCS.
 
-L'ordine di precedenza tra questi due sotto-livelli e chiaro: le inclusioni forzate vincono sempre sulle esclusioni VCS.
+### L3 — Esclusioni Config {#l3-config-exclusions}
 
-```toml
-# .zenzic.toml
-respect_vcs_ignore = true
-included_dirs = ["generated-docs"]
-included_file_patterns = ["api.generated.md"]
-```
+Esclusioni a livello di config da `.zenzic.toml` o `pyproject.toml`:
 
-In questo esempio, anche se `generated-docs/` e nel `.gitignore`, Zenzic lo scansionera comunque.
+- `excluded_dirs` — nomi di directory inside `docs/` da saltare
+- `excluded_file_patterns` — pattern glob di nomi file da saltare
 
-### L3 — Configurazione {#level-3-config}
+Sono additive a L1 ma subordinate alle inclusioni forzate L2.
 
-Le esclusioni dichiarate in `.zenzic.toml` o `[tool.zenzic]` in `pyproject.toml`:
+### L4 — Override CLI {#l4-cli-overrides}
 
-- `excluded_dirs` — directory da escludere (additive ai Guardrail)
-- `excluded_file_patterns` — pattern glob applicati ai nomi dei file
+Gli override per singola esecuzione tramite i flag `--exclude-dir` e `--include-dir` estendono o restringono il perimetro di scansione per una singola invocazione senza modificare la configurazione persistente. CLI `--include-dir` non può sovrascrivere i System Guardrails — tentare di includere `.git` o `.venv` tramite CLI viene ignorato silenziosamente.
 
-Queste esclusioni vengono valutate dopo le inclusioni forzate e il VCS. Se un file e stato forzatamente incluso al livello L2, le esclusioni L3 non lo toccano.
-
-### L4 — CLI {#level-4-cli}
-
-Flag a riga di comando per override temporanei:
-
-- `--exclude-dir DIR` — esclude una directory aggiuntiva (ripetibile)
-- `--include-dir DIR` — forza l'inclusione di una directory (ripetibile, non sovrasta i System Guardrails)
-
-I flag CLI vengono valutati con la stessa logica degli altri livelli: `--include-dir` vince su `--exclude-dir` per la stessa directory, ma nessuno dei due puo sovrastare L1.
-
+> Per la sintassi dei campi e gli esempi, vedi [Riferimento alla Configurazione](../reference/configuration-reference.mdx).
 
 ---
 
-## Flusso di lavoro `respect_vcs_ignore` {#vcs-workflow}
+## `respect_vcs_ignore` — Semantica di Esclusione VCS {#respect-vcs-ignore}
 
-Per default, `respect_vcs_ignore` è `false`. Zenzic scansiona ogni file sotto `docs/` che non sia escluso dai System Guardrails o dalle esclusioni config/CLI. Questo è il **principio Zero-Config**: ciò che vedi nel filesystem è ciò che Zenzic scansiona.
+`respect_vcs_ignore` controlla se Zenzic applica i pattern `.gitignore` come strato di esclusione aggiuntivo. Il suo default è `false`, implementando il **principio Zero-Config senza sorprese**: il perimetro di scansione è esattamente il filesystem visibile allo sviluppatore, senza esclusioni implicite nascoste.
 
-Quando `respect_vcs_ignore = true`, il `LayeredExclusionManager` costruisce un `VCSIgnoreParser` unificato dai file `.gitignore`:
+Quando abilitato, Zenzic carica i pattern `.gitignore` da due posizioni: la root del repository e la directory docs (se esiste un `.gitignore` separato lì). Il parser VCS ignore implementa la specifica gitignore completa, incluse la negazione (`!`), l'ancoraggio dei path e i glob wildcard.
 
-1. Legge `.gitignore` dalla radice del repository (se esiste)
-2. Legge `.gitignore` dalla directory docs (se esiste e diversa dalla radice)
-3. Unisce le regole di tutti i parser in un singolo parser
-4. Pre-compila le espressioni regolari per performance ottimali
-
-Il parser segue la specifica gitignore completa, incluse negazione (`!`), ancoraggio al percorso e wildcards glob.
-
-### Interazione con le Forced Inclusions
-
-Le inclusioni forzate (`included_dirs`, `included_file_patterns`) sovrascrivono le esclusioni VCS. Questo supporta il workflow comune in cui la documentazione generata è elencata nel `.gitignore` (perché non deve essere committata) ma deve comunque essere lintata:
-
-```toml
-respect_vcs_ignore = true
-
-# Questo file è nel .gitignore ma deve essere lintato
-included_file_patterns = ["api.generated.md"]
-```
+Le inclusioni forzate (`included_dirs`, `included_file_patterns`) hanno sempre la precedenza sulle esclusioni VCS. Questo rende sicuro abilitare `respect_vcs_ignore` in progetti dove la documentazione generata dal build è in `.gitignore` ma richiede comunque linting.
 
 ---
 
@@ -283,21 +239,12 @@ L'invariante garantisce che ogni URL generato dal motore risalga ad almeno un fi
 | Zensical         | No                                   | Architettura identica — abilitato quando arriva un plugin out-of-tree.       |
 | Standalone       | No                                   | Nessun plugin; `docs_root` è l'intera superficie di contenuto.               |
 
-### Esportare la mappa del sito: `inspect routes` {#inspect-routes}
+### `inspect routes` — Esportazione della Site Map {#inspect-routes}
 
-current series include un comando CLI di prima classe che espone il VSM a consumer esterni:
+Il comando `inspect routes` espone la VSM ai consumer esterni come struttura JSON deterministica. Ogni record contiene quattro campi: `url`, `kind` (`physical` o `virtual`), `source_files` (un array ordinato di path relativi al repo che causano l'esistenza dell'URL) e un `digest` — un'impronta SHA-256 derivata dall'URL e dai suoi file sorgente.
 
-```shell
-zenzic inspect routes --json
-```
+Il flag `--kind` restringe l'output a `physical`, `virtual` o `all` (default). Il JSON viene scritto esclusivamente su `stdout`; la diagnostica va su `stderr`.
 
-Questa funzionalità esporta la mappa completa del sito in formato JSON deterministico.
-È progettata per essere consumata da tool esterni: script Bash custom, dashboard di
-CI/CD, o tool specializzati che necessitano di contesto architetturale.
+Questo design rende la VSM componibile: strumenti esterni, dashboard CI/CD o tooling specializzato possono consumare la site map senza eseguire lo scanner completo.
 
-Ogni record nel JSON contiene quattro campi: `url`, `kind` (`physical` o `virtual`),
-`source_files` (un array ordinato di percorsi relativi al repository che *causano*
-l'esistenza dell'URL) e un `digest` — un’impronta SHA-256 derivata dall'URL e dai
-suoi file sorgente. Il flag `--kind` restringe l'output a `physical`, `virtual` o
-`all` (default). Il JSON viene scritto esclusivamente su `stdout`; i diagnostici
-vanno su `stderr`.
+> Sintassi CLI: vedi [Riferimento CLI — `inspect routes`](../reference/cli.mdx).

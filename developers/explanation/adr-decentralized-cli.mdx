@@ -136,6 +136,10 @@ The `zenzic.rules` façade preserves backwards compatibility for any project tha
 used `from zenzic.rules import run_rule`. No import path changes were required for
 existing integrations, despite the internal reorganisation.
 
+### 4. Unified Console State (Visual State Manager)
+
+Instantiating multiple `Console()` objects across different command modules breaks the command-line argument overrides. When `--no-color` or `--force-color` is passed, `configure_console()` overrides the singletons in `_shared.py`. Any locally-instantiated `Console` would bypass this configuration, leading to mixed-mode coloring or ignored user preferences.
+
 ---
 
 ## Invariants (Non-Negotiable)

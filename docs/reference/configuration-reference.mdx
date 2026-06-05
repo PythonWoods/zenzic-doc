@@ -334,48 +334,7 @@ Never add an entire domain as an exclusion (e.g. `"https://zenzic.dev/"`). A bla
 
 ## VCS-Aware Exclusion {#vcs-aware-exclusion}
 
-### The Zenzic Way: Conscious Control vs. Blind Automation {#zenzic-way}
-
-:::tip[Design Philosophy]
-Zenzic deliberately defaults to **Conscious Control** rather than Blind Automation. Understanding this principle is the key to configuring the tool effectively in production projects.
-:::
-
-`respect_vcs_ignore` is `true` by default. This aligns Zenzic with modern linter behavior (VCS-ignored paths are skipped unless explicitly included).
-
-**The Noisy `.gitignore` Problem**
-
-Consider a repository where `docs_dir = "."` (the repo root is also the docs root). This is common for projects that lint their `README.md`, `CHANGELOG.md`, and other root-level Markdown files. A typical Python project `.gitignore` contains entries like:
-
-```gitignore
-*.egg-info/
-.coverage
-dist/
-htmlcov/
-*.pyc
-.venv/
-```
-
-If `respect_vcs_ignore = true`, Zenzic would silently exclude any documentation file whose path matches these patterns. A `docs/coverage-report.md` page, for instance, would vanish from orphan detection without any diagnostic message. The linter would appear healthy while silently skipping entire documentation subtrees.
-
-**The Explicit .zenzic.toml is Superior**
-
-The `excluded_dirs` and `excluded_file_patterns` fields in your project config — `.zenzic.toml` or `[tool.zenzic]` in `pyproject.toml` — (L3 in the Layered Exclusion hierarchy) are:
-
-- **Visible** — exclusions are declared in one authoritative file, not scattered across `.gitignore`, `.dockerignore`, and `.npmignore`
-- **Reviewable** — a new contributor running `git diff` sees exactly what Zenzic excludes and why
-- **Stable** — exclusions do not change when a developer updates `.gitignore` for unrelated tooling reasons
-
-```toml title=".zenzic.toml"
-# Explicit exclusions are maintainable and auditable
-excluded_dirs = ["includes", "stylesheets", "overrides"]
-excluded_file_patterns = ["*.it.md", "CHANGELOG*.md"]
-
-# respect_vcs_ignore = true   ← default; omit or set explicitly
-```
-
-**When to enable `respect_vcs_ignore`**
-
-Enable it for projects with a clean, documentation-focused `.gitignore` where VCS-excluded paths genuinely map to documentation that should not be linted (e.g. auto-generated API reference in `site/`). Always audit the exclusion effect using `--show-info` after enabling.
+> See [Exclusion Design](../explanation/exclusion-design.mdx) for the rationale behind conscious exclusion vs. blind VCS automation.
 
 ---
 
@@ -386,7 +345,7 @@ Enable it for projects with a clean, documentation-focused `.gitignore` where VC
 | **Type** | `bool` |
 | **Default** | `true` |
 
-When `true`, Zenzic reads `.gitignore` files from the repository root and docs directory and excludes matching files from all checks. Enabled by default — see [The Zenzic Way](#zenzic-way) above for operational guidance.
+When `true`, Zenzic reads `.gitignore` files from the repository root and docs directory and excludes matching files from all checks. Enabled by default — see [Exclusion Design](../explanation/exclusion-design.mdx) for operational guidance.
 
 Forced inclusions (`included_dirs`, `included_file_patterns`) override VCS exclusions, but System Guardrails are always enforced.
 
@@ -557,19 +516,7 @@ Minimum quality score (0--100). If the Zenzic Score falls below this value, `zen
 fail_under = 80
 ```
 
-:::info Mathematical Invariant — Flat-Cost Model
-Every active suppression deducts exactly **1 DQS point** (flat-cost model). The maximum score your project can achieve is therefore:
-
-$$\text{Max Achievable Score} = 100 - |F_s|$$
-
-where $|F_s|$ is the total active suppression count. Configuring `fail_under > 100 - suppression_cap` creates a **mathematical contradiction**: the score gate will trigger due to suppression debt *before* the suppression cap is reached, making the upper slots of your cap budget unreachable.
-
-**Safe configuration rule:** `fail_under` $\leq$ `100 - suppression_cap`.
-:::
-
-:::tip[Designing Hybrid Governance Policies]
-Because `fail_under` and `suppression_cap` act as **orthogonal constraints**, you can design hybrid governance policies for enterprise environments. For example, setting `fail_under = 90` and `suppression_cap = 30` means: "The global repository quality (findings + debt) must never drop below 90/100, **but** regardless of the score, we absolutely refuse to tolerate more than 30 suppressed defects." This prevents teams from hiding massive structural debt even if their active code is otherwise perfect.
-:::
+> See [Exclusion Design — Governance Score Math](../explanation/exclusion-design.mdx#governance-score-math) for the flat-cost model and hybrid governance policy design.
 
 ### `strict` {#strict}
 

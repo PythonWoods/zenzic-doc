@@ -9,9 +9,9 @@ description: "The Zenzic scoring engine: 5-tier weight matrix, per-code penalty 
 
 # Scoring Algorithm
 
-> *"Zenzic doesn't grade on a curve. Security and Governance are not optional."*
+The Zenzic Documentation Quality Score (DQS) is a **deterministic, 0–100 integer** computed from the findings of every active check. Given the same repository state, the algorithm always produces the same score.
 
-The Zenzic Documentation Quality Score (DQS) is a **deterministic, 0–100 integer** computed from the findings of every active check. Given the same repository state, the algorithm always produces the same score. There is no weighting heuristic, no interpolation, and no rounding until the final integer cast.
+> For design rationale, a worked example, and CLI output interpretation, see [Scoring Design](../explanation/scoring-design.mdx).
 
 ---
 
@@ -129,7 +129,7 @@ Z602 (I18N_PARITY) is a Governance gate that fires as a standalone finding. It d
 
 ## Stage 3 — Governance Escalation {#governance-escalation}
 
-Z6xx violations represent **brand and governance decay** — the kind that accumulates silently. Beyond 10 occurrences, the engine applies an exponential amplifier to the Governance bucket deductions:
+Beyond 10 Z6xx occurrences, the engine applies an exponential amplifier to the Governance bucket deductions:
 
 $$
   \text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{n_{\text{excess}} / 5}\right)
@@ -137,7 +137,7 @@ $$
 
 where $n_{\text{excess}} = n_{Z6xx} - 10$.
 
-The deduction is capped at the Governance tier maximum (25 pts) to prevent overflow. The practical effect: a repository with 20 Z601 violations (10 excess → multiplier = $2^2 = 4$) takes four times the normal governance hit.
+The deduction is capped at the Governance tier maximum (25 pts). The practical effect: a repository with 20 Z601 violations (10 excess → multiplier = $2^2 = 4$) takes four times the normal governance hit.
 
 ---
 
@@ -148,8 +148,6 @@ If the Governance bucket is fully zeroed by its deductions:
 $$
 S_{\text{base}} = \min\!\left(S_{\text{base}},\; 70\right) \quad \text{if } \text{cat\_pts}_{\text{brand}} = 0
 $$
-
-**Rationale:** a documentation set with uncontrolled governance violations — brand decay, stale assets, broken navigation contracts — cannot be considered a high-quality product, regardless of its link graph. The Gravity Cap enforces this constraint structurally.
 
 ---
 
@@ -184,60 +182,10 @@ Because every suppression deducts 1 point, the **maximum achievable score** for 
 
 $$\text{Max Achievable Score} = 100 - |F_s|$$
 
-where $|F_s|$ is the total active suppression count. Configuring `fail_under > 100 - suppression_cap` creates a mathematical contradiction: the score gate fires due to suppression debt *before* the governance cap is reached. Safe configuration rule:
-
-$$\texttt{fail\_under} \leq 100 - \texttt{suppression\_cap}$$
+where $|F_s|$ is the total active suppression count. Configuring `fail_under > 100 - suppression_cap` creates a mathematical contradiction. Safe configuration rule: `fail_under` ≤ `100 - suppression_cap`.
 :::
 
-:::tip[Dual-Gate Architecture — Orthogonal Constraints]
-`fail_under` and `suppression_cap` operate as **orthogonal constraints** evaluated independently by the CI pipeline. A pipeline run fails if *either* condition is triggered:
-
-- **Score gate:** `score < fail_under` → `zenzic score` exits with code 1
-- **Governance cap:** `|F_s| > suppression_cap` → `zenzic score` exits with code 1
-
-This dual-gate architecture enables asymmetric bounding of technical debt. A **hybrid policy** such as `fail_under = 90`, `suppression_cap = 30` enforces: "Overall quality must never drop below 90/100, *and* regardless of score, no more than 30 suppressed defects are ever tolerated."
-:::
-
-:::tip Suppression Debt in the CLI
-Run `zenzic score` to inspect the current suppression posture:
-
-```text
-Suppression Audit: 8/30 (inline: 5, per-file: 3)
-```
-
-Run `zenzic check all --audit` to see findings without applying suppressions.
-:::
-
-## Result Interpretation {#result-interpretation}
-
-### 1) Informational Findings
-
-Informational findings are non-blocking diagnostics for visibility and observability.
-
-- They do not reduce DQS.
-- They never trigger the Security Override.
-- In SARIF they are emitted at `note` level.
-
-Typical examples include Z106 (`CIRCULAR_LINK`) and informational surfaces such as Z114 or Z906.
-
-### 2) Suppression Audit
-
-The Suppression Audit is governance telemetry, not a raw failure counter.
-
-- It reports the total active suppressions (inline directives + `per_file_ignores`).
-- It expresses explicitly authorized technical debt envelope.
-- Score impact is applied to every active suppression (flat-cost: 1 pt each).
-
-### 3) Label Semantics: `[MANAGED DEBT]` and `[EXTENDED DEBT]`
-
-- `[MANAGED DEBT]`: active suppressions are present and the project remains on sovereign cap profile (`suppression_cap <= 30`).
-- `[EXTENDED DEBT]`: active suppressions are present while using an expanded cap profile (`suppression_cap > 30`).
-
-These labels describe governance posture. They are complementary to score math and help reviewers track suppression growth over time.
-
-:::warning Breaking Change
-Suppressions are not allowance-based. Every suppression deducts 1 point (flat-cost model), while `suppression_cap` remains an independent hard-fail exit threshold. Projects with active suppressions always see their maximum achievable score reduced by the suppression count.
-:::
+> See [Scoring Design — Dual-Gate Architecture and Result Interpretation](../explanation/scoring-design.mdx) for worked examples, CLI output guide, and governance posture semantics.
 
 ---
 
@@ -265,82 +213,9 @@ $$
 
 ---
 
-## Worked Example {#example}
-
-**Scenario:** A repository has 2 broken links (Z101), 3 orphan pages (Z402), 5 untagged code blocks (Z505), and 15 Z601 brand violations, with 8 active suppressions (cap = 30).
-
-**Stage 1 — Security Gate:** No Z2xx findings → continue.
-
-**Stage 2 — Penalty Table:**
-
-| Tier | Cap | Deduction | cat_pts |
-| :--- | ---: | ---: | ---: |
-| Structural | 30 | 2 × 8.0 = 16.0 | 14.0 |
-| Navigation | 25 | 3 × 4.0 = 12.0 | 13.0 |
-| Content | 20 | 5 × 1.0 = 5.0 | 15.0 |
-| Governance | 25 | 15 × 2.0 = 30.0 → cap to 25 | 0.0 |
-
-$S_{\text{base}} = 14 + 13 + 15 + 0 = 42$
-
-**Stage 3 — Governance Escalation:** 15 Z601 violations → $n_{\text{excess}} = 5$ → multiplier $= 2^{5/5} = 2.0$ → deduction $= 30 \times 2 = 60 \to \min(60, 25) = 25$. Brand bucket = 0.
-
-**Stage 4 — Gravity Cap:** $\text{cat\_pts}_{\text{brand}} = 0$ → $S_{\text{gravity}} = \min(42, 70) = 42$.
-
-**Stage 5 — Suppression Debt:** $n = 8$ suppressions → flat-cost: $\omega_{\text{debt}} = 8$.
-
-$$S_{\text{final}} = \max(0,\; 42 - 8) = \mathbf{34}$$
-
----
-
-## Reading the CLI Output {#cli-output}
-
-Running `zenzic score` displays a **Quality Breakdown Ledger** that exposes
-every arithmetic step — from raw per-tier penalties to the applied cap, the
-Gravity Cap adjustment, suppression debt, and the final score.
-
-```text
-✨ Quality Score: 65/100
-
-╭─ Quality Breakdown ──────────────────────────────────────╮
-│   Category     Issues  Weight  Raw Pts  Applied Pts      │
-├──────────────────────────────────────────────────────────┤
-│ ✓ structural      0      30%      0           0          │
-│ ✓ navigation      0      25%      0           0          │
-│ ✗ content         2      20%     -4          -4          │
-│ ✗ brand          15      25%    -30         -25 (CAPPED) │
-├──────────────────────────────────────────────────────────┤
-│   Σ Subtotal                                71           │
-╰──────────────────────────────────────────────────────────╯
-  ! Technical Debt (6 suppressions)          -6 pts
-  = Final Quality Score                      65 / 100
-```
-
-**Column guide:**
-
-| Column | Meaning |
-| :--- | :--- |
-| **Raw Pts** | Post-escalation deduction before the category cap, shown as a negative value (or `0`). |
-| **Applied Pts** | Deduction actually subtracted, capped at the tier maximum. |
-| **(CAPPED)** | The raw deduction exceeded the tier cap and was truncated. |
-| **Σ Subtotal** | Sum of all retained `cat_pts` values before Gravity Cap and Suppression Debt. |
-
-**When the Gravity Cap fires** (Brand bucket = 0), an extra line appears between
-Σ Subtotal and Technical Debt:
-
-```text
-│   Σ Subtotal                                75           │
-╰──────────────────────────────────────────────────────────╯
-  ! Gravity Cap Enforcement (Brand = 0)       -5 pts
-  ! Technical Debt (0 suppressions)            0 pts
-  = Final Quality Score                       70 / 100
-```
-
-The arithmetic is always explicit: **Σ Subtotal − Gravity Cap − Suppression Debt = Final Score**.
-
----
-
 ## See Also {#see-also}
 
+- [Scoring Design](../explanation/scoring-design.mdx) — Worked example, CLI output interpretation, and governance posture semantics
 - [Suppression Policy](./suppression-policy) — Three suppression levels, debt formula, and the `--audit` override
 - [Finding Codes](./finding-codes) — Full encyclopedia of Zxxx codes with remediation steps
 - [Handle Technical Debt](../how-to/handle-technical-debt) — Step-by-step remediation workflow

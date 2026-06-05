@@ -127,34 +127,11 @@ suo scopo esatto è creare il marcatore di radice `.zenzic.toml`. Richiedere che
 un marcatore di radice *esista già* prima che `init` possa girare è un
 Catch-22.
 
-**Risoluzione:** `find_repo_root()` acquisisce un parametro keyword-only:
+**Risoluzione:** `find_repo_root()` acquisisce un parametro keyword-only `fallback_to_cwd` (predefinito `False`). Quando `fallback_to_cwd=True` e nessun marcatore di radice viene trovato, la funzione restituisce `Path.cwd()` invece di sollevare un'eccezione. Questo è chiamato **Fallback Genesis**.
 
-```python
-def find_repo_root(*, fallback_to_cwd: bool = False) -> Path:
-    ...  # risale da CWD; solleva o restituisce cwd in base al flag
-```
+Per le specifiche del parametro, vedere [API Reference — `find_repo_root`](../reference/adapter-api.mdx#find_repo_root-fallback_to_cwd-bool--false---path).
 
-Quando `fallback_to_cwd=True` e nessun marcatore di radice viene trovato, la
-funzione restituisce `Path.cwd()` invece di sollevare un'eccezione. Questo è
-chiamato **Fallback Genesis**.
-
-**Ambito di autorizzazione:** Il Fallback Genesis è un'esenzione a punto
-singolo. Solo il comando `init` passa `fallback_to_cwd=True`. Ogni altro
-comando (`check`, `guard`, `score`, `diff`, `clean`) mantiene il default
-rigoroso (`fallback_to_cwd=False`) e continuerà a fallire esplicitamente
-fuori da un perimetro di progetto.
-
-```python
-# src/zenzic/cli/_standalone.py — l'unico call site autorizzato per fallback_to_cwd=True
-def init(path=None, plugin=None, force=False):
-    repo_root = find_repo_root(fallback_to_cwd=True)  # Fallback Genesis
-    ...
-
-# Tutti gli altri comandi — applicazione rigorosa del perimetro
-def check_all(path=None, strict=False):
-    repo_root = find_repo_root()  # solleva fuori da un repo — corretto
-    ...
-```
+**Ambito di autorizzazione:** Il Fallback Genesis è un'esenzione a punto singolo. Solo il comando `init` passa `fallback_to_cwd=True` (in `src/zenzic/cli/_standalone.py`). Ogni altro comando (`check`, `guard`, `score`, `diff`, `clean`) mantiene il default rigoroso (`fallback_to_cwd=False`) e continuerà a fallire esplicitamente fuori da un perimetro di progetto.
 
 **Nota di sicurezza:** Il Fallback Genesis **non** indebolisce il perimetro
 per i comandi di analisi. `zenzic check all` eseguito da `/home/utente/` senza

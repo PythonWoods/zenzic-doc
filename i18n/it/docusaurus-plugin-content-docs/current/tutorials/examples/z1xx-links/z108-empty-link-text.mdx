@@ -1,0 +1,114 @@
+---
+sidebar_position: 7
+title: "Z108 - Testo Link Vuoto"
+sidebar_label: "Z108 - Testo Link Vuoto"
+description: "Analisi del fixture z108-empty-link-text: un link con etichetta vuota, inaccessibile agli screen reader. Z-Code Z108 EMPTY_LINK_TEXT, exit 1."
+---
+
+import Z108EmptyLinkText from '@site/src/components/examples/Z108EmptyLinkText';
+
+# Z108-empty-link-text — Testo Link Vuoto
+
+**Z-Code:** `Z108 EMPTY_LINK_TEXT` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z108EmptyLinkText />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z108-empty-link-text/` nel repository Zenzic.
+Contiene due documenti:
+
+| File | Ruolo |
+| :--- | :---- |
+| `docs/index.md` | Sorgente — contiene `[](guide.md)` alla riga 10 (etichetta vuota) |
+| `docs/guide.md` | Destinazione — esiste su disco (garantisce che Z101 non si attivi) |
+| `.zenzic.toml` | Engine: `standalone`, `fail_under = 0` |
+
+`docs/index.md` rimanda a `guide.md` tramite `[](guide.md)` — la sintassi Markdown
+per un link con etichetta vuota. Il file di destinazione esiste su disco (quindi Z101
+non si attiva), ma il link non ha testo visibile. Gli screen reader lo annunciano come
+la sola parola _"link"_ senza alcun contesto sulla destinazione, violando WCAG 2.1
+§2.4.4 (Scopo del Link). Gli utenti con visione normale vedono un punto elenco
+apparentemente vuoto.
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione aggiuntiva richiesta
+cd examples/z108-empty-link-text
+uvx zenzic check links
+```
+
+Expected output:
+
+```text
+standalone - 2 files (2 docs, 0 assets) - 0.0s - 118 files/s
+
+docs/guide.md:4  !  [Z502]  Page has only 25 words (minimum 50).
+
+    2  │  <!-- SPDX-License-Identifier: Apache-2.0 -->
+    3  │  
+    4  ❱  # Guide
+    5  │  
+    6  │  This guide page exists on disk so that `[](guide.md)` in `index.md` 
+does not
+
+docs/index.md:10:2  x  [Z108]  link label is empty or whitespace-only
+
+     8  │  ## Empty Link
+     9  │  
+    10  ❱  - [](guide.md) — empty label (no visible text for screen readers) → 
+**Z108**
+        │    
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    11  │  
+    12  │  ## What Zenzic Reports
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 1 warning  i 0 info  - 2 files with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il codice di errore `Z108` indica un problema di tipo **EMPTY_LINK_TEXT**.
+
+Questo errore o avviso viene generato da Zenzic quando un link markdown ha un testo di etichetta vuoto o composto solo da spazi (es. `[](/path)`). Questa è una violazione di accessibilità, poiché gli screen reader non possono descrivere la destinazione del link. In questo esempio specifico:
+- **Tipo di Scansione:** `Link Validator`
+- **Severità:** `Error`
+- **Impatto:** I link senza testo violano gli standard di accessibilità e comportano una detrazione DQS di 1.0 punto.
+## Correggere la Violazione
+
+Aggiungere un'etichetta descrittiva al link in `docs/index.md`:
+
+```markdown
+<!-- Prima -->
+- [](guide.md)
+
+<!-- Dopo -->
+- [Guida](guide.md)
+```
+
+Poi rieseguire:
+
+```bash
+uvx zenzic check links  # → exit 0, nessun finding
+```
+
+L'etichetta deve essere abbastanza descrittiva da comunicare lo scopo del link
+senza il contesto circostante — WCAG 2.4.4 (Livello AA) richiede che il testo del
+link sia significativo da solo.
+
+## Vedi Anche
+
+- [z101 — Link Rotti](z101-broken-links) — il file di destinazione non esiste su disco.
+- [z105 — Percorso Assoluto](z105-absolute-path) — il link usa un percorso assoluto non portabile.
+- [z403 — Alt Text Mancante](../../examples/z4xx-topology/z403-missing-alt) — lo stesso principio di accessibilità applicato alle immagini.
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

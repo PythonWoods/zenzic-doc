@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: "Panoramica"
+title: "Installa Zenzic"
+sidebar_label: "Installa e Prima Esecuzione"
 icon: lucide/play
-description: "Installa, configura ed esegui Zenzic sul tuo progetto documentale."
+description: "Installa Zenzic ed esegui il primo controllo qualità della documentazione."
 ---
 
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
@@ -11,31 +12,9 @@ description: "Installa, configura ed esegui Zenzic sul tuo progetto documentale.
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Per iniziare
+# Installa Zenzic
 
-Zenzic legge direttamente dal filesystem e funziona con qualsiasi progetto basato su Markdown.
-Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tantum.
-
-## Esempi canonici
-
-Il repository include fixture Z-code mantenuti e allineati ai contratti documentati:
-
-- `examples/z101-broken-links/` — fixture integrità link (Z101 LINK_BROKEN, exit 1).
-- `examples/z201-credentials/` — fixture credential scanner (Z201 CREDENTIAL_SECRET, exit 2).
-- `examples/z405-unused-assets/` — fixture asset non referenziato (Z405, exit 1).
-- `examples/z601-brand-obsolescence/` — fixture obsolescenza brand (Z601, exit 1).
-- `examples/z602-i18n-parity/` — fixture parità i18n (Z602, exit 1).
-
-:::tip[Vuoi eseguirlo subito?]
-
-```bash
-uvx zenzic lab      # esplora tutti i 5 scenari Z-code — zero setup
-uvx zenzic check all  # proteggi la tua documentazione
-```
-
-Vuoi vedere come Zenzic rileva credenziali o gap di parità i18n?
-Lancia `zenzic lab` e guarda Zenzic in azione su ogni scenario Z-code della galleria.
-:::
+Zenzic legge direttamente dal filesystem e funziona con qualsiasi progetto basato su Markdown. Usalo in locale, come hook di pre-commit, nelle pipeline CI o per audit una-tantum.
 
 ---
 
@@ -219,52 +198,41 @@ zenzic diff --threshold 5
 
 ## Modalità engine {#engine-modes}
 
-Zenzic opera in una di due modalità a seconda che riesca a trovare un file di configurazione
-del motore di build:
+Zenzic seleziona un adapter in base al file di configurazione del motore di build presente nella root del repository. La **modalità Engine-aware** si attiva quando viene trovato `mkdocs.yml` o `zensical.toml`, abilitando il rilevamento degli orfani basato sulla nav, la risoluzione del fallback i18n, la soppressione delle directory locale e il tracciamento delle Ghost Route. La **modalità Standalone** si attiva quando non viene trovata alcuna configurazione del motore — il controllo degli orfani viene saltato perché senza una dichiarazione nav ogni file sembrerebbe orfano.
 
-### Modalità Engine-aware {#engine-aware}
+Usa `--engine` per sovrascrivere l'adapter rilevato per una singola esecuzione senza modificare `.zenzic.toml`.
 
-Quando `mkdocs.yml` (MkDocs/Zensical) o `zensical.toml` (Zensical) è presente nella root del
-repository, Zenzic carica l'**adapter** corrispondente che fornisce:
+> Per il razionale di design completo dietro la modalità engine-aware rispetto a standalone, vedi [Architettura — Sovereign CLI](../explanation/architecture.mdx#sovereign-cli).
 
-- **Consapevolezza della nav** — il controllo orfani sa la differenza tra "non nella nav" e "non
+## Dismissione di Zenzic
 
-  dovrebbe essere nella nav" (ad esempio i file di locale i18n).
+Se hai bisogno di rimuovere Zenzic dal tuo progetto, il processo di dismissione richiede meno di 30 secondi e non lascia tracce.
 
-- **Fallback i18n** — i link cross-locale vengono risolti correttamente invece di essere
+### Passo 1 — Rimuovere da CI/CD
+Elimina il blocco di Zenzic dai tuoi file di workflow (ad es., `.github/workflows/docs.yml`):
 
-  segnalati come non validi.
-
-- **Soppressione directory locale** — i file sotto `docs/it/`, `docs/fr/`, ecc. non vengono
-
-  segnalati come orfani.
-
-- **Ghost Route** — quando `mkdocs-material` con `reconfigure_material: true` genera entry point
-  locale (es. `/it/`) al momento della build, quelle pagine non appaiono mai in `nav:`. Zenzic
-  le contrassegna come `REACHABLE` automaticamente nella [Virtual Site Map](../reference/checks#vsm-how-it-works)
-  senza richiedere alcuna lista di esclusione manuale.
-
-
-- **Il controllo orfani viene saltato.** Senza una dichiarazione di nav, ogni file sembrerebbe
-
-  un orfano.
-
-- **Tutti gli altri controlli vengono eseguiti normalmente** — link, snippet, placeholder, asset
-
-  e riferimenti.
-
-La modalità Standalone è la scelta giusta per wiki Markdown semplici, repository GitHub-wiki o
-qualsiasi progetto dove la navigazione è implicita.
-
-:::tip[Forza una modalità specifica]
-Usa `--engine` per sovrascrivere l'adapter rilevato per una singola esecuzione:
-
-```bash
-zenzic check all --engine standalone    # salta il controllo orfani
-zenzic check all --engine mkdocs        # forza l'adapter MkDocs
+```yaml
+- uses: PythonWoods/zenzic-action@<version>
+  with:
+    version: "<version>"
+    format: sarif
+    upload-sarif: "true"
 ```
 
-:::
+O, se eseguito direttamente in uno step shell:
+
+```yaml
+- name: Zenzic
+  run: uvx zenzic check all
+```
+
+### Passo 2 — Rimuovere la configurazione
+Elimina il file di configurazione dal tuo repository:
+
+```bash
+rm .zenzic.toml
+# OPPURE modifica pyproject.toml e rimuovi la sezione [tool.zenzic]
+```
 
 ---
 

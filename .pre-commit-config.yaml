@@ -65,8 +65,22 @@ repos:
     hooks:
       - id: reuse
 
-  # 6. Pre-push Final Guard (lifecycle gate model)
+  # 6. Score badge stamper (pre-commit) — writes current DQS score to badge files.
+  # If badges change, pre-commit fails and the developer re-adds + recommits.
+  # This ensures badges are always current before any push.
+  - repo: local
+    hooks:
+      - id: just-score-stamp
+        name: 🏅 Zenzic Score Badge (stamp)
+        entry: just score --stamp --no-header
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+        always_run: true
+
+  # 7. Pre-push Final Guard (lifecycle gate model)
   # Single entry-point: locale ≡ remote. Same `just verify` runs in GHA.
+  # --stamp runs at pre-commit time (hook above); this gate is read-only (--check-stamp).
   # Install with: uvx pre-commit install -t pre-push
   - repo: local
     hooks:

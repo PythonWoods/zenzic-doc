@@ -70,50 +70,7 @@ standard navbar items are also rewritten by the Docusaurus i18n build pipeline.
 
 ## Decision
 
-Two independent fixes were applied to `docusaurus.config.ts`:
-
-### Fix 1 — Unified Storage Namespace
-
-```ts
-// docusaurus.config.ts
-storage: {
-  namespace: false,
-},
-```
-
-The top-level `storage.namespace: false` overrides the `future.v4`
-namespacing behaviour. Both locales now share the single key `"theme"` in
-localStorage. Dark mode preference persists across all locale switches.
-
-**Verified in build output:** The anti-FOUC inline script in both
-`build/index.html` and `build/it/index.html` reads:
-
-```js
-localStorage.getItem("theme")
-```
-
-### Fix 2 — `type: 'html'` Locale-Sovereign Link
-
-```ts
-// docusaurus.config.ts — Blog navbar item
-{
-  type: 'html',
-  value: '<a class="navbar__item navbar__link" href="/blog">Blog</a>',
-  position: 'left',
-},
-```
-
-Docusaurus does **not** process the `innerHTML` of `type: 'html'` navbar items
-through the i18n rewrite pipeline. The raw `href="/blog"` is preserved verbatim
-in every locale's static HTML output.
-
-**Verified in build output:** The Italian locale HTML contains:
-
-```html
-href=/blog>Blog</a>
-```
-
-Not `/it/blog` — locale-sovereign.
+Two independent fixes were applied to `docusaurus.config.ts`. For step-by-step instructions on implementing these configurations, see [Release & Governance Protocol — Docusaurus Configuration Repairs](../how-to/release-governance-protocol.mdx#10-docusaurus-configuration-repairs).
 
 ---
 

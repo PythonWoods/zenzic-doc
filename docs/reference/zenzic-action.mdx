@@ -92,7 +92,7 @@ Exclusion zones (`excluded_dirs`, `excluded_file_patterns`) are **not** bypassed
 - **Security Review** — surface all Z2xx findings regardless of suppression.
 - **Pre-release audit** — measure the true (unfiltered) documentation state before shipping.
 
-**Recommended:** set `fail-on-error: "false"` in audit workflows. Audit mode is observational by design.
+> Note: `fail-on-error: "false"` is available for observational audit workflows where findings should not block the run.
 
 ---
 

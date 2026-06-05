@@ -58,14 +58,7 @@ console = Console(...)          # rompe lo stato condiviso
 ui = LegacyInterfaceV1(console) # crea un'istanza orfana
 ```
 
-Questa regola esiste perché `configure_console()` sostituisce i singleton a livello di modulo
-`console` e `_ui` quando viene passato `--no-color` o `--force-color`. Qualsiasi istanza
-`Console` o UI creata localmente sarà congelata allo stato pre-flag e ignorerà la preferenza
-colore dell'utente.
-
-Il parametro `force_terminal` della `Console` a livello di modulo è sempre `None`
-(auto-detect via `sys.stdout.isatty()`), mai `False`. Impostare `force_terminal=False` è
-un bug silenzioso che rimuove tutto lo styling ANSI anche nei terminali interattivi.
+Per il razionale di design dietro la condivisione dello stato dell'interfaccia utente, vedere [ADR 004 — Stato della Console Unificato](../explanation/adr-decentralized-cli.mdx#4-stato-della-console-unificato-visual-state-manager).
 
 **Convenzioni output UI:**
 
@@ -77,29 +70,9 @@ un bug silenzioso che rimuove tutto lo styling ANSI anche nei terminali interatt
 
 ---
 
-## Aggiungere un Comando a una Sub-App Esistente
+## Aggiungere Comandi CLI
 
-```python
-# src/zenzic/cli/_check.py (esempio: aggiunta di "check metadata")
-@check_app.command(name="metadata")
-def check_metadata(path: Path = ...) -> None:
-    ...
-```
-
-Non sono richieste modifiche a `__init__.py`, `main.py`, o `_metadata.py` — la sub-app Typer
-esistente gestisce già questa surface di comandi.
-
----
-
-## Aggiungere una Nuova Sub-App Top-Level
-
-1. Crea `src/zenzic/cli/_myfeature.py` con `myfeature_app = typer.Typer(...)` e i tuoi comandi.
-2. Esporta `myfeature_app` da `src/zenzic/cli/__init__.py`.
-3. Registra in `src/zenzic/main.py`: `app.add_typer(myfeature_app, name="myfeature", rich_help_panel="...")`.
-4. Aggiungi una entry `CommandMeta(...)` in `src/zenzic/cli/_metadata.py` così i pannelli help
-   root e lo short help rimangono autorevoli.
-5. Se la sub-app usa `no_args_is_help=True`, aggiungi `"myfeature"` al frozenset `_SUBAPPS_WITH_MENU`
-   in `cli_main()` così il banner Zenzic appare quando la sub-app viene invocata senza argomenti.
+Per istruzioni passo-passo su come aggiungere comandi o nuove sub-app alla CLI, vedere [Scrivere un Nuovo Check — Cablaggio CLI](../how-to/write-a-check.mdx#cablaggio-cli).
 
 ---
 

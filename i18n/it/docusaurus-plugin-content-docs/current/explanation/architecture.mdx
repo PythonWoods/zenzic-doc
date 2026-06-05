@@ -352,10 +352,7 @@ Il percorso indicato diventa direttamente il `repo_root`, e la directory viene c
 (`mkdir -p`) se non esiste. Il rilevamento automatico dell'engine opera sulla directory
 di destinazione (anche vuota). La CWD del chiamante non viene mai modificata.
 
-```bash
-zenzic init ../nuovo-progetto          # crea ../nuovo-progetto/.zenzic.toml
-zenzic init /workspace/docs-freschi    # crea la directory se necessario
-```
+Il contratto di risoluzione del path significa che la CWD del chiamante è sempre pulita — nessun effetto collaterale sulla directory invocante.
 
 ### Invarianti
 
@@ -494,36 +491,13 @@ La pipeline CLI fornisce hardening completo di credential scanner e path travers
 Una CLI Sovrana disaccoppia il quality gate dallo strumento di build e rende ogni punto di
 applicazione engine-agnostico.
 
-**Migrazione:** esegui Zenzic in CI come quality gate esterno:
+Esegui Zenzic in CI come quality gate esterno tramite `zenzic check all --strict` in uno step del workflow. Questo produce lo stesso enforcement con VSM completa, credential scanner (ZRT-006/007) e path traversal guard attivi — senza alcuna integrazione runtime all'interno del motore di build.
 
-```yaml title=".github/workflows/zenzic.yml"
-# GitHub Actions
-
-- run: zenzic check all --strict
-
-```
-
-Questo produce un'applicazione identica con VSM completo, credential scanner (ZRT-006/007) e path traversal guard
-attivi — senza integrazione runtime dentro il build engine.
+> Vedi [Integrazione CI/CD](../how-to/configure-ci-cd.mdx) per esempi di workflow.
 
 ### Pattern di Estensione {#extension-pattern}
 
-Gli strumenti esterni che devono invocare i controlli di Zenzic in modo programmatico devono usare
-l'API Python pubblica direttamente, senza mai fare shell out:
-
-```python
-
-from zenzic.core.scanner import find_repo_root
-from zenzic.models.config import ZenzicConfig
-
-repo_root = find_repo_root()
-config, _ = ZenzicConfig.load(repo_root)
-# ... invoke scanner / validator functions directly
-
-```
-
-Tutta l'intelligenza risiede in `zenzic.core`. La CLI è un thin dispatch layer sulle stesse
-funzioni — non esiste logica nascosta che richieda il percorso subprocess.
+Gli strumenti esterni che devono invocare i check di Zenzic in modo programmatico possono usare direttamente la Python API pubblica (`zenzic.core.scanner`, `zenzic.models.config`). Tutta l'intelligenza risiede in `zenzic.core`. La CLI è un sottile strato di dispatch sulle stesse funzioni — non esiste logica nascosta che richieda il percorso subprocess.
 
 ---
 
@@ -643,17 +617,12 @@ mai divergere. Questo è il principio di Sovereign Parity (ZRT-010).
 | Motore custom non supportato | **Scrivi un Adapter** — pubblica come pacchetto separato, registra via entry-point `zenzic.adapters` |
 | Migrazione da MkDocs a Docusaurus | Usa `zenzic check all` con `engine = "mkdocs"` sulla sorgente, `engine = "docusaurus"` sulla destinazione |
 
+> Vedi [Integrazione CI/CD](../how-to/configure-ci-cd.mdx) per workflow passo dopo passo corrispondenti a ogni scenario.
+
 ---
 
 ## Integrità del Brand {#brand-integrity}
 
 Il modello Exclusion Zone va oltre la correttezza strutturale. Una base di codice o una suite di documentazione che contiene identificatori di brand obsoleti porta un tipo di debito diverso: **debito narrativo**. Una pagina che fa ancora riferimento a un codename contraddice il contratto che cerca di documentare.
 
-Zenzic affronta questo problema attraverso il blocco di configurazione [`[governance]`](../reference/configuration-reference.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601):
-
-```toml title=".zenzic.toml"
-[governance]
-brand_obsolescence = ["Obsidian"]
-```
-
-Zenzic usa una **soppressione per riga, format-aware** per i riferimenti storici intenzionali. Nei file ``.md``, aggiungi `<!-- zenzic:ignore: Z601 -->` in fondo alla riga. Nei file ``.mdx``, aggiungi `{/* zenzic:ignore: Z601 */}` — un commento JSX invisibile al parser Docusaurus/React. Entrambe le forme vengono silenziosamente saltate dallo scanner. La distinzione tra *citazione storica* e *aggiornamento dimenticato* viene applicata a livello di riga, non di file.
+Zenzic gestisce questo attraverso il blocco di configurazione [`[governance]`](../reference/configuration-reference.mdx) e il finding [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.mdx#z601). La soppressione per-riga format-aware è disponibile per i riferimenti storici intenzionali utilizzando la sintassi di commento appropriata per il tipo di file (`.md` vs. `.mdx`).

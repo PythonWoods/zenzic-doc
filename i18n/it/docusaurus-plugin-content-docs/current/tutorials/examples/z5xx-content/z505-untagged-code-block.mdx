@@ -1,0 +1,72 @@
+---
+sidebar_position: 4
+title: "Z505 - Blocco Codice non Taggato"
+sidebar_label: "Z505 - Blocco Codice non Taggato"
+description: "Analisi del fixture z505-untagged-code-block."
+---
+
+import Z505UntaggedCodeBlock from '@site/src/components/examples/Z505UntaggedCodeBlock';
+
+# Z505-untagged-code-block — UNTAGGED_CODE_BLOCK
+
+**Z-Code:** `Z505 UNTAGGED_CODE_BLOCK` · **Engine:** `standalone` · **Exit:** `0`
+
+<Z505UntaggedCodeBlock />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z505-untagged-code-block/` nel repository Zenzic.
+Contiene documenti che dimostrano la violazione `Z505`.
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione aggiuntiva richiesta
+cd examples/z505-untagged-code-block
+uvx zenzic check all
+```
+
+Expected output:
+
+```text
+standalone - 1 file (1 docs, 0 assets) - 0.0s - 59 files/s
+
+docs/index.md:13  !  [Z505]  Fenced code block has no language specifier. Add a 
+language tag (e.g. ```python, ```bash, ```toml) to enable syntax highlighting 
+and snippet validation.
+
+    11  │  Run the following command to get started:
+    12  │  
+    13  ❱  ```
+        │  ^^^
+    14  │  zenzic check all --fail-under 0
+    15  │  ```
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 0 errors  ! 1 warning  i 0 info  - 1 file with findings
+
+* Analysis complete: All statically-detectable links, credentials, and 
+references verified.
+Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
+'zenzic check --help' for options.
+[ Suppression Audit: 0/30 (inline: 0, per-file: 0)
+```
+
+Exit code: `0`
+
+## Interpretare l'Output
+
+Il codice di errore `Z505` indica un problema di tipo **UNTAGGED_CODE_BLOCK**.
+
+Questo errore o avviso viene generato da Zenzic quando un blocco di codice (che usa ` ``` ` o ` ~~~ `) non indica il linguaggio di programmazione specifico. Questo impedisce ai motori di syntax highlighting di applicare gli stili corretti. In questo esempio specifico:
+- **Tipo di Scansione:** `Code Block Scanner`
+- **Severità:** `Warning`
+- **Impatto:** I blocchi di codice senza tag compromettono la qualità del formato e comportano una detrazione DQS di 1.0 punto.
+## Correggere la Violazione
+
+Risolvi il problema come riportato da Zenzic.
+
+## Vedi Anche
+
+- [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

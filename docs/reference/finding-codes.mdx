@@ -83,7 +83,7 @@ Fatal configuration error: the adapter factory encountered a deprecated or remov
 
 ### Z101: LINK_BROKEN {#z101}
 
-**Severity:** `error` · **Penalty:** −8.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z101-broken-links)
+**Severity:** `error` · **Penalty:** −8.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z101-broken-links)
 
 A relative link points to a resource not found in the Virtual Site Map. The file may be outside `docs_dir` scope or matched by an exclusion rule.
 
@@ -94,7 +94,7 @@ A relative link points to a resource not found in the Virtual Site Map. The file
 
 ### Z102: ANCHOR_MISSING {#z102}
 
-**Severity:** `error` · **Penalty:** −5.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z102-anchor-missing)
+**Severity:** `error` · **Penalty:** −5.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z102-anchor-missing)
 
 The link target file exists (Z101 passes), but the specific HTML anchor (e.g. `#setup`) is absent from the target file's header registry. Zenzic parses all headings and explicit `<a id="...">` tags during Pass 1.
 
@@ -105,7 +105,7 @@ The link target file exists (Z101 passes), but the specific HTML anchor (e.g. `#
 
 ### Z103: ORPHAN_LINK {#z103}
 
-**Severity:** `error` · **Penalty:** 0.0 pts · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z103-orphan-link)
+**Severity:** `error` · **Penalty:** 0.0 pts · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z103-orphan-link)
 
 The link target exists in the VSM but is not reachable through any navigation structure (sidebar/nav). Users can reach it only by direct URL.
 
@@ -131,7 +131,7 @@ blog/post.mdx:12: '/blog/zenzic-v070' not found in the site map
 
 ### Z105: ABSOLUTE_PATH {#z105}
 
-**Severity:** `error` · **Penalty:** −2.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z105-absolute-path)
+**Severity:** `error` · **Penalty:** −2.0 pts (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z105-absolute-path)
 
 An absolute filesystem path (e.g. `C:\Docs\page.md` or `/home/user/docs/page.md`) breaks documentation portability. Project-owned URL prefixes (`/blog/`, `/docs/`) are exempt from Z105 but still checked via VSM lookup (a missing slug raises **Z104** instead).
 
@@ -160,13 +160,23 @@ A link of the form `[text](#anchor)` resolves to a heading on the **same** page 
 
 ### Z108: EMPTY_LINK_TEXT {#z108}
 
-**Severity:** `error` · **Penalty:** −1.0 pt (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z1xx-links/z108-empty-link-text)
+**Severity:** `error` · **Penalty:** −1.0 pt (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z108-empty-link-text)
 
 Inline Markdown link or collapsed reference link has empty or whitespace-only visible text — e.g. `[](./page.md)`, `[ ](./page.md)`, `[][ref]`. Breaks screen reader accessibility and semantic indexing simultaneously.
 
 **Fix:**
 1. Add descriptive link text: `[Documentation](./page.md)`.
 2. Remove the link entirely if the destination is not yet known.
+
+### Z109: EXTERNAL_LINK_BROKEN {#z109}
+
+**Severity:** `error` · **Penalty:** −3.0 pt (Structural) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z1xx-links/z109-external-link-broken)
+
+An external URL returned an HTTP error status code (e.g. 404, 500) or was completely unreachable due to a connection timeout or DNS resolution failure during scan.
+
+**Fix:**
+1. Check the target URL in a web browser.
+2. Correct the URL if misspelled, or remove the link if the destination has ceased to exist.
 
 ---
 
@@ -175,7 +185,7 @@ Inline Markdown link or collapsed reference link has empty or whitespace-only vi
 ### Z201: CREDENTIAL_SECRET {#z201}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed | Exit 2 | DQS collapses to 0/100]
-`zenzic:ignore: Z201` is **silently rejected**. The credential scanner fires unconditionally on every line. [↗ Gallery](../how-to/examples/z2xx-security/z201-credentials)
+`zenzic:ignore: Z201` is **silently rejected**. The credential scanner fires unconditionally on every line. [↗ Gallery](../tutorials/examples/z2xx-security/z201-credentials)
 :::
 
 **Severity:** `security_breach` · **Penalty:** DQS collapses to 0/100 · **Exit:** 2
@@ -191,7 +201,7 @@ The credential scanner uses deterministic pattern matching (e.g., RE2) to detect
 ### Z202: PATH_TRAVERSAL {#z202}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed | Exit 1 | DQS collapses to 0/100]
-`zenzic:ignore: Z202` is **silently rejected**. [↗ Gallery](../how-to/examples/z2xx-security/z202-path-traversal)
+`zenzic:ignore: Z202` is **silently rejected**. [↗ Gallery](../tutorials/examples/z2xx-security/z202-path-traversal)
 :::
 
 **Severity:** `error` · **Penalty:** DQS collapses to 0/100 · **Exit:** 1
@@ -220,7 +230,7 @@ Path traversal detected targeting restricted OS directories (e.g. `/etc/`, `/roo
 ### Z204: FORBIDDEN_TERM {#z204}
 
 :::danger[🔒 INVIOLABLE — Cannot be suppressed | Exit 2 | DQS collapses to 0/100]
-`zenzic:ignore: Z204` is **silently rejected**. Source: `forbidden_patterns` in `.zenzic.local.toml` (git-ignored). [↗ Gallery](../how-to/examples/z2xx-security/z204-forbidden-term)
+`zenzic:ignore: Z204` is **silently rejected**. Source: `forbidden_patterns` in `.zenzic.local.toml` (git-ignored). [↗ Gallery](../tutorials/examples/z2xx-security/z204-forbidden-term)
 :::
 
 **Severity:** `security_breach` · **Penalty:** DQS collapses to 0/100 · **Exit:** 2
@@ -245,7 +255,7 @@ The Privacy Gate detected a confidential project term (internal code-name, stagi
 
 ### Z301: DANGLING_REF {#z301}
 
-**Severity:** `error` · **Penalty:** −4.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z3xx-references/z301-dangling-ref)
+**Severity:** `error` · **Penalty:** −4.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z3xx-references/z301-dangling-ref)
 
 A reference-style link (`[my link][ref]`) exists but its definition (`[ref]: http://...`) is missing. Most renderers silently degrade the link to plain text. Ensure your Markdown formatter (like Prettier or Markdownlint) does not inadvertently remove unused reference definitions during an automated pass, which can cause downstream references to dangle.
 
@@ -255,7 +265,7 @@ A reference-style link (`[my link][ref]`) exists but its definition (`[ref]: htt
 
 ### Z302: DEAD_DEF {#z302}
 
-**Severity:** `warning` · **Penalty:** −1.0 pt (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z3xx-references/z302-dead-def)
+**Severity:** `warning` · **Penalty:** −1.0 pt (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z3xx-references/z302-dead-def)
 
 A reference definition exists but no link in the file uses it. Harmless for readers but creates maintenance debt.
 
@@ -263,7 +273,7 @@ A reference definition exists but no link in the file uses it. Harmless for read
 
 ### Z303: DUPLICATE_DEF {#z303}
 
-**Severity:** `warning` · **Penalty:** −3.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z3xx-references/z303-duplicate-def)
+**Severity:** `warning` · **Penalty:** −3.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z3xx-references/z303-duplicate-def)
 
 Multiple definitions exist for the same reference ID. CommonMark specifies that the first definition wins, but this ambiguity should be resolved for deterministic cross-engine rendering.
 
@@ -283,7 +293,7 @@ A documentation directory has no `index.md` or `README.md`. The directory URL ma
 
 ### Z402: ORPHAN_PAGE {#z402}
 
-**Severity:** `warning` · **Penalty:** −4.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z4xx-topology/z402-orphan-page)
+**Severity:** `warning` · **Penalty:** −4.0 pts (Navigation) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z4xx-topology/z402-orphan-page)
 
 A file exists in `docs/` but is not reachable from any navigation menu. The documentation equivalent of dead code.
 
@@ -293,7 +303,7 @@ A file exists in `docs/` but is not reachable from any navigation menu. The docu
 
 ### Z403: MISSING_ALT {#z403}
 
-**Severity:** `warning` · **Penalty:** none (accessibility warning) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z4xx-topology/z403-missing-alt)
+**Severity:** `warning` · **Penalty:** none (accessibility warning) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z4xx-topology/z403-missing-alt)
 
 An image has no alt text, degrading screen reader accessibility and SEO.
 
@@ -335,7 +345,7 @@ A conflict between the physical file structure and the engine's navigation confi
 
 ### Z501: PLACEHOLDER {#z501}
 
-**Severity:** `warning` · **Penalty:** −2.0 pts (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z5xx-content/z501-placeholder)
+**Severity:** `warning` · **Penalty:** −2.0 pts (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z501-placeholder)
 
 Placeholder strings (`TODO`, `FIXME`, `[INSERT IMAGE HERE]`) committed to production documentation signal incomplete work.
 
@@ -343,7 +353,7 @@ Placeholder strings (`TODO`, `FIXME`, `[INSERT IMAGE HERE]`) committed to produc
 
 ### Z502: SHORT_CONTENT {#z502}
 
-**Severity:** `warning` · **Penalty:** −1.0 pt (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z5xx-content/z502-short-content)
+**Severity:** `warning` · **Penalty:** −1.0 pt (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z502-short-content)
 
 A page contains fewer than 50 words of rendered prose (frontmatter, MDX comments, and HTML comments excluded). A page below this threshold cannot contain the semantic components necessary to answer a reader's question.
 
@@ -351,7 +361,7 @@ A page contains fewer than 50 words of rendered prose (frontmatter, MDX comments
 
 ### Z503: SNIPPET_ERROR {#z503}
 
-**Severity:** `error` · **Penalty:** −10.0 pts (Content — highest single-occurrence penalty) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z5xx-content/z503-snippet-error)
+**Severity:** `error` · **Penalty:** −10.0 pts (Content — highest single-occurrence penalty) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z503-snippet-error)
 
 The Snippet Guard identified a syntax error in a fenced code block marked with a language tag. The reported line number is **absolute** — relative to the source file, not to the start of the snippet.
 
@@ -361,7 +371,7 @@ The Snippet Guard identified a syntax error in a fenced code block marked with a
 
 ### Z505: UNTAGGED_CODE_BLOCK {#z505}
 
-**Severity:** `warning` · **Penalty:** −1.0 pt (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z5xx-content/z505-untagged-code-block)
+**Severity:** `warning` · **Penalty:** −1.0 pt (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z505-untagged-code-block)
 
 A fenced code block has no language specifier. Syntax highlighters, the Snippet Guard (Z503), and screen readers cannot process it. Docusaurus metadata (e.g. `` ```python title="file.py" showLineNumbers ``) is fully supported and never flagged.
 
@@ -373,7 +383,7 @@ A fenced code block has no language specifier. Syntax highlighters, the Snippet 
 
 ### Z601: BRAND_OBSOLESCENCE {#z601}
 
-**Severity:** `warning` · **Penalty:** −2.0 pts (Governance) + Escalation · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z6xx-brand/z601-brand-obsolescence)
+**Severity:** `warning` · **Penalty:** −2.0 pts (Governance) + Escalation · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z6xx-brand/z601-brand-obsolescence)
 
 A deprecated release name or brand identifier appears in a scanned file. Configured via `[governance].brand_obsolescence` in `.zenzic.toml`. CHANGELOG files are exempt by default (`obsolete_names_exclude_patterns`).
 
@@ -387,7 +397,7 @@ A deprecated release name or brand identifier appears in a scanned file. Configu
 
 ### Z602: I18N_PARITY {#z602}
 
-**Severity:** `warning` · **Penalty:** none (bilingual integrity check) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../how-to/examples/z6xx-brand/z602-i18n-parity)
+**Severity:** `warning` · **Penalty:** none (bilingual integrity check) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z6xx-brand/z602-i18n-parity)
 
 A translation mirror is missing, or the frontmatter of a translated file diverges from the canonical base (`sidebar_position`, `sidebar_label`, `title`). Two locales with different frontmatter produce asymmetric navigation graphs.
 
@@ -488,24 +498,4 @@ Historical identifiers remain valid only as historical references in migration p
 
 ## Suppressing Diagnostics
 
-Zenzic supports **line-level, per-code suppression** via inline comments. Add a `zenzic:ignore` comment at the end of any line to silence a specific diagnostic for that line only.
-
-For `.md` files use a standard HTML comment (invisible in rendered Markdown):
-
-```markdown
-The Obsidian era defined our foundations. <!-- zenzic:ignore: Z601 -->
-```
-
-For `.mdx` files use a JSX comment (invisible in rendered MDX, safe for Docusaurus/React):
-
-```mdx
-The Obsidian era defined our foundations. {/* zenzic:ignore: Z601 */}
-```
-
-Each suppression comment silences **only** the specified code on that line. To suppress multiple codes, add multiple comments. To exempt an entire file, use `obsolete_names_exclude_patterns` (Z601) or the relevant `excluded_files` patterns in `.zenzic.toml`.
-
-:::tip[Use suppression sparingly]
-Suppression is for intentional, documented decisions — not for silencing findings you haven't reviewed. Every suppressed line should have a corresponding comment explaining why.
-:::
-
-See [Suppression Policy](./suppression-policy.mdx) for the full reference, including `--strict` mode, the Suppression Debt model, and the `--audit` override.
+> See [Suppression Policy](./suppression-policy.mdx) for inline suppression syntax (`zenzic:ignore`), the Suppression Debt model, and the `--audit` override.

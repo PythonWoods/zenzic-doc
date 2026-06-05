@@ -49,6 +49,21 @@ per qualsiasi SSG.
 
 ---
 
+## Versioni Supportate dei Motori
+
+Zenzic include adapter per specifiche linee di versione maggiore. Dichiarare un motore diverso è un errore di configurazione: Zenzic emetterà `Z000 UNSUPPORTED_ENGINE` e si interromperà.
+
+| Motore | Versioni supportate | Note |
+| :--- | :--- | :--- |
+| MkDocs | `1.x` | Serie congelata a `1.6.1`; nessuna `1.7` prevista. v2 è un progetto separato e richiede un adapter dedicato |
+| Zensical | `0.0.x` | Pre-release; API volatile. L'adapter viene aggiornato in lockstep |
+| Docusaurus | `3.x` | Il supporto v2 è deprecato ed è stato rimosso in Zenzic 0.9.0 |
+| Standalone | — | Agnostico rispetto al motore; la versione non è rilevante |
+
+Zenzic **non** invoca il binario del motore — legge i file di configurazione come dati semplici. I vincoli di versione riguardano lo **schema del file di configurazione**, non il binario del motore installato. Se il tuo progetto utilizza una versione più recente di quelle elencate, l'adapter potrebbe comunque funzionare; segnala un problema solo se riscontri un errore di parsing effettivo o un falso positivo riconducibile a una modifica dello schema.
+
+---
+
 ## Scegliere un motore
 
 La sezione `[build_context]` in `.zenzic.toml` indica a Zenzic quale motore utilizza il tuo
@@ -275,15 +290,7 @@ come orphan.
 
 ### Perché Zensical elimina la complessità dell'i18n
 
-L'i18n di MkDocs si basa su un plugin (`mkdocs-static-i18n`) con la propria configurazione
-YAML, switch `docs_structure`, logica `fallback_to_default` e liste `languages`. Zensical
-definisce la semantica i18n nativamente in `zensical.toml` senza indirezione di plugin.
-Il risultato:
-
-- Nessun YAML da analizzare per il rilevamento dei locale
-- Nessuna ambiguità `fallback_to_default`
-- Nessuna euristica "quale blocco plugin si applica?"
-- `ConfigurationError` è impossibile per i18n mal configurato — lo schema TOML è esplicito
+> Vedi [Caricamento Configurazione](../explanation/configuration-loading.mdx) per il razionale architetturale dietro i18n nativo di Zensical vs. indirezione di plugin MkDocs.
 
 ### Limitazioni
 

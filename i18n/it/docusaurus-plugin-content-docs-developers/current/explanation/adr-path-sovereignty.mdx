@@ -135,15 +135,8 @@ posizionale `PATH` opzionale (Regola R18 — Simmetria CLI Totale):
 ## Conseguenze
 
 - Eseguire Zenzic da qualsiasi directory produce risultati identici a
-
   eseguirlo dall'interno del repository target — nessuna sorpresa per gli
   operatori CI.
-
-- I contributori che implementano nuovi comandi CLI con argomento `PATH` **devono**
-
-  chiamare `find_repo_root(search_from=resolved_path)` e invocare
-    `_apply_target()`. Questo è un invariante documentato nella guida al
-  contributo.
 
 - Il parametro `fallback_to_cwd=True` di `find_repo_root()` è un percorso di
 

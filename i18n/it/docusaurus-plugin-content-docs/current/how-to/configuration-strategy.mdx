@@ -9,26 +9,11 @@ description: "Modello di configurazione a due file, regole di precedenza e matri
 
 # Strategia di Configurazione
 
-Zenzic utilizza un modello di configurazione a due file. Questa pagina spiega la catena di
-precedenza e fornisce una matrice di troubleshooting per i problemi di configurazione più comuni.
+Questa pagina è una guida per la risoluzione dei problemi di configurazione più comuni. Per il modello di configurazione completo — precedenza dei file, definizioni dei campi e valori predefiniti — vedi [Configuration Reference](../reference/configuration-reference.mdx).
 
 ---
 
-## Precedenza dei File
-
-La configurazione viene risolta in questo ordine. I file successivi sovrascrivono i precedenti:
-
-| Priorità | File | Committato | Ambito |
-|:--------:|:-----|:-----------|:------|
-| 1 (più bassa) | `.zenzic.toml` | Sì | Default condivisi del progetto |
-| 2 | `pyproject.toml [tool.zenzic]` | Sì | Alternativa embedded a `.zenzic.toml` |
-| 3 (più alta) | `.zenzic.local.toml` | **No** | Override locali alla macchina |
-
-`.zenzic.toml` e `pyproject.toml [tool.zenzic]` si escludono a vicenda — Zenzic legge
-quello presente. Se esistono entrambi, `.zenzic.toml` ha la priorità.
-
-`.zenzic.local.toml` è **sempre additivo** per i campi lista (es. `forbidden_patterns`,
-`excluded_dirs`). I campi scalari seguono la regola last-write-wins.
+> **Riepilogo modello a due file:** `.zenzic.toml` contiene le impostazioni predefinite del progetto condivise; `.zenzic.local.toml` contiene le impostazioni locali non committate. I campi scalari seguono last-write-wins. I campi lista (`forbidden_patterns`, `excluded_dirs`) sono additivi.
 
 ---
 
@@ -112,15 +97,6 @@ Questo è previsto. Per applicare gli override in CI, scrivi il file da un secre
 
 ---
 
-## Riferimento Rapido ai Campi di Configurazione
+---
 
-Per la specifica completa dei campi, vedi il [Riferimento Configurazione](../reference/configuration-reference.mdx).
-
-| Campo | File | Tipo | Note |
-|:------|:-----|:-----|:------|
-| `docs_dir` | `.zenzic.toml` | string | Root dell'albero della documentazione |
-| `fail_under` | `.zenzic.toml` | int 0–100 | DQS minimo; exit 1 se inferiore |
-| `engine` | `.zenzic.toml [build_context]` | string | `standalone`, `docusaurus`, `mkdocs` |
-| `forbidden_patterns` | `.zenzic.local.toml [governance]` | list[str] | RE2 DFA; case-insensitive di default |
-| `suppression_cap` | `.zenzic.toml [governance]` | int | Numero massimo di direttive `zenzic:ignore` consentite |
-| `brand_obsolescence` | `.zenzic.toml [governance]` | list[str] | Termini brand deprecati (Z601) |
+> Per la specifica completa dei campi, vedi [Configuration Reference](../reference/configuration-reference.mdx).

@@ -17,11 +17,12 @@ Auto-generated reference documentation for all public modules in `zenzic`. This 
 
 Filesystem scanning utilities: repo root discovery, orphan page detection, asset tracking, and placeholder scanning.
 
+### `find_repo_root(*, fallback_to_cwd: bool = False) -> Path` {#find_repo_root-fallback_to_cwd-bool--false---path}
+Walks upward from the current working directory to discover the workspace root marker (`.git/` or `.zenzic.toml`). If `fallback_to_cwd` is `True`, returns the current working directory as the fallback root instead of raising a `RuntimeError` when no marker is found.
+
 ::: zenzic.core.scanner
     options:
       members:
-
-        - find_repo_root
         - find_config_file
         - find_orphans
         - find_placeholders
@@ -77,69 +78,39 @@ Configuration model.
 
 ---
 
-## `zenzic.rules` — Plugin SDK façade
+## `BaseAdapter` Interface
 
-`zenzic.rules` is the **canonical entry point for plugin authors**. It re-exports the stable
-API surface from `zenzic.core.rules` and is the only path that is guaranteed to remain stable
-across major versions.
+The abstract base class for all engine adapters. Adapters translate engine-specific directory layouts, navigation schemes, and custom routing behaviors into the standardized vocabulary used by the validation core.
 
-```python
-from zenzic.rules import BaseRule, RuleFinding, Severity, run_rule
-```
+### Core Methods
 
-### `BaseRule`
+#### `provides_index(self, directory_path: Path) -> bool`
+Answers whether the engine auto-generates a browsable index for the directory (e.g., via `index.md` or a category metadata file). Used during missing index directory scans.
 
-Abstract base class for all plugin rules. Subclass this and implement `check()`:
+#### `get_nav_paths(self) -> frozenset[str]`
+Returns the set of file paths reachable via the site's navigation UI, relative to the documentation root. Used to detect orphan pages.
 
-```python
-from zenzic.rules import BaseRule, RuleFinding, Severity
+#### `get_link_scheme_bypasses(self) -> frozenset[str]`
+Returns a set of engine-specific URI schemes (e.g., `pathname`) to bypass the validator's standard absolute-path checks.
 
-class NoDraftRule(BaseRule):
-    rule_id = "no-draft"
+#### `get_route_info(self, rel: Path) -> RouteMetadata`
+Constructs and returns routing metadata, including the canonical URL and route status (`REACHABLE`, `ORPHAN_BUT_EXISTING`, or `IGNORED`), for a given relative source file path.
 
-    def check(self, file_path, line_no, line):
-        if "DRAFT" in line:
-            return [RuleFinding(
-                rule_id=self.rule_id,
-                file_path=file_path,
-                line_no=line_no,
-                message="DRAFT marker found",
-                severity=Severity.WARNING,
-            )]
-        return []
-```
+---
 
-### `run_rule` — Test helper
+## `zenzic.rules` — Plugin SDK Façade
 
-Runs a single rule against a Markdown string. No engine setup required — designed for unit tests:
+`zenzic.rules` is the stable, canonical entry point for plugin authors. It re-exports classes and helpers from `zenzic.core.rules`.
 
-```python
-from zenzic.rules import BaseRule, RuleFinding, run_rule
+For step-by-step guides and packaging templates, see [Writing Plugin Rules](../how-to/write-plugin.mdx).
 
-def test_no_draft_rule():
-    findings = run_rule(NoDraftRule(), "# My Page\n\nDRAFT content here.")
-    assert len(findings) == 1
-    assert findings[0].severity == "warning"
-```
+### Class and Type Definitions
 
-**Canonical location:** `run_rule` is implemented in `zenzic.core.rules` and re-exported from
-`zenzic.rules`. Both import paths work; prefer `from zenzic.rules import run_rule` in plugin code.
-
-### `RuleFinding`, `Severity`, `Violation`, `CustomRule`
-
-| Name | Purpose |
-| :--- | :--- |
-| `RuleFinding` | Dataclass returned by `BaseRule.check()` — carries `rule_id`, `file_path`, `line_no`, `message`, `severity` |
-| `Severity` | Enum: `Severity.ERROR`, `Severity.WARNING`, `Severity.INFO` |
-| `Violation` | Alias of `RuleFinding` — kept for backward compatibility |
-| `CustomRule` | TOML-declared rule engine — used internally; not for subclassing |
-
-### Entry-point registration
-
-Register your rule so `zenzic inspect capabilities` discovers it:
-
-```toml
-# In your plugin's pyproject.toml
-[project.entry-points."zenzic.rules"]
-my-rule-name = "my_package.rules:MyRuleClass"
-```
+| Name | Type | Purpose |
+| :--- | :--- | :--- |
+| `BaseRule` | `class` | Abstract base class for all plugin rules. Must subclass and implement `check`. |
+| `run_rule` | `function` | Test helper to run a single rule against a Markdown string. |
+| `RuleFinding` | `dataclass` | Finding object returned by `BaseRule.check()`. |
+| `Severity` | `enum` | Enum values: `ERROR`, `WARNING`, `INFO`. |
+| `Violation` | `alias` | Alias of `RuleFinding` (kept for backward compatibility). |
+| `CustomRule` | `class` | TOML-declared rule engine (internal use only). |

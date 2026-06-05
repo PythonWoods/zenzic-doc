@@ -118,33 +118,11 @@ Zenzic's behaviour is independent of the build toolchain.
 entire purpose is to create the `.zenzic.toml` root marker. Requiring a root
 marker to *already exist* before `init` can run is a Catch-22.
 
-**Resolution:** `find_repo_root()` gains a keyword-only parameter:
+**Resolution:** `find_repo_root()` gains a keyword-only parameter `fallback_to_cwd` (default `False`). When `fallback_to_cwd=True` and no root marker is found, the function returns `Path.cwd()` instead of raising. This is called the **Genesis Fallback**.
 
-```python
-def find_repo_root(*, fallback_to_cwd: bool = False) -> Path:
-    ...  # walk upward from CWD; raise or return cwd based on flag
-```
+For the parameter specification, see [API Reference — `find_repo_root`](../reference/adapter-api.mdx#find_repo_root-fallback_to_cwd-bool--false---path).
 
-When `fallback_to_cwd=True` and no root marker is found, the function returns
-`Path.cwd()` instead of raising. This is called the **Genesis Fallback**.
-
-**Authorisation scope:** The Genesis Fallback is a single-point exemption.
-Only the `init` command passes `fallback_to_cwd=True`. Every other command
-(`check`, `guard`, `score`, `diff`, `clean`) retains the strict default
-(`fallback_to_cwd=False`) and will continue to fail loudly outside a project
-scan scope.
-
-```python
-# src/zenzic/cli/_standalone.py — the only permitted call site for fallback_to_cwd=True
-def init(path=None, plugin=None, force=False):
-    repo_root = find_repo_root(fallback_to_cwd=True)  # Genesis Fallback
-    ...
-
-# Every other command — strict scan scope enforcement
-def check_all(path=None, strict=False):
-    repo_root = find_repo_root()  # raises outside a repo — correct
-    ...
-```
+**Authorisation scope:** The Genesis Fallback is a single-point exemption. Only the `init` command passes `fallback_to_cwd=True` (in `src/zenzic/cli/_standalone.py`). Every other command (`check`, `guard`, `score`, `diff`, `clean`) retains the strict default (`fallback_to_cwd=False`) and will continue to fail loudly outside a project scan scope.
 
 **Security note:** The Genesis Fallback does **not** weaken the scan scope
 for analysis commands. `zenzic check all` run from `/home/user/` with no
