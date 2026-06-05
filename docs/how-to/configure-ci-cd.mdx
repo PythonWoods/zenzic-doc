@@ -423,6 +423,75 @@ zenzic score --check-stamp
 Recommended CI behavior: run `zenzic score --check-stamp` after `zenzic check`
 to enforce freshness of stamped badges without external badge plumbing.
 
+### The Badge Freshness Gate {#badge-freshness-gate}
+
+`zenzic score --check-stamp` compares the badge URL embedded in your
+`README.md` (or any file listed in `badge_stamp_files`) against the score
+Zenzic computes at that moment. If they differ, the command exits 1 and
+prints an actionable message:
+
+```text
+[FAILED] Badge (score) in README.md is stale.
+Run 'zenzic score --stamp' locally and commit the updated files to resolve this.
+```
+
+The gate is **read-only** — it never modifies files. It only validates what is
+already committed.
+
+#### Optional: automate with pre-commit
+
+Zenzic operates zero-config out of the box — the CI gate alone is sufficient.
+If you use [pre-commit integration](#pre-commit) and want to automate badge stamping so you
+never have to run `--stamp` manually, you can optionally add this hook:
+
+```yaml title=".pre-commit-config.yaml"
+  - repo: local
+    hooks:
+      - id: zenzic-score-stamp
+        name: Zenzic Score Badge (stamp)
+        entry: zenzic score --stamp --no-header
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+        always_run: true
+```
+
+With this hook, the badge is updated automatically on every `git commit`. If
+the score changed, pre-commit fails and reports that `README.md` was modified —
+stage the file and run `git commit` again to proceed.
+
+#### Without pre-commit
+
+Run the stamp manually before pushing:
+
+```bash
+zenzic score --stamp
+git add README.md README.it.md   # or whichever files are in badge_stamp_files
+git commit --amend --no-edit     # or a new commit
+git push
+```
+
+If you skip this step and CI finds a stale badge, the workflow fails with the
+error above. Follow the message instructions, stamp locally, and push again.
+
+#### CI configuration (read-only gate)
+
+In GitHub Actions, use only `--check-stamp` — **never `--stamp`**. CI is an
+immutable validator, not a file editor:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Check badge freshness
+        run: uvx zenzic score --check-stamp --no-header
+```
+
+When using `zenzic-action`, the badge freshness gate is enabled by default —
+no additional configuration needed:
+
+```yaml
+      - name: Run Zenzic
+        uses: PythonWoods/zenzic-action@v1
+```
+
 ---
 
 ## Regression Detection {#regression}

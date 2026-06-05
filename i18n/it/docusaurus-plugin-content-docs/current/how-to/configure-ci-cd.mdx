@@ -424,6 +424,76 @@ Comportamento CI consigliato: esegui `zenzic score --check-stamp` dopo
 `zenzic check` per imporre la freschezza dei badge stampati senza token esterni
 o plumbing badge esterno.
 
+### Il Gate di Freschezza Badge {#badge-freshness-gate}
+
+`zenzic score --check-stamp` confronta l'URL del badge incorporato nel tuo
+`README.md` (o in qualsiasi file elencato in `badge_stamp_files`) con il
+punteggio calcolato da Zenzic in quel momento. Se differiscono, il comando
+termina con exit 1 e stampa un messaggio con le istruzioni di risoluzione:
+
+```text
+[FAILED] Badge (score) in README.md is stale.
+Run 'zenzic score --stamp' locally and commit the updated files to resolve this.
+```
+
+Il gate è **di sola lettura** — non modifica mai i file. Valida solo ciò che
+è già stato committato.
+
+#### Opzionale: automatizza con pre-commit
+
+Zenzic funziona zero-config out of the box — il gate CI da solo è sufficiente.
+Se usi l'[integrazione pre-commit](#pre-commit) e vuoi automatizzare lo stamp del badge per non
+dover eseguire `--stamp` manualmente, puoi aggiungere opzionalmente questo hook:
+
+```yaml title=".pre-commit-config.yaml"
+  - repo: local
+    hooks:
+      - id: zenzic-score-stamp
+        name: Zenzic Score Badge (stamp)
+        entry: zenzic score --stamp --no-header
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+        always_run: true
+```
+
+Con questo hook, il badge viene aggiornato automaticamente a ogni `git commit`.
+Se il punteggio è cambiato, pre-commit segnala che `README.md` è stato
+modificato — aggiungi il file e riesegui `git commit` per procedere.
+
+#### Senza pre-commit
+
+Esegui lo stamp manualmente prima di fare push:
+
+```bash
+zenzic score --stamp
+git add README.md README.it.md   # o i file in badge_stamp_files
+git commit --amend --no-edit     # o un nuovo commit
+git push
+```
+
+Se salti questo passaggio e la CI trova un badge obsoleto, il workflow fallisce
+con l'errore sopra. Segui le istruzioni del messaggio, esegui lo stamp in
+locale e ripeti il push.
+
+#### Configurazione CI (gate di sola lettura)
+
+In GitHub Actions, usa solo `--check-stamp` — **mai `--stamp`**. La CI è un
+validatore immutabile, non un editor di file:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Check badge freshness
+        run: uvx zenzic score --check-stamp --no-header
+```
+
+Con `zenzic-action`, il gate di freschezza badge è abilitato di default —
+nessuna configurazione aggiuntiva necessaria:
+
+```yaml
+      - name: Run Zenzic
+        uses: PythonWoods/zenzic-action@v1
+```
+
 ---
 
 ## Rilevamento Regressioni {#regression}

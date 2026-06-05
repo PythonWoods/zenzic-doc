@@ -54,9 +54,14 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
-verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
+# Stamp DQS score badges in README.md and README.it.md (mutation — pre-commit hook runs this automatically).
+# Run manually only when bypassing pre-commit (e.g. after git commit --no-verify).
+stamp:
     just score --stamp --no-header
+
+# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
+# Note: --stamp runs at pre-commit time (hook: just-score-stamp). This pre-push gate is read-only.
+verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
     just score --check-stamp --no-header
 
 # ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
