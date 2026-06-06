@@ -97,6 +97,15 @@ Questo è previsto. Per applicare gli override in CI, scrivi il file da un secre
 
 ---
 
+### Disabilitare la cache di rete in ambienti effimeri
+
+Zenzic fa caching delle risposte dei link esterni per 24 ore di default. In ambienti altamente effimeri (come certe pipeline CI dockerizzate) dove la persistenza di `.zenzic_cache/` tra le esecuzioni è impossibile o indesiderata, puoi disabilitare completamente la cache per forzare la validazione sincrona di rete ad ogni run.
+
+```toml title=".zenzic.toml"
+[network]
+cache_ttl_hours = 0
+```
+
 ---
 
 > Per la specifica completa dei campi, vedi [Configuration Reference](../reference/configuration-reference.mdx).

@@ -261,6 +261,22 @@ Slack notifications without re-parsing the SARIF file:
         run: echo "Zenzic found ${{ steps.zenzic.outputs.findings-count }} issues"
 ```
 
+### Progressive Adoption {#progressive-adoption}
+
+For large legacy repositories, fixing hundreds of warnings at once is impossible. The `only` parameter allows teams to adopt Zenzic progressively by enforcing only critical checks (e.g., Broken Links and Credential Leaks) while ignoring structural debt until the team is ready.
+
+By setting `ci: "true"`, the action natively injects the `--ci` flag under the hood, enabling inline PR annotations for the selected violations without requiring GitHub Code Scanning (SARIF) integration.
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Zenzic Progressive Gate
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.10.0"
+          ci: "true"              # Native inline PR annotations (no SARIF required)
+          only: "Z101,Z201"       # Gate ONLY fails on broken links and leaked secrets
+          fail-on-error: "true"
+```
+
 :::warning[Security incidents are always fatal]
 `fail-on-error: "false"` suppresses exit 1 (quality findings) only. Exit 2 (credential scanner — credential
 detected) and exit 3 (path traversal guard — path traversal) are **never suppressible** by any input.
