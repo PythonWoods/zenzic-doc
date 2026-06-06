@@ -38,8 +38,11 @@ excluded_external_urls = [
     "https://spdx.org/licenses/",
     # GitHub PAT settings endpoint can intermittently time out from CI runners.
     "https://github.com/settings/tokens",
-    # GitHub API rate-limits unauthenticated CI runners (HTTP 429 / 403); prefix covers all github.com links.
-    #"https://github.com",
+    # External URLs excluded from the broken-link check to prevent CI flakiness
+    # caused by GitHub API rate-limiting and network timeouts.
+    "https://github.com/PythonWoods/zenzic",
+    "https://github.com/PythonWoods/zenzic-action",
+    "https://github.com/PythonWoods/zenzic-doc",
     # Facebook debugger consistently times out (>10 s) from CI environments.
     "https://developers.facebook.com/tools/debug/",
     # contributor-covenant.org consistently times out (> 10 s) from CI environments.

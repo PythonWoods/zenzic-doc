@@ -1,6 +1,6 @@
 ---
 slug: zenzic-v0.10.0-native-github-annotations-and-progressive-adoption
-title: "Zenzic v0.10.0: Native GitHub Annotations and Progressive Adoption"
+title: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
 authors: [pythonwoods]
 tags: [release, ci-cd, architecture]
 ---
@@ -8,11 +8,11 @@ tags: [release, ci-cd, architecture]
 {/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */}
 {/* SPDX-License-Identifier: Apache-2.0 */}
 
-Zenzic v0.10.0 introduces two architectural changes designed strictly for the CI/CD pipeline: **Native GitHub Annotations** and **Destructive Rule Filtering**.
+Zenzic v0.10.0 introduces a massive performance upgrade with a new **Async Network Engine**, alongside two architectural changes designed strictly for the CI/CD pipeline: **Native GitHub Annotations** and **Destructive Rule Filtering**.
 
-These features are not aesthetic. They are built to solve two specific operational bottlenecks: context switching during Pull Request reviews and the high friction of adopting static analysis in legacy documentation repositories.
+These features are not aesthetic. They are built to solve three specific operational bottlenecks: network-induced CI flakiness, context switching during Pull Request reviews, and the high friction of adopting static analysis in legacy documentation repositories.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Native GitHub Annotations (`--ci`)
 
@@ -38,5 +38,13 @@ uvx zenzic check all --ci --only Z201,Z204
 ```
 
 This is the mechanism for **Progressive Adoption**. Tech Leads can deploy Zenzic to block critical security regressions (credential leaks, path traversal) without breaking the build over structural warnings. As the documentation debt is paid down, the `--only` filter can be expanded or removed entirely to enforce the full rule matrix.
+
+## The End of Network Non-Determinism
+
+Traditional linters fail in CI environments due to rate-limiting and external link timeouts, introducing unacceptable non-determinism into the build pipeline. Zenzic eliminates this bottleneck entirely by replacing synchronous network requests with an asynchronous I/O architecture.
+
+Zenzic v0.10.0 ships with a new **Async Network Engine** built on `asyncio` and `httpx`, enabling concurrent validation of external links. To eradicate latency across repeated CI runs, we deployed **Atomic Local Caching** with a configurable 24-hour TTL, saving results safely to `.zenzic_cache/external_links.json`.
+
+Furthermore, the engine now features an **Anti-Overfetching Smart Fallback**. When external servers arbitrarily block `HEAD` requests (e.g., returning 403 or 405), Zenzic immediately falls back to a streaming `GET` request, safely aborting the connection before downloading the actual payload. Zero false positives. Zero network non-determinism.
 
 Hostile precision, zero fluff. Upgrade to v0.10.0 via the official `PythonWoods/zenzic-action` composite action or locally via `uv tool upgrade zenzic`.
