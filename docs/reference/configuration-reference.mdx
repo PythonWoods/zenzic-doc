@@ -387,6 +387,16 @@ included_file_patterns = ["api.generated.md"]
 
 The `[network]` section controls external network resolution behaviors, specifically atomic local caching.
 
+### `cache_external_links` {#cache-external-links}
+
+| | |
+| :--- | :--- |
+| **Type** | `bool` |
+| **Default** | `true` |
+| **Section** | `[network]` |
+
+When `true`, external link validation results are atomically cached on disk (`.zenzic_cache/external_links.json`). Setting this to `false` disables the caching subsystem entirely.
+
 ### `cache_ttl_hours` {#cache-ttl-hours}
 
 | | |

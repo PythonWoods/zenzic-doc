@@ -29,6 +29,8 @@ Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/
 | `sarif-file` | `zenzic-results.sarif` | No | Percorso di output SARIF. Deve essere un percorso **relativo** all'interno del workspace. I percorsi assoluti e le sequenze di traversal `..` vengono rifiutati dal wrapper. |
 | `upload-sarif` | `true` | No | Carica il SARIF in GitHub Code Scanning. Richiede il permesso `security-events: write`. |
 | `strict` | `false` | No | Tratta i warning come errori — promuove tutti i finding con severità `warning` ad `error`. |
+| `ci` | `false` | No | Esegue con `--ci` per abilitare `--strict` e le annotazioni inline sulle PR GitHub. |
+| `only` | `""` | No | Lista separata da virgole di Codici Z da filtrare. Abilita la Progressive Adoption. |
 | `fail-on-error` | `true` | No | Fa fallire lo step del workflow su exit 1 (finding di qualità). **Non** sopprime exit 2 o 3. |
 | `config-file` | *(auto)* | No | Percorso esplicito a un file di configurazione `.zenzic.toml`. Auto-scopre `.zenzic.toml` → `.github/.zenzic.toml` se omesso. |
 | `audit` | `false` | No | Modalità sovereign audit — bypassa tutti i commenti `zenzic:ignore` inline e tutte le voci `governance.per_file_ignores`. Rivela lo stato reale e non filtrato della documentazione. |

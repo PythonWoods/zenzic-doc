@@ -145,7 +145,9 @@ Exit code: `0`
 
 Il codice di errore `Z501` indica un problema di tipo **PLACEHOLDER**.
 
-Questo errore o avviso viene generato da Zenzic quando il documento contiene pattern di testo segnaposto come 'TODO', 'FIXME', 'LOREM IPSUM' o stringhe boilerplate generiche. Questo verifica che bozze non vengano pubblicate per errore. In questo esempio specifico:
+Questo errore o avviso viene generato da Zenzic quando il documento contiene pattern di testo segnaposto come 'TODO', 'FIXME', 'LOREM IPSUM' o stringhe boilerplate generiche. Questo verifica che bozze non vengano pubblicate per errore. Di default, Zenzic è ultra-conservativo: usa i limiti di parola espliciti (`\bTODO\b`, `\bFIXME\b`) per prevenire il Problema di Scunthorpe (es. flaggare la parola "autodome" perché contiene "todo").
+
+In questo esempio specifico:
 - **Tipo di Scansione:** `Content Guard`
 - **Severità:** `Warning`
 - **Impatto:** Il testo segnaposto indica una documentazione incompleta e comporta una detrazione DQS di 2.0 punti.

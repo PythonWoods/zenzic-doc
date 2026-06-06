@@ -24,6 +24,8 @@ Source: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/ze
 | `sarif-file` | `zenzic-results.sarif` | No | SARIF output path. Must be a **relative** path inside the workspace. Absolute paths and `..` traversal sequences are rejected by the wrapper. |
 | `upload-sarif` | `true` | No | Upload SARIF to GitHub Code Scanning. Requires `security-events: write` permission. |
 | `strict` | `false` | No | Treat warnings as errors — promotes all `warning`-severity findings to `error`. |
+| `ci` | `false` | No | Run with `--ci` to enable `--strict` and inline GitHub PR annotations. |
+| `only` | `""` | No | Comma-separated list of Z-Codes to filter. Enables Progressive Adoption. |
 | `fail-on-error` | `true` | No | Fail the workflow step on exit 1 (quality findings). Does **not** suppress exit 2 or 3. |
 | `config-file` | *(auto)* | No | Explicit path to a `.zenzic.toml` config file. Auto-discovers `.zenzic.toml` → `.github/.zenzic.toml` when omitted. |
 | `audit` | `false` | No | Sovereign audit mode — bypasses all `zenzic:ignore` inline comments and `governance.per_file_ignores` entries. Reveals the true, unfiltered documentation state. |

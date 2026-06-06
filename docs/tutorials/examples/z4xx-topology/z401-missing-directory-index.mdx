@@ -78,6 +78,8 @@ Documentation engines that use directory-style URLs (e.g., `/guide/` instead of
 (or `index.mdx`) as its landing page. Without one, the build engine may silently
 omit the directory URL or return a 404:
 
+> **Standalone Mode:** When using the `standalone` engine, Zenzic accepts both `index.md` and `README.md` as valid directory indices, adapting natively to standard GitHub/GitLab repository structures.
+
 - **Scan Type:** `Structure Validator (zensical engine)`
 - **Severity:** `Info`
 - **Impact:** Deducts **2.0 DQS points** (navigation category, weight 0.25).

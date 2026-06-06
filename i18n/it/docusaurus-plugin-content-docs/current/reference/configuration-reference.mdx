@@ -370,6 +370,14 @@ Non aggiungere mai un intero dominio come esclusione (es. `"https://zenzic.dev/"
 
 La sezione `[network]` controlla i comportamenti di risoluzione di rete esterna, nello specifico il caching locale atomico.
 
+### `cache_external_links` {#cache-external-links}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `cache_external_links` | `bool` | `true` | Se `true`, i risultati della validazione di rete vengono messi in cache localmente |
+
+Quando `true`, i risultati della validazione dei link esterni vengono messi in cache atomica su disco (`.zenzic_cache/external_links.json`). Impostare questo valore a `false` disabilita completamente il sottosistema di caching.
+
 ### `cache_ttl_hours` {#cache-ttl-hours}
 
 | Campo | Tipo | Predefinito | Descrizione |

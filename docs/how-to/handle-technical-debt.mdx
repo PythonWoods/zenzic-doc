@@ -133,6 +133,21 @@ This is by design. Security findings are facts, not style opinions. You cannot a
 
 ---
 
+## Progressive Adoption via CLI Filtering {#progressive-adoption}
+
+When introducing Zenzic to a legacy repository, you may encounter hundreds of structural or stylistic warnings. Attempting to fix everything at once often stalls adoption.
+
+The new `--only` flag (introduced in v0.10.0) allows teams to adopt Zenzic progressively without blocking CI. You can enforce only the most critical rules (such as credential leaks and broken links) and systematically add more codes as the technical debt is paid down.
+
+```bash
+# Start by enforcing only Security Gates and Broken Links
+zenzic check all --only Z201,Z202,Z204,Z101,Z104
+```
+
+As your team resolves the structural debt, you can progressively expand the `--only` list until the repository is ready for a full, unfiltered `zenzic check all`. This allows you to secure the most critical aspects of your documentation immediately.
+
+---
+
 ## Resolving Discrepancies with Build Engines {#build-engine-discrepancies}
 
 If Zenzic reports a broken link that your build engine accepts, it is typically due to frontmatter routing overrides. Build engines like Docusaurus allow authors to override a file's canonical URL using the `slug:` frontmatter key. Zenzic strictly enforces that links target the exact resolved URL (the slug), rather than the physical file path. To fix the discrepancy, update the broken link to match the overridden slug.

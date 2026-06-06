@@ -78,6 +78,8 @@ di `/guide.html`) richiedono che ogni directory navigabile abbia un `index.md`
 (o `index.mdx`) come pagina di atterraggio. Senza di esso, il motore di build
 può silenziosamente omettere l'URL della directory o restituire un 404:
 
+> **Modalità Standalone:** Quando si utilizza l'engine `standalone`, Zenzic accetta sia `index.md` che `README.md` come indici di directory validi, adattandosi nativamente alle strutture standard dei repository GitHub/GitLab.
+
 - **Tipo di scansione:** `Structure Validator (engine zensical)`
 - **Severità:** `Info`
 - **Impatto:** Deduce **2.0 punti DQS** (categoria navigazione, peso 0.25).
