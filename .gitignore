@@ -14,6 +14,7 @@
 *.tsbuildinfo
 .eslintcache
 _zenzic_core/
+.zenzic_cache/
 __pycache__/
 
 # Misc
@@ -52,3 +53,4 @@ mutmut*
 
 # VS Code Copilot agent definitions (local-only)
 .github/agents/
+.zenzic_cache/

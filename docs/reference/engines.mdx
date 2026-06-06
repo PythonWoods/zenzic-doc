@@ -110,9 +110,9 @@ build pipeline. This means:
   from Zenzic's view.
 
 - **Plugin-generated nav** — plugins that mutate the nav at runtime (e.g. `mkdocs-awesome-pages`,
-
   `mkdocs-literate-nav`) produce a navigation tree that Zenzic never sees. Pages included
   only by these plugins will be reported as orphans.
+  *Technical Note on `mkdocs-awesome-pages`: Zenzic's static adapter does not read `.pages` files. If you use `.pages` files to define navigation, Zenzic will not see those pages as reachable and will flag them as orphans unless they are explicitly linked from other reachable pages.*
 
 - **Macros** — `mkdocs-macros-plugin` (Jinja2 templates in Markdown) is not evaluated.
 

@@ -113,10 +113,10 @@ build di MkDocs. Questo significa:
   valori saranno assenti dalla visione di Zenzic.
 
 - **Nav generata dai plugin** — plugin che mutano la nav a runtime (es.
-
   `mkdocs-awesome-pages`, `mkdocs-literate-nav`) producono un albero di navigazione
   che Zenzic non vede mai. Le pagine incluse solo da questi plugin vengono segnalate
   come orfane.
+  *Nota Tecnica su `mkdocs-awesome-pages`: L'adapter statico di Zenzic non legge i file `.pages`. Se si utilizzano i file `.pages` per definire la navigazione, Zenzic non vedrà quelle pagine come raggiungibili e le segnalerà come orfane a meno che non siano esplicitamente linkate da altre pagine raggiungibili.*
 
 - **Macro** — `mkdocs-macros-plugin` (template Jinja2 in Markdown) non viene
 

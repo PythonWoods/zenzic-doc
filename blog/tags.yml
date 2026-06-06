@@ -3,6 +3,11 @@
 #
 # Zenzic Blog — Semantic Tag Registry
 
+ci-cd:
+  label: "CI/CD"
+  permalink: /ci-cd
+  description: "Continuous Integration and Continuous Deployment integration guides and features."
+
 release:
   label: "Release"
   permalink: /release

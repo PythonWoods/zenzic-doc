@@ -50,6 +50,20 @@ your system Python clean.
   </TabItem>
 </Tabs>
 
+### Execute from GitHub (No installation) {#install-github}
+
+If you want to run Zenzic against a repository without installing it locally, you can execute it directly from the GitHub repository using `uvx`. This is useful for testing Zenzic on a project or using it as a distributed CLI tool.
+
+```bash
+uvx --from git+https://github.com/PythonWoods/zenzic zenzic .
+```
+
+You can also pin to a specific version tag for deterministic execution:
+
+```bash
+uvx --from git+https://github.com/PythonWoods/zenzic@<version> zenzic .
+```
+
 ### Global tool — available in every project {#install-global}
 
 <Tabs>
@@ -180,6 +194,10 @@ fail_under = 70                # establish an initial quality floor
 ```
 
 See the [Configuration Reference](../reference/index.mdx) for the full field list.
+
+:::tip[Git Ignore]
+Add `.zenzic_cache/` to your repository's `.gitignore` to prevent committing the local network validation cache.
+:::
 
 ### 3. Check — run continuously {#check}
 

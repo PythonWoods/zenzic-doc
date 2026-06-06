@@ -110,6 +110,15 @@ This is expected. To apply overrides in CI, write the file from a secret before 
 
 ---
 
+### Disable network cache in ephemeral environments
+
+Zenzic caches external link responses for 24 hours by default. In highly ephemeral environments (like certain Dockerized CI pipelines) where persisting `.zenzic_cache/` between runs is impossible or undesirable, you can disable the cache entirely to force synchronous network validation on every run.
+
+```toml title=".zenzic.toml"
+[network]
+cache_ttl_hours = 0
+```
+
 ---
 
 > For the full field specification, see [Configuration Reference](../reference/configuration-reference.mdx).

@@ -381,6 +381,29 @@ included_file_patterns = ["api.generated.md"]
 
 ---
 
+---
+
+## Network Settings {#network-settings}
+
+The `[network]` section controls external network resolution behaviors, specifically atomic local caching.
+
+### `cache_ttl_hours` {#cache-ttl-hours}
+
+| | |
+| :--- | :--- |
+| **Type** | `int` |
+| **Default** | `24` |
+| **Section** | `[network]` |
+
+Time-To-Live (in hours) for the atomic local cache of external link validation (`.zenzic_cache/external_links.json`). Set to `0` to completely disable caching and force synchronous network validation for every run.
+
+```toml
+[network]
+cache_ttl_hours = 24
+```
+
+---
+
 ## Build Context {#build-context}
 
 The `[build_context]` table tells Zenzic which documentation engine produced the site and how to resolve locale-specific paths.

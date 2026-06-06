@@ -364,6 +364,27 @@ Non aggiungere mai un intero dominio come esclusione (es. `"https://zenzic.dev/"
 
 ---
 
+---
+
+## Impostazioni di Rete {#network-settings}
+
+La sezione `[network]` controlla i comportamenti di risoluzione di rete esterna, nello specifico il caching locale atomico.
+
+### `cache_ttl_hours` {#cache-ttl-hours}
+
+| Campo | Tipo | Predefinito | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `cache_ttl_hours` | `int` | `24` | Time-To-Live (in ore) per la cache atomica locale |
+
+Time-To-Live (in ore) per la cache locale atomica della validazione dei link esterni (`.zenzic_cache/external_links.json`). Imposta a `0` per disabilitare completamente la cache e forzare la validazione di rete per ogni esecuzione.
+
+```toml
+[network]
+cache_ttl_hours = 24
+```
+
+---
+
 ## Contesto di build {#build-context}
 
 ```toml

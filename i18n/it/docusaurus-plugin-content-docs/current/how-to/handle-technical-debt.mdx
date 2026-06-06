@@ -145,6 +145,21 @@ assumerti la responsabilità di una perdita di credenziali e chiamarla eccezione
 
 ---
 
+## Progressive Adoption via CLI Filtering {#progressive-adoption}
+
+Quando si introduce Zenzic in un repository legacy, potresti incontrare centinaia di warning strutturali o stilistici. Cercare di correggere tutto in una volta spesso blocca l'adozione.
+
+Il nuovo flag `--only` (introdotto in v0.10.0) permette ai team di adottare Zenzic progressivamente senza bloccare la CI. Puoi far rispettare solo le regole più critiche (come i leak di credenziali e i link rotti) e aggiungere sistematicamente più codici man mano che il technical debt viene ripagato.
+
+```bash
+# Inizia imponendo solo i Security Gate e i Link Rotti
+zenzic check all --only Z201,Z202,Z204,Z101,Z104
+```
+
+Man mano che il tuo team risolve il debito strutturale, puoi espandere progressivamente la lista `--only` finché il repository non è pronto per un `zenzic check all` completo e non filtrato. Questo ti permette di mettere in sicurezza immediatamente gli aspetti più critici della tua documentazione.
+
+---
+
 ## Riferimento {#reference}
 
 - [Politica di Soppressione](../reference/suppression-policy.mdx) — Riferimento completo per tutti e tre i livelli di soppressione.
