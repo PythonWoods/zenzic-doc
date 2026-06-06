@@ -50,6 +50,20 @@ your system Python clean.
   </TabItem>
 </Tabs>
 
+### Execute from GitHub (No installation) {#install-github}
+
+If you want to run Zenzic against a repository without installing it locally, you can execute it directly from the GitHub repository using `uvx`. This is useful for testing Zenzic on a project or using it as a distributed CLI tool.
+
+```bash
+uvx --from git+https://github.com/PythonWoods/zenzic zenzic .
+```
+
+You can also pin to a specific version tag:
+
+```bash
+uvx --from git+https://github.com/PythonWoods/zenzic@v0.10.0 zenzic .
+```
+
 ### Global tool — available in every project {#install-global}
 
 <Tabs>

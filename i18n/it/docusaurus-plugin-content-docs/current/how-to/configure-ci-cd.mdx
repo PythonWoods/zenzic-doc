@@ -115,8 +115,9 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Lint documentazione
-
-        run: uvx zenzic check all --strict
+        # --ci applica automaticamente --strict e --format github-annotations
+        # per feedback inline sulle PR
+        run: uvx zenzic check all --ci
 
       - name: Controllo riferimenti e credential scanner
 
@@ -153,7 +154,7 @@ jobs:
 
       - name: Lint documentazione
 
-        run: uvx zenzic check all --strict
+        run: uvx zenzic check all --ci
 
       - name: Controllo riferimenti e credential scanner
 
@@ -212,7 +213,9 @@ il [Contratto Exit Code](https://github.com/PythonWoods/zenzic-action) è applic
 | Input | Default | Descrizione |
 | :--- | :---: | :--- |
 | `version` | pin action | Versione di Zenzic da installare. Usa il pin di default dichiarato nel manifest dell'action; qualsiasi valore esplicito usa `uvx "zenzic==X.Y.Z"`. **Fissa in produzione.** |
-| `format` | `sarif` | Formato di output: `text`, `json` o `sarif`. Usa `sarif` per GitHub Code Scanning. |
+| `ci` | `false` | Esegue con `--ci` per abilitare `--strict` e le annotazioni inline sulle PR GitHub. Nota: sconsigliato quando si usa `format: sarif` poiché le annotazioni sono gestite dal Code Scanning. |
+| `only` | `""` | Lista separata da virgole di Codici Z (es. "Z104,Z402") per limitare i controlli a problemi specifici. |
+| `format` | `sarif` | Formato di output: `text`, `json`, `github-annotations` o `sarif`. Usa `sarif` per GitHub Code Scanning. |
 | `sarif-file` | `zenzic-results.sarif` | Percorso del file SARIF generato (solo quando `format: sarif`). |
 | `upload-sarif` | `true` | Carica il SARIF in GitHub Code Scanning via `github/codeql-action/upload-sarif` delegato dal wrapper. |
 | `strict` | `false` | Tratta i warning come errori (passa `--strict` a Zenzic). |

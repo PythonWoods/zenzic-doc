@@ -31,6 +31,9 @@ zenzic check all                    # Run all checks
 zenzic check all --audit            # Sovereign Audit: ignore inline + per-file suppressions
 zenzic check all --strict           # Also validate external URLs; treat warnings as errors
 zenzic check all --format json      # Machine-readable output
+zenzic check all --format github-annotations # GitHub Actions annotations format
+zenzic check all --ci               # CI shorthand: sets --strict and --format github-annotations
+zenzic check all --only Z104,Z101   # Filter findings to only output specific Z-Codes
 zenzic check all --exit-zero        # Report issues but always exit 0
 zenzic check all --quiet            # Minimal one-line output for pre-commit and CI hooks
 zenzic check all --engine mkdocs    # Override detected build engine adapter
@@ -111,6 +114,29 @@ otherwise be non-blocking.
 The `--strict` flag enforces rigorous validation: for link checking, it validates external HTTP/HTTPS links via active network requests (which are disabled by default for performance); for references, it treats Dead Definitions as fatal errors instead of warnings.
 
 You can also set `strict = true` in `.zenzic.toml` to make it the permanent default.
+
+### `--ci`
+
+`--ci` is a convenience shorthand designed specifically for GitHub Actions pipelines. It forces two behaviors simultaneously:
+1. Sets `strict = true` (warnings promote to errors).
+2. Sets `--format github-annotations` (if no other format is specified).
+
+This flag bypasses `ZenzicReporter` completely, outputting raw `::error::` strings that GitHub Actions parses natively to create inline annotations on pull requests.
+
+```bash
+zenzic check all --ci
+```
+
+### `--only`
+
+`--only` applies a destructive engine-level filter to the Zenzic findings pipeline. It accepts a comma-separated list of Z-Codes. Any findings that do not match the specified codes are silently discarded *before* being processed by the formatter.
+
+Use this to run highly targeted, isolated checks—for example, if you only want to scan for broken links (`Z104`) and orphans (`Z402`) without running the rest of the validations, or if you want to silence everything except credential leaks (`Z201`).
+
+```bash
+zenzic check all --only Z104,Z402
+zenzic check links --only Z101,Z104
+```
 
 ### `--exit-zero`
 

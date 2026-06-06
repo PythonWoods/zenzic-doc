@@ -115,8 +115,9 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Lint documentation
-
-        run: uvx zenzic check all --strict
+        # --ci automatically applies --strict and --format github-annotations
+        # for inline PR feedback
+        run: uvx zenzic check all --ci
 
       - name: Check references and credentials
 
@@ -153,7 +154,7 @@ jobs:
 
       - name: Lint documentation
 
-        run: uvx zenzic check all --strict
+        run: uvx zenzic check all --ci
 
       - name: Check references and credentials
 
@@ -212,7 +213,9 @@ Security incidents (exit 2 and 3) are never suppressed by `fail-on-error: "false
 | Input | Default | Description |
 | :--- | :---: | :--- |
 | `version` | action pin | Zenzic version to install. Uses the pinned default declared in the action manifest; any explicit value uses `uvx "zenzic==X.Y.Z"`. **Pin in production.** |
-| `format` | `sarif` | Output format: `text`, `json`, or `sarif`. Use `sarif` for GitHub Code Scanning. |
+| `ci` | `false` | Run with `--ci` to enable `--strict` and inline GitHub PR annotations. Note: Not recommended when using `format: sarif` as annotations are handled by Code Scanning. |
+| `only` | `""` | Comma-separated list of Z-Codes (e.g. "Z104,Z402") to restrict checks to specific issues. |
+| `format` | `sarif` | Output format: `text`, `json`, `github-annotations`, or `sarif`. Use `sarif` for GitHub Code Scanning. |
 | `sarif-file` | `zenzic-results.sarif` | Path for the generated SARIF file (only when `format: sarif`). |
 | `upload-sarif` | `true` | Upload SARIF to GitHub Code Scanning via `github/codeql-action/upload-sarif` delegated by the wrapper. |
 | `strict` | `false` | Treat warnings as errors (passes `--strict` to Zenzic). |

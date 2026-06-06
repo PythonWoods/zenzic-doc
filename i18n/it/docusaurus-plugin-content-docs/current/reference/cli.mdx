@@ -29,6 +29,9 @@ zenzic check all                    # Esegue tutti i controlli
 zenzic check all --audit            # Audit Sovrano: ignora soppressioni inline + per-file
 zenzic check all --strict           # Valida anche gli URL esterni; tratta i warning come errori
 zenzic check all --format json      # Output machine-readable
+zenzic check all --format github-annotations # Formato annotazioni GitHub Actions
+zenzic check all --ci               # Shorthand CI: imposta --strict e --format github-annotations
+zenzic check all --only Z104,Z101   # Filtra i finding per produrre solo specifici codici Z
 zenzic check all --exit-zero        # Segnala problemi ma esce sempre con codice 0
 zenzic check all --quiet            # Output minimale a riga singola per pre-commit e CI
 zenzic check all --engine mkdocs    # Sovrascrive il motore rilevato
@@ -107,6 +110,29 @@ log CI sia inequivocabile anche quando gli stessi finding sarebbero altrimenti n
 | `score --strict` / `diff --strict` | Esegue il link check in modalità strict |
 
 Puoi anche impostare `strict = true` in `.zenzic.toml` per renderlo il default permanente.
+
+### `--ci`
+
+`--ci` è un comodo shorthand progettato specificamente per le pipeline GitHub Actions. Forza due comportamenti simultaneamente:
+1. Imposta `strict = true` (promuove i warning ad errori bloccanti).
+2. Imposta `--format github-annotations` (se non è specificato alcun altro formato).
+
+Questo flag bypassa completamente `ZenzicReporter`, emettendo stringhe grezze `::error::` che GitHub Actions analizza nativamente per creare annotazioni inline sulle pull request.
+
+```bash
+zenzic check all --ci
+```
+
+### `--only`
+
+`--only` applica un filtro distruttivo a livello engine per i finding Zenzic. Accetta una lista di Codici Z separata da virgole. Qualsiasi finding che non corrisponde ai codici specificati viene scartato silenziosamente *prima* di essere elaborato dal formatter.
+
+Usalo per eseguire controlli altamente mirati e isolati — per esempio, se vuoi scannerizzare solo i link rotti (`Z104`) e gli orfani (`Z402`) senza eseguire il resto delle validazioni, o se vuoi silenziare tutto ad eccezione dei leak di credenziali (`Z201`).
+
+```bash
+zenzic check all --only Z104,Z402
+zenzic check links --only Z101,Z104
+```
 
 ### `--exit-zero`
 
