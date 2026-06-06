@@ -76,7 +76,7 @@ locales        = ["it"]
 
 # --- BRAND INTEGRITY ---
 [project_metadata]
-release_name = "Graphite"
+release_name = "Magnetite"
 badge_stamp_files = ["README.md", "README.it.md"]
 
 [governance]
@@ -99,6 +99,7 @@ brand_obsolescence = [
     "Basalt",
     "Quartz",
     "Obsidian",
+    "Graphite"
 ]
 # suppression_cap_scope = "all"  # Options: all, per-file
 i18n_parity = true
