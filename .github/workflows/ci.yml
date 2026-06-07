@@ -5,9 +5,6 @@ name: zenzic-audit
 
 on:
   pull_request:
-    branches:
-      - main
-      - 'release/**'
     paths:
       - 'docs/**'
       - 'i18n/**'
@@ -26,7 +23,6 @@ on:
   push:
     branches:
       - main
-      - 'release/**'
     paths:
       - 'docs/**'
       - 'i18n/**'
