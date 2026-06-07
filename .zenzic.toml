@@ -4,30 +4,8 @@
 # Precedence: .zenzic.toml is shared baseline; .zenzic.local.toml overrides locally.
 # Keep secrets and workstation-only values in .zenzic.local.toml.
 
-# --- PROJECT IDENTITY ---
-# [project]
-# name = "zenzic-doc" # Used for personalized CLI Governance headers
-
-# --- CORE SETTINGS ---
-# ---------------------------------------------------------------------------
-# docs_dir
-# ---------------------------------------------------------------------------
-# The relative path to your documentation root.
-#
-# BEHAVIOR:
-#   - If commented out (default), Zenzic uses Auto-Discovery to find your
-#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
-#   - Set to "." to scan the entire repository (L1 system exclusions apply).
-#
-# DEFAULT: Auto-discovered
-#
-# docs_dir = "docs"
-
 strict = true
 fail_under = 90
-# exit_zero = false
-# respect_vcs_ignore = true
-# validate_same_page_anchors = true
 
 # External URLs excluded from the broken-link check (applies only with --strict)
 excluded_external_urls = [
@@ -58,13 +36,38 @@ excluded_external_urls = [
     #"https://zenzic.dev/developers",
 ]
 
+# Placeholder checks disabled: the documentation describes placeholder patterns
+# by example, which would cause false positives.
+placeholder_patterns = []
+
+# --- PROJECT IDENTITY ---
+# [project]
+# name = "zenzic-doc" # Used for personalized CLI Governance headers
+
+# --- CORE SETTINGS ---
+# ---------------------------------------------------------------------------
+# docs_dir
+# ---------------------------------------------------------------------------
+# The relative path to your documentation root.
+#
+# BEHAVIOR:
+#   - If commented out (default), Zenzic uses Auto-Discovery to find your
+#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
+#   - Set to "." to scan the entire repository (L1 system exclusions apply).
+#
+# DEFAULT: Auto-discovered
+#
+# docs_dir = "docs"
+
+# exit_zero = false
+# respect_vcs_ignore = true
+# validate_same_page_anchors = true
+
+
 # Z204 Privacy Gate — terms that must never appear in published docs.
 # forbidden_patterns = []
 
 # --- PLACEHOLDERS & CODE SNIPPETS (Optional) ---
-# Placeholder checks disabled: the documentation describes placeholder patterns
-# by example, which would cause false positives.
-placeholder_patterns = []
 placeholder_max_words = 0
 
 # --- ENGINE CONTEXT ---

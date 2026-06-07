@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-name: codeql
+name: Zenzic Docs CodeQL
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
           - javascript-typescript
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Initialize CodeQL

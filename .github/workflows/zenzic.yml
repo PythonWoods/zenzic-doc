@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-name: zenzic-action-dogfood
+name: Zenzic Docs Quality Gate
 
 on:
   push:
@@ -15,10 +15,11 @@ permissions:
 
 jobs:
   quality-gate:
-    name: Run Zenzic Quality Gate
+    name: Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Run Zenzic Quality Gate
         uses: PythonWoods/zenzic-action@v1
