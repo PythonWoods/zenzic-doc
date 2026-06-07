@@ -1,0 +1,28 @@
+name: zenzic-action-dogfood
+
+on:
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+  push:
+    branches:
+      - main
+      - 'release/**'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  quality-gate:
+    name: Run Zenzic Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Zenzic Quality Gate
+        uses: PythonWoods/zenzic-action@v1
+        with:
+          strict: 'true'
+          upload-sarif: 'true'

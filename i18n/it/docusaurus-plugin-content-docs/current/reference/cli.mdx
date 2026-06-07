@@ -30,7 +30,8 @@ zenzic check all --audit            # Audit Sovrano: ignora soppressioni inline 
 zenzic check all --strict           # Valida anche gli URL esterni; tratta i warning come errori
 zenzic check all --format json      # Output machine-readable
 zenzic check all --format github-annotations # Formato annotazioni GitHub Actions
-zenzic check all --ci               # Shorthand CI: imposta --strict e --format github-annotations
+zenzic check all --ci               # Shorthand CI: imposta --strict, --no-header, e --format github-annotations
+zenzic check all --no-header        # Sopprime l'header ASCII
 zenzic check all --only Z104,Z101   # Filtra i finding per produrre solo specifici codici Z
 zenzic check all --exit-zero        # Segnala problemi ma esce sempre con codice 0
 zenzic check all --quiet            # Output minimale a riga singola per pre-commit e CI
@@ -113,7 +114,9 @@ Puoi anche impostare `strict = true` in `.zenzic.toml` per renderlo il default p
 
 ### `--ci`
 
-`--ci` è un comodo shorthand progettato specificamente per le pipeline GitHub Actions. Forza due comportamenti simultaneamente:
+`--ci` è un comodo shorthand progettato specificamente per le pipeline GitHub Actions, disponibile su `check all`, `score` e `diff`. Agisce da modalità non interattiva implicita e sopprime globalmente l'header ASCII (`no_header = True`).
+
+Per il comando `check all`, forza due comportamenti aggiuntivi simultaneamente:
 1. Imposta `strict = true` (promuove i warning ad errori bloccanti).
 2. Imposta `--format github-annotations` (se non è specificato alcun altro formato).
 
@@ -771,11 +774,13 @@ zenzic score --save            # Calcola e persiste snapshot in .zenzic-score.js
 zenzic score --stamp           # Aggiorna marker audit+score in badge_stamp_files
 zenzic score --fail-under 80   # Esce con 1 se il punteggio è sotto la soglia
 zenzic score --format json     # Report punteggio machine-readable
+zenzic score --ci              # Esegue in modalità CI (sopprime l'header)
 zenzic score [PATH]            # Punteggio di un progetto remoto (sovereign root)
 
 zenzic diff                    # Confronta punteggio attuale con snapshot salvato
 zenzic diff --threshold 5      # Esce con 1 solo se il calo è superiore a 5 punti
 zenzic diff --format json      # Report diff machine-readable
+zenzic diff --ci               # Esegue in modalità CI (sopprime l'header)
 zenzic diff [PATH]             # Diff di un progetto remoto rispetto al suo baseline salvato
 ```
 
