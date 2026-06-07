@@ -125,6 +125,14 @@ l'approccio da adottare. Questo ti evita di dedicare tempo a una funzionalità c
 potrebbe non allinearsi con gli obiettivi del progetto. Nella tua PR farai quindi
 riferimento al numero dell'issue per collegare la nostra discussione.
 
+## CI/CD & Draft PRs
+
+Per ottimizzare le risorse, le GitHub Actions di Zenzic si innescano SOLO sui push verso `main` e sulle Pull Request. I push su branch di sviluppo isolati non avviano la CI. Se desideri un feedback continuo dalla CI durante lo sviluppo, apri immediatamente una Draft PR.
+
+### Local Hooks
+
+Zenzic utilizza `pre-commit` per le mutazioni automatiche (es. l'aggiornamento dei badge DQS). L'uso di hook come `post-commit` è un anti-pattern e non è supportato, in quanto lascerebbe il working tree sporco dopo il commit.
+
 ## Stile e linting
 
 È importante che le tue modifiche producano commit puliti che possano essere revisionati

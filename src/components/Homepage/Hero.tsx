@@ -39,7 +39,7 @@ export default function Hero(): React.JSX.Element {
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border dark:border-zinc-800/80 border-zinc-200 dark:bg-zinc-900/30 bg-zinc-50 dark:text-zinc-400 text-zinc-500 text-[11px] font-mono mb-10 tracking-wide dark:hover:bg-zinc-800/50 hover:bg-zinc-100 transition-colors cursor-pointer shadow-sm">
         <ZenzicBadge />
         <Translate id="homepage.hero.badge" description="Release version badge">
-          v0.10.0
+          v0.10.1
         </Translate>
       </div>
       <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-8 max-w-4xl">

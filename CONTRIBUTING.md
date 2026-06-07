@@ -226,6 +226,11 @@ This must pass with zero errors before you open or update a PR.
 
 - Execute a D.I.A. (Documentation Impact Analysis). If your PR alters CLI behavior or API contracts, explicitly state it in your PR description. You are encouraged to open a matching PR on zenzic-doc, but if you cannot, the maintainers will handle the documentation sync before release.
 
+### CI/CD & Workflow
+- **Draft PRs:** We run CI exclusively on `main` and Pull Requests to save resources. Open a **Draft PR** early to get continuous CI feedback on your branch.
+- **Hooks:** Use `pre-commit` for local mutations. Do not use `post-commit`.
+- **Full Guide:** Read the complete workflow in our [Developer Documentation](https://zenzic.dev/developers/how-to/contribute/pull-requests).
+
 ### Pre-commit hooks
 
 The repository enforces quality automatically on every `git commit`:

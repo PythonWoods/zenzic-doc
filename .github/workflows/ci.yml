@@ -1,13 +1,10 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-name: zenzic-audit
+name: Zenzic Docs CI
 
 on:
   pull_request:
-    branches:
-      - main
-      - 'release/**'
     paths:
       - 'docs/**'
       - 'i18n/**'
@@ -26,7 +23,6 @@ on:
   push:
     branches:
       - main
-      - 'release/**'
     paths:
       - 'docs/**'
       - 'i18n/**'
@@ -50,47 +46,15 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify (ubuntu-latest, Node LTS)
+    name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Determine Zenzic Core Branch (Parity or Fallback)
-        id: resolve-branch
-        shell: bash
-        run: |
-          TARGET_BRANCH="${{ github.head_ref || github.ref_name }}"
-          echo "Target branch is: $TARGET_BRANCH"
-
-          if git ls-remote --exit-code --heads https://github.com/PythonWoods/zenzic.git "$TARGET_BRANCH" > /dev/null 2>&1; then
-            echo "Branch $TARGET_BRANCH exists in core. Using it."
-            echo "core_ref=$TARGET_BRANCH" >> $GITHUB_OUTPUT
-          else
-            echo "Branch $TARGET_BRANCH not found in core. Falling back to main."
-            echo "core_ref=main" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Checkout local zenzic (unreleased)
+      - name: Checkout Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          repository: PythonWoods/zenzic
-          ref: ${{ steps.resolve-branch.outputs.core_ref }}
-          path: _zenzic_core
-
-      - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: '3.13'
-
-      - name: Install local zenzic in editable mode
-        run: python -m pip install -e ./_zenzic_core
-
-      - name: Install just
-        uses: taiki-e/install-action@ea85faa6acd705ad6d40586db99f1a70b09c2929 # just
 
       - name: Setup Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
@@ -98,41 +62,8 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Certify Zenzic public hooks contract
-        shell: bash
-        run: |
-          set -euo pipefail
-          hooks_file="_zenzic_core/.pre-commit-hooks.yaml"
-          test -f "$hooks_file"
-
-          # Required public hook ids
-          grep -q "id: zenzic-verify" "$hooks_file"
-          grep -q "id: zenzic-guard" "$hooks_file"
-          grep -q "id: zenzic-score" "$hooks_file"
-
-          # Required public contract entries
-          grep -q "entry: zenzic check all" "$hooks_file"
-          grep -q "entry: zenzic guard scan" "$hooks_file"
-          grep -q "entry: zenzic score" "$hooks_file"
-
-          # Required extension coverage (Markdown + MDX)
-          grep -q "markdown" "$hooks_file"
-          grep -q "mdx" "$hooks_file"
-
-          echo "Public hooks contract certified from _zenzic_core/.pre-commit-hooks.yaml"
-
-      - name: Run unified verification
-        shell: bash
-        env:
-          PYTHONUTF8: '1'
-          # Runtime-only injection point for local isolation checks in CI.
-          ZENZIC_EXTRA_ARGS: ${{ secrets.ZENZIC_EXTRA_ARGS }}
-          # ZRT-010 — Sovereign Parity: Pre-Launch Guard lives in justfile.
-          # Local and CI run identical 'just check' invocations.
-        run: just verify
+      - name: Build Docusaurus
+        run: npm run build

@@ -32,7 +32,8 @@ zenzic check all --audit            # Sovereign Audit: ignore inline + per-file 
 zenzic check all --strict           # Also validate external URLs; treat warnings as errors
 zenzic check all --format json      # Machine-readable output
 zenzic check all --format github-annotations # GitHub Actions annotations format
-zenzic check all --ci               # CI shorthand: sets --strict and --format github-annotations
+zenzic check all --ci               # CI shorthand: sets --strict, --no-header, and --format github-annotations
+zenzic check all --no-header        # Suppress the ASCII art header
 zenzic check all --only Z104,Z101   # Filter findings to only output specific Z-Codes
 zenzic check all --exit-zero        # Report issues but always exit 0
 zenzic check all --quiet            # Minimal one-line output for pre-commit and CI hooks
@@ -117,7 +118,9 @@ You can also set `strict = true` in `.zenzic.toml` to make it the permanent defa
 
 ### `--ci`
 
-`--ci` is a convenience shorthand designed specifically for GitHub Actions pipelines. It forces two behaviors simultaneously:
+`--ci` is a convenience shorthand designed specifically for GitHub Actions pipelines, available on `check all`, `score`, and `diff`. It acts as an implicit non-interactive mode and suppresses the ASCII art header globally (`no_header = True`). 
+
+For `check all`, it forces two additional behaviors simultaneously:
 1. Sets `strict = true` (warnings promote to errors).
 2. Sets `--format github-annotations` (if no other format is specified).
 
@@ -767,11 +770,13 @@ zenzic score --save            # Compute and persist snapshot to .zenzic-score.j
 zenzic score --stamp           # Update audit+score markers in badge_stamp_files
 zenzic score --fail-under 80   # Exit 1 if score is below threshold
 zenzic score --format json     # Machine-readable score report
+zenzic score --ci              # Run in CI mode (suppresses header)
 zenzic score [PATH]            # Score a remote project (sovereign root)
 
 zenzic diff                    # Compare current score against saved snapshot
 zenzic diff --threshold 5      # Exit 1 only if score dropped by more than 5 points
 zenzic diff --format json      # Machine-readable diff report
+zenzic diff --ci               # Run in CI mode (suppresses header)
 zenzic diff [PATH]             # Diff a remote project against its saved baseline
 ```
 
