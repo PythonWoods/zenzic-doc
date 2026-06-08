@@ -85,6 +85,10 @@ file system mancante:
 + For the complete API specification, see the [API Reference](api/index.md).
 ```
 
+## Comportamento del Parser per le Note a Piè di Pagina
+
+Le definizioni delle note a piè di pagina (come `[^1]: testo della nota`) vengono analizzate e riconosciute correttamente dal parser dei link di Zenzic. Zenzic ignora automaticamente le note a piè di pagina durante il processo di verifica dei link, impedendo che vengano erroneamente validate come link del filesystem, evitando così errori `Z104` falsi positivi.
+
 ## Vedi Anche
 
 - [Z101 — Link Rotti](z101-broken-links) — integrità dei link a livello di routing.

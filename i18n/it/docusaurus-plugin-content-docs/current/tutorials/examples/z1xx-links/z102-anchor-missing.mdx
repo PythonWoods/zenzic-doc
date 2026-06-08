@@ -110,6 +110,10 @@ Poi riesegui:
 uvx zenzic check links  # → exit 0, nessun finding
 ```
 
+## Ancore Esplicite e Attribute List
+
+Zenzic supporta nativamente le ancore esplicite a livello di blocco (come `{#id}`) e gestisce le liste di attributi markdown (es. `{ data-toc-label="Overview" }`) collegate alle intestazioni. Durante la compilazione del registro intestazioni, Zenzic rimuove queste attribute list prima di slugificare il testo del titolo, prevenendo falsi positivi per il codice `Z102`.
+
 ## Vedi Anche
 
 - [z101 — Link Rotti](z101-broken-links) — variante a livello di file: il file di destinazione non esiste.
