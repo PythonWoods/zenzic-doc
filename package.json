@@ -1,6 +1,6 @@
 {
   "name": "zenzic-doc",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

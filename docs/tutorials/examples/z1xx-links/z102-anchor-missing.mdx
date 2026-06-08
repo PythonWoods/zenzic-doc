@@ -97,6 +97,10 @@ This error or warning is raised by Zenzic when a markdown link contains a fragme
 
 Exit code 1 halts the CI/CD pipeline. Resolve the issue by adding the missing header to the target document, ensuring its slugified name matches the fragment, or updating the link to target a valid header.
 
+## Explicit Anchors & Attribute Lists
+
+Zenzic natively supports explicit block-level anchors (such as `{#id}`) and handles markdown attribute lists (e.g., `{ data-toc-label="Overview" }`) attached to headings. When compiling the header registry, Zenzic strips these attribute lists before slugifying heading text, preventing false-positive `Z102` errors.
+
 ## See Also
 
 - [z101 — Broken Links](z101-broken-links) — the file-level variant: the target file itself does not exist.

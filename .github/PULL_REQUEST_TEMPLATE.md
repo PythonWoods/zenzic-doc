@@ -51,6 +51,16 @@ Every PR touching `docs/`, `blog/`, `src/`, or `i18n/` must satisfy all that app
 
 ---
 
+## Enterprise governance compliance
+
+- [ ] This PR addresses an approved Issue #___ and complies with the **Issue-First Policy**.
+- [ ] Every commit in this PR is **cryptographically signed** (GPG/SSH/S/MIME) and shows as "Verified" on GitHub.
+- [ ] Every commit has a valid **Developer Certificate of Origin (DCO)** sign-off (`Signed-off-by:` via `git commit -s`).
+- [ ] I have verified and can architecturally justify every single line of code proposed in this PR (**No AI Slop**).
+- [ ] All commit messages comply with the **Conventional Commits** specification.
+
+---
+
 ## Notes for reviewers
 
 <!-- Anything unusual about this PR that reviewers should know? -->

@@ -58,6 +58,10 @@ Questo errore o avviso viene generato da Zenzic quando un blocco di codice conti
 
 Risolvi il problema come riportato da Zenzic.
 
+## Supporto per i Tag Custom YAML
+
+Il validatore YAML utilizzato dallo Snippet Guard di Zenzic registra e supporta nativamente sia i tag personalizzati standard di PyYAML (come `!!python/name:` o `!!python/object/apply:`) sia i tag personalizzati non registrati (come `!ENV` o `!file`) comunemente usati nei file di configurazione di MkDocs. Ciò garantisce che i file YAML validi che incorporano queste strutture vengano analizzati con successo senza generare eccezioni `Z503` false positive.
+
 ## Vedi Anche
 
 - [Riferimento Controlli](../../../reference/checks) — specifica completa della regola.

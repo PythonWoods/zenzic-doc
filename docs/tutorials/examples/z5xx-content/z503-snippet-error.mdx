@@ -58,6 +58,10 @@ This error or warning is raised by Zenzic when a fenced code block has syntax er
 
 Exit code 1. Fix the syntax error in the Python code block to ensure it is valid Python code.
 
+## Custom YAML Tags Support
+
+The YAML validator used by Zenzic's Snippet Guard natively registers and supports standard PyYAML custom tags (such as `!!python/name:` or `!!python/object/apply:`) as well as unregistered custom tags (such as `!ENV` or `!file`) commonly used in MkDocs configuration files. This ensures that valid YAML files incorporating these structures are parsed successfully without throwing false-positive `Z503` exceptions.
+
 ## See Also
 
 - [Checks Reference](../../../reference/checks) — full rule specification.
