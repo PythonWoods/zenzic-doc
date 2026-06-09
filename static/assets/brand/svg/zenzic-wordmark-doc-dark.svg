@@ -27,8 +27,8 @@
   <!-- "/" separator — muted -->
   <text x="308" y="67" font-family="system-ui, -apple-system, sans-serif" font-weight="300" font-size="52" fill="#64748b">/</text>
 
-  <!-- "doc" — teal accent (dark-mode) -->
-  <text x="333" y="68" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="56" fill="#2dd4bf" letter-spacing="-1.5">doc</text>
+  <!-- "doc" — sky accent (brand palette, dark-mode) -->
+  <text x="333" y="68" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="56" fill="#7dd3fc" letter-spacing="-1.5">doc</text>
 
   <!-- Tagline -->
   <text x="127" y="93" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="12" fill="#94a3b8" letter-spacing="3">THE OFFICIAL DOCUMENTATION PORTAL</text>
