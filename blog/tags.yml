@@ -78,11 +78,6 @@ user-tutorials:
   permalink: /tutorials
   description: "Practical guides for getting started with Zenzic — zero configuration required."
 
-architecture:
-  label: "Architecture"
-  permalink: /architecture
-  description: "Software and documentation architecture: design decisions, AST analysis, and system design."
-
 docs-as-code:
   label: "Docs as Code"
   permalink: /docs-as-code
