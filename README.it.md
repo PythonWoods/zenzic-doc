@@ -2,28 +2,30 @@
 SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 SPDX-License-Identifier: Apache-2.0
 -->
+<!-- markdownlint-disable MD033 MD041 MD060 -->
 
-<div align="center">
+<p align="center">
   <a href="https://zenzic.dev/it">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-nav-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="static/assets/brand/svg/zenzic-nav-light.svg">
-      <img src="static/assets/brand/svg/zenzic-nav-dark.svg" alt="Zenzic" height="64" />
+      <source media="(prefers-color-scheme: dark)" srcset="static/assets/brand/svg/zenzic-wordmark-doc-dark.svg">
+      <img alt="Zenzic / doc" src="static/assets/brand/svg/zenzic-wordmark-doc.svg" width="350">
     </picture>
   </a>
-</div>
+</p>
 
-# Guida per Sviluppatori zenzic-doc
+<p align="center">Il portale di documentazione Docusaurus ufficiale per Zenzic — costruito su Diátaxis, distribuito come sito unico con docs utente, docs sviluppatore e blog.</p>
 
-[![ci-status](https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-doc/ci.yml?branch=main&label=ci&style=flat-square)](https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml)
-<!-- zenzic:audit-badge -->
-[![zenzic-audit](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
-<!-- zenzic:score-badge -->
-[![zenzic-score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-96_%2F_100-f59e0b?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
-[![REUSE 3.x compliant](https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square)](https://reuse.software/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square)](LICENSE)
-[![Documentation: Diátaxis](https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square)](https://diataxis.fr/)
-[![Zenzic](https://img.shields.io/badge/Zenzic-v0.10.4-blue?style=flat-square)](https://github.com/PythonWoods/zenzic)
+<p align="center">
+  <a href="https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml"><img alt="ci-status" src="https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-doc/ci.yml?branch=main&label=ci&style=flat-square"></a>
+  <!-- zenzic:audit-badge -->
+  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square" alt="zenzic-audit">
+  <!-- zenzic:score-badge -->
+  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-96_%2F_100-f59e0b?style=flat-square" alt="zenzic-score">
+  <a href="https://reuse.software/"><img alt="REUSE 3.x compliant" src="https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square"></a>
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square"></a>
+  <a href="https://diataxis.fr/"><img alt="Documentation: Diátaxis" src="https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square"></a>
+  <a href="https://github.com/PythonWoods/zenzic"><img alt="Zenzic" src="https://img.shields.io/badge/Zenzic-v0.10.4-blue?style=flat-square"></a>
+</p>
 
 ---
 
