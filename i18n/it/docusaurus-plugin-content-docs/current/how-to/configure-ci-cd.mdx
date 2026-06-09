@@ -371,6 +371,45 @@ Quando viene rilevata una regressione del punteggio, il workflow riceve un verde
 
 ---
 
+## Branch Protection GitHub: Required Checks {#branch-protection-required-checks}
+
+Proteggi `main` e abilita **Require status checks to pass before merging**.
+
+### Profilo Operativo: `zenzic-doc`
+
+Controlli obbligatori:
+- `Build`
+- `Audit`
+- `Lint PR Title`
+- `Check DCO`
+
+Regola operativa:
+- Il check `Build` deve girare su **ogni** pull request.
+- Non usare filtri `paths` nel trigger `pull_request` in `.github/workflows/ci.yml` per `zenzic-doc`.
+- Mantieni i filtri `paths` sul `push` verso `main` se vuoi ottimizzare i minuti CI post-merge.
+
+Razionale:
+- `Build` è il gate di integrità strutturale per MDX e compilazione del sito.
+- Se `Build` è obbligatorio ma viene saltato su PR, il merge può restare bloccato in stato expected/pending.
+- Se `Build` non è obbligatorio, una regressione documentale fatale può entrare in merge e rompere il sito live.
+
+### Profilo Operativo: `zenzic` (core)
+
+Controlli obbligatori consigliati:
+- `Audit (ubuntu-latest, 3.10)`
+- `Audit (ubuntu-latest, 3.14)`
+- `Lint PR Title`
+- `Check DCO`
+
+Perché questi check:
+- `Audit` applica test, quality gate e badge freshness in CI.
+- `Lint PR Title` applica la convenzione del titolo PR.
+- `Check DCO` applica il `Signed-off-by` su ogni commit.
+
+Importante: ogni check obbligatorio deve girare su `pull_request`. Se un workflow obbligatorio viene saltato (ad esempio per path filter), la PR può restare bloccata in stato expected/pending.
+
+---
+
 ## Modalità Audit in CI — Sovereign Audit {#audit-mode}
 
 L'input `audit: "true"` forza un sovereign audit: tutti i commenti `zenzic:ignore` inline attivi e tutte le voci `governance.per_file_ignores` vengono bypassati. Ogni finding che normalmente sarebbe nascosto da una soppressione viene portato in superficie.
