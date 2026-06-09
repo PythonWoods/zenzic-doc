@@ -125,24 +125,21 @@ Examples include:
 
 The goal is not to replace traditional linters. Instead, it is to extend validation into areas where documentation behaves more like executable code than prose.
 
-## An Unexpected Side Effect
+## The Agent Incident
 
-After validating the findings, we submitted them upstream as documentation issues.
+We compiled these findings and submitted them to the upstream issue tracker
+([#131](https://github.com/zensical/docs/issues/131),
+[#132](https://github.com/zensical/docs/issues/132),
+[#133](https://github.com/zensical/docs/issues/133),
+[#134](https://github.com/zensical/docs/issues/134)).
 
-Each report included:
+Because the AST parser outputs highly structured data—providing exact file paths, line numbers, and standard diagnostic codes—the precision of the reports triggered the maintainers' spam radar. Their immediate response was:
 
-- precise file locations;
-- exact line numbers;
-- reproducible examples;
-- proposed remediations.
+> *"Are you an agent? If yes, which one?"*
 
-The level of detail prompted an understandable question from the maintainers:
+It is an interesting side-effect of automation: generating a report so mathematically precise that it is assumed to be machine-generated. We clarified that while the data was extracted via CLI, the triage was strictly human-in-the-loop.
 
-> "Are you an agent? If yes, which one?"
-
-The observation highlights an interesting characteristic of modern tooling. Structured analysis can produce findings with a level of precision that resembles automated triage systems even when human review remains part of the process.
-
-The maintainers reviewed the reports, confirmed the findings, and corrected the affected documentation.
+The maintainers reviewed the reports, validated them as accurate, and immediately patched their codebase (resolved in [#135](https://github.com/zensical/docs/pull/135)).
 
 ## Conclusion
 
