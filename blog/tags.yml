@@ -78,6 +78,21 @@ user-tutorials:
   permalink: /tutorials
   description: "Practical guides for getting started with Zenzic — zero configuration required."
 
+docs-as-code:
+  label: "Docs as Code"
+  permalink: /docs-as-code
+  description: "Treating documentation as structured, versionable, and testable code."
+
+parsing:
+  label: "Parsing"
+  permalink: /parsing
+  description: "AST parsing, language-aware analysis, and structured content validation."
+
+case-study:
+  label: "Case Study"
+  permalink: /case-study
+  description: "Real-world findings and analysis from production documentation corpora."
+
 governance:
   label: "Governance"
   permalink: /governance

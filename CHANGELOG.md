@@ -11,7 +11,10 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
-No changes yet.
+### Changed
+
+- **Fail-closed PR build gate:** Removed `pull_request.paths` filters from `.github/workflows/ci.yml` so the `Build` check runs on every PR and can safely be required in branch protection.
+- **Operational policy docs:** Added explicit branch-protection required-checks guidance (EN + IT) for `zenzic-doc` and `zenzic` in CI/CD integration documentation.
 
 ---
 

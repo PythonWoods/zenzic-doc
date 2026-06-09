@@ -199,7 +199,7 @@ jobs:
 
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"          # fissa a una release stabile
+          version: "0.10.4"          # fissa a una release stabile
           format: sarif             # emetti SARIF per Code Scanning
           upload-sarif: "true"
           fail-on-error: "true"
@@ -254,7 +254,7 @@ o notifiche Slack senza dover rileggere il file SARIF:
         id: zenzic
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"
+          version: "0.10.4"
 
       - name: Mostra conteggio finding
 
@@ -271,7 +271,7 @@ Impostando `ci: "true"`, l'action inietta nativamente il flag `--ci` sotto il co
       - name: Zenzic Progressive Gate
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"
+          version: "0.10.4"
           ci: "true"              # Annotazioni PR native (non richiede SARIF)
           only: "Z101,Z201"       # Il Gate fallisce SOLO per link rotti e segreti esposti
           fail-on-error: "true"
@@ -320,7 +320,7 @@ jobs:
       - name: Esegui Zenzic e salva il baseline
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"
+          version: "0.10.4"
           format: json          # genera lo snapshot .zenzic-score.json
           upload-sarif: "false"
 
@@ -352,7 +352,7 @@ jobs:
         uses: PythonWoods/zenzic-action@<version>
         id: zenzic
         with:
-          version: "0.10.3"
+          version: "0.10.4"
           format: sarif
           upload-sarif: "true"
           diff-base: ".zenzic-baseline/.zenzic-score.json"
@@ -368,6 +368,45 @@ jobs:
 :::info[Regressione di Qualità via `zenzic diff`]
 Quando viene rilevata una regressione del punteggio, il workflow riceve un verdetto diff non zero e può applicare comportamento bloccante oppure osservazionale, secondo policy.
 :::
+
+---
+
+## Branch Protection GitHub: Required Checks {#branch-protection-required-checks}
+
+Proteggi `main` e abilita **Require status checks to pass before merging**.
+
+### Profilo Operativo: `zenzic-doc`
+
+Controlli obbligatori:
+- `Build`
+- `Audit`
+- `Lint PR Title`
+- `Check DCO`
+
+Regola operativa:
+- Il check `Build` deve girare su **ogni** pull request.
+- Non usare filtri `paths` nel trigger `pull_request` in `.github/workflows/ci.yml` per `zenzic-doc`.
+- Mantieni i filtri `paths` sul `push` verso `main` se vuoi ottimizzare i minuti CI post-merge.
+
+Razionale:
+- `Build` è il gate di integrità strutturale per MDX e compilazione del sito.
+- Se `Build` è obbligatorio ma viene saltato su PR, il merge può restare bloccato in stato expected/pending.
+- Se `Build` non è obbligatorio, una regressione documentale fatale può entrare in merge e rompere il sito live.
+
+### Profilo Operativo: `zenzic` (core)
+
+Controlli obbligatori consigliati:
+- `Audit (ubuntu-latest, 3.10)`
+- `Audit (ubuntu-latest, 3.14)`
+- `Lint PR Title`
+- `Check DCO`
+
+Perché questi check:
+- `Audit` applica test, quality gate e badge freshness in CI.
+- `Lint PR Title` applica la convenzione del titolo PR.
+- `Check DCO` applica il `Signed-off-by` su ogni commit.
+
+Importante: ogni check obbligatorio deve girare su `pull_request`. Se un workflow obbligatorio viene saltato (ad esempio per path filter), la PR può restare bloccata in stato expected/pending.
 
 ---
 
@@ -400,7 +439,7 @@ jobs:
       - name: Sovereign Audit (soppressioni bypassate)
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"
+          version: "0.10.4"
           format: sarif
           upload-sarif: "true"
           audit: "true"           # bypassa tutti i zenzic:ignore e per_file_ignores
@@ -419,7 +458,7 @@ L'input `guard-scan: "true"` esegue `zenzic guard scan` come step standalone **p
       - name: Run Zenzic Documentation Quality Gate
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.10.3"
+          version: "0.10.4"
           guard-scan: "true"   # zenzic guard scan viene eseguito prima di check all
           format: sarif
           upload-sarif: "true"

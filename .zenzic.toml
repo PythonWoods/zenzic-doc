@@ -127,6 +127,10 @@ i18n_parity = true
 "docs/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
 "docs/it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
 
+# Z109: github.com/google/re2 — valid upstream repo; transient connection error in CI network.
+"docs/explanation/architecture.mdx" = ["Z109"]
+"docs/it/explanation/architecture.mdx" = ["Z109"]
+
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
 
