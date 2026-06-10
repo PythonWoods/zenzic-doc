@@ -18,21 +18,9 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
-## [0.10.0] - 2026-06-06
-
-### Added
-
-- **Native CI Integration and Filtering Docs:** Documented the new `--ci` shorthand and `--format github-annotations` in CLI Reference and CI/CD integration guides (EN + IT). Documented the `--only` flag for targeted rule filtering.
-- **Blog Post:** Added new DevRel payload "Zenzic v0.10.0: Native GitHub Annotations and Progressive Adoption" demonstrating the killer features of v0.10.0.
-
-### Changed
-
-- **ADR-037 Install Guide Refinement:** Removed the hardcoded version tag (`@v0.10.0`) from the Ephemeral GitHub execution instructions (`uvx --from git+...`) to decouple the command from temporal releases and point to the default branch.
-
----
-
 ## Historical Releases
 
+- v0.10.x archive: [changelogs/v0.10.md](./changelogs/v0.10.md)
 - v0.9.x archive: [changelogs/v0.9.md](./changelogs/v0.9.md)
 - v0.8.x archive: [changelogs/v0.8.md](./changelogs/v0.8.md)
 - v0.7.x archive: [changelogs/v0.7.md](./changelogs/v0.7.md)
