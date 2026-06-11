@@ -856,6 +856,54 @@ zenzic check all --exit-zero   # report completo, esce 0 comunque
 zenzic score                   # mostra il punteggio per visibilità
 ```
 
+### Dettaglio del punteggio (`--breakdown`)
+
+Usa il flag `--breakdown` per emettere un'esplosione dettagliata per categoria dei codici Z-Code riscontrati (inclusi quelli informativi o a 0 punti come `Z106` o `Z401`) e i calcoli matematici trasparenti della formula DQS:
+
+```bash
+zenzic score --breakdown
+```
+
+Esempio di output:
+
+```text
+DETAILED CATEGORY BREAKDOWN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STRUCTURAL CATEGORY (Weight: 30%, Max: 30.0 pts)
+  ✗ Z106 (CIRCULAR_LINK): 24 occurrence(s) x -0.0 pts = -0.0 pts
+  Category Raw Penalty:  0.0 pts
+  Category Net Score:    30.0 / 30.0 pts
+
+NAVIGATION CATEGORY (Weight: 25%, Max: 25.0 pts)
+  ✓ No issues detected
+  Category Raw Penalty:  0.0 pts
+  Category Net Score:    25.0 / 25.0 pts
+
+CONTENT CATEGORY (Weight: 20%, Max: 20.0 pts)
+  ✓ No issues detected
+  Category Raw Penalty:  0.0 pts
+  Category Net Score:    20.0 / 20.0 pts
+
+BRAND CATEGORY (Weight: 25%, Max: 25.0 pts)
+  ✓ No issues detected
+  Category Raw Penalty:  0.0 pts
+  Category Net Score:    25.0 / 25.0 pts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DQS MATHEMATICAL TRANSPARENCY
+  Base Score:                100.0 pts
+  + Structural Contribution:   +30.0 pts (max 30.0)
+  + Navigation Contribution:   +25.0 pts (max 25.0)
+  + Content Contribution:   +20.0 pts (max 20.0)
+  + Brand Contribution:   +25.0 pts (max 25.0)
+  ─────────────────────────────────────
+  Category Subtotal:          100.0 / 100.0 pts
+  - Gravity Cap Loss:           -0.0 pts (Brand bucket zeroed cap)
+  - Technical Debt Penalty:     -0.0 pts (0 suppression(s) x -1.0 pt)
+  ─────────────────────────────────────
+  Final Quality Score:        100 / 100
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
 ---
 
 ## Arsenal: Ispezione delle Capacità

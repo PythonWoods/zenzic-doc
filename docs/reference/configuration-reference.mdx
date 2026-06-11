@@ -100,6 +100,32 @@ forbidden_patterns = []
 Use `.zenzic.toml` for shared constitutional governance. Use `.zenzic.local.toml`
 for local experiments and private data only.
 
+### What Belongs Where — Decision Matrix {#local-vs-shared}
+
+| Configuration intent | File |
+| :--- | :--- |
+| Engine (`engine = "docusaurus"`) | `.zenzic.toml` — shared |
+| `docs_dir` | `.zenzic.toml` — **always shared**; if placed only in `.zenzic.local.toml`, CI will use the default (`"docs"`) |
+| `fail_under`, `suppression_cap` | `.zenzic.toml` — shared governance gate |
+| `strict = true` | **CLI flag only** for monorepos (`--strict`); in `.zenzic.toml` only for projects with stable, actionable warning counts |
+| `docs_dir` for temporary path override | `.zenzic.local.toml` — local override only |
+| API tokens, `github_pat` | `.zenzic.local.toml` — never commit secrets |
+| `log_level = "DEBUG"` | `.zenzic.local.toml` — diagnostics stay local |
+| `suppression_cap = 100` (raise for local experiments) | `.zenzic.local.toml` — does not affect team CI |
+
+:::caution[`docs_dir` trap]
+A `docs_dir` declared only in `.zenzic.local.toml` works on your machine but breaks in CI. CI runners load only `.zenzic.toml` (the local file is in `.gitignore`). Always put `docs_dir` in the shared config.
+:::
+
+:::caution[`strict = true` trap for monorepos]
+Setting `strict = true` in `.zenzic.toml` promotes **all warnings to errors** on every machine. On a monorepo with versioned snapshots this is guaranteed to hard-fail. Use `--strict` as a CI flag instead:
+```yaml
+# .github/workflows/zenzic.yml
+- run: zenzic check all --strict
+```
+:::
+
+
 ### Source-of-Truth Introspection (`zenzic config explain`)
 
 Use `zenzic config explain` to verify both active value and origin for each
@@ -240,6 +266,8 @@ validate_same_page_anchors = true
 
 Directories inside `docs/` to exclude from orphan and snippet checks. User entries are **merged** with the immutable System Guardrails (`SYSTEM_EXCLUDED_DIRS`) -- they can never be removed.
 
+**Path matching semantics:** If an entry contains a slash (`/`), it is evaluated against the repository-relative path. If it does not, it evaluates against the directory basename globally.
+
 ```toml
 excluded_dirs = ["includes", "stylesheets", "overrides", "snippets"]
 ```
@@ -259,7 +287,7 @@ These represent the **L1 System Guardrails** layer. No configuration can overrid
 | **Type** | `list[str]` |
 | **Default** | `[]` |
 
-Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and credential scanner). Uses `fnmatch` syntax.
+Filename glob patterns excluded from **all** checks (orphan detection, placeholder scanning, reference pipeline, and credential scanner). Uses glob syntax compiled to RE2 regular expressions — standard `*` and `?` wildcards are supported.
 
 ```toml
 # Skip locale-suffixed files and changelogs
@@ -656,6 +684,13 @@ Enables governance reporting for translation parity on configured locale trees.
 
 Scoped suppressions per glob pattern. Security findings remain non-suppressible.
 
+:::important[Path Resolution Invariant]
+Glob patterns for both `per_file_ignores` and `directory_policies` are evaluated relative to the **repository root**.
+In monorepos or nested layouts, you must include the full path prefix from the repository root:
+* Use `"website/docs/**"` instead of `"docs/**"` if the content folder lives in `website/docs/`.
+* Use `"docs/blog/**"` instead of `"blog/**"` if the blog folder lives inside `docs/blog/`.
+:::
+
 ### `directory_policies` {#directory-policies}
 
 | | |
@@ -698,7 +733,7 @@ suppression_cap_fail_hard = true
 "docs/legacy/**" = ["Z601"]
 
 [governance.directory_policies]
-"blog/**" = ["Z601"]
+"docs/blog/**" = ["Z601"]
 ```
 
 ---

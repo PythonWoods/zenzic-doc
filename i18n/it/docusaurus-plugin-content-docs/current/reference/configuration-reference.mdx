@@ -100,6 +100,32 @@ forbidden_patterns = []
 Usa `.zenzic.toml` per la governance costituzionale condivisa. Usa
 `.zenzic.local.toml` solo per esperimenti locali e dati privati.
 
+### Cosa Va Dove — Matrice Decisionale {#local-vs-shared}
+
+| Intenzione di configurazione | File |
+| :--- | :--- |
+| Engine (`engine = "docusaurus"`) | `.zenzic.toml` — condiviso |
+| `docs_dir` | `.zenzic.toml` — **sempre condiviso**; se dichiarato solo in `.zenzic.local.toml`, la CI userà il default (`"docs"`) |
+| `fail_under`, `suppression_cap` | `.zenzic.toml` — gate governance condiviso |
+| `strict = true` | **Solo come flag CLI** per monorepo (`--strict`); in `.zenzic.toml` solo per progetti con warning count stabile e azionabile |
+| Override temporaneo di `docs_dir` | `.zenzic.local.toml` — solo override locale |
+| Token API, `github_pat` | `.zenzic.local.toml` — non committare mai segreti |
+| `log_level = "DEBUG"` | `.zenzic.local.toml` — la diagnostica rimane locale |
+| `suppression_cap = 100` (alzare per esperimenti locali) | `.zenzic.local.toml` — non influenza la CI del team |
+
+:::caution[Trappola `docs_dir`]
+Un `docs_dir` dichiarato solo in `.zenzic.local.toml` funziona sulla tua macchina ma si rompe in CI. I runner CI caricano solo `.zenzic.toml` (il file locale è in `.gitignore`). Metti sempre `docs_dir` nella configurazione condivisa.
+:::
+
+:::caution[Trappola `strict = true` per monorepo]
+Impostare `strict = true` in `.zenzic.toml` promuove **tutti i warning a errori** su ogni macchina. Su un monorepo con snapshot versionati questo garantisce un hard-fail. Usa `--strict` come flag CI invece:
+```yaml
+# .github/workflows/zenzic.yml
+- run: zenzic check all --strict
+```
+:::
+
+
 ### Introspezione Source-of-Truth (`zenzic config explain`)
 
 Usa `zenzic config explain` per verificare sia il valore attivo sia la sua
@@ -180,6 +206,8 @@ excluded_dirs = ["includes", "stylesheets", "overrides"]
 
 Le voci dell'utente vengono **unite** ai System Guardrails (`SYSTEM_EXCLUDED_DIRS`) — non possono mai rimuoverli. I System Guardrails includono: `.git`, `.github`, `.venv`, `node_modules`, `.nox`, `.tox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, `.docusaurus`, `.cache`, `.hypothesis`, `.temp`.
 
+**Semantica di corrispondenza dei percorsi:** Se una voce contiene uno slash (`/`), viene valutata rispetto al percorso relativo al repository. Se non lo contiene, viene valutata globalmente rispetto al nome base (basename) della directory.
+
 ### Pattern di file esclusi {#excluded-file-patterns}
 
 ```toml
@@ -189,7 +217,7 @@ excluded_file_patterns = ["*.it.md", "*.fr.md", "CHANGELOG*.md"]
 
 | Campo | Tipo | Predefinito | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `excluded_file_patterns` | `list[string]` | `[]` | Pattern glob (sintassi fnmatch) per escludere file da tutti i controlli |
+| `excluded_file_patterns` | `list[string]` | `[]` | Pattern glob (compilati RE2 — supportati `*` e `?` standard) per escludere file da tutti i controlli |
 
 Utile per file con suffisso locale gestiti da plugin i18n, oppure per prosa storica che contiene esempi intenzionali di segreti o sintassi deprecata.
 
@@ -628,6 +656,13 @@ Abilita il reporting di governance per la parità traduzioni sui tree locali con
 
 Soppressioni scoped per pattern glob. I finding di sicurezza restano non sopprimibili.
 
+:::important[Invariante sulla Risoluzione dei Path]
+I glob pattern sia per `per_file_ignores` che per `directory_policies` sono valutati rispetto alla **root del repository**.
+Nei monorepo o nei layout nidificati, devi includere il prefisso del percorso completo partendo dalla root del repository:
+* Usa `"website/docs/**"` invece di `"docs/**"` se la cartella dei contenuti si trova in `website/docs/`.
+* Usa `"docs/blog/**"` invece di `"blog/**"` se la cartella blog si trova all'interno di `docs/blog/`.
+:::
+
 ### `directory_policies` {#directory-policies}
 
 | | |
@@ -670,7 +705,7 @@ suppression_cap_fail_hard = true
 "docs/legacy/**" = ["Z601"]
 
 [governance.directory_policies]
-"blog/**" = ["Z601"]
+"docs/blog/**" = ["Z601"]
 ```
 
 ---
