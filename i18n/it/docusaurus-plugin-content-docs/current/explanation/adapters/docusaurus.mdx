@@ -1,0 +1,26 @@
+---
+sidebar_label: "Adattatore Docusaurus"
+description: "Come Zenzic emula la semantica di routing di Docusaurus senza un runtime Node.js."
+---
+
+# Architettura dell'Adattatore Docusaurus
+
+Il `DocusaurusAdapter` è responsabile della traduzione dello stato del filesystem fisico di un progetto Docusaurus nel Virtual Site Map (VSM) universale di Zenzic. Poiché Docusaurus è un framework React basato su Node.js, Zenzic deve emularne la logica di routing interamente in Python tramite analisi statica.
+
+## Il Contratto di Emulazione
+
+Zenzic non esegue `docusaurus build` né valuta JavaScript. Al contrario, analizza staticamente `docusaurus.config.ts` (o `.js`) per estrarre le configurazioni dei plugin. Questo permette a Zenzic di prevedere accuratamente gli URL finali generati dalla pipeline di build di Docusaurus.
+
+### Semantica di Risoluzione delle Route
+
+Docusaurus genera route in base a una combinazione di path del filesystem e configurazione dei plugin. Zenzic emula questo comportamento utilizzando le seguenti regole:
+
+1. **Override Frontmatter (`slug`)**: Docusaurus consente agli autori di sovrascrivere la route predefinita basata sul filesystem utilizzando il campo frontmatter `slug`. Zenzic rispetta questa regola:
+   - **Slug Assoluti**: Se uno slug inizia con un `/` (es. `slug: /custom`), Docusaurus antepone il `routeBasePath` del plugin. Zenzic antepone correttamente il `routeBasePath` agli slug assoluti per prevenire falsi positivi di pagine orfane.
+   - **Slug Relativi**: Se uno slug è relativo (es. `slug: custom`), sostituisce l'ultimo segmento del path del filesystem.
+
+2. **Estrazione della Data del Blog**: I post del blog di Docusaurus spesso usano una convenzione per i nomi dei file come `YYYY-MM-DD-slug.md`. Quando genera l'URL, Docusaurus estrae la data nei segmenti del path (`/YYYY/MM/DD/slug/`). Zenzic analizza nativamente questi nomi di file usando espressioni regolari per emulare l'esatta logica di generazione degli URL, assicurando che i post del blog con date siano mappati correttamente nel VSM.
+
+3. **Linking Basato su File**: I link che utilizzano percorsi assoluti e fanno riferimento al filesystem sorgente (es. `/docs/guide/install.md`) vengono risolti da Zenzic esattamente come li risolve Docusaurus, mappandoli sui rispettivi URL canonici nel VSM.
+
+Questo approccio architetturale permette a Zenzic di fornire una validazione dei link senza falsi positivi e rilevamento degli orfani senza il sovraccarico di un runtime Node.js o l'esecuzione dinamica.
