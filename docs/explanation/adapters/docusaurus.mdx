@@ -24,3 +24,25 @@ Docusaurus generates routes based on a combination of filesystem paths and plugi
 3. **File-Based Linking**: Links using absolute paths referencing the source filesystem (e.g., `/docs/guide/install.md`) are resolved by Zenzic exactly as Docusaurus resolves them, mapping them to their canonical URLs in the VSM.
 
 This architectural approach allows Zenzic to provide zero-false-positive link validation and orphan detection without the overhead of a Node.js runtime or dynamic execution.
+
+## Known Limitations & Mitigations
+
+Zenzic enforces absolute determinism through a pure Python static analysis architecture. Consequently, it does not execute JavaScript or TypeScript. This imposes two strict boundaries when emulating Docusaurus routing semantics:
+
+### Webpack `@site` Aliases
+Zenzic cannot resolve Webpack aliases dynamically. Links utilizing the `@site/` alias rely on Node.js module resolution during the Webpack build phase. Because this process is dynamic, static analysis cannot reliably intercept it, and these links will yield **Z104** (Missing Internal Route) errors.
+
+### Generated Category Indices
+Docusaurus sidebars dynamically generate virtual `/category/` routes at runtime via `sidebars.js` or `sidebars.ts`. Since Zenzic cannot execute TypeScript to discover these virtual routes, links pointing to generated category indices will yield **Z101** (Orphaned File) or **Z104** (Missing Internal Route) errors.
+
+### Official Mitigation
+
+To silence these architectural false positives without suffering DQS penalties, you must implement explicit directory policies in your `.zenzic.toml` (or local `.zenzic.local.toml`). Do not alter your valid Docusaurus links.
+
+```toml
+[governance.directory_policies]
+# Silence false positives on dynamic Webpack aliases and sidebar categories
+"docs/**" = { silenced_findings = ["Z101", "Z104"] }
+```
+
+> **Strategic Note:** This limitation is temporary. In **v0.12.0**, Zenzic will implement the **Bridge Architecture**. By introducing `docusaurus-plugin-zenzic`, the Python engine will ingest a 100% accurate, physical `.zenzic-vsm.json` dump directly from the Docusaurus lifecycle, completely eliminating heuristic constraints.

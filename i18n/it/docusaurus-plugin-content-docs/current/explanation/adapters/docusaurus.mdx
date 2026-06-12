@@ -24,3 +24,25 @@ Docusaurus genera route in base a una combinazione di path del filesystem e conf
 3. **Linking Basato su File**: I link che utilizzano percorsi assoluti e fanno riferimento al filesystem sorgente (es. `/docs/guide/install.md`) vengono risolti da Zenzic esattamente come li risolve Docusaurus, mappandoli sui rispettivi URL canonici nel VSM.
 
 Questo approccio architetturale permette a Zenzic di fornire una validazione dei link senza falsi positivi e rilevamento degli orfani senza il sovraccarico di un runtime Node.js o l'esecuzione dinamica.
+
+## Limitazioni Note e Mitigazioni
+
+Zenzic impone un determinismo assoluto attraverso un'architettura di analisi statica in puro Python. Di conseguenza, non esegue JavaScript o TypeScript. Questo impone due rigidi confini fisici nell'emulazione della semantica di routing di Docusaurus:
+
+### Alias `@site` di Webpack
+Zenzic non può risolvere gli alias di Webpack dinamicamente. I link che utilizzano l'alias `@site/` si basano sulla risoluzione dei moduli di Node.js durante la fase di build di Webpack. Poiché questo processo è dinamico, l'analisi statica non può intercettarlo in modo affidabile, e questi link produrranno errori **Z104** (Missing Internal Route).
+
+### Indici di Categoria Generati
+Le sidebar di Docusaurus generano dinamicamente percorsi virtuali `/category/` a runtime tramite `sidebars.js` o `sidebars.ts`. Poiché Zenzic non può eseguire TypeScript per scoprire queste rotte virtuali, i link che puntano agli indici di categoria generati produrranno errori **Z101** (Orphaned File) o **Z104** (Missing Internal Route).
+
+### Mitigazione Ufficiale
+
+Per silenziare questi falsi positivi architetturali senza subire penalità sul DQS, devi implementare policy di directory esplicite nel tuo `.zenzic.toml` (o `.zenzic.local.toml`). Non alterare i tuoi link Docusaurus validi.
+
+```toml
+[governance.directory_policies]
+# Silenzia i falsi positivi sugli alias Webpack dinamici e le categorie sidebar
+"docs/**" = { silenced_findings = ["Z101", "Z104"] }
+```
+
+> **Nota Strategica:** Questa limitazione è temporanea. Nella versione **v0.12.0**, Zenzic implementerà la **Bridge Architecture**. Introducendo `docusaurus-plugin-zenzic`, il motore Python acquisirà un dump fisico `.zenzic-vsm.json` accurato al 100% direttamente dal ciclo di vita di Docusaurus, eliminando completamente i vincoli euristici.
