@@ -104,7 +104,7 @@ for local experiments and private data only.
 
 | Configuration intent | File |
 | :--- | :--- |
-| Engine (`engine = "docusaurus"`) | `.zenzic.toml` — shared |
+| Engine (`engine = "mkdocs"`) | `.zenzic.toml` — shared |
 | `docs_dir` | `.zenzic.toml` — **always shared**; if placed only in `.zenzic.local.toml`, CI will use the default (`"docs"`) |
 | `fail_under`, `suppression_cap` | `.zenzic.toml` — shared governance gate |
 | `strict = true` | **CLI flag only** for monorepos (`--strict`); in `.zenzic.toml` only for projects with stable, actionable warning counts |
@@ -443,20 +443,19 @@ The `[build_context]` table tells Zenzic which documentation engine produced the
 | **Type** | `str` |
 | **Default** | `"auto"` |
 
-Build engine identifier. Used by the adapter factory to select the correct path-resolution strategy. Built-in adapters: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
+Build engine identifier. Used by the adapter factory to select the correct path-resolution strategy. Built-in adapters: `mkdocs`, `zensical`, `standalone`.
 
 When set to `"auto"` (the default), Zenzic probes the project root at runtime using **engine auto-discovery**, scanning for engine config files in priority order:
 
 1. `zensical.toml` → `zensical`
-2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
-3. `mkdocs.yml` → `mkdocs`
-4. *(no match)* → `standalone`
+2. `mkdocs.yml` → `mkdocs`
+3. *(no match)* → `standalone`
 
 For production CI, pin the engine explicitly to skip discovery overhead:
 
 ```toml
 [build_context]
-engine = "docusaurus"
+engine = "mkdocs"
 ```
 
 ### `default_locale` {#default-locale}

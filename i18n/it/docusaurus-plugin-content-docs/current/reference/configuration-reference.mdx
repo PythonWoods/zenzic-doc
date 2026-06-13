@@ -104,7 +104,7 @@ Usa `.zenzic.toml` per la governance costituzionale condivisa. Usa
 
 | Intenzione di configurazione | File |
 | :--- | :--- |
-| Engine (`engine = "docusaurus"`) | `.zenzic.toml` — condiviso |
+| Engine (`engine = "mkdocs"`) | `.zenzic.toml` — condiviso |
 | `docs_dir` | `.zenzic.toml` — **sempre condiviso**; se dichiarato solo in `.zenzic.local.toml`, la CI userà il default (`"docs"`) |
 | `fail_under`, `suppression_cap` | `.zenzic.toml` — gate governance condiviso |
 | `strict = true` | **Solo come flag CLI** per monorepo (`--strict`); in `.zenzic.toml` solo per progetti con warning count stabile e azionabile |
@@ -432,20 +432,19 @@ fallback_to_default = true
 | **Tipo** | `str` |
 | **Default** | `"auto"` |
 
-Identificatore del motore di build. Usato dalla factory degli adapter per selezionare la strategia corretta di risoluzione dei percorsi. Adapter integrati: `mkdocs`, `zensical`, `docusaurus`, `standalone`.
+Identificatore del motore di build. Usato dalla factory degli adapter per selezionare la strategia corretta di risoluzione dei percorsi. Adapter integrati: `mkdocs`, `zensical`, `standalone`.
 
 Quando impostato su `"auto"` (il default), Zenzic analizza la root del progetto a runtime con il **rilevamento automatico dell'engine**, cercando file di configurazione dell'engine nell'ordine di priorità:
 
 1. `zensical.toml` → `zensical`
-2. `docusaurus.config.ts` / `docusaurus.config.js` → `docusaurus`
-3. `mkdocs.yml` → `mkdocs`
-4. *(nessuna corrispondenza)* → `standalone`
+2. `mkdocs.yml` → `mkdocs`
+3. *(nessuna corrispondenza)* → `standalone`
 
 Per la CI di produzione, si consiglia di fissare l'engine esplicitamente per saltare il costo della discovery:
 
 ```toml
 [build_context]
-engine = "docusaurus"
+engine = "mkdocs"
 ```
 
 ### `default_locale` {#default-locale}
