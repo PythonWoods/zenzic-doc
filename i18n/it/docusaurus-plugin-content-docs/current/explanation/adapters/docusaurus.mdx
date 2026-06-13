@@ -21,7 +21,7 @@ Docusaurus genera route in base a una combinazione di path del filesystem e conf
 
 2. **Estrazione della Data del Blog**: I post del blog di Docusaurus spesso usano una convenzione per i nomi dei file come `YYYY-MM-DD-slug.md`. Quando genera l'URL, Docusaurus estrae la data nei segmenti del path (`/YYYY/MM/DD/slug/`). Zenzic analizza nativamente questi nomi di file usando espressioni regolari per emulare l'esatta logica di generazione degli URL, assicurando che i post del blog con date siano mappati correttamente nel VSM.
 
-3. **Linking Basato su File**: I link che utilizzano percorsi assoluti e fanno riferimento al filesystem sorgente (es. `/docs/guide/install.md`) vengono risolti da Zenzic esattamente come li risolve Docusaurus, mappandoli sui rispettivi URL canonici nel VSM.
+3. **Linking Basato su File**: Zenzic risolve i link fisici ai file esattamente come fa Docusaurus. Zenzic comprende nativamente la **Magia Root-Relative** di Docusaurus—se un link a un file fisico (es. `guides/install.mdx`) è privo di un prefisso relativo (`./` o `../`) o assoluto (`/`), Zenzic esegue un fallback elegante risolvendo il percorso relativo alla radice del plugin attivo (es. la cartella `docs/` o `blog/`). Non è necessario alterare i link Docusaurus validi.
 
 Questo approccio architetturale permette a Zenzic di fornire una validazione dei link senza falsi positivi e rilevamento degli orfani senza il sovraccarico di un runtime Node.js o l'esecuzione dinamica.
 
