@@ -50,3 +50,12 @@ Se devi utilizzare `sidebars.js` o `sidebars.ts` per della logica dinamica, Zenz
 # Sopprimi Z104 sui link che puntano a indici di categoria generati in JS
 "docs/category/**" = ["Z101", "Z104"]
 ```
+
+### Confini Ontologici: React e MDX
+
+Zenzic valida Markdown statico. Non esegue React né fa il bundle di MDX. Zenzic analizza i file isolatamente e usa un parser AST in puro Python per costruire il Virtual Site Map. A causa di questa purezza architetturale, ci sono due confini distinti in cui Zenzic fallirà staticamente nel trovare gli anchor:
+
+1. **ID generati da React**: Se un `id` è generato dinamicamente da un componente React (es. `<APITable id={name} />`), il parser AST di Zenzic non può vederlo.
+2. **Partial MDX Importati**: Se un anchor è definito all'interno di un partial MDX importato, Zenzic non lo aggregherà nel namespace del file genitore.
+
+Gli errori `Z102` che puntano a ID generati da React o a partial MDX importati sono previsti. Dovresti sopprimere esplicitamente questi errori tramite la tua configurazione `.zenzic.local.toml` o usando un commento `zenzic:ignore` inline. Questo è un dato di fatto strutturale dell'analisi statica e garantisce il determinismo matematico di Zenzic senza il sovraccarico di un runtime JavaScript.
