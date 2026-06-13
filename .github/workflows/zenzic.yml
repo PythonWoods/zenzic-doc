@@ -24,5 +24,6 @@ jobs:
       - name: Run Zenzic Quality Gate
         uses: PythonWoods/zenzic-action@v1
         with:
+          version: "0.11.0"
           strict: 'true'
           upload-sarif: 'true'

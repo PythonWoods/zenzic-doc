@@ -72,7 +72,7 @@ placeholder_max_words = 0
 
 # --- ENGINE CONTEXT ---
 [build_context]
-engine         = "standalone" # Supported: mkdocs, zensical, standalone
+engine         = "docusaurus" # Supported: mkdocs, zensical, standalone
 base_url       = "/"
 default_locale = "en"
 locales        = ["it"]

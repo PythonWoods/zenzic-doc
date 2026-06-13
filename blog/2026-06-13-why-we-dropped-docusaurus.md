@@ -123,3 +123,4 @@ We deleted the Node.js call. We deleted the adapter. We wrote this post.
 
 *Zenzic is a pure-Python static documentation linter.
 Source: [github.com/pythonwoods/zenzic](https://github.com/pythonwoods/zenzic)*
+{/* truncate */}
