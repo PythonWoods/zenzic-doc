@@ -63,11 +63,6 @@ search = "badge/Zenzic-v{current_version}-blue"
 replace = "badge/Zenzic-v{new_version}-blue"
 
 [[tool.bumpversion.files]]
-filename = "README.it.md"
-search = "badge/Zenzic-v{current_version}-blue"
-replace = "badge/Zenzic-v{new_version}-blue"
-
-[[tool.bumpversion.files]]
 filename = "static/assets/brand/zenzic-brand-system.html"
 search = "v{current_version}"
 replace = "v{new_version}"

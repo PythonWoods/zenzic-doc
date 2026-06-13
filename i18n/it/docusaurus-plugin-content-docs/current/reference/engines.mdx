@@ -369,6 +369,47 @@ Questo rispecchia esattamente il comportamento di Docusaurus, prevenendo falsi p
 Le rotte versionate sono trattate come **Ghost Routes**: sono sempre considerate raggiungibili perché Docusaurus genera automaticamente la navigazione per gli alberi di documentazione versionati.
 :::
 
+### Partials e la Frontiera Sicurezza vs. Routing {#docusaurus-partials}
+
+Docusaurus tratta qualsiasi file o directory il cui nome inizia con `_` come un **partial** — un frammento di contenuto privato che il motore di build esclude intenzionalmente dal routing. Esempi comuni includono i descrittori sidebar `_category_.json`, le directory `_partials/` con snippet MDX riutilizzabili, e qualsiasi file `_*.mdx` pensato per essere importato da altre pagine.
+
+Zenzic applica una separazione rigorosa tra due layer:
+
+| Layer | Comportamento | Motivazione |
+| :--- | :--- | :--- |
+| **I/O Discovery** (`walk_files`) | Legge **tutti** i file, inclusi quelli con prefisso `_` | Z201 HARDCODED_SECRET e Z204 FORBIDDEN_TERM devono scansionare ogni file — le credenziali nei partial sono ugualmente pericolose |
+| **Routing** (`DocusaurusAdapter`) | Restituisce `status="IGNORED"` e `canonical_url=""` per qualsiasi segmento di percorso che inizia con `_` | I partial non hanno URL pubblico; emettere un URL fantasma causerebbe falsi positivi Z405 |
+| **Regole Z402 / Z502** | Saltano i file con stato `IGNORED` | I controlli word-count e placeholder sono privi di significato per file senza audience |
+
+:::caution[Sicurezza non negoziabile]
+Il layer I/O **non filtra mai** i file con prefisso `_`. Farlo renderebbe il credential scanner cieco ai segreti nascosti nei file partial — un blindspot di sicurezza vietato dall'ADR-013. L'esclusione è puramente logica e avviene al layer di routing, **dopo** che la scansione di sicurezza è già avvenuta.
+:::
+
+Questo significa che non vedrai mai falsi positivi Z402/Z502/Z405 per le tue directory `_partials/`, mentre Z201/Z204 rileva comunque qualsiasi credenziale accidentalmente inserita lì.
+
+### Supporto Monorepo — Site Root Dinamica {#docusaurus-monorepo}
+
+I progetti Docusaurus sono spesso annidati all'interno di un monorepo più grande: la sorgente della documentazione risiede sotto `website/docs/` mentre `docusaurus.config.ts` si trova in `website/`. Zenzic gestisce questo automaticamente tramite la **discovery dinamica della site root**:
+
+Quando `docs_dir = "website"` (o qualsiasi percorso che non è la root del repo), Zenzic risale da `docs_root` verso `repo_root` cercando `docusaurus.config.ts` o `docusaurus.config.js`. La prima directory antenata che contiene uno dei due file viene usata come site root per tutta l'analisi statica — `baseUrl`, `routeBasePath`, configurazione blog e percorsi sidebar vengono tutti estratti relativamente a quell'ancora.
+
+```toml
+# .zenzic.toml per un layout monorepo
+# Root del repo: /project/
+# docs_dir:      /project/website/
+# Site root:     /project/website/  (dove risiede docusaurus.config.ts)
+docs_dir = "website"
+
+[build_context]
+engine = "docusaurus"
+```
+
+Nessuna configurazione aggiuntiva è necessaria. Se `docusaurus.config.ts` è assente da tutti gli antenati, Zenzic si ricade alla root del repo e emette un warning — non si blocca mai.
+
+:::tip[Monorepo con versioning]
+Per i monorepo con `versioned_docs/` contenente molti snapshot storici, aggiungilo a `excluded_dirs` per evitare l'amplificazione ×N dei finding. Gli snapshot storici sono immutabili — i loro finding non sono azionabili. Usa `[governance.directory_policies]` se hai bisogno di una audit trail a zero-debt invece dell'esclusione totale.
+:::
+
 ### Auto-discovery del blog {#docusaurus-blog}
 
 I post del blog Docusaurus vivono **fuori** da `docs/`, ma restano URL reali che la build serve agli utenti. Zenzic li scopre automaticamente — nessuna configurazione aggiuntiva richiesta:
