@@ -37,12 +37,13 @@ Docusaurus sidebars dynamically generate virtual `/category/` routes at runtime 
 
 ### Official Mitigation
 
-To silence these architectural false positives without suffering DQS penalties, you must implement explicit directory policies in your `.zenzic.toml` (or local `.zenzic.local.toml`). Do not alter your valid Docusaurus links.
+To silence these architectural false positives without suffering DQS penalties, you must implement explicit directory policies in your `.zenzic.toml` (or local `.zenzic.local.toml`). You should only target the specific directories where these architectural boundaries occur to avoid masking legitimate issues in your main documentation. Do not alter your valid Docusaurus links.
 
 ```toml
 [governance.directory_policies]
-# Silence false positives on dynamic Webpack aliases and sidebar categories
-"docs/**" = { silenced_findings = ["Z101", "Z104"] }
+# Surgical mitigation for specific files/folders containing generated indices or @site aliases
+"website/docs/guides/docs/sidebar/**" = ["Z101", "Z104"]
+"website/docs/migration/**" = ["Z104"]
 ```
 
 > **Strategic Note:** This limitation is temporary. In **v0.12.0**, Zenzic will implement the **Bridge Architecture**. By introducing `docusaurus-plugin-zenzic`, the Python engine will ingest a 100% accurate, physical `.zenzic-vsm.json` dump directly from the Docusaurus lifecycle, completely eliminating heuristic constraints.
