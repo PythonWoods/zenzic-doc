@@ -25,25 +25,18 @@ Docusaurus generates routes based on a combination of filesystem paths and plugi
 
 This architectural approach allows Zenzic to provide zero-false-positive link validation and orphan detection without the overhead of a Node.js runtime or dynamic execution.
 
-## Known Limitations & Mitigations
+## The Data Contract for Dynamic Routing
 
-Zenzic enforces absolute determinism through a pure Python static analysis architecture. Consequently, it does not execute JavaScript or TypeScript. This imposes two strict boundaries when emulating Docusaurus routing semantics:
+Zenzic enforces absolute determinism through a pure Python static analysis architecture. Consequently, it does not execute JavaScript or TypeScript.
 
-### Webpack `@site` Aliases
-Zenzic cannot resolve Webpack aliases dynamically. Links utilizing the `@site/` alias rely on Node.js module resolution during the Webpack build phase. Because this process is dynamic, static analysis cannot reliably intercept it, and these links will yield **Z104** (Missing Internal Route) errors.
+To resolve Docusaurus-specific routing without violating the Zero Subprocess mandate, Zenzic establishes a strict **Data Contract**:
 
-### Generated Category Indices
-Docusaurus sidebars dynamically generate virtual `/category/` routes at runtime via `sidebars.js` or `sidebars.ts`. Since Zenzic cannot execute TypeScript to discover these virtual routes, links pointing to generated category indices will yield **Z101** (Orphaned File) or **Z104** (Missing Internal Route) errors.
+### 1. Webpack `@site` Aliases
+Zenzic statically intercepts and strips the `@site/` alias during path resolution. Links utilizing this alias are correctly re-mapped to the physical repository root exactly as Webpack would at runtime. You do not need to alter valid Docusaurus links.
 
-### Official Mitigation
+### 2. Generated Category Indices
+Docusaurus sidebars dynamically generate virtual `/category/` routes at runtime. Since Zenzic cannot execute TypeScript to discover these virtual routes, you must use **`sidebars.json`** (or YAML) instead of `sidebars.ts`.
 
-To silence these architectural false positives without suffering DQS penalties, you must implement explicit directory policies in your `.zenzic.toml` (or local `.zenzic.local.toml`). You should only target the specific directories where these architectural boundaries occur to avoid masking legitimate issues in your main documentation. Do not alter your valid Docusaurus links.
+When Zenzic detects `sidebars.json` in the Docusaurus root, it automatically parses the file to harvest any `generated-index` routes and maps them accurately into the Virtual Site Map.
 
-```toml
-[governance.directory_policies]
-# Surgical mitigation for specific files/folders containing generated indices or @site aliases
-"website/docs/guides/docs/sidebar/**" = ["Z101", "Z104"]
-"website/docs/migration/**" = ["Z104"]
-```
-
-> **Strategic Note:** This limitation is temporary. In **v0.12.0**, Zenzic will implement the **Bridge Architecture**. By introducing `docusaurus-plugin-zenzic`, the Python engine will ingest a 100% accurate, physical `.zenzic-vsm.json` dump directly from the Docusaurus lifecycle, completely eliminating heuristic constraints.
+> **Data Contract:** To allow Zenzic to validate generated category indices, you must use `sidebars.json` instead of `sidebars.ts`. If you choose to use TypeScript for sidebars, you must accept a static blindspot for generated indices.
