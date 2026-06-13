@@ -40,3 +40,13 @@ Le sidebar di Docusaurus generano dinamicamente rotte `/category/` virtuali a ru
 Quando Zenzic rileva `sidebars.json` nella radice di Docusaurus, analizza automaticamente il file per raccogliere qualsiasi rotta `generated-index` e la mappa accuratamente nel Virtual Site Map.
 
 > **Contratto Dati:** Per permettere a Zenzic di validare gli indici di categoria generati, devi usare `sidebars.json` invece di `sidebars.ts`. Se scegli di usare TypeScript per le sidebar, devi accettare un "punto cieco" statico per gli indici generati.
+
+### Fallback: Sopprimere le Categorie Dinamiche
+
+Se devi utilizzare `sidebars.js` o `sidebars.ts` per della logica dinamica, Zenzic sarà staticamente "cieco" rispetto agli indici generati. Per prevenire i falsi positivi Z104 su questi link, puoi sopprimere gli errori utilizzando il seguente frammento nel tuo `.zenzic.toml`:
+
+```toml
+[governance.directory_policies]
+# Sopprimi Z104 sui link che puntano a indici di categoria generati in JS
+"docs/category/**" = ["Z101", "Z104"]
+```
