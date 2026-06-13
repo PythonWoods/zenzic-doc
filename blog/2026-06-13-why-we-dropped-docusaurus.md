@@ -1,6 +1,6 @@
 # Why We Dropped Docusaurus: The Ontological Limits of Static Analysis
 
-*Zenzic Engineering · June 2025*
+*Zenzic Engineering · June 13, 2026*
 
 ---
 
