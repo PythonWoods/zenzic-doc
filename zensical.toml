@@ -12,6 +12,7 @@ extra_css = ["assets/extra.css"]
 
 [project.theme]
 name = "material"
+custom_dir = "overrides"
 logo = "assets/brand/svg/zenzic-icon.svg"
 favicon = "assets/favicon/png/zenzic-icon-32.png"
 features = [
