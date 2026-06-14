@@ -88,4 +88,4 @@ accounting as all other findings.
 
 - Z404 is now classified as a **universal quality check**, not an engine-specific
 
-  feature, in `reference/finding-codes.mdx`.
+  feature, in `reference/finding-codes.md`.

@@ -120,8 +120,8 @@ zenzic inspect routes --json
   "kind": "tag",
   "status": "virtual",
   "source_files": [
-    "blog/2026-05-01-v080-roadmap.mdx",
-    "blog/2026-05-07-quartz-retrospective.mdx"
+    "blog/2026-05-01-v080-roadmap.md",
+    "blog/2026-05-07-quartz-retrospective.md"
   ],
   "frontmatter_keys": ["tags", "slug", "authors"]
 }
@@ -250,7 +250,7 @@ Every governance system eventually encounters a legitimate exemption problem. Br
 
 Before `directory_policies`, the only escape was an inline suppression comment scattered across every affected line:
 
-```mdx
+```markdown
 <!-- zenzic:ignore: Z601 historical release -->
 Quartz was the internal code name for v0.6.0.
 <!-- zenzic:ignore: Z601 historical release -->
@@ -267,14 +267,14 @@ suppression_cap = 10
 suppression_cap_fail_hard = true
 
 [governance.directory_policies]
-"blog/**"                         = ["Z601"]  # historical release posts: brand terms are intentional
-"explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
-"it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
+"blog/**"                        = ["Z601"]  # historical release posts: brand terms are intentional
+"explanation/mineral-path.md"    = ["Z601"]  # SSOT codename registry (EN)
+"it/explanation/mineral-path.md" = ["Z601"]  # SSOT codename registry (IT)
 ```
 
 With this configuration in place, the blog posts become clean:
 
-```mdx
+```markdown
 Quartz was the internal code name for v0.6.0.
 The Obsidian milestone closed the legacy adapter contract.
 ```

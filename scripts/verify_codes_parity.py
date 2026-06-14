@@ -20,8 +20,8 @@ from zenzic.core import regex as re
 ROOT = Path(__file__).resolve().parent.parent
 
 _CODE_TOKEN_RE = re.compile(r"\bZ\d{3}\b")
-_MIGRATION_MATRIX_START = "{/* zenzic:migration-matrix:start */}"
-_MIGRATION_MATRIX_END = "{/* zenzic:migration-matrix:end */}"
+_MIGRATION_MATRIX_START = "<!-- zenzic:migration-matrix:start -->"
+_MIGRATION_MATRIX_END = "<!-- zenzic:migration-matrix:end -->"
 _MATRIX_ROW_RE = re.compile(r"\|\s*`?(Z\d{3})`?\s*\|\s*`?(Z\d{3})`?\s*\|")
 
 
@@ -29,9 +29,8 @@ def _iter_parity_files(root: Path) -> list[Path]:
     """Return all documentation files to scan for Zxxx references."""
     roots = [
         root / "docs",
-        root / "i18n" / "it",
     ]
-    patterns = ("**/*.mdx", "**/*.md")
+    patterns = ("**/*.md",)
     files: list[Path] = []
     for scan_root in roots:
         if not scan_root.exists():
@@ -68,52 +67,28 @@ def main() -> int:
             code = match.group().upper()
             found_in_docs.setdefault(code, set()).add(rel)
 
-    en_fc_path = ROOT / "docs" / "reference" / "finding-codes.mdx"
-    it_fc_path = (
-        ROOT
-        / "i18n"
-        / "it"
-        / "docusaurus-plugin-content-docs"
-        / "current"
-        / "reference"
-        / "finding-codes.mdx"
-    )
+    en_fc_path = ROOT / "docs" / "user-manual" / "reference" / "finding-codes.md"
     en_fc_text = en_fc_path.read_text(encoding="utf-8")
-    it_fc_text = it_fc_path.read_text(encoding="utf-8")
 
     missing_active_en = [
         code for code in sorted(active_codes) if f"{{#{code.lower()}}}" not in en_fc_text
     ]
-    missing_active_it = [
-        code for code in sorted(active_codes) if f"{{#{code.lower()}}}" not in it_fc_text
-    ]
 
     legacy_matrix_en = _extract_legacy_matrix(en_fc_text)
-    legacy_matrix_it = _extract_legacy_matrix(it_fc_text)
 
     missing_legacy_en = sorted(code for code in legacy_codes if code not in legacy_matrix_en)
-    missing_legacy_it = sorted(code for code in legacy_codes if code not in legacy_matrix_it)
 
     mismatched_legacy_en = sorted(
         code
         for code in legacy_codes
         if code in legacy_matrix_en and legacy_matrix_en[code] != legacy_to_code[code]
     )
-    mismatched_legacy_it = sorted(
-        code
-        for code in legacy_codes
-        if code in legacy_matrix_it and legacy_matrix_it[code] != legacy_to_code[code]
-    )
 
     unexpected_legacy_en = sorted(code for code in legacy_matrix_en if code not in legacy_codes)
-    unexpected_legacy_it = sorted(code for code in legacy_matrix_it if code not in legacy_codes)
 
     legacy_refs_in_docs = sorted(code for code in found_in_docs if code in legacy_codes)
     legacy_refs_missing_matrix_en = [
         code for code in legacy_refs_in_docs if code not in legacy_matrix_en
-    ]
-    legacy_refs_missing_matrix_it = [
-        code for code in legacy_refs_in_docs if code not in legacy_matrix_it
     ]
 
     unknown_codes = sorted(code for code in found_in_docs if code not in known_codes)
@@ -125,20 +100,10 @@ def main() -> int:
             "MISSING ACTIVE ANCHORS (EN): "
             f"{missing_active_en}. Each active code must expose a dedicated {{#zxxx}} section."
         )
-    if missing_active_it:
-        errors.append(
-            "MISSING ACTIVE ANCHORS (IT): "
-            f"{missing_active_it}. The Italian encyclopedia must mirror active anchor coverage."
-        )
 
     if not legacy_matrix_en:
         errors.append(
             "MIGRATION MATRIX (EN) not found. "
-            "Expected tagged block between zenzic:migration-matrix:start/end."
-        )
-    if not legacy_matrix_it:
-        errors.append(
-            "MIGRATION MATRIX (IT) not found. "
             "Expected tagged block between zenzic:migration-matrix:start/end."
         )
 
@@ -146,38 +111,21 @@ def main() -> int:
         errors.append(
             f"LEGACY MATRIX INCOMPLETE (EN) - missing rows for: {missing_legacy_en}"
         )
-    if missing_legacy_it:
-        errors.append(
-            f"LEGACY MATRIX INCOMPLETE (IT) - missing rows for: {missing_legacy_it}"
-        )
 
     if mismatched_legacy_en:
         errors.append(
             f"LEGACY MATRIX MISMATCH (EN) for codes: {mismatched_legacy_en}"
-        )
-    if mismatched_legacy_it:
-        errors.append(
-            f"LEGACY MATRIX MISMATCH (IT) for codes: {mismatched_legacy_it}"
         )
 
     if unexpected_legacy_en:
         errors.append(
             f"LEGACY MATRIX has unknown legacy rows (EN): {unexpected_legacy_en}"
         )
-    if unexpected_legacy_it:
-        errors.append(
-            f"LEGACY MATRIX has unknown legacy rows (IT): {unexpected_legacy_it}"
-        )
 
     if legacy_refs_missing_matrix_en:
         errors.append(
             "Legacy codes referenced in documentation but missing from EN migration matrix: "
             f"{legacy_refs_missing_matrix_en}"
-        )
-    if legacy_refs_missing_matrix_it:
-        errors.append(
-            "Legacy codes referenced in documentation but missing from IT migration matrix: "
-            f"{legacy_refs_missing_matrix_it}"
         )
 
     if unknown_codes:
@@ -195,8 +143,8 @@ def main() -> int:
         return 1
 
     print(
-        "Doc-Code Validator (semantic mode): active anchors validated (EN+IT), "
-        "legacy migration matrix validated (EN+IT), no unknown codes detected."
+        "Doc-Code Validator (semantic mode): active anchors validated (EN), "
+        "legacy migration matrix validated (EN), no unknown codes detected."
     )
     return 0
 

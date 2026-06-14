@@ -13,7 +13,7 @@ description: "Analysis of the z505-untagged-code-block fixture."
 
 **Z-Code:** `Z505 UNTAGGED_CODE_BLOCK` · **Engine:** `standalone` · **Exit:** `0`
 
-```terminal title="zenzic check all"
+~~~terminal title="zenzic check all"
 standalone - 1 file (1 docs, 0 assets) - 0.0s - 61 files/s
 docs/index.md:13
 ⚠
@@ -41,7 +41,7 @@ Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try
 'zenzic check --help' for options.
 [ Suppression Audit: 0/30 (inline: 0, per-file: 0)
 exit 0
-```
+~~~
 
 ## The Fixture
 

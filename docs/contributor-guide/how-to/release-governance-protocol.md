@@ -146,8 +146,7 @@ Suppression Audit: X/30
 
 Canonical inline syntax:
 
-- Markdown: `<!-- zenzic:ignore: Z601 - historical reference -->`
-- MDX: `<!-- zenzic:ignore: Z601 - historical reference -->`
+- Standard: `<!-- zenzic:ignore: Z601 - historical reference -->` (only standard HTML comments are supported for pure Markdown engines)
 
 ---
 

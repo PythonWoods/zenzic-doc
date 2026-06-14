@@ -5,7 +5,7 @@
 # Keep secrets and workstation-only values in .zenzic.local.toml.
 
 strict = true
-fail_under = 80
+fail_under = 90
 
 # External URLs excluded from the broken-link check (applies only with --strict)
 excluded_external_urls = [
@@ -97,7 +97,7 @@ badge_stamp_files = ["README.md"]
 #
 # DEFAULT: 30
 #
-suppression_cap = 20
+suppression_cap = 10
 suppression_cap_fail_hard = true
 
 # Terms that should no longer appear in your documentation.
@@ -119,22 +119,6 @@ i18n_parity = false
 # IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
 #
 [governance.per_file_ignores]
-# Z105: cross-plugin absolute links.
-# Tracked in ROADMAP: Docusaurus Cross-Instance Resolver.
-"docs/user-manual/explanation/github-action-internals.md" = ["Z105"]
-"docs/user-manual/explanation/architecture.md" = ["Z109", "Z105"]
-"docs/user-manual/explanation/the-zenzic-trinity.md" = ["Z105"]
-"docs/user-manual/how-to/configure-adapter.md" = ["Z105"]
-"docs/user-manual/reference/advanced-features.md" = ["Z105"]
-"docs/user-manual/reference/brand-kit.md" = ["Z105"]
-"docs/user-manual/reference/cli.md" = ["Z105"]
-
-# Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
-# demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
-# rel_path is relative to repo_root (with "docs/" prefix); IT locale uses "docs/it/" prefix.
-"docs/user-manual/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
-"docs/blog/2026-06-09-auditing-the-auditors.md" = ["Z503"]
-"docs/user-manual/tutorials/examples/z5xx-content/z505-untagged-code-block.md" = ["Z505"]
 
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
@@ -154,7 +138,7 @@ i18n_parity = false
 [governance.directory_policies]
 "docs/blog/**"                    = ["Z601"]  # historical release blog posts
 "docs/user-manual/explanation/mineral-path.md"    = ["Z601"]  # SSOT codename registry (EN)
-"docs/user-manual/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
+"docs/user-manual/tutorials/examples/**"      = ["Z401", "Z107"]  # example/fixture subdirectories lack category indices intentionally, and contain deliberate circular link examples
 
 # Governance Playbook:
 # /developers/how-to/release-governance-protocol

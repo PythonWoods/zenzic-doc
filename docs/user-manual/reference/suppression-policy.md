@@ -77,23 +77,17 @@ Files in exclusion zones are completely invisible to Zenzic. No findings are emi
 
 The most precise suppression: one comment, one line, one finding.
 
-**Markdown (`.md`) files:**
+**Standard Syntax:**
 
 ```markdown
 Legacy product name retained for historical accuracy. <!-- zenzic:ignore: Z601 -->
 ```
 
-**MDX (`.mdx`) files:**
+The standard HTML comment `<!-- zenzic:ignore [CODES] -->` is the only supported syntax for pure Markdown engines. The comment is completely invisible in the rendered output.
 
-```mdx
-Legacy product name retained for historical accuracy. <!-- zenzic:ignore: Z601 -->
-```
+To suppress **multiple codes on the same line**, append one HTML comment per code:
 
-Both comment forms are invisible in rendered output. Use the comment form that matches the surrounding file style to keep source examples consistent.
-
-To suppress **multiple codes on the same line**, add one comment per code:
-
-```mdx
+```markdown
 Some line. <!-- zenzic:ignore: Z107 --> <!-- zenzic:ignore: Z601 -->
 ```
 
@@ -101,7 +95,7 @@ Some line. <!-- zenzic:ignore: Z107 --> <!-- zenzic:ignore: Z601 -->
 
 The comment should always appear at the **end of the line**, following the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
 
-```mdx
+```markdown
 - Historical reference — legacy product naming retained here. <!-- zenzic:ignore: Z601 -->
 ```
 

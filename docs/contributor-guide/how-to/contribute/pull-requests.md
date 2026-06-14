@@ -205,11 +205,11 @@ are structurally distinct from credential patterns.
 
 :::
 
-### MDX / JSX files
+### Markdown files
 
-Use MDX comment syntax:
+Use HTML comment syntax:
 
-```mdx
+```markdown
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-FileCopyrightText: 2026 Your Name <your@email.example> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

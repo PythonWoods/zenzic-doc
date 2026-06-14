@@ -107,6 +107,7 @@ nav = [
             {"Configuration Loading" = "user-manual/explanation/configuration-loading.md"},
             {"Exclusion Design" = "user-manual/explanation/exclusion-design.md"},
             {"Engine Migration Design" = "user-manual/explanation/engine-migration-design.md"},
+            {"Non-Supported Frameworks" = "user-manual/explanation/non-supported-frameworks.md"},
             {"Structural Integrity" = "user-manual/explanation/structural-integrity.md"},
             {"Scoring Design" = "user-manual/explanation/scoring-design.md"},
             {"Scoring System" = "user-manual/explanation/scoring-system.md"},

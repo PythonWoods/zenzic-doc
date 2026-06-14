@@ -68,7 +68,7 @@ SPDX-License-Identifier = "Apache-2.0"
 | Python source files | Per-file SPDX header |
 | Shell scripts | Per-file SPDX header |
 | Configuration (TOML, YAML) | Per-file header or `REUSE.toml` |
-| Documentation (`.mdx`, `.md`) | `REUSE.toml` bulk declaration |
+| Documentation (`.md`) | `REUSE.toml` bulk declaration |
 | Auto-generated files | `REUSE.toml` coverage |
 | Binary assets (SVG, PNG) | `REUSE.toml` bulk declaration |
 

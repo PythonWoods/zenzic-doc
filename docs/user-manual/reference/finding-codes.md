@@ -50,8 +50,7 @@ Each code has a permanent anchor. You can link directly to a specific code using
 ::: info "Per-line suppression syntax"
 Suppress a finding on a specific line with a format-aware comment on that same line.\
 **Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
-**MDX (.mdx):** `<!-- zenzic:ignore: Zxxx -->`\
-See [Suppression Policy](suppression-policy.md) for the full reference.
+The standard HTML comment `<!-- zenzic:ignore [CODES] -->` is the only supported syntax for pure Markdown engines. See [Suppression Policy](suppression-policy.md) for the full reference.
 :::
 
 ### Exit Code Contract

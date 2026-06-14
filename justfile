@@ -12,41 +12,32 @@ ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
 
 # --- SETUP & MAINTENANCE ---
 
-# Install locked dependencies deterministically
-setup:
-    npm ci
-
 # Clean generated artifacts
 clean:
-    rm -rf build .docusaurus
+    rm -rf site/
 
-# Deep clean: remove artifacts and node_modules
+# Deep clean: remove artifacts and caches
 clean-all: clean
-    rm -rf node_modules
+    rm -rf .zenzic_cache
 
-# Purge Docusaurus and npm cache to resolve ghost build issues
+# Purge cache
 purge-cache:
-    npm cache clean --force
-    rm -rf .docusaurus
-    @echo "Cache purged. Run 'just build' for a fresh start."
+    rm -rf .zenzic_cache
+    @echo "Cache purged."
 
 # --- DEVELOPMENT ---
 
-# Start local development server (single-locale; locale dropdown inactive in dev mode)
+# Start local development server
 start:
-    npm run start
+    uvx zensical serve
 
-# Start local development server in Italian
-start-it:
-    npm run start:it
-
-# Serve production build locally (EN + IT, language switcher active)
+# Serve production build locally
 serve:
-    npm run serve
+    uvx zensical serve
 
-# Build then serve production site locally (full EN+IT testbed)
+# Build then serve production site locally
 preview: build
-    npm run serve
+    uvx zensical serve
 
 # --- QUALITY GATES ---
 
@@ -90,7 +81,7 @@ lint-all:
     uvx pre-commit run --all-files
 
 build:
-    npm run build
+    uvx zensical build
 
 check *args:
     #!/usr/bin/env bash
@@ -185,14 +176,8 @@ score *args:
         echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
         exit 2
     fi
-typecheck:
-    npm run typecheck
-
-lint-ts:
-    npm run lint:ts
-
 markdownlint:
-    npm run lint:md
+    uvx markdownlint-cli2 "docs/**/*.md"
 
 reuse:
     uvx reuse lint
@@ -229,8 +214,6 @@ release-dry part *args:
     fi
 
 doctor:
-    @node -v || echo "node missing"
-    @npm -v || echo "npm missing"
     @uv --version || echo "uv missing"
 
 _check-hooks:

@@ -26,8 +26,8 @@ any static site generator (SSG), regardless of what language that generator is w
 | :--- | :--- | :--- | :--- |
 | **Native** | MkDocs | Python | `MkDocsAdapter` — reads `mkdocs.yml`, resolves i18n, enforces nav |
 | **Native** | Zensical | Python | `ZensicalAdapter` — reads `zensical.toml`, zero-YAML |
-| **Native** | Docusaurus | Node.js | `DocusaurusAdapter` — reads `docusaurus.config.ts`, resolves i18n |
 | **Agnostic** | Standalone | any | `StandaloneAdapter` — works on any Markdown folder; orphan check disabled |
+| **Unsupported** | Docusaurus | Node.js | Deprecated and removed; see [Non-Supported Frameworks](../explanation/non-supported-frameworks.md) |
 | **Extensible** | Hugo *(example)* | Go | Third-party adapter via `zenzic.adapters` entry-point |
 | **Extensible** | Jekyll *(example)* | Ruby | Third-party adapter via `zenzic.adapters` entry-point |
 
@@ -55,8 +55,8 @@ Zenzic ships adapters for specific major-version lines. Declaring a different en
 | :--- | :--- | :--- |
 | MkDocs | `1.x` | Series frozen at `1.6.1`; no `1.7` planned. v2 is a separate project requiring a dedicated adapter |
 | Zensical | `0.0.x` | Pre-release; API is volatile. Adapter is updated in lockstep |
-| Docusaurus | `3.x` | v2 support is deprecated and was removed in Zenzic 0.9.0 |
 | Standalone | — | Engine-agnostic; version is irrelevant |
+| Docusaurus | — | Unsupported; removed in v0.12.0 |
 
 Zenzic does **not** invoke the engine binary — it reads configuration files as plain data. Version constraints apply to the **config-file schema**, not to the installed engine binary. If your project runs a newer engine than listed, the adapter may still work; report an issue only if you observe an actual parse error or a false positive traceable to a schema change.
 
@@ -69,13 +69,13 @@ The `[build_context]` section in `.zenzic.toml` tells Zenzic which engine your p
 ```toml
 # .zenzic.toml
 [build_context]
-engine = "mkdocs"   # or "zensical" or "docusaurus"
+engine = "mkdocs"   # or "zensical"
 ```
 
 If `[build_context]` is absent entirely, Zenzic deterministically discovers the engine:
 
 - `mkdocs.yml` present → `MkDocsAdapter`
-- `docusaurus.config.ts` (or `.js`) present → `DocusaurusAdapter`
+- `zensical.toml` present → `ZensicalAdapter`
 - neither config present, no locales declared → `StandaloneAdapter` (orphan check disabled)
 
 ::: info "CLI bridge — Signal-to-noise controls"
@@ -299,315 +299,13 @@ that is not in this set and is not a locale mirror is reported as an orphan.
 
 ---
 
-## Docusaurus {#docusaurus}
+## Docusaurus (Unsupported) {#docusaurus}
 
-`DocusaurusAdapter` is selected when `engine = "docusaurus"` or when `docusaurus.config.ts`
-(or `.js`) is detected in the project root. It reads the Docusaurus configuration as
-**plain text** using pattern matching — no Node.js runtime, no `npm install`, no JavaScript
-evaluation.
+Docusaurus support was removed in Zenzic v0.12.0 due to the fundamental architectural conflict of running static content analysis on a dynamic React-based SPA.
 
-### Source-only analysis
-
-Docusaurus is a Node.js framework built on React. Zenzic does not import or execute any
-Node.js code. Instead, the `DocusaurusAdapter`:
-
-1. **Reads `docusaurus.config.ts`** as text and extracts structural data — `i18n.locales`,
-
-   `i18n.defaultLocale`, docs plugin `routeBasePath` and `path`, and sidebar configuration.
-
-2. **Resolves locale directories** under the standard Docusaurus i18n layout
-
-   (`i18n/{locale}/docusaurus-plugin-content-docs/current/`).
-
-3. **Discovers all navigation surfaces** from `sidebars.ts` / `sidebars.js` and from
-
-   `docusaurus.config.ts` (navbar items and footer links) to build a complete reachability set.
-
-### Minimal configuration
-
-```toml
-# .zenzic.toml
-docs_dir = "docs"
-
-[build_context]
-engine         = "docusaurus"
-default_locale = "en"
-locales        = ["it", "fr"]
-```
-
-When `locales` is empty, Zenzic reads locale information from the `i18n` block in
-`docusaurus.config.ts`.
-
-### Versioning support
-
-Zenzic supports Docusaurus **multi-version documentation** out of the box. It identifies:
-
-1. **Version list** — read from `versions.json` in the project root.
-2. **Versioned content** — discovered under `versioned_docs/version-{version}/`.
-3. **Versioned translations** — discovered under `i18n/{locale}/docusaurus-plugin-content-docs/version-{version}/`.
-
-The Virtual Site Map automatically maps these paths to their correct canonical URLs, following Docusaurus's official versioning rules:
-
-- **Latest version** (the first entry in `versions.json`) maps to the `routeBasePath` root — **no version label in the URL**.
-  - Example: `versioned_docs/version-1.1.0/hello.md` with `versions.json = ["1.1.0", "1.0.0"]` → `/docs/hello/`.
-- **Older versions** retain their version label in the URL.
-  - Example: `versioned_docs/version-1.0.0/hello.md` → `/docs/1.0.0/hello/`.
-
-This matches Docusaurus's own behavior exactly, preventing false positive broken-link reports against latest-version pages.
-
-::: tip "Ghost Routing"
-Versioned routes are treated as **Ghost Routes**: they are always considered reachable because Docusaurus automatically generates navigation for versioned documentation trees.
-:::
-
-### Partials and the Security vs. Routing Boundary {#docusaurus-partials}
-
-Docusaurus treats any file or directory whose name begins with `_` as a **partial** — a private content fragment that the build engine intentionally excludes from routing. Common examples include `_category_.json` sidebar descriptors, `_partials/` directories containing reusable MDX snippets, and any `_*.mdx` file meant to be imported by other pages.
-
-Zenzic enforces a strict separation between two layers:
-
-| Layer | Behaviour | Reason |
-| :--- | :--- | :--- |
-| **I/O Discovery** (`walk_files`) | Reads **all** files, including `_`-prefixed ones | Z201 HARDCODED_SECRET and Z204 FORBIDDEN_TERM must scan every file — credentials in partials are equally dangerous |
-| **Routing** (`DocusaurusAdapter`) | Returns `status="IGNORED"` and `canonical_url=""` for any path segment starting with `_` | Partials have no public URL; emitting a phantom URL would cause Z405 false-positives |
-| **Rules Z402 / Z502** | Skip files with `IGNORED` status | Word-count and placeholder checks are meaningless for files with no audience |
-
-:::caution[Security non-negotiable]
-The I/O layer **never** filters `_`-prefixed files. Doing so would blind the credential scanner to secrets hidden in partial files — a security blindspot vetoed under ADR-013. The exclusion is purely logical and happens at the routing layer, after the security scan has already run.
-:::
-
-This means you will never see Z402/Z502/Z405 false-positives for your `_partials/` directories, while Z201/Z204 still catches any credentials accidentally committed there.
-
-### Monorepo Support — Dynamic Site Root {#docusaurus-monorepo}
-
-Docusaurus projects are often nested inside a larger monorepo — the documentation source lives under `website/docs/` while `docusaurus.config.ts` lives in `website/`. Zenzic handles this automatically via **dynamic site root discovery**:
-
-When `docs_dir = "website"` (or any path that is not the repo root), Zenzic walks upward from `docs_root` toward `repo_root` looking for `docusaurus.config.ts` or `docusaurus.config.js`. The first ancestor directory containing either file is used as the site root for all static analysis — `baseUrl`, `routeBasePath`, blog config, and sidebar paths are all extracted relative to that anchor.
-
-```toml
-# .zenzic.toml for a monorepo layout
-# Repo root: /project/
-# docs_dir:  /project/website/
-# Site root: /project/website/  (where docusaurus.config.ts lives)
-docs_dir = "website"
-
-[build_context]
-engine = "docusaurus"
-```
-
-No additional configuration is needed. If `docusaurus.config.ts` is absent from all ancestors, Zenzic falls back to the repo root and emits a warning — it never crashes.
-
-::: tip "Versioned monorepos"
-For monorepos with `versioned_docs/` containing many historical snapshots, add it to `excluded_dirs` to prevent ×N finding amplification. Historical snapshots are immutable — their findings are not actionable. Use `[governance.directory_policies]` if you need a zero-debt audit trail instead of full exclusion.
-:::
-
-
-Docusaurus blog posts live **outside** `docs/`, but they are still real URLs that the build will serve. Zenzic discovers them automatically — no extra setting required:
-
-- If `docusaurus.config.ts` declares a `blog: { path, routeBasePath }` block, Zenzic uses those values.
-- Otherwise, if `<repo>/blog/` exists on disk, Zenzic assumes the default plugin layout (`path: 'blog'`, `routeBasePath: 'blog'`).
-- If neither is true, the blog plugin is considered absent and nothing extra is scanned.
-
-Once a blog tree is discovered, `zenzic check all` validates it as first-class content:
-
-- Broken links **inside** a blog post are caught (the file would be silently ignored before).
-- Broken links **from `docs/` to a blog post** (or vice-versa) are caught.
-- Assets referenced **only** from a blog post no longer trigger Z405 (Unused Asset).
-- File-name date prefixes (`YYYY-MM-DD-slug.md`) and frontmatter `slug:` overrides are honoured exactly like `docusaurus build` does.
-
-To opt out, set `blog: false` in `docusaurus.config.ts`. To use a custom layout, declare it explicitly in the same config — Zenzic will pick it up.
-
-### Virtual Routes (Tags, Pagination, Authors) {#docusaurus-virtual-routes}
-
-Docusaurus generates routes that have no physical Markdown source file: each unique
-frontmatter tag produces a `/blog/tags/{slug}/` page, paginated indexes produce
-`/blog/page/{n}/` pages, and author profiles produce `/blog/authors/{id}/` pages.
-
-`DocusaurusAdapter` infers these virtual routes statically — **no build step, no Node.js
-execution** — by reading frontmatter metadata from blog posts already loaded into memory.
-
-Each `VirtualRoute` emitted by the adapter carries:
-
-| Field | Type | Example |
-| :--- | :--- | :--- |
-| `url` | `str` | `/blog/tags/python/` |
-| `kind` | `Literal["tag","tag_index","pagination","author","author_index"]` | `"tag"` |
-| `label` | `str` | `"tag:python"` |
-| `source_files` | `frozenset[str]` | `{"blog/2026-04-12-post.md"}` |
-
-The `source_files` set is the implementation of the **Reverse-Mapping Invariant**: every
-URL admitted to the VSM — physical or virtual — must trace back unambiguously to one or
-more real source files. A `VirtualRoute` with an empty `source_files` raises `ValueError`
-at construction time; it cannot reach the VSM.
-
-**Tag routes generated per post:**
-
-Given a blog post with `tags: [python, tutorial]`, Zenzic emits three virtual routes:
-
-```text
-/blog/tags/python/    kind=tag        source_files={"blog/2026-04-12-post.md"}
-/blog/tags/tutorial/  kind=tag        source_files={"blog/2026-04-12-post.md"}
-/blog/tags/           kind=tag_index  source_files={"blog/2026-04-12-post.md", ...}
-```
-
-The tag index (`/blog/tags/`) always lists the **union** of all blog files that carry at
-least one tag, giving the cross-file traceability needed for diagnostics.
-
-::: note "Pagination and Authors — future milestone"
-Pagination routes (`/blog/page/{n}/`) and author routes will be added in a subsequent
-release. The `VirtualRoute.kind` field already reserves the literals `"pagination"`,
-`"author"`, and `"author_index"` so downstream consumers can handle all route kinds
-without a breaking schema change.
-:::
-
-::: tip "Connecting external tools"
-The `zenzic inspect routes` command is now available. This feature exports the complete
-site map in a deterministic JSON format. It is designed to be consumed by external
-tools: custom Bash scripts, CI/CD dashboards, or specialized tools that
-require architectural context.
-:::
-
-### i18n layout
-
-Docusaurus stores translations in a deep directory structure:
-
-```text
-docs/
-  index.mdx         ← default locale
-  assets/
-    logo.png         ← shared asset
-i18n/
-  it/
-    docusaurus-plugin-content-docs/
-      current/
-        index.mdx    ← Italian translation
-```
-
-The adapter identifies `i18n/{locale}/docusaurus-plugin-content-docs/current/` as the
-locale mirror root. Files under these paths are excluded from the orphan check — they
-inherit nav membership from the default-locale original.
-
-### Frontmatter slug rules
-
-Docusaurus allows overriding the canonical URL of any page via the `slug:` frontmatter key.
-Zenzic applies the same rules as Docusaurus itself:
-
-- **Absolute slug** (starts with `/`): always prepended with `routeBasePath`.
-  - `slug: /bonjour` + `routeBasePath: docs` → `/docs/bonjour/`.
-  - `slug: /bonjour` + `routeBasePath: ''` (docs at site root) → `/bonjour/`.
-- **Relative slug** (no leading `/`): replaces the last path segment only.
-  - `slug: setup` in `guide/install.md` → `/docs/guide/setup/`.
-
-### Smart file collapsing
-
-Zenzic mirrors Docusaurus's `isCategoryIndex` logic: a file collapses into its parent
-directory URL when its name (case-insensitive) is:
-
-- `index` — e.g. `guides/index.md` → `/docs/guides/`
-- `readme` — e.g. `guides/README.md` → `/docs/guides/`
-- The parent folder's name — e.g. `Guides/Guides.md` → `/docs/Guides/`
-
-This prevents Zenzic from reporting broken links when authors use any of these three
-conventions to create category landing pages.
-
-### Unified Navigation Discovery {#docusaurus-unified-nav}
-
-**In Docusaurus, all files in `docs/` are routed by the docs plugin** — routing is
-file-system driven, not sidebar-driven. The sidebar, navbar, and footer control only
-*UX discoverability*: whether a user can actually find and click a page.
-
-Zenzic applies the **UX-Discoverability Law**: a file is considered `REACHABLE` if it
-appears in any UI navigation surface. A file absent from all surfaces is an orphan — it
-has a URL, but no user path leads to it.
-
-`DocusaurusAdapter` aggregates three navigation sources statically (no Node.js):
-
-| Source | Config location | Method |
-| :--- | :--- | :--- |
-| **Sidebar** | `sidebars.ts` / `sidebars.js` | `type: 'doc'` entries and bare string IDs |
-| **Navbar** | `docusaurus.config.ts` → `themeConfig.navbar.items` | `to:` URL paths and `docId:` attributes |
-| **Footer** | `docusaurus.config.ts` → `themeConfig.footer.links` | `to:` URL paths |
-
-A file is `ORPHAN_BUT_EXISTING` only if it is absent from **all three** sources:
-
-```text
-docs/changelog.mdx  → linked from navbar (to: '/docs/changelog')  → REACHABLE ✓
-docs/about.mdx      → linked from footer (to: '/docs/about')      → REACHABLE ✓
-docs/secret.mdx     → absent from sidebar, navbar, and footer     → ORPHAN_BUT_EXISTING ✗
-```
-
-::: note "Autogenerated sidebar"
-When `sidebars.ts` contains `type: 'autogenerated'`, Docusaurus shows all docs in the
-sidebar automatically. Zenzic detects this and marks **all files** as `REACHABLE` —
-no orphan report is issued regardless of navbar or footer content.
-:::
-
-`to:` URL paths are resolved by stripping the `baseUrl` and `routeBasePath` prefixes,
-then probing for `.md` / `.mdx` on disk. Non-doc links (e.g. `/blog/`, external URLs)
-never match a file and are silently dropped — no false positives.
-
-### `@site/` alias resolution
-
-Docusaurus projects frequently use the `@site/` alias in links to reference files
-relative to the project root:
-
-```markdown
-[Architecture diagram](../../assets/img/arch.png)
-[Source code](../explanation/architecture.md)
-```
-
-Zenzic resolves `@site/` to the repository root automatically. Links starting with
-`@site/docs/` are resolved against the docs root; all other `@site/` paths are checked
-against the repository root. This means Zenzic validates these links without triggering
-false-positive **PathTraversal** errors.
-
-::: note
-To enable full `@site/` resolution, set `repo_root` in your `.zenzic.toml`
-`[build_context]` section, or run `zenzic check` from the project root so Zenzic
-can detect it automatically.
-:::
-
-### MDX support
-
-Docusaurus uses MDX (`.mdx`) files natively. The adapter treats `.mdx` files identically
-to `.md` files for scanning, link validation, and orphan checking.
-
-### Special URL schemes {#docusaurus-special-url-schemes}
-
-Zenzic recognises the `pathname:///` protocol native to Docusaurus. This scheme is used
-to reference **static assets outside the React router** — downloads, standalone HTML
-pages, PDFs — that Docusaurus serves directly without route generation:
-
-```markdown
-[Open Brand System &rarr;](../../assets/brand/zenzic-brand-system.html)
-[Download Guide](../../reference/pathname:/assets/guide.pdf)
-```
-
-Because `pathname:///` is a Docusaurus-specific escape hatch with no equivalent in other
-engines, Zenzic treats it as a **verified bypass** — only when `engine = "docusaurus"`:
-
-| Engine | `pathname:///` handling |
-| :--- | :--- |
-| `docusaurus` | Skipped silently — recognised escape hatch |
-| `mkdocs`, `zensical`, `standalone` | Flagged as `Z105 ABSOLUTE_PATH` |
-
-::: note "Engine Isolation"
-This exception is intentionally scoped to the Docusaurus adapter. If you are migrating
-from Docusaurus to another engine, Zenzic will surface every `pathname:///` link as a
-`Z105` error — guiding you to replace them with port-safe relative paths.
-:::
-
-### Static analysis limits
-
-- **Dynamic nav plugins** — sidebar or nav trees generated dynamically via JavaScript at
-
-  build-time produce navigation that Zenzic cannot observe statically. Pages included only
-  by custom plugins will be reported as orphans. Add their paths to `excluded_dirs` in
-  `.zenzic.toml` to suppress false reports.
-
-- **`docusaurus.config.ts` with complex TypeScript** — the adapter uses pattern matching,
-
-  not full TypeScript evaluation. Configurations that compute values at module scope or
-  import from external modules may not be fully parsed.
+For more details on the rationale and migration paths, see:
+- [Non-Supported Frameworks](../explanation/non-supported-frameworks.md)
+- [Why We Dropped Docusaurus (Blog Post)](../../blog/2026-06-13-why-we-dropped-docusaurus.md)
 
 ---
 
@@ -683,8 +381,8 @@ All adapter methods are no-ops:
 ### Limitations
 
 `find_orphans` returns `[]` immediately — without a declared nav, there is no reference set
-to compare against. Orphan detection requires a nav declaration: MkDocs `nav:`, Zensical
-`[nav]`, or Docusaurus `sidebars.ts`.
+to compare against. Orphan detection requires a nav declaration (such as MkDocs `nav:`
+or Zensical `[nav]`).
 
 For locale-aware projects without a supported engine, add locale directory names to
 `excluded_dirs` in `.zenzic.toml` to prevent false orphan reports.
