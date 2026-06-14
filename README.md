@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
   </a>
 </p>
 
-<p align="center">The official Docusaurus documentation portal for Zenzic — built on Diátaxis, shipped as a single site with user docs, developer docs, and blog.</p>
+<p align="center">The official documentation portal for Zenzic — built on Diátaxis, shipped as a single site with user docs, developer docs, and blog.</p>
 
 <p align="center">
   <a href="https://github.com/PythonWoods/zenzic-doc/actions/workflows/ci.yml"><img alt="ci-status" src="https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-doc/ci.yml?branch=main&label=ci&style=flat-square"></a>
@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 📖 Documentation Map
 
-The Zenzic documentation ships as **one Docusaurus site** under one domain, with the main docs, a dedicated `developers` docs plugin, and the blog published alongside the same content tree.
+The Zenzic documentation ships as **one Zensical site** under one domain, with user docs, developer docs, and blog published alongside the same content tree.
 
 ```text
 zenzic.dev/
@@ -39,8 +39,6 @@ zenzic.dev/
 ├── developers/     → Dev Area     — plugins, adapters, ADRs, tech debt ledger
 └── blog/           → Release notes & engineering post-mortems
 ```
-
-The docs, developers, and blog sections are routed through the same site configuration.
 
 | You are a... | Start here |
 | :--- | :--- |
@@ -52,26 +50,32 @@ The docs, developers, and blog sections are routed through the same site configu
 
 ## Prerequisites
 
-- Node.js matching the project support policy declared in `package.json`
+- [Python 3.12+](https://www.python.org/) and [uv](https://docs.astral.sh/uv/) for the documentation build
+- [Node.js 20+](https://nodejs.org/) — only needed for `markdownlint` (`npm ci` in the devDependencies)
 - Optional: [just](https://github.com/casey/just) for short, memorable commands
 
 ## First Setup
 
 ```bash
-npm ci          # reproducible install from lockfile
-# or
-just setup
+uv sync         # install locked dependencies
 ```
 
 ## Start locally
 
 ```bash
-npm run start
-# or
-just start
+just start                      # serve on localhost:8000 (default)
+just start -a localhost:8001    # custom port
+just start -a 0.0.0.0:8000     # expose on all interfaces
+just start -o                   # open browser automatically
 ```
 
-For a full gate (TypeScript + build + Zenzic audit) before opening a PR:
+To only build the site without serving:
+
+```bash
+just preview
+```
+
+For a full gate (build + Zenzic audit + code parity) before opening a PR:
 
 ```bash
 just verify

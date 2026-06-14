@@ -8,6 +8,35 @@ docs_dir = "docs"
 use_directory_urls = true
 favicon = "assets/favicon/png/zenzic-icon-32.png"
 logo = "assets/brand/svg/zenzic-icon.svg"
+extra_css = ["assets/extra.css"]
+
+[project.theme]
+name = "material"
+logo = "assets/brand/svg/zenzic-icon.svg"
+favicon = "assets/favicon/png/zenzic-icon-32.png"
+features = [
+    "navigation.tabs",
+    "navigation.sections",
+    "navigation.top",
+    "search.highlight",
+    "content.code.copy"
+]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "black"
+accent = "indigo"
+toggle = {icon = "material/brightness-7", name = "Switch to light mode"}
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+toggle = {icon = "material/brightness-4", name = "Switch to dark mode"}
 
 [theme]
 name = "material"

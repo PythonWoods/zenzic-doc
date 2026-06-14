@@ -70,13 +70,13 @@ class NoDraftRule(BaseRule):
 
 - **Not** mutate their arguments (`file_path`, `text`, `vsm`, `anchors_cache`).
 
-:::warning[Avoid global mutable state]
-A rule that writes to a global counter will appear to work in sequential
-mode but will produce **non-deterministic, silently wrong** results in
-parallel mode.  Worker processes each receive an independent pickle copy
-of the engine — mutations are local to the worker and discarded on
-completion.  All state must be returned as `RuleFinding` objects.
-:::
+!!! warning "Avoid global mutable state"
+
+    A rule that writes to a global counter will appear to work in sequential
+    mode but will produce **non-deterministic, silently wrong** results in
+    parallel mode.  Worker processes each receive an independent pickle copy
+    of the engine — mutations are local to the worker and discarded on
+    completion.  All state must be returned as `RuleFinding` objects.
 
 ---
 
@@ -289,24 +289,23 @@ refuses to start.  Fix the rule before running Zenzic.
 - [ ] Entry-point registered under `zenzic.rules` in `pyproject.toml`.
 - [ ] Plugin ID listed in the project's `.zenzic.toml` under `plugins`.
 
-:::info[Next Steps]
- Bridge your rule from implementation to production Zenzic flow:
+!!! info "Next Steps"
 
- 1. Register and enable the plugin ID in `.zenzic.toml` under `plugins`
+     Bridge your rule from implementation to production Zenzic flow:
 
-     (see [Enabling plugins](#config-enabling-plugins)).
+     1. Register and enable the plugin ID in `.zenzic.toml` under `plugins`
 
- 2. Validate the rule under strict pipeline semantics:
+         (see [Enabling plugins](#config-enabling-plugins)).
 
-     `zenzic check all --strict`.
-     For run-time policy controls, see
-     [CLI Commands: Global flags](../../user-manual/reference/cli.md#global-flags).
+     2. Validate the rule under strict pipeline semantics:
 
- 3. If your rule is nav-aware, map expected Ghost Route behavior against the VSM model:
+         `zenzic check all --strict`.
+         For run-time policy controls, see
+         [CLI Commands: Global flags](../../user-manual/reference/cli.md#global-flags).
 
-     [Core Mechanics — VSM](../../user-manual/explanation/core-mechanics.md#vsm).
+     3. If your rule is nav-aware, map expected Ghost Route behavior against the VSM model:
 
-:::
+         [Core Mechanics — VSM](../../user-manual/explanation/core-mechanics.md#vsm).
 
 [ep]: https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata
 [api-baserule]: ../reference/adapter-api.md

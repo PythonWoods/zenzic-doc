@@ -2,8 +2,12 @@
 slug: terminal-ux-documentation-governance
 title: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
 sidebar_label: "Terminal UX & Governance"
-authors: [pythonwoods]
-tags: [engineering-logs, architecture, governance]
+authors:
+  - pythonwoods
+tags:
+  - engineering-logs
+  - architecture
+  - governance
 date: 2026-05-27
 description: >
   An engineering analysis of Zenzic's terminal interface: information density

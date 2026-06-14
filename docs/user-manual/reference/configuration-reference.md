@@ -116,17 +116,15 @@ for local experiments and private data only.
 | `log_level = "DEBUG"` | `.zenzic.local.toml` — diagnostics stay local |
 | `suppression_cap = 100` (raise for local experiments) | `.zenzic.local.toml` — does not affect team CI |
 
-:::caution[`docs_dir` trap]
-A `docs_dir` declared only in `.zenzic.local.toml` works on your machine but breaks in CI. CI runners load only `.zenzic.toml` (the local file is in `.gitignore`). Always put `docs_dir` in the shared config.
-:::
+!!! caution "`docs_dir` trap"
+    A `docs_dir` declared only in `.zenzic.local.toml` works on your machine but breaks in CI. CI runners load only `.zenzic.toml` (the local file is in `.gitignore`). Always put `docs_dir` in the shared config.
 
-:::caution[`strict = true` trap for monorepos]
-Setting `strict = true` in `.zenzic.toml` promotes **all warnings to errors** on every machine. On a monorepo with versioned snapshots this is guaranteed to hard-fail. Use `--strict` as a CI flag instead:
-```yaml
-# .github/workflows/zenzic.yml
-- run: zenzic check all --strict
-```
-:::
+!!! caution "`strict = true` trap for monorepos"
+    Setting `strict = true` in `.zenzic.toml` promotes **all warnings to errors** on every machine. On a monorepo with versioned snapshots this is guaranteed to hard-fail. Use `--strict` as a CI flag instead:
+    ```yaml
+    # .github/workflows/zenzic.yml
+    - run: zenzic check all --strict
+    ```
 
 
 ### Source-of-Truth Introspection (`zenzic config explain`)
@@ -686,12 +684,11 @@ Enables governance reporting for translation parity on configured locale trees.
 
 Scoped suppressions per glob pattern. Security findings remain non-suppressible.
 
-:::important[Path Resolution Invariant]
-Glob patterns for both `per_file_ignores` and `directory_policies` are evaluated relative to the **repository root**.
-In monorepos or nested layouts, you must include the full path prefix from the repository root:
-* Use `"website/docs/**"` instead of `"docs/**"` if the content folder lives in `website/docs/`.
-* Use `"docs/blog/**"` instead of `"blog/**"` if the blog folder lives inside `docs/blog/`.
-:::
+!!! important "Path Resolution Invariant"
+    Glob patterns for both `per_file_ignores` and `directory_policies` are evaluated relative to the **repository root**.
+    In monorepos or nested layouts, you must include the full path prefix from the repository root:
+    * Use `"website/docs/**"` instead of `"docs/**"` if the content folder lives in `website/docs/`.
+    * Use `"docs/blog/**"` instead of `"blog/**"` if the blog folder lives inside `docs/blog/`.
 
 ### `directory_policies` {#directory-policies}
 

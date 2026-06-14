@@ -31,12 +31,11 @@ Chances are that the bug you discovered was already fixed in a subsequent
 version. Before reporting an issue, ensure that you're running the
 [latest version] of Zenzic.
 
-:::warning[Bug fixes are not backported]
+!!! warning "Bug fixes are not backported"
 
-Only bugs that occur in the latest version of Zenzic will be addressed.
+    Only bugs that occur in the latest version of Zenzic will be addressed.
 
-[latest version]: https://github.com/PythonWoods/zenzic/releases
-:::
+  [latest version]: https://github.com/PythonWoods/zenzic/releases
 
 ### Search for solutions
 
@@ -118,10 +117,9 @@ allows us to instantly recreate the conditions needed to find the root cause.
 
 After creating the reproduction, attach the `.zip` file directly to the issue.
 
-:::warning[Don't share links to repositories.]
+!!! warning "Don't share links to repositories."
 
-Please attach a `.zip` reproduction rather than linking to a repository.
-:::
+    Please attach a `.zip` reproduction rather than linking to a repository.
 
 ### Steps to reproduce
 

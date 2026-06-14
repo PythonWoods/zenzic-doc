@@ -2,8 +2,15 @@
 slug: tutorial-stop-broken-links-60s
 title: "Tutorial: Get Started with Zenzic"
 sidebar_label: "Tutorial: Get Started"
-authors: [pythonwoods]
-tags: [tutorial, quickstart, python, opensource, devtools, user-tutorials]
+authors:
+  - pythonwoods
+tags:
+  - tutorial
+  - quickstart
+  - python
+  - opensource
+  - devtools
+  - user-tutorials
 date: 2026-04-29T19:00:00
 description: >
   Install Zenzic, run your first audit, and protect your documentation

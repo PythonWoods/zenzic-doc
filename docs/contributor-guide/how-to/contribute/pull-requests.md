@@ -91,28 +91,25 @@ zenzic check references     # includes custom [[custom_rules]] evaluation
 pytest                      # full test suite (Hypothesis dev profile — 50 examples)
 ```
 
-:::note[Thorough property-based testing]
+!!! note "Thorough property-based testing"
 
-To run the test suite with the **ci** Hypothesis profile (500 examples),
-use `just test-full` or set the environment variable directly:
+    To run the test suite with the **ci** Hypothesis profile (500 examples),
+    use `just test-full` or set the environment variable directly:
 
-```bash
-just test-full
-# or
-HYPOTHESIS_PROFILE=ci pytest
-```
+    ```bash
+    just test-full
+    # or
+    HYPOTHESIS_PROFILE=ci pytest
+    ```
 
-:::
+!!! note "End users vs contributors"
 
-:::note[End users vs contributors]
+    **End users** run `uvx zenzic check all` — no clone, no install, zero
+    friction. That is the entry point documented in the user-facing guides.
 
-**End users** run `uvx zenzic check all` — no clone, no install, zero
-friction. That is the entry point documented in the user-facing guides.
-
-**Contributors** clone the repo and install editably as shown above.
-The `zenzic` binary in your activated virtual environment is what you want
-— not `uvx`, which would download the published PyPI version.
-:::
+    **Contributors** clone the repo and install editably as shown above.
+    The `zenzic` binary in your activated virtual environment is what you want
+    — not `uvx`, which would download the published PyPI version.
 
 ## Issue-First Policy
 
@@ -196,14 +193,12 @@ one. Never replace or remove the original author's line:
 
 The `SPDX-License-Identifier` line stays last and appears only once per file.
 
-:::note[credential scanner and copyright lines]
+!!! note "credential scanner and copyright lines"
 
-Zenzic's normalizer skips `SPDX-FileCopyrightText` comment lines during
-word-count checks (Z502) — they are metadata, not prose.  The credential scanner (Z201)
-does not trigger on these lines either, because copyright email addresses
-are structurally distinct from credential patterns.
-
-:::
+    Zenzic's normalizer skips `SPDX-FileCopyrightText` comment lines during
+    word-count checks (Z502) — they are metadata, not prose.  The credential scanner (Z201)
+    does not trigger on these lines either, because copyright email addresses
+    are structurally distinct from credential patterns.
 
 ### Markdown files
 

@@ -304,11 +304,11 @@ Most engines return `frozenset()`. If your engine defines custom URI schemes
 (e.g., `brand-kit:///`), return them here to prevent Zenzic from flagging them
 as unknown protocols or absolute path violations.
 
-:::info[Rule R21 — Protocol Sovereignty]
-The Core never hardcodes engine names. Engine-specific behaviour is declared in
-the adapter and queried by the Core via this method. Adding a new adapter that
-needs a link-scheme bypass requires **zero changes to `validator.py`**.
-:::
+!!! info "Rule R21 — Protocol Sovereignty"
+
+    The Core never hardcodes engine names. Engine-specific behaviour is declared in
+    the adapter and queried by the Core via this method. Adding a new adapter that
+    needs a link-scheme bypass requires **zero changes to `validator.py`**.
 
 ---
 
@@ -511,21 +511,20 @@ When a custom link scheme is encountered, the Core checks `adapter.get_link_sche
 
 ---
 
-:::info[Next Steps]
-Connect adapter code to deployment truth:
+!!! info "Next Steps"
 
-1. Register engine identity in project configuration via `[build_context] engine`
+    Connect adapter code to deployment truth:
 
-   (see [Adapters & Engine Configuration](../../user-manual/how-to/configure-adapter.md)).
+    1. Register engine identity in project configuration via `[build_context] engine`
 
-2. Validate adapter behavior under strict Zenzic policy:
+       (see [Adapters & Engine Configuration](../../user-manual/how-to/configure-adapter.md)).
 
-   `zenzic check all --engine myengine --strict`.
-   For run controls, see [CLI Commands: Global flags](../../user-manual/reference/cli.md#global-flags).
+    2. Validate adapter behavior under strict Zenzic policy:
 
-3. If your engine generates synthetic locale routes, explicitly map Ghost Route
+       `zenzic check all --engine myengine --strict`.
+       For run controls, see [CLI Commands: Global flags](../../user-manual/reference/cli.md#global-flags).
 
-   expectations against the VSM reference:
-   [Core Mechanics — VSM](../../user-manual/explanation/core-mechanics.md#vsm).
+    3. If your engine generates synthetic locale routes, explicitly map Ghost Route
 
-:::
+       expectations against the VSM reference:
+       [Core Mechanics — VSM](../../user-manual/explanation/core-mechanics.md#vsm).

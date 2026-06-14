@@ -96,11 +96,10 @@ static/assets/social/
 └── social-card-light.svg
 ```
 
-:::caution[SVG as OG image]
-Most social crawlers (LinkedIn, Slack, iMessage) do not render SVG. Always
-export a PNG from the SVG source. The SVG files are kept in `static/assets/social/`
-as design sources only.
-:::
+!!! caution "SVG as OG image"
+    Most social crawlers (LinkedIn, Slack, iMessage) do not render SVG. Always
+    export a PNG from the SVG source. The SVG files are kept in `static/assets/social/`
+    as design sources only.
 
 For page-specific cards (e.g. a blog post announcing a release), add the PNG
 to `static/assets/social/` and reference it in the post's frontmatter:

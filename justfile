@@ -6,7 +6,6 @@ set shell :=["bash", "-c"]
 
 # Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
 # In CI/CD the installed `zenzic` binary is used by default.
-ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
 
 # Use `just --list` to see available commands
 
@@ -28,16 +27,16 @@ purge-cache:
 # --- DEVELOPMENT ---
 
 # Start local development server
-start:
-    uvx zensical serve
+# Use -a <IP:PORT> to change address (default: localhost:8000). Use -o to open browser.
+start *args:
+    uvx zensical serve {{args}}
 
-# Serve production build locally
-serve:
-    uvx zensical serve
+# Build the site then serve it (same as start — zensical serve always rebuilds)
+serve *args:
+    uvx zensical serve {{args}}
 
-# Build then serve production site locally
+# Build the site without serving (for CI or artifact inspection)
 preview: build
-    uvx zensical serve
 
 # --- QUALITY GATES ---
 

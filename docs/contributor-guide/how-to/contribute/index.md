@@ -97,12 +97,11 @@ following questions. By doing so, you ensure that you use the correct issue
 template and provide all necessary information when interacting with our
 community.
 
-:::warning[Issues and comments are forever]
+!!! warning "Issues and comments are forever"
 
-Please note that everything you write is permanent and will remain for
-everyone to read – forever. Therefore, we kindly ask you to always be
-nice and constructive, complying with our [Code of Conduct].
-:::
+    Please note that everything you write is permanent and will remain for
+    everyone to read – forever. Therefore, we kindly ask you to always be
+    nice and constructive, complying with our [Code of Conduct].
 
 ### Before creating an issue
 
@@ -174,3 +173,4 @@ without providing new information*.
   [bug reports]: report-a-bug.md
   [documentation issues]: report-a-docs-issue.md
   [change requests]: request-a-change.md
+  [Code of Conduct]: https://github.com/PythonWoods/zenzic/blob/main/CODE_OF_CONDUCT.md

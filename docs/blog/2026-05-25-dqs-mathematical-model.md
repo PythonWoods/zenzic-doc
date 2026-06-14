@@ -2,8 +2,11 @@
 slug: dqs-mathematical-model
 title: "The DQS Mathematical Model: Flat-Cost Suppressions and Deterministic Gates"
 sidebar_label: "DQS Mathematical Model"
-authors: [pythonwoods]
-tags: [engineering-logs, governance]
+authors:
+  - pythonwoods
+tags:
+  - engineering-logs
+  - governance
 date: 2026-05-25
 description: >
   Zenzic's Documentation Quality Score is a deterministic integer from 0 to 100.

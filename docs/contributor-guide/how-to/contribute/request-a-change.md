@@ -17,16 +17,15 @@ Zenzic is a static content analysis framework for Markdown documentation. We aim
 of use cases, and change requests are an essential mechanism for ensuring that
 our software meets the needs of our community.
 
-:::warning[How we manage change requests]
+!!! warning "How we manage change requests"
 
-We highly value every idea or contribution from our community, and we
-kindly ask you to take the time to read the following guidelines before
-submitting your change request in our public [issue tracker]. Before
-submitting a new idea, please take a moment to read
-[how we manage change requests].
+    We highly value every idea or contribution from our community, and we
+    kindly ask you to take the time to read the following guidelines before
+    submitting your change request in our public [issue tracker]. Before
+    submitting a new idea, please take a moment to read
+    [our process for handling them](#how-we-manage-change-requests).
 
-[issue tracker]: https://github.com/PythonWoods/zenzic/issues
-:::
+  [issue tracker]: https://github.com/PythonWoods/zenzic/issues
 
 ## Before creating an issue
 
