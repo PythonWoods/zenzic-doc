@@ -640,3 +640,744 @@
 .md-typeset .grid.cards ul {
   margin-bottom: 0;
 }
+
+/* ── Terminal window widget ───────────────────────────────────────────────── */
+
+/*
+ * Styles ```terminal fenced code blocks as a Mac/Linux-style terminal window.
+ * Material for MkDocs wraps fenced blocks as:
+ *   <div class="highlight"><pre><code class="language-terminal">...</code></pre></div>
+ *
+ * The ::before pseudo-element on .highlight injects the three window-chrome
+ * dots (red/yellow/green) and the optional title extracted from the
+ * data-title attribute set by the `title=` annotation.
+ */
+
+/* Outer wrapper: the .highlight div becomes the window chrome */
+.md-typeset .highlight:has(code.language-terminal) {
+  position: relative;
+  background-color: #0d1117;
+  border-radius: 10px;
+  border: 1px solid #30363d;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+/* Title bar row: traffic lights + optional title */
+.md-typeset .highlight:has(code.language-terminal)::before {
+  content: "";
+  display: flex;
+  align-items: center;
+  height: 2.4rem;
+  padding: 0 1rem;
+  background-color: #161b22;
+  border-bottom: 1px solid #21262d;
+
+  /* Traffic-light dots via a radial-gradient background image */
+  background-image:
+    radial-gradient(circle, #ff5f57 6px, transparent 6px),
+    radial-gradient(circle, #febc2e 6px, transparent 6px),
+    radial-gradient(circle, #28c840 6px, transparent 6px);
+  background-size: 12px 12px, 12px 12px, 12px 12px;
+  background-position: 14px center, 34px center, 54px center;
+  background-repeat: no-repeat;
+}
+
+/* If the block has a data-title, show it centred in the title bar.
+ * Requires mkdocs-material >= 9.x  with attr_list / data-title support. */
+.md-typeset .highlight:has(code.language-terminal)[data-title]::before {
+  content: attr(data-title);
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.72rem;
+  color: #8b949e;
+  letter-spacing: 0.02em;
+  justify-content: center;
+  padding-left: 5rem;   /* leave room for dots on the left */
+}
+
+/* The <pre> element: dark background, push content below the title bar */
+.md-typeset .highlight:has(code.language-terminal) pre {
+  background-color: #0d1117 !important;
+  border-radius: 0 0 10px 10px;
+  margin: 0;
+  padding: 1.1rem 1.4rem;
+  overflow-x: auto;
+}
+
+/* The <code> element: crisp monospace, GitHub-dark palette */
+.md-typeset .highlight:has(code.language-terminal) pre > code {
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #e6edf3;
+  background-color: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  white-space: pre;
+}
+
+/* Suppress Material's default copy-button background clash */
+.md-typeset .highlight:has(code.language-terminal) .md-clipboard {
+  color: #484f58;
+  top: 2.8rem;   /* push below the title bar */
+}
+
+.md-typeset .highlight:has(code.language-terminal) .md-clipboard:hover {
+  color: #8b949e;
+}
+
+/* Light-mode override: keep terminal always dark (terminals are dark) */
+[data-md-color-scheme="default"] .md-typeset .highlight:has(code.language-terminal) {
+  background-color: #0d1117;
+}
+
+[data-md-color-scheme="default"] .md-typeset .highlight:has(code.language-terminal) pre {
+  background-color: #0d1117 !important;
+}
+
+/* ── Homepage (overrides/home.html) ──────────────────────────────────────── */
+
+.zz-homepage {
+  --zz-page-bg: #09090b;
+  --zz-section-bg: #0d1117;
+  --zz-border: #21262d;
+  --zz-text: #e6edf3;
+  --zz-muted: #8b949e;
+  --zz-accent: #4f46e5;
+  --zz-accent-light: #818cf8;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Force full-bleed removal of Material padding on the home page */
+.md-content:has(.zz-homepage),
+.md-content__inner:has(.zz-homepage) {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+/* ── Hero section ──────────────────────────────────────────────────────── */
+
+.zz-hero {
+  background-color: var(--zz-page-bg);
+  border-bottom: 1px solid var(--zz-border);
+  padding: 3rem 1.5rem 4rem;
+}
+
+.zz-hero__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.zz-hero__logo {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 2rem;
+  opacity: 0.65;
+  filter: grayscale(1) contrast(1.2);
+  transition: opacity 0.4s, filter 0.4s;
+}
+.zz-hero__logo:hover {
+  opacity: 1;
+  filter: none;
+}
+
+.zz-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--zz-border);
+  background: #161b22;
+  color: var(--zz-muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 2.5rem;
+}
+
+.zz-badge-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4f46e5;
+  animation: zz-ping 1.8s ease-in-out infinite;
+}
+
+@keyframes zz-ping {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(1.4); }
+}
+
+.zz-hero__headline {
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  color: var(--zz-text);
+}
+
+.zz-hero__muted {
+  color: #484f58;
+}
+
+.zz-gradient-text {
+  background: linear-gradient(135deg, #818cf8 0%, #38bdf8 60%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.zz-hero__sub {
+  font-size: 1.05rem;
+  color: var(--zz-muted);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.zz-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+}
+
+.zz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.6rem;
+  padding: 0 1.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+}
+.zz-btn:hover { transform: translateY(-2px); }
+
+.zz-btn--primary {
+  background: #e6edf3;
+  color: #0d1117;
+}
+.zz-btn--primary:hover { background: #fff; color: #0d1117; }
+
+.zz-btn--outline {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+.zz-btn--outline:hover { border-color: #8b949e; color: #e6edf3; }
+
+/* ── Metrics strip ─────────────────────────────────────────────────────── */
+
+.zz-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  width: 100%;
+  max-width: 640px;
+}
+
+@media (max-width: 600px) {
+  .zz-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+.zz-metric__value {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--zz-text);
+}
+
+.zz-metric__label {
+  margin-top: 0.35rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--zz-muted);
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+
+.zz-section {
+  padding: 4rem 1.5rem;
+  background: var(--zz-section-bg);
+  border-bottom: 1px solid var(--zz-border);
+}
+
+.zz-section--dark {
+  background: var(--zz-page-bg);
+}
+
+.zz-section__inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.zz-overline {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--zz-accent-light);
+  margin-bottom: 0.75rem;
+}
+
+.zz-section__title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  color: var(--zz-text);
+  margin-bottom: 2.5rem;
+}
+
+.zz-text-accent { color: var(--zz-accent-light); }
+
+/* ── Terminal widget (standalone, not fenced code) ─────────────────────── */
+
+.zz-terminal-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+}
+
+.zz-terminal {
+  border-radius: 10px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  overflow: hidden;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.zz-terminal__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1rem;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+}
+
+.zz-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.zz-dot--red    { background: #ff5f57; }
+.zz-dot--yellow { background: #febc2e; }
+.zz-dot--green  { background: #28c840; }
+
+.zz-terminal__title {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  color: #484f58;
+  letter-spacing: 0.03em;
+}
+
+.zz-terminal__body {
+  margin: 0;
+  padding: 1.1rem 1.4rem;
+  background: transparent;
+  border-radius: 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: #8b949e;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.zz-terminal__body code {
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+
+.zz-t-red    { color: #f85149; }
+.zz-t-yellow { color: #d29922; }
+.zz-t-green  { color: #3fb950; }
+.zz-t-dim    { color: #484f58; }
+
+/* ── Feature cards ─────────────────────────────────────────────────────── */
+
+.zz-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.zz-card {
+  padding: 1.5rem;
+  border: 1px solid var(--zz-border);
+  border-radius: 8px;
+  background: #0d1117;
+  transition: border-color 0.2s, background 0.2s;
+}
+.zz-card:hover {
+  border-color: #30363d;
+  background: #161b22;
+}
+
+.zz-card__icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.zz-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--zz-text);
+  margin-bottom: 0.5rem;
+}
+
+.zz-card p {
+  font-size: 0.85rem;
+  color: var(--zz-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Section Divider ── */
+.zz-divider {
+  border-top: 1px solid var(--zz-border);
+  padding: 0.5rem 1.5rem;
+  background: var(--zz-page-bg);
+}
+
+.zz-divider__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #484f58;
+}
+
+/* ── Homepage Security Section grid ── */
+.zz-security-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .zz-security-row {
+    grid-template-columns: 4fr 8fr;
+  }
+}
+
+/* ── Homepage Ecosystem Row grid ── */
+.zz-ecosystem-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 3rem 0;
+  border-top: 1px solid var(--zz-border);
+  align-items: flex-start;
+}
+@media (min-width: 960px) {
+  .zz-ecosystem-row {
+    grid-template-columns: 4fr 8fr;
+  }
+}
+.zz-ecosystem-row__info {
+  max-width: 360px;
+}
+.zz-ecosystem-row__index {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--zz-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.zz-ecosystem-row__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--zz-text);
+  margin: 0 0 0.75rem 0;
+}
+.zz-ecosystem-row__desc {
+  font-size: 0.85rem;
+  color: var(--zz-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Homepage Quality Score Card ── */
+.zz-score-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--zz-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--zz-section-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  margin-top: 2.5rem;
+}
+@media (min-width: 768px) {
+  .zz-score-card {
+    flex-direction: row;
+  }
+}
+.zz-score-card__left {
+  padding: 2rem;
+  background: rgba(13, 17, 23, 0.4);
+  border-bottom: 1px solid var(--zz-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+@media (min-width: 768px) {
+  .zz-score-card__left {
+    width: 280px;
+    border-bottom: none;
+    border-right: 1px solid var(--zz-border);
+  }
+}
+.zz-score-card__right {
+  flex: 1;
+  padding: 1.5rem;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.zz-score-card__metrics-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--zz-text);
+  margin-bottom: 2rem;
+}
+.zz-score-card__overall-label {
+  font-size: 0.85rem;
+  color: var(--zz-muted);
+  margin-bottom: 0.5rem;
+}
+.zz-score-card__overall-value {
+  font-size: 4.5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--zz-text);
+  margin-bottom: 1rem;
+}
+.zz-score-card__trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: fit-content;
+}
+.zz-score-card__ci-label {
+  font-size: 0.75rem;
+  color: var(--zz-muted);
+  margin-bottom: 0.25rem;
+}
+.zz-score-card__ci-cmd {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  color: var(--zz-text);
+}
+.zz-score-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.zz-score-card__row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.zz-score-card__row-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--zz-text);
+  font-weight: 500;
+}
+.zz-score-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.zz-score-card__dot--sky { background: #38bdf8; }
+.zz-score-card__dot--rose { background: #ff7b72; }
+
+.zz-score-card__row-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--zz-muted);
+}
+.zz-score-card__sub-rows {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--zz-border);
+}
+.zz-score-card__sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.zz-score-card__sub-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.zz-score-card__sub-row-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--zz-muted);
+}
+.zz-score-card__sub-row-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  color: #484f58;
+}
+.zz-score-card__sub-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+.zz-score-card__sub-dot--sky { color: #38bdf8; }
+.zz-score-card__sub-dot--rose { color: #ff7b72; }
+
+/* ── Suppression CAP (Governance Preview) Cards ── */
+.zz-cap-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 960px) {
+  .zz-cap-grid {
+    grid-template-columns: 7fr 5fr;
+  }
+}
+.zz-cap-card {
+  border: 1px solid var(--zz-border);
+  border-radius: 12px;
+  background: rgba(13, 17, 23, 0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  font-family: "JetBrains Mono", monospace;
+}
+.zz-cap-card--breach {
+  border-color: rgba(248, 81, 73, 0.4);
+}
+.zz-cap-card--ok {
+  border-color: rgba(63, 185, 80, 0.4);
+}
+.zz-cap-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--zz-border);
+}
+.zz-cap-card--breach .zz-cap-card__header {
+  background: rgba(248, 81, 73, 0.1);
+  border-bottom-color: rgba(248, 81, 73, 0.4);
+}
+.zz-cap-card--ok .zz-cap-card__header {
+  background: rgba(63, 185, 80, 0.1);
+  border-bottom-color: rgba(63, 185, 80, 0.4);
+}
+.zz-cap-card__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.zz-cap-card--breach .zz-cap-card__title {
+  color: #ff7b72;
+}
+.zz-cap-card--ok .zz-cap-card__title {
+  color: #3fb950;
+}
+.zz-cap-card__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+.zz-cap-card--breach .zz-cap-card__badge {
+  background: rgba(248, 81, 73, 0.15);
+  color: #ff7b72;
+}
+.zz-cap-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+}
+.zz-cap-card__metric {
+  padding: 1.25rem 0.5rem;
+}
+.zz-cap-card__metric:not(:last-child) {
+  border-right: 1px solid var(--zz-border);
+}
+.zz-cap-card__metric-label {
+  font-size: 0.65rem;
+  color: var(--zz-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+.zz-cap-card__metric-value {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--zz-text);
+}
+.zz-cap-card--breach .zz-cap-card__metric-value--debt {
+  color: #ff7b72;
+}
+.zz-cap-card--ok .zz-cap-card__metric-value--debt {
+  color: #3fb950;
+}
+.zz-cap-card__remediation {
+  border-top: 1px solid var(--zz-border);
+  padding: 0.6rem 1.25rem;
+  font-size: 0.7rem;
+  background: rgba(13, 17, 23, 0.2);
+}
+.zz-cap-card--breach .zz-cap-card__remediation {
+  border-top-color: rgba(248, 81, 73, 0.4);
+}
+.zz-cap-card__remediation a {
+  color: #d29922;
+  text-decoration: none;
+}
+.zz-cap-card__remediation a:hover {
+  text-decoration: underline;
+}
