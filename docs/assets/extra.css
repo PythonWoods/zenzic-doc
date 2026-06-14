@@ -1438,3 +1438,103 @@
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+/* ── 9. Namespaced Docusaurus overrides ── */
+.zenzic-legacy-docusaurus-root {
+  font-family: 'Inter', sans-serif !important;
+  line-height: 1.5 !important;
+  color: #334155 !important;
+  background-color: var(--canvas-light) !important;
+}
+
+[data-md-color-scheme="slate"] .zenzic-legacy-docusaurus-root {
+  color: var(--lead) !important;
+  background-color: var(--canvas) !important;
+}
+
+/* Ensure typography within the root inherits correctly and overrides Material theme defaults */
+.zenzic-legacy-docusaurus-root h1,
+.zenzic-legacy-docusaurus-root h2,
+.zenzic-legacy-docusaurus-root h3,
+.zenzic-legacy-docusaurus-root h4,
+.zenzic-legacy-docusaurus-root p,
+.zenzic-legacy-docusaurus-root span,
+.zenzic-legacy-docusaurus-root div,
+.zenzic-legacy-docusaurus-root a {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Redefine fonts on monospace elements */
+.zenzic-legacy-docusaurus-root .font-mono,
+.zenzic-legacy-docusaurus-root .font-mono *,
+.zenzic-legacy-docusaurus-root code,
+.zenzic-legacy-docusaurus-root code *,
+.zenzic-legacy-docusaurus-root pre,
+.zenzic-legacy-docusaurus-root pre * {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Force specific colors and line heights to match original Docusaurus */
+.zenzic-legacy-docusaurus-root .zz-gradient-text {
+  background: linear-gradient(135deg, #818cf8 0%, #38bdf8 60%, #a5b4fc 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  display: inline-block !important;
+}
+
+/* macOS Terminal CSS definitions */
+.zenzic-legacy-docusaurus-root .mac-terminal,
+.zenzic-legacy-docusaurus-root .zz-terminal-monolith {
+  background-color: #0c0c10 !important; /* Docusaurus code background hex --code-bg */
+  border: 1px solid #1e1e27 !important; /* Docusaurus border --border */
+  box-shadow: var(--drop-shadow-strong) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.zenzic-legacy-docusaurus-root [data-md-color-scheme="default"] .mac-terminal,
+.zenzic-legacy-docusaurus-root [data-md-color-scheme="default"] .zz-terminal-monolith {
+  background-color: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Explicitly style macOS window buttons container & dots */
+.zenzic-legacy-docusaurus-root .mac-buttons {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+
+.zenzic-legacy-docusaurus-root .mac-buttons span,
+.zenzic-legacy-docusaurus-root .dot-rose,
+.zenzic-legacy-docusaurus-root .dot-amber,
+.zenzic-legacy-docusaurus-root .dot-emerald {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+.zenzic-legacy-docusaurus-root .dot-rose,
+.zenzic-legacy-docusaurus-root .bg-\[\#ff5f57\],
+.zenzic-legacy-docusaurus-root .bg-rose-500\/80,
+.zenzic-legacy-docusaurus-root .mac-buttons .close {
+  background-color: #ff5f57 !important;
+}
+
+.zenzic-legacy-docusaurus-root .dot-amber,
+.zenzic-legacy-docusaurus-root .bg-\[\#febc2e\],
+.zenzic-legacy-docusaurus-root .bg-amber-500\/80,
+.zenzic-legacy-docusaurus-root .mac-buttons .minimize {
+  background-color: #febc2e !important;
+}
+
+.zenzic-legacy-docusaurus-root .dot-emerald,
+.zenzic-legacy-docusaurus-root .bg-\[\#28c840\],
+.zenzic-legacy-docusaurus-root .bg-emerald-500\/80,
+.zenzic-legacy-docusaurus-root .mac-buttons .maximize {
+  background-color: #28c840 !important;
+}
