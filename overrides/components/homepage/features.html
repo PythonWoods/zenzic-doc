@@ -1,0 +1,42 @@
+{# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> #}
+{# SPDX-License-Identifier: Apache-2.0 #}
+{# Failure Topology — semantic BEM port of FindingCodeIndex (Features.tsx). #}
+{# Catalog grid of real, documented finding codes (see nav: finding-codes). #}
+
+<section class="zz-section">
+  <div class="zz-section__inner">
+    <p class="zz-overline">Failure Topology</p>
+    <h2 class="zz-section__title">
+      Every failure mode maps to a deterministic finding code.
+      <span class="zz-hero__muted">Click any code to jump to its remediation reference.</span>
+    </h2>
+
+    <div class="zz-findings">
+      <a class="zz-finding" href="{{ base_url }}/user-manual/reference/finding-codes/#z104">
+        <span class="zz-finding__code">Z104</span>
+        <span class="zz-finding__title">File not found</span>
+        <span class="zz-finding__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="zz-finding" href="{{ base_url }}/user-manual/reference/finding-codes/#z201">
+        <span class="zz-finding__code">Z201</span>
+        <span class="zz-finding__title">Credential leak (exit 2)</span>
+        <span class="zz-finding__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="zz-finding" href="{{ base_url }}/user-manual/reference/finding-codes/#z405">
+        <span class="zz-finding__code">Z405</span>
+        <span class="zz-finding__title">Unused asset</span>
+        <span class="zz-finding__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="zz-finding" href="{{ base_url }}/user-manual/reference/finding-codes/#z502">
+        <span class="zz-finding__code">Z502</span>
+        <span class="zz-finding__title">Short content</span>
+        <span class="zz-finding__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="zz-finding" href="{{ base_url }}/user-manual/reference/finding-codes/#z601">
+        <span class="zz-finding__code">Z601</span>
+        <span class="zz-finding__title">Brand obsolescence</span>
+        <span class="zz-finding__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>

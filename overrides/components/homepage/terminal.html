@@ -1,0 +1,53 @@
+{# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> #}
+{# SPDX-License-Identifier: Apache-2.0 #}
+{# Terminal — GROUND TRUTH. Output copied verbatim from a live run of      #}
+{# `uvx zenzic check all` (Zenzic v0.11.0) on a standalone fixture.        #}
+{# Do not fabricate findings. Regenerate via .architect/terminal-demo.     #}
+
+<section class="zz-section zz-section--dark">
+  <div class="zz-section__inner">
+    <p class="zz-overline">Pain Point</p>
+    <h2 class="zz-section__title">
+      Documentation drift is silent.
+      <span class="zz-hero__muted">Teams usually see it after deployment.</span>
+    </h2>
+
+    <div class="zz-terminal-wrap">
+      <div class="zz-terminal">
+        <div class="zz-terminal__bar">
+          <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+          <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+          <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+          <span class="zz-terminal__title">zenzic check all</span>
+        </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-dim">standalone • ./ • 3 files (2 docs, 1 assets) • 0.0s • 211 files/s</span>
+
+<span class="zz-t-yellow">docs/assets/unused.png  ⚠  [Z405]</span>  File not referenced in any documentation page.
+
+<span class="zz-t-yellow">docs/deploy.md:1  ⚠  [Z502]</span>  Page has only 11 words (minimum 50).
+
+    <span class="zz-t-dim">1  ❱  # Deploy</span>
+
+<span class="zz-t-yellow">docs/index.md:1  ⚠  [Z502]</span>  Page has only 9 words (minimum 50).
+
+    <span class="zz-t-dim">1  ❱  # Welcome</span>
+
+<span class="zz-t-red">docs/index.md:3:8  ✘  [Z104]</span>  index.md:3: './intro.md' not found in docs
+
+    <span class="zz-t-dim">3  ❱  See the [intro page](./intro.md) for details.</span>
+
+<span class="zz-t-red">docs/index.md:5  ✘  [Z104]</span>  index.md:5: './assets/old-diagram.png' not found in docs
+
+    <span class="zz-t-dim">5  ❱  ![architecture](./assets/old-diagram.png)</span>
+
+<span class="zz-t-dim">─────────────────────────────────────────────────────────────────</span>
+
+Summary:  <span class="zz-t-red">✘ 2 errors</span>  <span class="zz-t-yellow">⚠ 3 warnings</span>  <span class="zz-t-dim">💡 0 info  • 3 files with findings</span>
+
+<span class="zz-t-red">FAILED: Hard errors detected. Exit code 1 is mandatory.</span>
+<span class="zz-t-dim">Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 'zenzic check --help' for options.</span>
+<span class="zz-t-dim">🔒 Suppression Audit: 0/30 (inline: 0, per-file: 0)</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>

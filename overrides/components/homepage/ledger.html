@@ -1,0 +1,125 @@
+{# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> #}
+{# SPDX-License-Identifier: Apache-2.0 #}
+{# Engineering Ledger — semantic BEM port of EngineeringLedger.tsx.         #}
+{# One adapter row per documentation stack (Docusaurus/MkDocs/Zensical/etc).#}
+
+<section class="zz-section zz-section--dark">
+  <div class="zz-section__inner">
+    <p class="zz-overline">Ecosystem</p>
+    <h2 class="zz-section__title">
+      Run the same quality gate across documentation stacks.
+      <span class="zz-hero__muted">Docusaurus, MkDocs, Zensical, and standalone repositories.</span>
+    </h2>
+    <p class="zz-section__lead">
+      Adapters normalize path and topology checks so CI behavior stays
+      deterministic regardless of generator.
+    </p>
+
+    <div class="zz-ledger">
+      <div class="zz-ledger__row">
+        <div class="zz-ledger__meta">
+          <span class="zz-ledger__index">01</span>
+          <h3 class="zz-ledger__title">Docusaurus Adapter</h3>
+          <p class="zz-ledger__desc">
+            Validates internal links, anchors, and navigation topology from
+            Markdown source and Docusaurus configuration.
+          </p>
+        </div>
+        <div class="zz-ledger__panel">
+          <div class="zz-terminal">
+            <div class="zz-terminal__bar">
+              <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+              <span class="zz-terminal__title">docusaurus.config.ts · adapter run</span>
+            </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-dim"># Docusaurus project</span>
+uvx zenzic check all .
+
+<span class="zz-t-dim"># Outcome</span>
+<span class="zz-t-dim"># exit 0 -> no blocking findings</span>
+<span class="zz-t-dim"># exit 1 -> quality gate blocks merge</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="zz-ledger__row">
+        <div class="zz-ledger__meta">
+          <span class="zz-ledger__index">02</span>
+          <h3 class="zz-ledger__title">MkDocs Adapter</h3>
+          <p class="zz-ledger__desc">
+            Reads MkDocs navigation topology and checks Markdown source
+            directly, without requiring a site build.
+          </p>
+        </div>
+        <div class="zz-ledger__panel">
+          <div class="zz-terminal">
+            <div class="zz-terminal__bar">
+              <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+              <span class="zz-terminal__title">mkdocs.yml · adapter run</span>
+            </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-dim"># MkDocs project</span>
+uvx zenzic check all .
+
+<span class="zz-t-dim"># Same gate semantics as Docusaurus</span>
+<span class="zz-t-dim"># deterministic findings, same exit codes</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="zz-ledger__row">
+        <div class="zz-ledger__meta">
+          <span class="zz-ledger__index">03</span>
+          <h3 class="zz-ledger__title">Zensical Adapter</h3>
+          <p class="zz-ledger__desc">
+            Uses zensical configuration to validate structure and content
+            constraints with deterministic reporting.
+          </p>
+        </div>
+        <div class="zz-ledger__panel">
+          <div class="zz-terminal">
+            <div class="zz-terminal__bar">
+              <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+              <span class="zz-terminal__title">zensical.toml · adapter run</span>
+            </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-dim"># Zensical project</span>
+uvx zenzic check all .
+
+<span class="zz-t-dim"># Output is machine-readable and human-readable</span>
+<span class="zz-t-dim"># for CI and local review</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="zz-ledger__row">
+        <div class="zz-ledger__meta">
+          <span class="zz-ledger__index">04</span>
+          <h3 class="zz-ledger__title">Standalone Markdown Repositories</h3>
+          <p class="zz-ledger__desc">
+            Runs on repositories without a framework-specific adapter by
+            validating Markdown files and internal references directly.
+          </p>
+        </div>
+        <div class="zz-ledger__panel">
+          <div class="zz-terminal">
+            <div class="zz-terminal__bar">
+              <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+              <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+              <span class="zz-terminal__title">standalone repository · adapter run</span>
+            </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-dim"># Plain Markdown repository</span>
+uvx zenzic check all docs/
+
+<span class="zz-t-dim"># Use in CI, pre-commit, or local checks</span>
+<span class="zz-t-dim"># without changing repository structure</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,58 @@
+{# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> #}
+{# SPDX-License-Identifier: Apache-2.0 #}
+{# Hero — semantic BEM port of src/components/Homepage/Hero.tsx (no Tailwind). #}
+
+<section class="zz-hero">
+  <div class="zz-hero__inner">
+    <img
+      class="zz-hero__logo"
+      src="{{ base_url }}/assets/brand/svg/zenzic-icon.svg"
+      alt="Zenzic icon"
+      width="52"
+      height="52"
+    />
+
+    {# Atemporal badge (ADR-037): no hardcoded version #}
+    <div class="zz-hero__badge">
+      <span class="zz-badge-dot" aria-hidden="true"></span>
+      <span>Engine-Agnostic Static Analyzer</span>
+    </div>
+
+    <h1 class="zz-hero__headline">
+      <span class="zz-gradient-text">Documentation Quality Gate</span><br />
+      <span class="zz-hero__muted">for CI/CD pipelines.</span>
+    </h1>
+
+    <p class="zz-hero__sub">
+      Detect broken links, leaked credentials, and navigation drift before merge.
+    </p>
+
+    <div class="zz-hero__ctas">
+      <a class="zz-btn zz-btn--primary" href="{{ base_url }}/user-manual/">Get started</a>
+      <a
+        class="zz-btn zz-btn--outline"
+        href="https://github.com/PythonWoods/zenzic"
+        rel="noopener noreferrer"
+      >View on GitHub</a>
+    </div>
+
+    <div class="zz-metrics">
+      <div class="zz-metric">
+        <div class="zz-metric__value">100%</div>
+        <div class="zz-metric__label">Deterministic</div>
+      </div>
+      <div class="zz-metric">
+        <div class="zz-metric__value">0</div>
+        <div class="zz-metric__label">Subprocesses</div>
+      </div>
+      <div class="zz-metric">
+        <div class="zz-metric__value">O(N)</div>
+        <div class="zz-metric__label">RE2 Engine</div>
+      </div>
+      <div class="zz-metric">
+        <div class="zz-metric__value">CI/CD</div>
+        <div class="zz-metric__label">Native Gates</div>
+      </div>
+    </div>
+  </div>
+</section>
