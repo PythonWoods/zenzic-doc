@@ -21,12 +21,12 @@ hide:
       </div>
 
       <h1 class="zz-hero__headline">
-        <span class="zz-gradient-text">Documentation Quality Gate</span><br>
-        <span class="zz-hero__muted">for CI/CD pipelines.</span>
+        <span class="zz-gradient-text">The Exclusion Zone</span><br>
+        <span class="zz-hero__muted">for Markdown Documentation.</span>
       </h1>
 
       <p class="zz-hero__sub">
-        Detect broken links, leaked credentials, and navigation drift before merge.
+        High-performance, engine-agnostic, and security-hardened static analysis.
       </p>
 
       <div class="zz-hero__ctas">
@@ -37,19 +37,19 @@ hide:
       <div class="zz-metrics">
         <div>
           <div class="zz-metric__value">100%</div>
-          <div class="zz-metric__label">Deterministic</div>
+          <div class="zz-metric__label">DETERMINISTIC</div>
         </div>
         <div>
           <div class="zz-metric__value">0</div>
-          <div class="zz-metric__label">Subprocesses</div>
+          <div class="zz-metric__label">SUBPROCESSES</div>
         </div>
         <div>
           <div class="zz-metric__value">O(N)</div>
-          <div class="zz-metric__label">RE2 Engine</div>
+          <div class="zz-metric__label">RE2 ENGINE</div>
         </div>
         <div>
           <div class="zz-metric__value">CI/CD</div>
-          <div class="zz-metric__label">Native Gates</div>
+          <div class="zz-metric__label">NATIVE GATES</div>
         </div>
       </div>
     </div>
@@ -60,10 +60,10 @@ hide:
     <div class="zz-divider__inner">// EXECUTION_LAYER</div>
   </div>
 
-  <!-- 2. Features / Pain Point Section -->
+  <!-- 2. Pain Point Section -->
   <div class="zz-section">
     <div class="zz-section__inner">
-      <p class="zz-overline">Pain Point</p>
+      <p class="zz-overline">PAIN POINT</p>
       <h2 class="zz-section__title">Documentation drift is silent. <span class="zz-hero__muted">Teams usually see it after deployment.</span></h2>
     </div>
   </div>
@@ -152,109 +152,82 @@ Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
     <div class="zz-divider__inner">// FAILURE_TOPOLOGY</div>
   </div>
 
-  <!-- 3. Features Grid Section -->
-  <div class="zz-section zz-section--dark">
-    <div class="zz-section__inner">
-      <p class="zz-overline">Features</p>
-      <h2 class="zz-section__title">The Zenzic Standard <span class="zz-hero__muted">— Professional-grade static quality gates.</span></h2>
-    </div>
-  </div>
-
-  <div class="zz-features grid cards" markdown="1">
-
--   :material-bullseye-arrow:{ .lg .middle } **Deterministic Defaults**
-
-    Every finding resolves to a physical file and line number. Zero heuristics, zero stochastic predictions, and 100% reproducible pipeline outcomes.
-
--   :material-shield-check-outline:{ .lg .middle } **Zero-Config Security**
-
-    Point Zenzic at any repository and run audits instantly out of the box. Sensible default rules require zero configuration to secure your codebase.
-
--   :material-language-python:{ .lg .middle } **Pure Python Scanners**
-
-    AST-based parser with zero subprocesses. Safe, air-gapped execution that scans hundreds of files per second using the RE2 regular expression engine.
-
--   :material-transit-connection-variant:{ .lg .middle } **Engine-Agnostic Adapters**
-
-    Native adapters for MkDocs, Zensical, and a zero-assumption Standalone mode. Keep CI behavior uniform across all documentation frameworks.
-
-</div>
-
-  <!-- Divider: DIAGNOSTIC_OUTPUT -->
-  <div class="zz-divider">
-    <div class="zz-divider__inner">// DIAGNOSTIC_OUTPUT</div>
-  </div>
-
-  <!-- 4. Outcome / Security Section -->
+  <!-- 3. Outcome / Zenzic in Action Section -->
   <div class="zz-section">
     <div class="zz-section__inner">
-      <p class="zz-overline">Outcome</p>
-      <h2 class="zz-section__title">Zenzic in Action <span class="zz-hero__muted">— CI gate blocks regressions before merge.</span></h2>
+      <p class="zz-overline">REPORTER &amp; CREDENTIALS</p>
+      <h2 class="zz-section__title">Zenzic in Action <span class="zz-hero__muted">CI gate blocks regressions before merge.</span></h2>
       <p class="zz-hero__sub" style="margin-bottom: 3.5rem;">
-        Findings are deterministic by file and line. Exit code 1 blocks documentation debt, and the DQS flat-cost model keeps suppression debt explicit.
+        Every finding is pinned to file, line, and source. Structured output for human eyes and machine parsing alike.
       </p>
 
       <div style="display: flex; flex-direction: column; gap: 4rem;">
 
-        <!-- Row 1: Gutter Context -->
+        <!-- Row 1: Gutter Context (Text Left, Visual Right) -->
         <div class="zz-security-row">
-          <div class="zz-ecosystem-row__info">
-            <h3 class="zz-ecosystem-row__title">Deterministic finding context</h3>
+          <div class="zz-security-row__text">
+            <h3 class="zz-ecosystem-row__title">Gutter reporter</h3>
             <p class="zz-ecosystem-row__desc">
-              Each finding shows exact source line context. Teams can fix the issue without hunting through logs.
+              Each error shows the exact offending source line with gutter context. No scrolling through logs to find what broke.
             </p>
           </div>
-          <div class="highlight" style="border: 1px solid var(--zz-border); border-radius: 12px; background: rgba(13, 17, 23, 0.4); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
-            <div style="color: var(--zz-muted); border-bottom: 1px solid var(--zz-border); padding-bottom: 0.5rem; margin-bottom: 0.75rem; font-weight: 500;">docs/guide.md</div>
-            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-              <span style="color: #f85149;">✘</span>
-              <span style="background: rgba(248, 81, 73, 0.1); color: #f85149; padding: 0.1rem 0.3rem; border-radius: 2px;">[FILE_NOT_FOUND]</span>
-              <span style="color: var(--zz-text);">'intro.md' not reachable from nav (would return 404)</span>
-            </div>
-            <div style="color: #484f58;"><span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem;">15</span>│ before continuing.</div>
-            <div style="background: rgba(255, 255, 255, 0.05); margin: 0.25rem -1.25rem; padding: 0.1rem 1.25rem; display: flex;">
-              <span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem; color: #f85149; font-weight: bold;">16</span>
-              <span style="color: #f85149; margin-right: 0.25rem; font-weight: bold;">❱</span> <span style="color: var(--zz-text);">See the getting started page for details.</span>
-            </div>
-            <div style="color: #484f58;"><span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem;">17</span>│ Then configure your environment.</div>
-          </div>
-        </div>
-
-        <!-- Row 2: Credential Breaches -->
-        <div class="zz-security-row">
-          <div class="zz-ecosystem-row__info">
-            <h3 class="zz-ecosystem-row__title">Credential leak blocked (exit 2)</h3>
-            <p class="zz-ecosystem-row__desc">
-              Scans every line, including fenced code blocks, for leaked credentials. Exit code 2 is reserved for security events.
-            </p>
-          </div>
-          <div class="highlight" style="border: 1px solid rgba(248, 81, 73, 0.3); border-radius: 12px; background: rgba(248, 81, 73, 0.05); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
-            <div style="color: #f85149; text-align: center; font-weight: bold; letter-spacing: 0.2em; font-size: 11px; border-bottom: 1px solid rgba(248, 81, 73, 0.15); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">SECURITY BREACH DETECTED</div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Finding:</span><span style="color: var(--zz-text);">GitHub token detected</span></div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Location:</span><span style="color: var(--zz-text);">docs/tutorial.md:42</span></div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Credential:</span><span style="background: rgba(248, 81, 73, 0.15); color: #ff7b72; padding: 0.1rem 0.3rem; border-radius: 2px;">ghp_•••••••••••••••••3456</span></div>
-            <div style="border-top: 1px solid rgba(248, 81, 73, 0.15); padding-top: 0.75rem; margin-top: 0.75rem; display: flex; gap: 0.5rem;">
-              <span style="width: 6rem; color: #484f58;">Action:</span>
-              <span style="color: var(--zz-muted); flex: 1;">Rotate this credential immediately and purge it from the repository history.</span>
+          <div class="zz-security-row__visual">
+            <div class="highlight" style="border: 1px solid var(--zz-border); border-radius: 12px; background: rgba(13, 17, 23, 0.4); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
+              <div style="color: var(--zz-muted); border-bottom: 1px solid var(--zz-border); padding-bottom: 0.5rem; margin-bottom: 0.75rem; font-weight: 500;">docs/guide.md</div>
+              <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <span style="color: #f85149;">✘</span>
+                <span style="background: rgba(248, 81, 73, 0.1); color: #f85149; padding: 0.1rem 0.3rem; border-radius: 2px;">[FILE_NOT_FOUND]</span>
+                <span style="color: var(--zz-text);">'intro.md' not reachable from nav (would return 404)</span>
+              </div>
+              <div style="color: #484f58;"><span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem;">15</span>│ before continuing.</div>
+              <div style="background: rgba(255, 255, 255, 0.05); margin: 0.25rem -1.25rem; padding: 0.1rem 1.25rem; display: flex;">
+                <span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem; color: #f85149; font-weight: bold;">16</span>
+                <span style="color: #f85149; margin-right: 0.25rem; font-weight: bold;">❱</span> <span style="color: var(--zz-text);">See the getting started page for details.</span>
+              </div>
+              <div style="color: #484f58;"><span style="display: inline-block; width: 1.5rem; text-align: right; margin-right: 0.75rem;">17</span>│ Then configure your environment.</div>
             </div>
           </div>
         </div>
 
-        <!-- Row 3: Severity Summary -->
-        <div class="zz-security-row">
-          <div class="zz-ecosystem-row__info">
-            <h3 class="zz-ecosystem-row__title">Gate result summary</h3>
+        <!-- Row 2: Credential Scanner (Visual Left, Text Right - Reverse layout) -->
+        <div class="zz-security-row zz-security-row--reverse">
+          <div class="zz-security-row__text">
+            <h3 class="zz-ecosystem-row__title">credential scanner</h3>
             <p class="zz-ecosystem-row__desc">
-              Every run ends with a compact status. Exit code 1 indicates a blocked merge due to quality findings.
+              Scans every line - including fenced codeblocks/nodes and config/yaml/toml headers - for leaked credentials. Exit code 2 is reserved exclusively for security events.
             </p>
           </div>
-          <div class="highlight" style="border: 1px solid var(--zz-border); border-radius: 12px; background: rgba(13, 17, 23, 0.4); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; gap: 1.5rem; border-bottom: 1px solid var(--zz-border); padding-bottom: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-              <span style="color: #f85149; font-weight: 500;">✘ 2 errors</span>
-              <span style="color: #d29922; font-weight: 500;">⚠ 1 warning</span>
-              <span style="color: var(--zz-muted);">• 1 file with findings</span>
+          <div class="zz-security-row__visual">
+            <div class="highlight" style="border: 1px solid rgba(248, 81, 73, 0.3); border-radius: 12px; background: rgba(248, 81, 73, 0.05); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
+              <div style="color: #f85149; text-align: center; font-weight: bold; letter-spacing: 0.2em; font-size: 11px; border-bottom: 1px solid rgba(248, 81, 73, 0.15); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">SECURITY BREACH DETECTED</div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Finding:</span><span style="color: var(--zz-text);">GitHub token detected</span></div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Location:</span><span style="color: var(--zz-text);">docs/tutorial.md:42</span></div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;"><span style="color: #f85149;">✘</span><span style="width: 6rem; color: var(--zz-muted);">Credential:</span><span style="background: rgba(248, 81, 73, 0.15); color: #ff7b72; padding: 0.1rem 0.3rem; border-radius: 2px;">ghp_•••••••••••••••••3456</span></div>
+              <div style="border-top: 1px solid rgba(248, 81, 73, 0.15); padding-top: 0.75rem; margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                <span style="width: 6rem; color: #484f58;">Action:</span>
+                <span style="color: var(--zz-muted); flex: 1;">Rotate this credential immediately and purge it from the repository history.</span>
+              </div>
             </div>
-            <div style="color: #f85149; font-weight: bold; letter-spacing: 0.02em;">FAILED: Quality gate blocked merge (exit code 1).</div>
+          </div>
+        </div>
+
+        <!-- Row 3: Severity Summary (Text Left, Visual Right) -->
+        <div class="zz-security-row">
+          <div class="zz-security-row__text">
+            <h3 class="zz-ecosystem-row__title">Severity summary</h3>
+            <p class="zz-ecosystem-row__desc">
+              Every run ends with a compact summary. You know immediately whether the check failed hard or only emitted warnings.
+            </p>
+          </div>
+          <div class="zz-security-row__visual">
+            <div class="highlight" style="border: 1px solid var(--zz-border); border-radius: 12px; background: rgba(13, 17, 23, 0.4); padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 12px 32px rgba(0,0,0,0.25); overflow-x: auto; width: 100%; box-sizing: border-box;">
+              <div style="display: flex; gap: 1.5rem; border-bottom: 1px solid var(--zz-border); padding-bottom: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <span style="color: #f85149; font-weight: 500;">✘ 2 errors</span>
+                <span style="color: #d29922; font-weight: 500;">⚠ 1 warning</span>
+                <span style="color: var(--zz-muted);">• 1 file with findings</span>
+              </div>
+              <div style="color: #f85149; font-weight: bold; letter-spacing: 0.02em;">FAILED: One or more checks failed.</div>
+            </div>
           </div>
         </div>
 
@@ -262,27 +235,27 @@ Refer to https://zenzic.dev/docs/reference/finding-codes for remediation · Try 
     </div>
   </div>
 
-  <!-- Divider: ADAPTER_SURFACE -->
+  <!-- Divider: DIAGNOSTIC_OUTPUT -->
   <div class="zz-divider">
-    <div class="zz-divider__inner">// ADAPTER_SURFACE</div>
+    <div class="zz-divider__inner">// DIAGNOSTIC_OUTPUT</div>
   </div>
 
   <!-- 5. Ecosystem Section (Engineering Ledger) -->
   <div class="zz-section zz-section--dark">
     <div class="zz-section__inner">
-      <p class="zz-overline">Ecosystem</p>
-      <h2 class="zz-section__title">Run the same quality gate across stacks. <span class="zz-hero__muted">Docusaurus, MkDocs, Zensical, and standalone.</span></h2>
+      <p class="zz-overline">THE ZENZIC ENGINEERING LEDGER</p>
+      <h2 class="zz-section__title">Three invariants enforced on every commit. <span class="zz-hero__muted">No exceptions. No shortcuts.</span></h2>
       <p class="zz-hero__sub" style="margin-bottom: 3.5rem;">
-        Adapters normalize path and topology checks so CI behavior stays deterministic regardless of generator.
+        These are not aspirations — they are gates. Every release of Zenzic ships only when all three pass.
       </p>
 
       <!-- Adapter 1 -->
       <div class="zz-ecosystem-row">
         <div class="zz-ecosystem-row__info">
           <div class="zz-ecosystem-row__index">01</div>
-          <h3 class="zz-ecosystem-row__title">Docusaurus Adapter</h3>
+          <h3 class="zz-ecosystem-row__title">Zero Assumptions at System Boundaries</h3>
           <p class="zz-ecosystem-row__desc">
-            Validates internal links, anchors, and navigation topology from Markdown source and Docusaurus configuration.
+            Every public entry point validates its inputs at the boundary. Internal hot paths carry no defensive checks — the shape is guaranteed by the type system, enforced by mypy --strict on every merge.
           </p>
         </div>
         <div class="zz-terminal">
@@ -305,9 +278,9 @@ uvx zenzic check all .
       <div class="zz-ecosystem-row">
         <div class="zz-ecosystem-row__info">
           <div class="zz-ecosystem-row__index">02</div>
-          <h3 class="zz-ecosystem-row__title">MkDocs Adapter</h3>
+          <h3 class="zz-ecosystem-row__title">Subprocess-Free Analysis</h3>
           <p class="zz-ecosystem-row__desc">
-            Reads MkDocs navigation topology and checks Markdown source directly, without requiring a site build.
+            Production-grade tools do not shell out during analysis. No subprocess.run(), no os.system() inside per-item loops. Zenzic validates your documentation stack without executing it.
           </p>
         </div>
         <div class="zz-terminal">
@@ -329,9 +302,9 @@ uvx zenzic check all .
       <div class="zz-ecosystem-row">
         <div class="zz-ecosystem-row__info">
           <div class="zz-ecosystem-row__index">03</div>
-          <h3 class="zz-ecosystem-row__title">Zensical Adapter</h3>
+          <h3 class="zz-ecosystem-row__title">Deterministic Dependency Graph</h3>
           <p class="zz-ecosystem-row__desc">
-            Uses zensical configuration to validate structure and content constraints with deterministic reporting.
+            Every dependency is pinned in a lockfile, audited by Dependabot, and scanned for SPDX license compatibility. No transitive surprises at release time: we lock and reuse list run on every commit.
           </p>
         </div>
         <div class="zz-terminal">
@@ -353,7 +326,7 @@ uvx zenzic check all .
       <div class="zz-ecosystem-row">
         <div class="zz-ecosystem-row__info">
           <div class="zz-ecosystem-row__index">04</div>
-          <h3 class="zz-ecosystem-row__title">Standalone Repositories</h3>
+          <h3 class="zz-ecosystem-row__title">Standalone Markdown Repositories</h3>
           <p class="zz-ecosystem-row__desc">
             Runs on repositories without a framework-specific adapter by validating Markdown files and internal references directly.
           </p>
@@ -376,10 +349,15 @@ uvx zenzic check all docs/
     </div>
   </div>
 
+  <!-- Divider: ADAPTER_SURFACE -->
+  <div class="zz-divider">
+    <div class="zz-divider__inner">// ADAPTER_SURFACE</div>
+  </div>
+
   <!-- 6. Quickstart Section -->
   <div id="quickstart" class="zz-section">
     <div class="zz-section__inner">
-      <p class="zz-overline">Get Started</p>
+      <p class="zz-overline">GET STARTED</p>
       <h2 class="zz-section__title">From zero to documentation integrity <span class="zz-hero__muted">in one command.</span></h2>
       <p class="zz-hero__sub" style="margin-bottom: 2.5rem;">
         No configuration required. No account needed. Works on any Markdown project.
@@ -395,14 +373,11 @@ uvx zenzic check all docs/
         <pre class="zz-terminal__body"><code><span class="zz-t-green">✓</span> <span class="zz-t-dim">zenzic · python 3.10+ · ready</span>
 
 <span class="zz-t-dim"># run the documentation quality gate</span>
-<span class="zz-t-dim">$</span> uvx zenzic check all
-
-<span class="zz-t-dim"># exit 0: no blocking findings</span>
-<span class="zz-t-dim"># exit 1: quality gate blocks merge</span></code></pre>
+<span class="zz-t-dim">$</span> uvx zenzic check all</code></pre>
       </div>
 
       <div class="zz-hero__ctas" style="justify-content: flex-start; margin-bottom: 0;">
-        <a href="user-manual/index.md" class="zz-btn zz-btn--primary">Read the full docs →</a>
+        <a href="user-manual/index.md" class="zz-btn zz-btn--primary">Read the full docs -></a>
         <a href="https://github.com/PythonWoods/zenzic" target="_blank" rel="noopener noreferrer" class="zz-btn zz-btn--outline" style="display: flex; gap: 0.5rem; align-items: center;">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" /></svg>
           Star on GitHub
@@ -415,7 +390,7 @@ uvx zenzic check all docs/
   <!-- 7. Enterprise Section -->
   <div class="zz-section zz-section--dark">
     <div class="zz-section__inner">
-      <p class="zz-overline">Enterprise</p>
+      <p class="zz-overline">ENTERPRISE</p>
       <h2 class="zz-section__title">Enterprise Governance &amp; Scoring</h2>
       <p class="zz-hero__sub" style="margin-bottom: 0;">
         Track suppression debt, enforce quality policies, and govern documentation health across teams and repositories.

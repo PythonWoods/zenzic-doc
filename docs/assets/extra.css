@@ -1082,7 +1082,13 @@
 }
 @media (min-width: 960px) {
   .zz-security-row {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 1fr 1fr;
+  }
+  .zz-security-row--reverse .zz-security-row__text {
+    order: 2;
+  }
+  .zz-security-row--reverse .zz-security-row__visual {
+    order: 1;
   }
 }
 
@@ -1097,7 +1103,7 @@
 }
 @media (min-width: 960px) {
   .zz-ecosystem-row {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 .zz-ecosystem-row__info {
