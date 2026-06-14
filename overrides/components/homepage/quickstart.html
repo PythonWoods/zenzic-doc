@@ -1,0 +1,44 @@
+{# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> #}
+{# SPDX-License-Identifier: Apache-2.0 #}
+{# Quickstart — semantic BEM port of Quickstart.tsx (no Tailwind).          #}
+{# CLI commands reflect Zenzic v0.11.0 reality: `uvx zenzic check all`.     #}
+
+<section id="quickstart" class="zz-section zz-section--dark">
+  <div class="zz-section__inner">
+    <p class="zz-overline">Get Started</p>
+    <h2 class="zz-section__title">
+      From zero to documentation integrity
+      <span class="zz-hero__muted">in one command.</span>
+    </h2>
+    <p class="zz-section__lead">
+      No configuration required. No account needed. Works on any Markdown project.
+    </p>
+
+    <div class="zz-quickstart">
+      <div class="zz-terminal">
+        <div class="zz-terminal__bar">
+          <span class="zz-dot zz-dot--red" aria-hidden="true"></span>
+          <span class="zz-dot zz-dot--yellow" aria-hidden="true"></span>
+          <span class="zz-dot zz-dot--green" aria-hidden="true"></span>
+          <span class="zz-terminal__title">zenzic &middot; quickstart</span>
+        </div>
+<pre class="zz-terminal__body"><code><span class="zz-t-green">&#10003;</span> <span class="zz-t-dim">zenzic &middot; python 3.10+ &middot; ready</span>
+
+<span class="zz-t-dim"># run the documentation quality gate</span>
+<span class="zz-quickstart__prompt">$</span> uvx zenzic check all
+
+<span class="zz-t-dim"># exit 0: no blocking findings</span>
+<span class="zz-t-dim"># exit 1: quality gate blocks merge</span></code></pre>
+      </div>
+
+      <div class="zz-quickstart__ctas">
+        <a class="zz-btn zz-btn--primary" href="{{ base_url }}/user-manual/">Read the full docs &rarr;</a>
+        <a
+          class="zz-btn zz-btn--outline"
+          href="https://github.com/PythonWoods/zenzic"
+          rel="noopener noreferrer"
+        >Star on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>

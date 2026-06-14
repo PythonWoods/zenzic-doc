@@ -1,0 +1,11 @@
+/* SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> */
+/* SPDX-License-Identifier: Apache-2.0 */
+/*
+ * Tailwind homepage input — utilities ONLY.
+ * base is intentionally omitted (no Preflight) to avoid
+ * destroying MkDocs Material's Markdown rendering.
+ * Compiled by: ./tailwindcss-linux-x64 --config tailwind.config.js
+ *   --input src/tailwind-homepage.css
+ *   --output docs/assets/tailwind-homepage.css --minify
+ */
+@tailwind utilities;

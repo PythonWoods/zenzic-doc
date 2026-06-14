@@ -11,10 +11,18 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [Unreleased]
 
+### Added
+
+- **Homepage Phase 2 sections:** Ported the Security Boundary, Quality Score, Governance Gate, and Quickstart panels from the legacy Docusaurus React components to engine-native Jinja2 partials (`overrides/components/homepage/`) with semantic BEM markup and zero Tailwind. Terminal/diagnostic content reflects real `uvx zenzic check all` ground truth.
+
 ### Changed
 
 - **Fail-closed PR build gate:** Removed `pull_request.paths` filters from `.github/workflows/ci.yml` so the `Build` check runs on every PR and can safely be required in branch protection.
 - **Operational policy docs:** Added explicit branch-protection required-checks guidance (EN + IT) for `zenzic-doc` and `zenzic` in CI/CD integration documentation.
+
+### Fixed
+
+- **Section lead overlap:** Replaced the fragile negative top margin on `.zz-section__lead` with a `:has(+ .zz-section__lead)` rule that tightens the title's bottom margin, eliminating the lead paragraph overlapping the section title when the title wrapped to two lines.
 
 ---
 

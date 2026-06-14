@@ -213,39 +213,39 @@
 
 /* Suppress the auto-injected <h1> on pages that contain .zz-hero.
  * :has() is supported in all modern browsers (Chrome 105+, Firefox 121+, Safari 15.4+). */
-.md-content__inner:has(.zz-hero)>h1:first-child {
+.md-content__inner:has(.zz-homepage)>h1:first-child {
   display: none;
 }
 
 /* Remove ALL Material spacing so .zz-hero is truly full-bleed */
-.md-content__inner:has(.zz-hero) {
+.md-content__inner:has(.zz-homepage) {
   padding: 0;
   margin: 0 auto;
 }
 
-.md-content:has(.zz-hero) {
+.md-content:has(.zz-homepage) {
   margin-top: 0;
   padding: 0;
 }
 
-.md-main:has(.zz-hero) .md-main__inner {
+.md-main:has(.zz-homepage) .md-main__inner {
   margin: 0;
   padding: 0;
   max-width: 100%;
   width: 100%;
 }
 
-.md-main:has(.zz-hero) {
+.md-main:has(.zz-homepage) {
   padding-top: 0;
 }
 
 /* Kill the grid gap Material reserves for the sidebar on hero pages */
-.md-main:has(.zz-hero) .md-content {
+.md-main:has(.zz-homepage) .md-content {
   margin-left: 0 !important;
   padding-left: 0 !important;
 }
 
-.md-grid:has(.zz-hero) {
+.md-grid:has(.zz-homepage) {
   margin: 0;
   max-width: 100%;
 }
@@ -409,7 +409,7 @@
 }
 
 /* Hide the <hr> separators on the home page — spacing handled by sections */
-.md-content__inner:has(.zz-hero)>hr {
+.md-content__inner:has(.zz-homepage)>hr {
   border: none;
   border-top: 1px solid var(--zz-border-subtle);
   margin: 0;
@@ -765,16 +765,33 @@
 
 /* ── Homepage (overrides/home.html) ──────────────────────────────────────── */
 
+/*
+ * Palette mapped 1:1 from the production ground truth:
+ *   .draft/zenzic.dev/.../styles.650b531e.css (--zenzic-* token scale).
+ *   page-bg     = --zenzic-slate-900  var(--zz-page-bg)
+ *   section-bg  = --zenzic-slate-800  var(--zz-section-bg)
+ *   border      = --zenzic-ink-800 / zinc-800  var(--zz-border)
+ *   text        = --zenzic-zinc-100 / zinc-100  var(--zz-text)
+ *   muted       = --zenzic-ink-400 / zinc-400  var(--zz-muted)
+ *   accent      = --zenzic-brand-600  var(--zz-accent)
+ *   accent-light= --zenzic-brand-soft var(--zz-accent-light)
+ *   code-surface= --zenzic-code-surface var(--zz-code-surface)  (terminal background)
+ */
 .zz-homepage {
   --zz-page-bg: #09090b;
-  --zz-section-bg: #0d1117;
-  --zz-border: #21262d;
-  --zz-text: #e6edf3;
-  --zz-muted: #8b949e;
+  --zz-section-bg: #0f0f13;
+  --zz-border: #27272a;
+  --zz-text: #f4f4f5;
+  --zz-muted: #a1a1aa;
   --zz-accent: #4f46e5;
-  --zz-accent-light: #818cf8;
+  --zz-accent-light: #808af0;
+  --zz-code-surface: #0c0c10;
+  --zz-brand-border-20: rgba(79, 70, 229, 0.2);
+  --zz-brand-bg-12: rgba(79, 70, 229, 0.12);
+  --zz-shadow-terminal: 0 10px 24px -12px rgba(0, 0, 0, 0.46), 0 0 12px rgba(79, 70, 229, 0.1);
   font-family: "Inter", system-ui, sans-serif;
 }
+
 
 /* Force full-bleed removal of Material padding on the home page */
 .md-content:has(.zz-homepage),
@@ -821,7 +838,7 @@
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   border: 1px solid var(--zz-border);
-  background: #161b22;
+  background: var(--zz-section-bg);
   color: var(--zz-muted);
   font-family: "JetBrains Mono", monospace;
   font-size: 0.7rem;
@@ -834,7 +851,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: var(--zz-accent);
   animation: zz-ping 1.8s ease-in-out infinite;
 }
 
@@ -853,7 +870,7 @@
 }
 
 .zz-hero__muted {
-  color: #484f58;
+  color: var(--zz-muted);
 }
 
 .zz-gradient-text {
@@ -894,17 +911,17 @@
 .zz-btn:hover { transform: translateY(-2px); }
 
 .zz-btn--primary {
-  background: #e6edf3;
-  color: #0d1117;
+  background: var(--zz-text);
+  color: var(--zz-page-bg);
 }
-.zz-btn--primary:hover { background: #fff; color: #0d1117; }
+.zz-btn--primary:hover { background: #fff; color: var(--zz-page-bg); }
 
 .zz-btn--outline {
   background: transparent;
-  border: 1px solid #30363d;
-  color: #8b949e;
+  border: 1px solid var(--zz-border);
+  color: var(--zz-muted);
 }
-.zz-btn--outline:hover { border-color: #8b949e; color: #e6edf3; }
+.zz-btn--outline:hover { border-color: var(--zz-muted); color: var(--zz-text); }
 
 /* ── Metrics strip ─────────────────────────────────────────────────────── */
 
@@ -982,11 +999,14 @@
   padding: 0 1.5rem 2rem;
 }
 
+/* Terminal frame — mapped from .zz-terminal-monolith / .zz-terminal-frame
+ * (styles.650b531e.css): code-surface bg, brand-20 border, 12px radius,
+ * --zenzic-shadow-terminal. Titlebar = the production linear-gradient. */
 .zz-terminal {
-  border-radius: 10px;
-  border: 1px solid #30363d;
-  background: #0d1117;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  border-radius: 12px;
+  border: 1px solid var(--zz-brand-border-20);
+  background: var(--zz-code-surface);
+  box-shadow: var(--zz-shadow-terminal);
   overflow: hidden;
   font-family: "JetBrains Mono", monospace;
 }
@@ -996,9 +1016,10 @@
   align-items: center;
   gap: 6px;
   padding: 0.6rem 1rem;
-  background: #161b22;
-  border-bottom: 1px solid #21262d;
+  background: linear-gradient(#2d2d2d 0%, #252525 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
+
 
 .zz-dot {
   width: 12px;
@@ -1013,7 +1034,7 @@
 .zz-terminal__title {
   margin-left: 0.5rem;
   font-size: 0.7rem;
-  color: #484f58;
+  color: var(--zz-muted);
   letter-spacing: 0.03em;
 }
 
@@ -1024,7 +1045,7 @@
   border-radius: 0;
   font-size: 0.78rem;
   line-height: 1.7;
-  color: #8b949e;
+  color: var(--zz-muted);
   white-space: pre;
   overflow-x: auto;
 }
@@ -1041,7 +1062,7 @@
 .zz-t-red    { color: #f85149; }
 .zz-t-yellow { color: #d29922; }
 .zz-t-green  { color: #3fb950; }
-.zz-t-dim    { color: #484f58; }
+.zz-t-dim    { color: var(--zz-muted); }
 
 /* ── Feature cards ─────────────────────────────────────────────────────── */
 
@@ -1055,12 +1076,12 @@
   padding: 1.5rem;
   border: 1px solid var(--zz-border);
   border-radius: 8px;
-  background: #0d1117;
+  background: var(--zz-page-bg);
   transition: border-color 0.2s, background 0.2s;
 }
 .zz-card:hover {
-  border-color: #30363d;
-  background: #161b22;
+  border-color: var(--zz-border);
+  background: var(--zz-section-bg);
 }
 
 .zz-card__icon {
@@ -1089,8 +1110,16 @@
   color: var(--zz-muted);
   max-width: 640px;
   line-height: 1.7;
-  margin: -1.5rem 0 2.5rem;
+  margin: 0 0 2.5rem;
 }
+
+/* When a lead paragraph follows the title, tighten the title's bottom
+ * margin instead of pulling the lead up with a negative margin. The old
+ * negative margin overlapped the title whenever it wrapped to two lines. */
+.zz-section__title:has(+ .zz-section__lead) {
+  margin-bottom: 1rem;
+}
+
 
 /* ── Diagnostic divider (// EXECUTION_LAYER, // FAILURE_TOPOLOGY, …) ─────── */
 
@@ -1201,3 +1230,120 @@
 .zz-ledger__panel .zz-terminal__body {
   white-space: pre;
 }
+
+/* ════════════════════════════════════════════════════════════════════════ */
+/* PHASE 2 — Security · Quickstart · Quality Score · Governance              */
+/* ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Security: alternating meta / panel rows ────────────────────────────── */
+.zz-security { display: flex; flex-direction: column; gap: 4rem; }
+.zz-security__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 2rem 3rem;
+  align-items: center;
+}
+.zz-security__row--reverse .zz-security__meta { order: 2; }
+.zz-security__row--reverse .zz-security__panel { order: 1; }
+@media (max-width: 760px) {
+  .zz-security__row { grid-template-columns: 1fr; }
+  .zz-security__row--reverse .zz-security__meta,
+  .zz-security__row--reverse .zz-security__panel { order: initial; }
+}
+.zz-security__title { font-size: 1.25rem; font-weight: 500; color: var(--zz-text); margin: 0 0 0.75rem; }
+.zz-security__desc { font-size: 0.875rem; color: var(--zz-muted); line-height: 1.7; margin: 0; }
+.zz-security__desc code {
+  font-family: "JetBrains Mono", monospace; font-size: 0.8em; background: var(--zz-section-bg);
+  border: 1px solid var(--zz-border); border-radius: 4px; padding: 0.1em 0.4em; color: var(--zz-accent-light);
+}
+
+/* Shared diagnostic panel chrome */
+.zz-gutter, .zz-breach, .zz-gatesummary {
+  border: 1px solid var(--zz-border); border-radius: 12px; background: var(--zz-page-bg);
+  padding: 1.25rem 1.5rem; font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem; line-height: 1.7; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+.zz-gutter__file { color: var(--zz-muted); border-bottom: 1px solid var(--zz-border); padding-bottom: 0.5rem; margin-bottom: 0.75rem; font-weight: 500; }
+.zz-gutter__finding { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.zz-gutter__code { background: rgba(248, 81, 73, 0.1); color: #f85149; padding: 0.05rem 0.4rem; border-radius: 4px; }
+.zz-gutter__msg { color: var(--zz-text); }
+.zz-gutter__line { display: flex; gap: 0.5rem; color: var(--zz-muted); }
+.zz-gutter__num { width: 1.5rem; text-align: right; flex-shrink: 0; }
+.zz-gutter__bar { color: var(--zz-border); }
+.zz-gutter__line--hit { background: rgba(255, 255, 255, 0.03); margin: 0 -1.5rem; padding: 0.1rem 1.5rem; color: var(--zz-text); font-weight: 500; }
+
+.zz-breach { border-color: rgba(248, 81, 73, 0.3); background: rgba(248, 81, 73, 0.03); }
+.zz-breach__banner { text-align: center; letter-spacing: 0.2em; font-weight: 700; font-size: 0.7rem; color: rgba(248, 81, 73, 0.9); border-bottom: 1px solid rgba(248, 81, 73, 0.2); padding-bottom: 0.75rem; margin-bottom: 1rem; }
+.zz-breach__row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.zz-breach__key { width: 6rem; flex-shrink: 0; color: var(--zz-muted); }
+.zz-breach__val { color: var(--zz-text); }
+.zz-breach__cred { background: rgba(248, 81, 73, 0.1); color: #ffa198; padding: 0.05rem 0.5rem; border-radius: 4px; }
+.zz-breach__action { display: flex; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(248, 81, 73, 0.2); }
+.zz-breach__actionval { color: var(--zz-muted); line-height: 1.6; }
+
+.zz-gatesummary__counts { display: flex; gap: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid var(--zz-border); padding-bottom: 1rem; margin-bottom: 1rem; }
+.zz-gatesummary__verdict { color: #f85149; font-weight: 700; letter-spacing: 0.02em; }
+
+/* ── Quickstart ─────────────────────────────────────────────────────────── */
+.zz-quickstart { max-width: 720px; }
+.zz-quickstart__prompt { color: var(--zz-accent-light); font-weight: 600; user-select: none; }
+.zz-quickstart__ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+
+/* ── Quality Score card ─────────────────────────────────────────────────── */
+.zz-score-card { display: flex; flex-direction: column; border: 1px solid var(--zz-border); border-radius: 12px; overflow: hidden; }
+@media (min-width: 720px) { .zz-score-card { flex-direction: row; } }
+.zz-score-card__aside { width: 100%; background: rgba(13, 13, 17, 0.4); border-bottom: 1px solid var(--zz-border); padding: 1.5rem; display: flex; flex-direction: column; }
+@media (min-width: 720px) { .zz-score-card__aside { width: 18rem; flex-shrink: 0; border-bottom: none; border-right: 1px solid var(--zz-border); } }
+.zz-score-card__aside-label { font-size: 0.8rem; font-weight: 500; color: var(--zz-muted); margin-bottom: 2rem; }
+.zz-score-card__overall { flex: 1; }
+.zz-score-card__overall-label { font-size: 0.85rem; font-weight: 500; color: var(--zz-muted); margin-bottom: 0.5rem; }
+.zz-score-card__overall-value { font-size: 4.5rem; font-weight: 300; letter-spacing: -0.04em; line-height: 1; color: var(--zz-text); margin-bottom: 1rem; }
+.zz-score-card__trend { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.1rem 0.5rem; border-radius: 4px; background: rgba(63, 185, 80, 0.1); border: 1px solid rgba(63, 185, 80, 0.2); color: #3fb950; font-size: 0.72rem; font-weight: 500; width: max-content; }
+.zz-score-card__ci { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--zz-border); }
+.zz-score-card__ci-label { font-size: 0.7rem; color: var(--zz-muted); margin-bottom: 0.5rem; }
+.zz-score-card__ci-cmd { font-family: "JetBrains Mono", monospace; font-size: 0.72rem; color: var(--zz-muted); background: transparent; padding: 0; }
+.zz-score-card__body { flex: 1; padding: 1rem; }
+.zz-score-card__sep { height: 1px; background: var(--zz-border); margin: 0.25rem 0.5rem; }
+.zz-score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; border-radius: 6px; transition: background 0.2s; }
+.zz-score-row:hover { background: rgba(255, 255, 255, 0.02); }
+.zz-score-row__label { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; font-weight: 500; color: var(--zz-text); }
+.zz-score-row__value { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--zz-muted); }
+.zz-score-dot { width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.zz-score-dot::after { content: ""; width: 0.35rem; height: 0.35rem; border-radius: 50%; }
+.zz-score-dot--sky { border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1); }
+.zz-score-dot--sky::after { background: #38bdf8; }
+.zz-score-dot--rose { border-color: rgba(251, 113, 133, 0.3); background: rgba(251, 113, 133, 0.1); }
+.zz-score-dot--rose::after { background: #fb7185; }
+.zz-score-sub { margin-left: 1.25rem; padding-left: 1rem; border-left: 1px solid var(--zz-border); }
+.zz-score-subrow { display: flex; align-items: center; gap: 0.75rem; padding: 0.4rem 1rem; border-radius: 6px; }
+.zz-score-subrow:hover { background: rgba(255, 255, 255, 0.02); }
+.zz-score-subrow__label { flex: 1; font-size: 0.78rem; color: var(--zz-muted); }
+.zz-score-subrow__value { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; color: var(--zz-muted); }
+.zz-score-subdot { width: 1rem; height: 1rem; border-radius: 50%; border: 1px solid currentColor; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.zz-score-subdot::after { content: ""; width: 0.25rem; height: 0.25rem; border-radius: 50%; background: currentColor; }
+.zz-score-subdot--sky { color: rgba(56, 189, 248, 0.8); }
+.zz-score-subdot--rose { color: rgba(251, 113, 133, 0.8); }
+
+/* ── Governance: Suppression CAP panels ─────────────────────────────────── */
+.zz-governance { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 2rem; align-items: stretch; }
+@media (max-width: 760px) { .zz-governance { grid-template-columns: 1fr; } }
+.zz-governance__col { display: flex; flex-direction: column; }
+.zz-governance__caption { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--zz-muted); margin-bottom: 0.75rem; }
+.zz-cap { flex: 1; border: 1px solid var(--zz-border); border-radius: 12px; overflow: hidden; background: rgba(13, 13, 17, 0.4); font-family: "JetBrains Mono", monospace; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45); }
+.zz-cap--breach { border-color: rgba(248, 81, 73, 0.4); }
+.zz-cap--ok { border-color: rgba(63, 185, 80, 0.4); }
+.zz-cap__header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--zz-border); }
+.zz-cap--breach .zz-cap__header { background: rgba(248, 81, 73, 0.08); border-bottom-color: rgba(248, 81, 73, 0.2); }
+.zz-cap--ok .zz-cap__header { background: rgba(63, 185, 80, 0.08); border-bottom-color: rgba(63, 185, 80, 0.2); }
+.zz-cap__title { font-size: 0.8rem; font-weight: 600; color: var(--zz-text); }
+.zz-cap__badge { background: rgba(248, 81, 73, 0.1); color: #ffa198; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.zz-cap__grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.zz-cap__cell { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; padding: 1.25rem 0.75rem; }
+.zz-cap__cell + .zz-cap__cell { border-left: 1px solid var(--zz-border); }
+.zz-cap__cell-label { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--zz-muted); text-align: center; }
+.zz-cap__cell-value { font-size: 1.5rem; font-weight: 300; color: var(--zz-text); font-variant-numeric: tabular-nums; }
+.zz-cap__cell-value--debt { color: #fb7185; }
+.zz-cap__cell-value--ok { color: #3fb950; }
+.zz-cap__footer { padding: 0.75rem 1.5rem; border-top: 1px solid var(--zz-border); background: rgba(13, 13, 17, 0.4); }
+.zz-cap__link { font-size: 0.7rem; letter-spacing: 0.02em; color: #d29922; text-decoration: none; }
+.zz-cap__link:hover { text-decoration: underline; }

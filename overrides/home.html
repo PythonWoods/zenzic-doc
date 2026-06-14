@@ -2,17 +2,54 @@
 {# SPDX-License-Identifier: Apache-2.0 #}
 {% extends "base.html" %}
 
+{#
+  Divider sequence locked to the production ground truth
+  (.draft/zenzic.dev/ rendered DOM), exactly 6 labels:
+    EXECUTION_LAYER → FAILURE_TOPOLOGY → DIAGNOSTIC_OUTPUT
+    → ADAPTER_SURFACE → GOVERNANCE_GATE → SUPPRESSION_POLICY
+
+  Partial mapping (ground-truth DOM extraction, Tailwind classes verbatim):
+    EXECUTION_LAYER    → terminal.html
+    FAILURE_TOPOLOGY   → features.html
+    DIAGNOSTIC_OUTPUT  → diagnostic_output.html
+    ADAPTER_SURFACE    → ledger.html
+    GOVERNANCE_GATE    → quality_score.html
+    SUPPRESSION_POLICY → suppression.html
+
+  Tailwind CSS is compiled by the standalone binary (Path C):
+    ./tailwindcss-linux-x64 --config tailwind.config.js \
+      --input src/tailwind-homepage.css \
+      --output docs/assets/tailwind-homepage.css --minify
+  It is injected via extrahead (homepage-only scope) and does NOT
+  apply Preflight, so MkDocs Material Markdown rendering is unaffected.
+#}
+
+{# Inject the scoped Tailwind utilities stylesheet for this page only #}
+{% block extrahead %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ base_url }}assets/tailwind-homepage.css">
+{% endblock %}
+
 {% block content %}
 <div class="zz-homepage">
   {% include "components/homepage/hero.html" %}
 
-  <div class="zz-divider"><span>// EXECUTION_LAYER</span></div>
+  <div class="zz-divider px-6 py-2"><span>// EXECUTION_LAYER</span></div>
   {% include "components/homepage/terminal.html" %}
 
-  <div class="zz-divider"><span>// FAILURE_TOPOLOGY</span></div>
+  <div class="zz-divider px-6 py-2"><span>// FAILURE_TOPOLOGY</span></div>
   {% include "components/homepage/features.html" %}
 
-  <div class="zz-divider"><span>// ADAPTER_SURFACE</span></div>
+  <div class="zz-divider px-6 py-2"><span>// DIAGNOSTIC_OUTPUT</span></div>
+  {% include "components/homepage/diagnostic_output.html" %}
+
+  <div class="zz-divider px-6 py-2"><span>// ADAPTER_SURFACE</span></div>
   {% include "components/homepage/ledger.html" %}
+
+  <div class="zz-divider px-6 py-2"><span>// GOVERNANCE_GATE</span></div>
+  {% include "components/homepage/quality_score.html" %}
+
+  <div class="zz-divider px-6 py-2"><span>// SUPPRESSION_POLICY</span></div>
+  {% include "components/homepage/suppression.html" %}
 </div>
 {% endblock %}

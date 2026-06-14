@@ -89,3 +89,4 @@ yarn-error.log*
 # AI Agents Configuration
 .github/agents/
 .clinerules
+tailwindcss-linux-x64
