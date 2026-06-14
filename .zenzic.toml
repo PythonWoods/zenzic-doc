@@ -70,12 +70,15 @@ placeholder_patterns = []
 # --- PLACEHOLDERS & CODE SNIPPETS (Optional) ---
 placeholder_max_words = 0
 
+excluded_assets = ["robots.txt"]
+excluded_asset_dirs = ["overrides", "assets"]
+
 # --- ENGINE CONTEXT ---
 [build_context]
-engine         = "docusaurus" # Supported: mkdocs, zensical, standalone
+engine         = "zensical" # Supported: mkdocs, zensical, standalone
 base_url       = "/"
 default_locale = "en"
-locales        = ["it"]
+locales        = []
 
 # --- BRAND INTEGRITY ---
 [project_metadata]
@@ -105,7 +108,7 @@ brand_obsolescence = [
     "Graphite"
 ]
 # suppression_cap_scope = "all"  # Options: all, per-file
-i18n_parity = true
+i18n_parity = false
 
 # ---------------------------------------------------------------------------
 # per_file_ignores
@@ -118,26 +121,20 @@ i18n_parity = true
 [governance.per_file_ignores]
 # Z105: cross-plugin absolute links.
 # Tracked in ROADMAP: Docusaurus Cross-Instance Resolver.
-"docs/explanation/github-action-internals.mdx" = ["Z105"]
-"docs/it/explanation/github-action-internals.mdx" = ["Z105"]
-"docs/explanation/architecture.mdx" = ["Z109", "Z105"]
-"docs/it/explanation/architecture.mdx" = ["Z109", "Z105"]
-"docs/explanation/the-zenzic-trinity.mdx" = ["Z105"]
-"docs/it/explanation/the-zenzic-trinity.mdx" = ["Z105"]
-"docs/how-to/configure-adapter.mdx" = ["Z105"]
-"docs/it/how-to/configure-adapter.mdx" = ["Z105"]
-"docs/reference/advanced-features.mdx" = ["Z105"]
-"docs/it/reference/advanced-features.mdx" = ["Z105"]
-"docs/reference/brand-kit.mdx" = ["Z105"]
-"docs/it/reference/brand-kit.mdx" = ["Z105"]
-"docs/reference/cli.mdx" = ["Z105"]
-"docs/it/reference/cli.mdx" = ["Z105"]
+"docs/user-manual/explanation/github-action-internals.md" = ["Z105"]
+"docs/user-manual/explanation/architecture.md" = ["Z109", "Z105"]
+"docs/user-manual/explanation/the-zenzic-trinity.md" = ["Z105"]
+"docs/user-manual/how-to/configure-adapter.md" = ["Z105"]
+"docs/user-manual/reference/advanced-features.md" = ["Z105"]
+"docs/user-manual/reference/brand-kit.md" = ["Z105"]
+"docs/user-manual/reference/cli.md" = ["Z105"]
 
 # Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
 # demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
 # rel_path is relative to repo_root (with "docs/" prefix); IT locale uses "docs/it/" prefix.
-"docs/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
-"docs/it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
+"docs/user-manual/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
+"docs/blog/2026-06-09-auditing-the-auditors.md" = ["Z503"]
+"docs/user-manual/tutorials/examples/z5xx-content/z505-untagged-code-block.md" = ["Z505"]
 
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
 # "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
@@ -153,12 +150,11 @@ i18n_parity = true
 # [governance.directory_policies]
 # "docs/blog/**"                  = ["Z601"]  # historical archive
 # "docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
-
+#
 [governance.directory_policies]
 "docs/blog/**"                    = ["Z601"]  # historical release blog posts
-"docs/explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
-"docs/it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
-"docs/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
+"docs/user-manual/explanation/mineral-path.md"    = ["Z601"]  # SSOT codename registry (EN)
+"docs/user-manual/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
 
 # Governance Playbook:
 # /developers/how-to/release-governance-protocol
@@ -187,20 +183,18 @@ i18n_parity = true
 
 # --- I18N PARITY (Optional) ---
 [i18n]
-enabled = true
+enabled = false
 base_lang = "en"
 base_source = "docs"
-strict_parity = true
+strict_parity = false
 require_frontmatter_parity = ["title", "description"]
 
 [i18n.targets]
-it = "i18n/it/docusaurus-plugin-content-docs/current"
 
 [[i18n.extra_sources]]
-base_source = "developers"
+base_source = "contributor-guide"
 
 [i18n.extra_sources.targets]
-it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
 
 # --- GATE 4: CI/CD (GitHub Actions, Optional) ---
 # Add this workflow snippet to .github/workflows/zenzic.yml

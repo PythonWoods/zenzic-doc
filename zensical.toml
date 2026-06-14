@@ -1,0 +1,295 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+
+[project]
+site_name = "Zenzic"
+site_url = "https://zenzic.dev"
+docs_dir = "docs"
+use_directory_urls = true
+favicon = "assets/favicon/png/zenzic-icon-32.png"
+logo = "assets/brand/svg/zenzic-icon.svg"
+
+[theme]
+name = "material"
+features = [
+    "navigation.tabs",
+    "navigation.sections",
+    "navigation.top",
+    "search.highlight",
+    "content.code.copy"
+]
+
+nav = [
+    {"User Manual" = [
+        {"Getting Started" = "user-manual/index.md"},
+        {"Tutorials" = [
+            {"First Audit" = "user-manual/tutorials/first-audit.md"},
+            {"Examples" = [
+                {"Index" = "user-manual/tutorials/examples/index.md"},
+                {"Links" = [
+                    {"Z101 Broken Links" = "user-manual/tutorials/examples/z1xx-links/z101-broken-links.md"},
+                    {"Z102 Anchor Missing" = "user-manual/tutorials/examples/z1xx-links/z102-anchor-missing.md"},
+                    {"Z103 Orphan Link" = "user-manual/tutorials/examples/z1xx-links/z103-orphan-link.md"},
+                    {"Z104 File Not Found" = "user-manual/tutorials/examples/z1xx-links/z104-file-not-found.md"},
+                    {"Z105 Absolute Path" = "user-manual/tutorials/examples/z1xx-links/z105-absolute-path.md"},
+                    {"Z107 Circular Anchor" = "user-manual/tutorials/examples/z1xx-links/z107-circular-anchor.md"},
+                    {"Z108 Empty Link Text" = "user-manual/tutorials/examples/z1xx-links/z108-empty-link-text.md"},
+                    {"Z109 External Link Broken" = "user-manual/tutorials/examples/z1xx-links/z109-external-link-broken.md"}
+                ]},
+                {"Security" = [
+                    {"Z201 Credentials" = "user-manual/tutorials/examples/z2xx-security/z201-credentials.md"},
+                    {"Z202 Path Traversal" = "user-manual/tutorials/examples/z2xx-security/z202-path-traversal.md"},
+                    {"Z204 Forbidden Term" = "user-manual/tutorials/examples/z2xx-security/z204-forbidden-term.md"}
+                ]},
+                {"References" = [
+                    {"Z301 Dangling Reference" = "user-manual/tutorials/examples/z3xx-references/z301-dangling-ref.md"},
+                    {"Z302 Dead Definition" = "user-manual/tutorials/examples/z3xx-references/z302-dead-def.md"},
+                    {"Z303 Duplicate Definition" = "user-manual/tutorials/examples/z3xx-references/z303-duplicate-def.md"}
+                ]},
+                {"Topology" = [
+                    {"Z401 Missing Directory Index" = "user-manual/tutorials/examples/z4xx-topology/z401-missing-directory-index.md"},
+                    {"Z402 Orphan Page" = "user-manual/tutorials/examples/z4xx-topology/z402-orphan-page.md"},
+                    {"Z403 Missing Alt" = "user-manual/tutorials/examples/z4xx-topology/z403-missing-alt.md"},
+                    {"Z404 Config Asset Missing" = "user-manual/tutorials/examples/z4xx-topology/z404-config-asset-missing.md"},
+                    {"Z405 Unused Assets" = "user-manual/tutorials/examples/z4xx-topology/z405-unused-assets.md"},
+                    {"Z406 Nav Contract" = "user-manual/tutorials/examples/z4xx-topology/z406-nav-contract.md"}
+                ]},
+                {"Content" = [
+                    {"Z501 Placeholder" = "user-manual/tutorials/examples/z5xx-content/z501-placeholder.md"},
+                    {"Z502 Short Content" = "user-manual/tutorials/examples/z5xx-content/z502-short-content.md"},
+                    {"Z503 Snippet Error" = "user-manual/tutorials/examples/z5xx-content/z503-snippet-error.md"},
+                    {"Z505 Untagged Code Block" = "user-manual/tutorials/examples/z5xx-content/z505-untagged-code-block.md"}
+                ]},
+                {"Brand" = [
+                    {"Z601 Brand Obsolescence" = "user-manual/tutorials/examples/z6xx-brand/z601-brand-obsolescence.md"},
+                    {"Z602 i18n Parity" = "user-manual/tutorials/examples/z6xx-brand/z602-i18n-parity.md"}
+                ]}
+            ]}
+        ]},
+        {"How-To Guides" = [
+            {"Install" = "user-manual/how-to/install.md"},
+            {"Initialize Configuration" = "user-manual/how-to/initialize-configuration.md"},
+            {"Configuration Strategy" = "user-manual/how-to/configuration-strategy.md"},
+            {"Workflow Integration" = "user-manual/how-to/workflow-integration.md"},
+            {"Add Custom Rules" = "user-manual/how-to/add-custom-rules.md"},
+            {"Add Badges" = "user-manual/how-to/add-badges.md"},
+            {"Use Brand System" = "user-manual/how-to/use-brand-system.md"},
+            {"Handle Technical Debt" = "user-manual/how-to/handle-technical-debt.md"},
+            {"Configure Social Metadata" = "user-manual/how-to/configure-social-metadata.md"},
+            {"Configure Adapter" = "user-manual/how-to/configure-adapter.md"},
+            {"Manage Cross-Site Links" = "user-manual/how-to/manage-cross-site-links.md"},
+            {"Configure Privacy Gate" = "user-manual/how-to/configure-privacy-gate.md"},
+            {"Migrate Engines" = "user-manual/how-to/migrate-engines.md"},
+            {"Configure CI/CD" = "user-manual/how-to/configure-ci-cd.md"}
+        ]},
+        {"Reference" = [
+            {"Overview" = "user-manual/reference/index.md"},
+            {"CLI" = "user-manual/reference/cli.md"},
+            {"Finding Codes" = "user-manual/reference/finding-codes.md"},
+            {"Checks" = "user-manual/reference/checks.md"},
+            {"API JSON" = "user-manual/reference/api-json.md"},
+            {"Scoring Algorithm" = "user-manual/reference/scoring-algorithm.md"},
+            {"Suppression Policy" = "user-manual/reference/suppression-policy.md"},
+            {"Zenzic Action" = "user-manual/reference/zenzic-action.md"},
+            {"Configuration Reference" = "user-manual/reference/configuration-reference.md"},
+            {"Engines" = "user-manual/reference/engines.md"},
+            {"Brand Kit" = "user-manual/reference/brand-kit.md"},
+            {"Brand System" = "user-manual/reference/brand-system.md"},
+            {"Advanced Features" = "user-manual/reference/advanced-features.md"},
+            {"Glossary" = "user-manual/reference/glossary.md"}
+        ]},
+        {"Explanation" = [
+            {"Why Zenzic?" = "user-manual/explanation/why-zenzic.md"},
+            {"Architecture" = "user-manual/explanation/architecture.md"},
+            {"The Zenzic Trinity" = "user-manual/explanation/the-zenzic-trinity.md"},
+            {"Core Mechanics" = "user-manual/explanation/core-mechanics.md"},
+            {"Discovery" = "user-manual/explanation/discovery.md"},
+            {"Configuration Loading" = "user-manual/explanation/configuration-loading.md"},
+            {"Exclusion Design" = "user-manual/explanation/exclusion-design.md"},
+            {"Engine Migration Design" = "user-manual/explanation/engine-migration-design.md"},
+            {"Structural Integrity" = "user-manual/explanation/structural-integrity.md"},
+            {"Scoring Design" = "user-manual/explanation/scoring-design.md"},
+            {"Scoring System" = "user-manual/explanation/scoring-system.md"},
+            {"Privacy Gate" = "user-manual/explanation/privacy-gate.md"},
+            {"Brand Philosophy" = "user-manual/explanation/brand-philosophy.md"},
+            {"Mineral Path" = "user-manual/explanation/mineral-path.md"},
+            {"Community Index" = "user-manual/explanation/community-index.md"},
+            {"GitHub Action Internals" = "user-manual/explanation/github-action-internals.md"}
+        ]}
+    ]},
+    {"Contributor Guide" = [
+        {"Home" = "contributor-guide/index.md"},
+        {"How-To" = [
+            {"Implement Adapter" = "contributor-guide/how-to/implement-adapter.md"},
+            {"Write Plugin" = "contributor-guide/how-to/write-plugin.md"},
+            {"Write a Check" = "contributor-guide/how-to/write-a-check.md"},
+            {"Release Governance Protocol" = "contributor-guide/how-to/release-governance-protocol.md"},
+            {"Contribute" = [
+                {"Index" = "contributor-guide/how-to/contribute/index.md"},
+                {"Report a Bug" = "contributor-guide/how-to/contribute/report-a-bug.md"},
+                {"Report a Docs Issue" = "contributor-guide/how-to/contribute/report-a-docs-issue.md"},
+                {"Request a Change" = "contributor-guide/how-to/contribute/request-a-change.md"},
+                {"Pull Requests" = "contributor-guide/how-to/contribute/pull-requests.md"}
+            ]}
+        ]},
+        {"Reference" = [
+            {"Adapter API" = "contributor-guide/reference/adapter-api.md"},
+            {"Adapter Examples" = "contributor-guide/reference/adapter-examples.md"},
+            {"CLI Architecture" = "contributor-guide/reference/cli-architecture.md"},
+            {"Credential Scanner Obligations" = "contributor-guide/reference/credential-scanner-obligations.md"},
+            {"Supply Chain Assurance Profile" = "contributor-guide/reference/supply-chain-assurance-profile.md"},
+            {"Zenzic Style" = "contributor-guide/reference/zenzic-style.md"}
+        ]},
+        {"Explanation" = [
+            {"Adapter Internals" = "contributor-guide/explanation/adapter-internals.md"},
+            {"MDX Asset Rationale" = "contributor-guide/explanation/mdx-asset-rationale.md"},
+            {"Sovereign Verification Model" = "contributor-guide/explanation/sovereign-verification-model.md"},
+            {"Core Laws" = "contributor-guide/explanation/core-laws.md"},
+            {"ADR Vault" = "contributor-guide/explanation/adr-vault.md"},
+            {"ADR Path Sovereignty" = "contributor-guide/explanation/adr-path-sovereignty.md"},
+            {"ADR Lint Source" = "contributor-guide/explanation/adr-lint-source.md"},
+            {"ADR Parallel Early Termination" = "contributor-guide/explanation/adr-parallel-early-termination.md"},
+            {"ADR Unified Perimeter" = "contributor-guide/explanation/adr-unified-perimeter.md"},
+            {"ADR Regex ACL" = "contributor-guide/explanation/adr-regex-acl.md"},
+            {"ADR Native Telemetry" = "contributor-guide/explanation/adr-native-telemetry.md"},
+            {"ADR Bilingual Structural" = "contributor-guide/explanation/adr-bilingual-structural.md"},
+            {"ADR Discovery" = "contributor-guide/explanation/adr-discovery.md"},
+            {"ADR Agnostic Universalism" = "contributor-guide/explanation/adr-agnostic-universalism.md"},
+            {"ADR Decentralized CLI" = "contributor-guide/explanation/adr-decentralized-cli.md"},
+            {"Governance" = [
+                {"Index" = "contributor-guide/explanation/governance/index.md"},
+                {"Exit Strategy" = "contributor-guide/explanation/governance/exit_strategy.md"},
+                {"Technical Debt" = "contributor-guide/explanation/governance/technical-debt.md"},
+                {"Evolution Policy" = "contributor-guide/explanation/governance/evolution_policy.md"},
+                {"Licensing" = "contributor-guide/explanation/governance/licensing.md"}
+            ]}
+        ]}
+    ]},
+    {"Blog" = "blog/index.md"}
+]
+
+[plugins.search]
+
+[plugins.redirects.redirect_maps]
+"blog/2026/04/28/welcome.html" = "blog/2026-04-28-welcome.md"
+"blog/2026/04/29/tutorial-stop-broken-links.html" = "blog/2026-04-29-tutorial-stop-broken-links.md"
+"blog/2026/05/24/engineering-v080-deep-dive.html" = "blog/2026-05-24-engineering-v080-deep-dive.md"
+"blog/2026/05/24/log-v080.html" = "blog/2026-05-24-log-v080.md"
+"blog/2026/05/24/v080-namespace-contract.html" = "blog/2026-05-24-v080-namespace-contract.md"
+"blog/2026/05/25/dqs-mathematical-model.html" = "blog/2026-05-25-dqs-mathematical-model.md"
+"blog/2026/05/27/terminal-ux-documentation-governance.html" = "blog/2026-05-27-terminal-ux-documentation-governance.md"
+"blog/2026/05/28/enterprise-use-cases.html" = "blog/2026-05-28-enterprise-use-cases.md"
+"blog/2026/05/30/log-v090.html" = "blog/2026-05-30-log-v090.md"
+"blog/2026/06/03/algorithmic-complexity-and-redos-prevention.html" = "blog/2026-06-03-algorithmic-complexity-and-redos-prevention.md"
+"blog/2026/06/06/native-ci-integration-and-progressive-adoption.html" = "blog/2026-06-06-native-ci-integration-and-progressive-adoption.md"
+"blog/2026/06/09/auditing-the-auditors.html" = "blog/2026-06-09-auditing-the-auditors.md"
+"blog/2026/06/13/why-we-dropped-docusaurus.html" = "blog/2026-06-13-why-we-dropped-docusaurus.md"
+"developers/explanation/adapter-internals.html" = "contributor-guide/explanation/adapter-internals.md"
+"developers/explanation/adr-agnostic-universalism.html" = "contributor-guide/explanation/adr-agnostic-universalism.md"
+"developers/explanation/adr-bilingual-structural.html" = "contributor-guide/explanation/adr-bilingual-structural.md"
+"developers/explanation/adr-decentralized-cli.html" = "contributor-guide/explanation/adr-decentralized-cli.md"
+"developers/explanation/adr-discovery.html" = "contributor-guide/explanation/adr-discovery.md"
+"developers/explanation/adr-lint-source.html" = "contributor-guide/explanation/adr-lint-source.md"
+"developers/explanation/adr-native-telemetry.html" = "contributor-guide/explanation/adr-native-telemetry.md"
+"developers/explanation/adr-parallel-early-termination.html" = "contributor-guide/explanation/adr-parallel-early-termination.md"
+"developers/explanation/adr-path-sovereignty.html" = "contributor-guide/explanation/adr-path-sovereignty.md"
+"developers/explanation/adr-regex-acl.html" = "contributor-guide/explanation/adr-regex-acl.md"
+"developers/explanation/adr-unified-perimeter.html" = "contributor-guide/explanation/adr-unified-perimeter.md"
+"developers/explanation/adr-vault.html" = "contributor-guide/explanation/adr-vault.md"
+"developers/explanation/core-laws.html" = "contributor-guide/explanation/core-laws.md"
+"developers/explanation/governance/evolution_policy.html" = "contributor-guide/explanation/governance/evolution_policy.md"
+"developers/explanation/governance/exit_strategy.html" = "contributor-guide/explanation/governance/exit_strategy.md"
+"developers/explanation/governance/index.html" = "contributor-guide/explanation/governance/index.md"
+"developers/explanation/governance/licensing.html" = "contributor-guide/explanation/governance/licensing.md"
+"developers/explanation/governance/technical-debt.html" = "contributor-guide/explanation/governance/technical-debt.md"
+"developers/explanation/mdx-asset-rationale.html" = "contributor-guide/explanation/mdx-asset-rationale.md"
+"developers/explanation/sovereign-verification-model.html" = "contributor-guide/explanation/sovereign-verification-model.md"
+"developers/how-to/contribute/index.html" = "contributor-guide/how-to/contribute/index.md"
+"developers/how-to/contribute/pull-requests.html" = "contributor-guide/how-to/contribute/pull-requests.md"
+"developers/how-to/contribute/report-a-bug.html" = "contributor-guide/how-to/contribute/report-a-bug.md"
+"developers/how-to/contribute/report-a-docs-issue.html" = "contributor-guide/how-to/contribute/report-a-docs-issue.md"
+"developers/how-to/contribute/request-a-change.html" = "contributor-guide/how-to/contribute/request-a-change.md"
+"developers/how-to/implement-adapter.html" = "contributor-guide/how-to/implement-adapter.md"
+"developers/how-to/release-governance-protocol.html" = "contributor-guide/how-to/release-governance-protocol.md"
+"developers/how-to/write-a-check.html" = "contributor-guide/how-to/write-a-check.md"
+"developers/how-to/write-plugin.html" = "contributor-guide/how-to/write-plugin.md"
+"developers/index.html" = "contributor-guide/index.md"
+"developers/reference/adapter-api.html" = "contributor-guide/reference/adapter-api.md"
+"developers/reference/adapter-examples.html" = "contributor-guide/reference/adapter-examples.md"
+"developers/reference/cli-architecture.html" = "contributor-guide/reference/cli-architecture.md"
+"developers/reference/credential-scanner-obligations.html" = "contributor-guide/reference/credential-scanner-obligations.md"
+"developers/reference/supply-chain-assurance-profile.html" = "contributor-guide/reference/supply-chain-assurance-profile.md"
+"developers/reference/zenzic-style.html" = "contributor-guide/reference/zenzic-style.md"
+"docs/explanation/architecture.html" = "user-manual/explanation/architecture.md"
+"docs/explanation/brand-philosophy.html" = "user-manual/explanation/brand-philosophy.md"
+"docs/explanation/community-index.html" = "user-manual/explanation/community-index.md"
+"docs/explanation/configuration-loading.html" = "user-manual/explanation/configuration-loading.md"
+"docs/explanation/core-mechanics.html" = "user-manual/explanation/core-mechanics.md"
+"docs/explanation/discovery.html" = "user-manual/explanation/discovery.md"
+"docs/explanation/engine-migration-design.html" = "user-manual/explanation/engine-migration-design.md"
+"docs/explanation/exclusion-design.html" = "user-manual/explanation/exclusion-design.md"
+"docs/explanation/github-action-internals.html" = "user-manual/explanation/github-action-internals.md"
+"docs/explanation/mineral-path.html" = "user-manual/explanation/mineral-path.md"
+"docs/explanation/privacy-gate.html" = "user-manual/explanation/privacy-gate.md"
+"docs/explanation/scoring-design.html" = "user-manual/explanation/scoring-design.md"
+"docs/explanation/scoring-system.html" = "user-manual/explanation/scoring-system.md"
+"docs/explanation/structural-integrity.html" = "user-manual/explanation/structural-integrity.md"
+"docs/explanation/the-zenzic-trinity.html" = "user-manual/explanation/the-zenzic-trinity.md"
+"docs/explanation/why-zenzic.html" = "user-manual/explanation/why-zenzic.md"
+"docs/how-to/add-badges.html" = "user-manual/how-to/add-badges.md"
+"docs/how-to/add-custom-rules.html" = "user-manual/how-to/add-custom-rules.md"
+"docs/how-to/configuration-strategy.html" = "user-manual/how-to/configuration-strategy.md"
+"docs/how-to/configure-adapter.html" = "user-manual/how-to/configure-adapter.md"
+"docs/how-to/configure-ci-cd.html" = "user-manual/how-to/configure-ci-cd.md"
+"docs/how-to/configure-privacy-gate.html" = "user-manual/how-to/configure-privacy-gate.md"
+"docs/how-to/configure-social-metadata.html" = "user-manual/how-to/configure-social-metadata.md"
+"docs/how-to/handle-technical-debt.html" = "user-manual/how-to/handle-technical-debt.md"
+"docs/how-to/initialize-configuration.html" = "user-manual/how-to/initialize-configuration.md"
+"docs/how-to/install.html" = "user-manual/how-to/install.md"
+"docs/how-to/manage-cross-site-links.html" = "user-manual/how-to/manage-cross-site-links.md"
+"docs/how-to/migrate-engines.html" = "user-manual/how-to/migrate-engines.md"
+"docs/how-to/use-brand-system.html" = "user-manual/how-to/use-brand-system.md"
+"docs/how-to/workflow-integration.html" = "user-manual/how-to/workflow-integration.md"
+"docs/index.html" = "user-manual/index.md"
+"docs/reference/advanced-features.html" = "user-manual/reference/advanced-features.md"
+"docs/reference/api-json.html" = "user-manual/reference/api-json.md"
+"docs/reference/brand-kit.html" = "user-manual/reference/brand-kit.md"
+"docs/reference/brand-system.html" = "user-manual/reference/brand-system.md"
+"docs/reference/checks.html" = "user-manual/reference/checks.md"
+"docs/reference/cli.html" = "user-manual/reference/cli.md"
+"docs/reference/configuration-reference.html" = "user-manual/reference/configuration-reference.md"
+"docs/reference/engines.html" = "user-manual/reference/engines.md"
+"docs/reference/finding-codes.html" = "user-manual/reference/finding-codes.md"
+"docs/reference/glossary.html" = "user-manual/reference/glossary.md"
+"docs/reference/index.html" = "user-manual/reference/index.md"
+"docs/reference/scoring-algorithm.html" = "user-manual/reference/scoring-algorithm.md"
+"docs/reference/suppression-policy.html" = "user-manual/reference/suppression-policy.md"
+"docs/reference/zenzic-action.html" = "user-manual/reference/zenzic-action.md"
+"docs/tutorials/examples/index.html" = "user-manual/tutorials/examples/index.md"
+"docs/tutorials/examples/z1xx-links/z101-broken-links.html" = "user-manual/tutorials/examples/z1xx-links/z101-broken-links.md"
+"docs/tutorials/examples/z1xx-links/z102-anchor-missing.html" = "user-manual/tutorials/examples/z1xx-links/z102-anchor-missing.md"
+"docs/tutorials/examples/z1xx-links/z103-orphan-link.html" = "user-manual/tutorials/examples/z1xx-links/z103-orphan-link.md"
+"docs/tutorials/examples/z1xx-links/z104-file-not-found.html" = "user-manual/tutorials/examples/z1xx-links/z104-file-not-found.md"
+"docs/tutorials/examples/z1xx-links/z105-absolute-path.html" = "user-manual/tutorials/examples/z1xx-links/z105-absolute-path.md"
+"docs/tutorials/examples/z1xx-links/z107-circular-anchor.html" = "user-manual/tutorials/examples/z1xx-links/z107-circular-anchor.md"
+"docs/tutorials/examples/z1xx-links/z108-empty-link-text.html" = "user-manual/tutorials/examples/z1xx-links/z108-empty-link-text.md"
+"docs/tutorials/examples/z1xx-links/z109-external-link-broken.html" = "user-manual/tutorials/examples/z1xx-links/z109-external-link-broken.md"
+"docs/tutorials/examples/z2xx-security/z201-credentials.html" = "user-manual/tutorials/examples/z2xx-security/z201-credentials.md"
+"docs/tutorials/examples/z2xx-security/z202-path-traversal.html" = "user-manual/tutorials/examples/z2xx-security/z202-path-traversal.md"
+"docs/tutorials/examples/z2xx-security/z204-forbidden-term.html" = "user-manual/tutorials/examples/z2xx-security/z204-forbidden-term.md"
+"docs/tutorials/examples/z3xx-references/z301-dangling-ref.html" = "user-manual/tutorials/examples/z3xx-references/z301-dangling-ref.md"
+"docs/tutorials/examples/z3xx-references/z302-dead-def.html" = "user-manual/tutorials/examples/z3xx-references/z302-dead-def.md"
+"docs/tutorials/examples/z3xx-references/z303-duplicate-def.html" = "user-manual/tutorials/examples/z3xx-references/z303-duplicate-def.md"
+"docs/tutorials/examples/z4xx-topology/z401-missing-directory-index.html" = "user-manual/tutorials/examples/z4xx-topology/z401-missing-directory-index.md"
+"docs/tutorials/examples/z4xx-topology/z402-orphan-page.html" = "user-manual/tutorials/examples/z4xx-topology/z402-orphan-page.md"
+"docs/tutorials/examples/z4xx-topology/z403-missing-alt.html" = "user-manual/tutorials/examples/z4xx-topology/z403-missing-alt.md"
+"docs/tutorials/examples/z4xx-topology/z404-config-asset-missing.html" = "user-manual/tutorials/examples/z4xx-topology/z404-config-asset-missing.md"
+"docs/tutorials/examples/z4xx-topology/z405-unused-assets.html" = "user-manual/tutorials/examples/z4xx-topology/z405-unused-assets.md"
+"docs/tutorials/examples/z4xx-topology/z406-nav-contract.html" = "user-manual/tutorials/examples/z4xx-topology/z406-nav-contract.md"
+"docs/tutorials/examples/z5xx-content/z501-placeholder.html" = "user-manual/tutorials/examples/z5xx-content/z501-placeholder.md"
+"docs/tutorials/examples/z5xx-content/z502-short-content.html" = "user-manual/tutorials/examples/z5xx-content/z502-short-content.md"
+"docs/tutorials/examples/z5xx-content/z503-snippet-error.html" = "user-manual/tutorials/examples/z5xx-content/z503-snippet-error.md"
+"docs/tutorials/examples/z5xx-content/z505-untagged-code-block.html" = "user-manual/tutorials/examples/z5xx-content/z505-untagged-code-block.md"
+"docs/tutorials/examples/z6xx-brand/z601-brand-obsolescence.html" = "user-manual/tutorials/examples/z6xx-brand/z601-brand-obsolescence.md"
+"docs/tutorials/examples/z6xx-brand/z602-i18n-parity.html" = "user-manual/tutorials/examples/z6xx-brand/z602-i18n-parity.md"
+"docs/tutorials/first-audit.html" = "user-manual/tutorials/first-audit.md"

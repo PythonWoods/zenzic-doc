@@ -3,67 +3,10 @@
   "version": "0.11.0",
   "private": true,
   "scripts": {
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start --locale en",
-    "start:en": "docusaurus start --locale en",
-    "start:it": "docusaurus start --locale it",
-    "build": "docusaurus build",
-    "lint:md": "markdownlint-cli2 \"**/*.{md,mdx}\" \"#build\" \"#node_modules\"",
-    "lint:ts": "eslint .",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
-  },
-  "dependencies": {
-    "@docusaurus/core": "3.10.1",
-    "@docusaurus/faster": "3.10.1",
-    "@docusaurus/preset-classic": "3.10.1",
-    "@mdx-js/react": "^3.0.0",
-    "@tailwindcss/postcss": "^4.3.0",
-    "clsx": "^2.0.0",
-    "fast-uri": "^3.1.2",
-    "lucide-react": "^1.16.0",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "rehype-katex": "^7.0.1",
-    "remark-math": "^6.0.0",
-    "tailwindcss": "^4.3.0"
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#build\" \"#node_modules\""
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.10.1",
-    "@docusaurus/tsconfig": "3.10.1",
-    "@docusaurus/types": "3.10.1",
-    "@eslint/js": "^9.39.1",
-    "@types/node": "^25.9.2",
-    "@types/react": "^19.2.17",
-    "autoprefixer": "^10.5.0",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "markdownlint-cli2": "^0.22.1",
-    "postcss": "^8.5.15",
-    "typescript": "~6.0.3",
-    "typescript-eslint": "^8.61.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "overrides": {
-    "serialize-javascript": "^7.0.5"
+    "markdownlint-cli2": "^0.22.1"
   },
   "engines": {
     "node": ">=20.0"
