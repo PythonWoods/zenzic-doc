@@ -34,7 +34,9 @@ jobs:
           enable-cache: true
 
       - name: Build Zensical
-        run: uvx zensical build
+        run: |
+          uvx zensical build -f zensical.toml
+          uvx zensical build -f zensical.it.toml
 
       - name: Set artifact name
         id: vars
@@ -46,7 +48,7 @@ jobs:
           fi
 
       - name: Archive build output
-        run: tar -czf "${{ steps.vars.outputs.name }}.tar.gz" build
+        run: tar -czf "${{ steps.vars.outputs.name }}.tar.gz" site
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -67,4 +69,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build --project-name=zenzic-doc
+          command: pages deploy site --project-name=zenzic-doc
