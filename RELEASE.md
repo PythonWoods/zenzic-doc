@@ -8,7 +8,7 @@
 
 | Field    | Value      |
 | :------- | :--------- |
-| Version  | v0.13.0     |
+| Version  | v0.13.1     |
 | Codename | Magnetite   |
 | Date     | 2026-06-19 |
 | Status   | Stable     |
@@ -47,11 +47,11 @@ git checkout main
 git pull origin main
 
 # 3. Tag the main branch and push
-git tag v0.13.0
+git tag v0.13.1
 git push origin main --tags
 ```
 
-- [ ] Create GitHub Release from the tag, using the `## v0.13.0` CHANGELOG section as the release body.
+- [ ] Create GitHub Release from the tag, using the `## v0.13.1` CHANGELOG section as the release body.
 
 ## Changelog Reference
 

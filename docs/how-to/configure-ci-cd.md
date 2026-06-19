@@ -198,7 +198,7 @@ jobs:
 
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"          # pin to a stable release
+          version: "0.13.1"          # pin to a stable release
           format: sarif             # emit SARIF for Code Scanning
           upload-sarif: "true"
           fail-on-error: "true"
@@ -253,7 +253,7 @@ Slack notifications without re-parsing the SARIF file:
         id: zenzic
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"
+          version: "0.13.1"
 
       - name: Post finding count
 
@@ -270,7 +270,7 @@ By setting `ci: "true"`, the action natively injects the `--ci` flag under the h
       - name: Zenzic Progressive Gate
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           ci: "true"              # Native inline PR annotations (no SARIF required)
           only: "Z101,Z201"       # Gate ONLY fails on broken links and leaked secrets
           fail-on-error: "true"
@@ -315,7 +315,7 @@ jobs:
       - name: Run Zenzic and save baseline
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           format: json          # triggers .zenzic-score.json snapshot
           upload-sarif: "false"
 
@@ -347,7 +347,7 @@ jobs:
         uses: PythonWoods/zenzic-action@<version>
         id: zenzic
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           format: sarif
           upload-sarif: "true"
           diff-base: ".zenzic-baseline/.zenzic-score.json"
@@ -433,7 +433,7 @@ jobs:
       - name: Sovereign Audit (suppressions bypassed)
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           format: sarif
           upload-sarif: "true"
           audit: "true"           # bypass all zenzic:ignore and per_file_ignores
@@ -452,7 +452,7 @@ The `guard-scan: "true"` input runs `zenzic guard scan` as a standalone step **b
       - name: Run Zenzic Documentation Quality Gate
         uses: PythonWoods/zenzic-action@<version>
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           guard-scan: "true"   # zenzic guard scan runs before check all
           format: sarif
           upload-sarif: "true"
