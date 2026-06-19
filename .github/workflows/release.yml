@@ -31,10 +31,12 @@ jobs:
           enable-cache: true
 
       - name: Build Zensical
-        run: uvx zensical build
+        run: |
+          uvx zensical build -f zensical.toml
+          uvx zensical build -f zensical.it.toml
 
       - name: Archive build output
-        run: tar -czf "docs-${{ github.ref_name }}.tar.gz" build
+        run: tar -czf "docs-${{ github.ref_name }}.tar.gz" site
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3
