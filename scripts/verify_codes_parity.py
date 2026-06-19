@@ -20,8 +20,10 @@ from zenzic.core import regex as re
 ROOT = Path(__file__).resolve().parent.parent
 
 _CODE_TOKEN_RE = re.compile(r"\bZ\d{3}\b")
-_MIGRATION_MATRIX_START = "{/* zenzic:migration-matrix:start */}"
-_MIGRATION_MATRIX_END = "{/* zenzic:migration-matrix:end */}"
+# Post-migration: files are .md (Markdown), not .mdx (JSX).
+# Delimiters changed from JSX comments {/* */} to HTML comments <!-- -->.
+_MIGRATION_MATRIX_START = "<!-- zenzic:migration-matrix:start -->"
+_MIGRATION_MATRIX_END = "<!-- zenzic:migration-matrix:end -->"
 _MATRIX_ROW_RE = re.compile(r"\|\s*`?(Z\d{3})`?\s*\|\s*`?(Z\d{3})`?\s*\|")
 
 
@@ -29,7 +31,7 @@ def _iter_parity_files(root: Path) -> list[Path]:
     """Return all documentation files to scan for Zxxx references."""
     roots = [
         root / "docs",
-        root / "i18n" / "it",
+        root / "docs-it",
     ]
     patterns = ("**/*.mdx", "**/*.md")
     files: list[Path] = []
@@ -68,16 +70,8 @@ def main() -> int:
             code = match.group().upper()
             found_in_docs.setdefault(code, set()).add(rel)
 
-    en_fc_path = ROOT / "docs" / "reference" / "finding-codes.mdx"
-    it_fc_path = (
-        ROOT
-        / "i18n"
-        / "it"
-        / "docusaurus-plugin-content-docs"
-        / "current"
-        / "reference"
-        / "finding-codes.mdx"
-    )
+    en_fc_path = ROOT / "docs" / "reference" / "finding-codes.md"
+    it_fc_path = ROOT / "docs-it" / "reference" / "finding-codes.md"
     en_fc_text = en_fc_path.read_text(encoding="utf-8")
     it_fc_text = it_fc_path.read_text(encoding="utf-8")
 

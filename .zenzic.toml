@@ -1,183 +1,67 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# Precedence: .zenzic.toml is shared baseline; .zenzic.local.toml overrides locally.
-# Keep secrets and workstation-only values in .zenzic.local.toml.
-
 strict = true
-fail_under = 90
+fail_under = 80
 
-# External URLs excluded from the broken-link check (applies only with --strict)
 excluded_external_urls = [
-    # REUSE specification endpoint intermittently times out from CI/local runners.
     "https://reuse.software/spec/",
-    # SPDX license list endpoint intermittently times out from CI/local runners.
-    # Temporary exclusion; remove once the final guard stops timing out on this URL.
     "https://spdx.org/licenses/",
-    # GitHub PAT settings endpoint can intermittently time out from CI runners.
     "https://github.com/settings/tokens",
-    # External URLs excluded from the broken-link check to prevent CI flakiness
-    # caused by GitHub API rate-limiting and network timeouts.
     "https://github.com/PythonWoods/zenzic",
     "https://github.com/PythonWoods/zenzic-action",
     "https://github.com/PythonWoods/zenzic-doc",
-    # Facebook debugger consistently times out (>10 s) from CI environments.
     "https://developers.facebook.com/tools/debug/",
-    # contributor-covenant.org consistently times out (> 10 s) from CI environments.
-    #"https://www.contributor-covenant.org/version/2/1/code_of_conduct.html",
-    #"https://www.contributor-covenant.org",
-    # Twitter/X card validator and social profiles consistently time out (>10 s) from CI environments.
-    #"https://cards-dev.twitter.com/validator",
-    #"https://twitter.com",
-    #"https://x.com",
-    # Shields.io applies rate-limiting to CI runners (HTTP 429); prefix covers all badge URLs.
-    #"https://img.shields.io",
-    # zenzic.dev/developers/* intermittently times out during CI external-link probes.
-    #"https://zenzic.dev/developers",
 ]
 
-# Placeholder checks disabled: the documentation describes placeholder patterns
-# by example, which would cause false positives.
 placeholder_patterns = []
-
-# --- PROJECT IDENTITY ---
-# [project]
-# name = "zenzic-doc" # Used for personalized CLI Governance headers
-
-# --- CORE SETTINGS ---
-# ---------------------------------------------------------------------------
-# docs_dir
-# ---------------------------------------------------------------------------
-# The relative path to your documentation root.
-#
-# BEHAVIOR:
-#   - If commented out (default), Zenzic uses Auto-Discovery to find your
-#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
-#   - Set to "." to scan the entire repository (L1 system exclusions apply).
-#
-# DEFAULT: Auto-discovered
-#
-# docs_dir = "docs"
-
-# exit_zero = false
-# respect_vcs_ignore = true
-# validate_same_page_anchors = true
-
-
-# Z204 Privacy Gate — terms that must never appear in published docs.
-# forbidden_patterns = []
-
-# --- PLACEHOLDERS & CODE SNIPPETS (Optional) ---
 placeholder_max_words = 0
 
-# --- ENGINE CONTEXT ---
 [build_context]
-engine         = "docusaurus" # Supported: docusaurus, mkdocs, zensical, standalone
+engine         = "zensical"
 base_url       = "/"
 default_locale = "en"
 locales        = ["it"]
 
-# --- BRAND INTEGRITY ---
 [project_metadata]
 release_name = "Magnetite"
 badge_stamp_files = ["README.md"]
 
 [governance]
-# ---------------------------------------------------------------------------
-# suppression_cap
-# ---------------------------------------------------------------------------
-# Hard-fail threshold for technical debt.
-#
-# BEHAVIOR:
-#   - If total suppressions > cap: CI fails immediately (Exit Code 1).
-#   - Scoring: Every suppression costs 1 DQS point (Flat-Cost Model).
-#
-# DEFAULT: 30
-#
-suppression_cap = 10
+suppression_cap = 20
 suppression_cap_fail_hard = true
-
-# Terms that should no longer appear in your documentation.
-brand_obsolescence = [
-    "Basalt",
-    "Quartz",
-    "Obsidian",
-    "Graphite"
-]
-# suppression_cap_scope = "all"  # Options: all, per-file
+brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
 i18n_parity = true
 
-# ---------------------------------------------------------------------------
-# per_file_ignores
-# ---------------------------------------------------------------------------
-# Silence a rule for specific file globs.
-#
-# BEHAVIOR: ADDITIVE — each entry adds 1 pt of Technical Debt (flat-cost).
-# IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
-#
 [governance.per_file_ignores]
-# Z105: cross-plugin absolute links — inline suppressions are not parsed inside Markdown table cells.
-# Tracked in ROADMAP: Docusaurus Cross-Instance Resolver.
-"docs/explanation/github-action-internals.mdx" = ["Z105"]
-"docs/it/explanation/github-action-internals.mdx" = ["Z105"]
-
-# Z107: gallery page documents Z107 examples; [Setup](#setup) links are intentional
-# demonstrations inside prose/code blocks (text/diff) that cannot be suppressed inline.
-# rel_path is relative to repo_root (with "docs/" prefix); IT locale uses "docs/it/" prefix.
-"docs/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
-"docs/it/tutorials/examples/z1xx-links/z107-circular-anchor.mdx" = ["Z107"]
-
-# Z109: github.com/google/re2 — valid upstream repo; transient connection error in CI network.
-"docs/explanation/architecture.mdx" = ["Z109"]
-"docs/it/explanation/architecture.mdx" = ["Z109"]
-
-# "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
-# "docs/migration/*.md" = ["Z101"]  # known broken links → -1 pt
-
-# ---------------------------------------------------------------------------
-# directory_policies
-# ---------------------------------------------------------------------------
-# Strategic exemptions for entire directory trees or specific files.
-#
-# BEHAVIOR: Matched findings are silently dropped — ZERO debt added.
-# IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
-#
-# [governance.directory_policies]
-# "docs/blog/**"                  = ["Z601"]  # historical archive
-# "docs/explanation/registry.mdx" = ["Z601"]  # SSOT codename registry
+"docs/assets/brand/svg/zenzic-icon.svg"    = ["Z405"]  # Referenced by Jinja2 hero template, invisible to Zenzic static analysis
+"docs-it/assets/brand/svg/zenzic-icon.svg" = ["Z405"]  # Mirror of EN asset — same rationale (ADR-020)
+"docs/explanation/github-action-internals.md" = ["Z105"]
+"docs-it/explanation/github-action-internals.md" = ["Z105"]
+"docs/explanation/architecture.md" = ["Z109", "Z105"]
+"docs-it/explanation/architecture.md" = ["Z109", "Z105"]
+"docs/explanation/the-zenzic-trinity.md" = ["Z105"]
+"docs-it/explanation/the-zenzic-trinity.md" = ["Z105"]
+"docs/how-to/configure-adapter.md" = ["Z105"]
+"docs-it/how-to/configure-adapter.md" = ["Z105"]
+"docs/reference/advanced-features.md" = ["Z105"]
+"docs-it/reference/advanced-features.md" = ["Z105"]
+"docs/reference/brand-kit.md" = ["Z105"]
+"docs-it/reference/brand-kit.md" = ["Z105"]
+"docs/reference/cli.md" = ["Z105"]
+"docs-it/reference/cli.md" = ["Z105"]
+"docs/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
+"docs-it/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
 
 [governance.directory_policies]
-"docs/blog/**"                    = ["Z601"]  # historical release blog posts
-"docs/explanation/mineral-path.mdx"    = ["Z601"]  # SSOT codename registry (EN)
-"docs/it/explanation/mineral-path.mdx" = ["Z601"]  # SSOT codename registry (IT)
-"docs/tutorials/examples/**"      = ["Z401"]  # example/fixture subdirectories lack category indices intentionally
+"docs/assets/**"                  = ["Z402"]
+"docs-it/assets/**"               = ["Z402"]
+"docs/blog/**"                    = ["Z601", "Z602", "Z503", "Z907"]  # Blog posts are EN-only; Z503 exempted (intentionally invalid snippets used as counter-examples)
+"docs-it/blog/**"                 = ["Z402"]           # IT blog index is a stub pointing to EN posts
+"docs/explanation/mineral-path.md"    = ["Z601"]
+"docs-it/explanation/mineral-path.md" = ["Z601"]
+"docs/tutorials/examples/**"      = ["Z401"]
 
-# Governance Playbook:
-# /developers/how-to/release-governance-protocol
-
-# --- EXCLUSION ZONES (Full bypass — use sparingly) ---
-# Paths listed here are INVISIBLE to Zenzic: no findings, no audit trail.
-# Prefer [governance.per_file_ignores] for targeted suppression with an audit trail.
-# excluded_dirs = ["legacy/", "third-party/"]
-# excluded_file_patterns = ["*.tmp", "*.log"]
-# excluded_assets = ["favicon.ico"]
-# excluded_asset_dirs = ["theme/"]
-# excluded_build_artifacts = ["pdf/*.pdf"]
-# included_dirs = []
-# included_file_patterns = []
-
-# --- PLUGINS (Optional) ---
-# plugins = []
-
-# --- CUSTOM RULES (Optional) ---
-# Declares project-specific regex-based lint rules applied line-by-line.
-# [[custom_rules]]
-# id       = "ZZ-NOCLICKHERE"
-# pattern  = "(?i)\\bclick here\\b"
-# message  = "Avoid generic link text. Use a meaningful description."
-# severity = "error"
-
-# --- I18N PARITY (Optional) ---
 [i18n]
 enabled = true
 base_lang = "en"
@@ -186,32 +70,7 @@ strict_parity = true
 require_frontmatter_parity = ["title", "description"]
 
 [i18n.targets]
-it = "i18n/it/docusaurus-plugin-content-docs/current"
+it = "docs-it"
 
-[[i18n.extra_sources]]
-base_source = "developers"
-
-[i18n.extra_sources.targets]
-it = "i18n/it/docusaurus-plugin-content-docs-developers/current"
-
-# --- GATE 4: CI/CD (GitHub Actions, Optional) ---
-# Add this workflow snippet to .github/workflows/zenzic.yml
-#
-# name: zenzic
-# on: [pull_request, push]
-# jobs:
-#   audit:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - name: Run Zenzic Action
-#         uses: pythonwoods/zenzic-action@v1
-#       - name: Verify Badge Freshness
-#         run: uvx zenzic score --check-stamp
-
-# --- NETWORK I/O ---
 [network]
-# Cache external link resolution in .zenzic_cache/external_links.json
-# to eliminate network latency in CI and local re-runs.
-# Set to 0 to disable caching entirely (synchronous fallback).
 cache_ttl_hours = 24

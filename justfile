@@ -1,8 +1,9 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Release Enterprise workflow for zenzic-doc
-set shell :=["bash", "-c"]
+# just - Release Enterprise workflow for zenzic-doc (Zensical/MkDocs architecture)
+# Phase 0.5: Fully migrated from npm/Docusaurus to uv/Zensical. No Node.js required.
+set shell := ["bash", "-c"]
 
 # Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
 # In CI/CD the installed `zenzic` binary is used by default.
@@ -12,41 +13,51 @@ ZENZIC_CMD := env_var_or_default("ZENZIC_BIN", "zenzic")
 
 # --- SETUP & MAINTENANCE ---
 
-# Install locked dependencies deterministically
+# Install locked dependencies deterministically (Python/uv)
 setup:
-    npm ci
+    uv sync
 
 # Clean generated artifacts
 clean:
-    rm -rf build .docusaurus
+    rm -rf site/
 
-# Deep clean: remove artifacts and node_modules
+# Deep clean: remove artifacts and virtual environment
 clean-all: clean
-    rm -rf node_modules
-
-# Purge Docusaurus and npm cache to resolve ghost build issues
-purge-cache:
-    npm cache clean --force
-    rm -rf .docusaurus
-    @echo "Cache purged. Run 'just build' for a fresh start."
+    rm -rf .venv
 
 # --- DEVELOPMENT ---
 
-# Start local development server (single-locale; locale dropdown inactive in dev mode)
-start:
-    npm run start
+# Start local development server (English)
+# Default port: 8000. Override example: `just start -a localhost:8080`
+start *args:
+    uvx zensical serve -f zensical.toml {{args}}
 
-# Start local development server in Italian
-start-it:
-    npm run start:it
+# Start local development server (Italian)
+# Default port: 8001 to prevent collision with EN build.
+start-it *args:
+    uvx zensical serve -f zensical.it.toml -a localhost:8001 {{args}}
 
-# Serve production build locally (EN + IT, language switcher active)
-serve:
-    npm run serve
+# Serve production build locally (English)
+serve *args: build-docs
+    uvx zensical serve -f zensical.toml --no-reload {{args}}
 
 # Build then serve production site locally (full EN+IT testbed)
-preview: build
-    npm run serve
+preview *args: build-docs
+    uvx zensical serve -f zensical.toml --no-reload {{args}}
+
+# --- BUILD (ADR-020 Dual-Build) ---
+
+# Build the static documentation (EN & IT) — ADR-020 dual-build sequence.
+# Requires the external Tailwind CSS artifact at docs/assets/css/zenzic-tailwind.min.css
+# to be compiled by the human operator before invoking this target.
+build-docs:
+    @echo "=> [ZENZIC I/O] Ensuring Tailwind CSS artifact exists..."
+    @test -f docs/assets/css/zenzic-tailwind.min.css || (echo "FATAL: zenzic-tailwind.min.css missing. Build external artifact first." && exit 1)
+    @echo "=> [ZENZIC BUILD] Compiling English Documentation (ADR-020 Main)..."
+    uvx zensical build -f zensical.toml
+    @echo "=> [ZENZIC BUILD] Compiling Italian Documentation (ADR-020 Mirror)..."
+    uvx zensical build -f zensical.it.toml
+    @echo "=> [ZENZIC SUCCESS] Dual-build complete. Output in site/ and site/it/."
 
 # --- QUALITY GATES ---
 
@@ -54,14 +65,14 @@ preview: build
 lint *args:
     uvx pre-commit run {{args}}
 
-# Stamp DQS score badges in README.md and README.it.md (mutation — pre-commit hook runs this automatically).
+# Stamp DQS score badges in README.md (mutation — pre-commit hook runs this automatically).
 # Run manually only when bypassing pre-commit (e.g. after git commit --no-verify).
 stamp:
     just score --stamp --no-header
 
 # Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
 # Note: --stamp runs at pre-commit time (hook: just-score-stamp). This pre-push gate is read-only.
-verify: _check-hooks release-contracts check-pinning lint-all build verify-codes check
+verify: _check-hooks release-contracts check-pinning lint-all build-docs verify-codes check
     just score --check-stamp --no-header
 
 # ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
@@ -80,7 +91,7 @@ check-pinning:
     fi
     echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
-# Verify Zxxx code parity between codes.py and finding-codes.mdx (EN + IT)
+# Verify Zxxx code parity between codes.py and finding-codes.md (EN + IT)
 verify-codes:
     uvx nox -s verify-codes-parity
 
@@ -89,8 +100,8 @@ verify-codes:
 lint-all:
     uvx pre-commit run --all-files
 
-build:
-    npm run build
+markdownlint:
+    uvx pymarkdownlnt scan docs/ docs-it/
 
 check *args:
     #!/usr/bin/env bash
@@ -185,17 +196,14 @@ score *args:
         echo "Fail-closed policy active: PyPI fallback is prohibited." >&2
         exit 2
     fi
-typecheck:
-    npm run typecheck
-
-lint-ts:
-    npm run lint:ts
-
-markdownlint:
-    npm run lint:md
 
 reuse:
     uvx reuse lint
+
+doctor:
+    @python3 --version || echo "python3 missing"
+    @uv --version || echo "uv missing"
+    @uvx zensical --version || echo "zensical missing (run: uv sync)"
 
 # Release orchestration: explicit, transparent, and lockfile-first.
 release part:
@@ -228,17 +236,12 @@ release-dry part *args:
         uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose
     fi
 
-doctor:
-    @node -v || echo "node missing"
-    @npm -v || echo "npm missing"
-    @uv --version || echo "uv missing"
-
 _check-hooks:
     #!/usr/bin/env bash
     _missing=0
     if [ ! -f .git/hooks/pre-commit ]; then
         echo -e "\033[33m⚠️  WARNING: pre-commit hook is not installed.\033[0m"
-        echo "Without it, linters and type-checks will NOT run automatically on git commit."
+        echo "Without it, linters and checks will NOT run automatically on git commit."
         echo "👉 Fix it by running: uvx pre-commit install"
         echo ""
         _missing=1

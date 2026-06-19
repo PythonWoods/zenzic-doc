@@ -84,3 +84,17 @@ yarn-error.log*
 # AI Agent Private Memory
 .clinerules
 .github/agents/
+
+# AI Agents Configuration
+.github/agents/
+.clinerules
+
+# MkDocs build output
+site/
+
+# ────────────────────────────────────────────────────────────────────────────
+# Airlock Visual Isolation Sandbox (Phase 11 dev tool — NOT for production)
+# ────────────────────────────────────────────────────────────────────────────
+docs/sandbox.md
+overrides/sandbox.html
+scratch/

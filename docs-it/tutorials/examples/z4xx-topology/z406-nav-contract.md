@@ -1,0 +1,118 @@
+---
+sidebar_position: 6
+title: "Z406 - Contratto di Navigazione"
+sidebar_label: "Z406 - Contratto di Navigazione"
+description: "Analisi del fixture z406-nav-contract: mkdocs.yml dichiara extra.alternate con link /it/ ma nessuna pagina italiana esiste nella VSM, attivando Z406 NAV_CONTRACT con exit code 1."
+---
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+
+
+
+# Z406-nav-contract — Violazione del Contratto di Navigazione
+
+**Z-Code:** `Z406 NAV_CONTRACT` · **Engine:** `mkdocs` · **Exit:** `1`
+
+<Z406NavContract />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z406-nav-contract/` nel repository Zenzic.
+Utilizza l'engine **MkDocs**.
+
+`mkdocs.yml` dichiara `extra.alternate` con un link in italiano `/it/`,
+ma non esistono pagine sorgente in italiano (nessun `docs/*.it.md` o
+sottodirectory `docs/it/`). La rotta `/it/` è quindi **assente dalla Virtual
+Site Map**:
+
+```yaml title="examples/z406-nav-contract/mkdocs.yml"
+site_name: My Project
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: Italiano
+      link: /it/
+      lang: it
+```
+
+```toml title="examples/z406-nav-contract/.zenzic.toml"
+docs_dir = "docs"
+fail_under = 0
+
+[build_context]
+engine = "mkdocs"
+```
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione richiesta
+cd examples/z406-nav-contract
+uvx zenzic check all
+```
+
+Output atteso:
+
+```text
+mkdocs · 2 files (2 docs, 0 assets) · 0.0s · 109 files/s
+
+docs/(nav)  x  [Z406]  mkdocs.yml extra.alternate[it]: link '/it/' does not
+correspond to any URL the build engine will generate. The Virtual Site Map
+contains no entry for '/it/'. Use a path that maps to an existing source file
+(e.g. '/index.it/' for the it home page).
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 0 warnings  i 0 info  · 1 file with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding `Z406` indica una violazione del **NAV_CONTRACT**.
+
+Zenzic costruisce una **Virtual Site Map (VSM)** — il set completo di URL che
+il motore di documentazione genererà dall'albero sorgente. Ogni URL dichiarato
+in `extra.alternate` deve esistere nella VSM; se non esiste, cliccare il
+selettore di lingua produce un 404:
+
+- **Tipo di scansione:** `Nav Contract Checker (engine mkdocs)`
+- **Severità:** `Error`
+- **Impatto:** Deduce **2.0 punti DQS** (categoria brand governance, peso 0.25).
+
+## Risolvere il Problema
+
+Opzione A — Creare il contenuto locale mancante:
+
+```bash
+# Creare la home page italiana (convenzione suffix-locale MkDocs)
+cp docs/index.md docs/index.it.md
+# Tradurre il contenuto, poi rieseguire zenzic check all
+```
+
+Opzione B — Rimuovere la voce alternate non valida:
+
+```diff
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+-   - name: Italiano
+-     link: /it/
+-     lang: it
+```
+
+## Vedi Anche
+
+- [Z602 — Parità i18n](../z6xx-brand/z602-i18n-parity) — file di traduzione
+  mancanti tra le lingue.
+- [Z404 — Asset Config Mancante](z404-config-asset-missing) — asset di
+  infrastruttura referenziato in config non trovato.
+- [Riferimento Controlli — Z406](../../../reference/checks) — specifica completa della regola.

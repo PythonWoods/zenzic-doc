@@ -1,0 +1,176 @@
+---
+
+sidebar_position: -1
+description: "ADR 013: Perché Zenzic incapsula google-re2 dietro un Anti-Corruption Layer per imporre la protezione ReDoS senza degradare la Developer Experience."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# ADR 013: The Regex Anti-Corruption Layer (ReDoS Protection)
+
+**Stato:** Accettato (Maggio 2026)
+**Decisore:** Tech Lead
+**Data:** 2026-05-10 (v0.8.x)
+
+---
+
+## Contesto
+
+Zenzic ha adottato **RE2** per far rispettare l'invariante di sicurezza
+ZRT-007: la valutazione delle espressioni regolari in produzione deve avere un
+comportamento prevedibile, lineare nel tempo, e non deve esporre il progetto al
+catastrophic backtracking (**ReDoS**).
+
+Il problema è che l'ecosistema regex di Python è modellato attorno all'API
+standard di `re`, mentre `google-re2` non è un sostituto perfettamente
+compatibile. È intenzionalmente più severo ed espone una superficie più stretta:
+
+- alcune costanti e flag familiari di `re` non sono esportati direttamente,
+- alcuni costrutti regex della stdlib sono vietati perché non descrivono
+  linguaggi regolari o dipendono da semantiche backtracking,
+- il core esistente si aspettava una superficie a forma di `re`
+  (`compile`, `sub`, `finditer`, flag come `DOTALL`, type hint come `Pattern`
+  e `Match`),
+- una migrazione ingenua avrebbe sparso i caveat di `re2` in decine di file,
+  abbassando la leggibilità e accoppiando l'intero codebase a un'API C-extension
+  imperfetta.
+
+Durante l'implementazione è emersa anche una seconda tentazione, più pericolosa:
+fare fallback alla stdlib `re` quando RE2 rifiuta un pattern. Quel fallback
+avrebbe distrutto silenziosamente ZRT-007 proprio nel punto in cui l'invariante
+conta di più. Un pattern rifiutato deve fallire in modo esplicito, non essere
+ricompilato di nascosto da un engine vulnerabile.
+
+Le opzioni esaminate erano:
+
+- **Opzione A** — Importare `re2` direttamente ovunque e insegnare a ogni
+  modulo le sue incompatibilità.
+- **Opzione B** — Usare `re2` quando possibile, ma fare fallback silenzioso a
+  `re` per la sintassi non supportata.
+- **Opzione C** — Introdurre un piccolo **Anti-Corruption Layer / Façade** che
+  presenti al resto del core una API simile a `re`, facendo però rispettare in
+  modo rigoroso RE2 come unico engine runtime.
+
+## Decisione
+
+Adottiamo l'**Opzione C**.
+
+Zenzic introduce un modulo dedicato:
+
+```python
+from zenzic.core import regex as re
+```
+
+Questo modulo agisce come **Regex Anti-Corruption Layer**:
+
+- riesporta una superficie a forma di `re` (`compile`, `search`, `match`,
+  `sub`, `finditer`, `findall`, `escape`),
+- espone flag ed eccezioni nello stile della stdlib per ergonomia dei caller,
+- centralizza il ponte di typing (`RegexPattern`, `Match`) per Mypy,
+- traduce l'uso dei flag compatibili in compilazione RE2-safe,
+- rifiuta i costrutti non supportati sollevando errore immediatamente,
+- non fa mai fallback alla compilazione runtime della stdlib.
+
+La conseguenza è intenzionale: **tutta l'esecuzione regex in produzione rimane
+su RE2, ovunque, sempre**.
+
+Quando pattern legacy usavano costrutti validi solo per la stdlib, come <!-- * zenzic:ignore: Z601 - ADR historical record * -->
+lookbehind, lookahead o altra sintassi non supportata da RE2, quei pattern
+vengono riscritti in forme compatibili con RE2 oppure il codice circostante
+viene adattato per eseguire fuori dalla regex il filtraggio semantico mancante.
+
+## Razionale
+
+Questa decisione preserva entrambi i lati del contratto che contano:
+
+- **Disciplina di sicurezza.** ZRT-007 rimane reale, non aspirazionale. Se un
+  pattern è incompatibile con RE2, il fallimento è immediato e visibile.
+- **Developer experience.** Il resto del codebase può continuare a usare una API
+  stabile e ovvia (`re.compile(...)`, `re.DOTALL`, `re.sub(...)`) senza
+  importare helper multipli o codificare in ogni modulo le stranezze del motore.
+- **Contenimento del mismatch del vendor.** `google-re2` è un motore valido ma
+  un'astrazione incompleta rispetto alle aspettative della stdlib di Python.
+  L'ACL localizza questo mismatch in un singolo file.
+- **Integrità del typing.** Il ponte verso i tipi `Pattern` / `Match` è
+  centralizzato invece di essere duplicato tramite boilerplate `TYPE_CHECKING`.
+
+L'Opzione A è stata respinta perché diffonderebbe ovunque l'attrito della
+C-extension: problemi di import order, shim di typing ripetuti e accoppiamento
+esplicito alla superficie Python incompleta di RE2.
+
+L'Opzione B è stata respinta perché distruggerebbe lo scopo stesso della
+migrazione. Un invariante di sicurezza che degrada in silenzio sotto pressione
+non è un invariante. È teatro.
+
+## Invarianti
+
+Questi vincoli sono conseguenze permanenti di ADR-013:
+
+1. **Nessun fallback alla stdlib a runtime.** I pattern non supportati devono
+   sollevare errore. Possono essere riscritti, ma non ricompilati da `re` nel
+   codice di produzione.
+2. **Tutti gli import regex governati passano attraverso l'ACL.** Moduli di
+  produzione, test di contratto e tooling di quality gate del repository
+  devono usare `from zenzic.core import regex as re` invece di importare
+  `re` o `re2` direttamente.
+3. **Il typing resta centralizzato.** Gli alias `RegexPattern` e `Match`
+   vivono nell'ACL. Il resto del codebase non deve replicare bridge
+   `TYPE_CHECKING`.
+4. **Le incompatibilità RE2 si risolvono in modo strutturale.** Se un pattern
+   usa lookbehind, lookahead, backreference o altri costrutti non supportati,
+   il fix consiste nel riscrivere il pattern o spostare parte della logica in
+   normale codice Python.
+5. **I warning sono difetti.** Se il layer regex emette warning di deprecazione
+   o compatibilità durante i test, l'implementazione è incompleta.
+
+## Conseguenze
+
+### Pro
+
+- **ZRT-007 è applicabile in un solo punto.** L'auditabilità migliora perché
+  esiste un unico choke point per la semantica regex.
+- **Il core resta leggibile.** La maggior parte dei moduli continua a sembrare
+  Python idiomatico invece che scaffolding di integrazione RE2.
+- **Il costo di future migrazioni diminuisce.** Se i binding RE2 cambiano di
+  nuovo, idealmente solo l'ACL richiederà adattamenti.
+- **I test diventano più significativi.** I test di rifiuto RE2 validano il
+  confine reale del motore, non un runtime misto tra più engine.
+
+### Contro
+
+- **L'ACL va mantenuto con attenzione.** Ora è un boundary critico e non può
+  essere trattato come un helper banale.
+- **Alcune regex diventano meno compatte.** I pattern che si affidavano a
+  lookbehind/lookahead devono talvolta essere spezzati tra passata regex e
+  filtri semantici in Python.
+- **La pressione sulla performance cresce.** Riscrivere pattern rinunciando a
+  costrutti avanzati può cambiare il comportamento dei percorsi caldi, quindi va
+  misurato, non dato per scontato.
+
+## Confine di Anti-Corruzione
+
+L'ACL esiste perché `google-re2` è insieme corretto e incompleto rispetto a ciò
+che il resto dell'ecosistema Python si aspetta. La risposta giusta non è far
+trapelare questa incompletezza in ogni caller. La risposta giusta è assorbire il
+mismatch al boundary.
+
+È esattamente il ruolo di un Anti-Corruption Layer:
+
+- fuori dal boundary, il codice parla **la lingua di Zenzic**,
+- dentro il boundary, la façade traduce quella lingua nel contratto più stretto
+  del motore esterno,
+- se la traduzione è impossibile, il boundary rifiuta la richiesta in modo
+  esplicito.
+
+In questo modo il core rimane coerente senza indebolire la postura di
+sicurezza.
+
+---
+
+## Correlati
+
+- [ADR 001: Lint the Source](./adr-lint-source.md) — la semantica della
+  sorgente deve restare leggibile per gli esseri umani.
+- ADR 002: Zero Subprocesses Policy — il layer
+  regex deve rimanere in-process e deterministico. *(Maintainer Only)*

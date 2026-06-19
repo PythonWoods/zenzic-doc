@@ -1,0 +1,283 @@
+---
+icon: lucide/arrow-right-left
+sidebar_label: "Migrazione"
+description: "Guide di aggiornamento e note di migrazione tra versioni di Zenzic."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Migrazione a Zensical
+
+!!! note "Zenzic vs Zensical"
+    **Zenzic** è il linter di documentazione descritto in questo sito — lo strumento
+    che esegui con `zenzic check all`.
+
+    **Zensical** è un motore di build separato (successore compatibile di MkDocs 1.x). Questa
+    pagina descrive come usare Zenzic come rete di sicurezza mentre passi il tuo *motore di
+    build* da MkDocs a Zensical.
+
+    Non è necessario usare Zensical per usare Zenzic. Zenzic funziona con MkDocs, Zensical,
+    cartelle Markdown standalone e qualsiasi motore che abbia un adapter.
+
+---
+
+> Per il razionale architetturale — perché Zenzic analizza i sorgenti e non il build, come MkDocsAdapter preserva il contratto strutturale e come l'i18n viene validato indipendentemente dal rendering — vedi [Design della Migrazione dei Motori](../explanation/engine-migration-design.md).
+
+---
+
+## Cosa rimane invariato passando a Zensical
+
+Zensical legge `mkdocs.yml` nativamente. Molti progetti possono cambiare il binario di build
+senza toccare un singolo file di documentazione. Dal punto di vista di Zenzic:
+
+- La struttura della directory `docs/` rimane invariata.
+- `mkdocs.yml` rimane valido come sorgente principale di navigazione e configurazione;
+
+  Zensical lo legge direttamente.
+
+- Le convenzioni i18n in folder-mode e suffix-mode sono strutturalmente identiche.
+- `[build_context]` in `.zenzic.toml` può rimanere `engine = "mkdocs"` fino a quando non sei
+
+  pronto a creare `zensical.toml`.
+
+---
+
+## Best practice per MkDocs Material
+
+### Configurazione dello switcher di lingua
+
+Quando si usa `mkdocs-material` con il plugin `i18n` e più lingue, lo switcher di lingua
+può essere controllato da due meccanismi distinti. Mescolarli produce conflitti di routing
+che Zenzic — in quanto linter dei sorgenti — non può rilevare automaticamente, ma che
+rompono silenziosamente l'esperienza utente in fase di build.
+
+**Configurazione raccomandata:**
+
+```yaml title="mkdocs.yml"
+# mkdocs.yml
+plugins:
+
+  - i18n:
+
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true   # ← delega lo switcher al plugin i18n
+      reconfigure_search: true
+      languages:
+
+        - locale: en
+
+          default: true
+          build: true
+          link: /
+
+        - locale: it
+
+          build: true
+          link: /it/
+```
+
+**Non aggiungere** un blocco `extra.alternate` insieme a `reconfigure_material: true`.
+Quando entrambi sono presenti, il tema Material riceve due definizioni di switcher in
+conflitto; a seconda della versione del plugin il risultato è uno switcher duplicato oppure
+nessuno switcher:
+
+```yaml title="mkdocs.yml"
+# ✗ — rimuovere questo blocco quando reconfigure_material: true è impostato
+extra:
+  alternate:
+
+    - name: English
+
+      link: /
+      lang: en
+
+    - name: Italiano
+
+      link: /it/
+      lang: it
+```
+
+**Perché Zenzic gestisce questo correttamente:**
+Quando `reconfigure_material: true` è presente in `mkdocs.yml`, Zenzic riconosce che il
+tema Material genererà automaticamente i punti di ingresso per le lingue (es. `/it/`) in
+fase di build. Queste pagine non sono mai elencate in `nav:` — sono rotte sintetiche
+prodotte dal plugin. Zenzic le marca come **REACHABLE auto-generate** nella Virtual Site
+Map in modo che non vengano mai segnalate come orfane.
+
+---
+
+## Piano di migrazione
+
+!!! info "Ponte CLI — Flag globali"
+    La migrazione engine cambia gli adapter, non la policy Zenzic. Mantieni il comportamento
+    di esecuzione allineato a [Comandi CLI: Flag globali](../reference/cli.md#global-flags):
+
+    1. `--strict` per validazione hard-gate durante il cutover.
+    2. `--exit-zero` per finestre di osservazione senza interrompere la pipeline.
+    3. `--show-info` per ispezionare segnali del grafo link (esempio `CIRCULAR_LINK`).
+    4. `--quiet` per Silent Builders negli hook CI.
+
+
+### Fase 1 — Stabilisci un baseline
+
+Esegui la suite completa di controlli e registra un baseline (punto di riferimento) di
+qualità prima di cambiare qualsiasi cosa:
+
+```bash
+# Conferma che la documentazione sia strutturalmente corretta prima di toccare il layer di build
+zenzic check all
+zenzic score --save   # persisti il baseline in .zenzic-score.json
+```
+
+Un baseline salvato significa che qualsiasi regressione introdotta durante la migrazione è
+immediatamente misurabile con `zenzic diff`. Il baseline è uno snapshot dello stato dei
+sorgenti — non dipende dal funzionamento di alcun motore di build.
+
+### Fase 2 — Cambia il binario di build
+
+Installa Zensical insieme a (o al posto di) MkDocs:
+
+```bash
+uv pip install zensical   # oppure: pip install zensical
+```
+
+Ora puoi testare la tua documentazione contro il motore Zensical senza nemmeno creare un file `zensical.toml`. Eseguendo Zenzic con l'engine Zensical, si attiva la modalità **Proxy Trasparente**:
+
+```bash
+zenzic check all --engine zensical
+```
+
+Zenzic leggerà il tuo file `mkdocs.yml` esistente e validerà come Zensical lo interpreterebbe. Cerca il Zenzic banner per confermare che il ponte è attivo:
+
+```text
+NOTICE: Zensical engine active via mkdocs.yml compatibility bridge.
+```
+
+Esegui la build della documentazione per verificare che produca output corretto:
+
+```bash
+zensical build
+```
+
+I controlli di Zenzic sono engine-neutral (indipendenti dal motore di build) — eseguili
+dopo la build per confermare che la struttura dei sorgenti sia intatta:
+
+```bash
+zenzic check all
+zenzic diff              # dovrebbe riportare zero delta rispetto al baseline pre-migrazione
+```
+
+### Fase 3 — Dichiara l'identità Zensical (opzionale)
+
+Se vuoi che Zenzic imponga il contratto strutturale di Zensical — richiedendo la presenza
+di `zensical.toml` e usando `ZensicalAdapter` per l'estrazione della nav — aggiorna
+`.zenzic.toml`:
+
+```toml
+# .zenzic.toml
+[build_context]
+engine = "zensical"
+default_locale = "en"
+locales        = ["it"]
+```
+
+E crea un `zensical.toml` minimale nella root del repository:
+
+```toml
+# zensical.toml  (Zensical)
+[project]
+site_name = "La Mia Documentazione"
+docs_dir  = "docs"
+nav = [
+    "index.md",
+    {"Guida" = "guide.md"},
+]
+```
+
+!!! tip "Identità Flessibile — Proxy Trasparente"
+    Dichiara `engine = "zensical"` in `.zenzic.toml` prima che `zensical.toml` esista. Zenzic
+    legge il tuo `mkdocs.yml` esistente tramite il Proxy Trasparente e lo valida rispetto al
+    contratto strutturale Zensical. Cambia la dichiarazione dell'engine, esegui
+    `zenzic check all`, leggi il risultato — nessun file Markdown toccato, nessuna pipeline
+    interrotta.
+
+    Mentre il bridge di compatibilità è attivo, Zenzic emette warning per le chiavi specifiche
+    di MkDocs che Zensical ignora: `remote_branch`, `remote_name`, `exclude_docs`,
+    `draft_docs`, `not_in_nav`, `validation`, `strict`, `hooks` e `watch`.
+
+### Fase 4 — Verifica l'integrità dei link
+
+Il controllo dei link è il passo di validazione più importante. Eseguilo sulla migrazione
+completata:
+
+```bash
+# Link interni + risoluzione fallback i18n
+zenzic check links
+
+# Link reference-style + credential scanner (rilevamento credenziali)
+zenzic check references
+
+# Suite completa
+zenzic check all
+zenzic diff --threshold 0   # fallisce su qualsiasi regressione, nessun margine
+```
+
+Se il punteggio corrisponde al baseline pre-migrazione, la migrazione è completa.
+
+---
+
+## Le tue opzioni di migrazione
+
+Passare a Zensical è una delle diverse strade disponibili a un progetto su MkDocs. Zenzic
+le supporta tutte con la stessa garanzia di qualità:
+
+| Percorso | `engine` in `.zenzic.toml` | Cosa valida Zenzic |
+| :--- | :--- | :--- |
+| Rimane su MkDocs 1.x | `"mkdocs"` | Contratto strutturale completo MkDocs 1.x |
+| Passa a Zensical | `"zensical"` | Nav Zensical (via TOML o bridge legacy YAML) |
+| Migra a un altro motore | `"mkdocs"` durante transizione, poi adapter | Integrità sorgenti durante il cambio |
+| Valuta senza impegnarsi | flag CLI `--engine mkdocs` o `--engine zensical` | Controllo compatibilità dry-run |
+
+Il flag CLI `--engine` permette di eseguire un singolo controllo contro un adapter diverso
+senza toccare `.zenzic.toml`:
+
+```bash
+# Testa se i tuoi sorgenti attuali sono strutturalmente compatibili con Zensical
+# senza dichiarare il passaggio in .zenzic.toml
+zenzic check all --engine zensical
+```
+
+---
+
+## Mantenere le regole custom durante la migrazione
+
+Le `[[custom_rules]]` in `.zenzic.toml` sono **indipendenti dall'adapter** — si attivano
+identicamente indipendentemente dall'engine. Qualsiasi regola in vigore per il tuo progetto
+MkDocs continua a funzionare senza modifiche dopo il passaggio a Zensical:
+
+```toml
+# Queste regole funzionano con entrambi gli engine
+[[custom_rules]]
+id       = "ZZ-NODRAFT"
+pattern  = "(?i)\\bDRAFT\\b"
+message  = "Rimuovere il marker DRAFT prima della pubblicazione."
+severity = "warning"
+
+[build_context]
+engine = "zensical"
+```
+
+---
+
+## Riferimento rapido
+
+| Passo | Comando | Risultato atteso |
+| :--- | :--- | :--- |
+| Baseline | `zenzic score --save` | Score salvato in `.zenzic-score.json` |
+| Dry-run compatibilità | `zenzic check all --engine zensical` | Problemi strutturali con adapter Zensical |
+| Dopo il cambio di build | `zenzic check all` | Stessi problemi di prima |
+| Controllo regressioni | `zenzic diff` | Delta = 0 |
+| Identità flessibile | `engine = "zensical"` in `.zenzic.toml` | Usa `zensical.toml` o esegue il fallback a `mkdocs.yml` |
+| Gate finale | `zenzic diff --threshold 0` | Exit 0 solo se il punteggio non è diminuito |

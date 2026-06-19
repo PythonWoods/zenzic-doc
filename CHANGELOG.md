@@ -9,17 +9,26 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
-## [Unreleased]
+## [0.13.0] - 2026-06-19
+
+### Added
+
+- **D.I.A. Compliance:** Added the "TOML Root Key Law" warning block in English and Italian documentation, explaining configuration boundaries and root key swallowing to prevent silent failures.
 
 ### Changed
 
-- **Fail-closed PR build gate:** Removed `pull_request.paths` filters from `.github/workflows/ci.yml` so the `Build` check runs on every PR and can safely be required in branch protection.
-- **Operational policy docs:** Added explicit branch-protection required-checks guidance (EN + IT) for `zenzic-doc` and `zenzic` in CI/CD integration documentation.
+- Full documentation migration to Zensical/MkDocs.
+
+### Fixed
+
+- REUSE compliance updates and Z-Code parity fixes across the bilingual documentation.
 
 ---
 
 ## Historical Releases
 
+- v0.12.x archive: [changelogs/v0.12.md](./changelogs/v0.12.md)
+- v0.11.x archive: [changelogs/v0.11.md](./changelogs/v0.11.md)
 - v0.10.x archive: [changelogs/v0.10.md](./changelogs/v0.10.md)
 - v0.9.x archive: [changelogs/v0.9.md](./changelogs/v0.9.md)
 - v0.8.x archive: [changelogs/v0.8.md](./changelogs/v0.8.md)

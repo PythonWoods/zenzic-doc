@@ -1,0 +1,98 @@
+---
+
+sidebar_position: 2
+description: "ADR 005: Z404 CONFIG_ASSET_MISSING esteso a tutti i motori supportati — non solo Docusaurus."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# ADR 005: Universalismo Agnostico — Z404 per Tutti i Motori
+
+**Stato:** Attivo
+**Decisore:** Architecture Lead
+**Data:** 2026-04-20 (sprint v0.8.x)
+
+---
+
+## Contesto
+
+Z404 (`CONFIG_ASSET_MISSING`) era originariamente implementato esclusivamente per
+l'adapter Docusaurus. Rilevava quando un file dichiarato in `docusaurus.config.ts`
+(favicon, immagine Open Graph, CSS personalizzato) non esisteva su disco.
+
+Questa scelta creava una contraddizione strutturale: Zenzic si presenta come un
+**Exclusion Zone per tutti i motori di documentazione**. Offrire un controllo
+dell'integrità degli asset di configurazione solo agli utenti Docusaurus violava
+questa garanzia. Un progetto MkDocs che dichiarava un `theme.favicon` puntante
+a un file inesistente non riceveva alcuna diagnostica — una lacuna silenziosa
+nel perimetro di sicurezza.
+
+---
+
+## Decisione
+
+Z404 è stato esteso da un controllo Docusaurus-specifico a un **controllo
+universale** che copre tutti i motori supportati. Il controllo degli asset di
+configurazione di ogni adapter è implementato come funzione a livello di modulo.
+La pipeline CLI lo esegue per tipo di motore dopo il main scan pass.
+
+| Motore | Asset controllati |
+|--------|------------------|
+| Docusaurus | `customCss`, `favicon`, Open Graph `image`, percorsi social card in `themeConfig` |
+| MkDocs | `theme.favicon`, `theme.logo` (risolti relativamente a `docs_dir/`) |
+| Zensical | `[project].favicon`, `[project].logo` |
+| Standalone | — (nessun file di configurazione motore; il controllo è un no-op) |
+
+---
+
+## Motivazione
+
+### 1. Privacy Gate È un Contratto Universale
+
+Un Privacy Gate che si applica solo a Docusaurus non è un Exclusion Zone — è una
+**funzionalità circoscritta con un'assunzione di motore non documentata**. Nel momento in cui un
+controllo è specifico per un motore senza una ragione tecnica, si segnala ai
+contributori che la parità tra motori è opzionale. Quel segnale si amplifica
+nel corso delle versioni.
+
+### 2. Il Protocollo Adapter Fornisce Già il Hook
+
+La decisione di universalismo ha esteso un pattern esistente — validazione
+per-adapter a livello di modulo — a tutti i motori supportati, non solo Docusaurus.
+
+### 3. Prevenire l'Assunzione di "Config Fidata"
+
+L'assunzione implicita che i file di configurazione del motore contengano percorsi
+di asset validi è la stessa categoria di errore di fiducia che Zenzic è stato
+progettato per eliminare. Un `theme.favicon: assets/icon.png` che non esiste è
+un link rotto — capita solo di trovarsi in un file YAML invece che in un documento
+Markdown.
+
+---
+
+## Implementazione
+
+Il controllo degli asset di configurazione di ogni motore legge il file di
+configurazione del motore, risolve i percorsi di asset dichiarati rispetto a
+`docs_root`, ed emette un `Finding` con codice `Z404` per ogni percorso che non
+esiste su disco. La CLI esegue questi controlli dopo il main scan pass, assicurando
+che i finding Z404 compaiano nello stesso report SARIF e nel conteggio dei codici
+di uscita di tutti gli altri finding.
+
+---
+
+## Conseguenze
+
+- Gli utenti MkDocs e Zensical ottengono la validazione dell'integrità degli asset
+
+  senza alcuna modifica alla configurazione.
+
+- L'aggiunta di un nuovo adapter richiede l'implementazione di `check_config_assets()`
+
+  — il protocollo ora lo impone esplicitamente (viene sollevato un `NotImplementedError`
+  per gli adapter che lo omettono).
+
+- Z404 è ora classificato come **controllo di qualità universale**, non come
+
+  funzionalità specifica di un motore, in `reference/finding-codes.md`.

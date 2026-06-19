@@ -1,0 +1,111 @@
+---
+icon: lucide/layers
+sidebar_label: "Strategia di Configurazione"
+description: "Modello di configurazione a due file, regole di precedenza e matrice di troubleshooting per i problemi di configurazione più comuni in Zenzic."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Strategia di Configurazione
+
+Questa pagina è una guida per la risoluzione dei problemi di configurazione più comuni. Per il modello di configurazione completo — precedenza dei file, definizioni dei campi e valori predefiniti — vedi [Configuration Reference](../reference/configuration-reference.md).
+
+---
+
+> **Riepilogo modello a due file:** `.zenzic.toml` contiene le impostazioni predefinite del progetto condivise; `.zenzic.local.toml` contiene le impostazioni locali non committate. I campi scalari seguono last-write-wins. I campi lista (`forbidden_patterns`, `excluded_dirs`) sono additivi.
+
+---
+
+## Matrice di Troubleshooting
+
+### `zenzic:ignore` non sopprime un finding Z2xx
+
+I codici Z2xx (`Z201`, `Z202`, `Z203`, `Z204`) sono **non sopprimibili**. Bypassano
+completamente il sistema di soppressione. La direttiva `zenzic:ignore` non ha effetto su questi codici.
+
+**Soluzione:** Rimuovi il contenuto che attiva il finding. Non esiste nessun flag di configurazione
+per disabilitare le regole Z2xx.
+
+---
+
+### Il pattern proibito dichiarato in `.zenzic.local.toml` non viene rilevato
+
+Possibili cause:
+
+| Causa | Diagnostica | Correzione |
+|:------|:-----------|:----|
+| File non trovato | `zenzic config show` → controlla la lista `forbidden_patterns` | Verifica il percorso: `.zenzic.local.toml` deve essere nella root del repo |
+| Il pattern usa la sintassi PCRE | Il pattern non dà match in silenzio | Usa la sintassi RE2 DFA. I lookahead e i backreference non sono supportati |
+| Il file è git-ignorato e non presente in CI | Z204 si attiva solo localmente | Provvedi i pattern tramite secret CI (vedi [Privacy Gate](./configure-privacy-gate.md)) |
+
+---
+
+### I file che dovrebbero essere esclusi vengono comunque scansionati
+
+`excluded_dirs` e `excluded_file_patterns` in `.zenzic.toml` si applicano solo ai file sorgente
+della documentazione. Non interagiscono con `.gitignore`.
+
+**Percorsi esclusi di sistema** (non è mai necessario dichiararli):
+- Output di build: `build/`, `dist/`, `temp/`, `tmp/`, `.tox/`, `mutants/`
+- Toolchain: `.git/`, `.venv/`, `node_modules/`
+- File di configurazione: `*.toml`, `*.yaml`, `*.json`, `*.lock`, `Makefile`, `justfile`
+
+Solo le voci specifiche del repo non presenti nella lista di esclusione di sistema
+appartengono a `excluded_dirs`.
+
+---
+
+### La soglia `fail_under` non viene rispettata
+
+`fail_under` si applica al **Documentation Quality Score (DQS)**, non ai conteggi
+individuali di finding. Uno score di 0 causato dal Security Override (Z2xx presente)
+provoca sempre l'uscita con codice 2, indipendentemente da `fail_under`.
+
+Verifica la soglia effettiva:
+
+```bash
+zenzic config show | grep fail_under
+```
+
+---
+
+### Il punteggio è 0 ma non ci sono credenziali
+
+Z204 (`FORBIDDEN_TERM`) attiva anch'esso il Security Override. Esegui:
+
+```bash
+zenzic check all --verbose
+```
+
+Cerca `Z204` nell'output. Se `forbidden_patterns` in `.zenzic.local.toml` corrisponde
+a contenuto nella tua documentazione, il punteggio crolla a 0.
+
+---
+
+### L'override locale non viene applicato in CI
+
+`.zenzic.local.toml` è git-ignorato e non presente nei checkout CI di default.
+Questo è previsto. Per applicare gli override in CI, scrivi il file da un secret prima di eseguire Zenzic:
+
+```yaml
+- name: Scrivi overlay zenzic locale
+  env:
+    FORBIDDEN: ${{ secrets.ZENZIC_FORBIDDEN_PATTERNS }}
+  run: printf '[governance]\nforbidden_patterns = %s\n' "$FORBIDDEN" > .zenzic.local.toml
+```
+
+---
+
+### Disabilitare la cache di rete in ambienti effimeri
+
+Zenzic fa caching delle risposte dei link esterni per 24 ore di default. In ambienti altamente effimeri (come certe pipeline CI dockerizzate) dove la persistenza di `.zenzic_cache/` tra le esecuzioni è impossibile o indesiderata, puoi disabilitare completamente la cache per forzare la validazione sincrona di rete ad ogni run.
+
+```toml title=".zenzic.toml"
+[network]
+cache_ttl_hours = 0
+```
+
+---
+
+> Per la specifica completa dei campi, vedi [Configuration Reference](../reference/configuration-reference.md).

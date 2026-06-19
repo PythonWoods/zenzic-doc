@@ -9,7 +9,7 @@ description: "A pedagogical comparison of adapter internals."
 
 # Adapter Internals — Pedagogical Design
 
-The adapter pattern is the core architectural mechanism that allows Zenzic to validate documentation sites without depending on the runtime of specific build frameworks (e.g., Node.js for Docusaurus). 
+The adapter pattern is the core architectural mechanism that allows Zenzic to validate documentation sites without depending on the runtime of specific build frameworks (e.g., Node.js for Docusaurus).
 
 By abstracting site layouts and navigation contracts into a unified protocol (`BaseAdapter`), Zenzic decouples the validation engine from engine-specific behaviors.
 
@@ -34,5 +34,5 @@ Zero-Assumption adapters treat the documentation tree as a raw set of Markdown f
 ---
 
 > For concrete code comparisons showing how these strategies are implemented in Python, see [Writing an Adapter — Concrete Examples](../how-to/implement-adapter.mdx#concrete-implementation-examples-docusaurus-vs-standalone).
-> 
+>
 > For the abstract class definition and protocol signatures, see [API Reference — `BaseAdapter`](../reference/adapter-api.mdx#baseadapter-interface).

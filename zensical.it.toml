@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
+# SPDX-License-Identifier: Apache-2.0
+#
+# zensical.it.toml — Italian Build Configuration (ADR-020: IT Mirror)
+# ADR-020: docs-it/ mirrors docs/ exactly. Both builds share overrides/ and extra_css.
+# ADR-037 Compliance: No hardcoded SemVer. Version injected via [extra].
+
+[project]
+site_name   = "Zenzic — Documentation Quality Gate"
+site_url    = "https://zenzic.dev/it/"
+docs_dir    = "docs-it"
+site_dir    = "site/it"
+language    = "it"
+repo_url    = "https://github.com/PythonWoods/zenzic"
+repo_name   = "PythonWoods/zenzic"
+
+extra_css = [
+  "assets/css/zenzic-tailwind.min.css",
+  # Shared external artifact — same compiled file as English build.
+]
+
+# --- Navigazione (4 tab: Home / Documentazione Utente / Documentazione Developer / Blog)
+# Ogni [[project.nav]] è un tab di primo livello (navigation.tabs).
+# Le pagine devono essere tutte esplicite (Zensical NON auto-espande directory path).
+
+[[project.nav]]
+Home = "index.md"
+
+[[project.nav]]
+"Documentazione Utente" = [
+  {Tutorials = ["tutorials/first-audit.md", {Examples = ["tutorials/examples/index.md", "tutorials/examples/z1xx-links/z101-broken-links.md", "tutorials/examples/z1xx-links/z102-anchor-missing.md", "tutorials/examples/z1xx-links/z103-orphan-link.md", "tutorials/examples/z1xx-links/z104-file-not-found.md", "tutorials/examples/z1xx-links/z105-absolute-path.md", "tutorials/examples/z1xx-links/z107-circular-anchor.md", "tutorials/examples/z1xx-links/z108-empty-link-text.md", "tutorials/examples/z1xx-links/z109-external-link-broken.md", "tutorials/examples/z2xx-security/z201-credentials.md", "tutorials/examples/z2xx-security/z202-path-traversal.md", "tutorials/examples/z2xx-security/z204-forbidden-term.md", "tutorials/examples/z3xx-references/z301-dangling-ref.md", "tutorials/examples/z3xx-references/z302-dead-def.md", "tutorials/examples/z3xx-references/z303-duplicate-def.md", "tutorials/examples/z4xx-topology/z401-missing-directory-index.md", "tutorials/examples/z4xx-topology/z402-orphan-page.md", "tutorials/examples/z4xx-topology/z403-missing-alt.md", "tutorials/examples/z4xx-topology/z404-config-asset-missing.md", "tutorials/examples/z4xx-topology/z405-unused-assets.md", "tutorials/examples/z4xx-topology/z406-nav-contract.md", "tutorials/examples/z5xx-content/z501-placeholder.md", "tutorials/examples/z5xx-content/z502-short-content.md", "tutorials/examples/z5xx-content/z503-snippet-error.md", "tutorials/examples/z5xx-content/z505-untagged-code-block.md", "tutorials/examples/z6xx-brand/z601-brand-obsolescence.md", "tutorials/examples/z6xx-brand/z602-i18n-parity.md"]}]},
+  {"Guide Pratiche" = ["how-to/install.md", "how-to/initialize-configuration.md", "how-to/configure-ci-cd.md", "how-to/add-badges.md", "how-to/handle-technical-debt.md", "how-to/add-custom-rules.md", "how-to/configure-adapter.md", "how-to/configure-privacy-gate.md", "how-to/configuration-strategy.md", "how-to/manage-cross-site-links.md", "how-to/migrate-engines.md", "how-to/use-brand-system.md", "how-to/workflow-integration.md", "how-to/configure-social-metadata.md"]},
+  {Reference = ["reference/index.md", "reference/finding-codes.md", "reference/checks.md", "reference/cli.md", "reference/configuration-reference.md", "reference/scoring-algorithm.md", "reference/suppression-policy.md", "reference/engines.md", "reference/advanced-features.md", "reference/api-json.md", "reference/brand-kit.md", "reference/brand-system.md", "reference/glossary.md", "reference/zenzic-action.md"]},
+  {Spiegazioni = ["explanation/why-zenzic.md", "explanation/architecture.md", "explanation/core-mechanics.md", "explanation/scoring-design.md", "explanation/scoring-system.md", "explanation/discovery.md", "explanation/configuration-loading.md", "explanation/exclusion-design.md", "explanation/structural-integrity.md", "explanation/engine-migration-design.md", "explanation/the-zenzic-trinity.md", "explanation/github-action-internals.md", "explanation/privacy-gate.md", "explanation/mineral-path.md", "explanation/brand-philosophy.md", "explanation/community-index.md"]},
+]
+
+[[project.nav]]
+# Documentazione Developer: 36 pagine da cd99bfd (Diátaxis: Come fare / Reference / Spiegazioni)
+"Documentazione Developer" = [
+  "developers/index.md",
+  {"Come fare" = [{Contribuire = ["developers/how-to/contribute/index.md", "developers/how-to/contribute/pull-requests.md", "developers/how-to/contribute/report-a-bug.md", "developers/how-to/contribute/report-a-docs-issue.md", "developers/how-to/contribute/request-a-change.md"]}, "developers/how-to/implement-adapter.md", "developers/how-to/release-governance-protocol.md", "developers/how-to/write-a-check.md", "developers/how-to/write-plugin.md"]},
+  {Reference = ["developers/reference/adapter-api.md", "developers/reference/adapter-examples.md", "developers/reference/cli-architecture.md", "developers/reference/credential-scanner-obligations.md", "developers/reference/supply-chain-assurance-profile.md", "developers/reference/zenzic-style.md"]},
+  {Spiegazioni = ["developers/explanation/adapter-internals.md", "developers/explanation/adr-agnostic-universalism.md", "developers/explanation/adr-bilingual-structural.md", "developers/explanation/adr-decentralized-cli.md", "developers/explanation/adr-discovery.md", "developers/explanation/adr-lint-source.md", "developers/explanation/adr-native-telemetry.md", "developers/explanation/adr-parallel-early-termination.md", "developers/explanation/adr-path-sovereignty.md", "developers/explanation/adr-regex-acl.md", "developers/explanation/adr-unified-perimeter.md", "developers/explanation/adr-vault.md", "developers/explanation/core-laws.md", "developers/explanation/mdx-asset-rationale.md", "developers/explanation/sovereign-verification-model.md", {Governance = ["developers/explanation/governance/index.md", "developers/explanation/governance/evolution_policy.md", "developers/explanation/governance/exit_strategy.md", "developers/explanation/governance/licensing.md", "developers/explanation/governance/technical-debt.md"]}]},
+]
+
+[[project.nav]]
+Blog = ["blog/index.md"]
+
+[project.theme]
+custom_dir = "overrides"
+palette    = [
+  { scheme = "slate", primary = "black", accent = "indigo" }
+]
+features   = [
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.breadcrumbs",
+  "navigation.path",
+  "navigation.top",
+  "toc.follow",
+  "content.action.edit",
+  "content.action.view",
+  "content.code.copy",
+]
+
+[extra]
+zenzic_version = "current"
+
+[markdown_extensions]
+attr_list   = true
+tables      = true
+admonition  = true
+
+[markdown_extensions.toc]
+permalink = true
+
+[markdown_extensions.pymdownx_superfences]
+enabled = true
+
+[markdown_extensions.pymdownx_highlight]
+anchor_linenums = true
+
+[plugins]
+search = {}
+
+# URI Integrity Map (Phase 5 IT): Legacy Docusaurus /it/ URL → New Zensical IT path
+
+[plugins.redirects.redirect_maps]
+"it/docs/index.html"                                                    = "index.md"
+"it/docs/tutorials/first-audit.html"                                    = "tutorials/first-audit.md"
+"it/docs/tutorials/examples/index.html"                                 = "tutorials/examples/index.md"
+"it/docs/tutorials/examples/z1xx-links/z101-broken-links.html"         = "tutorials/examples/z1xx-links/z101-broken-links.md"
+"it/docs/tutorials/examples/z1xx-links/z102-anchor-missing.html"       = "tutorials/examples/z1xx-links/z102-anchor-missing.md"
+"it/docs/tutorials/examples/z1xx-links/z103-orphan-link.html"          = "tutorials/examples/z1xx-links/z103-orphan-link.md"
+"it/docs/tutorials/examples/z1xx-links/z104-file-not-found.html"       = "tutorials/examples/z1xx-links/z104-file-not-found.md"
+"it/docs/tutorials/examples/z1xx-links/z105-absolute-path.html"        = "tutorials/examples/z1xx-links/z105-absolute-path.md"
+"it/docs/tutorials/examples/z1xx-links/z107-circular-anchor.html"      = "tutorials/examples/z1xx-links/z107-circular-anchor.md"
+"it/docs/tutorials/examples/z1xx-links/z108-empty-link-text.html"      = "tutorials/examples/z1xx-links/z108-empty-link-text.md"
+"it/docs/tutorials/examples/z1xx-links/z109-external-link-broken.html" = "tutorials/examples/z1xx-links/z109-external-link-broken.md"
+"it/docs/tutorials/examples/z2xx-security/z201-credentials.html"       = "tutorials/examples/z2xx-security/z201-credentials.md"
+"it/docs/tutorials/examples/z2xx-security/z202-path-traversal.html"    = "tutorials/examples/z2xx-security/z202-path-traversal.md"
+"it/docs/tutorials/examples/z2xx-security/z204-forbidden-term.html"    = "tutorials/examples/z2xx-security/z204-forbidden-term.md"
+"it/docs/tutorials/examples/z3xx-references/z301-dangling-ref.html"    = "tutorials/examples/z3xx-references/z301-dangling-ref.md"
+"it/docs/tutorials/examples/z3xx-references/z302-dead-def.html"        = "tutorials/examples/z3xx-references/z302-dead-def.md"
+"it/docs/tutorials/examples/z3xx-references/z303-duplicate-def.html"   = "tutorials/examples/z3xx-references/z303-duplicate-def.md"
+"it/docs/tutorials/examples/z4xx-topology/z401-missing-directory-index.html" = "tutorials/examples/z4xx-topology/z401-missing-directory-index.md"
+"it/docs/tutorials/examples/z4xx-topology/z402-orphan-page.html"       = "tutorials/examples/z4xx-topology/z402-orphan-page.md"
+"it/docs/tutorials/examples/z4xx-topology/z403-missing-alt.html"       = "tutorials/examples/z4xx-topology/z403-missing-alt.md"
+"it/docs/tutorials/examples/z4xx-topology/z404-config-asset-missing.html" = "tutorials/examples/z4xx-topology/z404-config-asset-missing.md"
+"it/docs/tutorials/examples/z4xx-topology/z405-unused-assets.html"     = "tutorials/examples/z4xx-topology/z405-unused-assets.md"
+"it/docs/tutorials/examples/z4xx-topology/z406-nav-contract.html"      = "tutorials/examples/z4xx-topology/z406-nav-contract.md"
+"it/docs/tutorials/examples/z5xx-content/z501-placeholder.html"        = "tutorials/examples/z5xx-content/z501-placeholder.md"
+"it/docs/tutorials/examples/z5xx-content/z502-short-content.html"      = "tutorials/examples/z5xx-content/z502-short-content.md"
+"it/docs/tutorials/examples/z5xx-content/z503-snippet-error.html"      = "tutorials/examples/z5xx-content/z503-snippet-error.md"
+"it/docs/tutorials/examples/z5xx-content/z505-untagged-code-block.html" = "tutorials/examples/z5xx-content/z505-untagged-code-block.md"
+"it/docs/tutorials/examples/z6xx-brand/z601-brand-obsolescence.html"   = "tutorials/examples/z6xx-brand/z601-brand-obsolescence.md"
+"it/docs/tutorials/examples/z6xx-brand/z602-i18n-parity.html"          = "tutorials/examples/z6xx-brand/z602-i18n-parity.md"
+# Documentazione Developer IT — legacy Docusaurus /it/developers/ routes
+"it/developers/index.html"                                                        = "developers/index.md"
+"it/developers/how-to/contribute/index.html"                                      = "developers/how-to/contribute/index.md"
+"it/developers/how-to/contribute/pull-requests.html"                              = "developers/how-to/contribute/pull-requests.md"
+"it/developers/how-to/contribute/report-a-bug.html"                               = "developers/how-to/contribute/report-a-bug.md"
+"it/developers/how-to/contribute/report-a-docs-issue.html"                        = "developers/how-to/contribute/report-a-docs-issue.md"
+"it/developers/how-to/contribute/request-a-change.html"                           = "developers/how-to/contribute/request-a-change.md"
+"it/developers/how-to/implement-adapter.html"                                     = "developers/how-to/implement-adapter.md"
+"it/developers/how-to/release-governance-protocol.html"                           = "developers/how-to/release-governance-protocol.md"
+"it/developers/how-to/write-a-check.html"                                         = "developers/how-to/write-a-check.md"
+"it/developers/how-to/write-plugin.html"                                          = "developers/how-to/write-plugin.md"
+"it/developers/reference/adapter-api.html"                                        = "developers/reference/adapter-api.md"
+"it/developers/reference/adapter-examples.html"                                   = "developers/reference/adapter-examples.md"
+"it/developers/reference/cli-architecture.html"                                   = "developers/reference/cli-architecture.md"
+"it/developers/reference/credential-scanner-obligations.html"                     = "developers/reference/credential-scanner-obligations.md"
+"it/developers/reference/supply-chain-assurance-profile.html"                     = "developers/reference/supply-chain-assurance-profile.md"
+"it/developers/reference/zenzic-style.html"                                       = "developers/reference/zenzic-style.md"
+"it/developers/explanation/adapter-internals.html"                                = "developers/explanation/adapter-internals.md"
+"it/developers/explanation/adr-agnostic-universalism.html"                        = "developers/explanation/adr-agnostic-universalism.md"
+"it/developers/explanation/adr-bilingual-structural.html"                         = "developers/explanation/adr-bilingual-structural.md"
+"it/developers/explanation/adr-decentralized-cli.html"                            = "developers/explanation/adr-decentralized-cli.md"
+"it/developers/explanation/adr-discovery.html"                                    = "developers/explanation/adr-discovery.md"
+"it/developers/explanation/adr-lint-source.html"                                  = "developers/explanation/adr-lint-source.md"
+"it/developers/explanation/adr-native-telemetry.html"                             = "developers/explanation/adr-native-telemetry.md"
+"it/developers/explanation/adr-parallel-early-termination.html"                   = "developers/explanation/adr-parallel-early-termination.md"
+"it/developers/explanation/adr-path-sovereignty.html"                             = "developers/explanation/adr-path-sovereignty.md"
+"it/developers/explanation/adr-regex-acl.html"                                    = "developers/explanation/adr-regex-acl.md"
+"it/developers/explanation/adr-unified-perimeter.html"                            = "developers/explanation/adr-unified-perimeter.md"
+"it/developers/explanation/adr-vault.html"                                        = "developers/explanation/adr-vault.md"
+"it/developers/explanation/core-laws.html"                                        = "developers/explanation/core-laws.md"
+"it/developers/explanation/mdx-asset-rationale.html"                              = "developers/explanation/mdx-asset-rationale.md"
+"it/developers/explanation/sovereign-verification-model.html"                     = "developers/explanation/sovereign-verification-model.md"
+"it/developers/explanation/governance/index.html"                                 = "developers/explanation/governance/index.md"
+"it/developers/explanation/governance/evolution_policy.html"                      = "developers/explanation/governance/evolution_policy.md"
+"it/developers/explanation/governance/exit_strategy.html"                         = "developers/explanation/governance/exit_strategy.md"
+"it/developers/explanation/governance/licensing.html"                             = "developers/explanation/governance/licensing.md"
+"it/developers/explanation/governance/technical-debt.html"                        = "developers/explanation/governance/technical-debt.md"

@@ -1,0 +1,176 @@
+---
+sidebar_position: 1
+sidebar_label: "Il tuo primo audit"
+---
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+
+
+# Il tuo primo audit
+
+**Cosa farai:** passare da zero a un report Zenzic in meno di tre minuti. Zenzic rileva credenziali esposte, pagine orfane e link rotti. Nessun file di configurazione richiesto per iniziare.
+
+!!! tip "Prerequisiti"
+
+    Ti serve [uv](https://docs.astral.sh/uv/) nel `PATH`. Il resto è gestito automaticamente.
+
+!!! info "Perché iniziare con il Lab?"
+
+    `zenzic lab` esegue ogni scanner contro fixture pre-costruite. Copre uno scenario di violazione della sicurezza e uno scenario di documentazione pulita. Tempo di esecuzione totale: meno di 60 secondi.
+
+---
+
+## Step 1 — Esegui Zenzic senza installarlo {#step-1-uvx}
+
+Punta Zenzic sulla root del tuo progetto. Nessun ambiente virtuale, nessun `pip install`:
+
+```bash
+uvx zenzic check all
+```
+
+`uvx` scarica Zenzic in un ambiente isolato e lo elimina al termine del comando.
+Esegui questo comando dalla directory che contiene il tuo `.zenzic.toml` (o dalla root del repository).
+Zenzic individua automaticamente la configurazione e attiva l'engine corretto — incluso
+il controllo orfani (Z402) quando è presente un contratto di navigazione.
+Se una directory `blog/` esiste su disco, `zenzic check all` include i post del blog nel perimetro di scansione automaticamente. Nessuna impostazione aggiuntiva. Nessun `blog_dir` da configurare.
+Questo è il workflow consigliato per la CI e per provare Zenzic su repository sconosciuti.
+
+---
+
+## Step 2 — Demo Live Credential Scanner {#step-2-credential-scanner}
+
+Prima di configurare qualsiasi cosa, osserva Zenzic proteggere un repo volutamente compromesso:
+
+**Demo credential scanner** — esegui lo scenario Z201 (credenziale esposta):
+
+```bash
+uvx zenzic lab z201
+```
+
+Zenzic scansiona il fixture `z201-credentials` incluso e attiva l'**exit code 2** con
+il banner Security Breach — l'allerta non sopprimibile per una credenziale esposta:
+
+<CredentialTerminal
+  finding="AWS access key rilevata"
+  location="docs/how-to/configure.md:4"
+  credential="AKIA************MPLE"
+/>
+
+La credenziale mascherata e l'exit code non-zero sono l'output atteso del credential scanner.
+
+**Demo integrità dei link (Zenzic Audit Badge)** — ora esegui lo scenario Z101 (LINK_BROKEN):
+
+```bash
+uvx zenzic lab z101
+```
+
+Il Zenzic Audit Badge: finding di link rilevati, exit 1. Il contrasto è la prova —
+lo stesso motore che ha rilevato il segreto conferma che la documentazione
+pulita è genuinamente pulita.
+
+!!! tip "Demo Interattiva — Nessuna installazione richiesta"
+
+    ```bash
+    uvx zenzic lab
+    ```
+
+    Lancia il menu della galleria con 5 scenari Z-code: credenziali esposte, link rotti, asset
+    orfani, obsolescenza del brand e parità i18n. Nessuna installazione. Nessuna configurazione richiesta.
+
+    → Scegli qualsiasi scenario dal menu, oppure eseguine uno specifico: `uvx zenzic lab z201` (CREDENTIAL_SECRET), `uvx zenzic lab z101` (LINK_BROKEN).
+
+---
+
+## Step 3 — Inizializza il tuo Exclusion Zone {#step-3-init}
+
+Quando sei pronto a integrare Zenzic nel progetto, genera un `.zenzic.toml` con un comando:
+
+!!! info "Perimetro del Workspace obbligatorio"
+
+    Zenzic analizza **workspace definiti, non directory arbitrarie**. Esegue una traversata verso l'alto
+    dal percorso target per localizzare un marcatore di radice (`.git/` o `.zenzic.toml`). Se vedi:
+
+    ```text
+    ERROR: Could not locate repo root: no .git directory or .zenzic.toml found
+    ```
+
+    Esegui `zenzic init` nella directory radice del tuo progetto per stabilire il perimetro di analisi.
+    Vedi [Discovery & Exclusion — L'Autorità della Radice](../explanation/discovery#root-authority) per la motivazione completa.
+
+
+```bash
+cd il-tuo-progetto/
+zenzic init
+```
+
+Zenzic ispeziona la directory e pre-configura il motore automaticamente:
+
+```text
+Created .zenzic.toml
+  Engine pre-set to mkdocs (detected from mkdocs.yml).
+
+Edit the file to enable rules, adjust directories, or set a quality threshold.
+Run zenzic check all to validate your documentation.
+```
+
+Il file generato è commentato — ogni opzione è disabilitata con una breve spiegazione.
+Aprilo, decommenta quello che ti serve, lascia il resto.
+
+!!! note "Usi pyproject.toml?"
+
+    ```bash
+    zenzic init --pyproject
+    ```
+
+    Questo aggiunge una sezione `[tool.zenzic]` al tuo `pyproject.toml` esistente invece di
+    creare un file separato.
+
+---
+
+## Step 4 — Esegui il tuo primo audit reale {#step-4-audit}
+
+```bash
+zenzic check all
+```
+
+Zenzic scansiona ogni file Markdown, valida i link interni rispetto alla Virtual Site Map,
+controlla le ancore, cerca credenziali, esegue le regole personalizzate — poi stampa un report
+strutturato ed esce con un codice leggibile dalla macchina. Per i dettagli sui codici di uscita e i relativi livelli di sicurezza, consulta l'**[Exit Code Contract](../reference/finding-codes#contratto-codici-di-uscita)**.
+
+Un'esecuzione pulita si presenta così — il **Zenzic Audit Badge**:
+
+<!-- Terminal output: run `uvx zenzic check all` -->
+
+Exit 0 conferma che ogni link si risolve, ogni pagina è raggiungibile e nessuna credenziale è esposta nello scope analizzato.
+
+!!! note "Rottura Deliberata — La Prova della Tracciabilità"
+    Inserisci un link rotto in qualsiasi file:
+
+    ```markdown title="docs/intro.md"
+    [Vedi la guida](./pagina-inesistente.md)
+    ```
+
+    Esegui `zenzic check all`. Il finding è esatto:
+
+    ```text
+    docs/intro.mdx:3  Z101  Internal link resolves to no page in the VSM  → ./pagina-inesistente.mdx
+    ```
+
+    File. Riga. Codice. Nessun finding senza un'origine fisica.
+    Questa è tracciabilità deterministica — la stessa garanzia in CI come in locale.
+
+Esegui `uvx zenzic score` sul tuo repository per ottenere una baseline score senza installare nulla.
+
+---
+
+## Cosa fare dopo? {#next}
+
+- **Misura il tuo punteggio** — esegui `uvx zenzic score` per ottenere una baseline 0–100 precisa
+- **Aggiungi un gate CI** — vedi [Integrazione CI/CD](../how-to/configure-ci-cd) per l'enforcement automatico della qualità
+- **Export SARIF** — `zenzic check all --format sarif` per le annotazioni inline di GitHub Code Scanning
+- **Strict mode** — aggiungi `--strict` per validare anche gli URL esterni
+- **Regole personalizzate** — aggiungi voci `[[custom_rules]]` a `.zenzic.toml` per i tuoi pattern
+- **Codici di finding** — consulta il [riferimento ai Finding Codes](../reference/finding-codes) per il
+
+  catalogo diagnostico completo `Zxxx`
