@@ -22,8 +22,8 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Run Zenzic Quality Gate
-        uses: PythonWoods/zenzic-action@16d64c6043d90d5ad10fa8b1efe48f489efbd605 # v2.0.0
+        uses: PythonWoods/zenzic-action@37ffe970d72f8ccad7545e8bce9dd6cc51abb98b # v2.0.0
         with:
-          version: "0.13.0"
+          version: "0.13.1"
           strict: 'true'
           upload-sarif: 'true'
