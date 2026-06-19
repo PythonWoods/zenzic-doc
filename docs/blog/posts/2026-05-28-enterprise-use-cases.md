@@ -2,8 +2,12 @@
 slug: enterprise-use-cases
 title: "Three Zenzic Deployment Patterns for Teams"
 
-authors: [pythonwoods]
-tags: [governance, devtools, engineering]
+authors:
+  - pythonwoods
+tags:
+  - governance
+  - devtools
+  - engineering
 date: 2026-05-28T10:00:00
 description: >-
   Three concrete deployment patterns for teams operating Zenzic in CI/CD

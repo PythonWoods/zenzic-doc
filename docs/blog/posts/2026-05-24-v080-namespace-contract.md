@@ -2,8 +2,11 @@
 slug: v080-namespace-contract
 title: "The Namespace Contract"
 
-authors: [pythonwoods]
-tags: [engineering-logs, release]
+authors:
+  - pythonwoods
+tags:
+  - engineering-logs
+  - release
 date: 2026-05-24
 description: >
   v0.8.0 formalizes the namespace contract, tiered code governance,

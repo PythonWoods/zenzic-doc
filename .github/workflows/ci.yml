@@ -14,11 +14,8 @@ on:
       - 'src/**'
       - 'static/**'
       - 'scripts/**'
-      - 'docusaurus.config.ts'
-      - 'sidebars.ts'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'tsconfig.json'
+      - 'zensical.toml'
+      - 'uv.lock'
       - '.zenzic.toml'
       - '.github/workflows/ci.yml'
 

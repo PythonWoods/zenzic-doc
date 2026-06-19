@@ -15,9 +15,7 @@ description: "How to report bugs effectively with reproduction steps."
 Zenzic is an actively maintained project that we constantly strive to improve.
 With a project of this size and complexity, bugs may occur. If you think you
 have discovered a bug, you can help us by submitting an issue in our public
-[issue tracker], following this guide.
-
-  [issue tracker]: https://github.com/PythonWoods/zenzic/issues
+[issue tracker](https://github.com/PythonWoods/zenzic/issues), following this guide.
 
 ## Before creating an issue
 
@@ -28,30 +26,26 @@ Before submitting a new issue, please complete the following steps.
 
 Chances are that the bug you discovered was already fixed in a subsequent
 version. Before reporting an issue, ensure that you're running the
-[latest version] of Zenzic.
+[latest version](https://github.com/PythonWoods/zenzic/releases) of Zenzic.
 
 !!! warning "Bug fixes are not backported"
 
     Only bugs that occur in the latest version of Zenzic will be addressed.
 
-    [latest version]: https://github.com/PythonWoods/zenzic/releases
-
 ### Search for solutions
 
 Before creating a bug report, do some research:
 
-1. [Search our documentation][Search our documentation] and look for sections
+1. [Search our documentation](?q=) and look for sections
 
    related to your problem.
 
-2. [Search our issue tracker][issue tracker], as another user might already
+2. [Search our issue tracker](https://github.com/PythonWoods/zenzic/issues), as another user might already
 
    have reported the same problem.
 
 __Keep track of all <u>search terms</u> and <u>relevant links</u>; you'll need
 them in the bug report.__
-
-  [Search our documentation]: ?q=
 
 ---
 
@@ -59,21 +53,13 @@ them in the bug report.__
 
 Our issue template consists of the following parts:
 
-- [Title]
-- [Context] <small>optional</small>
-- [Bug description]
-- [Related links]
-- [Reproduction]
-- [Steps to reproduce]
-- [Checklist]
-
-  [Title]: #title
-  [Context]: #context
-  [Bug description]: #bug-description
-  [Related links]: #related-links
-  [Reproduction]: #reproduction
-  [Steps to reproduce]: #steps-to-reproduce
-  [Checklist]: #checklist
+- [Title](#title)
+- [Context](#context) <small>optional</small>
+- [Bug description](#bug-description)
+- [Related links](#related-links)
+- [Reproduction](#reproduction)
+- [Steps to reproduce](#steps-to-reproduce)
+- [Checklist](#checklist)
 
 ### Title
 

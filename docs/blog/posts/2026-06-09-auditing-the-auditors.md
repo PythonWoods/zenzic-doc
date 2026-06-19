@@ -1,8 +1,14 @@
 ---
 slug: auditing-the-auditors-ast-based-documentation-analysis
 title: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
-authors: [pythonwoods]
-tags: [architecture, docs-as-code, ci-cd, parsing, case-study]
+authors:
+  - pythonwoods
+tags:
+  - architecture
+  - docs-as-code
+  - ci-cd
+  - parsing
+  - case-study
 date: 2026-06-09
 ---
 

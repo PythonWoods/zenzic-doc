@@ -100,7 +100,7 @@ community.
 
     Please note that everything you write is permanent and will remain for
     everyone to read – forever. Therefore, we kindly ask you to always be
-    nice and constructive, complying with our [Code of Conduct].
+    nice and constructive, complying with our [Code of Conduct](https://github.com/PythonWoods/zenzic/blob/main/CODE_OF_CONDUCT.md).
 
 ### Before creating an issue
 

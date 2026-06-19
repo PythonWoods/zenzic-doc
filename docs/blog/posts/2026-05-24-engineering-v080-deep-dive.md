@@ -2,8 +2,12 @@
 slug: engineering-v080-deep-dive
 title: "Engineering Deep Dive: v0.8.0 Architecture"
 
-authors: [pythonwoods]
-tags: [engineering-logs, architecture, release]
+authors:
+  - pythonwoods
+tags:
+  - engineering-logs
+  - architecture
+  - release
 date: 2026-05-24
 description: >
   A long-form engineering deep dive into Zenzic v0.8.0: context fragmentation,

@@ -8,8 +8,8 @@ on:
     branches:
       - main
     paths:
-      - 'package.json'
-      - 'package-lock.json'
+      - 'pyproject.toml'
+      - 'uv.lock'
   workflow_dispatch:
 
 permissions:

@@ -20,11 +20,9 @@ our software meets the needs of our community.
 
     We highly value every idea or contribution from our community, and we
     kindly ask you to take the time to read the following guidelines before
-    submitting your change request in our public [issue tracker]. Before
+    submitting your change request in our public [issue tracker](https://github.com/PythonWoods/zenzic/issues). Before
     submitting a new idea, please take a moment to read
-    [how we manage change requests].
-
-    [issue tracker]: https://github.com/PythonWoods/zenzic/issues
+    [how we manage change requests](#how-we-manage-change-requests).
 
 ## Before creating an issue
 
@@ -36,9 +34,7 @@ Zenzic.
 
 Change requests are intended to suggest minor adjustments, propose ideas for
 new features, or provide input to the project's direction. They are **not**
-intended for reporting bugs — please refer to our [bug reporting guide] instead.
-
-  [bug reporting guide]: report-a-bug.md
+intended for reporting bugs — please refer to our [bug reporting guide](report-a-bug.md) instead.
 
 ### Look for sources of inspiration
 
@@ -53,21 +49,13 @@ them in the change request.**
 
 Our change request template consists of the following parts:
 
-- [Title]
-- [Context] <small>optional</small>
-- [Description]
-- [Related links]
-- [Use cases]
-- [Visuals] <small>optional</small>
-- [Checklist]
-
-  [Title]: #title
-  [Context]: #context
-  [Description]: #description
-  [Related links]: #related-links
-  [Use cases]: #use-cases
-  [Visuals]: #visuals
-  [Checklist]: #checklist
+- [Title](#title)
+- [Context](#context) <small>optional</small>
+- [Description](#description)
+- [Related links](#related-links)
+- [Use cases](#use-cases)
+- [Visuals](#visuals) <small>optional</small>
+- [Checklist](#checklist)
 
 ### Title
 
@@ -123,7 +111,7 @@ of information to review your idea.
 
 ## How we manage change requests
 
-Change requests are submitted as issues on our public [issue tracker]. Here's
+Change requests are submitted as issues on our public [issue tracker](https://github.com/PythonWoods/zenzic/issues). Here's
 how we handle them:
 
 1. We read and review the request to understand the idea.

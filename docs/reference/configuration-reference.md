@@ -14,7 +14,7 @@ Zenzic is configured through a TOML file. Every field has a sensible default, so
 
 !!! warning "The TOML Root Key Law"
 
-    In TOML, once a [table] is declared, all subsequent keys belong to that table. You MUST declare all root-level keys (e.g., excluded_dirs, fail_under) at the absolute top of the .zenzic.toml file, before opening any bracketed sections like [governance] or [network]. Keys placed at the bottom will be silently swallowed by the preceding table and ignored by Zenzic.
+    In TOML, once a `[table]` is declared, all subsequent keys belong to that table. You MUST declare all root-level keys (e.g., excluded_dirs, fail_under) at the absolute top of the .zenzic.toml file, before opening any bracketed sections like `[governance]` or `[network]`. Keys placed at the bottom will be silently swallowed by the preceding table and ignored by Zenzic.
 
 
 ## Config File Priority {#config-priority}

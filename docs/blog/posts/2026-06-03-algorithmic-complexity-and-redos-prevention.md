@@ -1,8 +1,12 @@
 ---
 slug: algorithmic-complexity-and-redos-prevention
 title: "Why we banned Python's regex module: The algorithm behind Zenzic"
-authors: [pythonwoods]
-tags: [architecture, security, python]
+authors:
+  - pythonwoods
+tags:
+  - architecture
+  - security
+  - python
 date: 2026-06-03
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
