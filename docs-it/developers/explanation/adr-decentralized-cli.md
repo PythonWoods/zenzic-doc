@@ -1,0 +1,208 @@
+---
+
+sidebar_position: 7
+description: "ADR 004: Suddivisione del modulo CLI monolitico in un package strutturato — la Layer Law che mantiene il Core indipendente dalla CLI."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# ADR 004: Package CLI Decentralizzata
+
+**Stato:** Attivo
+**Decisore:** Architecture Lead
+**Data:** 2026-04-15 (v0.8.x, D062-B / D063 / D064)
+
+---
+
+## Contesto
+
+La CLI originale di Zenzic era contenuta in un singolo file: `src/zenzic/cli.py`.
+Nel corso del ciclo di rilascio v0.8.x series, quel file è cresciuto fino a superare
+le **2.000 righe**, contenendo sei responsabilità concettualmente distinte in
+un unico namespace:
+
+| Responsabilità | Esempi |
+|---|---|
+| Comandi di analisi | `check links`, `check orphans`, `check all` |
+| Ispezione del motore | `inspect capabilities` |
+| Comandi di manutenzione | `clean` |
+| Showcase lab | `zenzic lab` — 11 atti interattivi |
+| Operazioni standalone | `diff`, `score`, `init` |
+| Helper UI/output condivisi | banner, console, costruttore dell'exclusion manager |
+
+Questo monolite creava problemi composti:
+
+1. **Rischio di importazione circolare.** Con la crescita dei moduli `core/`, i
+
+   contributori erano tentati di importare direttamente le utility di `cli.py`
+   dal core, invertendo la direzione delle dipendenze.
+
+2. **Stato UI disperso.** L'oggetto Rich `console` veniva istanziato più volte in
+
+   scope di funzioni diverse, causando formattazione dell'output incoerente e
+   race condition negli ambienti di test.
+
+3. **Fallimento dell'isolamento dei test.** Ogni test che toccava un comando CLI
+
+   doveva importare l'intero `cli.py` — incluso il lab showcase, il display live
+   di Rich e tutti i sub-app Typer. Questo aumentava il tempo di avvio dei test
+   e rendeva il mocking inaffidabile.
+
+4. **Attrito per i contributori.** Un nuovo contributore che aggiungeva un comando
+
+   check non aveva un chiaro segnale "dove va questo?" dalla struttura dei file.
+
+---
+
+## Decisione
+
+`src/zenzic/cli.py` è stato sciolto in un package `src/zenzic/cli/` con la
+seguente struttura modulare:
+
+```text
+src/zenzic/cli/
+  __init__.py       — re-export pubblici
+  _check.py         — sub-app check: links, orphans, snippets, references, assets, all
+  _inspect.py       — sub-app inspect: capabilities
+  _clean.py         — sub-app clean
+  _lab.py           — comando lab: 11 Atti (0–10), showcase interattivo
+  _standalone.py    — comandi standalone: diff, init, score
+  _shared.py        — helper condivisi: _build_exclusion_manager, _validate_docs_root,
+                      _ui, console
+```
+
+`src/zenzic/main.py` è diventato il **punto di ingresso Typer** — un orchestratore
+minimale che importa ogni sub-app e la registra sull'applicazione Typer root.
+Non contiene alcuna logica di analisi.
+
+Tre decisioni complementari sono state applicate nella stessa release:
+
+- **D062-B:** `src/zenzic/ui.py` → `src/zenzic/core/ui.py`. Le primitive UI sono
+
+  usate sia dalla CLI che dal Core; collocarle in `core/` garantisce che il Core
+  possa usarle senza importare da `cli/`, il che violerebbe la Layer Law.
+
+- **D063:** `src/zenzic/lab.py` → `src/zenzic/cli/_lab.py`. Il lab showcase è
+
+  pura orchestrazione CLI — display Rich interattivi, sequenziamento degli atti,
+  prompt utente. Appartiene al layer CLI, non adiacente al core.
+
+- **D064 (SDK Cleansing):** `run_rule()` è stata estratta da `cli.py` e spostata
+
+  in `core/rules.py`. Il modulo pubblico `zenzic.rules` è diventato una
+  **façade di 6 righe** — retrocompatibile con qualsiasi codice di terze parti
+  che lo importasse direttamente, assicurando che l'implementazione viva in
+  `core/`.
+
+---
+
+## La Layer Law (Regola R05)
+
+Questo ADR formalizza l'**invariante di direzione delle dipendenze** come regola
+denominata:
+
+> **R05 — Il Core non importa verso l'alto.** I moduli in `src/zenzic/core/`
+> non devono mai importare da `src/zenzic/cli/` o `src/zenzic/main.py`.
+
+La direzione imposta è:
+
+```text
+cli/ → core/ → models/
+```
+
+`cli/` può importare qualsiasi cosa da `core/`. `core/` può importare da
+`models/`. L'inverso è permanentemente vietato. Questo garantisce che `core/`
+possa essere usato come SDK standalone senza trascinare Typer, display live
+di Rich o dipendenze I/O interattive.
+
+---
+
+## Motivazione
+
+### 1. Responsabilità Singola a Livello di File
+
+Un file da 2.000 righe non è un file — è un package non dichiarato. Formalizzare
+la struttura del package rende il principio di responsabilità singola visibile
+nel filesystem: un contributore che cerca la logica di rilevamento degli orphan
+apre `_check.py`, non un monolite in cui deve cercare per nome di funzione.
+
+### 2. Isolamento dei Test
+
+Dopo la suddivisione, `test_cli.py` può importare solo il sub-app specifico in
+test. I display live Rich del lab showcase non vengono più caricati quando si
+testano i `check links`. Il tempo di avvio per i singoli moduli di test è calato
+in modo misurabile.
+
+### 3. Contratto SDK
+
+La façade `zenzic.rules` preserva la retrocompatibilità per qualsiasi progetto
+che usasse `from zenzic.rules import run_rule`. Non è stato richiesto alcun
+cambiamento ai percorsi di importazione per le integrazioni esistenti, nonostante
+la riorganizzazione interna.
+
+### 4. Stato della Console Unificato (Visual State Manager)
+
+L'istanza di più oggetti `Console()` in moduli di comando diversi interrompe le sovrascritture degli argomenti della riga di comando. Quando viene passato `--no-color` o `--force-color`, `configure_console()` sovrascrive i singleton in `_shared.py`. Qualsiasi `Console` istanziata localmente aggirerebbe questa configurazione, portando a una colorazione in modalità mista o a preferenze dell'utente ignorate.
+
+---
+
+## Invarianti (Non Negoziabili)
+
+- `src/zenzic/core/` non importa mai da `src/zenzic/cli/` — qualsiasi PR che
+
+  introduce tale importazione è un candidato automatico al revert.
+
+- `_shared.py` è l'**unico** posto in `cli/` in cui l'oggetto Rich `console`
+
+  viene istanziato. Tutti gli altri moduli `cli/` chiamano `_ui()` da `_shared.py`.
+
+- `src/zenzic/main.py` non contiene **alcuna logica di analisi** — solo cablaggio
+
+  dell'app Typer.
+
+- `zenzic.rules` rimane una façade di re-export. L'implementazione vive in
+
+  `core/rules.py`.
+
+---
+
+## Conseguenze
+
+- I nuovi comandi CLI vengono aggiunti al modulo `cli/_*.py` appropriato, non a
+
+  un monolite generico.
+
+- La funzione `run_rule()` è importabile sia come `zenzic.rules.run_rule` (façade
+
+  pubblica) che come `zenzic.core.rules.run_rule` (diretta). Entrambi i percorsi
+  sono stabili.
+
+- Il lab showcase (`cli/_lab.py`) può essere esteso con nuovi atti senza influire
+
+  sulla superficie di test della pipeline di analisi.
+
+---
+
+## Decisione Complementare D082 — Decomposizione CLI
+
+**Stato:** Accettata — v0.8.0
+
+**Contesto:** `_check.py` era cresciuto fino a 1641 righe, accumulando quattro categorie di
+helper che appartengono propriamente altrove: filtri di governance, risoluzione del target,
+boilerplate di setup dei comandi, e la reportistica di governance già presente in `_governance.py`.
+
+**Decisione:** Estrarre gli helper in moduli dedicati con re-export retrocompatibili.
+
+| Nuovo modulo | Estratto da | Funzioni |
+|:-------------|:------------|:---------|
+| `_governance.py` | `_check.py` | `_apply_per_file_ignores`, `_apply_directory_policies` |
+| `_target_resolver.py` | `_check.py` | `_resolve_target`, `_apply_target` |
+| `_command_setup.py` | `_check.py` | Factory `setup_command()` |
+
+**Contratto Zero-Regressione:** 1550 test passano invariati. Tutti i simboli spostati rimangono
+importabili da `_check.py` tramite stub di re-export, quindi qualsiasi codice a valle che importa
+direttamente da `_check` continua a funzionare senza modifiche.
+
+**Risultato:** `_check.py` ridotto da 1641 → 1478 righe. Ogni nuovo modulo ha una singola
+responsabilità chiaramente nominata, coerente con il modello di ownership decentralizzata di questo ADR.

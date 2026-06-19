@@ -1,0 +1,99 @@
+---
+sidebar_position: 10
+sidebar_label: "Perché Zenzic"
+title: "Perché Zenzic — Prevenzione del Rischio e Quality Gate Deterministici"
+description: "Come Zenzic riduce il rischio documentale, elimina i cicli di QA manuale e applica quality gate deterministici in CI/CD."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Perché Zenzic — Prevenzione del Rischio e Quality Gate Deterministici
+
+Zenzic esiste per impedire che i difetti documentali entrino nel branch principale. L'obiettivo
+è operativo: bloccare regressioni prima del rilascio, ridurre l'esposizione di sicurezza e
+mantenere risultati CI deterministici.
+
+---
+
+## Valore di Business
+
+### 1. Riduzione del Rischio
+
+Zenzic previene i guasti documentali ad alto impatto prima del deploy:
+
+- link interni rotti che diventano 404 in produzione,
+- credenziali trapelate in Markdown o code block,
+- incoerenze di navigazione e topologia che nascondono pagine critiche.
+
+Per repository pubblici, il rilevamento credenziali (Z2xx) è un controllo diretto contro la
+divulgazione accidentale di segreti.
+
+### 2. Risparmio di Tempo
+
+Il quality gate automatizza controlli che spesso vengono svolti manualmente in review.
+
+Formulazione corretta: **l'automazione del quality gate previene l'integrazione di debito
+documentale nel branch principale, azzerando i cicli di revisione manuale per i link
+interrotti.**
+
+I team smettono di spendere cicli di revisione su difetti ripetitivi e si concentrano sulla
+qualità del contenuto.
+
+### 3. Affidabilità
+
+Affidabilità significa risultati ripetibili a parità di input. Zenzic applica analisi
+deterministica e codici di uscita deterministici, in modo che il comportamento CI sia stabile
+su run e ambienti diversi.
+
+---
+
+## Trinità della Difesa {#defence-trinity}
+
+### Integrità dei Link (Z1xx)
+
+Link interni, anchor e riferimenti di route vengono validati prima della build. Questo impedisce
+che errori di navigazione runtime arrivino agli utenti.
+
+### Prevenzione Leak Credenziali (Z2xx) {#credential-scanner}
+
+Lo scanner controlla ogni file per pattern noti di credenziali. I finding di sicurezza sono
+fail-closed e fermano immediatamente la pipeline.
+
+### Sicurezza di Path e Topologia (Z202/Z203) {#path-traversal-guard}
+
+Path traversal e risoluzione path non sicura sono bloccati. Durante l'analisi, la configurazione
+non può uscire dai confini del repository.
+
+---
+
+## Modello di Esecuzione Deterministico {#three-pillars}
+
+Zenzic applica tre regole di ingegneria per mantenere i risultati prevedibili:
+
+1. **Analizza il sorgente, non l'output di build.**
+2. **Nessun sottoprocesso nel loop di analisi core.**
+3. **Validazione e scoring con approccio pure-function-first.**
+
+Questo modello garantisce che lo stesso stato repository produca lo stesso set di finding e lo
+stesso risultato di gate.
+
+---
+
+## Semantica del CI Gate
+
+- **Exit 0**: nessun finding bloccante.
+- **Exit 1**: finding di qualità che bloccano il merge.
+- **Exit 2**: finding di sicurezza/credenziali.
+- **Exit 3**: violazione del path traversal guard.
+
+Il modello DQS flat-cost rende esplicito il debito da soppressioni: ogni soppressione applica una
+penalità fissa, quindi la variazione del punteggio è prevedibile e verificabile.
+
+---
+
+## Use Cases
+
+- **Manutenzione monorepo B2B**: applicare uno standard documentale coerente su più servizi.
+- **Validazione portali API**: prevenire regressioni di route e navigazione.
+- **Pipeline docs-as-code**: bloccare regressioni in anticipo con comportamento di gate deterministico.

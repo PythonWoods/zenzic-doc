@@ -1,0 +1,166 @@
+---
+icon: lucide/award
+sidebar_label: "Badge Ufficiali"
+description: "Aggiungi badge CI status e DQS Score al tuo README con il Dual-Badge Telemetry."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Aggiungere Badge al README
+
+Zenzic fornisce due segnali ortogonali per il tuo README: un **Audit Badge** (pass/fail governance) e un **DQS Score badge** (punteggio qualità 0–100). Entrambi vengono scritti in-place da `zenzic score --stamp` senza dipendenze esterne.
+
+---
+
+## Badge 1 — Stato Audit (`zenzic score --stamp`)
+
+`zenzic score --stamp` scrive anche un badge di governance deterministico (`passing` o `failing`).
+Il badge audit è basato sulla stessa esecuzione del punteggio e risolve pass/fail dalle condizioni di policy:
+
+- nessun security override
+- `score >= fail_under`
+- `suppressions <= suppression_cap`
+
+---
+
+## Badge 2 — DQS Score (`zenzic score --stamp`)
+
+`zenzic score --stamp` scrive il Documentation Quality Score corrente direttamente nel tuo README come badge Shields.io — senza Gist, senza PAT token, senza dipendenze esterne.
+
+### Setup
+
+**Step 1.** Aggiungi entrambe le righe marcatore nel tuo README. Ogni marcatore deve essere seguito immediatamente da un placeholder Shields.io:
+
+```markdown title="README.md"
+<!-- zenzic:audit-badge -->
+[![Zenzic Audit](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+<!-- zenzic:score-badge -->
+[![Zenzic Score](https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-100_%2F_100-4f46e5?style=flat-square)](https://zenzic.dev/it/docs/reference/scoring-algorithm)
+```
+
+**Step 2.** Esegui `zenzic score --stamp`. Entrambi gli URL badge vengono sostituiti in-place.
+
+```bash
+zenzic score --stamp
+# Badge stamped → README.md
+```
+
+L'opzione `--stamp` aggiorna sempre i badge **prima** di applicare i controlli di exit-code (fail_under, suppression_cap). Questo garantisce che la telemetria rifletta l'esecuzione effettiva anche quando la build fallisce.
+
+### Colori del badge
+
+| Colore | Hex | Condizione |
+|--------|-----|-----------|
+| Indaco | `4f46e5` | Score = 100 |
+| Ambra | `f59e0b` | Score ≥ `fail_under` (passing) |
+| Rosso | `ef4444` | Score < `fail_under` o security override |
+
+### Il Badge Rosso come Segnale Locale
+
+Quando `zenzic score --stamp` viene eseguito localmente e il punteggio è sotto `fail_under`, il badge nel tuo README diventa rosso. Questo fornisce un feedback immediato prima del push — il gate CI blocca con Exit Code 1, quindi solo badge indigo o ambra raggiungono il main.
+
+### Badge che Viaggiano nel Tempo
+
+Poiché l'URL viene scritto inline nel commit, ogni commit storico mostra il punteggio calcolato in quel momento. Questo è il vantaggio principale rispetto agli endpoint dinamici: nessuna dipendenza da database centrali o cache di terze parti.
+
+### Stamping multi-file (`badge_stamp_files`)
+
+Per default, `--stamp` aggiorna solo `README.md`. Per aggiornare file aggiuntivi (es. `README.it.md` per progetti multilingua), aggiungi `badge_stamp_files` a `[project_metadata]` in `.zenzic.toml`:
+
+```toml title=".zenzic.toml"
+[project_metadata]
+badge_stamp_files = ["README.md", "README.it.md"]
+```
+
+Inserisci entrambi i marcatori (`<!-- zenzic:audit-badge -->` e `<!-- zenzic:score-badge -->`) in ciascun file elencato.
+
+---
+
+## Integrazione CI/CD
+
+Usa `zenzic score --check-stamp` per **far fallire la pipeline** se il badge non è aggiornato — senza git, senza bash, senza nomi di file hardcodati.
+
+```yaml title=".github/workflows/ci.yml"
+- name: Verifica freshness del badge
+  run: uvx zenzic score --check-stamp
+```
+
+`--check-stamp` legge `badge_stamp_files` dal tuo `.zenzic.toml`, calcola gli URL Shields.io attesi per entrambi i badge, ed esce con codice 1 se qualsiasi file configurato contiene telemetria obsoleta. Il messaggio di errore indica file e tipo badge:
+
+```text
+[FAILED] Badge (score) in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+```
+
+> **zenzic-action esegue questo automaticamente.** Quando usi `pythonwoods/zenzic-action`, il controllo di freshness del badge viene eseguito per default dopo `check all`. Puoi disabilitarlo con `check-stamp: 'false'`.
+
+```yaml title=".github/workflows/zenzic.yml (esempio opt-out)"
+- uses: pythonwoods/zenzic-action@v1
+  with:
+    check-stamp: 'false'
+```
+
+---
+
+## Automazione del badge Score in CI/CD
+
+Eseguire `zenzic score --stamp` in locale prima di ogni push funziona bene per gli sviluppatori singoli. I team che usano GitHub Actions possono automatizzarlo in modo che il badge sia sempre sincronizzato — senza dipendere dal fatto che ogni contributor ricordi il passaggio.
+
+### Perché è richiesto `contents: write`
+
+`--stamp` modifica un file su disco (`README.md`). Per persistere quella modifica nel repository da un runner GitHub Actions, il workflow deve committare e fare push del file. Questo richiede il permesso `contents: write`.
+
+### Snippet workflow completo
+
+Il pattern seguente esegue prima la Zenzic action (il gate di audit), poi stampa il badge indipendentemente dal risultato dell'audit (`if: always()`), e committa solo se l'URL del badge è effettivamente cambiato:
+
+```yaml title=".github/workflows/zenzic.yml"
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Richiesto per committare il badge aggiornato
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Zenzic Action
+        uses: pythonwoods/zenzic-action@v1
+
+      - name: Update Score Badge
+        if: always()  # Esegui anche se l'audit fallisce
+        run: |
+          uvx zenzic score --stamp
+
+          # Committa solo se il badge è cambiato
+          if [[ -n $(git status -s README.md) ]]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore(docs): update Zenzic score badge"
+            git push
+          fi
+```
+
+### Note sul workflow
+
+- **`if: always()`** assicura che il badge venga stampato anche quando l'audit fallisce — così i contributor vedono subito il badge rosso sul branch della PR.
+- **`git status -s README.md`** salta il commit quando il punteggio non è cambiato — evita commit "chore" rumorosi ad ogni push.
+- **`contents: write` con scope al job** limita il blast radius: solo questo job può scrivere nel repository.
+
+### Stamping multi-file
+
+Se `badge_stamp_files` include più di `README.md`, estendi il `git add` e il controllo `git status` di conseguenza:
+
+```yaml
+- name: Update Score Badge
+  if: always()
+  run: |
+    uvx zenzic score --stamp
+    if [[ -n $(git status -s README.md README.it.md) ]]; then
+      git config --global user.name "github-actions[bot]"
+      git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      git add README.md README.it.md
+      git commit -m "chore(docs): update Zenzic score badge"
+      git push
+    fi
+```

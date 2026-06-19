@@ -1,20 +1,17 @@
 # SPDX-FileCopyrightText: 2025 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# Read the Docs configuration for Docusaurus v3
+# Read the Docs configuration for Zensical
 version: 2
 
 build:
   os: ubuntu-24.04
   tools:
-    nodejs: "22"
+    python: "3.12"
 
   commands:
-    # 1. Installazione deterministica delle dipendenze (root-based)
-    - npm ci
-    # 2. Generazione del sito statico
-    - npm run build
-    # 3. Preparazione directory di output RTD
+    - python -m pip install uv
+    - uvx zensical build -f zensical.toml
+    - uvx zensical build -f zensical.it.toml
     - mkdir --parents $READTHEDOCS_OUTPUT/html/
-    # 4. Trasferimento della build (la cartella è 'build/', non 'docs/build/')
-    - cp --recursive build/* $READTHEDOCS_OUTPUT/html/
+    - cp --recursive site/* $READTHEDOCS_OUTPUT/html/

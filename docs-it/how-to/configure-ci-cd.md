@@ -1,0 +1,692 @@
+---
+icon: lucide/workflow
+sidebar_label: "Integrazione CI/CD"
+description: "Workflow GitHub Actions, hook pre-commit e integrazione pipeline CI."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+
+# Integrazione CI/CD
+
+Zenzic è pronto all'automazione. Il flag `--format json` e l'opzione `--save` espongono output machine-readable che qualsiasi sistema CI/CD può consumare per pilotare badge dinamici, quality gate e rilevamento delle regressioni.
+
+---
+
+## Output JSON
+
+Ogni comando di controllo supporta `--format json`:
+
+```bash
+# Report aggregato per tutti i controlli
+zenzic check all --format json
+
+# Controlli singoli
+zenzic check links --format json
+zenzic check references --format json
+
+# Punteggio e regressioni
+zenzic score --format json
+zenzic diff --format json
+```
+
+### `zenzic check all --format json`
+
+```json
+{
+  "links":         ["guides/setup.md:12 — Link target 'install.md' not found"],
+  "orphans":       ["old-page.md"],
+  "snippets":      [{"file": "api/ref.md", "line": 5, "message": "Snippet target not found"}],
+  "placeholders":  [{"file": "index.md", "line": 1, "issue": "TODO", "detail": "Fix this"}],
+  "unused_assets": ["images/old-logo.png"],
+  "references":    [],
+  "nav_contract":  []
+}
+```
+
+### `zenzic score --format json`
+
+```json
+{
+  "project": "zenzic",
+  "score": 100,
+  "threshold": 0,
+  "status": "success",
+  "timestamp": "2026-03-24T12:00:00+00:00",
+  "categories": [
+    {"name": "structural", "weight": 0.30, "issues": 0, "category_score": 30.0, "contribution": 30.0},
+    {"name": "content",    "weight": 0.20, "issues": 0, "category_score": 20.0, "contribution": 20.0},
+    {"name": "navigation", "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0},
+    {"name": "brand",      "weight": 0.25, "issues": 0, "category_score": 25.0, "contribution": 25.0}
+  ]
+}
+```
+
+### Comandi singoli (`check links`, `check orphans`, ecc.)
+
+Ogni comando di controllo singolo restituisce una struttura findings uniforme:
+
+```json
+{
+  "findings": [
+    {"rel_path": "guides/setup.md", "line_no": 42, "code": "Z104", "severity": "error", "message": "guides/setup.md:42: 'install.md' not found in docs"}
+  ],
+  "summary": {
+    "errors": 1, "warnings": 0, "info": 0,
+    "security_incidents": 0, "security_breaches": 0,
+    "elapsed_seconds": 0.042
+  }
+}
+```
+
+I codici di uscita sono preservati in modalità JSON: exit 0 quando vengono trovati solo
+warning, exit 1 in caso di errori (o warning con `--strict`), exit 2 per violazioni credential scanner,
+exit 3 per path traversal guard — lo stesso contratto dell'output da terminale.
+
+---
+
+## GitHub Actions: Zenzic Credential Gate {#github-actions-zenzic-credential-gate}
+
+L'integrazione diretta — blocca la build a qualsiasi errore di documentazione.
+
+
+**uvx (zero-setup)**
+
+
+Nessun setup Python richiesto. `uvx` scarica ed esegue Zenzic in un
+ambiente temporaneo ad ogni esecuzione. Ideale per repository
+documentazione-only o team che non hanno altrimenti bisogno di Python in CI:
+
+```yaml title=".github/workflows/zenzic.yml"
+name: Qualità Documentazione
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'mkdocs.yml']
+
+jobs:
+  zenzic:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Lint documentazione
+        # --ci applica automaticamente --strict, --no-header, e --format github-annotations
+        # per feedback inline sulle PR
+        run: uvx zenzic check all --ci
+
+      - name: Controllo riferimenti e credential scanner
+
+        run: uvx zenzic check references
+```
+
+**astral-sh/setup-uv (versione fissata)**
+
+
+Usa [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) quando hai bisogno di una versione
+Zenzic fissata, installazioni più veloci (cache wheel), o quando il progetto
+usa già uv per la gestione delle dipendenze:
+
+```yaml title=".github/workflows/zenzic.yml"
+name: Qualità Documentazione
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'mkdocs.yml']
+
+jobs:
+  zenzic:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Setup uv
+
+        uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+
+      - name: Lint documentazione
+
+        run: uvx zenzic check all --ci
+
+      - name: Controllo riferimenti e credential scanner
+
+        run: uvx zenzic check references
+```
+
+L'opzione `enable-cache: true` riusa la cache degli strumenti uv tra
+le esecuzioni, riducendo i download ripetuti delle dipendenze.
+
+L'exit code `2` indica che una credenziale è stata rilevata in un URL di riferimento. L'exit code `3` indica che un link risolve a un percorso di sistema OS (path traversal guard). Entrambi richiedono indagine immediata — ruota le credenziali esposte e rimuovi il link incriminato.
+
+**zenzic-action (consigliata)**
+
+
+La [`PythonWoods/zenzic-action`](https://github.com/PythonWoods/zenzic-action) ufficiale installa
+`uv`, esegue Zenzic, valida l'integrità SARIF e carica i risultati in GitHub Code Scanning — tutto
+in un unico step. I risultati vengono pubblicati in **Security → Code Scanning** e possono
+apparire come annotazioni PR quando le annotazioni Code Scanning sono abilitate nel repository:
+
+```yaml title=".github/workflows/zenzic.yml"
+name: Qualità Documentazione
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'mkdocs.yml']
+  pull_request:
+    branches: [main]
+
+jobs:
+  zenzic:
+    name: Gate Qualità Documentazione
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write        # necessario per l'upload SARIF
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Esegui Zenzic
+
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"          # fissa a una release stabile
+          format: sarif             # emetti SARIF per Code Scanning
+          upload-sarif: "true"
+          fail-on-error: "true"
+```
+
+Gli incidenti di sicurezza (exit 2 e 3) non vengono mai soppressi da `fail-on-error: "false"` —
+il [Contratto Exit Code](https://github.com/PythonWoods/zenzic-action) è applicato dall'action stessa.
+
+### Riferimento agli input dell'action
+
+| Input | Default | Descrizione |
+| :--- | :---: | :--- |
+| `version` | pin action | Versione di Zenzic da installare. Usa il pin di default dichiarato nel manifest dell'action; qualsiasi valore esplicito usa `uvx "zenzic==X.Y.Z"`. **Fissa in produzione.** |
+| `ci` | `false` | Esegue con `--ci` per abilitare `--strict` e le annotazioni inline sulle PR GitHub. Nota: sconsigliato quando si usa `format: sarif` poiché le annotazioni sono gestite dal Code Scanning. |
+| `only` | `""` | Lista separata da virgole di Codici Z (es. "Z104,Z402") per limitare i controlli a problemi specifici. |
+| `format` | `sarif` | Formato di output: `text`, `json`, `github-annotations` o `sarif`. Usa `sarif` per GitHub Code Scanning. |
+| `sarif-file` | `zenzic-results.sarif` | Percorso del file SARIF generato (solo quando `format: sarif`). |
+| `upload-sarif` | `true` | Carica il SARIF in GitHub Code Scanning via `github/codeql-action/upload-sarif` delegato dal wrapper. |
+| `strict` | `false` | Tratta i warning come errori (passa `--strict` a Zenzic). |
+| `fail-on-error` | `true` | Fa fallire il workflow step sui finding di qualità (exit 1). **Non influisce su exit 2 o 3.** |
+| `config-file` | `""` | Percorso opzionale a un file `.zenzic.toml` dentro il workspace. |
+| `audit` | `false` | Esegue la modalità audit sovrana bypassando soppressioni inline e per-file. |
+| `diff-base` | `""` | Usa un file baseline JSON per confronti quality-gate con `zenzic diff`. |
+| `guard-scan` | `false` | Esegue `zenzic guard scan` prima del gate principale come controllo Defense-in-Depth. |
+| `check-stamp` | `true` | Esegue `zenzic score --check-stamp` dopo l'audit e fallisce su badge stamp obsoleti. |
+
+### Output dell'action
+
+| Output | Descrizione |
+| :--- | :--- |
+| `sarif-file` | Percorso del file SARIF generato nel workspace (impostato quando `format: sarif`) |
+| `findings-count` | Numero totale di finding riportati nel run SARIF |
+| `score` | Documentation Quality Score (0–100). Vuoto quando il formato non è `json` o `sarif`. |
+| `suppression-debt-pts` | Punti di debito sottratti allo score per soppressioni attive. |
+| `cap-exceeded` | `true` quando il CAP delle soppressioni viene superato e blocca la build. |
+
+### Leggere i risultati in GitHub
+
+Dopo l'esecuzione del workflow, i finding di Zenzic appaiono in tre punti:
+
+1. **Security → Code Scanning** — ogni finding elencato con file, riga, severità e codice `Zxxx`.
+2. **Pull Request → Files changed** — annotazioni inline sulla riga esatta dove è stato rilevato il problema.
+3. **Checks tab** — il nome dello step appare come fallito se `fail-on-error: "true"` e exit 1 o superiore.
+
+L'output `findings-count` può essere consumato dagli step successivi per aggiornare badge personalizzati
+o notifiche Slack senza dover rileggere il file SARIF:
+
+```yaml title=".github/workflows/zenzic.yml"
+
+      - name: Esegui Zenzic
+
+        id: zenzic
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"
+
+      - name: Mostra conteggio finding
+
+        run: echo "Zenzic ha trovato ${{ steps.zenzic.outputs.findings-count }} problemi"
+```
+
+### Adozione Progressiva (Progressive Adoption) {#progressive-adoption}
+
+Per grandi repository legacy, correggere centinaia di warning in un colpo solo è impossibile. Il parametro `only` permette ai team di adottare Zenzic in modo progressivo, applicando solo controlli critici (es. Link Rotti e Leak di Credenziali) e ignorando il debito strutturale finché il team non è pronto.
+
+Impostando `ci: "true"`, l'action inietta nativamente il flag `--ci` sotto il cofano, abilitando le annotazioni inline sulle PR per le violazioni selezionate senza richiedere l'integrazione con GitHub Code Scanning (SARIF).
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Zenzic Progressive Gate
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"
+          ci: "true"              # Annotazioni PR native (non richiede SARIF)
+          only: "Z101,Z201"       # Il Gate fallisce SOLO per link rotti e segreti esposti
+          fail-on-error: "true"
+```
+
+!!! warning "Gli incidenti di sicurezza sono sempre fatali"
+    `fail-on-error: "false"` sopprime solo exit 1 (finding di qualità). Exit 2 (Credential scanner — credenziale
+    rilevata) e exit 3 (path traversal guard — path traversal) **non sono mai sopprimibili** con alcun input.
+    L'action lo applica incondizionatamente. Vedi il
+    [Contratto Exit Code](../reference/cli#exit-codes).
+
+---
+
+## Zenzic Quality Gate — Il Protocollo Diff {#diff-protocol}
+
+Il Zenzic Quality Gate usa `zenzic diff` per confrontare il punteggio corrente con un baseline salvato. I team possono collegare questo verdetto come gate bloccante o osservazionale in base alla policy del workflow.
+
+### Come funziona
+
+1. **Su `main`**: Zenzic esegue, salva il punteggio come `.zenzic-score.json` e lo carica come artefatto CI.
+2. **Su ogni PR**: L'artefatto di `main` viene scaricato come baseline. Zenzic esegue sul branch PR e chiama `zenzic diff --base <baseline>` per confrontare.
+3. **Verdetto**: Il workflow legge i segnali di regressione da `zenzic diff` e applica la policy di merge scelta dal repository.
+
+```yaml title=".github/workflows/zenzic-quality-gate.yml"
+name: Zenzic Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Su main: salva il baseline autorevole
+  baseline:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Esegui Zenzic e salva il baseline
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"
+          format: json          # genera lo snapshot .zenzic-score.json
+          upload-sarif: "false"
+
+      - name: Carica artefatto baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-score.json
+          retention-days: 90
+
+  # Su PR: confronta contro il baseline di main
+  quality-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Scarica il baseline di main
+        uses: actions/download-artifact@v4
+        with:
+          name: zenzic-baseline
+          path: .zenzic-baseline/
+        continue-on-error: true   # la prima PR su un nuovo repo non ha ancora un baseline
+
+      - name: Zenzic — Quality Gate
+        uses: PythonWoods/zenzic-action@<version>
+        id: zenzic
+        with:
+          version: "0.13.1"
+          format: sarif
+          upload-sarif: "true"
+          diff-base: ".zenzic-baseline/.zenzic-score.json"
+
+      - name: Riporta il punteggio di qualità
+        if: always()
+        run: |
+          echo "Score: ${{ steps.zenzic.outputs.score }}"
+          echo "Suppression debt: ${{ steps.zenzic.outputs.suppression-debt-pts }} pts"
+          echo "Finding: ${{ steps.zenzic.outputs.findings-count }}"
+```
+
+!!! info "Regressione di Qualità via `zenzic diff`"
+    Quando viene rilevata una regressione del punteggio, il workflow riceve un verdetto diff non zero e può applicare comportamento bloccante oppure osservazionale, secondo policy.
+
+---
+
+## Branch Protection GitHub: Required Checks {#branch-protection-required-checks}
+
+Proteggi `main` e abilita **Require status checks to pass before merging**.
+
+### Profilo Operativo: `zenzic-doc`
+
+Controlli obbligatori:
+- `Build`
+- `Audit`
+- `Lint PR Title`
+- `Check DCO`
+
+Regola operativa:
+- Il check `Build` deve girare su **ogni** pull request.
+- Non usare filtri `paths` nel trigger `pull_request` in `.github/workflows/ci.yml` per `zenzic-doc`.
+- Mantieni i filtri `paths` sul `push` verso `main` se vuoi ottimizzare i minuti CI post-merge.
+
+Razionale:
+- `Build` è il gate di integrità strutturale per MDX e compilazione del sito.
+- Se `Build` è obbligatorio ma viene saltato su PR, il merge può restare bloccato in stato expected/pending.
+- Se `Build` non è obbligatorio, una regressione documentale fatale può entrare in merge e rompere il sito live.
+
+### Profilo Operativo: `zenzic` (core)
+
+Controlli obbligatori consigliati:
+- `Audit (ubuntu-latest, 3.10)`
+- `Audit (ubuntu-latest, 3.14)`
+- `Lint PR Title`
+- `Check DCO`
+
+Perché questi check:
+- `Audit` applica test, quality gate e badge freshness in CI.
+- `Lint PR Title` applica la convenzione del titolo PR.
+- `Check DCO` applica il `Signed-off-by` su ogni commit.
+
+Importante: ogni check obbligatorio deve girare su `pull_request`. Se un workflow obbligatorio viene saltato (ad esempio per path filter), la PR può restare bloccata in stato expected/pending.
+
+---
+
+## Modalità Audit in CI — Sovereign Audit {#audit-mode}
+
+L'input `audit: "true"` forza un sovereign audit: tutti i commenti `zenzic:ignore` inline attivi e tutte le voci `governance.per_file_ignores` vengono bypassati. Ogni finding che normalmente sarebbe nascosto da una soppressione viene portato in superficie.
+
+Usa la modalità audit in:
+- **Build notturne** — verifica settimanale che il debt soppresso rimanga intenzionale.
+- **Workflow di Security Review** — prima di un rilascio, verifica lo stato non filtrato della documentazione.
+- **Sprint di riduzione del debt** — visualizza l'intera portata di ciò che viene soppresso prima di alzare o abbassare `suppression_cap`.
+
+```yaml title=".github/workflows/zenzic-audit.yml"
+name: Zenzic Sovereign Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # ogni lunedì alle 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Sovereign Audit (soppressioni bypassate)
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"
+          format: sarif
+          upload-sarif: "true"
+          audit: "true"           # bypassa tutti i zenzic:ignore e per_file_ignores
+          fail-on-error: "false"  # l'audit è osservazionale, non bloccante
+```
+
+I risultati appaiono nella scheda **Security → Code Scanning**. Ogni finding soppresso è visibile accanto a quelli attivi. Questa è la verità non filtrata della tua documentazione.
+
+---
+
+## Defense-in-Depth: Secret Guard {#guard-scan}
+
+L'input `guard-scan: "true"` esegue `zenzic guard scan` come step standalone **prima** del gate principale. Usalo nei repository in cui i contributor possono bypassare i pre-commit hook con `git commit --no-verify`:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Run Zenzic Documentation Quality Gate
+        uses: PythonWoods/zenzic-action@<version>
+        with:
+          version: "0.13.1"
+          guard-scan: "true"   # zenzic guard scan viene eseguito prima di check all
+          format: sarif
+          upload-sarif: "true"
+```
+
+Se `guard scan` rileva una credenziale hardcodata o un pattern vietato, esce con valore non zero e termina il job. `fail-on-error: "false"` non sopprime questo comportamento — lo scan di guardia è sempre fatale, coerente con il contratto di sicurezza Exit 2.
+
+---
+
+## Gate Nativo di Freschezza Badge {#dynamic-score-badge}
+
+Il workflow badge dinamico legacy è deprecato. Usa stamp e controllo
+freschezza nativi:
+
+```bash
+zenzic score --stamp
+zenzic score --check-stamp
+```
+
+Comportamento CI consigliato: esegui `zenzic score --check-stamp` dopo
+`zenzic check` per imporre la freschezza dei badge stampati senza token esterni
+o plumbing badge esterno.
+
+### Il Gate di Freschezza Badge {#badge-freshness-gate}
+
+`zenzic score --check-stamp` confronta l'URL del badge incorporato nel tuo
+`README.md` (o in qualsiasi file elencato in `badge_stamp_files`) con il
+punteggio calcolato da Zenzic in quel momento. Se differiscono, il comando
+termina con exit 1 e stampa un messaggio con le istruzioni di risoluzione:
+
+```text
+[FAILED] Badge (score) in README.md is stale.
+Run 'zenzic score --stamp' locally and commit the updated files to resolve this.
+```
+
+Il gate è **di sola lettura** — non modifica mai i file. Valida solo ciò che
+è già stato committato.
+
+#### Opzionale: automatizza con pre-commit
+
+Zenzic funziona zero-config out of the box — il gate CI da solo è sufficiente.
+Se usi l'[integrazione pre-commit](#pre-commit) e vuoi automatizzare lo stamp del badge per non
+dover eseguire `--stamp` manualmente, puoi aggiungere opzionalmente questo hook:
+
+```yaml title=".pre-commit-config.yaml"
+  - repo: local
+    hooks:
+      - id: zenzic-score-stamp
+        name: Zenzic Score Badge (stamp)
+        entry: zenzic score --stamp --no-header
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+        always_run: true
+```
+
+Con questo hook, il badge viene aggiornato automaticamente a ogni `git commit`.
+Se il punteggio è cambiato, pre-commit segnala che `README.md` è stato
+modificato — aggiungi il file e riesegui `git commit` per procedere.
+
+#### Senza pre-commit
+
+Esegui lo stamp manualmente prima di fare push:
+
+```bash
+zenzic score --stamp
+git add README.md README.it.md   # o i file in badge_stamp_files
+git commit --amend --no-edit     # o un nuovo commit
+git push
+```
+
+Se salti questo passaggio e la CI trova un badge obsoleto, il workflow fallisce
+con l'errore sopra. Segui le istruzioni del messaggio, esegui lo stamp in
+locale e ripeti il push.
+
+#### Configurazione CI (gate di sola lettura)
+
+In GitHub Actions, usa solo `--check-stamp` — **mai `--stamp`**. La CI è un
+validatore immutabile, non un editor di file:
+
+```yaml title=".github/workflows/zenzic.yml"
+      - name: Check badge freshness
+        run: uvx zenzic score --check-stamp --no-header
+```
+
+Con `zenzic-action`, il gate di freschezza badge è abilitato di default —
+nessuna configurazione aggiuntiva necessaria:
+
+```yaml
+      - name: Run Zenzic
+        uses: PythonWoods/zenzic-action@v1
+```
+
+---
+
+## Rilevamento Regressioni {#regression}
+
+`zenzic diff` confronta il punteggio corrente con il baseline `.zenzic-score.json` salvato e fallisce se il punteggio è sceso:
+
+```yaml title=".github/workflows/zenzic.yml"
+- name: Rileva regressione del punteggio
+  run: |
+    uvx zenzic score --save        # aggiorna snapshot
+    uvx zenzic diff --threshold 5  # fallisce se il punteggio scende > 5 punti
+```
+
+Per il setup completo del Zenzic Quality Gate con blocco PR e upload dell'artefatto baseline, vedi la sezione [Protocollo Diff](#diff-protocol) sopra.
+
+---
+
+## Codici di Uscita
+
+| Codice | Significato | Azione badge |
+|:---:|---|---|
+| `0` | Tutti i controlli superati | Mantieni il badge verde |
+| `1` | Uno o più controlli falliti | Imposta il badge a `failing` / `ef4444` |
+| **`2`** | **Credential scanner: credenziale rilevata** | **Ruota la credenziale immediatamente** |
+| **`3`** | **Path traversal guard: path traversal rilevato** | **Rimuovi il link incriminato immediatamente** |
+
+> Per il riferimento completo dei badge pronti all'uso, vedi [Badge Ufficiali](./add-badges.md).
+
+---
+
+## Recupero dalla credential scanner — Quando Viene Rilevata una Credenziale {#credential-recovery}
+
+Un rilevamento di credenziale (exit code 2) non è una build fallita. È un **incidente di sicurezza**.
+Il protocollo di recupero è breve e non negoziabile:
+
+### Step 1 — Identifica l'esposizione
+
+Il Zenzic Report ti dice tutto ciò di cui hai bisogno:
+
+```text
+ ✘  Z201  docs/how-to/configure.md:4    Secret rilevato (aws-access-key)
+          Credenziale: AKIA************MPLE
+          → Exit code 2 — ruota immediatamente.
+```
+
+Nota il file, la riga e il tipo di credenziale. La credenziale è sempre mascherata nel
+report — Zenzic non stampa mai il valore completo.
+
+### Step 2 — Ruota la credenziale
+
+**Prima di fare qualsiasi altra cosa** — ruota la chiave nella console del tuo cloud provider.
+Non committare prima la correzione. Una chiave ruotata è inerte anche se rimane brevemente
+nella tua git history.
+
+### Step 3 — Rimuovila dalla sorgente
+
+Elimina o sostituisci il segreto nel file segnalato da Zenzic. Committa la correzione.
+
+### Step 4 — Riscrivi la history se necessario
+
+Se la credenziale è apparsa in un commit precedente già pushato:
+
+```bash
+# Rebase interattivo fino al commit che ha introdotto il segreto
+git rebase -i <commit-prima-del-segreto>^
+
+# Oppure usa git-filter-repo (preferito rispetto a BFG per i nuovi progetti)
+git filter-repo --path docs/how-to/configure.md --force
+```
+
+!!! warning "Il force-push richiede coordinamento"
+    Riscrivere la history pubblica richiede un force-push. Coordina con il tuo team prima di farlo
+    su un branch condiviso. Se il repository è pubblico, considera la credenziale già compromessa
+    a prescindere dalla riscrittura della history — la rotazione è obbligatoria.
+
+### Step 5 — Verifica che il credential scanner sia soddisfatto
+
+```bash
+uvx zenzic check all
+# Atteso: exit 0, sezione credential scanner mostra ✔ nessuna credenziale rilevata
+```
+
+Solo exit 0 dal pass credential scanner significa che il recupero è completo.
+
+!!! info "Perché Zenzic ti salva da BFG Repo Cleaner"
+    BFG Repo Cleaner è uno strumento irreversibile per eliminare segreti dalla git history.
+    Il suo utilizzo è un sintomo di un fallimento di processo: il segreto ha raggiunto il repository
+    senza essere rilevato. Il credential scanner di Zenzic previene questo intercettando le credenziali **prima**
+    che entrino nella pipeline CI — idealmente tramite un hook pre-commit. Vedi
+    [Integrazione pre-commit](#pre-commit) per aggiungere il credential scanner come gate locale che
+    gira ad ogni `git commit`.
+
+---
+
+## Integrazione Pre-commit {#pre-commit}
+
+Il credential scanner in CI è la tua ultima linea di difesa. L'hook pre-commit è la prima:
+
+```yaml title=".pre-commit-config.yaml"
+repos:
+
+  - repo: local
+
+    hooks:
+
+      - id: zenzic-credentials
+
+        name: Zenzic Credentials
+        language: system
+        entry: uvx zenzic check all
+        pass_filenames: false
+        stages: [pre-commit]
+```
+
+Con questo hook, `git commit` si rifiuterà di procedere se Zenzic rileva una credenziale,
+un link rotto o qualsiasi finding di qualità con exit 1. Il feedback è istantaneo, la
+correzione è locale, e il segreto non tocca mai il remoto.
+
+---
+
+## Parity Doc-Code {#doc-code-parity}
+
+Ogni codice di finding Zxxx documentato in `docs/` deve avere un'entità registrata in
+`src/zenzic/core/codes.py` nel pacchetto core — e viceversa. Questo invariante
+bidirezionale è applicato dalla sessione Nox `verify-codes-parity`:
+
+```bash
+# Esecuzione autonoma
+nox -s verify-codes-parity
+
+# Esegue automaticamente come parte del gate locale completo
+just verify
+```
+
+La sessione usa la **Risoluzione Sovrana (Fail-Closed)** per localizzare `codes.py`:
+
+| Condizione | Strategia | Comando usato |
+|:-----------|:---------|:--------------|
+| `ZENZIC_CORE_PATH` impostato, o `../zenzic` esiste | **Core Maintainer** — usa il source tree locale | `uv run --project <percorso> python scripts/verify_codes_parity.py` |
+| Core locale non trovato | **Fail-Closed** — nessun fallback consentito | La sessione fallisce con errore sul path del core |
+
+I contributori esterni devono fornire un checkout locale del core
+(`ZENZIC_CORE_PATH`, `./_zenzic_core` oppure `../zenzic`) per eseguire
+`nox -s verify-codes-parity`.

@@ -1,0 +1,179 @@
+---
+sidebar_position: 9
+sidebar_label: "GitHub Action"
+description: "Riferimento completo per la Zenzic GitHub Action — input, output, codici di uscita e il protocollo Zenzic Quality Gate."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Riferimento Zenzic GitHub Action
+
+La `PythonWoods/zenzic-action` è l'action ufficiale CI per il sistema di qualità documentale
+Zenzic. In modalità non-audit esegue una pipeline di validazione in tre fasi: `zenzic check all`
+(finding strutturali), `zenzic score` (governance DQS: `fail_under` + `suppression_cap`) e
+`zenzic score --check-stamp` (freshness badge, abilitato di default). I finding vengono pubblicati
+in GitHub Code Scanning, mentre il gate di regressione qualità è gestito da `zenzic diff` quando
+è configurata una baseline.
+
+Sorgente: [github.com/PythonWoods/zenzic-action](https://github.com/PythonWoods/zenzic-action)
+
+---
+
+## Input {#inputs}
+
+| Input | Default | Richiesto | Descrizione |
+| :--- | :--- | :---: | :--- |
+| `version` | `<version>` | No | Versione di Zenzic da installare (`latest` o un pin di versione esatto). Fissa a una versione specifica per CI riproducibile. |
+| `format` | `sarif` | No | Formato di output: `text`, `json` o `sarif`. |
+| `sarif-file` | `zenzic-results.sarif` | No | Percorso di output SARIF. Deve essere un percorso **relativo** all'interno del workspace. I percorsi assoluti e le sequenze di traversal `..` vengono rifiutati dal wrapper. |
+| `upload-sarif` | `true` | No | Carica il SARIF in GitHub Code Scanning. Richiede il permesso `security-events: write`. |
+| `strict` | `false` | No | Tratta i warning come errori — promuove tutti i finding con severità `warning` ad `error`. |
+| `ci` | `false` | No | Esegue con `--ci` per abilitare `--strict` e le annotazioni inline sulle PR GitHub. |
+| `only` | `""` | No | Lista separata da virgole di Codici Z da filtrare. Abilita la Progressive Adoption. |
+| `fail-on-error` | `true` | No | Fa fallire lo step del workflow su exit 1 (finding di qualità). **Non** sopprime exit 2 o 3. |
+| `config-file` | *(auto)* | No | Percorso esplicito a un file di configurazione `.zenzic.toml`. Auto-scopre `.zenzic.toml` → `.github/.zenzic.toml` se omesso. |
+| `audit` | `false` | No | Modalità sovereign audit — bypassa tutti i commenti `zenzic:ignore` inline e tutte le voci `governance.per_file_ignores`. Rivela lo stato reale e non filtrato della documentazione. |
+| `diff-base` | *(snapshot)* | No | Percorso a un file JSON di baseline per il confronto con `zenzic diff`. Quando impostato, l'action confronta il punteggio corrente contro questo file invece del `.zenzic-score.json` salvato. Usa un artefatto da `main` per implementare il Zenzic Quality Gate. |
+| `guard-scan` | `false` | No | Esegue `zenzic guard scan` come step Defense-in-Depth **prima** del gate principale. Rileva credenziali hardcodate e pattern vietati in repo dove gli sviluppatori hanno bypassato i pre-commit hook. Il fallimento è sempre fatale — non governato da `fail-on-error`. |
+| `check-stamp` | `true` | No | Esegue `zenzic score --check-stamp` dopo la validazione di governance. Fa fallire il workflow quando i badge in `badge_stamp_files` sono stale. Imposta `false` per fare opt-out. |
+
+---
+
+## Output {#outputs}
+
+| Output | Descrizione |
+| :--- | :--- |
+| `sarif-file` | Percorso del file SARIF generato. |
+| `findings-count` | Numero totale di finding riportati. I finding di sicurezza (exit 2/3) impongono un minimo di 1. |
+| `score` | Documentation Quality Score (0–100). Popolato quando `format: json` o quando `diff-base` è impostato. Stringa vuota negli altri modi. |
+| `suppression-debt-pts` | Punti di Technical Debt detratti dal punteggio a causa delle soppressioni attive. `0` quando non ci sono soppressioni attive o quando la modalità audit è abilitata. |
+| `cap-exceeded` | `"true"` quando il CAP di soppressione è stato superato e ha bloccato la build; `"false"` altrimenti. |
+
+---
+
+## Contratto Exit Code {#exit-codes}
+
+| Codice | Nome | Significato | Sopprimibile? |
+| :---: | :--- | :--- | :---: |
+| `0` | Clean | Tutti i controlli superati — punteggio superiore o uguale a `fail_under` | — |
+| `1` | Quality | Uno o più finding; il punteggio potrebbe essere sotto `fail_under` | Sì (`fail-on-error: "false"`) |
+| **`2`** | **Credential** | **Z201 CREDENTIAL_SECRET rilevato — scansione interrotta** | **Mai** |
+| **`3`** | **Path Traversal** | **Z202/Z203 PATH_TRAVERSAL rilevato — scansione interrotta** | **Mai** |
+
+I codici di uscita 2 e 3 **non vengono mai soppressi** da `fail-on-error: "false"`, `--exit-zero`
+o qualsiasi altro flag. Il wrapper lo applica incondizionatamente — i finding di sicurezza sono
+fatti, non finding da negoziare.
+
+---
+
+## Il Zenzic Quality Gate {#quality-gate}
+
+Il Zenzic Quality Gate è il setup di enforcement PR raccomandato. Combina controlli strutturali,
+scoring di governance, freshness dei badge (opzionale) e confronto di regressione per bloccare
+i merge che riducono la qualità della documentazione.
+
+**Implementazione:** vedi [Integrazione CI/CD → Protocollo Diff](../how-to/configure-ci-cd.md#diff-protocol)
+per il workflow completo `zenzic-quality-gate.yml`.
+
+### Logica del Gate
+
+```text
+PR aperta
+  └─ zenzic check all → exit 0/1/2/3 (finding)
+  └─ zenzic score → exit 0/1 (fail_under + suppression_cap)
+  └─ zenzic score --check-stamp (default: true) → exit 0/1 (freshness)
+  └─ zenzic diff --base <baseline-main>
+       ├─ punteggio stabile o migliorato → exit 0 ✅ La PR può fare merge
+```
+
+Il suppression debt è incluso nel punteggio usato per il confronto. Una PR che aggiunge
+soppressioni per nascondere finding mostrerà un punteggio inferiore. Gli exit di sicurezza
+(2/3) restano non sopprimibili e falliscono sempre l'esecuzione.
+
+---
+
+## Modalità Sovereign Audit {#audit}
+
+Quando `audit: "true"` è impostato, l'action viene eseguita con il flag `--audit`, che bypassa:
+- Tutti i commenti inline `<!-- zenzic:ignore ZXXX -->`
+- Tutte le voci `[governance.per_file_ignores]` in `.zenzic.toml`
+
+Le exclusion zone (`excluded_dirs`, `excluded_file_patterns`) **non** vengono bypassate dalla
+modalità audit — definiscono il perimetro di scansione, non la policy di soppressione.
+
+**Casi d'uso:**
+- **Build notturne** — verifica che il debt soppresso rimanga intenzionale.
+- **Security Review** — porta in superficie tutti i finding Z2xx indipendentemente dalla soppressione.
+- **Audit pre-release** — misura lo stato reale (non filtrato) della documentazione prima del rilascio.
+
+> Nota: `fail-on-error: "false"` è disponibile per workflow di audit osservazionali dove i finding non devono bloccare l'esecuzione.
+
+---
+
+## Scoperta della Configurazione {#config-discovery}
+
+| Priorità | Posizione | Quando usata |
+| :---: | :--- | :--- |
+| 1 | Input esplicito `config-file` | Sempre rispettato quando fornito |
+| 2 | `.zenzic.toml` nella root del repository | Auto-scoperto quando non c'è override esplicito |
+| 3 | `.github/.zenzic.toml` | Fallback quando il file root è assente |
+| — | *(nessuno trovato)* | Zenzic usa i suoi default integrati |
+
+**Contratto di Intento Sovrano:** se fornisci `config-file: path/to/custom.toml` e il file non
+esiste, l'action **non** fa fallback all'auto-scoperta. Ricevi un'annotazione `::warning`
+(o un `::error` fatale con `strict: "true"`).
+
+---
+
+## Architettura di Sicurezza {#security}
+
+| Guardia | Cosa blocca |
+| :--- | :--- |
+| Guardia Jailbreak SARIF | `sarif-file` con percorso assoluto o traversal `..` — rifiutato prima dell'esecuzione |
+| Guardia Jailbreak Config | `config-file` con percorso assoluto o traversal `..` — rifiutato prima dell'esecuzione |
+| Guardia Jailbreak diff-base | `diff-base` con percorso assoluto o traversal `..` — rifiutato prima dell'esecuzione |
+| Controllo integrità SARIF | SARIF JSON troncato (da SIGKILL/abort runtime) — emette `::warning`, carica comunque |
+| Contratto Exit Code | Exit 2/3 si propagano sempre — non possono essere silenziati da nessun input o env var |
+
+---
+
+## Permessi {#permissions}
+
+Permessi minimi richiesti per le configurazioni più comuni:
+
+| Scenario | Permessi |
+| :--- | :--- |
+| Upload SARIF in Code Scanning | `contents: read`, `security-events: write` |
+| Upload artefatto (baseline) | `contents: read` |
+| Solo audit (nessun upload) | `contents: read` |
+
+---
+
+## Variabili d'Ambiente (Avanzato) {#env}
+
+La variabile d'ambiente `ZENZIC_EXTRA_ARGS` passa flag aggiuntivi direttamente alla CLI
+di Zenzic senza modificare gli input dell'action:
+
+```yaml
+- uses: PythonWoods/zenzic-action@<version>
+  with:
+    version: "<version>"
+  env:
+    ZENZIC_EXTRA_ARGS: >-
+      --exclude-url https://staging.example.com
+      --exclude-url https://example.com/blog/unreleased-post
+```
+
+Il word-split è intenzionale (ogni coppia `--exclude-url <url>` diventa elementi `argv` separati).
+L'espansione dei glob è disabilitata nel wrapper prima di costruire l'array degli argomenti.
+
+---
+
+## Vedi Anche {#see-also}
+
+- [Integrazione CI/CD](../how-to/configure-ci-cd.md) — Esempi di workflow completi incluso il Zenzic Quality Gate.
+- [Gestire il Technical Debt](../how-to/handle-technical-debt.md) — Come verificare e ridurre il suppression debt.
+- [Politica di Soppressione](./suppression-policy.md) — I tre livelli di soppressione e la formula del costo del debt.
+- [Algoritmo di Scoring](./scoring-algorithm.md) — Come viene calcolato il quality score.
+- [Codici di Finding](./finding-codes.md) — Catalogo completo di tutti i codici Zxxx.

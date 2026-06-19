@@ -1,0 +1,218 @@
+---
+sidebar_position: 6
+sidebar_label: "Algoritmo di Scoring"
+description: "Il motore di scoring Zenzic: matrice dei pesi a 5 tier, tabella penalità per codice, Gravity Cap, Governance Escalation, formula del Technical Debt e Security Override."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Algoritmo di Scoring
+
+Il Documentation Quality Score (DQS) di Zenzic è un **intero deterministico da 0 a 100** calcolato dai risultati di tutti i check attivi. Dato lo stesso stato del repository, l'algoritmo produce sempre lo stesso punteggio.
+
+> Per il razionale di design, un esempio pratico e la lettura dell'output CLI, vedi [Design dello Scoring](../explanation/scoring-design.md).
+
+---
+
+## Architettura Generale {#overview}
+
+La pipeline di scoring ha cinque stadi sequenziali:
+
+```text
+1. Security Gate    → Finding Z2xx? score = 0, early return.
+2. Tabella Penalità → deduzioni per codice, cap per tier.
+3. Governance Esc.  → amplificazione esponenziale se Z6xx > 10.
+4. Gravity Cap      → brand score = 0 ⟹ totale ≤ 70.
+5. Suppression Debt → sottrai ω_debt dal totale con cap.
+```
+
+Ogni stadio è descritto di seguito con la formula completa.
+
+---
+
+## Stadio 1 — Security Override {#security-override}
+
+Prima di qualsiasi calcolo del punteggio, il motore controlla la presenza di **finding Z2xx**:
+
+$$
+S_{\text{final}} = 0 \quad \text{se } \sum_{c \in \mathcal{S}} n_c > 0
+$$
+
+dove $\mathcal{S} = \{Z201, Z202, Z203, Z204\}$.
+
+Si tratta di un **early return incondizionale** — nessun flag, nessuna opzione di configurazione e nessuna soppressione può bypassarlo. I quattro codici in $\mathcal{S}$ rappresentano condizioni di fallimento binarie:
+
+| Codice | Nome | Condizione |
+| :--- | :--- | :--- |
+| Z201 | CREDENTIAL | Pattern di credenziale rilevato nel documento |
+| Z202 | PATH_TRAVERSAL | Il target del link esce da `docs/` verso un percorso non di sistema |
+| Z203 | PATH_TRAVERSAL_FATAL | Il target del link si risolve verso un path di sistema operativo |
+| Z204 | FORBIDDEN_TERM | Privacy Gate — esposizione di termine riservato |
+
+Quando si attiva il Security Override, `ScoreReport` restituisce `security_override=True` e `security_findings=N` (conteggio totale Z2xx). Il flag `--strict` e la configurazione `fail-on-error` sono irrilevanti — il gate opera prima di entrambi.
+
+!!! danger I Codici di Sicurezza Non Sono Sopprimibili
+    Nessun inline `<!-- zenzic:ignore -->`, nessun `per_file_ignores` e nessun `excluded_dirs` può sopprimere un finding Z2xx. Il finding si attiva comunque. Il punteggio è comunque 0.
+
+---
+
+## Stadio 2 — Tabella Penalità e Cap per Tier {#penalty-table}
+
+Se non sono presenti finding Z2xx, il motore calcola un punteggio per tier.
+
+### Matrice dei Pesi Zenzic (5-Tier)
+
+| Tier | Categoria | Codici | Peso | Cap |
+| :--- | :--- | :--- | ---: | ---: |
+| Security Gate | — | Z2xx | — | score = 0 |
+| Structural | `structural` | Z1xx | 30% | 30 pts |
+| Navigation | `navigation` | Z3xx, Z4xx | 25% | 25 pts |
+| Content | `content` | Z5xx | 20% | 20 pts |
+| Governance | `brand` | Z404, Z405, Z406, Z6xx | 25% | 25 pts |
+
+### Formula per Categoria
+
+Per ogni tier $i$:
+
+$$
+\text{cat\_pts}_i = \max\!\left(0,\; w_i \times 100 - \sum_{c \in \text{tier}_i} \text{penalty}_c \times n_c\right)
+$$
+
+L'**invariante del Category Cap** garantisce che un singolo tier non possa trascinare il punteggio sotto il suo pavimento. Ad esempio, 1 000 occorrenze di Z505 (1 pt ciascuna) esauriscono il bucket content a −20 pts. Gli 80 pts rimanenti dagli altri tier non vengono toccati.
+
+### Punteggio Base
+
+$$
+S_{\text{base}} = \sum_{i \in \{\text{structural, navigation, content, brand}\}} \text{cat\_pts}_i
+$$
+
+### Tabella di Riferimento delle Penalità
+
+| Codice | Nome | Penalità / occorrenza | Tier |
+| :--- | :--- | ---: | :--- |
+| Z101 | LINK_BROKEN | 8.0 pts | Structural |
+| Z102 | ANCHOR_MISSING | 5.0 pts | Structural |
+| Z103 | ORPHAN_LINK | 2.0 pts | Structural |
+| Z104 | FILE_NOT_FOUND | 8.0 pts | Structural |
+| Z105 | ABSOLUTE_PATH | 2.0 pts | Structural |
+| Z107 | CIRCULAR_ANCHOR | 1.0 pts | Structural |
+| Z106 | CIRCULAR_LINK | 0.0 pts | Informativo (nessun impatto sul DQS) |
+| Z108 | EMPTY_LINK_TEXT | 1.0 pts | Structural |
+| Z111 | VIRTUAL_ROUTE_BROKEN | 8.0 pts | Structural |
+| Z113 | AUTHOR_KEY_COLLISION | 2.0 pts | Structural |
+| Z301 | DANGLING_REF | 4.0 pts | Navigation |
+| Z302 | DEAD_DEF | 1.0 pts | Navigation |
+| Z303 | DUPLICATE_DEF | 3.0 pts | Navigation |
+| Z402 | ORPHAN_PAGE | 4.0 pts | Navigation |
+| Z401 | MISSING_DIRECTORY_INDEX | 2.0 pts | Navigation |
+| Z501 | PLACEHOLDER | 2.0 pts | Content |
+| Z502 | SHORT_CONTENT | 1.0 pts | Content |
+| Z503 | SNIPPET_ERROR | 10.0 pts | Content |
+| Z505 | UNTAGGED_CODE_BLOCK | 1.0 pts | Content |
+| Z403 | MISSING_ALT | 1.0 pts | Content |
+| Z405 | UNUSED_ASSET | 3.0 pts | Governance |
+| Z404 | CONFIG_ASSET_MISSING | 3.0 pts | Governance |
+| Z406 | NAV_CONTRACT | 2.0 pts | Governance |
+| Z601 | BRAND_OBSOLESCENCE | 2.0 pts | Governance |
+
+!!! note Z106 — Telemetria del Knowledge Graph, non un difetto
+    Z106 è escluso dalla tabella delle penalità per scelta progettuale. Elevarlo a finding con punteggio sottrarrebbe punti al Quality Score, spingendo gli ingegneri a rimuovere link utili per soddisfare il linter — un incentivo perverso che degrada la qualità reale della documentazione. I link circolari in un Knowledge Graph sono dati strutturali, non difetti. Z106 viene emesso come telemetria topologica; ispezionalo con `--show-info`.
+
+!!! note Z602 non è incluso nel punteggio
+    Z602 (I18N_PARITY) è un gate di Governance che si attiva come finding autonomo. Non contribuisce a nessun bucket DQS e quindi non ha un valore di penalità nella tabella sopra.
+
+---
+
+## Stadio 3 — Governance Escalation {#governance-escalation}
+
+Oltre 10 occorrenze Z6xx, il motore applica un amplificatore esponenziale alle deduzioni del bucket Governance:
+
+$$
+  \text{deduction}_{\text{brand}}' = \min\!\left(\text{cap}_{\text{brand}},\; \text{deduction}_{\text{brand}} \times 2^{n_{\text{excess}} / 5}\right)
+$$
+
+dove $n_{\text{excess}} = n_{Z6xx} - 10$.
+
+La deduzione è limitata al massimo del tier Governance (25 pts). L'effetto pratico: un repository con 20 violazioni Z601 (10 in eccesso → moltiplicatore $= 2^2 = 4$) subisce quattro volte il normale impatto sulla governance.
+
+---
+
+## Stadio 4 — Gravity Cap {#gravity-cap}
+
+Se il bucket Governance viene completamente azzerato dalle deduzioni:
+
+$$
+S_{\text{base}} = \min\!\left(S_{\text{base}},\; 70\right) \quad \text{se } \text{cat\_pts}_{\text{brand}} = 0
+$$
+
+---
+
+## Stadio 5 — Suppression Debt {#suppression-debt}
+
+Ogni soppressione attiva è un'assunzione consapevole di responsabilità. Il **modello flat-cost** deduce esattamente **1 punto per soppressione**, indipendentemente da quante soppressioni siano presenti. Non esiste una franchigia gratuita.
+
+`suppression_cap` (default: 30) è una **soglia di hard-fail**, non un limite di franchigia. In `zenzic score`, il gate `fail_under` viene valutato prima e il gate sul suppression cap viene valutato dopo; restano due controlli indipendenti. La formula della penalità è indipendente dal cap:
+
+$$
+\omega_{\text{debt}} = n
+$$
+
+dove:
+- $n$ = soppressioni attive totali (inline `zenzic:ignore` + voci `per_file_ignores`)
+
+Il punteggio finale è:
+
+$$
+S_{\text{final}} = \max\!\left(0,\; S_{\text{base}} - n\right)
+$$
+
+### Riferimento Costo Soppressioni
+
+| Numero soppressioni | Costo per soppressione | Note |
+| :--- | :---: | :--- |
+| $n \leq \text{cap}$ | 1 pt ciascuna | Postura gestita — ogni soppressione ha un costo |
+| $n > \text{cap}$ | 1 pt ciascuna | Hard-fail: `zenzic score` termina con codice 1 |
+
+!!! info Condizione al Contorno — Invariante di Configurazione
+    Poiché ogni soppressione deduce 1 punto, il **punteggio massimo raggiungibile** per un repository è:
+
+    $$\text{Punteggio Massimo Raggiungibile} = 100 - |F_s|$$
+
+    dove $|F_s|$ è il conteggio totale delle soppressioni attive. Configurare `fail_under > 100 - suppression_cap` crea una contraddizione matematica. Regola sicura: `fail_under` ≤ `100 - suppression_cap`.
+
+> Vedi [Design dello Scoring — Architettura Dual-Gate e Interpretazione](../explanation/scoring-design.md) per esempi pratici, guida all'output CLI e semantica della postura di governance.
+
+---
+
+## Formula Completa {#complete-formula}
+
+Assemblando tutti e cinque gli stadi:
+
+$$
+S_{\text{final}} =
+\begin{cases}
+0 & \text{se } \sum_{c \in \mathcal{S}} n_c > 0 \quad \text{(Security Override)} \\[6pt]
+\max\!\left(0,\; S_{\text{gravity}} - n\right) & \text{altrimenti}
+\end{cases}
+$$
+
+dove $n$ è il conteggio totale delle soppressioni attive e:
+
+$$
+S_{\text{gravity}} =
+\begin{cases}
+\min\!\left(S_{\text{base}},\; 70\right) & \text{se } \text{cat\_pts}_{\text{brand}} = 0 \\
+S_{\text{base}} & \text{altrimenti}
+\end{cases}
+$$
+
+---
+
+## Vedi Anche {#see-also}
+
+- [Design dello Scoring](../explanation/scoring-design.md) — Esempio pratico, lettura dell'output CLI e postura di governance
+- [Suppression Policy](./suppression-policy) — Tre livelli di soppressione, formula del debito e l'override `--audit`
+- [Finding Codes](./finding-codes) — Enciclopedia completa dei codici Zxxx con passi di rimedio
+- [Gestione del Technical Debt](../how-to/handle-technical-debt) — Workflow di remediation passo dopo passo
+- [Configura il Privacy Gate](../how-to/configure-privacy-gate) — Architettura Z204 FORBIDDEN_TERM

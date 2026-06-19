@@ -1,0 +1,263 @@
+---
+sidebar_label: "Sistema di Scoring"
+sidebar_position: 4
+description: "Il Punteggio di Qualità Deterministico — modello concettuale, tabella di penalità, esecuzione del punteggio e pattern CI."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Sistema di Scoring — Il Punteggio di Qualità Deterministico
+
+> *"Un Exclusion Zone deve saper dire esattamente quanto è solido il suo molo."*
+
+**Un link rotto degrada l'esperienza utente. Una credenziale esposta richiede una risposta immediata all'incidente. Un punteggio di 97 significa tre finding ancora irrisolti.**
+
+Il Deterministic Quality Score (DQS) è un **valore da 0 a 100** calcolato dal
+conteggio concreto dei problemi rilevati da ogni controllo. Zero problemi significa
+100/100. Nessun credito parziale, nessun arrotondamento favorevole, nessuna sorpresa.
+Dati gli stessi file sorgente e la stessa versione di Zenzic, il punteggio è identico
+su ogni macchina — nessun campionamento, nessun peso basato sull'età del file, nessuna
+componente soggettiva.
+
+Per le formule esatte e la specifica matematica, consulta il
+[Riferimento Algoritmo di Scoring](../reference/scoring-algorithm.md).
+
+---
+
+## Cosa Misura il Punteggio
+
+Il Punteggio di Qualità è un **composito pesato** di quattro categorie di controllo.
+Ogni categoria corrisponde direttamente a un sotto-comando `zenzic check` e ai
+codici di finding `Zxxx` che emette.
+
+| Categoria | Comando | Codici Finding | Peso |
+|-----------|---------|----------------|---------|
+| **Integrità Strutturale** | `zenzic check links [PATH]` | [Z101], [Z102], [Z104], [Z105], [Z107], [Z108] | **30 %** |
+| **Eccellenza dei Contenuti** | `zenzic check all [PATH]` | [Z403], [Z501], [Z502], [Z503], [Z505] | **20 %** |
+| **Navigazione** | `zenzic check orphans [PATH]` | [Z301], [Z302], [Z303], [Z401], [Z402] | **25 %** |
+| **Brand & Asset** | `zenzic check assets [PATH]` | [Z404], [Z405], [Z406], [Z601] | **25 %** |
+
+[Z101]: ../reference/finding-codes.md#z101
+[Z102]: ../reference/finding-codes.md#z102
+[Z104]: ../reference/finding-codes.md#z104
+[Z105]: ../reference/finding-codes.md#z105
+[Z107]: ../reference/finding-codes.md#z107
+[Z108]: ../reference/finding-codes.md#z108
+[Z301]: ../reference/finding-codes.md#z301
+[Z302]: ../reference/finding-codes.md#z302
+[Z303]: ../reference/finding-codes.md#z303
+[Z402]: ../reference/finding-codes.md#z402
+[Z501]: ../reference/finding-codes.md#z501
+[Z502]: ../reference/finding-codes.md#z502
+[Z503]: ../reference/finding-codes.md#z503
+[Z505]: ../reference/finding-codes.md#z505
+[Z405]: ../reference/finding-codes.md#z405
+[Z406]: ../reference/finding-codes.md#z406
+[Z601]: ../reference/finding-codes.md#z601
+[Z401]: ../reference/finding-codes.md#z401
+[Z403]: ../reference/finding-codes.md#z403
+[Z404]: ../reference/finding-codes.md#z404
+
+**Come leggere i pesi.** I due pesi maggiori — Strutturale e Governance — riflettono
+il principio di design di Zenzic: la correttezza (link che si risolvono davvero) e la
+fiducia (conformità al brand e ai contratti) contano più della qualità estetica dei
+contenuti.
+
+!!! danger "Override di Sicurezza"
+    Se viene rilevato un finding di sicurezza — Z201 (credential scanner), Z202 o Z203 (path traversal guard) —
+    il Punteggio di Qualità **crolla a 0/100 incondizionatamente**. Una sorgente documentale
+    che perde attivamente una credenziale non può ricevere un Punteggio di Qualità.
+
+## Filosofia di Calibrazione delle Penalità {#penalty-calibration}
+
+Le penalità sono assegnate a uno di tre livelli di gravità, indipendentemente dal bucket di appartenenza:
+
+| Livello | Esempi | Punti |
+|---|---|---|
+| Critico | Z503 (errore snippet) | 10.0 |
+| Alto | Z301, Z402 (link rotto, pagina orfana) | 3.0 – 4.0 |
+| Standard | Z104, Z401, Z403 … | 1.0 – 2.0 |
+
+Una penaltà **Critica** (10 pts) segnala che il contenuto è attivamente dannoso per i
+lettori (un esempio di codice non funzionante). Una penaltà **Alta** segnala un difetto
+strutturale che il lettore incontrerà direttamente (un link morto, una pagina
+irraggiungibile). Una penaltà **Standard** segnala un deficit di qualità che degrada
+l'esperienza nel tempo.
+
+> Per la tabella completa di lookup penalità per codice, vedi [Algoritmo di Scoring — Tabella di Riferimento delle Penalità](../reference/scoring-algorithm.md#penalty-table).
+
+---
+
+## Invariante del Category Cap
+
+Le deduzioni di categoria sono limitate dal peso della categoria:
+
+- Tetto Structural: **30 pts** (30% × 100)
+- Tetto Content: **20 pts** (20% × 100)
+- Tetto Navigation: **25 pts** (25% × 100)
+- Tetto Brand: **25 pts** (25% × 100)
+
+**Esempio:** 100 × Z505 (1,0 pt ciascuno) genera 100 pts di deduzione potenziale
+contro la categoria Content — ma il tetto limita la perdita effettiva a 20 pts.
+Le altre tre categorie rimangono inalterate: **80/100 totale**.
+
+### Separazione Score vs. Gate
+
+Lo Score e la soglia `fail_under` sono **indipendenti**:
+
+- **Score (la Metrica):** Misurazione oggettiva della qualità, limitata dai Category Cap.
+- **`fail_under` (il Gate):** La tua policy di enforcement in `.zenzic.toml`.
+
+Uno score di 70/100 con `fail_under = 80` **esce comunque con codice 1**. Il Category Cap
+impedisce che un tipo di violazione rumoroso mascheri la salute strutturale —
+non indebolisce il tuo gate.
+
+Il punteggio finale 0–100 è la somma dei contributi di categoria pesati:
+
+$$
+\text{score} = \left\lfloor \sum_i \max\bigl(0,\ w_i \times 100 - \text{deduzioni}_i\bigr) \right\rceil
+$$
+
+---
+
+## Come Interpretare il Tuo Punteggio
+
+| Punteggio | Interpretazione |
+|---|---|
+| 95 – 100 | Eccellente — finding residui minimi |
+| 80 – 94 | Buono — alcuni finding non critici |
+| 60 – 79 | Discreto — lacune di qualità significative |
+| 40 – 59 | Scarso — problemi sistematici che richiedono attenzione |
+| < 40 | Critico — integrità della documentazione a rischio |
+
+---
+
+## Osservabilità del Punteggio {#score-observability}
+
+L'output di `zenzic score` espone un Quality Breakdown Ledger che mostra ogni passo aritmetico: deduzioni raw per tier, cap applicati, aggiustamento Gravity Cap, suppression debt e l'intero finale. Questa esplicitezza è intenzionale — il punteggio non è un rating black-box ma un risultato aritmetico verificabile.
+
+> Per il riferimento CLI e i pattern di integrazione CI, vedi [Gestione del Technical Debt](../how-to/handle-technical-debt.md) e [Design dello Scoring](./scoring-design.md).
+
+---
+
+## Soppressione e Gate di Governance
+
+Esistono due meccanismi che interagiscono diversamente con il punteggio.
+
+**Soppressione (`.zenzic-ignore`)** — rimuove un finding specifico dall'output. Il
+finding soppresso non viene penalizzato. Usa la soppressione solo per eccezioni
+deliberate e documentate.
+
+**Gate di governance** — alcuni codici (Z602 I18N_PARITY) attivano un gate forzato:
+`zenzic check` termina con codice 2 indipendentemente dal DQS. Il DQS stesso non è
+influenzato perché i codici gate sono esclusi dalla matrice di penalità per design. Un
+progetto può ottenere 100 e comunque fallire il gate se è presente una violazione di
+parità delle traduzioni.
+
+---
+
+## Regressione di Qualità — Z504
+
+Quando `zenzic diff` rileva una diminuzione del punteggio, emette
+**[Z504 QUALITY_REGRESSION][z504]** come finding. Questo è l'unico codice di finding
+che fa da ponte tra il layer di scoring e il layer di finding — significa:
+*"qualcosa che hai cambiato ha peggiorato il punteggio."*
+
+[z504]: ../reference/finding-codes.md#z504
+
+Z504 non viene pesato nel punteggio stesso (sarebbe circolare). È il segnale che
+comunica *quale commit ha introdotto una regressione*.
+
+---
+
+## La Garanzia Exclusion Zone {#exclusion-zone-guarantee}
+
+Quando `zenzic score` restituisce 100/100, è una garanzia formale che:
+
+- Ogni link interno si risolve (zero Z101/Z102/Z103/Z104/Z105)
+- Ogni riferimento ad ancora si risolve (zero Z107)
+- Ogni pagina è raggiungibile da almeno un punto di ingresso di navigazione (zero Z402)
+- Ogni snippet di codice è sintatticamente valido (zero Z503)
+- Non esiste contenuto placeholder (zero Z501)
+- Non esistono blocchi di codice non etichettati (zero Z505)
+- Non esistono asset non utilizzati (zero Z405)
+- Non esistono violazioni del contratto di navigazione (zero Z406)
+- Non esistono riferimenti di brand obsoleti (zero Z601)
+- Il credential scanner non ha trovato credenziali in alcun file (zero Z201 — implicito, azzera il punteggio)
+
+<!-- Terminal output: run `uvx zenzic check all` -->
+
+Questo è il **Zenzic Audit Badge**: lo stato in cui la documentazione è strutturalmente
+completa, pulita nei contenuti e verificata dalla sicurezza.
+
+> **Porta il Sigillo nel tuo README:** una volta raggiunto il 100/100, esegui `zenzic score --save`
+> e aggiungi il badge di punteggio dinamico al tuo progetto. Fai vedere ai contributor
+> lo standard a cui si stanno impegnando. Consulta [Badge Ufficiali](../how-to/add-badges) per le URL dei badge pronte all'uso.
+
+---
+
+## Invarianti di Ingegneria
+
+Il Punteggio di Qualità è la prova operativa dei [Tre Pilastri](why-zenzic.md#defence-trinity)
+di Zenzic:
+
+**1. Analizza la Sorgente, Non il Build.**
+Il punteggio è calcolato dall'analisi del sorgente Markdown grezzo — mai dall'output
+HTML o da un server web in esecuzione. Il peso del 30% per la categoria strutturale premia una sorgente
+che è internamente coerente prima che qualsiasi passo di build venga eseguito.
+
+**2. Zero Sottoprocessi.**
+`compute_score()` in `core/scorer.py` è una funzione Python pura — nessuna chiamata
+shell, nessun `subprocess.run`, nessuna richiesta di rete. Riceve una mappa
+`findings_counts: dict[str, int]` e restituisce uno `ScoreReport`. Questo garantisce
+risultati identici su ogni OS e versione Python nella matrice CI
+(ubuntu / windows / macos × Python 3.10–3.14).
+
+**3. Funzioni Pure Prima di Tutto.**
+`compute_score()` non ha effetti collaterali. `save_snapshot()` è l'unica funzione
+di I/O e viene chiamata esplicitamente solo quando l'utente passa `--save`. La suite
+di test verifica i calcoli del punteggio con test basati su proprietà (Hypothesis)
+per garantire gli invarianti matematici.
+
+---
+
+## Integrità del Nav Contract — Categorizzata come Brand & Asset
+
+Quello che gli utenti talvolta chiamano "Nav Isolation" è formalmente **Nav Contract Integrity ([Z406])**.
+
+Z406 scatta quando un file dichiarato nella configurazione di navigazione del motore (es. una voce `nav:` di `mkdocs.yml`
+o simile voce di navigazione esplicita) non esiste su disco. Ogni violazione Z406
+contribuisce alla categoria **Brand & Asset** (25%) usando la stessa penalità per codice
+degli altri finding con score (Z406: 2,0 pts per violazione).
+
+---
+
+## Esempio Pratico
+
+Supponiamo un progetto con:
+
+- 2 × Z503 SNIPPET_ERROR → 2 × 10.0 = 20.0 pts (al limite — riempie il bucket Content)
+- 1 × Z301 DANGLING_REF → 4.0 pts (Navigation)
+- 1 × Z405 UNUSED_ASSET → 3.0 pts (Brand)
+
+```text
+Deduzione Structural = 0
+Deduzione Navigation = min(4.0, 25) = 4.0  → contribuisce 4.0 × (25/25) = 4.0 pesato
+Deduzione Content    = min(20.0, 20) = 20.0 → contribuisce 20.0 × (20/20) = 20.0 pesato
+Deduzione Brand      = min(3.0, 25)  = 3.0  → contribuisce 3.0 × (25/25) = 3.0 pesato
+
+DQS = 100 − (0 + 4.0 + 20.0 + 3.0) = 73
+```
+
+I due errori di snippet da soli ridurrebbero il punteggio di 20 punti; correggerli
+recupera il bucket Content nella sua interezza.
+
+---
+
+## Pagine Correlate
+
+- [Riferimento Algoritmo di Scoring](../reference/scoring-algorithm.md) — pesi formali,
+  tabella delle penalità e specifica matematica
+- [Codici di Finding](../reference/finding-codes.md) — catalogo completo di tutti i Z-code
+- [Policy di Soppressione](../reference/suppression-policy.md) — come i finding soppressi incidono sul Punteggio di Qualità

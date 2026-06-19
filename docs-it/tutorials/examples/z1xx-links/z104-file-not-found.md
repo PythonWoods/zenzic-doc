@@ -1,0 +1,99 @@
+---
+sidebar_position: 4
+title: "Z104 - File Non Trovato"
+sidebar_label: "Z104 - File Non Trovato"
+description: "Analisi del fixture z104-file-not-found: un link verso api/reference.md inesistente su disco che attiva Z104 FILE_NOT_FOUND con exit code 1."
+---
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+
+
+
+# Z104-file-not-found — Destinazione del Link Mancante
+
+**Z-Code:** `Z104 FILE_NOT_FOUND` · **Engine:** `standalone` · **Exit:** `1`
+
+<Z104FileNotFound />
+
+## Il Fixture
+
+Il fixture si trova in `examples/z104-file-not-found/` nel repository Zenzic.
+Il documento sorgente è `docs/index.md`, che contiene un link verso `api/reference.md`
+— un file inesistente su disco:
+
+| Riga | Link | Destinazione | Esiste? |
+| :--: | :--- | :----------- | :-----: |
+| 11   | `[API Reference](api/reference.md)` | `docs/api/reference.md` | ✘ |
+
+```toml title="examples/z104-file-not-found/.zenzic.toml"
+docs_dir = "docs"
+fail_under = 0
+
+[build_context]
+engine = "standalone"
+```
+
+## Eseguire l'Esempio
+
+```bash
+# Clona il repository Zenzic — nessuna installazione richiesta
+cd examples/z104-file-not-found
+uvx zenzic check all
+```
+
+Output atteso:
+
+```text
+standalone · 1 file (1 docs, 0 assets) · 0.0s · 67 files/s
+
+docs/index.md:11:44  x  [Z104]  'api/reference.md' not found in docs
+
+     9  │  ## API Reference
+    10  │
+    11  ❱  For the complete API specification, see the [API Reference](api/refer…
+    12  │  The API reference contains all endpoints, request formats, and respo…
+    13  │
+
+────────────────────────────────────────────────────────────────────────────────
+
+Summary:  x 1 error  ! 0 warnings  i 0 info  · 1 file with findings
+
+FAILED: Hard errors detected. Exit code 1 is mandatory.
+```
+
+Exit code: `1`
+
+## Interpretare l'Output
+
+Il finding `Z104` indica un problema **FILE_NOT_FOUND**.
+
+Questo errore viene sollevato quando un link relativo in una pagina Markdown punta
+a un percorso che non esiste nell'albero `docs_dir`. A differenza di `Z101 LINK_BROKEN`
+(che copre problemi di routing strutturale), Z104 è il segnale preciso per un
+file system mancante:
+
+- **Tipo di scansione:** `Link Validator`
+- **Severità:** `Error`
+- **Impatto:** I link a file mancanti rompono la navigazione e deducono **8.0 punti DQS**
+  — la penalità più alta del gruppo Z1xx.
+
+## Risolvere il Problema
+
+1. Creare il file mancante in `docs/api/reference.md`.
+2. Oppure correggere la destinazione del link in `docs/index.md`.
+
+```diff
+- For the complete API specification, see the [API Reference](api/reference.md).
++ For the complete API specification, see the [API Reference](api/index.md).
+```
+
+## Comportamento del Parser per le Note a Piè di Pagina
+
+Le definizioni delle note a piè di pagina (come `[^1]: testo della nota`) vengono analizzate e riconosciute correttamente dal parser dei link di Zenzic. Zenzic ignora automaticamente le note a piè di pagina durante il processo di verifica dei link, impedendo che vengano erroneamente validate come link del filesystem, evitando così errori `Z104` falsi positivi.
+
+## Vedi Anche
+
+- [Z101 — Link Rotti](z101-broken-links) — integrità dei link a livello di routing.
+- [Z102 — Anchor Mancante](z102-anchor-missing) — integrità a livello di frammento.
+- [Riferimento Controlli — Z104](../../../reference/checks) — specifica completa della regola.

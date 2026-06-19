@@ -1,0 +1,138 @@
+---
+
+sidebar_position: 3
+description: "ADR 015: Zenzic valida nativamente la freschezza dei propri badge DQS tramite --check-stamp, eliminando la necessità di gate git/bash esterni nei workflow CI."
+---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# ADR 015: Validazione Telemetria Nativa
+
+**Stato:** Attivo
+**Decisore:** Architecture Lead
+**Data:** 2026-05-30
+
+---
+
+## Contesto
+
+`zenzic score --stamp` scrive il punteggio DQS corrente come URL badge Shields.io in qualsiasi
+file elencato in `badge_stamp_files`. Questo meccanismo è deterministico e Git-native: il badge
+viene cristallizzato in ogni commit, senza richiedere alcun servizio esterno.
+
+Tuttavia, Zenzic non ha alcun meccanismo nativo per **verificare**
+che il badge committato corrispondesse al punteggio calcolato. L'unico percorso di enforcement
+era un gate bash esterno aggiunto manualmente ai workflow CI:
+
+```bash
+# Pattern CI tipico pre-ADR-015
+git diff HEAD --quiet README.md README.it.md || exit 1
+```
+
+Questo pattern aveva quattro difetti strutturali:
+
+1. **Nomi file hardcodati** — il gate non rispettava `badge_stamp_files`. Un progetto che
+   configurava `README.it.md` come target aggiuntivo doveva aggiornare manualmente lo script CI.
+2. **Portabilità zero** — il gate richiedeva sia `git` che `bash`. Ambienti CI non-bash
+   e shallow clone introducevano false pass.
+3. **Non scopribile** — i nuovi utenti Zenzic non avevano alcun indizio che questo gate fosse
+   necessario. La documentazione di `--stamp` descriveva come scrivere i badge; l'enforcement
+   era una convenzione tacita non esposta da `zenzic --help`.
+4. **Violazione del Pillar "Zero-Config Default"** — gli utenti che optavano per il badge
+   stamping dovevano configurare infrastruttura CI esterna per una feature di proprietà di
+   Zenzic. Il motore deve gestire l'intero ciclo di vita dei propri artefatti.
+
+---
+
+## Decisione
+
+> **Zenzic valida nativamente i propri artefatti.** Il flag `--check-stamp` calcola l'URL
+> Shields.io atteso per il punteggio corrente, legge `badge_stamp_files` dalla configurazione,
+> ed esce con codice 1 con un messaggio di errore preciso e actionable se qualsiasi file
+> configurato contiene un URL badge obsoleto.
+
+L'invariante: se entrambi i marcatori (`<!-- zenzic:audit-badge -->`, `<!-- zenzic:score-badge -->`) sono assenti da un file, `--check-stamp`
+restituisce True (pass). Il gate si attiva solo quando l'utente ha esplicitamente optato per
+il badge stamping. Nessuna configurazione di opt-out è richiesta agli utenti che non usano i badge.
+
+`--stamp` (scrittura) e `--check-stamp` (verifica) sono mutuamente esclusivi. Questo previene
+invocazioni ambigue e impone il confine read/write tra le due modalità.
+
+---
+
+## Motivazione
+
+### 1. Enforcement del Pillar "Zero-Config Default"
+
+Il Pillar "Zero-Config Default" richiede che gli utenti possano adottare le feature di Zenzic
+senza configurare tooling esterno. Nel modello pre-ADR-015, il badge stamping era una feature
+Opt-In (l'utente inserisce il marcatore) che richiedeva silenziosamente un corrispondente Opt-In
+in CI (l'utente scrive il gate `git diff`). Il secondo opt-in era invisibile.
+
+`--check-stamp` chiude il loop: l'utente inserisce il marcatore una volta, e Zenzic gestisce
+sia la scrittura (`--stamp`) che la verifica (`--check-stamp`) del badge. `zenzic-action` esegue
+`--check-stamp` automaticamente dopo `check all` (opt-out: `check-stamp: 'false'`). La
+Developer Experience CI predefinita è zero-configuration.
+
+### 2. Gate config-aware
+
+`--check-stamp` legge `badge_stamp_files` da `.zenzic.toml` — la stessa chiave che controlla
+`--stamp`. Aggiungere un nuovo file a `badge_stamp_files` estende automaticamente il gate di
+freshness a quel file. Nessuna modifica agli script CI, nessuna aggiunta di
+`git diff README.it.md`.
+
+### 3. Implementazione git-agnostic
+
+`_check_stamp_file(path, marker, expected_url)` legge il file da disco, localizza il marcatore
+richiesto usando lo stesso parser di `_stamp_file()`, estrae l'URL badge tramite
+`_SHIELDS_URL_RE`, e lo confronta con l'URL atteso. Nessun sottoprocesso, nessun `git diff`,
+nessuna dipendenza dalla shell. Il gate funziona in qualsiasi ambiente dove Python e il
+checkout del repository sono presenti.
+
+### 4. Progressive disclosure
+
+Quando `--check-stamp` rileva un badge obsoleto, l'errore nomina il file specifico e prescrive
+il passo di remediation esatto:
+
+```text
+[FAILED] Badge (score) in README.md is stale. Run 'zenzic score --stamp' locally and commit the result.
+```
+
+L'utente riceve un'azione completa: il problema, il file e la soluzione — senza leggere
+la documentazione.
+
+---
+
+## Invarianti
+
+- `_check_stamp_file(path, marker, expected_url)` restituisce **True (pass)** quando:
+  - Il file non esiste.
+  - Il marcatore target è assente.
+  - Il marcatore è presente ma non segue alcun URL badge Shields.io.
+  - L'URL badge corrisponde esattamente a `expected_url`.
+- `_check_stamp_file` restituisce **False (stale)** solo quando il marcatore è presente e l'URL
+  badge differisce da `expected_url`.
+- `--stamp` e `--check-stamp` generano un errore fatale se invocati insieme (esclusione reciproca).
+- `zenzic-action` salta `--check-stamp` quando `ZENZIC_AUDIT=true` (la audit mode non produce
+  artefatti con punteggio).
+
+---
+
+## Conseguenze
+
+- La recipe bash `_badge-freshness-check` in `just verify` è sostituita da una singola
+  invocazione nativa: `zenzic score --check-stamp --no-header`.
+- Gli utenti CI di `zenzic-action` ricevono il gate di freshness del badge automaticamente
+  senza alcuna modifica al workflow YAML.
+- La chiave di configurazione `badge_stamp_files` è ora la singola fonte di verità sia per lo
+  stamping che per la verifica — nessuna duplicazione tra `.zenzic.toml` e gli script CI.
+- Il Pillar "Zero-Config Default" è pienamente rispettato: il badge stamping è plug-and-play
+  dall'inserimento del marcatore fino all'enforcement CI.
+
+---
+
+## Correlati
+
+- [ADR 009: Path Sovereignty](./adr-path-sovereignty.md) — lo stesso principio applicato alla risoluzione dei percorsi di configurazione.
+- [ADR 005: Agnostic Universalism](./adr-agnostic-universalism.md) — la portabilità come vincolo di design di primo livello.
