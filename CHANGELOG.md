@@ -9,6 +9,15 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
+## [0.13.2] - 2026-06-20
+
+### Changed
+
+- **SEO Overhaul:** Migrated `mkdocs-redirects` to edge-level Cloudflare `_redirects` for strict 301 compliance.
+- **Reference:** Documented that standard infrastructure files (`robots.txt`, `_redirects`, `CNAME`, `sitemap.xml`) are natively exempt from Z405 (Unused Assets).
+
+---
+
 ## [0.13.0] - 2026-06-19
 
 ### Added

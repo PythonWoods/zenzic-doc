@@ -411,6 +411,9 @@ La configurazione principale del motore di build (es. `zensical.toml`) referenzi
 
 Un file immagine o asset nel repository non viene mai referenziato da alcun file Markdown. Gli "Dark Asset" gonfiano il repository e gli artefatti di build silenziosamente.
 
+!!! info "Esenzioni Infrastrutturali"
+    I file di infrastruttura standard (`robots.txt`, `_redirects`, `CNAME`, `sitemap.xml`) sono nativamente esentati da questo controllo dal motore core. Non attiveranno mai un rilevamento Z405.
+
 **Rimedio:**
 1. Elimina il file inutilizzato.
 2. Oppure referenzialo in una pagina di documentazione appropriata.

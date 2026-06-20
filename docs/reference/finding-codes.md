@@ -411,6 +411,9 @@ The build engine's main configuration (e.g. `zensical.toml`) references a logo o
 
 An image or asset file in the repository is never referenced by any Markdown file. "Dark Assets" bloat the repository and build artifacts silently.
 
+!!! info "Infrastructure Exemptions"
+    Standard infrastructure files (`robots.txt`, `_redirects`, `CNAME`, `sitemap.xml`) are natively exempt from this check by the core engine. They will never trigger a Z405 finding.
+
 **Fix:**
 1. Delete the unused file.
 2. Or reference it in a documentation page where appropriate.
