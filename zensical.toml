@@ -16,6 +16,7 @@ repo_name   = "PythonWoods/zenzic"
 
 extra_css = [
   "assets/css/zenzic-tailwind.min.css",
+  "assets/css/extra.css",
   # EXTERNAL BUILD ARTIFACT — compiled by human-run Tailwind CLI (no Node.js in CI).
   # Preflight (CSS Reset) is DISABLED in this file to prevent interference with
   # Zensical base typography. See docs/assets/css/README.md for the build protocol.

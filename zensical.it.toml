@@ -16,6 +16,7 @@ repo_name   = "PythonWoods/zenzic"
 
 extra_css = [
   "assets/css/zenzic-tailwind.min.css",
+  "assets/css/extra.css",
   # Shared external artifact — same compiled file as English build.
 ]
 
