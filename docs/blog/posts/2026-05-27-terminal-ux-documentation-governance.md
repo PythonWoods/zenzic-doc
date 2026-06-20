@@ -1,19 +1,17 @@
 ---
-slug: terminal-ux-documentation-governance
+date: 2026-05-27
 title: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
-
 authors:
   - pythonwoods
 tags:
   - engineering-logs
   - architecture
   - governance
-date: 2026-05-27
 description: >
   An engineering analysis of Zenzic's terminal interface: information density
   in the run header, caret-precision diagnostic rendering, suppression debt
   mathematics, and the invariant semantics of exit codes.
-image: /assets/social/social-card.png
+template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

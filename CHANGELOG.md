@@ -11,7 +11,20 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ## [0.14.0] - Unreleased
 
+### Added
+
+- **Blog UX Sprint v3:** Complete blog overhaul — pagination (`blog/index.md` → 10 posts + `blog/page-2.md` → 4 older posts), posts sidebar in right panel (replaces TOC on blog post pages, 14 links with active-post highlighting), manual breadcrumb on each article (`Home › Blog › Title`) with inline SVG home icon, metadata bar (date / authors / tags) rendered after H1 and before body. Template `overrides/blog_post.html` rewritten with explicit `{% block toc %}` and `{% block content %}` overrides. Zero JavaScript.
+- **Footer:** Added `copyright` field to `zensical.toml` — triggers MkDocs Material footer rendering on all pages.
+- **Nav icons:** Universal document icon (CSS `::before`, mask-based, theme-adaptive) injected on all left-sidebar nav links that lack an explicit Material icon (`icon:` frontmatter).
+
+### Fixed
+
+- **TOC right sidebar background:** Removed undesired accent background from TOC links (`developers/reference/adapter-api/`, etc.) using `[data-md-component="sidebar"][data-md-type="toc"]` high-specificity selector with `background-color: transparent !important`.
+- **Breadcrumb Blog link:** Fixed double-path resolution bug (`/blog/blog/`) caused by `{{ base_url }}blog/` from nested post URLs. All blog post template links now use absolute root paths (`/`, `/blog/`).
+- **Breadcrumb home icon:** Fixed CSS selector from `.md-breadcrumb__item` (invalid) to `.md-path__item:first-child a::before` (Zensical's actual breadcrumb class).
+
 ### Removed
+
 
 - **I18N Eradication:** Deprecated ADR-020 (Mirror Law) and entirely removed Italian bilingual support (`docs-it/`, `zensical.it.toml`). Zenzic is now a strictly English-Only ecosystem to streamline maintenance and CI/CD performance.
 - **Dark Mode Enforcement:** Removed Light Mode support from the landing page. Enforced a unified Dark-Mode (`slate`) aesthetic. The theme toggle has been eliminated.

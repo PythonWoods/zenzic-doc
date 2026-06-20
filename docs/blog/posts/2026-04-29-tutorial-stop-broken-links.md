@@ -1,7 +1,6 @@
 ---
-slug: tutorial-stop-broken-links-60s
+date: 2026-04-29
 title: "Tutorial: Get Started with Zenzic"
-
 authors:
   - pythonwoods
 tags:
@@ -11,11 +10,10 @@ tags:
   - opensource
   - devtools
   - user-tutorials
-date: 2026-04-29T19:00:00
 description: >
   Install Zenzic, run your first audit, and protect your documentation
   pipeline in under 60 seconds. No setup, no configuration, no build required.
-image: https://zenzic.dev/assets/social/social-card.png
+template: blog_post.html
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

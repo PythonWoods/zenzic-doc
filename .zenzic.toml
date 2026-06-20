@@ -37,11 +37,9 @@ brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
 "docs/assets/brand/svg/zenzic-icon.svg"    = ["Z405"]  # Referenced by Jinja2 hero template, invisible to Zenzic static analysis
 "docs/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
 
-
-
 [governance.directory_policies]
 "docs/assets/**"                  = ["Z402"]
-"docs/blog/**"                    = ["Z601", "Z602", "Z503", "Z907"]  # Blog posts are EN-only; Z503 exempted (intentionally invalid snippets used as counter-examples)
+"docs/blog/**"                    = ["Z601", "Z503", "Z402", "Z101"]  # Blog posts are EN-only; Z402+Z101 suppressed (content-leaves, UNREACHABLE_LINK expected)
 "docs/explanation/mineral-path.md"    = ["Z601"]
 "docs/tutorials/examples/**"      = ["Z401", "Z506"]
 "docs/developers/how-to/contribute/**" = ["Z107"]

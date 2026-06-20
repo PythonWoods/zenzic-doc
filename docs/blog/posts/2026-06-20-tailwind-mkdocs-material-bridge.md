@@ -1,16 +1,14 @@
 ---
-date:
-  created: 2026-06-20
+date: 2026-06-20
+title: "The Tailwind/MkDocs Material Bridge: A Surgical CSS Pattern"
 authors:
   - pythonwoods
-categories:
-  - Architecture
-  - Engineering
 tags:
   - css
   - tailwind
   - mkdocs-material
   - design-system
+template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

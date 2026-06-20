@@ -146,8 +146,20 @@
   color: #818cf8;
 }
 
-.md-nav--secondary .md-nav__item--active>.md-nav__link {
+/* Secondary nav (TOC right sidebar) — color only, NO background               */
+/* Target via data-md-type="toc" for maximum specificity over Material defaults */
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__link,
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__link:hover,
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__link:focus,
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__link--active,
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__item--active > .md-nav__link {
+  background-color: transparent !important;
+}
+
+.md-nav--secondary .md-nav__item--active > .md-nav__link,
+.md-nav--secondary .md-nav__link--active {
   color: #818cf8;
+  background-color: transparent !important;
 }
 
 /* light mode: standard indigo */
@@ -157,6 +169,28 @@
 
 [data-md-color-scheme="default"] .md-nav--secondary .md-nav__item--active>.md-nav__link {
   color: #4f46e5;
+}
+
+/* ── Navigation: universal document icon for nav links without explicit icon ─ */
+/* MkDocs Material renders .md-nav__icon for pages with frontmatter icon: set.  */
+/* :not(:has(.md-nav__icon)) targets only links that LACK an icon element.      */
+/* :has() support: Chrome 105+, Firefox 121+, Safari 15.4+                      */
+.md-nav--primary .md-nav__link:not(:has(.md-nav__icon))::before {
+  content: "";
+  display: inline-block;
+  width: 0.82em;
+  height: 0.82em;
+  flex-shrink: 0;
+  margin-right: 0.3em;
+  vertical-align: -0.1em;
+  background-color: currentColor;
+  opacity: 0.4;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-size: contain;
 }
 
 /* ── Navigation: hide site title from sidebar ─────────────────────────────── */
@@ -715,9 +749,62 @@ html:has(.zz-tailwind-root) .md-header__source {
     font-size: 0.65rem !important; /* Force smaller metric labels */
 }
 
-/* === Breadcrumb: Home icon ============================================== */
-/* Uses CSS mask so the SVG inherits currentColor (theme-adaptive) */
-.md-breadcrumb__item:first-child .md-breadcrumb__link::before {
+/* === Blog Post Metadata Bar ============================================= */
+/* Pure CSS — zero JavaScript. Rendered by overrides/blog_post.html Jinja2. */
+.zz-post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0 1.25rem;
+  border-bottom: 1px solid var(--zz-border-subtle);
+  margin-bottom: 1.5rem;
+  font-size: 0.78rem !important;
+  color: var(--zz-muted-color);
+  line-height: 1.4;
+}
+
+.zz-post-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Override global svg rule — post-meta uses filled icons, not stroked */
+.zz-post-meta__item svg {
+  flex-shrink: 0;
+  opacity: 0.75;
+  fill: currentColor !important;
+  stroke: none !important;
+  stroke-width: 0 !important;
+}
+
+.zz-post-meta__tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.zz-post-meta__tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: rgba(79, 70, 229, 0.12);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: 9999px;
+  font-size: 0.7rem !important;
+  color: #818cf8;
+  font-family: var(--md-code-font-family, ui-monospace, monospace);
+  letter-spacing: 0.01em;
+}
+
+[data-md-color-scheme="default"] .zz-post-meta__tag {
+  background: rgba(79, 70, 229, 0.07);
+  border-color: rgba(79, 70, 229, 0.15);
+  color: #4f46e5;
+}
+
+/* === Breadcrumb: Home icon (navigation.path uses .md-path__item) ======= */
+.md-path__item:first-child a::before {
   content: "";
   display: inline-block;
   width: 0.85em;
@@ -731,4 +818,95 @@ html:has(.zz-tailwind-root) .md-header__source {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
   mask-repeat: no-repeat;
   mask-size: contain;
+}
+
+/* === Blog post: manual breadcrumb (.zz-post-breadcrumb) ================= */
+.zz-post-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  color: var(--zz-muted-color);
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  line-height: 1;
+}
+
+.zz-post-breadcrumb a {
+  color: var(--zz-muted-color);
+  text-decoration: none;
+  transition: color var(--zz-transition-fast);
+}
+
+.zz-post-breadcrumb a:hover {
+  color: var(--md-typeset-a-color);
+}
+
+/* Inline SVG home icon — override global stroke rule */
+.zz-post-breadcrumb__home svg {
+  fill: currentColor !important;
+  stroke: none !important;
+  stroke-width: 0 !important;
+  vertical-align: -0.15em;
+}
+
+.zz-post-breadcrumb__sep {
+  opacity: 0.45;
+  user-select: none;
+}
+
+.zz-post-breadcrumb__current {
+  color: var(--md-accent-fg-color);
+  font-weight: 500;
+}
+
+/* === Blog posts sidebar (.zz-posts-sidebar) ============================= */
+.zz-posts-sidebar {
+  padding: 0.5rem 0;
+}
+
+.zz-posts-sidebar__label {
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.09em !important;
+  color: var(--zz-muted-color) !important;
+  margin: 0 0 0.5rem 0 !important;
+  padding: 0 0.5rem !important;
+}
+
+.zz-posts-sidebar__list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.zz-posts-sidebar__item {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.zz-posts-sidebar__item a {
+  display: block;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.71rem !important;
+  color: var(--zz-muted-color);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color var(--zz-transition-fast), background var(--zz-transition-fast);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zz-posts-sidebar__item a:hover {
+  color: var(--md-typeset-a-color);
+  background: var(--md-default-bg-color--light);
+}
+
+.zz-posts-sidebar__item--active a {
+  color: var(--md-accent-fg-color) !important;
+  font-weight: 600;
+  background: var(--md-accent-fg-color--transparent);
 }
