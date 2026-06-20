@@ -162,87 +162,9 @@
 /blog/auditing-the-auditors-ast-based-documentation-analysis.html /blog/posts/2026-06-09-auditing-the-auditors/ 301
 /blog/why-we-dropped-docusaurus.html /blog/posts/2026-06-13-why-we-dropped-docusaurus/ 301
 
-# ── Italian Locale (Legacy /it/ routes) ─────────────────────────────────────────
+# ── ADR-020 Deprecation: Italian Locale Splat Redirect ──────────────────────────
+# Replaces 80+ individual /it/* → /it/* dead routes with a single edge-level splat.
+# All legacy Italian traffic is gracefully degraded to the English source (1:1 path).
 
-# Root
-/it/docs/index.html /it/ 301
-
-# Tutorials
-/it/docs/tutorials/first-audit.html /it/tutorials/first-audit/ 301
-/it/docs/tutorials/examples/index.html /it/tutorials/examples/ 301
-
-# Tutorials — Z1xx Links
-/it/docs/tutorials/examples/z1xx-links/z101-broken-links.html /it/tutorials/examples/z1xx-links/z101-broken-links/ 301
-/it/docs/tutorials/examples/z1xx-links/z102-anchor-missing.html /it/tutorials/examples/z1xx-links/z102-anchor-missing/ 301
-/it/docs/tutorials/examples/z1xx-links/z103-orphan-link.html /it/tutorials/examples/z1xx-links/z103-orphan-link/ 301
-/it/docs/tutorials/examples/z1xx-links/z104-file-not-found.html /it/tutorials/examples/z1xx-links/z104-file-not-found/ 301
-/it/docs/tutorials/examples/z1xx-links/z105-absolute-path.html /it/tutorials/examples/z1xx-links/z105-absolute-path/ 301
-/it/docs/tutorials/examples/z1xx-links/z107-circular-anchor.html /it/tutorials/examples/z1xx-links/z107-circular-anchor/ 301
-/it/docs/tutorials/examples/z1xx-links/z108-empty-link-text.html /it/tutorials/examples/z1xx-links/z108-empty-link-text/ 301
-/it/docs/tutorials/examples/z1xx-links/z109-external-link-broken.html /it/tutorials/examples/z1xx-links/z109-external-link-broken/ 301
-
-# Tutorials — Z2xx Security
-/it/docs/tutorials/examples/z2xx-security/z201-credentials.html /it/tutorials/examples/z2xx-security/z201-credentials/ 301
-/it/docs/tutorials/examples/z2xx-security/z202-path-traversal.html /it/tutorials/examples/z2xx-security/z202-path-traversal/ 301
-/it/docs/tutorials/examples/z2xx-security/z204-forbidden-term.html /it/tutorials/examples/z2xx-security/z204-forbidden-term/ 301
-
-# Tutorials — Z3xx References
-/it/docs/tutorials/examples/z3xx-references/z301-dangling-ref.html /it/tutorials/examples/z3xx-references/z301-dangling-ref/ 301
-/it/docs/tutorials/examples/z3xx-references/z302-dead-def.html /it/tutorials/examples/z3xx-references/z302-dead-ref/ 301
-/it/docs/tutorials/examples/z3xx-references/z303-duplicate-def.html /it/tutorials/examples/z3xx-references/z303-duplicate-def/ 301
-
-# Tutorials — Z4xx Topology
-/it/docs/tutorials/examples/z4xx-topology/z401-missing-directory-index.html /it/tutorials/examples/z4xx-topology/z401-missing-directory-index/ 301
-/it/docs/tutorials/examples/z4xx-topology/z402-orphan-page.html /it/tutorials/examples/z4xx-topology/z402-orphan-page/ 301
-/it/docs/tutorials/examples/z4xx-topology/z403-missing-alt.html /it/tutorials/examples/z4xx-topology/z403-missing-alt/ 301
-/it/docs/tutorials/examples/z4xx-topology/z404-config-asset-missing.html /it/tutorials/examples/z4xx-topology/z404-config-asset-missing/ 301
-/it/docs/tutorials/examples/z4xx-topology/z405-unused-assets.html /it/tutorials/examples/z4xx-topology/z405-unused-assets/ 301
-/it/docs/tutorials/examples/z4xx-topology/z406-nav-contract.html /it/tutorials/examples/z4xx-topology/z406-nav-contract/ 301
-
-# Tutorials — Z5xx Content
-/it/docs/tutorials/examples/z5xx-content/z501-placeholder.html /it/tutorials/examples/z5xx-content/z501-placeholder/ 301
-/it/docs/tutorials/examples/z5xx-content/z502-short-content.html /it/tutorials/examples/z5xx-content/z502-short-content/ 301
-/it/docs/tutorials/examples/z5xx-content/z503-snippet-error.html /it/tutorials/examples/z5xx-content/z503-snippet-error/ 301
-/it/docs/tutorials/examples/z5xx-content/z505-untagged-code-block.html /it/tutorials/examples/z5xx-content/z505-untagged-code-block/ 301
-
-# Tutorials — Z6xx Brand
-/it/docs/tutorials/examples/z6xx-brand/z601-brand-obsolescence.html /it/tutorials/examples/z6xx-brand/z601-brand-obsolescence/ 301
-/it/docs/tutorials/examples/z6xx-brand/z602-i18n-parity.html /it/tutorials/examples/z6xx-brand/z602-i18n-parity/ 301
-
-# Developer Documentation (IT)
-/it/developers/index.html /it/developers/ 301
-/it/developers/how-to/contribute/index.html /it/developers/how-to/contribute/ 301
-/it/developers/how-to/contribute/pull-requests.html /it/developers/how-to/contribute/pull-requests/ 301
-/it/developers/how-to/contribute/report-a-bug.html /it/developers/how-to/contribute/report-a-bug/ 301
-/it/developers/how-to/contribute/report-a-docs-issue.html /it/developers/how-to/contribute/report-a-docs-issue/ 301
-/it/developers/how-to/contribute/request-a-change.html /it/developers/how-to/contribute/request-a-change/ 301
-/it/developers/how-to/implement-adapter.html /it/developers/how-to/implement-adapter/ 301
-/it/developers/how-to/release-governance-protocol.html /it/developers/how-to/release-governance-protocol/ 301
-/it/developers/how-to/write-a-check.html /it/developers/how-to/write-a-check/ 301
-/it/developers/how-to/write-plugin.html /it/developers/how-to/write-plugin/ 301
-/it/developers/reference/adapter-api.html /it/developers/reference/adapter-api/ 301
-/it/developers/reference/adapter-examples.html /it/developers/reference/adapter-examples/ 301
-/it/developers/reference/cli-architecture.html /it/developers/reference/cli-architecture/ 301
-/it/developers/reference/credential-scanner-obligations.html /it/developers/reference/credential-scanner-obligations/ 301
-/it/developers/reference/supply-chain-assurance-profile.html /it/developers/reference/supply-chain-assurance-profile/ 301
-/it/developers/reference/zenzic-style.html /it/developers/reference/zenzic-style/ 301
-/it/developers/explanation/adapter-internals.html /it/developers/explanation/adapter-internals/ 301
-/it/developers/explanation/adr-agnostic-universalism.html /it/developers/explanation/adr-agnostic-universalism/ 301
-/it/developers/explanation/adr-bilingual-structural.html /it/developers/explanation/adr-bilingual-structural/ 301
-/it/developers/explanation/adr-decentralized-cli.html /it/developers/explanation/adr-decentralized-cli/ 301
-/it/developers/explanation/adr-discovery.html /it/developers/explanation/adr-discovery/ 301
-/it/developers/explanation/adr-lint-source.html /it/developers/explanation/adr-lint-source/ 301
-/it/developers/explanation/adr-native-telemetry.html /it/developers/explanation/adr-native-telemetry/ 301
-/it/developers/explanation/adr-parallel-early-termination.html /it/developers/explanation/adr-parallel-early-termination/ 301
-/it/developers/explanation/adr-path-sovereignty.html /it/developers/explanation/adr-path-sovereignty/ 301
-/it/developers/explanation/adr-regex-acl.html /it/developers/explanation/adr-regex-acl/ 301
-/it/developers/explanation/adr-unified-perimeter.html /it/developers/explanation/adr-unified-perimeter/ 301
-/it/developers/explanation/adr-vault.html /it/developers/explanation/adr-vault/ 301
-/it/developers/explanation/core-laws.html /it/developers/explanation/core-laws/ 301
-/it/developers/explanation/mdx-asset-rationale.html /it/developers/explanation/mdx-asset-rationale/ 301
-/it/developers/explanation/sovereign-verification-model.html /it/developers/explanation/sovereign-verification-model/ 301
-/it/developers/explanation/governance/index.html /it/developers/explanation/governance/ 301
-/it/developers/explanation/governance/evolution_policy.html /it/developers/explanation/governance/evolution_policy/ 301
-/it/developers/explanation/governance/exit_strategy.html /it/developers/explanation/governance/exit_strategy/ 301
-/it/developers/explanation/governance/licensing.html /it/developers/explanation/governance/licensing/ 301
-/it/developers/explanation/governance/technical-debt.html /it/developers/explanation/governance/technical-debt/ 301
+# ADR-020 Deprecation: Gracefully degrade all legacy Italian traffic to the English source
+/it/*  /:splat  301
