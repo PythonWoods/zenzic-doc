@@ -42,7 +42,7 @@ extra_css = [
   "developers/index.md",
   {"Come fare" = [{"Contribuire" = ["developers/how-to/contribute/index.md", "developers/how-to/contribute/pull-requests.md", "developers/how-to/contribute/report-a-bug.md", "developers/how-to/contribute/report-a-docs-issue.md", "developers/how-to/contribute/request-a-change.md"]}, "developers/how-to/implement-adapter.md", "developers/how-to/release-governance-protocol.md", "developers/how-to/write-a-check.md", "developers/how-to/write-plugin.md"]},
   {"Reference" = ["developers/reference/adapter-api.md", "developers/reference/adapter-examples.md", "developers/reference/cli-architecture.md", "developers/reference/credential-scanner-obligations.md", "developers/reference/supply-chain-assurance-profile.md", "developers/reference/zenzic-style.md"]},
-  {"Spiegazioni" = ["developers/explanation/adapter-internals.md", "developers/explanation/adr-agnostic-universalism.md", "developers/explanation/adr-bilingual-structural.md", "developers/explanation/adr-decentralized-cli.md", "developers/explanation/adr-discovery.md", "developers/explanation/adr-lint-source.md", "developers/explanation/adr-native-telemetry.md", "developers/explanation/adr-parallel-early-termination.md", "developers/explanation/adr-path-sovereignty.md", "developers/explanation/adr-regex-acl.md", "developers/explanation/adr-unified-perimeter.md", "developers/explanation/adr-vault.md", "developers/explanation/core-laws.md", "developers/explanation/mdx-asset-rationale.md", "developers/explanation/sovereign-verification-model.md", {"Governance" = ["developers/explanation/governance/index.md", "developers/explanation/governance/evolution_policy.md", "developers/explanation/governance/exit_strategy.md", "developers/explanation/governance/licensing.md", "developers/explanation/governance/technical-debt.md"]}]},
+  {"Spiegazioni" = ["developers/explanation/adapter-internals.md", "developers/explanation/tailwind-mkdocs-bridge.md", {"Governance" = ["developers/explanation/governance/evolution_policy.md"]}]},
 ]
 
 [[project.nav]]
@@ -51,7 +51,8 @@ extra_css = [
 [project.theme]
 custom_dir = "overrides"
 palette    = [
-  { scheme = "slate", primary = "black", accent = "indigo" }
+  { scheme = "slate", primary = "black", accent = "indigo", toggle = { icon = "material/brightness-4", name = "Switch to light mode" } },
+  { scheme = "default", primary = "indigo", accent = "indigo", toggle = { icon = "material/brightness-7", name = "Switch to dark mode" } }
 ]
 features   = [
   "navigation.tabs",

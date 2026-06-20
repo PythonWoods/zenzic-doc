@@ -690,3 +690,11 @@
 .zz-metrics { gap: 1.5rem; margin-top: 2.5rem; }
 .zz-metric__value { font-size: 2rem !important; font-weight: 700; }
 .zz-metric__label { font-size: 0.7rem !important; letter-spacing: 0.05em; }
+
+/* ── Tailwind/MkDocs Bridge: Rem Scaling Fix ─────────────────────────────── */
+/* MkDocs Material sets html { font-size: 125% } for accessibility.
+ * This blows up Tailwind's rem values by 25%. We reset to 100% (16px)
+ * ONLY on pages that contain the .zz-tailwind-root semantic anchor. */
+html:has(.zz-tailwind-root) {
+  font-size: 100% !important;
+}
