@@ -1,5 +1,3 @@
-<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
-<!-- SPDX-License-Identifier: Apache-2.0 -->
 ---
 date:
   created: 2026-06-20
@@ -14,6 +12,9 @@ tags:
   - mkdocs-material
   - design-system
 ---
+
+<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 # The Tailwind/MkDocs Material Bridge: A Surgical CSS Pattern
 

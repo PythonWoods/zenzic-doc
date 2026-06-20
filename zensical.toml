@@ -49,7 +49,7 @@ extra_css = [
 ]
 
 [[project.nav]]
-"Blog" = ["blog/index.md", {"Posts" = ["blog/posts/2026-04-28-welcome.md", "blog/posts/2026-04-29-tutorial-stop-broken-links.md", "blog/posts/2026-05-24-engineering-v080-deep-dive.md", "blog/posts/2026-05-24-log-v080.md", "blog/posts/2026-05-24-v080-namespace-contract.md", "blog/posts/2026-05-25-dqs-mathematical-model.md", "blog/posts/2026-05-27-terminal-ux-documentation-governance.md", "blog/posts/2026-05-28-enterprise-use-cases.md", "blog/posts/2026-05-30-log-v090.md", "blog/posts/2026-06-03-algorithmic-complexity-and-redos-prevention.md", "blog/posts/2026-06-06-native-ci-integration-and-progressive-adoption.md", "blog/posts/2026-06-09-auditing-the-auditors.md", "blog/posts/2026-06-13-why-we-dropped-docusaurus.md", "blog/posts/2026-06-20-tailwind-mkdocs-material-bridge.md"]}]
+"Blog" = ["blog/index.md", {"Posts" = ["blog/posts/2026-06-20-tailwind-mkdocs-material-bridge.md", "blog/posts/2026-06-13-why-we-dropped-docusaurus.md", "blog/posts/2026-06-09-auditing-the-auditors.md", "blog/posts/2026-06-06-native-ci-integration-and-progressive-adoption.md", "blog/posts/2026-06-03-algorithmic-complexity-and-redos-prevention.md", "blog/posts/2026-05-30-log-v090.md", "blog/posts/2026-05-28-enterprise-use-cases.md", "blog/posts/2026-05-27-terminal-ux-documentation-governance.md", "blog/posts/2026-05-25-dqs-mathematical-model.md", "blog/posts/2026-05-24-v080-namespace-contract.md", "blog/posts/2026-05-24-log-v080.md", "blog/posts/2026-05-24-engineering-v080-deep-dive.md", "blog/posts/2026-04-29-tutorial-stop-broken-links.md", "blog/posts/2026-04-28-welcome.md"]}, "blog/archive.md"]
 
 [project.theme]
 custom_dir = "overrides"

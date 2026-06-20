@@ -714,3 +714,21 @@ html:has(.zz-tailwind-root) .md-header__source {
 .zz-tailwind-root .text-\[11px\] {
     font-size: 0.65rem !important; /* Force smaller metric labels */
 }
+
+/* === Breadcrumb: Home icon ============================================== */
+/* Uses CSS mask so the SVG inherits currentColor (theme-adaptive) */
+.md-breadcrumb__item:first-child .md-breadcrumb__link::before {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.25em;
+  vertical-align: -0.1em;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
