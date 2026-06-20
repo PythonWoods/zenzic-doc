@@ -293,7 +293,7 @@ immediately — before any file is scanned.
   local to each worker process and discarded on completion — results will differ
   from sequential mode silently.  Return all state as `RuleFinding` objects.
 
-See [Writing Plugin Rules](/developers/how-to/write-plugin) for the complete contract,
+See [Writing Plugin Rules](../developers/how-to/write-plugin.md) for the complete contract,
 examples, and packaging instructions.
 
 ---

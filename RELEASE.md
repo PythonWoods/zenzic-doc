@@ -8,9 +8,9 @@
 
 | Field    | Value      |
 | :------- | :--------- |
-| Version  | v0.13.1     |
+| Version  | v0.14.0     |
 | Codename | Magnetite   |
-| Date     | 2026-06-19 |
+| Date     | 2026-06-20 |
 | Status   | Stable     |
 
 ## Release Checklist

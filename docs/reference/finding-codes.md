@@ -411,6 +411,9 @@ The build engine's main configuration (e.g. `zensical.toml`) references a logo o
 
 An image or asset file in the repository is never referenced by any Markdown file. "Dark Assets" bloat the repository and build artifacts silently.
 
+!!! info "Infrastructure Exemptions"
+    Standard infrastructure files (`robots.txt`, `_redirects`, `CNAME`, `sitemap.xml`) are natively exempt from this check by the core engine. They will never trigger a Z405 finding.
+
 **Fix:**
 1. Delete the unused file.
 2. Or reference it in a documentation page where appropriate.
@@ -463,6 +466,19 @@ A fenced code block has no language specifier. Syntax highlighters, the Snippet 
 
 **Fix:** Add a language tag: `` ```python ``, `` ```bash ``, `` ```toml ``. For display-only blocks, use `` ```text `` or `` ```plaintext ``.
 
+### Z506: MALFORMED_FRONTMATTER {#z506}
+
+**Severity:** `error` · **Penalty:** −5.0 pts (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z506-malformed-frontmatter)
+
+The opening frontmatter delimiter on line 1 of the file is not exactly `---`. Any line that starts with two or more dashes but is not exactly `---` — such as `--`, `----`, or `--- trailing chars` — is silently discarded by most static-site engines. The `template:`, `title:`, and all metadata keys will be rendered as raw prose content instead of being parsed.
+
+**Common triggers:**
+- Typo: `--` (two dashes) instead of `---`
+- Copy-paste artefact: `----` (four or more dashes)
+- Trailing text: `--- @generated` or `--- BEGIN YAML`
+
+**Fix:** Ensure the very first line of the file is exactly `---` with no leading or trailing characters.
+
 ---
 
 ## Z6xx — Governance
@@ -483,14 +499,7 @@ A deprecated release name or brand identifier appears in a scanned file. Configu
 
 ### Z602: I18N_PARITY {#z602}
 
-**Severity:** `warning` · **Penalty:** none (bilingual integrity check) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z6xx-brand/z602-i18n-parity)
-
-A translation mirror is missing, or the frontmatter of a translated file diverges from the canonical base (`sidebar_position`, `sidebar_label`, `title`). Two locales with different frontmatter produce asymmetric navigation graphs.
-
-**Fix:**
-1. Create the missing translation at the corresponding path in the locale mirror.
-2. Copy the base-language frontmatter block and translate the values — do not add or remove keys.
-3. For intentional asymmetry, suppress with `<!-- zenzic:ignore: Z602 -->` on the frontmatter block.
+> **\[INACTIVE\]** This feature and its associated adapter logic have been permanently eradicated. The code remains in the registry strictly to prevent `Unknown Z-Code` configuration crashes for legacy projects.
 
 ---
 
@@ -543,18 +552,18 @@ Emitted by `zenzic diff` when the current DQS is lower than the saved baseline (
 
 ---
 
-## Historical Code Remap {#historical-code-remap}
+## Breaking Changes: Legacy Code Migration {#historical-code-remap}
+
+> **\[FATAL\]** As of `v0.14.0`, automatic legacy code translation (`LEGACY_TO_CODE`) has been eradicated. Using the dead codes below in your `.zenzic.toml` will trigger a **FATAL Configuration Crash** (`Unknown Z-Code`). You must manually update your configuration to the active codes.
 
 <!-- zenzic:migration-matrix:start -->
-| Deprecated Code | Active Code | Notes |
+| Dead Code | Active Code | Status / Action Required |
 |---|---|---|
-| `Z903` | `Z405` | Canonical remap for `UNUSED_ASSET`. |
-| `Z904` | `Z406` | Canonical remap for `NAV_CONTRACT`. |
-| `Z905` | `Z601` | Canonical remap for `BRAND_OBSOLESCENCE`. |
-| `Z907` | `Z602` | Canonical remap for `I18N_PARITY`. |
+| `Z903` | `Z405` | **DEAD.** Triggers FATAL crash. Manually replace with `Z405`. |
+| `Z904` | `Z406` | **DEAD.** Triggers FATAL crash. Manually replace with `Z406`. |
+| `Z905` | `Z601` | **DEAD.** Triggers FATAL crash. Manually replace with `Z601`. |
+| `Z907` | `Z602` | **INACTIVE.** Both codes are permanently disabled (Bilingual Parity eradicated). Retained in the Python registry strictly as dummy codes to prevent legacy TOML files from crashing. |
 <!-- zenzic:migration-matrix:end -->
-
-Historical identifiers remain valid only as historical references in migration prose. Active findings and section anchors always use the canonical codes listed in this matrix.
 
 ---
 

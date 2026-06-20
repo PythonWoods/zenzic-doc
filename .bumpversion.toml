@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.bumpversion]
-current_version = "0.13.1"
+current_version = "0.14.0"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
 serialize = ["{major}.{minor}.{patch}"]
 
@@ -27,12 +27,21 @@ replace = 'version: "{new_version}"'
 regex = true
 
 [[tool.bumpversion.files]]
-filename = "docs-it/how-to/configure-ci-cd.md"
-search = 'version:\s*"?v?{current_version}"?'
-replace = 'version: "{new_version}"'
-regex = true
-
-[[tool.bumpversion.files]]
 filename = "README.md"
 search = "badge/Zenzic-v{current_version}-blue"
 replace = "badge/Zenzic-v{new_version}-blue"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "zensical.toml"
+search = 'zenzic_version = "{current_version}"'
+replace = 'zenzic_version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "overrides/partials/homepage/hero.html"
+search = 'v{current_version}'
+replace = 'v{new_version}'

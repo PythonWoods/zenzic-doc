@@ -77,7 +77,7 @@ relevant to Zenzic specifically.
 
 - **Explain the <u>what</u>, not the <u>why</u>** – focus on describing the
 
-    proposed change precisely. Benefits belong in [Use cases].
+    proposed change precisely. Benefits belong in [Use cases](#use-cases).
 
 - **Keep it short** – be brief and to the point.
 

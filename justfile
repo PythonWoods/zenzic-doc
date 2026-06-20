@@ -32,32 +32,25 @@ clean-all: clean
 start *args:
     uvx zensical serve -f zensical.toml {{args}}
 
-# Start local development server (Italian)
-# Default port: 8001 to prevent collision with EN build.
-start-it *args:
-    uvx zensical serve -f zensical.it.toml -a localhost:8001 {{args}}
-
 # Serve production build locally (English)
 serve *args: build-docs
     uvx zensical serve -f zensical.toml --no-reload {{args}}
 
-# Build then serve production site locally (full EN+IT testbed)
+# Build then serve production site locally
 preview *args: build-docs
     uvx zensical serve -f zensical.toml --no-reload {{args}}
 
-# --- BUILD (ADR-020 Dual-Build) ---
+# --- BUILD ---
 
-# Build the static documentation (EN & IT) — ADR-020 dual-build sequence.
+# Build the static documentation (EN) — English-Only ecosystem.
 # Requires the external Tailwind CSS artifact at docs/assets/css/zenzic-tailwind.min.css
 # to be compiled by the human operator before invoking this target.
 build-docs:
     @echo "=> [ZENZIC I/O] Ensuring Tailwind CSS artifact exists..."
     @test -f docs/assets/css/zenzic-tailwind.min.css || (echo "FATAL: zenzic-tailwind.min.css missing. Build external artifact first." && exit 1)
-    @echo "=> [ZENZIC BUILD] Compiling English Documentation (ADR-020 Main)..."
+    @echo "=> [ZENZIC BUILD] Compiling English Documentation..."
     uvx zensical build -f zensical.toml
-    @echo "=> [ZENZIC BUILD] Compiling Italian Documentation (ADR-020 Mirror)..."
-    uvx zensical build -f zensical.it.toml
-    @echo "=> [ZENZIC SUCCESS] Dual-build complete. Output in site/ and site/it/."
+    @echo "=> [ZENZIC SUCCESS] Build complete. Output in site/."
 
 # --- QUALITY GATES ---
 
@@ -70,9 +63,9 @@ lint *args:
 stamp:
     just score --stamp --no-header
 
-# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
+# Recommended final local check (verify sequence: hooks + docs audit + build + score + freshness)
 # Note: --stamp runs at pre-commit time (hook: just-score-stamp). This pre-push gate is read-only.
-verify: _check-hooks release-contracts check-pinning lint-all build-docs verify-codes check
+verify: _check-hooks release-contracts check-pinning lint-all build-docs check
     just score --check-stamp --no-header
 
 # ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
@@ -91,17 +84,13 @@ check-pinning:
     fi
     echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
-# Verify Zxxx code parity between codes.py and finding-codes.md (EN + IT)
-verify-codes:
-    uvx nox -s verify-codes-parity
-
 # --- INTERNAL RECIPES (Hidden from 'just --list') ---
 
 lint-all:
     uvx pre-commit run --all-files
 
 markdownlint:
-    uvx pymarkdownlnt scan docs/ docs-it/
+    uvx pymarkdownlnt scan docs/
 
 check *args:
     #!/usr/bin/env bash
@@ -216,7 +205,7 @@ release part:
     uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
     version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
     git add -u
-    git commit -m "release: bump version to ${version}"
+    git commit -S -s -m "release: bump version to ${version}"
 
 # Show the current project version
 version:
@@ -261,8 +250,6 @@ release-contracts:
     grep -qE '^version:' justfile
     grep -qE '^release part:' justfile
     grep -qE '^release-dry part' justfile
-    grep -qE '^verify:[[:space:]].*\bverify-codes\b' justfile
-    grep -qE '^[[:space:]]+uvx nox -s verify-codes-parity$' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
         echo "release-contracts failed: release part must not use --allow-dirty"
@@ -270,5 +257,9 @@ release-contracts:
     fi
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -qE 'git[[:space:]]+tag'; then
         echo "release-contracts failed: release part must not create tags"
+        exit 1
+    fi
+    if ! grep -q 'git commit -S -s' justfile; then
+        echo "release-contracts failed: all git commits must use DCO (-s) and GPG signing (-S)"
         exit 1
     fi

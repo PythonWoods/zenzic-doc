@@ -6,10 +6,9 @@ Sessions delegate to npm scripts for Node-based tasks and use uvx for
 Python-based tooling (REUSE compliance).
 
 Quick reference:
-    nox -s typecheck            — Static type checking (tsc)
-    nox -s build                — Production build (EN + IT)
-    nox -s reuse                — REUSE/SPDX licence compliance
-    nox -s verify-codes-parity  — Doc-Code Validator: Zxxx parity between .mdx and codes.py
+    nox -s typecheck  — Static type checking (tsc)
+    nox -s build      — Production build (EN + IT)
+    nox -s reuse      — REUSE/SPDX licence compliance
 """
 
 import os
@@ -101,26 +100,3 @@ def build(session: nox.Session) -> None:
 def reuse(session: nox.Session) -> None:
     """Verify REUSE/SPDX licence compliance."""
     session.run("uvx", "reuse", "lint", external=True)
-
-
-@nox.session(name="verify-codes-parity", venv_backend="none")
-def verify_codes_parity(session: nox.Session) -> None:
-    """Run Doc-Code Validator with core interpreter and ACL regex backend.
-
-    Sovereign Resolution (Fail-Closed):
-      - Override: ZENZIC_CORE_PATH
-      - CI canonical: ./_zenzic_core
-      - Dev fallback: ../zenzic
-      - PyPI fallback prohibited.
-    """
-    root = _ROOT
-    core_path = _resolve_core_path(root, session)
-    session.run(
-        "uv",
-        "run",
-        "--project",
-        str(core_path),
-        "python",
-        "scripts/verify_codes_parity.py",
-        external=True,
-    )

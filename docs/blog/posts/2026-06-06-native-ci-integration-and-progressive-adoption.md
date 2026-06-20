@@ -1,5 +1,5 @@
 ---
-slug: zenzic-v0.10.0-native-github-annotations-and-progressive-adoption
+date: 2026-06-06
 title: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
 authors:
   - pythonwoods
@@ -7,6 +7,7 @@ tags:
   - release
   - ci-cd
   - architecture
+template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

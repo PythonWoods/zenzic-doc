@@ -20,11 +20,11 @@ SPDX-License-Identifier: Apache-2.0
   <!-- zenzic:audit-badge -->
   <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square" alt="zenzic-audit">
   <!-- zenzic:score-badge -->
-  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-80_%2F_100-f59e0b?style=flat-square" alt="zenzic-score">
+  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-97_%2F_100-f59e0b?style=flat-square" alt="zenzic-score">
   <a href="https://reuse.software/"><img alt="REUSE 3.x compliant" src="https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square"></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square"></a>
   <a href="https://diataxis.fr/"><img alt="Documentation: Diátaxis" src="https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square"></a>
-  <a href="https://github.com/PythonWoods/zenzic"><img alt="Zenzic" src="https://img.shields.io/badge/Zenzic-v0.13.1-blue?style=flat-square"></a>
+  <a href="https://github.com/PythonWoods/zenzic"><img alt="Zenzic" src="https://img.shields.io/badge/Zenzic-v0.14.0-blue?style=flat-square"></a>
 </p>
 
 ---
