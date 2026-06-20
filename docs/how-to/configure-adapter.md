@@ -83,4 +83,4 @@ engine = "zensical"   # ← this line is what activates ZensicalAdapter
 Third-party adapters (e.g. `zenzic-hugo-adapter`) are discovered automatically once installed as
 Python packages — no Zenzic update required. Register via the `zenzic.adapters` entry-point group.
 
-See [Writing an Adapter](/developers/how-to/implement-adapter) for the full protocol.
+See [Writing an Adapter](../developers/how-to/implement-adapter.md) for the full protocol.

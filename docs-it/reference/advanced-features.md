@@ -293,7 +293,7 @@ scansionato qualsiasi file.
 - **Nessuno stato globale mutabile** — i worker ricevono copie indipendenti del motore
   (via pickle); restituisci tutto lo stato come oggetti `RuleFinding`.
 
-Vedi [Scrivere Regole Plugin](/developers/how-to/write-plugin) per il contratto
+Vedi [Scrivere Regole Plugin](../developers/how-to/write-plugin.md) per il contratto
 completo, esempi e istruzioni di pacchettizzazione.
 
 ---

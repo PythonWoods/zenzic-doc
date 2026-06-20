@@ -28,7 +28,7 @@ Per i varianti dinamici Shields.io e il wiring CI/CD, vedi la [guida ai Badge](.
 Il documento interattivo Brand System mostra l'intera Color Palette, le varianti del logomark,
 la social card, i campioni tipografici e le norme d'uso in un'unica pagina formattata con precisione:
 
-[Apri il Brand System &rarr;](pathname:///assets/brand/zenzic-brand-system.html)
+[Apri Brand System &rarr;](https://zenzic.dev/assets/brand/zenzic-brand-system.html)
 
 ## Download
 

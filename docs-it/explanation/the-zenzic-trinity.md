@@ -114,7 +114,7 @@ La Trinità non è una gerarchia — è un **ciclo**. Ogni repository informa e 
 Una modifica al Core che non si riflette nell'Anima è un **ghost commit**. Una Action che espone
 comportamenti non documentati nell'Anima è un **contratto silenzioso**. La Trinità è completa
 solo quando tutti e tre sono sincronizzati — garantito dalla
-[Legge della Testimonianza Contemporanea](/developers/explanation/governance/evolution_policy).
+[Legge della Testimonianza Contemporanea](../developers/explanation/governance/evolution_policy.md).
 
 ---
 

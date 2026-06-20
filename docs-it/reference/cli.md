@@ -751,7 +751,7 @@ Install a third-party adapter or choose from the list above.
 ```
 
 Gli adapter di terze parti vengono scoperti automaticamente una volta installati — nessun
-aggiornamento Zenzic richiesto. Vedi [Scrivere un Adapter](/developers/how-to/implement-adapter).
+aggiornamento Zenzic richiesto. Vedi [Scrivere un Adapter](../developers/how-to/implement-adapter.md).
 
 ---
 
