@@ -12,6 +12,5 @@ build:
   commands:
     - python -m pip install uv
     - uvx zensical build -f zensical.toml
-    - uvx zensical build -f zensical.it.toml
     - mkdir --parents $READTHEDOCS_OUTPUT/html/
     - cp --recursive site/* $READTHEDOCS_OUTPUT/html/

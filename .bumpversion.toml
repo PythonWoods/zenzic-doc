@@ -27,12 +27,6 @@ replace = 'version: "{new_version}"'
 regex = true
 
 [[tool.bumpversion.files]]
-filename = "docs-it/how-to/configure-ci-cd.md"
-search = 'version:\s*"?v?{current_version}"?'
-replace = 'version: "{new_version}"'
-regex = true
-
-[[tool.bumpversion.files]]
 filename = "README.md"
 search = "badge/Zenzic-v{current_version}-blue"
 replace = "badge/Zenzic-v{new_version}-blue"
@@ -48,6 +42,6 @@ search = 'zenzic_version = "{current_version}"'
 replace = 'zenzic_version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "zensical.it.toml"
-search = 'zenzic_version = "{current_version}"'
-replace = 'zenzic_version = "{new_version}"'
+filename = "overrides/partials/homepage/hero.html"
+search = 'v{current_version}'
+replace = 'v{new_version}'

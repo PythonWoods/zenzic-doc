@@ -22,7 +22,7 @@ placeholder_max_words = 0
 engine         = "zensical"
 base_url       = "/"
 default_locale = "en"
-locales        = ["it"]
+locales        = []
 
 [project_metadata]
 release_name = "Magnetite"
@@ -32,35 +32,19 @@ badge_stamp_files = ["README.md"]
 suppression_cap = 20
 suppression_cap_fail_hard = true
 brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
-i18n_parity = true
 
 [governance.per_file_ignores]
 "docs/assets/brand/svg/zenzic-icon.svg"    = ["Z405"]  # Referenced by Jinja2 hero template, invisible to Zenzic static analysis
-"docs-it/assets/brand/svg/zenzic-icon.svg" = ["Z405"]  # Mirror of EN asset — same rationale (ADR-020)
 "docs/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
-"docs-it/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
 
 
 
 [governance.directory_policies]
 "docs/assets/**"                  = ["Z402"]
-"docs-it/assets/**"               = ["Z402"]
 "docs/blog/**"                    = ["Z601", "Z602", "Z503", "Z907"]  # Blog posts are EN-only; Z503 exempted (intentionally invalid snippets used as counter-examples)
-"docs-it/blog/**"                 = ["Z402"]           # IT blog index is a stub pointing to EN posts
 "docs/explanation/mineral-path.md"    = ["Z601"]
-"docs-it/explanation/mineral-path.md" = ["Z601"]
 "docs/tutorials/examples/**"      = ["Z401"]
 "docs/developers/how-to/contribute/**" = ["Z107"]
-
-[i18n]
-enabled = true
-base_lang = "en"
-base_source = "docs"
-strict_parity = true
-require_frontmatter_parity = ["title", "description"]
-
-[i18n.targets]
-it = "docs-it"
 
 [network]
 cache_ttl_hours = 24

@@ -33,7 +33,6 @@ jobs:
       - name: Build Zensical
         run: |
           uvx zensical build -f zensical.toml
-          uvx zensical build -f zensical.it.toml
 
       - name: Archive build output
         run: tar -czf "docs-${{ github.ref_name }}.tar.gz" site

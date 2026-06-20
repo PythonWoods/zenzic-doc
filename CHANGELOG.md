@@ -9,6 +9,13 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
+## [0.14.0] - Unreleased
+
+### Removed
+
+- **I18N Eradication:** Deprecated ADR-020 (Mirror Law) and entirely removed Italian bilingual support (`docs-it/`, `zensical.it.toml`). Zenzic is now a strictly English-Only ecosystem to streamline maintenance and CI/CD performance.
+- **Dark Mode Enforcement:** Removed Light Mode support from the landing page. Enforced a unified Dark-Mode (`slate`) aesthetic. The theme toggle has been eliminated.
+
 ## [0.13.2] - 2026-06-20
 
 ### Changed

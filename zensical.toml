@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 #
-# zensical.toml — English Build Configuration (ADR-020: EN Canonical)
+# zensical.toml — English Build Configuration (English-Only Ecosystem)
 # ADR-037 Compliance: No hardcoded SemVer. Version injected via [extra].
-# ADR-020: Parallel Italian build → zensical.it.toml (docs_dir = "docs-it")
 
 [project]
 site_name   = "Zenzic — Documentation Quality Gate"
@@ -55,8 +54,7 @@ extra_css = [
 [project.theme]
 custom_dir = "overrides"
 palette    = [
-  { scheme = "slate", primary = "black", accent = "indigo", toggle = { icon = "material/brightness-4", name = "Switch to light mode" } },
-  { scheme = "default", primary = "indigo", accent = "indigo", toggle = { icon = "material/brightness-7", name = "Switch to dark mode" } }
+  { scheme = "slate", primary = "black", accent = "indigo" }
 ]
 features   = [
   "navigation.tabs",
@@ -76,16 +74,6 @@ features   = [
 #   uvx zensical build -f zensical.toml --extra zenzic_version=0.11.0
 zenzic_version = "0.13.2"
 
-
-[[extra.alternate]]
-name = "English"
-link = "/"
-lang = "en"
-
-[[extra.alternate]]
-name = "Italiano"
-link = "/it/"
-lang = "it"
 
 [markdown_extensions]
 attr_list   = true

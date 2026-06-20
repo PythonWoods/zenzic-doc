@@ -36,7 +36,6 @@ jobs:
       - name: Build Zensical
         run: |
           uvx zensical build -f zensical.toml
-          uvx zensical build -f zensical.it.toml
 
       - name: Set artifact name
         id: vars

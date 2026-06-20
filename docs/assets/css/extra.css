@@ -693,8 +693,9 @@
 
 /* ── Tailwind/MkDocs Bridge: Rem Scaling Fix ─────────────────────────────── */
 /* MkDocs Material sets html { font-size: 125% } for accessibility.
- * This blows up Tailwind's rem values by 25%. We reset to 100% (16px)
- * ONLY on pages that contain the .zz-tailwind-root semantic anchor. */
-html:has(.zz-tailwind-root) {
-  font-size: 100% !important;
+ * This blows up Tailwind's rem values by 25%.
+ * Reset applied directly to the landing page wrapper (not html) to avoid
+ * corrupting MkDocs Material's global header proportions. */
+.zz-tailwind-root {
+  font-size: 16px !important;
 }

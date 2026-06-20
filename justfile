@@ -32,32 +32,25 @@ clean-all: clean
 start *args:
     uvx zensical serve -f zensical.toml {{args}}
 
-# Start local development server (Italian)
-# Default port: 8001 to prevent collision with EN build.
-start-it *args:
-    uvx zensical serve -f zensical.it.toml -a localhost:8001 {{args}}
-
 # Serve production build locally (English)
 serve *args: build-docs
     uvx zensical serve -f zensical.toml --no-reload {{args}}
 
-# Build then serve production site locally (full EN+IT testbed)
+# Build then serve production site locally
 preview *args: build-docs
     uvx zensical serve -f zensical.toml --no-reload {{args}}
 
-# --- BUILD (ADR-020 Dual-Build) ---
+# --- BUILD ---
 
-# Build the static documentation (EN & IT) — ADR-020 dual-build sequence.
+# Build the static documentation (EN) — English-Only ecosystem.
 # Requires the external Tailwind CSS artifact at docs/assets/css/zenzic-tailwind.min.css
 # to be compiled by the human operator before invoking this target.
 build-docs:
     @echo "=> [ZENZIC I/O] Ensuring Tailwind CSS artifact exists..."
     @test -f docs/assets/css/zenzic-tailwind.min.css || (echo "FATAL: zenzic-tailwind.min.css missing. Build external artifact first." && exit 1)
-    @echo "=> [ZENZIC BUILD] Compiling English Documentation (ADR-020 Main)..."
+    @echo "=> [ZENZIC BUILD] Compiling English Documentation..."
     uvx zensical build -f zensical.toml
-    @echo "=> [ZENZIC BUILD] Compiling Italian Documentation (ADR-020 Mirror)..."
-    uvx zensical build -f zensical.it.toml
-    @echo "=> [ZENZIC SUCCESS] Dual-build complete. Output in site/ and site/it/."
+    @echo "=> [ZENZIC SUCCESS] Build complete. Output in site/."
 
 # --- QUALITY GATES ---
 
