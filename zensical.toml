@@ -75,7 +75,7 @@ features   = [
 # ADR-037: No hardcoded SemVer in any .html or .md source.
 # CI pipeline passes the current version at build time, e.g.:
 #   uvx zensical build -f zensical.toml --extra zenzic_version=0.11.0
-zenzic_version = "0.13.2"
+zenzic_version = "0.14.0"
 
 
 [markdown_extensions]
