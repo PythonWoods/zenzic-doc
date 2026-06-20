@@ -63,9 +63,9 @@ lint *args:
 stamp:
     just score --stamp --no-header
 
-# Recommended final local check (verify sequence: hooks + docs audit + build + codes parity + score + freshness)
+# Recommended final local check (verify sequence: hooks + docs audit + build + score + freshness)
 # Note: --stamp runs at pre-commit time (hook: just-score-stamp). This pre-push gate is read-only.
-verify: _check-hooks release-contracts check-pinning lint-all build-docs verify-codes check
+verify: _check-hooks release-contracts check-pinning lint-all build-docs check
     just score --check-stamp --no-header
 
 # ADR-089 — Immutable Infrastructure guard on local hooks (internal CI policy,
@@ -84,17 +84,13 @@ check-pinning:
     fi
     echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
-# Verify Zxxx code parity between codes.py and finding-codes.md (EN + IT)
-verify-codes:
-    uvx nox -s verify-codes-parity
-
 # --- INTERNAL RECIPES (Hidden from 'just --list') ---
 
 lint-all:
     uvx pre-commit run --all-files
 
 markdownlint:
-    uvx pymarkdownlnt scan docs/ docs-it/
+    uvx pymarkdownlnt scan docs/
 
 check *args:
     #!/usr/bin/env bash
@@ -254,8 +250,6 @@ release-contracts:
     grep -qE '^version:' justfile
     grep -qE '^release part:' justfile
     grep -qE '^release-dry part' justfile
-    grep -qE '^verify:[[:space:]].*\bverify-codes\b' justfile
-    grep -qE '^[[:space:]]+uvx nox -s verify-codes-parity$' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     if sed -n '/^release part:/,/^[^[:space:]].*:/p' justfile | tail -n +2 | grep -q -- '--allow-dirty'; then
         echo "release-contracts failed: release part must not use --allow-dirty"

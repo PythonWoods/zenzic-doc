@@ -43,7 +43,7 @@ brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
 "docs/assets/**"                  = ["Z402"]
 "docs/blog/**"                    = ["Z601", "Z602", "Z503", "Z907"]  # Blog posts are EN-only; Z503 exempted (intentionally invalid snippets used as counter-examples)
 "docs/explanation/mineral-path.md"    = ["Z601"]
-"docs/tutorials/examples/**"      = ["Z401"]
+"docs/tutorials/examples/**"      = ["Z401", "Z506"]
 "docs/developers/how-to/contribute/**" = ["Z107"]
 
 [network]

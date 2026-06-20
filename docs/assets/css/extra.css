@@ -699,3 +699,18 @@
 .zz-tailwind-root {
   font-size: 16px !important;
 }
+
+/* Hide GitHub stats widget on the Landing Page to reduce visual noise */
+html:has(.zz-tailwind-root) .md-header__source {
+    display: none !important;
+}
+
+/* Aggressive Typography Override for Hero Metrics */
+.zz-tailwind-root .text-3xl,
+.zz-tailwind-root .md\:text-4xl {
+    font-size: 2rem !important; /* Force smaller metric numbers */
+    line-height: 1.2 !important;
+}
+.zz-tailwind-root .text-\[11px\] {
+    font-size: 0.65rem !important; /* Force smaller metric labels */
+}

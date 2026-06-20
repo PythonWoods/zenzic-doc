@@ -15,6 +15,7 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 - **I18N Eradication:** Deprecated ADR-020 (Mirror Law) and entirely removed Italian bilingual support (`docs-it/`, `zensical.it.toml`). Zenzic is now a strictly English-Only ecosystem to streamline maintenance and CI/CD performance.
 - **Dark Mode Enforcement:** Removed Light Mode support from the landing page. Enforced a unified Dark-Mode (`slate`) aesthetic. The theme toggle has been eliminated.
+- **Code Parity Validator Removed:** `scripts/verify_codes_parity.py` and its nox session `verify-codes-parity` deleted. The Z602 I18N_PARITY scanner has been eradicated from Zenzic core; the parity validator is no longer relevant. The nox session docstring updated accordingly.
 
 ## [0.13.2] - 2026-06-20
 
