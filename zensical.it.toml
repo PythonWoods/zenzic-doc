@@ -23,28 +23,29 @@ extra_css = [
 # Ogni [[project.nav]] è un tab di primo livello (navigation.tabs).
 # Le pagine devono essere tutte esplicite (Zensical NON auto-espande directory path).
 
+
 [[project.nav]]
-Home = "index.md"
+"Home" = "index.md"
 
 [[project.nav]]
 "Documentazione Utente" = [
-  {Tutorials = ["tutorials/first-audit.md", {Examples = ["tutorials/examples/index.md", "tutorials/examples/z1xx-links/z101-broken-links.md", "tutorials/examples/z1xx-links/z102-anchor-missing.md", "tutorials/examples/z1xx-links/z103-orphan-link.md", "tutorials/examples/z1xx-links/z104-file-not-found.md", "tutorials/examples/z1xx-links/z105-absolute-path.md", "tutorials/examples/z1xx-links/z107-circular-anchor.md", "tutorials/examples/z1xx-links/z108-empty-link-text.md", "tutorials/examples/z1xx-links/z109-external-link-broken.md", "tutorials/examples/z2xx-security/z201-credentials.md", "tutorials/examples/z2xx-security/z202-path-traversal.md", "tutorials/examples/z2xx-security/z204-forbidden-term.md", "tutorials/examples/z3xx-references/z301-dangling-ref.md", "tutorials/examples/z3xx-references/z302-dead-def.md", "tutorials/examples/z3xx-references/z303-duplicate-def.md", "tutorials/examples/z4xx-topology/z401-missing-directory-index.md", "tutorials/examples/z4xx-topology/z402-orphan-page.md", "tutorials/examples/z4xx-topology/z403-missing-alt.md", "tutorials/examples/z4xx-topology/z404-config-asset-missing.md", "tutorials/examples/z4xx-topology/z405-unused-assets.md", "tutorials/examples/z4xx-topology/z406-nav-contract.md", "tutorials/examples/z5xx-content/z501-placeholder.md", "tutorials/examples/z5xx-content/z502-short-content.md", "tutorials/examples/z5xx-content/z503-snippet-error.md", "tutorials/examples/z5xx-content/z505-untagged-code-block.md", "tutorials/examples/z6xx-brand/z601-brand-obsolescence.md", "tutorials/examples/z6xx-brand/z602-i18n-parity.md"]}]},
+  {"Tutorials" = ["tutorials/first-audit.md", {"Examples" = ["tutorials/examples/index.md", "tutorials/examples/z1xx-links/z101-broken-links.md", "tutorials/examples/z1xx-links/z102-anchor-missing.md", "tutorials/examples/z1xx-links/z103-orphan-link.md", "tutorials/examples/z1xx-links/z104-file-not-found.md", "tutorials/examples/z1xx-links/z105-absolute-path.md", "tutorials/examples/z1xx-links/z107-circular-anchor.md", "tutorials/examples/z1xx-links/z108-empty-link-text.md", "tutorials/examples/z1xx-links/z109-external-link-broken.md", "tutorials/examples/z2xx-security/z201-credentials.md", "tutorials/examples/z2xx-security/z202-path-traversal.md", "tutorials/examples/z2xx-security/z204-forbidden-term.md", "tutorials/examples/z3xx-references/z301-dangling-ref.md", "tutorials/examples/z3xx-references/z302-dead-def.md", "tutorials/examples/z3xx-references/z303-duplicate-def.md", "tutorials/examples/z4xx-topology/z401-missing-directory-index.md", "tutorials/examples/z4xx-topology/z402-orphan-page.md", "tutorials/examples/z4xx-topology/z403-missing-alt.md", "tutorials/examples/z4xx-topology/z404-config-asset-missing.md", "tutorials/examples/z4xx-topology/z405-unused-assets.md", "tutorials/examples/z4xx-topology/z406-nav-contract.md", "tutorials/examples/z5xx-content/z501-placeholder.md", "tutorials/examples/z5xx-content/z502-short-content.md", "tutorials/examples/z5xx-content/z503-snippet-error.md", "tutorials/examples/z5xx-content/z505-untagged-code-block.md", "tutorials/examples/z6xx-brand/z601-brand-obsolescence.md", "tutorials/examples/z6xx-brand/z602-i18n-parity.md"]}]},
   {"Guide Pratiche" = ["how-to/install.md", "how-to/initialize-configuration.md", "how-to/configure-ci-cd.md", "how-to/add-badges.md", "how-to/handle-technical-debt.md", "how-to/add-custom-rules.md", "how-to/configure-adapter.md", "how-to/configure-privacy-gate.md", "how-to/configuration-strategy.md", "how-to/manage-cross-site-links.md", "how-to/migrate-engines.md", "how-to/use-brand-system.md", "how-to/workflow-integration.md", "how-to/configure-social-metadata.md"]},
-  {Reference = ["reference/index.md", "reference/finding-codes.md", "reference/checks.md", "reference/cli.md", "reference/configuration-reference.md", "reference/scoring-algorithm.md", "reference/suppression-policy.md", "reference/engines.md", "reference/advanced-features.md", "reference/api-json.md", "reference/brand-kit.md", "reference/brand-system.md", "reference/glossary.md", "reference/zenzic-action.md"]},
-  {Spiegazioni = ["explanation/why-zenzic.md", "explanation/architecture.md", "explanation/core-mechanics.md", "explanation/scoring-design.md", "explanation/scoring-system.md", "explanation/discovery.md", "explanation/configuration-loading.md", "explanation/exclusion-design.md", "explanation/structural-integrity.md", "explanation/engine-migration-design.md", "explanation/the-zenzic-trinity.md", "explanation/github-action-internals.md", "explanation/privacy-gate.md", "explanation/mineral-path.md", "explanation/brand-philosophy.md", "explanation/community-index.md"]},
+  {"Reference" = ["reference/index.md", "reference/finding-codes.md", "reference/checks.md", "reference/cli.md", "reference/configuration-reference.md", "reference/scoring-algorithm.md", "reference/suppression-policy.md", "reference/engines.md", "reference/advanced-features.md", "reference/api-json.md", "reference/brand-kit.md", "reference/brand-system.md", "reference/glossary.md", "reference/zenzic-action.md"]},
+  {"Spiegazioni" = ["explanation/why-zenzic.md", "explanation/architecture.md", "explanation/core-mechanics.md", "explanation/scoring-design.md", "explanation/scoring-system.md", "explanation/discovery.md", "explanation/configuration-loading.md", "explanation/exclusion-design.md", "explanation/structural-integrity.md", "explanation/engine-migration-design.md", "explanation/the-zenzic-trinity.md", "explanation/github-action-internals.md", "explanation/privacy-gate.md", "explanation/mineral-path.md", "explanation/brand-philosophy.md", "explanation/community-index.md"]},
 ]
 
 [[project.nav]]
 # Documentazione Developer: 36 pagine da cd99bfd (Diátaxis: Come fare / Reference / Spiegazioni)
 "Documentazione Developer" = [
   "developers/index.md",
-  {"Come fare" = [{Contribuire = ["developers/how-to/contribute/index.md", "developers/how-to/contribute/pull-requests.md", "developers/how-to/contribute/report-a-bug.md", "developers/how-to/contribute/report-a-docs-issue.md", "developers/how-to/contribute/request-a-change.md"]}, "developers/how-to/implement-adapter.md", "developers/how-to/release-governance-protocol.md", "developers/how-to/write-a-check.md", "developers/how-to/write-plugin.md"]},
-  {Reference = ["developers/reference/adapter-api.md", "developers/reference/adapter-examples.md", "developers/reference/cli-architecture.md", "developers/reference/credential-scanner-obligations.md", "developers/reference/supply-chain-assurance-profile.md", "developers/reference/zenzic-style.md"]},
-  {Spiegazioni = ["developers/explanation/adapter-internals.md", "developers/explanation/adr-agnostic-universalism.md", "developers/explanation/adr-bilingual-structural.md", "developers/explanation/adr-decentralized-cli.md", "developers/explanation/adr-discovery.md", "developers/explanation/adr-lint-source.md", "developers/explanation/adr-native-telemetry.md", "developers/explanation/adr-parallel-early-termination.md", "developers/explanation/adr-path-sovereignty.md", "developers/explanation/adr-regex-acl.md", "developers/explanation/adr-unified-perimeter.md", "developers/explanation/adr-vault.md", "developers/explanation/core-laws.md", "developers/explanation/mdx-asset-rationale.md", "developers/explanation/sovereign-verification-model.md", {Governance = ["developers/explanation/governance/index.md", "developers/explanation/governance/evolution_policy.md", "developers/explanation/governance/exit_strategy.md", "developers/explanation/governance/licensing.md", "developers/explanation/governance/technical-debt.md"]}]},
+  {"Come fare" = [{"Contribuire" = ["developers/how-to/contribute/index.md", "developers/how-to/contribute/pull-requests.md", "developers/how-to/contribute/report-a-bug.md", "developers/how-to/contribute/report-a-docs-issue.md", "developers/how-to/contribute/request-a-change.md"]}, "developers/how-to/implement-adapter.md", "developers/how-to/release-governance-protocol.md", "developers/how-to/write-a-check.md", "developers/how-to/write-plugin.md"]},
+  {"Reference" = ["developers/reference/adapter-api.md", "developers/reference/adapter-examples.md", "developers/reference/cli-architecture.md", "developers/reference/credential-scanner-obligations.md", "developers/reference/supply-chain-assurance-profile.md", "developers/reference/zenzic-style.md"]},
+  {"Spiegazioni" = ["developers/explanation/adapter-internals.md", "developers/explanation/adr-agnostic-universalism.md", "developers/explanation/adr-bilingual-structural.md", "developers/explanation/adr-decentralized-cli.md", "developers/explanation/adr-discovery.md", "developers/explanation/adr-lint-source.md", "developers/explanation/adr-native-telemetry.md", "developers/explanation/adr-parallel-early-termination.md", "developers/explanation/adr-path-sovereignty.md", "developers/explanation/adr-regex-acl.md", "developers/explanation/adr-unified-perimeter.md", "developers/explanation/adr-vault.md", "developers/explanation/core-laws.md", "developers/explanation/mdx-asset-rationale.md", "developers/explanation/sovereign-verification-model.md", {"Governance" = ["developers/explanation/governance/index.md", "developers/explanation/governance/evolution_policy.md", "developers/explanation/governance/exit_strategy.md", "developers/explanation/governance/licensing.md", "developers/explanation/governance/technical-debt.md"]}]},
 ]
 
 [[project.nav]]
-Blog = ["blog/index.md"]
+"Blog" = ["blog/index.md"]
 
 [project.theme]
 custom_dir = "overrides"
@@ -64,7 +65,19 @@ features   = [
 ]
 
 [extra]
-zenzic_version = "current"
+zenzic_version = "0.13.2"
+
+
+[[extra.alternate]]
+name = "English"
+link = "/"
+lang = "en"
+
+[[extra.alternate]]
+name = "Italiano"
+link = "/it/"
+lang = "it"
+
 
 [markdown_extensions]
 attr_list   = true

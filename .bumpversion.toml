@@ -36,3 +36,18 @@ regex = true
 filename = "README.md"
 search = "badge/Zenzic-v{current_version}-blue"
 replace = "badge/Zenzic-v{new_version}-blue"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "zensical.toml"
+search = 'zenzic_version = "{current_version}"'
+replace = 'zenzic_version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "zensical.it.toml"
+search = 'zenzic_version = "{current_version}"'
+replace = 'zenzic_version = "{new_version}"'

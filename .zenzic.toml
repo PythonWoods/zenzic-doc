@@ -41,6 +41,7 @@ i18n_parity = true
 "docs-it/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
 
 
+
 [governance.directory_policies]
 "docs/assets/**"                  = ["Z402"]
 "docs-it/assets/**"               = ["Z402"]

@@ -113,6 +113,11 @@
   display: none !important;
 }
 
+/* Hide the 'Home' tab from the top navigation */
+.md-tabs__list > :first-child {
+    display: none !important;
+}
+
 /* ── Source widget: icona tag per la versione ──────────────────────────── */
 
 .md-source__fact--version::before {
@@ -640,3 +645,48 @@
 .md-typeset .grid.cards ul {
   margin-bottom: 0;
 }
+
+/* ── Proportional Polish (Landing Page Scale Down) ────────────────────────── */
+
+/* Scale down h2, h3, and paragraph text in landing page sections to match Hero */
+.md-content__inner:has(.zz-hero) section h2 {
+  font-size: 1.75rem !important;
+  line-height: 1.2 !important;
+}
+
+.md-content__inner:has(.zz-hero) section h3 {
+  font-size: 1.125rem !important;
+}
+
+.md-content__inner:has(.zz-hero) section p:not(.font-mono) {
+  font-size: 0.95rem !important;
+}
+
+/* Scale down Action Buttons */
+.zz-btn { padding: 0.5rem 1.25rem !important; font-size: 0.85rem !important; }
+
+/* Badge styles */
+.zz-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: var(--md-code-font-family);
+    font-size: 0.8rem;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+.zz-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #818cf8;
+}
+
+/* Metrics styling */
+.zz-metrics { gap: 1.5rem; margin-top: 2.5rem; }
+.zz-metric__value { font-size: 2rem !important; font-weight: 700; }
+.zz-metric__label { font-size: 0.7rem !important; letter-spacing: 0.05em; }
