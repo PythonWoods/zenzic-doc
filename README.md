@@ -24,7 +24,7 @@ SPDX-License-Identifier: Apache-2.0
   <a href="https://reuse.software/"><img alt="REUSE 3.x compliant" src="https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square"></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square"></a>
   <a href="https://diataxis.fr/"><img alt="Documentation: Diátaxis" src="https://img.shields.io/badge/Docs-Di%C3%A1taxis-brightgreen?style=flat-square"></a>
-  <a href="https://github.com/PythonWoods/zenzic"><img alt="Zenzic" src="https://img.shields.io/badge/Zenzic-v0.13.1-blue?style=flat-square"></a>
+  <a href="https://github.com/PythonWoods/zenzic"><img alt="Zenzic" src="https://img.shields.io/badge/Zenzic-v0.13.2-blue?style=flat-square"></a>
 </p>
 
 ---
