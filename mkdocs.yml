@@ -149,6 +149,8 @@ nav:
         - developers/explanation/governance/licensing.md
         - developers/explanation/governance/technical-debt.md
 
+  - Blog: blog/
+
 
 theme:
   name: material
@@ -201,3 +203,5 @@ plugins:
 validation:
   links:
     unrecognized_links: ignore
+  nav:
+    not_found: ignore

@@ -44,7 +44,6 @@ excluded_external_urls = [
     "https://github.com/PythonWoods/zenzic-action",
     "https://github.com/PythonWoods/zenzic-doc",
     "https://developers.facebook.com/tools/debug/",
-    "https://zenzic.dev/assets/brand/zenzic-brand-system.html",
 ]
 
 # Z204 Privacy Gate — terms that must never appear in published docs.
@@ -71,7 +70,7 @@ placeholder_max_words = 0
 
 # --- ENGINE CONTEXT ---
 [build_context]
-engine         = "zensical" # Supported: mkdocs, zensical, standalone
+engine         = "mkdocs" # Supported: mkdocs, zensical, standalone
 base_url       = "/"
 default_locale = "en"
 locales        = []
@@ -111,6 +110,7 @@ brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
 #
 [governance.per_file_ignores]
 "docs/assets/brand/svg/zenzic-icon.svg"    = ["Z405"]  # Referenced by Jinja2 hero template, invisible to Zenzic static analysis
+"docs/assets/brand/zenzic-brand-system.html" = ["Z405"] # HTML asset referenced via standard markdown link, invisible to Zenzic asset-use graph
 "docs/tutorials/examples/z1xx-links/z107-circular-anchor.md" = ["Z107"]
 
 # ---------------------------------------------------------------------------
