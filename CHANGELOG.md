@@ -9,6 +9,12 @@ Versions track the Zenzic Core release line under the Branch Parity Rule.
 
 ---
 
+## [0.14.1] - Unreleased
+
+### Fixed
+- **Blog UX**: Eradicated double titles and redundant metadata from the body of all blog posts. Unified frontmatter across the corpus. Fixed the author avatar URL in `.authors.yml` to resolve correctly.
+- **Blog Truncation**: Migrated legacy Docusaurus truncation tags (`<!-- truncate -->`) to the MkDocs Material standard (`<!-- more -->`) across all blog posts to ensure the blog index renders cleanly.
+
 ## [0.14.0] - Unreleased
 
 ### Added

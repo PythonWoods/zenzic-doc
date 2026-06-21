@@ -1,5 +1,4 @@
 ---
-icon: lucide/award
 sidebar_label: "Official Badges"
 description: "Add CI status and DQS Score badges to your README using Dual-Badge Telemetry."
 ---

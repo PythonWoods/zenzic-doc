@@ -49,7 +49,7 @@ The code registry is governed by immutable contract surfaces:
 !!! info "Per-line suppression syntax"
     Suppress a finding on a specific line with a format-aware comment on that same line.\
     **Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
-    **MDX (.md):** `<!-- zenzic:ignore: Zxxx -->`\
+    **Markdown (.md):** `<!-- zenzic:ignore: Zxxx -->`\
     See [Suppression Policy](./suppression-policy.md) for the full reference.
 
 ### Exit Code Contract
@@ -183,7 +183,7 @@ The link target exists in the VSM but is not reachable through any navigation st
 Low-level filesystem error: the engine could not open a file referenced by a link.
 
 ```text
-blog/post.mdx:12: '/blog/zenzic-v070' not found in the site map
+blog/post.md:12: '/blog/zenzic-v070' not found in the site map
 💡 Did you mean: '/blog/zenzic-v070-release/'?
 ```
 
@@ -444,7 +444,7 @@ Placeholder strings (`TODO`, `FIXME`, `[INSERT IMAGE HERE]`) committed to produc
 
 **Severity:** `warning` · **Penalty:** −1.0 pt (Content) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z5xx-content/z502-short-content)
 
-A page contains fewer than 50 words of rendered prose (frontmatter, MDX comments, and HTML comments excluded). A page below this threshold cannot contain the semantic components necessary to answer a reader's question.
+A page contains fewer than 50 words of rendered prose (frontmatter, Markdown comments, and HTML comments excluded). A page below this threshold cannot contain the semantic components necessary to answer a reader's question.
 
 **Fix:** Expand the page, or combine it with a related page.
 
@@ -494,7 +494,7 @@ A deprecated release name or brand identifier appears in a scanned file. Configu
 **Fix:**
 1. Update the text to the active release name.
 2. For intentional historical references in `.md`: append `<!-- zenzic:ignore: Z601 -->`.
-3. For `.mdx` files: append `<!-- zenzic:ignore: Z601 -->`.
+3. For `.md` files: append `<!-- zenzic:ignore: Z601 -->`.
 4. To exempt a file pattern entirely, add it to `obsolete_names_exclude_patterns` in `.zenzic.toml`.
 
 ### Z602: I18N_PARITY {#z602}
@@ -528,7 +528,7 @@ A rule exceeded the execution time limit (default > 30s). Almost always caused b
 
 **Severity:** `note` · **Penalty:** none · **Exit:** 0 · **Suppressible:** Yes (informational)
 
-No `.md` / `.mdx` files found in the resolved `docs_root` after all exclusion layers. Suppressed in machine-output formats (`json`, `sarif`).
+No `.md` / `.md` files found in the resolved `docs_root` after all exclusion layers. Suppressed in machine-output formats (`json`, `sarif`).
 
 **Fix:**
 1. Verify `docs_dir` in `.zenzic.toml` (or `--docs-dir`) points to the correct directory.

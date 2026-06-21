@@ -192,11 +192,11 @@ The `SPDX-License-Identifier` line stays last and appears only once per file.
     does not trigger on these lines either, because copyright email addresses
     are structurally distinct from credential patterns.
 
-### MDX / JSX files
+### HTML / Jinja2 files
 
-Use MDX comment syntax:
+Use HTML comment syntax:
 
-```mdx
+```html
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-FileCopyrightText: 2026 Your Name <your@email.example> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

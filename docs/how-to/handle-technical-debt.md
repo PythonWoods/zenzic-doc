@@ -29,7 +29,7 @@ Suppression Audit: 7/30 (inline: 5, per-file: 2)
 
 This means:
 - **7 active suppressions** are hiding findings from the audit stream.
-- **5** are inline `zenzic:ignore` comments in Markdown/MDX files.
+- **5** are inline `zenzic:ignore` comments in Markdown files.
 - **2** are per-file entries in `governance.per_file_ignores`.
 - The debt formula reduced the score by **7 pts**.
 

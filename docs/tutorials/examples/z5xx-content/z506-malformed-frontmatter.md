@@ -1,4 +1,4 @@
--- <!-- zenzic:ignore: Z506 -->
+--
 title: "Z506 Gallery — MALFORMED_FRONTMATTER"
 description: "Live example showing a malformed frontmatter delimiter detected by Zenzic."
 ---
@@ -13,7 +13,7 @@ description: "Live example showing a malformed frontmatter delimiter detected by
 
 The opening frontmatter delimiter on line 1 must be **exactly** `---`. Any first line that starts with two or more dashes but is **not** exactly `---` is silently ignored by most static-site engines. The consequence is that `template:`, `title:`, and all other metadata keys are rendered as raw prose instead of being parsed.
 
-This file intentionally opens with `--` (two dashes) to trigger the rule. The suppression marker `<!-- zenzic:ignore: Z506 -->` on line 1 keeps this Gallery page green.
+This file intentionally opens with `--` (two dashes) to trigger the rule. The `directory_policies` configuration in `.zenzic.toml` keeps this Gallery page green.
 
 ## Terminal Output
 

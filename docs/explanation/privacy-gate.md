@@ -1,5 +1,4 @@
 ---
-icon: lucide/shield
 title: "Privacy Gate Architecture"
 sidebar_label: "Privacy Gate Architecture"
 sidebar_position: 3

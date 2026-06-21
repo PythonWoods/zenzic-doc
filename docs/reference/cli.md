@@ -1,5 +1,4 @@
 ---
-icon: lucide/terminal
 sidebar_label: "CLI Commands"
 description: "Every Zenzic CLI command, flag, exit code, and output format."
 ---

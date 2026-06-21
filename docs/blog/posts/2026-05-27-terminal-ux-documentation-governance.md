@@ -1,17 +1,9 @@
 ---
-date: 2026-05-27
 title: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
+date: 2026-05-27
 authors:
   - pythonwoods
-tags:
-  - engineering-logs
-  - architecture
-  - governance
-description: >
-  An engineering analysis of Zenzic's terminal interface: information density
-  in the run header, caret-precision diagnostic rendering, suppression debt
-  mathematics, and the invariant semantics of exit codes.
-template: blog_post.html
+description: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -23,7 +15,7 @@ pipeline when one does not.
 
 This analysis reflects the terminal contract as shipped on the v0.9.0 release line.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## Beyond Linting
 
@@ -101,7 +93,7 @@ example — are structurally inactive for that run. The label is the sole
 communication of this fact.
 
 **Scope decomposition** (`20 files (14 docs, 6 assets)`). The file count is
-split into two categories: documents (`.md` and `.mdx`) and assets (images,
+split into two categories: documents (`.md` and `.md`) and assets (images,
 data files, schema definitions, and any other non-document file within the
 analyzed tree). The split is not cosmetic: document checks operate on file
 content; asset checks operate on the asset manifest. Different scanners activate

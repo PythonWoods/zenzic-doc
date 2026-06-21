@@ -1,16 +1,9 @@
 ---
-date: 2026-05-24
 title: "Engineering Deep Dive: v0.8.0 Architecture"
+date: 2026-05-24
 authors:
   - pythonwoods
-tags:
-  - engineering-logs
-  - architecture
-  - release
-description: >
-  A long-form engineering deep dive into Zenzic v0.8.0: context fragmentation,
-  modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
-template: blog_post.html
+description: "Engineering Deep Dive: v0.8.0 Architecture"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
@@ -18,7 +11,7 @@ template: blog_post.html
 
 Zenzic emerged as a systems response to a recurring pattern across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. The pipeline was shipping checks, not guarantees — collecting signals, not preserving architecture.
 
-<!-- * truncate * -->
+<!-- more -->
 
 This deep dive is for software architects and technical stakeholders who want to understand why architecture matters below the changelog line. The central claim of Zenzic is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 
@@ -97,7 +90,6 @@ At a high level:
 This is not heuristic URL guessing. It is a contract.
 
 ```python
-# Simplified idea of the invariant
 @dataclass(frozen=True)
 class VirtualRoute:
     url: str
@@ -148,17 +140,12 @@ The architectural response treated this as a systems boundary problem, not a sty
 The Zenzic solution is an **Anti-Corruption Layer (Facade)** around regex operations. Contributors keep a simple internal API. The runtime backend is enforced to use RE2 semantics for linear-time matching where policy requires determinism.
 
 ```python
-# simplified facade pattern
 from zenzic.core import regex
 
 def contains_secret(line: str) -> bool:
     # contributor-facing API stays stable
     return regex.search(SECRET_PATTERN, line) is not None
 
-# inside the facade implementation
-# - compile through google-re2 backend
-# - reject unsupported constructs at load time
-# - expose a compatible API surface for callers
 ```
 
 This design gives us three guarantees at once:
@@ -190,7 +177,6 @@ The purpose is not duplication. The purpose is risk distribution.
 The implementation hinge is the `justfile`. It is not a convenience wrapper; it is the parity contract.
 
 ```make
-# concept sketch
 verify:
     uvx pre-commit run --all-files
     uvx nox -s tests

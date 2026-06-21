@@ -28,7 +28,7 @@ them — without weakening Z105 elsewhere.
 
 | Situation | Use this | Don't use |
 |---|---|---|
-| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore: Zxxx -->` (or `<!-- zenzic:ignore: Zxxx -->` for MDX) | — |
+| One isolated line in one file legitimately matches a rule | `<!-- zenzic:ignore: Zxxx -->` (or `<!-- zenzic:ignore: Zxxx -->` for Markdown) | — |
 | Multiple cross-plugin links in different files | Inline ignores — one per link | — |
 
 The decision rule: **if it is a property of one line, it belongs inline.**
@@ -57,7 +57,7 @@ Inline ignores are surgical. Reach for them when:
 api_key = "sk_test_PLACEHOLDER_FOR_DOCS"
 ```
 
-```mdx
+```html
 <!-- zenzic:ignore: Z1XX -->
 [Hard link example](/legacy/path)
 ```

@@ -1,7 +1,8 @@
 # SPDX-FileCopyrightText: 2025 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# Read the Docs configuration for Zensical
+# Read the Docs configuration for MkDocs Material
+# Migrated from zensical in Sprint 0.14.1
 version: 2
 
 build:
@@ -11,6 +12,7 @@ build:
 
   commands:
     - python -m pip install uv
-    - uvx zensical build -f zensical.toml
+    - uv sync
+    - uv run mkdocs build --strict
     - mkdir --parents $READTHEDOCS_OUTPUT/html/
     - cp --recursive site/* $READTHEDOCS_OUTPUT/html/

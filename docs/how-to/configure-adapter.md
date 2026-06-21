@@ -1,5 +1,4 @@
 ---
-icon: lucide/plug
 sidebar_label: "Adapters & Engine"
 description: "Configure adapter behavior, locale settings, and engine-specific options."
 ---

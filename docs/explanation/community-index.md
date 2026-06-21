@@ -1,6 +1,5 @@
 ---
 sidebar_label: Overview
-icon: lucide/info
 description: "Community resources, contribution guides, and project governance."
 ---
 

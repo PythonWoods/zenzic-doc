@@ -1,5 +1,4 @@
 ---
-icon: lucide/regex
 sidebar_label: "Custom Rules DSL"
 description: "Define project-specific lint rules in .zenzic.toml using the Custom Rules DSL."
 ---

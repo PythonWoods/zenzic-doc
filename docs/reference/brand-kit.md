@@ -1,5 +1,4 @@
 ---
-icon: lucide/palette
 sidebar_label: "Brand Ecosystem"
 description: "Logos, colors, and usage guidelines for the Zenzic brand."
 ---
@@ -28,7 +27,7 @@ For dynamic Shields.io variants and CI/CD wiring, see the [Badges guide](../how-
 The interactive Brand System document shows the full Color Palette, logomark variants,
 social card, typography specimens, and usage laws in a single precision-formatted page:
 
-[Open Brand System &rarr;](https://zenzic.dev/assets/brand/zenzic-brand-system.html)
+[Open Brand System &rarr;](../assets/brand/zenzic-brand-system.html)
 
 ## Download
 

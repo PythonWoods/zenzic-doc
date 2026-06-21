@@ -77,7 +77,7 @@ The `Z401` finding indicates a **MISSING_DIRECTORY_INDEX** issue.
 
 Documentation engines that use directory-style URLs (e.g., `/guide/` instead of
 `/guide.html`) require each directory that is browsable to have an `index.md`
-(or `index.mdx`) as its landing page. Without one, the build engine may silently
+(or `index.md`) as its landing page. Without one, the build engine may silently
 omit the directory URL or return a 404:
 
 > **Standalone Mode:** When using the `standalone` engine, Zenzic accepts both `index.md` and `README.md` as valid directory indices, adapting natively to standard GitHub/GitLab repository structures.

@@ -1,16 +1,9 @@
 ---
-date: 2026-05-28
 title: "Three Zenzic Deployment Patterns for Teams"
+date: 2026-05-28
 authors:
   - pythonwoods
-tags:
-  - governance
-  - devtools
-  - engineering
-description: >-
-  Three concrete deployment patterns for teams operating Zenzic in CI/CD
-  pipelines: quality gates, legacy debt containment, and structural i18n parity.
-template: blog_post.html
+description: "Three Zenzic Deployment Patterns for Teams"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -20,7 +13,7 @@ Zenzic is designed to run inside automated pipelines without configuration drift
 
 These patterns target different teams at different stages: DevOps teams enforcing merge gates in CI, technical leads scoping governance adoption in repositories with accumulated debt, and documentation engineers maintaining multilingual portals. The patterns are independent and can be combined. A repository with legacy debt can run Pattern 2 to fence exemptions while still enforcing a quality floor via Pattern 1 and structural i18n parity via Pattern 3.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## Pattern 1 — CI/CD Quality Gate
 
@@ -113,7 +106,7 @@ If the translation backlog is substantial, set `strict_parity = false` initially
 
 ```toml title=".zenzic.toml"
 [governance.directory_policies]
-"i18n/it/docusaurus-plugin-content-docs/current/reference/**" = ["Z602"]
+"i18n/it/mkdocs-plugin-content-docs/current/reference/**" = ["Z602"]
 ```
 
 Remove the exemption when the translation reaches structural parity. `zenzic diff main` confirms the removal does not regress the quality score.

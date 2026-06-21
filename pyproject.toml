@@ -7,12 +7,12 @@
 
 [project]
 name = "zenzic-doc"
-version = "0.14.0"
+version = "0.14.1"
 description = "Documentation for Zenzic Quality Gate"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "zensical",
+    "mkdocs-material>=9.5",
 ]
 
 [tool.uv]
@@ -23,7 +23,7 @@ dependencies = [
 [tool.bumpversion]
 # Keeps version in sync with Zenzic Core (Versioning Law).
 # Managed via: just release patch|minor|major
-current_version = "0.14.0"
+current_version = "0.14.1"
 commit = false
 tag = false
 
@@ -31,3 +31,5 @@ tag = false
 filename = "pyproject.toml"
 search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
+
+# just release patch|minor|major

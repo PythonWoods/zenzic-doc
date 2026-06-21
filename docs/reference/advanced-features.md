@@ -1,5 +1,4 @@
 ---
-icon: lucide/settings-2
 sidebar_label: "Advanced Features"
 description: "Reference integrity, credential scanner detection, and programmatic usage."
 ---

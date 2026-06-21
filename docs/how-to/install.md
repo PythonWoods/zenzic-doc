@@ -2,7 +2,6 @@
 sidebar_position: 1
 sidebar_label: "Install & First Run"
 title: "Install & First Run"
-icon: lucide/play
 description: "Install Zenzic and run your first documentation quality check."
 ---
 

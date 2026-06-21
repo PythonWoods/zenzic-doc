@@ -9,7 +9,10 @@ description: "ADR 006: Fixing theme flip and Blog locale bleed in zenzic.dev —
 
 # ADR 006: Unified Scan Scope — Storage Namespace & Blog Locale Sovereignty
 
-**Status:** Active
+> **[DEPRECATED - HISTORICAL ARCHIVE]**
+> As of `v0.14.0`, the Docusaurus adapter has been permanently eradicated from the Zenzic ecosystem due to the ontological limits of static analysis on runtime-generated React ASTs. This ADR is retained strictly for historical context. See the blog post *Why We Dropped Docusaurus* for the full post-mortem.
+
+**Status:** Deprecated (as of v0.14.0)
 **Decider:** Architecture Lead
 **Date:** 2026-04-27 (CEO 051, commit `3188387`)
 

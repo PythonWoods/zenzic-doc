@@ -129,7 +129,7 @@ registries and stable command outputs (`inspect capabilities`, `inspect codes`,
 
 ### ADR Corpus — The Decision Mirror
 
-Every architectural choice lives in a structured MDX file with a canonical format:
+Every architectural choice lives in a structured Markdown file with a canonical format:
 `sidebar_label`, `**Status:**`, `## Context`, `## Decision`, `## Rationale`. This makes the
 decision history machine-readable by design.
 

@@ -1,13 +1,9 @@
 ---
-date: 2026-06-06
 title: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
+date: 2026-06-06
 authors:
   - pythonwoods
-tags:
-  - release
-  - ci-cd
-  - architecture
-template: blog_post.html
+description: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -17,7 +13,7 @@ Zenzic v0.10.0 introduces a massive performance upgrade with a new **Async Netwo
 
 These features are not aesthetic. They are built to solve three specific operational bottlenecks: network-induced CI flakiness, context switching during Pull Request reviews, and the high friction of adopting static analysis in legacy documentation repositories.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## Native GitHub Annotations (`--ci`)
 
@@ -38,7 +34,6 @@ Adopting a strict linter on a mature, undocumented legacy repository usually res
 The `--only` flag solves this by applying a destructive filter to the Zenzic analysis engine. It accepts a comma-separated list of Z-Codes and silently drops all findings that do not match.
 
 ```bash
-# Block PRs strictly on credential leaks and nothing else
 uvx zenzic check all --ci --only Z201,Z204
 ```
 

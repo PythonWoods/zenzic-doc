@@ -1,15 +1,9 @@
 ---
-date: 2026-06-09
 title: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
+date: 2026-06-09
 authors:
   - pythonwoods
-tags:
-  - architecture
-  - docs-as-code
-  - ci-cd
-  - parsing
-  - case-study
-template: blog_post.html
+description: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -23,7 +17,7 @@ Instead, the scan surfaced a small set of defects that had survived normal revie
 
 This article examines the findings and explores why documentation quality often requires deeper analysis than conventional Markdown validation.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## The Findings
 

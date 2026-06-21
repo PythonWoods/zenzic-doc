@@ -82,9 +82,9 @@ The most precise suppression: one comment, one line, one finding.
 Legacy product name retained for historical accuracy. <!-- zenzic:ignore: Z601 -->
 ```
 
-**MDX (`.mdx`) files:**
+**Markdown (`.md`) files:**
 
-```mdx
+```html
 Legacy product name retained for historical accuracy. <!-- zenzic:ignore: Z601 -->
 ```
 
@@ -92,7 +92,7 @@ Both comment forms are invisible in rendered output. Use the comment form that m
 
 To suppress **multiple codes on the same line**, add one comment per code:
 
-```mdx
+```html
 Some line. <!-- zenzic:ignore: Z107 --> <!-- zenzic:ignore: Z601 -->
 ```
 
@@ -100,7 +100,7 @@ Some line. <!-- zenzic:ignore: Z107 --> <!-- zenzic:ignore: Z601 -->
 
 The comment should always appear at the **end of the line**, following the industry convention established by `# noqa` (Python), `// eslint-disable-line` (JavaScript), and `// lint:ignore` (Go).
 
-```mdx
+```html
 - Historical reference — legacy product naming retained here. <!-- zenzic:ignore: Z601 -->
 ```
 
@@ -173,9 +173,9 @@ When running `zenzic check all --audit`, directory policy exemptions are **not d
 
 ```shell
 $ zenzic check all --audit
-explanation/brand-history.mdx:21 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameA'
-explanation/brand-history.mdx:22 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameB'
-blog/2026-05-24-log-v080.mdx:1 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyReleaseCodename'
+explanation/brand-history.md:21 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameA'
+explanation/brand-history.md:22 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyNameB'
+blog/2026-05-24-log-v080.md:1 [Z601] [POLICY_EXEMPTION] Brand obsolescence: 'LegacyReleaseCodename'
 ```
 
 Security findings (Z201–Z204) **always bypass directory policies** unconditionally — they cannot be exempted regardless of any TOML configuration.

@@ -1,19 +1,9 @@
 ---
-date: 2026-04-29
 title: "Tutorial: Get Started with Zenzic"
+date: 2026-04-29
 authors:
   - pythonwoods
-tags:
-  - tutorial
-  - quickstart
-  - python
-  - opensource
-  - devtools
-  - user-tutorials
-description: >
-  Install Zenzic, run your first audit, and protect your documentation
-  pipeline in under 60 seconds. No setup, no configuration, no build required.
-template: blog_post.html
+description: "Tutorial: Get Started with Zenzic"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
@@ -24,7 +14,7 @@ Your docs have broken links. You just haven't found them yet.
 **Zenzic finds them before your readers do** — before you build, before you deploy,
 before it's too late.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ---
 
@@ -91,7 +81,7 @@ are caught before they reach `main`.
 
   Read-only analysis, always. Your repository is observed, never modified.
 
-- **Universal** — Works with MkDocs, Docusaurus, Zensical, or any plain Markdown folder.
+- **Universal** — Works with MkDocs, Zensical, or any plain Markdown folder.
 
   Point it at your `docs/` directory and it figures out the rest.
 

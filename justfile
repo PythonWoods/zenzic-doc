@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Release Enterprise workflow for zenzic-doc (Zensical/MkDocs architecture)
-# Phase 0.5: Fully migrated from npm/Docusaurus to uv/Zensical. No Node.js required.
+# just - Release Enterprise workflow for zenzic-doc (MkDocs Material architecture)
+# Sprint 0.14.1: Migrated from zensical alpha SSG to stable mkdocs-material.
 set shell := ["bash", "-c"]
 
 # Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
@@ -30,15 +30,15 @@ clean-all: clean
 # Start local development server (English)
 # Default port: 8000. Override example: `just start -a localhost:8080`
 start *args:
-    uvx zensical serve -f zensical.toml {{args}}
+    uv run mkdocs serve {{args}}
 
 # Serve production build locally (English)
 serve *args: build-docs
-    uvx zensical serve -f zensical.toml --no-reload {{args}}
+    uv run mkdocs serve {{args}}
 
 # Build then serve production site locally
 preview *args: build-docs
-    uvx zensical serve -f zensical.toml --no-reload {{args}}
+    uv run mkdocs serve {{args}}
 
 # --- BUILD ---
 
@@ -49,7 +49,7 @@ build-docs:
     @echo "=> [ZENZIC I/O] Ensuring Tailwind CSS artifact exists..."
     @test -f docs/assets/css/zenzic-tailwind.min.css || (echo "FATAL: zenzic-tailwind.min.css missing. Build external artifact first." && exit 1)
     @echo "=> [ZENZIC BUILD] Compiling English Documentation..."
-    uvx zensical build -f zensical.toml
+    uv run mkdocs build --strict
     @echo "=> [ZENZIC SUCCESS] Build complete. Output in site/."
 
 # --- QUALITY GATES ---
@@ -192,8 +192,7 @@ reuse:
 doctor:
     @python3 --version || echo "python3 missing"
     @uv --version || echo "uv missing"
-    @uvx zensical --version || echo "zensical missing (run: uv sync)"
-
+    @uv run mkdocs --version || echo "mkdocs-material missing (run: uv sync)"
 # Release orchestration: explicit, transparent, and lockfile-first.
 release part:
     #!/usr/bin/env bash
@@ -210,6 +209,21 @@ release part:
 # Show the current project version
 version:
     @uvx --from "bump-my-version==1.2.6" bump-my-version show current_version
+
+# Show the current project version and the pinned infrastructure versions
+versions:
+    #!/usr/bin/env python3
+    import subprocess, re
+    docs = subprocess.check_output(["uvx", "--from", "bump-my-version==1.2.6", "bump-my-version", "show", "current_version"]).decode().strip()
+    print(f"docs:        {docs.split()[-1]}")
+    try:
+        c = open(".github/workflows/zenzic.yml").read()
+        v = re.search(r'version:\s*"([^"]+)"', c)
+        a = re.search(r'uses:\s*PythonWoods/zenzic-action@([a-f0-9]{40}(?: # [^\n]+)?)', c)
+        print(f"zenzic-core: {v.group(1) if v else 'unknown'}")
+        print(f"action:      {a.group(1) if a else 'unknown'}")
+    except Exception:
+        pass
 
 # Simulate a release bump without modifying any files
 # Usage: just release-dry patch|minor|major [--short]
@@ -263,3 +277,50 @@ release-contracts:
         echo "release-contracts failed: all git commits must use DCO (-s) and GPG signing (-S)"
         exit 1
     fi
+
+# Pin the Zenzic core version in GitHub Actions workflows
+pin-core version:
+    #!/usr/bin/env python3
+    import glob, re
+    version = "{{version}}"
+    print(f"Pinning Zenzic core to version {version}...")
+    for file in glob.glob(".github/workflows/*.yml"):
+        with open(file, "r") as f: content = f.read()
+        # Safely replace the version string
+        new_content = re.sub(r'version: "[^"]+"', f'version: "{version}"', content)
+        if content != new_content:
+            with open(file, "w") as f: f.write(new_content)
+            print(f"Updated {file}")
+    print("Done.")
+
+# Pin the Zenzic Action to a specific version tag and auto-resolve its immutable SHA
+pin-action tag:
+    #!/usr/bin/env python3
+    import subprocess, glob, re, sys
+    tag = "{{tag}}"
+    if not tag.startswith("v"):
+        tag = "v" + tag
+    print(f"Resolving SHA for PythonWoods/zenzic-action tag {tag}...")
+    try:
+        out = subprocess.check_output(["git", "ls-remote", "https://github.com/PythonWoods/zenzic-action.git", f"refs/tags/{tag}"]).decode()
+    except subprocess.CalledProcessError:
+        sys.exit("Failed to query remote repository.")
+
+    sha = out.split()[0] if out else None
+    if not sha:
+        sys.exit(f"Error: Tag {tag} not found on remote.")
+
+    print(f"Resolved to SHA: {sha}")
+
+    for file in glob.glob(".github/workflows/*.yml"):
+        with open(file, "r") as f: content = f.read()
+        # Replace the uses: line with the new SHA and tag comment
+        new_content = re.sub(
+            r'uses: PythonWoods/zenzic-action@[a-f0-9]{40}( # v.*)?',
+            f'uses: PythonWoods/zenzic-action@{sha} # {tag}',
+            content
+        )
+        if content != new_content:
+            with open(file, "w") as f: f.write(new_content)
+            print(f"Updated {file}")
+    print("Done.")

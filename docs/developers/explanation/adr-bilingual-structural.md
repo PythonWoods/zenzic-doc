@@ -9,10 +9,11 @@ description: "ADR 008: Atomic filesystem parity between the English source tree 
 
 # ADR 008: Bilingual Structural Invariant — The Symmetry Guardrail
 
-> **\[DEPRECATED — HISTORICAL ARCHIVE\]**
-> As of `v0.14.0`, both the Docusaurus adapter and the Italian Bilingual Mirror Law (ADR-020) have been permanently eradicated from the Zenzic ecosystem. This document references dead architecture and is retained strictly for historical context.
 
-**Status:** Active
+> **[DEPRECATED - HISTORICAL ARCHIVE]**
+> As of `v0.14.0`, the Docusaurus adapter has been permanently eradicated from the Zenzic ecosystem due to the ontological limits of static analysis on runtime-generated React ASTs. This ADR is retained strictly for historical context. See the blog post *Why We Dropped Docusaurus* for the full post-mortem.
+
+**Status:** Deprecated (as of v0.14.0)
 **Decider:** Architecture Lead
 **Date:** 2026-04-20 (D045 — Diátaxis Migration)
 
