@@ -298,6 +298,8 @@ pin-action tag:
     #!/usr/bin/env python3
     import subprocess, glob, re, sys
     tag = "{{tag}}"
+    if not tag.startswith("v"):
+        tag = "v" + tag
     print(f"Resolving SHA for PythonWoods/zenzic-action tag {tag}...")
     try:
         out = subprocess.check_output(["git", "ls-remote", "https://github.com/PythonWoods/zenzic-action.git", f"refs/tags/{tag}"]).decode()
