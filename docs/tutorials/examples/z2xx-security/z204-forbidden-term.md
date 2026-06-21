@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-title: "Z204 - Forbidden Term"
 sidebar_label: "Z204 - Forbidden Term"
 description: "Analysis of the z204-forbidden-term fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z204-forbidden-term fixture."
 
 
 
-# Z204-forbidden-term — FORBIDDEN_TERM
+# Z204 — Forbidden Term
 
 **Z-Code:** `Z204 FORBIDDEN_TERM` · **Engine:** `standalone` · **Exit:** `2`
 

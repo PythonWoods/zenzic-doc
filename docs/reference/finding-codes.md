@@ -501,6 +501,38 @@ A deprecated release name or brand identifier appears in a scanned file. Configu
 
 > **\[INACTIVE\]** This feature and its associated adapter logic have been permanently eradicated. The code remains in the registry strictly to prevent `Unknown Z-Code` configuration crashes for legacy projects.
 
+### Z603: DEAD_SUPPRESSION {#z603}
+
+**Severity:** `warning` · **Penalty:** −1.0 pt (Governance) · **Exit:** 1 · **Suppressible:** Yes · [↗ Gallery](../tutorials/examples/z6xx-brand/z603-dead-suppression)
+
+An inline suppression directive (`<!-- zenzic:ignore: Zxxx -->`) does not correspond to any active finding on that line. The directive silences nothing — it is **Phantom Debt** that consumes part of the 30-point governance budget without justification.
+
+```text
+docs/guide.md:12:  [Z603]  Inline suppression directive does not suppress
+any active finding. Remove the dead comment.
+
+    10  │  See [Installation](./install.md) for setup instructions.
+    11  │
+    12  ❱  ## Getting Started <!-- zenzic:ignore: Z101 - precaution -->
+       │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    13  │
+```
+
+**Common causes:**
+
+- A broken link was fixed but the `zenzic:ignore` comment was left behind.
+- A suppression was added speculatively ("just in case") for a link that was never actually broken.
+- A developer attempted to suppress a **security code** (Z201–Z204) — the Inviolability Law rejects these silently, making the directive permanently dead.
+
+**Fix:**
+
+1. Remove the dead `<!-- zenzic:ignore: Zxxx -->` comment from the flagged line.
+2. If the suppression was legitimate (the finding was recently fixed), cleaning the comment is the correct action — it eliminates Technical Debt.
+3. If you suppressed Z201/Z202/Z203/Z204: those codes are **non-suppressible**. Remove the comment and address the underlying security finding.
+
+!!! warning "Inviolability Law & Z603"
+    Attempting `<!-- zenzic:ignore: Z201 -->` above a real credential **does not suppress Z201**. The credential scanner fires unconditionally. The suppression directive is therefore never consumed, and **Z603 fires on top of Z201** — two findings for one bad line.
+
 ---
 
 ## Z9xx — Engine & System

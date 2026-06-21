@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z301 - Dangling Reference"
 sidebar_label: "Z301 - Dangling Reference"
 description: "Analysis of the z301-dangling-ref fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z301-dangling-ref fixture."
 
 
 
-# Z301-dangling-ref — DANGLING_REF
+# Z301 — Dangling Ref
 
 **Z-Code:** `Z301 DANGLING_REF` · **Engine:** `standalone` · **Exit:** `1`
 

@@ -1,6 +1,5 @@
 ---
 sidebar_position: 5
-title: "Z405 - Unused Assets"
 sidebar_label: "Z405 - Unused Assets"
 description: "Analysis of the z405-unused-assets fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z405-unused-assets fixture."
 
 
 
-# Z405-unused-assets — UNUSED_ASSET
+# Z405 — Unused Assets
 
 **Z-Code:** `Z405 UNUSED_ASSET` · **Engine:** `standalone` · **Exit:** `0`
 

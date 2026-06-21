@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z401 - Missing Directory Index"
 sidebar_label: "Z401 - Missing Directory Index"
 description: "Walk through the z401-missing-directory-index fixture: a docs/guide/ directory containing page.md but no index.md, triggering Z401 MISSING_DIRECTORY_INDEX at exit code 0."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z401-missing-directory-index fixture: a docs/guid
 
 
 
-# Z401-missing-directory-index — Directory Without Index
+# Z401 — Missing Directory Index
 
 **Z-Code:** `Z401 MISSING_DIRECTORY_INDEX` · **Engine:** `zensical` · **Exit:** `0`
 

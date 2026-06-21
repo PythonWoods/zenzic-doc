@@ -1,6 +1,5 @@
 ---
 sidebar_position: 7
-title: "Z108 - Empty Link Text"
 sidebar_label: "Z108 - Empty Link Text"
 description: "Analysis of the z108-empty-link-text fixture: a link whose label is empty, making it inaccessible to screen readers. Z-Code Z108 EMPTY_LINK_TEXT, exit 1."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z108-empty-link-text fixture: a link whose label i
 
 
 
-# Z108-empty-link-text — Empty Link Text
+# Z108 — Empty Link Text
 
 **Z-Code:** `Z108 EMPTY_LINK_TEXT` · **Engine:** `standalone` · **Exit:** `1`
 

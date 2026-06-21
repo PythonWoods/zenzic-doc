@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-title: "Z303 - Duplicate Definition"
 sidebar_label: "Z303 - Duplicate Definition"
 description: "Analysis of the z303-duplicate-def fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z303-duplicate-def fixture."
 
 
 
-# Z303-duplicate-def — DUPLICATE_DEF
+# Z303 — Duplicate Def
 
 **Z-Code:** `Z303 DUPLICATE_DEF` · **Engine:** `standalone` · **Exit:** `0`
 

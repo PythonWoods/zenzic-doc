@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z201 - Credentials"
 sidebar_label: "Z201 - Credentials"
 description: "Analysis of the z201-credentials fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z201-credentials fixture."
 
 
 
-# Z201-credentials — CREDENTIAL_SECRET
+# Z201 — Credentials
 
 **Z-Code:** `Z201 CREDENTIAL_SECRET` · **Engine:** `standalone` · **Exit:** `2`
 

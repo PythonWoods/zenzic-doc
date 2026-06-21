@@ -56,7 +56,7 @@ nav:
         - tutorials/examples/z5xx-content/z505-untagged-code-block.md
         - tutorials/examples/z5xx-content/z506-malformed-frontmatter.md
         - tutorials/examples/z6xx-brand/z601-brand-obsolescence.md
-        - tutorials/examples/z6xx-brand/z602-i18n-parity.md
+        - tutorials/examples/z6xx-brand/z603-dead-suppression.md
     - How-to Guides:
       - how-to/install.md
       - how-to/initialize-configuration.md
@@ -177,7 +177,7 @@ extra:
   # ADR-037: No hardcoded SemVer in any .html or .md source.
   # CI pipeline passes the current version at build time, e.g.:
   #   uv run mkdocs build --extra zenzic_version=0.14.1
-  zenzic_version: "0.14.1"
+  zenzic_version: "0.15.0"
 
 markdown_extensions:
   - attr_list

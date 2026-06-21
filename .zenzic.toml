@@ -125,7 +125,7 @@ brand_obsolescence = ["Basalt", "Quartz", "Obsidian", "Graphite"]
 "docs/blog/**"                    = ["Z601", "Z503", "Z402", "Z101"]  # Blog posts are EN-only; Z402+Z101 suppressed (content-leaves, UNREACHABLE_LINK expected)
 "docs/blog/posts/**"              = ["Z402"]  # dynamically routed by native MkDocs blog plugin (v0.14.1)
 "docs/explanation/mineral-path.md"    = ["Z601"]
-"docs/tutorials/examples/**"      = ["Z401", "Z506"]
+"docs/tutorials/examples/**"      = ["Z401", "Z506", "Z603"]  # examples intentionally trigger findings for D.I.A. purposes; Z603 exempted for z603-dead-suppression.md fixture
 "docs/developers/how-to/contribute/**" = ["Z107"]
 
 # Governance Playbook:

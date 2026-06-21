@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z101 - Broken Links"
 sidebar_label: "Z101 - Broken Links"
 description: "Walk through the z101-broken-links fixture: two internal link targets that do not exist on disk, triggering Z101 LINK_BROKEN at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z101-broken-links fixture: two internal link targ
 
 
 
-# Z101-broken-links — Link Integrity
+# Z101 — Broken Links
 
 **Z-Code:** `Z101 LINK_BROKEN` · **Engine:** `standalone` · **Exit:** `1`
 

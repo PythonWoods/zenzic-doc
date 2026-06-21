@@ -281,7 +281,7 @@ release-contracts:
 # Pin the Zenzic core version in GitHub Actions workflows
 pin-core version:
     #!/usr/bin/env python3
-    import glob, re
+    import subprocess, glob, re
     version = "{{version}}"
     print(f"Pinning Zenzic core to version {version}...")
     for file in glob.glob(".github/workflows/*.yml"):
@@ -291,7 +291,10 @@ pin-core version:
         if content != new_content:
             with open(file, "w") as f: f.write(new_content)
             print(f"Updated {file}")
-    print("Done.")
+    print("Staging and committing workflow updates...")
+    subprocess.run(["git", "add", ".github/workflows/"], check=True)
+    subprocess.run(["git", "commit", "-S", "-s", "-m", f"build(ci): pin zenzic core to v{version} in workflows"], check=True)
+    print("Pin-core atomic operation complete.")
 
 # Pin the Zenzic Action to a specific version tag and auto-resolve its immutable SHA
 pin-action tag:
@@ -323,4 +326,7 @@ pin-action tag:
         if content != new_content:
             with open(file, "w") as f: f.write(new_content)
             print(f"Updated {file}")
-    print("Done.")
+    print("Staging and committing workflow updates...")
+    subprocess.run(["git", "add", ".github/workflows/"], check=True)
+    subprocess.run(["git", "commit", "-S", "-s", "-m", f"build(ci): pin zenzic-action to {tag} ({sha[:7]}) in workflows"], check=True)
+    print("Pin-action atomic operation complete.")

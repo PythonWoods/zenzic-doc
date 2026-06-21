@@ -1,6 +1,5 @@
 ---
 sidebar_position: 4
-title: "Z404 - Config Asset Missing"
 sidebar_label: "Z404 - Config Asset Missing"
 description: "Walk through the z404-config-asset-missing fixture: mkdocs.yml declares theme.logo: assets/logo.svg but the file does not exist, triggering Z404 CONFIG_ASSET_MISSING at exit code 0."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z404-config-asset-missing fixture: mkdocs.yml dec
 
 
 
-# Z404-config-asset-missing — Infrastructure Asset Not Found
+# Z404 — Config Asset Missing
 
 **Z-Code:** `Z404 CONFIG_ASSET_MISSING` · **Engine:** `mkdocs` · **Exit:** `0`
 

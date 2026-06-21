@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z102 - Anchor Missing"
 sidebar_label: "Z102 - Anchor Missing"
 description: "Walk through the z102-anchor-missing fixture: a fragment link that targets a heading that does not exist in the destination file, triggering Z102 ANCHOR_MISSING at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z102-anchor-missing fixture: a fragment link that
 
 
 
-# Z102-anchor-missing — Anchor Integrity
+# Z102 — Anchor Missing
 
 **Z-Code:** `Z102 ANCHOR_MISSING` · **Engine:** `standalone` · **Exit:** `1`
 

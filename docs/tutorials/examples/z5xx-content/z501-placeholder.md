@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z501 - Placeholder Content"
 sidebar_label: "Z501 - Placeholder Content"
 description: "Analysis of the z501-placeholder fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z501-placeholder fixture."
 
 
 
-# Z501-placeholder — PLACEHOLDER
+# Z501 — Placeholder
 
 **Z-Code:** `Z501 PLACEHOLDER` · **Engine:** `standalone` · **Exit:** `0`
 
