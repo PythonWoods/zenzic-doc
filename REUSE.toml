@@ -12,7 +12,7 @@ SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = ["blog/**", "docs/**/*.mdx", "i18n/**/*.mdx"]
+path = ["blog/**", "docs/**/*.md"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
