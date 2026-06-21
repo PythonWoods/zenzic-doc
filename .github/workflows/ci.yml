@@ -14,7 +14,7 @@ on:
       - 'src/**'
       - 'static/**'
       - 'scripts/**'
-      - 'zensical.toml'
+      - 'mkdocs.yml'
       - 'uv.lock'
       - '.zenzic.toml'
       - '.github/workflows/ci.yml'
@@ -43,5 +43,5 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build Zensical
-        run: uvx zensical build
+      - name: Build Docs
+        run: uv run mkdocs build --strict

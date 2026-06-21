@@ -33,9 +33,9 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build Zensical
+      - name: Build Docs
         run: |
-          uvx zensical build -f zensical.toml
+          uv run mkdocs build --strict
 
       - name: Set artifact name
         id: vars

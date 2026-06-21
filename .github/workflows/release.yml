@@ -30,9 +30,9 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build Zensical
+      - name: Build Docs
         run: |
-          uvx zensical build -f zensical.toml
+          uv run mkdocs build --strict
 
       - name: Archive build output
         run: tar -czf "docs-${{ github.ref_name }}.tar.gz" site
