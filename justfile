@@ -210,6 +210,21 @@ release part:
 version:
     @uvx --from "bump-my-version==1.2.6" bump-my-version show current_version
 
+# Show the current project version and the pinned infrastructure versions
+versions:
+    #!/usr/bin/env python3
+    import subprocess, re
+    docs = subprocess.check_output(["uvx", "--from", "bump-my-version==1.2.6", "bump-my-version", "show", "current_version"]).decode().strip()
+    print(f"docs:        {docs.split()[-1]}")
+    try:
+        c = open(".github/workflows/zenzic.yml").read()
+        v = re.search(r'version:\s*"([^"]+)"', c)
+        a = re.search(r'uses:\s*PythonWoods/zenzic-action@([a-f0-9]{40}(?: # [^\n]+)?)', c)
+        print(f"zenzic-core: {v.group(1) if v else 'unknown'}")
+        print(f"action:      {a.group(1) if a else 'unknown'}")
+    except Exception:
+        pass
+
 # Simulate a release bump without modifying any files
 # Usage: just release-dry patch|minor|major [--short]
 release-dry part *args:
