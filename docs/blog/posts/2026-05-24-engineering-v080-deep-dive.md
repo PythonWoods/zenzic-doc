@@ -11,7 +11,7 @@ description: "Engineering Deep Dive: v0.8.0 Architecture"
 
 Zenzic emerged as a systems response to a recurring pattern across code reviews and CI incidents: documentation quality pipelines were improving locally but degrading structurally over time. The pipeline was shipping checks, not guarantees — collecting signals, not preserving architecture.
 
-<!-- * truncate * -->
+<!-- more -->
 
 This deep dive is for software architects and technical stakeholders who want to understand why architecture matters below the changelog line. The central claim of Zenzic is straightforward: zero-config should not mean zero-governance. It should mean deterministic defaults, explicit contracts, and interfaces that remain machine-readable under pressure.
 

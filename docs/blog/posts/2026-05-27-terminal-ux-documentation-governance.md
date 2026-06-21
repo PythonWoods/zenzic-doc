@@ -15,7 +15,7 @@ pipeline when one does not.
 
 This analysis reflects the terminal contract as shipped on the v0.9.0 release line.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## Beyond Linting
 

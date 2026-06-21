@@ -10,13 +10,13 @@ description: "Why We Dropped Docusaurus: The Ontological Limits of Static Analys
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 
-*Zenzic Engineering · June 13, 2026*
 
----
 
 We spent a full development cycle building a Docusaurus adapter for Zenzic.
 We ran forensic audits on real Docusaurus projects.
 Then we deleted every line of it.
+
+<!-- more -->
 
 This is the story of why — and why we think it was the right call.
 

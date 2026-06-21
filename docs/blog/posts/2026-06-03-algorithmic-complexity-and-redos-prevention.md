@@ -12,7 +12,7 @@ description: "Why we banned Python's regex module: The algorithm behind Zenzic"
 
 In modern CI/CD pipelines, security and performance should be structurally bounded, not just empirically observed. Traditional documentation linters and credential scanners often fail when operating at scale or under adversarial conditions. The primary failure mode is **ReDoS (Regular Expression Denial of Service)**.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## The ReDoS Problem in CI/CD
 

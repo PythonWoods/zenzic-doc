@@ -14,7 +14,7 @@ Your docs have broken links. You just haven't found them yet.
 **Zenzic finds them before your readers do** — before you build, before you deploy,
 before it's too late.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ---
 

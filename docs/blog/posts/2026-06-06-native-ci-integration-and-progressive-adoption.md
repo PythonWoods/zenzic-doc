@@ -13,7 +13,7 @@ Zenzic v0.10.0 introduces a massive performance upgrade with a new **Async Netwo
 
 These features are not aesthetic. They are built to solve three specific operational bottlenecks: network-induced CI flakiness, context switching during Pull Request reviews, and the high friction of adopting static analysis in legacy documentation repositories.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## Native GitHub Annotations (`--ci`)
 

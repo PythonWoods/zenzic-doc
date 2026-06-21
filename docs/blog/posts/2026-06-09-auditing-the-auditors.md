@@ -17,7 +17,7 @@ Instead, the scan surfaced a small set of defects that had survived normal revie
 
 This article examines the findings and explores why documentation quality often requires deeper analysis than conventional Markdown validation.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## The Findings
 

@@ -11,7 +11,7 @@ description: "The DQS Mathematical Model: Flat-Cost Suppressions and Determinist
 
 The Documentation Quality Score (DQS) is an integer from 0 to 100. Given the same repository state, it always produces the same number. v0.8.0 changed two things: it closed a gate paradox where CI-blocking codes had zero DQS weight, and it replaced the allowance-based suppression model with a flat-cost model.
 
-<!-- * truncate * -->
+<!-- more -->
 
 ## The Gate Paradox
 

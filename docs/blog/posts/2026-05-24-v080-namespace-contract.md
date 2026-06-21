@@ -12,7 +12,7 @@ description: "The Namespace Contract"
 The system is built on a contract: explicit tier boundaries, frozen security guarantees,
 and a machine-consumable route surface for external tools.
 
-<!-- * truncate * -->
+<!-- more -->
 
 Italian version available in the Italian locale mirror of this article.
 
