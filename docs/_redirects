@@ -170,3 +170,6 @@
 
 # ADR-020 Deprecation: Gracefully degrade all legacy Italian traffic to the English source
 /it/*  /:splat  301
+
+# Legacy Docusaurus routing fallback
+/docs/*  /:splat  301
