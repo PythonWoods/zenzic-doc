@@ -1,5 +1,4 @@
 --
-title: "Z506 Gallery — MALFORMED_FRONTMATTER"
 description: "Live example showing a malformed frontmatter delimiter detected by Zenzic."
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -48,7 +47,6 @@ Ensure the very first line of the file is exactly three dashes and nothing else:
 
 ```yaml
 ---
-title: My Page
 description: A well-formed frontmatter block.
 ---
 ```
@@ -59,6 +57,5 @@ If you need to suppress Z506 on a specific file (e.g. a gallery page like this o
 
 ```markdown
 -- <!-- zenzic:ignore: Z506 -->
-title: example
 ---
 ```

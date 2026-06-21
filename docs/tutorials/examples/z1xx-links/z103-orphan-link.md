@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-title: "Z103 - Orphan Link"
 sidebar_label: "Z103 - Orphan Link"
 description: "Walk through the z103-orphan-link fixture: a link to a file that exists on disk but is absent from the site navigation, triggering Z103 ORPHAN_LINK at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z103-orphan-link fixture: a link to a file that e
 
 
 
-# Z103-orphan-link — Orphan Link
+# Z103 — Orphan Link
 
 **Z-Code:** `Z103 ORPHAN_LINK` · **Engine:** `zensical` · **Exit:** `1`
 

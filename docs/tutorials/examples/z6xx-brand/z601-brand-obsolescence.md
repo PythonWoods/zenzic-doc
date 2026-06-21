@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Z601 - Brand Obsolescence"
 sidebar_label: "Z601 - Brand Obsolescence"
 description: "Analysis of the z601-brand-obsolescence fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z601-brand-obsolescence fixture."
 
 
 
-# Z601-brand-obsolescence — BRAND_OBSOLESCENCE
+# Z601 — Brand Obsolescence
 
 **Z-Code:** `Z601 BRAND_OBSOLESCENCE` · **Engine:** `standalone` · **Exit:** `0`
 

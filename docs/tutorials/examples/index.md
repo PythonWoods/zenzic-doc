@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-title: "Examples Overview"
 sidebar_label: "Overview"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

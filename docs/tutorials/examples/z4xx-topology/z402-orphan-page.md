@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z402 - Orphan Page"
 sidebar_label: "Z402 - Orphan Page"
 description: "Analysis of the z402-orphan-page fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z402-orphan-page fixture."
 
 
 
-# Z402-orphan-page — ORPHAN_PAGE
+# Z402 — Orphan Page
 
 **Z-Code:** `Z402 ORPHAN_PAGE` · **Engine:** `zensical` · **Exit:** `0`
 

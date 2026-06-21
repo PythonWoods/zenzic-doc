@@ -1,6 +1,5 @@
 ---
 sidebar_position: 5
-title: "Z105 - Absolute Path"
 sidebar_label: "Z105 - Absolute Path"
 description: "Analysis of the z105-absolute-path fixture: a link using an absolute path starting with '/', breaking host-path portability. Z-Code Z105 ABSOLUTE_PATH, exit 1."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z105-absolute-path fixture: a link using an absolu
 
 
 
-# Z105-absolute-path — Absolute Path
+# Z105 — Absolute Path
 
 **Z-Code:** `Z105 ABSOLUTE_PATH` · **Engine:** `standalone` · **Exit:** `1`
 

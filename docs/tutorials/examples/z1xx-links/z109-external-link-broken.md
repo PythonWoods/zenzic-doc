@@ -1,6 +1,5 @@
 ---
 sidebar_position: 8
-title: "Z109 - External Link Broken"
 sidebar_label: "Z109 - External Link Broken"
 description: "Walk through the z109-external-link-broken fixture: an external URL that cannot be reached or returns an HTTP error, triggering Z109 EXTERNAL_LINK_BROKEN at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z109-external-link-broken fixture: an external UR
 
 
 
-# Z109-external-link-broken — Link Integrity
+# Z109 — External Link Broken
 
 **Z-Code:** `Z109 EXTERNAL_LINK_BROKEN` · **Engine:** `standalone` · **Exit:** `1`
 

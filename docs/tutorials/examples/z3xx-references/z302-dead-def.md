@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z302 - Dead Definition"
 sidebar_label: "Z302 - Dead Definition"
 description: "Analysis of the z302-dead-def fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z302-dead-def fixture."
 
 
 
-# Z302-dead-def — DEAD_DEF
+# Z302 — Dead Def
 
 **Z-Code:** `Z302 DEAD_DEF` · **Engine:** `standalone` · **Exit:** `0`
 

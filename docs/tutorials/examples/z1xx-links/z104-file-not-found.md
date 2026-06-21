@@ -1,6 +1,5 @@
 ---
 sidebar_position: 4
-title: "Z104 - File Not Found"
 sidebar_label: "Z104 - File Not Found"
 description: "Walk through the z104-file-not-found fixture: a link pointing to api/reference.md which does not exist on disk, triggering Z104 FILE_NOT_FOUND at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z104-file-not-found fixture: a link pointing to a
 
 
 
-# Z104-file-not-found — Link Target Missing
+# Z104 — File Not Found
 
 **Z-Code:** `Z104 FILE_NOT_FOUND` · **Engine:** `standalone` · **Exit:** `1`
 

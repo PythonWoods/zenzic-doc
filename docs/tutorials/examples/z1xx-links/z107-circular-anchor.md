@@ -1,6 +1,5 @@
 ---
 sidebar_position: 6
-title: "Z107 - Circular Anchor"
 sidebar_label: "Z107 - Circular Anchor"
 description: "Walk through the z107-circular-anchor fixture: a self-referential anchor link whose text slugifies to its own fragment, triggering Z107 CIRCULAR_ANCHOR at exit code 0."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z107-circular-anchor fixture: a self-referential 
 
 
 
-# Z107-circular-anchor — Self-Referential Anchor
+# Z107 — Circular Anchor
 
 **Z-Code:** `Z107 CIRCULAR_ANCHOR` · **Engine:** `standalone` · **Exit:** `0`
 

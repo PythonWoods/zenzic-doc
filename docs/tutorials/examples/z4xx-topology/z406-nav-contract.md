@@ -1,6 +1,5 @@
 ---
 sidebar_position: 6
-title: "Z406 - Nav Contract"
 sidebar_label: "Z406 - Nav Contract"
 description: "Walk through the z406-nav-contract fixture: mkdocs.yml declares extra.alternate with link /it/ but no Italian pages exist in the VSM, triggering Z406 NAV_CONTRACT at exit code 1."
 ---
@@ -10,7 +9,7 @@ description: "Walk through the z406-nav-contract fixture: mkdocs.yml declares ex
 
 
 
-# Z406-nav-contract — Navigation Contract Violation
+# Z406 — Nav Contract
 
 **Z-Code:** `Z406 NAV_CONTRACT` · **Engine:** `mkdocs` · **Exit:** `1`
 

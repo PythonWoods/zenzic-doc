@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z502 - Short Content"
 sidebar_label: "Z502 - Short Content"
 description: "Analysis of the z502-short-content fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z502-short-content fixture."
 
 
 
-# Z502-short-content — SHORT_CONTENT
+# Z502 — Short Content
 
 **Z-Code:** `Z502 SHORT_CONTENT` · **Engine:** `standalone` · **Exit:** `0`
 

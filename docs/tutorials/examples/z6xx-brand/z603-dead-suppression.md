@@ -1,13 +1,12 @@
 ---
 sidebar_position: 3
-title: "Z603 - Dead Suppression"
 sidebar_label: "Z603 - Dead Suppression"
 description: "Analysis of the z603-dead-suppression fixture. Demonstrates how Zenzic detects inline zenzic:ignore directives that suppress no active finding (Phantom Debt)."
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# Z603-dead-suppression — DEAD_SUPPRESSION
+# Z603 — Dead Suppression
 
 **Z-Code:** `Z603 DEAD_SUPPRESSION` · **Engine:** `standalone` · **Exit:** `0` · **Severity:** `warning`
 

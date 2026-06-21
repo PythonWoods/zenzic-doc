@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-title: "Z403 - Missing Alt Text"
 sidebar_label: "Z403 - Missing Alt Text"
 description: "Analysis of the z403-missing-alt fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z403-missing-alt fixture."
 
 
 
-# Z403-missing-alt — MISSING_ALT
+# Z403 — Missing Alt
 
 **Z-Code:** `Z403 MISSING_ALT` · **Engine:** `standalone` · **Exit:** `0`
 

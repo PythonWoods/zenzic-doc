@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z202 - Path Traversal"
 sidebar_label: "Z202 - Path Traversal"
 description: "Analysis of the z202-path-traversal fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z202-path-traversal fixture."
 
 
 
-# Z202-path-traversal — PATH_TRAVERSAL
+# Z202 — Path Traversal
 
 **Z-Code:** `Z202 PATH_TRAVERSAL` · **Engine:** `standalone` · **Exit:** `1`
 

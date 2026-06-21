@@ -1,6 +1,5 @@
 ---
 sidebar_position: 4
-title: "Z505 - Untagged Code Block"
 sidebar_label: "Z505 - Untagged Code Block"
 description: "Analysis of the z505-untagged-code-block fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z505-untagged-code-block fixture."
 
 
 
-# Z505-untagged-code-block — UNTAGGED_CODE_BLOCK
+# Z505 — Untagged Code Block
 
 **Z-Code:** `Z505 UNTAGGED_CODE_BLOCK` · **Engine:** `standalone` · **Exit:** `0`
 

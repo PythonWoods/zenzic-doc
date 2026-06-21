@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-title: "Z503 - Snippet Error"
 sidebar_label: "Z503 - Snippet Error"
 description: "Analysis of the z503-snippet-error fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z503-snippet-error fixture."
 
 
 
-# Z503-snippet-error — SNIPPET_ERROR
+# Z503 — Snippet Error
 
 **Z-Code:** `Z503 SNIPPET_ERROR` · **Engine:** `standalone` · **Exit:** `1`
 

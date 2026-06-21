@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-title: "Z602 - i18n Parity"
 sidebar_label: "Z602 - i18n Parity"
 description: "Analysis of the z602-i18n-parity fixture."
 ---
@@ -10,7 +9,7 @@ description: "Analysis of the z602-i18n-parity fixture."
 
 
 
-# Z602-i18n-parity — I18N_PARITY
+# Z602 — I18n Parity
 
 **Z-Code:** `Z602 I18N_PARITY` · **Engine:** `standalone` · **Exit:** `1`
 
