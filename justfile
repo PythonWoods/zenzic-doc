@@ -262,3 +262,48 @@ release-contracts:
         echo "release-contracts failed: all git commits must use DCO (-s) and GPG signing (-S)"
         exit 1
     fi
+
+# Pin the Zenzic core version in GitHub Actions workflows
+pin-core version:
+    #!/usr/bin/env python3
+    import glob, re
+    version = "{{version}}"
+    print(f"Pinning Zenzic core to version {version}...")
+    for file in glob.glob(".github/workflows/*.yml"):
+        with open(file, "r") as f: content = f.read()
+        # Safely replace the version string
+        new_content = re.sub(r'version: "[^"]+"', f'version: "{version}"', content)
+        if content != new_content:
+            with open(file, "w") as f: f.write(new_content)
+            print(f"Updated {file}")
+    print("Done.")
+
+# Pin the Zenzic Action to a specific version tag and auto-resolve its immutable SHA
+pin-action tag:
+    #!/usr/bin/env python3
+    import subprocess, glob, re, sys
+    tag = "{{tag}}"
+    print(f"Resolving SHA for PythonWoods/zenzic-action tag {tag}...")
+    try:
+        out = subprocess.check_output(["git", "ls-remote", "https://github.com/PythonWoods/zenzic-action.git", f"refs/tags/{tag}"]).decode()
+    except subprocess.CalledProcessError:
+        sys.exit("Failed to query remote repository.")
+
+    sha = out.split()[0] if out else None
+    if not sha:
+        sys.exit(f"Error: Tag {tag} not found on remote.")
+
+    print(f"Resolved to SHA: {sha}")
+
+    for file in glob.glob(".github/workflows/*.yml"):
+        with open(file, "r") as f: content = f.read()
+        # Replace the uses: line with the new SHA and tag comment
+        new_content = re.sub(
+            r'uses: PythonWoods/zenzic-action@[a-f0-9]{40}( # v.*)?',
+            f'uses: PythonWoods/zenzic-action@{sha} # {tag}',
+            content
+        )
+        if content != new_content:
+            with open(file, "w") as f: f.write(new_content)
+            print(f"Updated {file}")
+    print("Done.")
