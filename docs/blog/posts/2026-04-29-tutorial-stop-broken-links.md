@@ -81,7 +81,7 @@ are caught before they reach `main`.
 
   Read-only analysis, always. Your repository is observed, never modified.
 
-- **Universal** — Works with MkDocs, Docusaurus, Zensical, or any plain Markdown folder.
+- **Universal** — Works with MkDocs, Zensical, or any plain Markdown folder.
 
   Point it at your `docs/` directory and it figures out the rest.
 

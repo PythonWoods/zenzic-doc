@@ -106,7 +106,7 @@ If the translation backlog is substantial, set `strict_parity = false` initially
 
 ```toml title=".zenzic.toml"
 [governance.directory_policies]
-"i18n/it/docusaurus-plugin-content-docs/current/reference/**" = ["Z602"]
+"i18n/it/mkdocs-plugin-content-docs/current/reference/**" = ["Z602"]
 ```
 
 Remove the exemption when the translation reaches structural parity. `zenzic diff main` confirms the removal does not regress the quality score.

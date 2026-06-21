@@ -5,8 +5,8 @@
 # Replaces mkdocs-redirects client-side meta-refresh with edge-level 301s.
 # Format: /source /destination 301
 #
-# Legacy Docusaurus routes → New Zensical (MkDocs) routes
-# Docusaurus served docs under /docs/<path>; Zensical serves from site root.
+# Legacy Framework routes → New Zensical (MkDocs) routes
+# Legacy Framework served docs under /docs/<path>; Zensical serves from site root.
 # MkDocs use_directory_urls=true: foo.md → /foo/, index.md → /
 
 # ── User Documentation ─────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@
 /developers/explanation/governance/licensing.html /developers/explanation/governance/licensing/ 301
 /developers/explanation/governance/technical-debt.html /developers/explanation/governance/technical-debt/ 301
 
-# ── Blog (Legacy Docusaurus /blog/<slug> routes) ───────────────────────────────
+# ── Blog (Legacy Framework /blog/<slug> routes) ───────────────────────────────
 # MkDocs Material blog plugin generates canonical /blog/YYYY/MM/DD/<title-slug>/
 # URLs (title-slugified, full ISO date path). Updated in Sprint 0.14.1.
 
