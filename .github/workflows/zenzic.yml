@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Run Zenzic Quality Gate
-        uses: PythonWoods/zenzic-action@d8f866625a36f8ccaea69a12a81a83ff65604a1e # v2
+        uses: PythonWoods/zenzic-action@f6d9dbc4515e9f33d5db4b562c09bc9a2af2d2d3 # fix/wrapper-sarif-count
         with:
           version: "0.15.0"
           strict: 'true'
