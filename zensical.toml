@@ -51,6 +51,9 @@ extra_css = [
 
 [[project.nav]]
 "Blog" = "blog/index.md"
+# NOTE: blog/index.md is a hand-authored index (zensical v0.0.45 has no native
+# blog plugin). Native blog plugin support is tracked for a future zensical
+# release. Post pages are static: blog/posts/YYYY-MM-DD-<slug>/index.html.
 
 [project.theme]
 custom_dir = "overrides"
@@ -94,5 +97,7 @@ anchor_linenums = true
 
 [plugins]
 search = {}
-# Legacy Docusaurus redirects now handled by Cloudflare Pages _redirects file
-# (true HTTP 301s at the edge, not client-side meta-refresh).
+# NOTE: zensical v0.0.45 only supports the 'search' plugin natively.
+# The MkDocs Material blog plugin is not available in this runtime.
+# Blog posts are rendered as static pages; the index is hand-authored.
+# Tracked: https://github.com/zensical/zensical (future blog plugin support).

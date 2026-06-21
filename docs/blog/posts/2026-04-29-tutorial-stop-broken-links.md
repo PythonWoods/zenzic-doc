@@ -3,17 +3,6 @@ date: 2026-04-29
 title: "Tutorial: Get Started with Zenzic"
 authors:
   - pythonwoods
-tags:
-  - tutorial
-  - quickstart
-  - python
-  - opensource
-  - devtools
-  - user-tutorials
-description: >
-  Install Zenzic, run your first audit, and protect your documentation
-  pipeline in under 60 seconds. No setup, no configuration, no build required.
-template: blog_post.html
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

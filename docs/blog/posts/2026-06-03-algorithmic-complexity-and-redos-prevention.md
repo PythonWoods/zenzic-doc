@@ -3,11 +3,6 @@ date: 2026-06-03
 title: "Why we banned Python's regex module: The algorithm behind Zenzic"
 authors:
   - pythonwoods
-tags:
-  - architecture
-  - security
-  - python
-template: blog_post.html
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

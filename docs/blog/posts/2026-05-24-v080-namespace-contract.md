@@ -3,13 +3,6 @@ date: 2026-05-24
 title: "The Namespace Contract"
 authors:
   - pythonwoods
-tags:
-  - engineering-logs
-  - release
-description: >
-  v0.8.0 formalizes the namespace contract, tiered code governance,
-  and deterministic diagnostics for virtual routes.
-template: blog_post.html
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

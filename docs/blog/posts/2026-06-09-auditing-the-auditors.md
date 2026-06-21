@@ -3,13 +3,6 @@ date: 2026-06-09
 title: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
 authors:
   - pythonwoods
-tags:
-  - architecture
-  - docs-as-code
-  - ci-cd
-  - parsing
-  - case-study
-template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

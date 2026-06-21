@@ -3,14 +3,6 @@ date: 2026-05-28
 title: "Three Zenzic Deployment Patterns for Teams"
 authors:
   - pythonwoods
-tags:
-  - governance
-  - devtools
-  - engineering
-description: >-
-  Three concrete deployment patterns for teams operating Zenzic in CI/CD
-  pipelines: quality gates, legacy debt containment, and structural i18n parity.
-template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

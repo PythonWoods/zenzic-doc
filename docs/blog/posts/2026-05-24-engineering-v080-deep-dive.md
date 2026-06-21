@@ -3,14 +3,6 @@ date: 2026-05-24
 title: "Engineering Deep Dive: v0.8.0 Architecture"
 authors:
   - pythonwoods
-tags:
-  - engineering-logs
-  - architecture
-  - release
-description: >
-  A long-form engineering deep dive into Zenzic v0.8.0: context fragmentation,
-  modular context, VSM reverse mapping, RE2 hardening, and sovereign CI parity.
-template: blog_post.html
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

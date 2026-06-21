@@ -1,14 +1,8 @@
 ---
 date: 2026-06-13
 title: "Why We Dropped Docusaurus: The Ontological Limits of Static Analysis"
-description: "Why Zenzic abandoned Docusaurus for Zensical/MkDocs Material — the architectural and philosophical reasons behind the migration."
 authors:
   - pythonwoods
-tags:
-  - architecture
-  - docs-as-code
-  - engineering
-template: blog_post.html
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
