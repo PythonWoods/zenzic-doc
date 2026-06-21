@@ -114,8 +114,8 @@
 }
 
 /* Hide the 'Home' tab from the top navigation */
-.md-tabs__list > :first-child {
-    display: none !important;
+.md-tabs__list> :first-child {
+  display: none !important;
 }
 
 /* ── Source widget: icona tag per la versione ──────────────────────────── */
@@ -152,11 +152,11 @@
 [data-md-component="sidebar"][data-md-type="toc"] .md-nav__link:hover,
 [data-md-component="sidebar"][data-md-type="toc"] .md-nav__link:focus,
 [data-md-component="sidebar"][data-md-type="toc"] .md-nav__link--active,
-[data-md-component="sidebar"][data-md-type="toc"] .md-nav__item--active > .md-nav__link {
+[data-md-component="sidebar"][data-md-type="toc"] .md-nav__item--active>.md-nav__link {
   background-color: transparent !important;
 }
 
-.md-nav--secondary .md-nav__item--active > .md-nav__link,
+.md-nav--secondary .md-nav__item--active>.md-nav__link,
 .md-nav--secondary .md-nav__link--active {
   color: #818cf8;
   background-color: transparent !important;
@@ -171,27 +171,7 @@
   color: #4f46e5;
 }
 
-/* ── Navigation: universal document icon for nav links without explicit icon ─ */
-/* MkDocs Material renders .md-nav__icon for pages with frontmatter icon: set.  */
-/* :not(:has(.md-nav__icon)) targets only links that LACK an icon element.      */
-/* :has() support: Chrome 105+, Firefox 121+, Safari 15.4+                      */
-.md-nav--primary .md-nav__link:not(:has(.md-nav__icon))::before {
-  content: "";
-  display: inline-block;
-  width: 0.82em;
-  height: 0.82em;
-  flex-shrink: 0;
-  margin-right: 0.3em;
-  vertical-align: -0.1em;
-  background-color: currentColor;
-  opacity: 0.4;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
-  mask-repeat: no-repeat;
-  mask-size: contain;
-}
+
 
 /* ── Navigation: hide site title from sidebar ─────────────────────────────── */
 
@@ -663,14 +643,14 @@
 }
 
 /* Documentation cards - structural consistency */
-.md-typeset .grid.cards > ul > li {
+.md-typeset .grid.cards>ul>li {
   border: 1px solid var(--md-code-fg-color--transparent);
   border-radius: 0.2rem;
   padding: 1.2rem;
   transition: border-color 0.25s, background-color 0.25s;
 }
 
-.md-typeset .grid.cards > ul > li:hover {
+.md-typeset .grid.cards>ul>li:hover {
   border-color: var(--md-accent-fg-color);
   background-color: var(--md-accent-fg-color--transparent);
 }
@@ -697,33 +677,48 @@
 }
 
 /* Scale down Action Buttons */
-.zz-btn { padding: 0.5rem 1.25rem !important; font-size: 0.85rem !important; }
+.zz-btn {
+  padding: 0.5rem 1.25rem !important;
+  font-size: 0.85rem !important;
+}
 
 /* Badge styles */
 .zz-hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-family: var(--md-code-font-family);
-    font-size: 0.8rem;
-    color: #ffffff;
-    margin-bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--md-code-font-family);
+  font-size: 0.8rem;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
 }
+
 .zz-badge-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #818cf8;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #818cf8;
 }
 
 /* Metrics styling */
-.zz-metrics { gap: 1.5rem; margin-top: 2.5rem; }
-.zz-metric__value { font-size: 2rem !important; font-weight: 700; }
-.zz-metric__label { font-size: 0.7rem !important; letter-spacing: 0.05em; }
+.zz-metrics {
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.zz-metric__value {
+  font-size: 2rem !important;
+  font-weight: 700;
+}
+
+.zz-metric__label {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.05em;
+}
 
 /* ── Tailwind/MkDocs Bridge: Rem Scaling Fix ─────────────────────────────── */
 /* MkDocs Material sets html { font-size: 125% } for accessibility.
@@ -736,17 +731,20 @@
 
 /* Hide GitHub stats widget on the Landing Page to reduce visual noise */
 html:has(.zz-tailwind-root) .md-header__source {
-    display: none !important;
+  display: none !important;
 }
 
 /* Aggressive Typography Override for Hero Metrics */
 .zz-tailwind-root .text-3xl,
 .zz-tailwind-root .md\:text-4xl {
-    font-size: 2rem !important; /* Force smaller metric numbers */
-    line-height: 1.2 !important;
+  font-size: 2rem !important;
+  /* Force smaller metric numbers */
+  line-height: 1.2 !important;
 }
+
 .zz-tailwind-root .text-\[11px\] {
-    font-size: 0.65rem !important; /* Force smaller metric labels */
+  font-size: 0.65rem !important;
+  /* Force smaller metric labels */
 }
 
 /* === Blog Post Metadata Bar ============================================= */

@@ -144,15 +144,6 @@ cache_ttl_hours = 24
 # message  = "Avoid generic link text. Use a meaningful description."
 # severity = "error"
 
-# --- I18N PARITY (Optional) ---
-# [i18n]
-# enabled = true
-# base_lang = "en"
-# base_source = "docs"
-# strict_parity = true
-# require_frontmatter_parity = ["title", "description"]
-# [i18n.targets]
-# it = "docs-it"
 
 # --- GATE 4: CI/CD (GitHub Actions, Optional) ---
 # Add this workflow snippet to .github/workflows/zenzic.yml
