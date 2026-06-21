@@ -93,7 +93,7 @@ example — are structurally inactive for that run. The label is the sole
 communication of this fact.
 
 **Scope decomposition** (`20 files (14 docs, 6 assets)`). The file count is
-split into two categories: documents (`.md` and `.mdx`) and assets (images,
+split into two categories: documents (`.md` and `.md`) and assets (images,
 data files, schema definitions, and any other non-document file within the
 analyzed tree). The split is not cosmetic: document checks operate on file
 content; asset checks operate on the asset manifest. Different scanners activate

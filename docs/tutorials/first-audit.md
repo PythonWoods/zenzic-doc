@@ -153,7 +153,7 @@ Exit 0 confirms that every link resolves, every page is reachable, and no creden
     Run `zenzic check all`. The finding is exact:
 
     ```text
-    docs/intro.mdx:3  Z101  Internal link resolves to no page in the VSM  → ./nonexistent-page.mdx
+    docs/intro.md:3  Z101  Internal link resolves to no page in the VSM  → ./nonexistent-page.md
     ```
 
     File path. Line number. Finding code. No finding without a physical origin.

@@ -89,13 +89,13 @@ are not decoration.
 
 Every icon in the documentation must be rendered with:
 
-```mdx
+```html
 <Icon name="icon-name" />
 ```
 
 Optional size override (default is `1.15em`, inherits from surrounding text):
 
-```mdx
+```html
 <Icon name="shield-check" size={20} />
 ```
 
@@ -184,7 +184,7 @@ random colours on log strings or file paths.
 
 ## 6. SPDX Header {#spdx-header}
 
-Every source documentation file (`.md`, `.mdx`, and equivalent content files)
+Every source documentation file (`.md`, `.md`, and equivalent content files)
 must carry SPDX metadata.
 
 Minimum header pattern:
@@ -239,7 +239,7 @@ Before submitting a PR, verify:
 - [ ] No hex literal (`#rrggbb`) in `src/` outside `ZenzicPalette._*` (§9).
 - [ ] All colour references use `ZenzicPalette.*` — no removed flat constants (§9).
 - [ ] No new `.svg` file added to `static/assets/terminal/` (§10).
-- [ ] Any text-bearing SVG inside an MDX page is implemented as `.tsx` (§10).
+- [ ] Any text-bearing SVG inside an Markdown page is implemented as `.tsx` (§10).
 
 ---
 
@@ -373,16 +373,16 @@ Add to your PR checklist:
 
 ---
 
-## 10. MDX Asset Componentization Law {#mdx-asset-componentization}
+## 10. Markdown Asset Componentization Law {#mdx-asset-componentization}
 
 **Directive:** ZRT-DOC-010
 
 !!! warning "Design Constraint"
 
-    Any vector asset intended for **exclusive use within MDX pages** must be implemented
-    as a React component (`.tsx`), never as a static `.svg` file.
+    Any vector asset intended for **exclusive use within Markdown pages** must be implemented
+    as a HTML/Jinja component (`.tsx`), never as a static `.svg` file.
 
-For the detailed architectural rationale behind this directive, see [MDX Asset Componentization Rationale](../explanation/mdx-asset-rationale.md).
+For the detailed architectural rationale behind this directive, see [Markdown Asset Componentization Rationale](../explanation/mdx-asset-rationale.md).
 
 
 ### Checklist addition
@@ -390,4 +390,4 @@ For the detailed architectural rationale behind this directive, see [MDX Asset C
 Add to your PR checklist:
 
 - [ ] No new `.svg` file added to `static/assets/terminal/` (use a `.tsx` component).
-- [ ] Any text-bearing SVG introduced inside an MDX page is implemented as `.tsx`.
+- [ ] Any text-bearing SVG introduced inside an Markdown page is implemented as `.tsx`.

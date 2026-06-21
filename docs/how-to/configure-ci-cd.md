@@ -382,7 +382,7 @@ Operational rule:
 - Keep `paths` filters on `push` to `main` if you want to optimize post-merge CI minutes.
 
 Rationale:
-- `Build` is the structural integrity gate for MDX and site compilation.
+- `Build` is the structural integrity gate for Markdown and site compilation.
 - If `Build` is required but skipped on PR, merge can be blocked in expected/pending state.
 - If `Build` is not required, a fatal docs regression can merge and break the live site.
 

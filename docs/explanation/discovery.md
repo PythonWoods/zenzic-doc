@@ -74,7 +74,7 @@ If none of these conditions are met, Zenzic rejects the invocation with an expli
 All modules that need to iterate over documentation source files must call `iter_markdown_sources`. Direct calls to `Path.rglob()`, `os.walk()`, or `Path.iterdir()` from scanner, validator, or credential scanner are prohibited by design. This function:
 
 1. Walks the `docs_root` directory using `os.walk()` with **in-place directory pruning** (excluded subtrees are never entered).
-2. Yields only `.md` and `.mdx` files, in deterministic sorted order.
+2. Yields only `.md` and `.md` files, in deterministic sorted order.
 3. Skips symbolic links.
 4. Delegates all exclusion decisions to the `LayeredExclusionManager`.
 

@@ -191,7 +191,7 @@ unchanged. Unset, it expands to empty and the gate behaves at full strictness.
 
     ```bash
     just build
-    # ✘ [EXTERNAL_LINK] blog/example.mdx:12: 'https://zenzic.dev/blog/' returned HTTP 404
+    # ✘ [EXTERNAL_LINK] blog/example.md:12: 'https://zenzic.dev/blog/' returned HTTP 404
     # FAILED: Hard errors detected. Exit code 1 is mandatory.
     ```
 

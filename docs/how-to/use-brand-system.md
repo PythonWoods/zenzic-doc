@@ -1,6 +1,6 @@
 ---
 sidebar_label: Use the Brand System
-description: "How to use Zenzic's semantic tokens in React components and MDX."
+description: "How to use Zenzic's semantic tokens in HTML/Jinja components and Markdown."
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -10,9 +10,9 @@ description: "How to use Zenzic's semantic tokens in React components and MDX."
 
 The Zenzic visual language is token-first. All UI colors must be consumed through semantic CSS variables defined in `src/css/custom.css`.
 
-## React Components Contract
+## HTML/Jinja components Contract
 
-Every React component must use `var(--zenzic-*)` tokens for:
+Every HTML/Jinja component must use `var(--zenzic-*)` tokens for:
 
 1. Surface/background
 2. Text hierarchy
@@ -27,43 +27,30 @@ Every React component must use `var(--zenzic-*)` tokens for:
 - `--zenzic-border-*` for separators and component framing
 - `--zenzic-success|warning|error|fatal` for severity semantics
 
-### React usage example
+### HTML/Jinja usage example
 
-```tsx
-export function AuditBadge(): React.JSX.Element {
-  return (
-    <span
-      style={{
-        backgroundColor: 'var(--zenzic-brand)',
-        color: 'var(--zenzic-ink-100)',
-        border: '1px solid var(--zenzic-border-brand-35)',
-        borderRadius: '6px',
-        padding: '0.2rem 0.5rem',
-        fontWeight: 600,
-      }}
-    >
-      audit: passed
-    </span>
-  );
-}
+```html
+<span style="background-color: var(--zenzic-brand); color: var(--zenzic-ink-100); border: 1px solid var(--zenzic-border-brand-35); border-radius: 6px; padding: 0.2rem 0.5rem; font-weight: 600;">
+  audit: passed
+</span>
 ```
 
 !!! danger "Policy Gate"
-    UI pull requests are rejected if JSX/TSX or local CSS introduces hardcoded color literals. Use semantic tokens only.
+    UI pull requests are rejected if HTML/Jinja or local CSS introduces hardcoded color literals. Use semantic tokens only.
 
-## MDX Integration Pattern
+## Markdown Integration Pattern
 
-Use MDX as the normative page and keep the static HTML board as the full visual artifact.
+Use Markdown as the normative page and keep the static HTML board as the full visual artifact.
 
 Recommended pattern:
 
-1. Explain policy and token mapping in MDX.
+1. Explain policy and token mapping in Markdown.
 2. Link to the static board for visual review.
 3. Keep both aligned when editing palette decisions.
 
 Optional embed:
 
-```mdx
+```html
 <iframe
   title="Zenzic Brand System"
   src="/assets/brand/zenzic-brand-system.html"

@@ -45,7 +45,7 @@ The core analysis engine operates as a **Three-Phase Pipeline** over the documen
 
 ### Pass 1 -- Harvest and Credential Scan {#pass-1}
 
-Pass 1 reads every `.md` and `.mdx` file under `docs/` and performs three coordinated operations:
+Pass 1 reads every `.md` and `.md` file under `docs/` and performs three coordinated operations:
 
 | Stream | What it reads | Purpose |
 | :--- | :--- | :--- |
@@ -89,7 +89,7 @@ The report includes:
 
 The link validator (`validate_links_async`) operates independently with its own multi-pass structure:
 
-**Pass 1** -- Read all `.md`/`.mdx` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
+**Pass 1** -- Read all `.md`/`.md` files into memory, extract inline links and reference links, compute heading anchor slugs per file. Construct the `InMemoryPathResolver` once from the complete file map.
 
 **Pass 1.5** -- Build the link adjacency graph and run iterative DFS cycle detection. The cycle registry is a `frozenset[str]` -- O(1) membership checks in Pass 2. Total complexity: Theta(V+E).
 
@@ -255,7 +255,7 @@ three. Zero asymmetries.
 
 ### Link Resolution and Slug Mapping {#link-resolution}
 
-Adapters that support frontmatter `slug` overrides map slugs into the Virtual Site Map for **reachability** validation: a page with `slug: /quick-start` at URL `/docs/quick-start` is correctly marked `REACHABLE` even though its file path is `docs/guides/getting-started.mdx`.
+Adapters that support frontmatter `slug` overrides map slugs into the Virtual Site Map for **reachability** validation: a page with `slug: /quick-start` at URL `/docs/quick-start` is correctly marked `REACHABLE` even though its file path is `docs/guides/getting-started.md`.
 
 However, Zenzic's **link integrity** validation (broken links, absolute paths) resolves relative paths from the *filesystem* location, not the slug URL. This means a heavy divergence between slug and file path can cause a page's relative links to resolve differently in Zenzic (file-based) vs the build engine (URL-based).
 
@@ -603,4 +603,4 @@ allowed to drift. This is the Sovereign Parity principle (ZRT-010).
 
 The Exclusion Zone model extends beyond structural correctness. A codebase or documentation suite that contains stale brand identifiers carries a different kind of debt: **narrative debt**. A page that still refers to a codename contradicts the contract it is trying to document.
 
-Zenzic addresses this through the [`[governance]`](../reference/configuration-reference.md) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.md#z601) finding. Format-aware, per-line suppression is available for intentional historical references using the appropriate comment syntax for the file type (`.md` vs. `.mdx`).
+Zenzic addresses this through the [`[governance]`](../reference/configuration-reference.md) configuration block and the [Z601 BRAND_OBSOLESCENCE](../reference/finding-codes.md#z601) finding. Format-aware, per-line suppression is available for intentional historical references using the appropriate comment syntax for the file type (`.md` vs. `.md`).

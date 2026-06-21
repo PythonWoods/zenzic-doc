@@ -24,7 +24,7 @@ This reference is split into focused pages:
 | :--- | :--- |
 | [Configuration Reference](./configuration-reference.md) | `docs_dir`, exclusion lists, thresholds, scoring, `build_context`, adapter auto-detection |
 | [Custom Rules DSL](../how-to/add-custom-rules.md) | `[[custom_rules]]` — project-specific regex lint rules in pure TOML |
-| [Brand System](./brand-system.md) | Palette contract, semantic tokens, and React component styling rules |
+| [Brand System](./brand-system.md) | Palette contract, semantic tokens, and HTML component styling rules |
 
 ---
 
