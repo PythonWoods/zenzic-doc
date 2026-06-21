@@ -305,11 +305,22 @@ pin-action tag:
         tag = "v" + tag
     print(f"Resolving SHA for PythonWoods/zenzic-action tag {tag}...")
     try:
-        out = subprocess.check_output(["git", "ls-remote", "https://github.com/PythonWoods/zenzic-action.git", f"refs/tags/{tag}"]).decode()
+        out = subprocess.check_output(["git", "ls-remote", "https://github.com/PythonWoods/zenzic-action.git", f"refs/tags/{tag}*"]).decode()
     except subprocess.CalledProcessError:
         sys.exit("Failed to query remote repository.")
 
-    sha = out.split()[0] if out else None
+    lines = out.strip().split('\n') if out else []
+    sha = None
+    for line in lines:
+        if line.endswith("refs/tags/" + tag + "^{}"):
+            sha = line.split()[0]
+            break
+    if not sha:
+        for line in lines:
+            if line.endswith(f"refs/tags/{tag}"):
+                sha = line.split()[0]
+                break
+
     if not sha:
         sys.exit(f"Error: Tag {tag} not found on remote.")
 
