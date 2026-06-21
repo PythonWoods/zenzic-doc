@@ -1,14 +1,14 @@
 ---
-date: 2026-06-20
 title: "The Tailwind/MkDocs Material Bridge: A Surgical CSS Pattern"
+date: 2026-06-20
 authors:
   - pythonwoods
+description: "The Tailwind/MkDocs Material Bridge: A Surgical CSS Pattern"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# The Tailwind/MkDocs Material Bridge: A Surgical CSS Pattern
 
 Running Tailwind CSS components inside a MkDocs Material documentation site introduces a deceptively subtle conflict. This post documents the architectural decision, the failure mode it resolves, and why we chose a pure-CSS solution over the obvious alternatives.
 

@@ -1,8 +1,9 @@
 ---
-date: 2026-06-09
 title: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
+date: 2026-06-09
 authors:
   - pythonwoods
+description: "Auditing the Auditors: Finding Documentation Defects with AST-Based Analysis"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

@@ -1,8 +1,9 @@
 ---
-date: 2026-05-24
 title: "The Namespace Contract"
+date: 2026-05-24
 authors:
   - pythonwoods
+description: "The Namespace Contract"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

@@ -1,8 +1,9 @@
 ---
-date: 2026-04-29
 title: "Tutorial: Get Started with Zenzic"
+date: 2026-04-29
 authors:
   - pythonwoods
+description: "Tutorial: Get Started with Zenzic"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->

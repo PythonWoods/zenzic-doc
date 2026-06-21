@@ -1,14 +1,14 @@
 ---
-date: 2026-06-13
 title: "Why We Dropped Docusaurus: The Ontological Limits of Static Analysis"
+date: 2026-06-13
 authors:
   - pythonwoods
+description: "Why We Dropped Docusaurus: The Ontological Limits of Static Analysis"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# Why We Dropped Docusaurus: The Ontological Limits of Static Analysis
 
 *Zenzic Engineering · June 13, 2026*
 

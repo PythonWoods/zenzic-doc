@@ -1,8 +1,9 @@
 ---
-date: 2026-05-28
 title: "Three Zenzic Deployment Patterns for Teams"
+date: 2026-05-28
 authors:
   - pythonwoods
+description: "Three Zenzic Deployment Patterns for Teams"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

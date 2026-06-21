@@ -1,8 +1,9 @@
 ---
-date: 2026-06-06
 title: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
+date: 2026-06-06
 authors:
   - pythonwoods
+description: "Zenzic v0.10.0: Async Engine, Native Annotations, and Progressive Adoption"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
@@ -33,7 +34,6 @@ Adopting a strict linter on a mature, undocumented legacy repository usually res
 The `--only` flag solves this by applying a destructive filter to the Zenzic analysis engine. It accepts a comma-separated list of Z-Codes and silently drops all findings that do not match.
 
 ```bash
-# Block PRs strictly on credential leaks and nothing else
 uvx zenzic check all --ci --only Z201,Z204
 ```
 

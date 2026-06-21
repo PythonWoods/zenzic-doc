@@ -1,14 +1,14 @@
 ---
-date: 2026-06-03
 title: "Why we banned Python's regex module: The algorithm behind Zenzic"
+date: 2026-06-03
 authors:
   - pythonwoods
+description: "Why we banned Python's regex module: The algorithm behind Zenzic"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 
-# Why we banned Python's regex module: The algorithm behind Zenzic
 
 In modern CI/CD pipelines, security and performance should be structurally bounded, not just empirically observed. Traditional documentation linters and credential scanners often fail when operating at scale or under adversarial conditions. The primary failure mode is **ReDoS (Regular Expression Denial of Service)**.
 

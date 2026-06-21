@@ -1,8 +1,9 @@
 ---
-date: 2026-05-27
 title: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
+date: 2026-05-27
 authors:
   - pythonwoods
+description: "Terminal UX as a Governance Interface: How Zenzic Renders Diagnostic Contracts"
 ---
 
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->

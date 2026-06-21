@@ -1,8 +1,9 @@
 ---
-date: 2026-05-25
 title: "The DQS Mathematical Model: Flat-Cost Suppressions and Deterministic Gates"
+date: 2026-05-25
 authors:
   - pythonwoods
+description: "The DQS Mathematical Model: Flat-Cost Suppressions and Deterministic Gates"
 ---
 <!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
