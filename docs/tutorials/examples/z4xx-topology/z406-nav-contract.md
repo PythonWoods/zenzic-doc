@@ -109,7 +109,6 @@ extra:
 
 ## See Also
 
-- [Z602 — i18n Parity](../z6xx-brand/z602-i18n-parity) — missing translation
   files between locales.
 - [Z404 — Config Asset Missing](z404-config-asset-missing) — infrastructure
   asset referenced in config not found.

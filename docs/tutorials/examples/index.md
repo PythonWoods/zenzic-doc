@@ -55,7 +55,6 @@ uvx zenzic lab all       # run all 20 scenarios
 | Z503 | Python snippet syntax error | [z503-snippet-error](z5xx-content/z503-snippet-error) |
 | Z505 | Untagged fenced code block | [z505-untagged-code-block](z5xx-content/z505-untagged-code-block) |
 | Z601 | Deprecated brand name in content | [z601-brand-obsolescence](z6xx-brand/z601-brand-obsolescence) |
-| Z602 | i18n locale file parity gap | [z602-i18n-parity](z6xx-brand/z602-i18n-parity) |
 
 ---
 

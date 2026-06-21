@@ -56,7 +56,6 @@ nav:
         - tutorials/examples/z5xx-content/z505-untagged-code-block.md
         - tutorials/examples/z5xx-content/z506-malformed-frontmatter.md
         - tutorials/examples/z6xx-brand/z601-brand-obsolescence.md
-        - tutorials/examples/z6xx-brand/z602-i18n-parity.md
         - tutorials/examples/z6xx-brand/z603-dead-suppression.md
     - How-to Guides:
       - how-to/install.md
