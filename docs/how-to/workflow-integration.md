@@ -1,5 +1,4 @@
 ---
-icon: lucide/circle-check
 sidebar_label: "Local Quality Gate"
 description: "Close the gate before the build. Integrate Zenzic into your local workflow so documentation errors never reach CI."
 ---

@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 
-# just - Release Enterprise workflow for zenzic-doc (Zensical/MkDocs architecture)
-# Phase 0.5: Fully migrated from npm/Docusaurus to uv/Zensical. No Node.js required.
+# just - Release Enterprise workflow for zenzic-doc (MkDocs Material architecture)
+# Sprint 0.14.1: Migrated from zensical alpha SSG to stable mkdocs-material.
 set shell := ["bash", "-c"]
 
 # Allow local override via ZENZIC_BIN (e.g. "uv run --project ../zenzic zenzic").
@@ -30,15 +30,15 @@ clean-all: clean
 # Start local development server (English)
 # Default port: 8000. Override example: `just start -a localhost:8080`
 start *args:
-    uvx zensical serve -f zensical.toml {{args}}
+    uv run mkdocs serve {{args}}
 
 # Serve production build locally (English)
 serve *args: build-docs
-    uvx zensical serve -f zensical.toml --no-reload {{args}}
+    uv run mkdocs serve {{args}}
 
 # Build then serve production site locally
 preview *args: build-docs
-    uvx zensical serve -f zensical.toml --no-reload {{args}}
+    uv run mkdocs serve {{args}}
 
 # --- BUILD ---
 
@@ -49,7 +49,7 @@ build-docs:
     @echo "=> [ZENZIC I/O] Ensuring Tailwind CSS artifact exists..."
     @test -f docs/assets/css/zenzic-tailwind.min.css || (echo "FATAL: zenzic-tailwind.min.css missing. Build external artifact first." && exit 1)
     @echo "=> [ZENZIC BUILD] Compiling English Documentation..."
-    uvx zensical build -f zensical.toml
+    uv run mkdocs build --strict
     @echo "=> [ZENZIC SUCCESS] Build complete. Output in site/."
 
 # --- QUALITY GATES ---
@@ -192,8 +192,7 @@ reuse:
 doctor:
     @python3 --version || echo "python3 missing"
     @uv --version || echo "uv missing"
-    @uvx zensical --version || echo "zensical missing (run: uv sync)"
-
+    @uv run mkdocs --version || echo "mkdocs-material missing (run: uv sync)"
 # Release orchestration: explicit, transparent, and lockfile-first.
 release part:
     #!/usr/bin/env bash

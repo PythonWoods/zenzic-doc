@@ -1,6 +1,5 @@
 ---
 sidebar_label: Overview
-icon: lucide/settings
 description: "Checks, configuration fields, custom rules DSL, and discovery logic."
 ---
 

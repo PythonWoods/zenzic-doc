@@ -1,5 +1,4 @@
 ---
-icon: lucide/blocks
 sidebar_label: "Engine Guide"
 description: "How Zenzic discovers and loads documentation engine adapters."
 ---

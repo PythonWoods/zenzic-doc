@@ -146,24 +146,23 @@
 /developers/explanation/governance/technical-debt.html /developers/explanation/governance/technical-debt/ 301
 
 # ── Blog (Legacy Docusaurus /blog/<slug> routes) ───────────────────────────────
-# Docusaurus used frontmatter slug: for blog URLs. Zensical renders blog posts
-# as static pages at filesystem paths: /blog/posts/YYYY-MM-DD-<slug>/.
-# NOTE: /blog/YYYY/<slug>/ routing requires a native blog plugin not yet
-# available in zensical v0.0.45. Targets updated to reflect actual output paths.
+# MkDocs Material blog plugin generates canonical /blog/YYYY/MM/DD/<title-slug>/
+# URLs (title-slugified, full ISO date path). Updated in Sprint 0.14.1.
 
-/blog/welcome.html                                                            /blog/posts/2026-04-28-welcome/ 301
-/blog/tutorial-stop-broken-links-60s.html                                     /blog/posts/2026-04-29-tutorial-stop-broken-links/ 301
-/blog/engineering-v080-deep-dive.html                                         /blog/posts/2026-05-24-engineering-v080-deep-dive/ 301
-/blog/log-v080.html                                                           /blog/posts/2026-05-24-log-v080/ 301
-/blog/v080-namespace-contract.html                                            /blog/posts/2026-05-24-v080-namespace-contract/ 301
-/blog/dqs-mathematical-model.html                                             /blog/posts/2026-05-25-dqs-mathematical-model/ 301
-/blog/terminal-ux-documentation-governance.html                               /blog/posts/2026-05-27-terminal-ux-documentation-governance/ 301
-/blog/enterprise-use-cases.html                                               /blog/posts/2026-05-28-enterprise-use-cases/ 301
-/blog/log-v090.html                                                           /blog/posts/2026-05-30-log-v090/ 301
-/blog/algorithmic-complexity-and-redos-prevention.html                        /blog/posts/2026-06-03-algorithmic-complexity-and-redos-prevention/ 301
-/blog/zenzic-v0.10.0-native-github-annotations-and-progressive-adoption.html /blog/posts/2026-06-06-native-ci-integration-and-progressive-adoption/ 301
-/blog/auditing-the-auditors-ast-based-documentation-analysis.html            /blog/posts/2026-06-09-auditing-the-auditors/ 301
-/blog/why-we-dropped-docusaurus.html                                          /blog/posts/2026-06-13-why-we-dropped-docusaurus/ 301
+/blog/welcome.html                                                            /blog/2026/04/28/welcome-to-the-zenzic-blog/ 301
+/blog/tutorial-stop-broken-links-60s.html                                     /blog/2026/04/29/tutorial-get-started-with-zenzic/ 301
+/blog/engineering-v080-deep-dive.html                                         /blog/2026/05/24/engineering-deep-dive-v080-architecture/ 301
+/blog/log-v080.html                                                           /blog/2026/05/24/release-v080-governance-baseline/ 301
+/blog/v080-namespace-contract.html                                            /blog/2026/05/24/the-namespace-contract/ 301
+/blog/dqs-mathematical-model.html                                             /blog/2026/05/25/the-dqs-mathematical-model-flat-cost-suppressions-and-deterministic-gates/ 301
+/blog/terminal-ux-documentation-governance.html                               /blog/2026/05/27/terminal-ux-as-a-governance-interface-how-zenzic-renders-diagnostic-contracts/ 301
+/blog/enterprise-use-cases.html                                               /blog/2026/05/28/three-zenzic-deployment-patterns-for-teams/ 301
+/blog/log-v090.html                                                           /blog/2026/05/30/release-v090-deterministic-telemetry/ 301
+/blog/algorithmic-complexity-and-redos-prevention.html                        /blog/2026/06/03/why-we-banned-pythons-regex-module-the-algorithm-behind-zenzic/ 301
+/blog/zenzic-v0.10.0-native-github-annotations-and-progressive-adoption.html /blog/2026/06/06/zenzic-v0100-async-engine-native-annotations-and-progressive-adoption/ 301
+/blog/auditing-the-auditors-ast-based-documentation-analysis.html            /blog/2026/06/09/auditing-the-auditors-finding-documentation-defects-with-ast-based-analysis/ 301
+/blog/why-we-dropped-docusaurus.html                                          /blog/2026/06/13/why-we-dropped-docusaurus-the-ontological-limits-of-static-analysis/ 301
+
 
 # ── ADR-020 Deprecation: Italian Locale Splat Redirect ──────────────────────────
 # Replaces 80+ individual /it/* → /it/* dead routes with a single edge-level splat.

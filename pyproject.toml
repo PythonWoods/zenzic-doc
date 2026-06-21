@@ -12,7 +12,7 @@ description = "Documentation for Zenzic Quality Gate"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "zensical",
+    "mkdocs-material>=9.5",
 ]
 
 [tool.uv]
@@ -31,3 +31,5 @@ tag = false
 filename = "pyproject.toml"
 search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
+
+# just release patch|minor|major

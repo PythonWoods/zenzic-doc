@@ -37,9 +37,9 @@ search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "zensical.toml"
-search = 'zenzic_version = "{current_version}"'
-replace = 'zenzic_version = "{new_version}"'
+filename = "mkdocs.yml"
+search = 'zenzic_version: "{current_version}"'
+replace = 'zenzic_version: "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "overrides/partials/homepage/hero.html"

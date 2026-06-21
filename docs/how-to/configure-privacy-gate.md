@@ -1,5 +1,4 @@
 ---
-icon: lucide/eye-off
 sidebar_label: "Privacy Gate"
 description: "Configure Z204 FORBIDDEN_TERM to block confidential terms from appearing in public documentation."
 ---

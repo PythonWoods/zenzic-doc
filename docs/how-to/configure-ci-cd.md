@@ -1,5 +1,4 @@
 ---
-icon: lucide/workflow
 sidebar_label: "CI/CD Integration"
 description: "GitHub Actions workflows, pre-commit hooks, and CI pipeline integration."
 ---
