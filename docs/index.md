@@ -1,12 +1,3 @@
----
-template: home.html
-title: "Zenzic — Documentation Quality Gate"
-hide:
-  - navigation
-  - toc
-  - path
-  - feedback
----
+# Repository Archived
 
-<!-- SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev> -->
-<!-- SPDX-License-Identifier: Apache-2.0 -->
+This documentation repository has been archived. All documentation is now maintained within the main [Zenzic monorepo](https://github.com/PythonWoods/zenzic).
