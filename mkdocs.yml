@@ -1,0 +1,5 @@
+site_name: Zenzic Documentation
+nav:
+  - Archive: index.md
+theme:
+  name: mkdocs
