@@ -14,6 +14,9 @@
 # Root
 /docs/index.html / 301
 
+# Legacy Blog Tags fallback
+/blog/tags/*  /blog/  301
+
 # Tutorials
 /docs/tutorials/first-audit.html /tutorials/first-audit/ 301
 /docs/tutorials/examples/index.html /tutorials/examples/ 301
@@ -105,6 +108,7 @@
 /docs/explanation/mineral-path.html /explanation/mineral-path/ 301
 /docs/explanation/brand-philosophy.html /explanation/brand-philosophy/ 301
 /docs/explanation/community-index.html /explanation/community-index/ 301
+/explanation/ecosystem      /explanation/the-zenzic-trinity/  301
 
 # ── Developer Documentation ────────────────────────────────────────────────────
 
@@ -162,7 +166,7 @@
 /blog/zenzic-v0.10.0-native-github-annotations-and-progressive-adoption.html /blog/2026/06/06/zenzic-v0100-async-engine-native-annotations-and-progressive-adoption/ 301
 /blog/auditing-the-auditors-ast-based-documentation-analysis.html            /blog/2026/06/09/auditing-the-auditors-finding-documentation-defects-with-ast-based-analysis/ 301
 /blog/why-we-dropped-docusaurus.html                                          /blog/2026/06/13/why-we-dropped-docusaurus-the-ontological-limits-of-static-analysis/ 301
-
+/blog/obsidian-masterclass  /blog/  301
 
 # ── ADR-020 Deprecation: Italian Locale Splat Redirect ──────────────────────────
 # Replaces 80+ individual /it/* → /it/* dead routes with a single edge-level splat.
