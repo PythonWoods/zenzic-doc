@@ -1,0 +1,28 @@
+name: Tombstone Bypass
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  Audit:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Bypass Audit"
+
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Bypass Build"
+
+  Check_DCO:
+    name: Check DCO
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Bypass Check DCO"
+
+  Lint_PR_Title:
+    name: Lint PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Bypass Lint PR Title"
